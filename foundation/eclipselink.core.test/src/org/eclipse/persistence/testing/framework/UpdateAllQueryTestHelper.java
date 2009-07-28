@@ -138,20 +138,20 @@ public class UpdateAllQueryTestHelper {
         Vector objectsAfterOneByOneUpdate = new Vector(objects.size());
         ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
         try {
-            for(int i=0; i < result.size(); i++) {
+            for (int i = 0; i < result.size(); i++) {
                 // read through uow the object(clone) to be updated
                 ReportQueryResult reportResult = (ReportQueryResult)result.elementAt(i);
                 // hammer into the object the updated values
                 Object obj = reportResult.readObject(rq.getReferenceClass(), uow);
                 DatabaseRecord row = new DatabaseRecord();
-                for(int j=0; j < reportResult.getNames().size(); j++) {
-                    String name = (String)reportResult.getNames().elementAt(j);
+                for (int j = 0; j < reportResult.getNames().size(); j++) {
+                    String name = reportResult.getNames().get(j);
                     DatabaseField field = new DatabaseField(name);
-                    Object value = reportResult.getResults().elementAt(j);
+                    Object value = reportResult.getResults().get(j);
                     row.add(field, value);            
                 }
                 // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result
-                for(int j=0; j < fieldsWithNullValues.size(); j++) {
+                for (int j = 0; j < fieldsWithNullValues.size(); j++) {
                     String name = (String)fieldsWithNullValues.elementAt(j);
                     DatabaseField field = new DatabaseField(name);
                     row.add(field, null);

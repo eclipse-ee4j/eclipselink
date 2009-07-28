@@ -314,7 +314,7 @@ public class InheritedTableManager extends TableCreator {
         RS_KEY_field.setName("RS_KEY");
         RS_KEY_field.setTypeName("VARCHAR");
         RS_KEY_field.setSize(10);
-        RS_KEY_field.setShouldAllowNull(true);
+        RS_KEY_field.setShouldAllowNull(false);
         RS_KEY_field.setIsPrimaryKey(false);
         RS_KEY_field.setUnique(true);
         RS_KEY_field.setIsIdentity(false);

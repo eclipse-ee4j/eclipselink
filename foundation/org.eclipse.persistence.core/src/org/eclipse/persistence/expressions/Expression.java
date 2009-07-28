@@ -945,6 +945,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      */
     public Expression copiedVersionFrom(Map alreadyDone) {
+        if (alreadyDone == null) {
+            // For sub-selects no cloning is done.
+            return this;
+        }
         Expression existing = (Expression)alreadyDone.get(this);
         if (existing == null) {
             return registerIn(alreadyDone);

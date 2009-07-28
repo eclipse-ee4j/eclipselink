@@ -131,6 +131,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNestedOneToManyUsingInClause"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexUnusedVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest2"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest3"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleJoinOfSameRelationship"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleLeftOuterJoinOfSameRelationship"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexFetchJoinTest"));
@@ -259,7 +261,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         beginTransaction(em);
         try {
             Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
-            Employee emp2 = (Employee) em.merge(emp);
+            Employee emp2 = em.merge(emp);
             clearCache();
             Query q = em.createQuery("SELECT emp FROM Employee emp WHERE emp.salary = ABS(:sal)");
             q.setParameter("sal", emp.getSalary());
@@ -734,9 +736,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNestedOneToManyUsingInClause()
     {
-        EntityManager em = createEntityManager();                  
-         
-        Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
+        EntityManager em = createEntityManager();
         
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOf("managedEmployees").anyOf("projects").
@@ -746,7 +746,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         readQuery.setReferenceClass(Employee.class);
         readQuery.setSelectionCriteria(whereClause);
 
-        Vector expectedResult = (Vector)getServerSession().executeQuery(readQuery);
+        List expectedResult = (List)getServerSession().executeQuery(readQuery);
         
         clearCache();
         
@@ -763,9 +763,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexUnusedVariableTest()
     {
-        EntityManager em = createEntityManager();                  
-         
-        Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
+        EntityManager em = createEntityManager();
+
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.dontMaintainCache();
         reportQuery.setShouldReturnWithoutReportQueryResult(true);
@@ -832,6 +831,93 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
+    public void complexJoinTest2()
+    {
+        EntityManager em = createEntityManager();
+        Collection emps = getServerSession().readAllObjects(Employee.class);
+        Employee empWithManager = null;
+        Employee empWithOutManager = null;
+        // find an employee w/ and w/o manager
+        for (Iterator i = emps.iterator(); i.hasNext();) {
+            Employee e = (Employee)i.next();
+            Employee manager = e.getManager();
+            if (manager != null) {
+                if (empWithManager == null) {
+                    empWithManager = e;
+                }
+            } else {
+                if (empWithOutManager == null) {
+                    empWithOutManager = e;
+                }
+            }
+            if ((empWithManager != null) && (empWithOutManager != null)) {
+                break;
+            }
+        }
+
+        // Select the related manager of empWithOutManager and empWithManager
+        // This should return empWithManager's manager, because the manager
+        // identification variable m is defined as inner join
+        String ejbqlString = "SELECT m FROM Employee emp JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";       
+        Query query = em.createQuery(ejbqlString);
+        query.setMaxResults(5);
+        query.setParameter("id1", empWithOutManager.getId());
+        query.setParameter("id2", empWithManager.getId());
+        List result = query.getResultList();
+        List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+
+        // Select the related manager of empWithOutManager and empWithManager 
+        // This should return empWithManager's manager, because the manager
+        // identification variable m is defined as outer join
+        ejbqlString = "SELECT m FROM Employee emp LEFT OUTER JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";
+        query = em.createQuery(ejbqlString);
+        query.setMaxResults(5);
+        query.setParameter("id1", empWithOutManager.getId());
+        query.setParameter("id2", empWithManager.getId());
+        result = query.getResultList();
+        expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
+        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+    }
+
+    /**
+     * Test that query cloning that occurs when max results is set works correctly.
+     */
+    public void complexJoinTest3()
+    {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e FROM Employee e");
+        List expectedResult = query.getResultList();
+        for (Iterator iterator = expectedResult.iterator(); iterator.hasNext(); ) {
+            Employee employee = (Employee)iterator.next();
+            if (employee.getManager() == null) {
+                iterator.remove();
+            }
+        }
+        
+        query = em.createQuery("SELECT e FROM Employee e join e.manager m");
+        query.setMaxResults(500);
+        List result = query.getResultList();
+        if (expectedResult.size() != result.size()) {
+            fail("Join did not filter employees without managers:" + result);
+        }
+        
+        query = em.createQuery("SELECT e.id FROM Employee e join e.manager m");
+        query.setMaxResults(500);
+        result = query.getResultList();
+        if (expectedResult.size() != result.size()) {
+            fail("Join did not filter employees without managers:" + result);
+        }
+        
+        // These used to trigger SQL errors.
+        query = em.createQuery("SELECT count(p.number) FROM PhoneNumber p group by p.owner.id");
+        query.setMaxResults(500);
+        result = query.getResultList();
+        query = em.createQuery("SELECT count(e.id) FROM Employee e group by e.address.id");
+        query.setMaxResults(500);
+        result = query.getResultList();
+    }
+    
     /**
      * glassfish issue 2867
      */
@@ -864,7 +950,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     {
         EntityManager em = createEntityManager();                  
          
-        Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.dontMaintainCache();
         reportQuery.setShouldReturnWithoutReportQueryResult(true);
@@ -1411,7 +1496,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
-        List expectedResult = new ArrayList();
         String ejbqlString = "SELECT e FROM Employee e WHERE e NOT MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps)); 
@@ -1422,7 +1506,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
-        List expectedResult = new ArrayList();
         String ejbqlString = "SELECT e FROM Employee e  WHERE e.manager NOT MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps)); 
@@ -1460,12 +1543,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         Project expectedResult = (Project)getServerSession().readAllObjects(Project.class).firstElement();
         String projectName = expectedResult.getName();
-        ReadObjectQuery roq = new ReadObjectQuery();
-        ExpressionBuilder eb = new ExpressionBuilder();
-        Expression whereClause = eb.get("name").equal(projectName);
-        roq.setSelectionCriteria(whereClause);
-        roq.setReferenceClass(LargeProject.class);
-        LargeProject proj = (LargeProject)getServerSession().executeQuery(roq);
 
         //Set criteria for EJBQL and call super-class method to construct the EJBQL query
         String ejbqlString = "SELECT OBJECT(project) FROM ProjectBaseClass project WHERE project.name = \"" + projectName +"\"";
@@ -1480,20 +1557,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexInheritanceUsingNamedQueryTest()
     {
-        EntityManager em = createEntityManager();                  
-        
         Project expectedResult = (Project)getServerSession().readAllObjects(Project.class).firstElement();
         
         String argument = expectedResult.getName();
-        
-        //set up query, using query framework, to return a Project object which will be compared
-        //against the Project object which is returned by the EJBQL query
-        ReadObjectQuery roq = new ReadObjectQuery();
-        roq.setReferenceClass(LargeProject.class);
-        ExpressionBuilder eb = new ExpressionBuilder();
-        Expression whereClause = eb.get("name").equal(argument);
-        roq.setSelectionCriteria(whereClause);
-        Project proj = (Project)getServerSession().executeQuery(roq);
         
         String queryName = "findLargeProjectByNameEJBQL";
         
@@ -2152,12 +2218,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
         String ejbqlString = "select e from Employee e where coalesce(e.firstName, e.lastName) = 'Bob'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2176,7 +2242,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
         String ejbqlString = "select coalesce(e.firstName, e.lastName) from Employee e";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2185,12 +2251,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
         String ejbqlString = "select e from Employee e where nullIf(e.firstName, 'Bob') is null";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2204,7 +2270,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
         String ejbqlString = "select nullIf(e.firstName, 'Bob') from Employee e where e.firstName = 'Bob'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2219,7 +2285,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
         String ejbqlString = "select case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end from Employee e where e.firstName = 'Bob' or e.firstName = 'Jill'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2228,12 +2294,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
         String ejbqlString = "select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end = 'Robert'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2248,7 +2314,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
         String ejbqlString = "select case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end from Employee e  where e.firstName = 'Bob' or e.firstName = 'Jill'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2257,12 +2323,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
         String ejbqlString = "select e from Employee e where case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end = 'Robert'";
         
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
         
         Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }

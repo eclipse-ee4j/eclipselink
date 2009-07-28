@@ -62,7 +62,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected List<Expression> orderByExpressions;
 
     /** Group by clause for report queries. */
-    protected Vector groupByExpressions;
+    protected List<Expression> groupByExpressions;
 
     /** Having clause for report queries. */
     protected Expression havingExpression;
@@ -84,7 +84,7 @@ public class SQLSelectStatement extends SQLStatement {
     /** Used for Oracle Hierarchical Queries */
     protected Expression startWithExpression;
     protected Expression connectByExpression;
-    protected Vector orderSiblingsByExpressions;
+    protected List<Expression> orderSiblingsByExpressions;
 
     /** Variables used for aliasing and normalizing. */
     protected boolean requiresAliases;
@@ -547,9 +547,7 @@ public class SQLSelectStatement extends SQLStatement {
         Vector newFields = new Vector();
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
-        for (Enumeration expressionsEnum = getGroupByExpressions().elements();
-                 expressionsEnum.hasMoreElements();) {
-            Expression expression = (Expression)expressionsEnum.nextElement();            
+        for (Expression expression : getGroupByExpressions()) {            
             writeFieldsFromExpression(printer, expression, newFields);
         }
     }
@@ -561,7 +559,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void appendHierarchicalQueryClauseToWriter(ExpressionSQLPrinter printer) throws IOException {
         Expression startWith = getStartWithExpression();
         Expression connectBy = getConnectByExpression();
-        Vector orderSiblingsBy = getOrderSiblingsByExpressions();
+        List<Expression> orderSiblingsBy = getOrderSiblingsByExpressions();
 
         //Create the START WITH CLAUSE
         if (startWith != null) {
@@ -651,12 +649,11 @@ public class SQLSelectStatement extends SQLStatement {
         if (orderSiblingsBy != null) {
             printer.getWriter().write(" ORDER SIBLINGS BY ");
 
-            for (Enumeration expressionEnum = orderSiblingsBy.elements();
-                     expressionEnum.hasMoreElements();) {
-                Expression ex = (Expression)expressionEnum.nextElement();
-                ex.printSQL(printer);
+            for (Iterator<Expression> iterator = orderSiblingsBy.iterator(); iterator.hasNext(); ) {
+                Expression expression = iterator.next();
+                expression.printSQL(printer);
 
-                if (expressionEnum.hasMoreElements()) {
+                if (iterator.hasNext()) {
                     printer.getWriter().write(", ");
                 }
             }
@@ -920,9 +917,9 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * Return the group bys.
      */
-    public Vector getGroupByExpressions() {
+    public List<Expression> getGroupByExpressions() {
         if (groupByExpressions == null) {
-            groupByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+            groupByExpressions = new ArrayList<Expression>();
         }
 
         return groupByExpressions;
@@ -964,7 +961,7 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * Return the ORDER SIBLINGS BY expression
      */
-    public Vector getOrderSiblingsByExpressions() {
+    public List<Expression> getOrderSiblingsByExpressions() {
         return orderSiblingsByExpressions;
     }
     
@@ -1616,7 +1613,7 @@ public class SQLSelectStatement extends SQLStatement {
         this.fields = fields;
     }
 
-    public void setGroupByExpressions(Vector expressions) {
+    public void setGroupByExpressions(List<Expression> expressions) {
         this.groupByExpressions = expressions;
     }
 
@@ -1629,7 +1626,7 @@ public class SQLSelectStatement extends SQLStatement {
      * takes the hierarchical query expression which have been set on the query and sets them here
      * used to generate the Hierarchical Query Clause in the SQL
      */
-    public void setHierarchicalQueryExpressions(Expression startWith, Expression connectBy, Vector orderSiblingsExpressions) {
+    public void setHierarchicalQueryExpressions(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions) {
         this.startWithExpression = startWith;
         this.connectByExpression = connectBy;
         this.orderSiblingsByExpressions = orderSiblingsExpressions;

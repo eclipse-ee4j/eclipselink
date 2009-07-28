@@ -80,7 +80,6 @@ protected void setup()  throws Exception
         reportQuery.setSelectionCriteria(expression);
 
         // Now, create a custom query key.
-        ClassDescriptor employeeDescriptor = getSession().getClassDescriptor(Employee.class);
         ClassDescriptor projectDescriptor = getSession().getClassDescriptor(Project.class);
 
         ExpressionBuilder qkBuilder = new ExpressionBuilder();
@@ -104,7 +103,7 @@ protected void setup()  throws Exception
     public void verify() {
         //super.verify();
         //ReportQueryResult aResult = (ReportQueryResult)results.firstElement();
-        ReportItem item = (ReportItem)reportQuery.getItems().firstElement();
+        ReportItem item = reportQuery.getItems().get(0);
 
         ClassDescriptor descriptor = getSession().getClassDescriptor(Address.class);
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("id");

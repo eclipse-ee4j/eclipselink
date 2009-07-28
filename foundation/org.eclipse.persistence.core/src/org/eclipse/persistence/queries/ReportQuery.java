@@ -82,13 +82,13 @@ public class ReportQuery extends ReadAllQuery {
     protected int shouldRetrievePrimaryKeys;
 
     /** Collection of names for use by results. */
-    protected Vector names;
+    protected List<String> names;
 
     /** Items to be selected, these could be attributes or aggregate functions. */
-    protected Vector items;
+    protected List<ReportItem> items;
 
     /** Expressions representing fields to be used in the GROUP BY clause. */
-    protected Vector groupByExpressions;
+    protected List<Expression> groupByExpressions;
     
     /** Expression representing the HAVING clause. */
     protected Expression havingExpression;
@@ -100,14 +100,11 @@ public class ReportQuery extends ReadAllQuery {
     
     /** flag to allow items to be added to the last ConstructorReportItem **/
     protected boolean addToConstructorItem;
-    protected Class resultConstructorClass;
-    protected Class[] constructorArgTypes;
-    protected List constructorMappings;
     
     /* GF_ISSUE_395 this attribute stores a set of unique keys that identity results.
      * Used when distinct has been set on the query.  For use in TCK
      */
-    protected HashSet returnedKeys;
+    protected Set<Object> returnedKeys;
 
     /**
      * INTERNAL:
@@ -115,15 +112,13 @@ public class ReportQuery extends ReadAllQuery {
      */
     public ReportQuery() {
         this.queryMechanism = new ExpressionQueryMechanism(this);
-        this.items = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        this.items = new ArrayList<ReportItem>();
         this.shouldRetrievePrimaryKeys = NO_PRIMARY_KEY;
-        this.groupByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
-        this.havingExpression=null;
         this.addToConstructorItem = false;
 
         // overwrite the lock mode to NO_LOCK, this prevents the report query to lock
         // when DEFAULT_LOCK_MODE and a pessimistic locking policy are used.
-        this.setLockMode(ObjectBuildingQuery.NO_LOCK);
+        setLockMode(ObjectBuildingQuery.NO_LOCK);
     }
 
     public ReportQuery(Class javaClass, Expression expression) {
@@ -362,7 +357,7 @@ public class ReportQuery extends ReadAllQuery {
      * Example: reportQuery.addGrouping(expBuilder.get("address").get("country"))
      */
     public void addGrouping(Expression expression) {
-        getGroupByExpressions().addElement(expression);
+        getGroupByExpressions().add(expression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
     }
@@ -384,10 +379,10 @@ public class ReportQuery extends ReadAllQuery {
      * Method used to abstract addToConstructorItem behavour from the public addItem methods
      */
     private void addItem(ReportItem item){
-        if (addToConstructorItem && (getItems().size()>0) &&(((ReportItem)getItems().lastElement()).isConstructorItem())) {
-            ((ConstructorReportItem)getItems().lastElement()).addItem(item);
+        if (this.addToConstructorItem && (getItems().size() > 0) && (getItems().get(getItems().size() - 1).isConstructorItem())) {
+            ((ConstructorReportItem)getItems().get(getItems().size() - 1)).addItem(item);
         } else {
-            getItems().addElement(item);
+            getItems().add(item);
         }
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
@@ -673,11 +668,9 @@ public class ReportQuery extends ReadAllQuery {
      */
     public Object clone() {
         ReportQuery cloneQuery = (ReportQuery)super.clone();
-        cloneQuery.setItems(new Vector(getItems().size()));
+        cloneQuery.items = new ArrayList<ReportItem>(this.items.size());
 
-        Iterator items = getItems().iterator();
-        while (items.hasNext()){
-            ReportItem item = (ReportItem)items.next();
+        for (ReportItem item : this.items) {
             ReportItem newItem = (ReportItem)item.clone();
             if (item.getJoinedAttributeManagerInternal() != null){
                 JoinedAttributeManager manager = (JoinedAttributeManager)item.getJoinedAttributeManager().clone();
@@ -687,6 +680,10 @@ public class ReportQuery extends ReadAllQuery {
             cloneQuery.addItem(newItem);
         }
 
+        if (this.groupByExpressions != null) {
+            cloneQuery.groupByExpressions = new ArrayList<Expression>(this.groupByExpressions);
+        }
+        
         return cloneQuery;
     }
 
@@ -700,9 +697,9 @@ public class ReportQuery extends ReadAllQuery {
      * already cloned.
      */
     public void copyReportItems(Map alreadyDone) {
-        this.items = (Vector)this.items.clone();
+        this.items = new ArrayList<ReportItem>(this.items);
         for (int i = this.items.size() - 1; i >= 0; i--) {
-            ReportItem item = (ReportItem)this.items.elementAt(i);
+            ReportItem item = this.items.get(i);
             Expression expression = item.getAttributeExpression();
             if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
                 expression = expression.copiedVersionFrom(alreadyDone);
@@ -710,9 +707,9 @@ public class ReportQuery extends ReadAllQuery {
             this.items.set(i, new ReportItem(item.getName(), expression));
         }
         if (this.groupByExpressions != null) {
-            this.groupByExpressions = (Vector)this.groupByExpressions.clone();
+            this.groupByExpressions = new ArrayList<Expression>(this.groupByExpressions);
             for (int i = this.groupByExpressions.size() - 1; i >= 0; i--) {
-                Expression item = (Expression)this.groupByExpressions.elementAt(i);
+                Expression item = this.groupByExpressions.get(i);
                 if (alreadyDone.get(item.getBuilder()) != null) {
                     this.groupByExpressions.set(i, item.copiedVersionFrom(alreadyDone));
                 }
@@ -746,7 +743,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void dontReturnSingleAttribute() {
         if (shouldReturnSingleAttribute()) {
-            returnChoice = 0;
+            this.returnChoice = 0;
         }
     }
 
@@ -757,7 +754,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void dontReturnSingleResult() {
         if (shouldReturnSingleResult()) {
-            returnChoice = 0;
+            this.returnChoice = 0;
         }
     }
 
@@ -769,7 +766,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void dontReturnSingleValue() {
         if (shouldReturnSingleValue()) {
-            returnChoice = 0;
+            this.returnChoice = 0;
         }
     }
 
@@ -781,29 +778,25 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void dontReturnWithoutReportQueryResult() {
         if (shouldReturnWithoutReportQueryResult()) {
-            returnChoice = 0;
+            this.returnChoice = 0;
         }
     }
     
     /**
      * PUBLIC:
      * Used in conjunction with beginAddingConstructorArguments to signal that expressions should no longer be 
-     * be added to the collection used in the constructor
-     * 
-     * Get the rows and build the object from the rows.
-     * @exception  DatabaseException - an error has occurred on the database
-     * @return Vector - collection of objects resulting from execution of query.
+     * be added to the collection used in the constructor.
      */
     public void endAddingToConstructorItem(){
-        this.addToConstructorItem=false;
+        this.addToConstructorItem = false;
     }
 
     /**
      * INTERNAL:
      * Execute the query.
-     * Get the rows and build the object from the rows.
+     * Get the rows and build the objects or report data from the rows.
      * @exception  DatabaseException - an error has occurred on the database
-     * @return Vector - collection of objects resulting from execution of query.
+     * @return either collection of objects, or report data resulting from execution of query.
      */
     public Object executeDatabaseQuery() throws DatabaseException {
         // ensure a pessimistic locking query will go down the write connection
@@ -845,15 +838,27 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Return the group bys.
      */
-    public Vector getGroupByExpressions() {
-        return groupByExpressions;
+    public List<Expression> getGroupByExpressions() {
+        if (this.groupByExpressions == null) {
+            this.groupByExpressions = new ArrayList<Expression>();
+        }
+        return this.groupByExpressions;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if any group bys exist, allow lazy initialization.
+     * This should be called before calling getGroupByExpressions().
+     */
+    public boolean hasGroupByExpressions() {
+        return (this.groupByExpressions != null) && (!this.groupByExpressions.isEmpty());
     }
     
     /**
      * INTERNAL:
      * Set the group bys.
      */
-    protected void setGroupByExpressions(Vector groupByExpressions) {
+    protected void setGroupByExpressions(List<Expression> groupByExpressions) {
         this.groupByExpressions = groupByExpressions;
     }
     
@@ -896,36 +901,9 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
-     * return a collection of expressions from the items. Ignore the null (place holders).
+     * @return ReportItems defining the attributes to be read.
      */
-    public Vector getItemExpressions() {
-        Vector fieldExpressions = new Vector(getItems().size());
-
-        // For bug 3115576 and an EXISTS subquery only need to return a single field.
-        if (shouldRetrieveFirstPrimaryKey()) {
-            if (!getDescriptor().getPrimaryKeyFields().isEmpty()) {
-                fieldExpressions.addElement(getDescriptor().getPrimaryKeyFields().get(0));
-            }
-        }
-        if (shouldRetrievePrimaryKeys()) {
-            fieldExpressions.addAll(getDescriptor().getPrimaryKeyFields());
-        }
-
-        for (Enumeration itemsEnum = getItems().elements(); itemsEnum.hasMoreElements();) {
-            ReportItem item = (ReportItem)itemsEnum.nextElement();
-            Expression fieldExpression = item.getAttributeExpression();
-            if (fieldExpression != null) {
-                fieldExpressions.addElement(fieldExpression);
-            }
-        }
-        return fieldExpressions;
-    }
-
-    /**
-     * INTERNAL:
-     * @return ReportQueryItems defining the attributes to be read.
-     */
-    public Vector getItems() {
+    public List<ReportItem> getItems() {
         return items;
     }
     
@@ -933,7 +911,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Set the ReportQueryItems defining the attributes to be read.
      */
-    protected void setItems(Vector items) {
+    protected void setItems(List<ReportItem> items) {
         this.items = items;
     }
 
@@ -964,7 +942,7 @@ public class ReportQuery extends ReadAllQuery {
                 // but PESSIMISTIC and NONE. Validate only those report items that
                 // are expression builders (ignoring the others)
                 if (! lockModeType.equals(PESSIMISTIC_READ) && ! lockModeType.equals(PESSIMISTIC_WRITE) && ! lockModeType.equals(NONE)) {
-                    for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
+                    for (ReportItem reportItem : getItems()) {
                         if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
                             OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();
                         
@@ -985,7 +963,7 @@ public class ReportQuery extends ReadAllQuery {
      * Clear the ReportQueryItems
      */
     public void clearItems() {
-        items = new Vector();
+        this.items = new ArrayList<ReportItem>();
         setIsPrepared(false);
     }
 
@@ -993,21 +971,21 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Lazily initialize and return the names of the items requested for use in each result object.
      */
-    public Vector getNames() {
-        if (names == null) {
-            names = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            for (Enumeration e = getItems().elements(); e.hasMoreElements();) {
-                names.addElement(((ReportItem)e.nextElement()).getName());
+    public List<String> getNames() {
+        if (this.names == null) {
+            this.names = new ArrayList<String>();
+            for (ReportItem item : getItems()) {
+                this.names.add(item.getName());
             }
         }
-        return names;
+        return this.names;
     }
     
     /**
      * INTERNAL:
      * Set the item names.
      */
-    protected void setNames(Vector names) {
+    protected void setNames(List<String> names) {
         this.names = names;
     }
 
@@ -1032,8 +1010,8 @@ public class ReportQuery extends ReadAllQuery {
         // Added exception to be thrown if no attributes have been added to the query
         if (getItems().size() > 0) {
             try {
-                for (Enumeration itemsEnum = getItems().elements(); itemsEnum.hasMoreElements();) {
-                    ((ReportItem)itemsEnum.nextElement()).initialize(this);
+                for (ReportItem item : getItems()) {
+                    item.initialize(this);
                 }
             } catch (QueryException exception) {
                 exception.setQuery(this);
@@ -1054,7 +1032,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare the query from the prepared query.
      * This allows a dynamic query to prepare itself directly from a prepared query instance.
      * This is used in the EJBQL parse cache to allow preparsed queries to be used to prepare
-     * dyanmic queries.
+     * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
     public void prepareFromQuery(DatabaseQuery query) {
@@ -1064,10 +1042,7 @@ public class ReportQuery extends ReadAllQuery {
             this.names = reportQuery.names;
             this.items = reportQuery.items;
             this.groupByExpressions = reportQuery.groupByExpressions;
-            this.constructorArgTypes = reportQuery.constructorArgTypes;
-            this.constructorMappings = reportQuery.constructorMappings;
             this.havingExpression = reportQuery.havingExpression;
-            this.resultConstructorClass = reportQuery.resultConstructorClass;
             this.returnChoice = reportQuery.returnChoice;
             this.returnedKeys = reportQuery.returnedKeys;
             this.shouldRetrievePrimaryKeys = reportQuery.shouldRetrievePrimaryKeys;
@@ -1112,23 +1087,24 @@ public class ReportQuery extends ReadAllQuery {
                 return false;
             }
         }
-        List groupBys = getGroupByExpressions();
-        List otherGroupBys = query.getGroupByExpressions();
-        size = groupBys.size();
-        if (size != otherGroupBys.size()) {
-            return false;
-        }
-        for (int index = 0; index < size; index++) {
-            if (!groupBys.get(index).equals(otherGroupBys.get(index))) {
+        if (hasGroupByExpressions() && query.hasGroupByExpressions()) {
+            List groupBys = getGroupByExpressions();
+            List otherGroupBys = query.getGroupByExpressions();
+            size = groupBys.size();
+            if (size != otherGroupBys.size()) {
                 return false;
             }
+            for (int index = 0; index < size; index++) {
+                if (!groupBys.get(index).equals(otherGroupBys.get(index))) {
+                    return false;
+                }
+            }
+        } else if (hasGroupByExpressions() || query.hasGroupByExpressions()) {
+            return false;
         }
         if ((getHavingExpression() != query.getHavingExpression())
                 && (getHavingExpression() != null)
                 && (!getHavingExpression().equals(query.getHavingExpression()))) {
-            return false;
-        }
-        if (this.resultConstructorClass != query.resultConstructorClass) {
             return false;
         }
         if (this.returnChoice != query.returnChoice) {
@@ -1253,7 +1229,9 @@ public class ReportQuery extends ReadAllQuery {
         }
     }
 
-    /** */
+    /**
+     * Return the first mapping for the primary key.
+     */
     private DatabaseMapping getMappingOfFirstPrimaryKey(ClassDescriptor descriptor) {
         if (descriptor != null) {
             for (Iterator i = descriptor.getMappings().iterator(); i.hasNext(); ) {
@@ -1298,8 +1276,8 @@ public class ReportQuery extends ReadAllQuery {
         }
 
         try {
-            for (Enumeration itemsEnum = getItems().elements(); itemsEnum.hasMoreElements();) {
-                ((ReportItem)itemsEnum.nextElement()).initialize(this);
+            for (ReportItem item : getItems()) {
+                item.initialize(this);
             }
         } catch (QueryException exception) {
             exception.setQuery(this);

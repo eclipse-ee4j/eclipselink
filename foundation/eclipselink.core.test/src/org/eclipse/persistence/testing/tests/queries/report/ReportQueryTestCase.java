@@ -59,8 +59,8 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
             if (result.size() != set.size()) {
                 return false;
             }
-            Vector names = (Vector)result.getNames().clone();
-            Vector results = (Vector)result.getResults().clone();
+            List names = new ArrayList(result.getNames());
+            List results = new ArrayList(result.getResults());
             Iterator it = set.iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry)it.next();
@@ -70,7 +70,7 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
                 if (index == -1) {
                     return false;
                 }
-                if (results.elementAt(index) != value) {
+                if (results.get(index) != value) {
                     return false;
                 }
                 names.remove(index);

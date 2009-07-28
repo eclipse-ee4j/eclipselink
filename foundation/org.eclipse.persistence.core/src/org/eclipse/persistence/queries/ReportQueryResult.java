@@ -13,10 +13,10 @@
 package org.eclipse.persistence.queries;
 
 import java.io.*;
+import java.util.*;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
@@ -48,13 +48,13 @@ import org.eclipse.persistence.sessions.Session;
 public class ReportQueryResult implements Serializable, Map {
 
     /** Item names to lookup result values */
-    protected Vector names;
+    protected List<String> names;
 
     /** Actual converted attribute values */
-    protected Vector results;
+    protected List<Object> results;
 
     /** PK values if the retrievPKs flag was set on the ReportQuery. These can be used to get the actual object */
-    protected Vector primaryKeyValues;
+    protected Vector<Object> primaryKeyValues;
     
     /** If an objectLevel distinct is used then generate unique key for this result */
     // GF_ISSUE_395
@@ -64,7 +64,7 @@ public class ReportQueryResult implements Serializable, Map {
      * INTERNAL:
      * Used to create test results
      */
-    public ReportQueryResult(Vector results, Vector primaryKeyValues) {
+    public ReportQueryResult(List<Object> results, Vector primaryKeyValues) {
         this.results = results;
         this.primaryKeyValues = primaryKeyValues;
     }
@@ -86,7 +86,7 @@ public class ReportQueryResult implements Serializable, Map {
         }
         List items = query.getItems();
         int itemSize = items.size();
-        Vector results = new Vector(itemSize);
+        List results = new ArrayList(itemSize);
 
         if (query.shouldRetrievePrimaryKeys()) {
             setPrimaryKeyValues(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
@@ -134,11 +134,11 @@ public class ReportQueryResult implements Serializable, Map {
                 } else {
                     value = query.getSession().getDatasourcePlatform().convertObject(value, Class.class);
                 }
-                results.addElement(value);
+                results.add(value);
             } else {
                 // Normal items
                 Object value = processItem(query, row, toManyData, item);
-                results.addElement(value);
+                results.add(value);
             }
         }
 
@@ -244,8 +244,8 @@ public class ReportQueryResult implements Serializable, Map {
      * Clear the contents of the result.
      */
     public void clear() {
-        this.names = new Vector();
-        this.results = new Vector();
+        this.names = new ArrayList<String>();
+        this.results = new ArrayList<Object>();
     }
 
     /**
@@ -273,11 +273,12 @@ public class ReportQueryResult implements Serializable, Map {
     }
 
     /**
-     * PUBLIC:
+     * OBSOLETE:
      * Return an enumeration of the result values.
+     * @see #values()
      */
     public Enumeration elements() {
-        return getResults().elements();
+        return new Vector(getResults()).elements();
     }
 
     /**
@@ -285,14 +286,126 @@ public class ReportQueryResult implements Serializable, Map {
      * Returns a set of the keys.
      */
     public Set entrySet() {
-        // bug 2669127
-        // implemented this method exactly the same way as Record.entrySet()
-        int size = this.size();
-        Map tempMap = new HashMap(size);
-        for (int i = 0; i < size; i++) {
-            tempMap.put(this.getNames().elementAt(i), this.getResults().elementAt(i));
+        return new EntrySet();
+    }
+
+    
+    /**
+     * Defines the virtual entrySet.
+     */
+    protected class EntrySet extends AbstractSet {
+        public Iterator iterator() {
+            return new EntryIterator();
         }
-        return tempMap.entrySet();
+        public int size() {
+            return ReportQueryResult.this.size();
+        }
+        public boolean contains(Object object) {
+            if (!(object instanceof Entry)) {
+                return false;
+            }
+            return ReportQueryResult.this.containsKey(((Entry)object).getKey());
+        }
+        public boolean remove(Object object) {
+            if (!(object instanceof Entry)) {
+                return false;
+            }
+            ReportQueryResult.this.remove(((Entry)object).getKey());
+            return true;
+        }
+        public void clear() {
+            ReportQueryResult.this.clear();
+        }
+    }
+    
+    /**
+     * Entry class for implementing Map interface.
+     */
+    protected static class RecordEntry implements Entry {
+        Object key;
+        Object value;
+
+        public RecordEntry(Object key, Object value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public Object getKey() {
+            return key;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Object setValue(Object value) {
+            Object oldValue = this.value;
+            this.value = value;
+            return oldValue;
+        }
+
+        public boolean equals(Object object) {
+            if (!(object instanceof Map.Entry)) {
+                return false;
+            }
+            Map.Entry entry = (Map.Entry)object;
+            return compare(key, entry.getKey()) && compare(value, entry.getValue());
+        }
+
+        public int hashCode() {
+            return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
+        }
+
+        public String toString() {
+            return key + "=" + value;
+        }
+
+        private boolean compare(Object object1, Object object2) {
+            return (object1 == null ? object2 == null : object1.equals(object2));
+        }
+    }
+    
+    /**
+     * Defines the virtual entrySet iterator.
+     */
+    protected class EntryIterator implements Iterator {
+        int index;
+
+        EntryIterator() {
+            this.index = 0;
+        }
+
+        public boolean hasNext() {
+            return this.index < ReportQueryResult.this.size();
+        }
+
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            this.index++;
+            return new RecordEntry(getNames().get(this.index - 1), getResults().get(this.index - 1));
+        }
+
+        public void remove() {
+            if (this.index >= ReportQueryResult.this.size()) {
+                throw new IllegalStateException();
+            }
+            ReportQueryResult.this.remove(getNames().get(this.index));
+        }
+    }
+    
+    /**
+     * Defines the virtual keySet iterator.
+     */
+    protected class KeyIterator extends EntryIterator {
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            this.index++;
+            return getNames().get(this.index - 1);
+        }
     }
 
     /**
@@ -315,7 +428,7 @@ public class ReportQueryResult implements Serializable, Map {
         if (this == result) {
             return true;
         }
-        if (!Helper.compareOrderedVectors(getResults(), result.getResults())) {
+        if (!getResults().equals(result.getResults())) {
             return false;
         }
 
@@ -352,7 +465,7 @@ public class ReportQueryResult implements Serializable, Map {
             return null;
         }
 
-        return getResults().elementAt(index);
+        return getResults().get(index);
     }
 
     /**
@@ -360,7 +473,7 @@ public class ReportQueryResult implements Serializable, Map {
      * Return the indexed value from result.
      */
     public Object getByIndex(int index) {
-        return getResults().elementAt(index);
+        return getResults().get(index);
     }
 
     /**
@@ -378,7 +491,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return the names of report items, provided to ReportQuery.
      */
-    public Vector getNames() {
+    public List<String> getNames() {
         return names;
     }
 
@@ -386,7 +499,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return the PKs for the corresponding object or null if not requested.
      */
-    public Vector getPrimaryKeyValues() {
+    public Vector<Object> getPrimaryKeyValues() {
         return primaryKeyValues;
     }
 
@@ -394,7 +507,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return the results.
      */
-    public Vector getResults() {
+    public List<Object> getResults() {
         return results;
     }
 
@@ -407,19 +520,35 @@ public class ReportQueryResult implements Serializable, Map {
     }
 
     /**
-     * PUBLIC:
+     * OBSOLETE:
      * Return an enumeration of the result names.
+     * @see #keySet()
      */
     public Enumeration keys() {
-        return getNames().elements();
+        return new Vector(getNames()).elements();
     }
-
+    
     /**
      * PUBLIC:
      * Returns a set of the keys.
      */
     public Set keySet() {
-        return new HashSet(getNames());
+        return new KeySet();
+    }
+    
+    /**
+     * Defines the virtual keySet.
+     */
+    protected class KeySet extends EntrySet {
+        public Iterator iterator() {
+            return new KeyIterator();
+        }
+        public boolean contains(Object object) {
+        return ReportQueryResult.this.containsKey(object);
+        }
+        public boolean remove(Object object) {
+            return ReportQueryResult.this.remove(object) != null;
+        }
     }
 
     /**
@@ -429,13 +558,13 @@ public class ReportQueryResult implements Serializable, Map {
     public Object put(Object name, Object value) {
         int index = getNames().indexOf(name);
         if (index == -1) {
-            getNames().addElement(name);
-            getResults().addElement(value);
+            getNames().add((String)name);
+            getResults().add(value);
             return null;
         }
 
-        Object oldValue = getResults().elementAt(index);
-        getResults().setElementAt(value, index);
+        Object oldValue = getResults().get(index);
+        getResults().set(index, value);
         return oldValue;
     }
 
@@ -473,15 +602,15 @@ public class ReportQueryResult implements Serializable, Map {
     public Object remove(Object name) {
         int index = getNames().indexOf(name);
         if (index >= 0) {
-            getNames().removeElementAt(index);
-            Object value = getResults().elementAt(index);
-            getResults().removeElementAt(index);
+            getNames().remove(index);
+            Object value = getResults().get(index);
+            getResults().remove(index);
             return value;
         }
         return null;
     }
 
-    protected void setNames(Vector names) {
+    protected void setNames(List<String> names) {
         this.names = names;
     }
 
@@ -497,7 +626,7 @@ public class ReportQueryResult implements Serializable, Map {
      * INTERNAL:
      * Set the results.
      */
-    public void setResults(Vector results) {
+    public void setResults(List<Object> results) {
         this.results = results;
     }
 
@@ -530,7 +659,7 @@ public class ReportQueryResult implements Serializable, Map {
         java.io.StringWriter writer = new java.io.StringWriter();
         writer.write("ReportQueryResult(");
         for (int index = 0; index < getResults().size(); index++) {
-            writer.write(String.valueOf(getResults().elementAt(index)));
+            writer.write(String.valueOf(getResults().get(index)));
             if (index < (getResults().size() - 1)) {
                 writer.write(", ");
             }

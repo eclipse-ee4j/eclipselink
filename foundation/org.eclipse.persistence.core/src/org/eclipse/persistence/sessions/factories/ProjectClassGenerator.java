@@ -1158,8 +1158,7 @@ public class ProjectClassGenerator {
             //ExpressionBuilder string
             builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
             //ReportItems
-            for (Enumeration itemsEnum = reportQuery.getItems().elements(); itemsEnum.hasMoreElements();) {
-                ReportItem item = (ReportItem)itemsEnum.nextElement();
+            for (ReportItem item : reportQuery.getItems()) {
                 Expression expression = item.getAttributeExpression();
                 String itemName = item.getName();
                 StringWriter writer = new StringWriter();
@@ -1206,8 +1205,7 @@ public class ProjectClassGenerator {
                 }
             }
             //groupBy
-            for (Enumeration groupByEnum = reportQuery.getGroupByExpressions().elements(); groupByEnum.hasMoreElements();) {
-                Expression groupByExp = (Expression)groupByEnum.nextElement();
+            for (Expression groupByExp : reportQuery.getGroupByExpressions()) {
                 buildExpressionString(builderString, method, queryIdentifier, groupByExp, ".addGrouping(");
             }
             //shouldRetrievePrimaryKeys

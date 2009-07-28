@@ -165,10 +165,19 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         //For bug 5900782, the clone of the OrderBy expressions needs to be used to ensure they are normalized
         //every time when select SQL statement gets re-prepared, which will further guarantee the calculation 
         //of table alias always be correct
-        selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
+        if (query.hasOrderByExpressions()) {
+            selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
+        }
         if (getQuery().isReadAllQuery() && ((ReadAllQuery)getQuery()).hasHierarchicalExpressions()) {
             ReadAllQuery readAllquery = (ReadAllQuery)query;
-            selectStatement.setHierarchicalQueryExpressions(readAllquery.getStartWithExpression(), readAllquery.getConnectByExpression(), readAllquery.getOrderSiblingsByExpressions());
+            Expression startsWith = readAllquery.getStartWithExpression();
+            if (startsWith != null) {
+                startsWith.copiedVersionFrom(clonedExpressions);
+            }
+            selectStatement.setHierarchicalQueryExpressions(
+                    startsWith,
+                    readAllquery.getConnectByExpression().copiedVersionFrom(clonedExpressions),
+                    cloneExpressions(readAllquery.getOrderSiblingsByExpressions(), clonedExpressions));
         }
         selectStatement.setHintString(query.getHintString());
         selectStatement.setTranslationRow(getTranslationRow());
@@ -452,7 +461,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         selectStatement.setFields(getSelectionFields(selectStatement, true));
         if (query.hasNonFetchJoinedAttributeExpressions()) {
-            selectStatement.setNonSelectFields(new ArrayList(query.getNonFetchJoinAttributeExpressions()));
+            selectStatement.setNonSelectFields(cloneExpressions(query.getNonFetchJoinAttributeExpressions(), clonedExpressions));
         }
         selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
@@ -477,12 +486,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect, boolean useCustomaryInheritanceExpression, Expression inheritanceExpression) {
         ReportQuery reportQuery = (ReportQuery)getQuery();
         // For bug 2612185: Need to know which original bases were mapped to which cloned bases.
-        // Note: subSelects are already cloned so this table is not needed.
-        // 2612538 - the default size of Map (32) is appropriate
+        // For sub-seclets the expressions have already been clones, and identity must be maintained with the outer expression.
         Map clonedExpressions = isSubSelect ? null : new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions);
-        selectStatement.setGroupByExpressions(reportQuery.getGroupByExpressions());
-        selectStatement.setHavingExpression(reportQuery.getHavingExpression());
+        if (reportQuery.hasGroupByExpressions()) {
+            selectStatement.setGroupByExpressions(cloneExpressions(reportQuery.getGroupByExpressions(), clonedExpressions));
+        }
+        if (reportQuery.getHavingExpression() != null) {
+            selectStatement.setHavingExpression(reportQuery.getHavingExpression().copiedVersionFrom(clonedExpressions));
+        }
         if (getDescriptor().hasInheritance()) {
             if (useCustomaryInheritanceExpression) {
                 if (inheritanceExpression != null) {
@@ -515,7 +527,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             
         selectStatement.setFields(fieldExpressions);
         if (reportQuery.hasNonFetchJoinedAttributeExpressions()) {
-            selectStatement.setNonSelectFields(reportQuery.getNonFetchJoinAttributeExpressions());
+            selectStatement.setNonSelectFields(cloneExpressions(reportQuery.getNonFetchJoinAttributeExpressions(), clonedExpressions));
         }
         
         // Subselects must be normalized in the context of the parent statement.
@@ -1425,7 +1437,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This method return the clones of the list of expressions.
      */
     private List<Expression> cloneExpressions(List<Expression> originalExpressions, Map<Expression, Expression> clonedExpressions){
-        if ((originalExpressions == null) || (originalExpressions.size() == 0)) {
+        if ((originalExpressions == null) || (originalExpressions.size() == 0) || (clonedExpressions == null)) {
             return originalExpressions;
         }
         List<Expression> newExpressions = new ArrayList<Expression>(originalExpressions.size());

@@ -3334,11 +3334,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             getSession().clearProfile();
         }
         if (getProfileCheckbox().isSelected()) {
-            getSession()
-                    .setProfiler(
-                            new org.eclipse.persistence.tools.profiler.PerformanceProfiler(
-                                    getSession(), getLogProfileCheckbox()
-                                            .isSelected()));
+            getSession().setProfiler(new PerformanceProfiler(getLogProfileCheckbox().isSelected()));
             getBrowseProfileButton().setEnabled(true);
             getLogProfileCheckbox().setEnabled(true);
         } else {
@@ -3353,17 +3349,11 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param evt
      *                java.beans.PropertyChangeEvent
      */
-    public/* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void propertyChange(java.beans.PropertyChangeEvent evt) {
-        // user code begin {1}
-        // user code end
+    public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if ((evt.getSource() == getBrowseProfileMenuItem())
                 && (evt.getPropertyName().equals("enabled"))) {
             connPtoP1SetTarget();
         }
-
-        // user code begin {2}
-        // user code end
     }
 
     public void resetButtons() {
@@ -3558,8 +3548,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             ReportQueryResult result = (ReportQueryResult) results.get(0);
             String[] columns = new String[result.getNames().size()];
             for (int index = 0; index < result.getNames().size(); index++) {
-                columns[index] = ((DatabaseField) result.getNames().get(
-                        index)).getName();
+                columns[index] = result.getNames().get(index);
             }
             model.setColumnIdentifiers(columns);
             for (Iterator iterator = results.iterator(); iterator.hasNext();) {

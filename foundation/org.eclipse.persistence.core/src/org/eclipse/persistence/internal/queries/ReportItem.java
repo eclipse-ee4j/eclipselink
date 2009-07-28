@@ -31,13 +31,13 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     /** Expression (partial) describing the attribute wanted */
     protected Expression attributeExpression;
 
-    /** Name given for item, can be used to retieve value from result. Useful if same field retrieved multipe times */
+    /** Name given for item, can be used to retrieve value from result. Useful if same field retrieved multiple times */
     protected String name;
 
     /** Mapping which relates field to attribute, used to convert value and determine reference descriptor */
     protected DatabaseMapping mapping;
     
-    /** Desriptor for object result that is not based on an expression */
+    /** Descriptor for object result that is not based on an expression */
     protected ClassDescriptor descriptor;
     
     /** Result type for this report item. */
