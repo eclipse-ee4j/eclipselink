@@ -193,8 +193,8 @@ public class JAXBContextFactory {
         }
         
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
-        JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
         typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
+        JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
         try {
             Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType(), xmlBindings, classLoader);
             return createContext(generator, properties, classLoader, loader, typesToBeBound);
