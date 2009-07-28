@@ -58,7 +58,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, 1);
             shouldGenerateSchema = false;
         }
-        String result = validateAgainstSchema(PATH + "employee.xml", outputResolver);
+        String result = validateAgainstSchema(PATH + "employee.xml", EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -73,7 +73,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, 1);
             shouldGenerateSchema = false;
         }
-        String result = validateAgainstSchema(PATH + "address.xml", outputResolver);
+        String result = validateAgainstSchema(PATH + "address.xml", null, outputResolver);
         assertTrue("Schema validation succeeded unxepectedly", result != null);
     }
 
@@ -88,7 +88,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, 1);
             shouldGenerateSchema = false;
         }
-        String result = validateAgainstSchema(PATH + "employee-invalidproperty.xml", outputResolver);
+        String result = validateAgainstSchema(PATH + "employee-invalidproperty.xml", null, outputResolver);
         assertTrue("Schema validation succeeded unxepectedly", result != null);
     }
 
@@ -103,7 +103,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, 1);
             shouldGenerateSchema = false;
         }
-        String result = validateAgainstSchema(PATH + "employee-invalidfield.xml", outputResolver);
+        String result = validateAgainstSchema(PATH + "employee-invalidfield.xml", null, outputResolver);
         assertTrue("Schema validation succeeded unxepectedly", result != null);
     }
 
@@ -116,7 +116,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".unset.classlevel";
         String path = PATH + "unset/classlevel/";
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.classlevel.Employee.class }, contextPath, path, 1);
-        String result = validateAgainstSchema(PATH + "employee.xml", outputResolver);
+        String result = validateAgainstSchema(PATH + "employee.xml", EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -132,7 +132,6 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { Person.class, org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.Employee.class }, contextPath, path, 1);
 
         // validate schema against control schema
-        String result = compareSchemas(new File(path + "schema.xsd"), outputResolver.schemaFiles.get(0));
-        assertFalse(result, result.length() > 0);
+        compareSchemas(new File(path + "schema.xsd"), outputResolver.schemaFiles.get(EMPTY_NAMESPACE));
     }
 }

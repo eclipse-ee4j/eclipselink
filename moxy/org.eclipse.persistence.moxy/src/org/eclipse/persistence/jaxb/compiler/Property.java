@@ -19,6 +19,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 
 /**
  *  INTERNAL:
@@ -57,9 +58,11 @@ public class Property {
     private boolean isNillable = false;
     private boolean isTransient;
     private String defaultValue;
-    private boolean isSetDefaultValue = false;
     private boolean isMixedContent = false;
     private boolean xmlElementType;
+    private JavaClass originalType;
+    
+    private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     
     public Property() {
     	xmlElementType = false;
@@ -74,14 +77,6 @@ public class Property {
         this.helper = helper;
     }
     
-    public JavaClass getAdapterClass() {
-        return adapterClass;
-    }
-
-    public boolean hasAdapterClass() {
-        return getAdapterClass() != null;
-    }
-    
     public void setAdapterClass(Class adapterCls) {
         setAdapterClass(helper.getJavaClass(adapterCls));
     }
@@ -93,10 +88,6 @@ public class Property {
         // look for marshal method
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
-            // for some reason, getDeclaredMethods is returning inherited
-            // methods - need to filter
-            //if (method.getName().equals("marshal") && method.getReturnType() != Object.class && method.getParameterTypes()[0] != Object.class) {
-            // TODO verify that inherited marshal methods are not being returned...
             if (method.getName().equals("marshal")) {
             	newType = (JavaClass) method.getReturnType();
                 break;
@@ -260,6 +251,7 @@ public class Property {
     public void setNillable(boolean isNillable) {
         this.isNillable = isNillable;
     }
+    
     public boolean isTransient() {
         return isTransient;
     }
@@ -273,7 +265,6 @@ public class Property {
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
-        this.isSetDefaultValue = true;
     }
 
     /**
@@ -287,7 +278,7 @@ public class Property {
      * @return the isSetDefaultValue
      */
     public boolean isSetDefaultValue() {
-        return isSetDefaultValue;
+        return defaultValue != null;
     }
     
     public boolean isMixedContent() {
@@ -306,8 +297,7 @@ public class Property {
         return xmlElementType;
     }
     
-  public boolean isCollectionType(JavaClass type) {
-        
+    public boolean isCollectionType(JavaClass type) {
         if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {
@@ -316,16 +306,72 @@ public class Property {
         return false;
     }
 
-  /**
-   * Return the generic type if it was set (collection or array item type)
-   * otherwise return the type of this property 
-   * @return 
-   */
-  public JavaClass getActualType(){
-	  if(genericType != null){
-		  return genericType;
-	  }else{
-		  return type;
-	  }
-  }
+    /**
+     * Return the generic type if it was set (collection or array item type) otherwise return the
+     * type of this property
+     * 
+     * @return
+     */
+    public JavaClass getActualType() {
+        if (genericType != null) {
+            return genericType;
+        }
+        return type;
+    }
+
+    /**
+     * Get the original type of the property.  This is typically used when
+     * the type has been changed via @XmlElement annotation and the 
+     * original type is desired.
+     *  
+     * @return
+     */
+    public JavaClass getOriginalType() {
+        return originalType;
+    }
+    
+    /**
+     * Set the original type of the property.  This is typically used when
+     * the type will been changed via @XmlElement annotation and the 
+     * original type may be needed.
+     *  
+     * @return
+     */
+    public void  setOriginalType(JavaClass type) {
+        originalType = type;
+    }
+    
+    /**
+     * Indicates if an XmlJavaTypeAdapter has been set, i.e. the
+     * xmlJavaTypeAdapter property is non-null.
+     * 
+     * @return true if xmlJavaTypeAdapter is non-null, false otherwise
+     * @see XmlJavaTypeAdapter
+     */
+    public boolean isSetXmlJavaTypeAdapter() {
+        return getXmlJavaTypeAdapter() != null;
+    }
+
+    /**
+     * Return the xmlJavaTypeAdapter set on this Property.
+     * 
+     * @return xmlJavaTypeAdapter, or null if not set
+     * @see XmlJavaTypeAdapter
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Set an XmlJavaTypeAdapter on this Property.  This call sets the adapterClass
+     * property to the given adapter's value.
+     * 
+     * @param xmlJavaTypeAdapter
+     * @see XmlJavaTypeAdapter
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
+        this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
+        // set the adapter class
+        setAdapterClass(helper.getJavaClass(xmlJavaTypeAdapter.getValue()));
+    }
 }

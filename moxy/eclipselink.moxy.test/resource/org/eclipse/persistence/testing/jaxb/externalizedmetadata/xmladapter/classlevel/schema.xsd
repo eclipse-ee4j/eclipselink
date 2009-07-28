@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="myClass">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:int"/>
+         <xsd:element name="myCal" type="xsd:dateTime" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="myClass" type="myClass"/>
+</xsd:schema>

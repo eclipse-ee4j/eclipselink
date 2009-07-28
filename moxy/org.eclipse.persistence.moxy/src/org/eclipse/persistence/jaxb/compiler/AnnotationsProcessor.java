@@ -226,7 +226,13 @@ public class AnnotationsProcessor {
             
             // handle @XmlAccessorOrder
             preProcessXmlAccessorOrder(javaClass, info, packageNamespace);
+            
+            // handle package level @XmlJavaTypeAdapters
+            processPackageLevelAdapters(javaClass, info);
 
+            // handle class level @XmlJavaTypeAdapters
+            processClassLevelAdapters(javaClass, info);
+            
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
         }
@@ -278,12 +284,6 @@ public class AnnotationsProcessor {
             // handle factory methods
             processFactoryMethods(javaClass, info);
 
-            // handle package level @XmlJavaTypeAdapters
-            processPackageLevelAdapters(javaClass, info);
-
-            // handle class level @XmlJavaTypeAdapters
-            processClassLevelAdapters(javaClass, info);
-
             // handle @XmlSchemaType(s)
             processSchemaTypes(javaClass, info);
 
@@ -308,8 +308,7 @@ public class AnnotationsProcessor {
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
             if (shouldGenerateTypeInfo(superClass)) {
                 JavaClass[] jClassArray = new JavaClass[] { superClass };
-                preBuildTypeInfo(jClassArray);
-                postBuildTypeInfo(jClassArray);
+                buildNewTypeInfo(jClassArray);
             }
 
             // add properties
@@ -348,11 +347,10 @@ public class AnnotationsProcessor {
             processXmlIDREF(property);
          
         	JavaClass propertyType = property.getActualType();
-         
+
             if (shouldGenerateTypeInfo(propertyType)) {
                 JavaClass[] jClassArray = new JavaClass[] { propertyType };
-                preBuildTypeInfo(jClassArray);
-                postBuildTypeInfo(jClassArray);
+                buildNewTypeInfo(jClassArray);
             }
         }
     }
@@ -480,7 +478,8 @@ public class AnnotationsProcessor {
                 for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext();) {
                     JavaClass innerClass = jClassIt.next();
                     if (shouldGenerateTypeInfo(innerClass)) {
-                        if (!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
+                        TypeInfo tInfo = typeInfo.get(innerClass.getQualifiedName());
+                        if ((tInfo != null && !tInfo.isTransient()) || !helper.isAnnotationPresent(innerClass, XmlTransient.class)) {
                             classesToProcess.add(innerClass);
                         }
                     }
@@ -560,7 +559,7 @@ public class AnnotationsProcessor {
                 if (boundType != null) {
                     info.addAdapterClass(adapterClass, boundType);
                 } else {
-                    // TODO: Throw an error?
+                    // TODO: should log a warning here
                 }
             }
         }
@@ -573,16 +572,14 @@ public class AnnotationsProcessor {
      * @param info
      */
     private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
-        if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapters.class)) {
-            XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(javaClass, XmlJavaTypeAdapters.class);
-            XmlJavaTypeAdapter[] adapterArray = adapters.value();
-            for (XmlJavaTypeAdapter next : adapterArray) {
-                JavaClass adapterClass = helper.getJavaClass(next.value());
-                JavaClass boundType = helper.getJavaClass(next.type());
-                if (boundType != null) {
-                    info.addAdapterClass(adapterClass, boundType);
-                }
-            }
+        if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapter.class)) {
+            XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(javaClass, XmlJavaTypeAdapter.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+            xja.setValue(adapter.value().getName());
+            xja.setType(adapter.type().getName());
+            
+            
+            info.setXmlJavaTypeAdapter(xja);
         }
     }
 
@@ -790,14 +787,14 @@ public class AnnotationsProcessor {
      * Process @XmlElement annotation on a given property.
      * 
      * @param property
-     * @return if XmlElement exists and the value is not the default return the element's type; otherwise propertyType
      */
     private void processXmlElement(Property property, TypeInfo info) {
         if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
             XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
             property.setIsRequired(element.required());
             property.setNillable(element.nillable());
-            if (element.type() != XmlElement.DEFAULT.class) {                
+            if (element.type() != XmlElement.DEFAULT.class) {
+                property.setOriginalType(property.getType());
                 property.setType(helper.getJavaClass(element.type()));
                 property.setHasXmlElementType(true);
             }
@@ -846,14 +843,22 @@ public class AnnotationsProcessor {
      * @return if @XmlJavaTypeAdapter exists return property's value type; otherwise propertyType
      */
     private void processXmlJavaTypeAdapter(Property property, TypeInfo info) {
+        JavaClass adapterClass = null;
     	JavaClass ptype = property.getActualType();
         if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
             XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
-            JavaClass adapterClass = helper.getJavaClass(adapter.value());
-            property.setAdapterClass(adapterClass);           
-        }  else if (info.getAdaptersByClass().get(ptype) != null) {
-            property.setAdapterClass(info.getAdapterClass(ptype));
-        }              
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+            xja.setValue(adapter.value().getName());
+            xja.setType(adapter.type().getName());
+            property.setXmlJavaTypeAdapter(xja);
+        }  else if (info.getAdaptersByClass().get(ptype.getQualifiedName()) != null) {
+            adapterClass = info.getAdapterClass(ptype);
+            
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+            xja.setValue(adapterClass.getQualifiedName());
+            xja.setType(ptype.getQualifiedName());
+            property.setXmlJavaTypeAdapter(xja);
+        }
     }
 
     /**
@@ -971,8 +976,10 @@ public class AnnotationsProcessor {
         }
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
-                
-        if (!helper.isAnnotationPresent(ptype, XmlTransient.class)) {
+
+        // if there is a TypeInfo for ptype check it for transient, otherwise check the class
+        TypeInfo pTypeInfo = typeInfo.get(ptype.getQualifiedName());
+        if ((pTypeInfo != null && !pTypeInfo.isTransient()) || !helper.isAnnotationPresent(ptype, XmlTransient.class)) {
             property.setType(ptype);
         } else {
             JavaClass parent = ptype.getSuperclass();
@@ -981,7 +988,9 @@ public class AnnotationsProcessor {
                     property.setType(parent);
                     break;
                 }
-                if (!helper.isAnnotationPresent(parent, XmlTransient.class)) {
+                // if there is a TypeInfo for parent check it for transient, otherwise check the class
+                TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
+                if ((parentTypeInfo != null && !parentTypeInfo.isTransient()) || !helper.isAnnotationPresent(parent, XmlTransient.class)) {
                     property.setType(parent);
                     break;
                 }
@@ -997,6 +1006,14 @@ public class AnnotationsProcessor {
         if (ptype.isPrimitive() || ptype.isArray() && ptype.getComponentType().isPrimitive()){                        
         	property.setIsRequired(true);
         } 
+
+        // apply class level adapters - don't override property level adapter
+        if (!property.isSetXmlJavaTypeAdapter()) {
+            TypeInfo refClassInfo = getTypeInfo().get(ptype.getQualifiedName());
+            if (refClassInfo != null && refClassInfo.isSetXmlJavaTypeAdapter()) {
+                property.setXmlJavaTypeAdapter(refClassInfo.getXmlJavaTypeAdapter());
+            }
+        }
         
         return property;
     }
@@ -2042,8 +2059,7 @@ public class AnnotationsProcessor {
                 }
             } else if (shouldGenerateTypeInfo(ptype)) {
                 JavaClass[] jClasses = new JavaClass[] { ptype };
-                preBuildTypeInfo(jClasses);
-                postBuildTypeInfo(jClasses);
+                buildNewTypeInfo(jClasses);
                 refInfo = typeInfo.get(ptype.getQualifiedName());
             }
             if (refInfo != null && refInfo.getXmlValueProperty() == null) {
@@ -2723,8 +2739,7 @@ public class AnnotationsProcessor {
         }
 
         JavaClass[] jClasses = new JavaClass[] { javaClass };
-        preBuildTypeInfo(jClasses);
-        postBuildTypeInfo(jClasses);
+        buildNewTypeInfo(jClasses);
         TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
 
         NamespaceInfo namespaceInfo;
@@ -2768,5 +2783,33 @@ public class AnnotationsProcessor {
         }
 
         return schemaInfo;
+    }
+    
+    /**
+     * Convenience method to determine if a class exists in a given ArrayList.  The qualified names
+     * are compared via equals() method.
+     *  
+     * @param className
+     * @param existingClasses
+     * @return
+     */
+    public static boolean classExistsInArray(String className, ArrayList<JavaClass> existingClasses) {
+        for (JavaClass jClass : existingClasses) {
+            if (jClass.getQualifiedName().equals(className)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Convenience method which class pre and postBuildTypeInfo for a given set
+     * of JavaClasses.
+     * 
+     * @param javaClasses
+     */
+    public void buildNewTypeInfo(JavaClass[] javaClasses) {
+        preBuildTypeInfo(javaClasses);
+        postBuildTypeInfo(javaClasses);
     }
 }

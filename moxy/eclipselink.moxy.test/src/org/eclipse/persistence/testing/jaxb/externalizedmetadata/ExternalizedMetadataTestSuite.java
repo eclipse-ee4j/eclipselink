@@ -15,6 +15,9 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSchemaTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
@@ -24,6 +27,10 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlType
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * Suite for testing eclipselink-oxm.xml processing.
+ *
+ */
 public class ExternalizedMetadataTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("Externalized Metadata Test Suite");
@@ -35,6 +42,9 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
         suite.addTestSuite(XmlAccessorOrderTestCases.class);
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
+        suite.addTestSuite(XmlElementTestCases.class);
+        suite.addTestSuite(XmlAdapterTestCases.class);
+        suite.addTestSuite(XmlAttributeTestCases.class);
         return suite;
     }
     

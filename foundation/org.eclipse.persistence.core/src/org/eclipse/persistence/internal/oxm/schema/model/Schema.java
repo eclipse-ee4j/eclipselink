@@ -27,7 +27,6 @@ public class Schema {
     private String targetNamespace;
     private String defaultNamespace;
 
-    //private String token;
     private boolean elementFormDefault;//error mapping in mw
     private boolean attributeFormDefault;//error mapping in mw
     private Map topLevelSimpleTypes;
@@ -55,7 +54,6 @@ public class Schema {
 
     public void setTargetNamespace(String targetNamespace) {
         this.targetNamespace = targetNamespace;
-        //setDefaultNamespace(targetNamespace);//temp until full NS support is added
     }
 
     public String getTargetNamespace() {
@@ -69,16 +67,6 @@ public class Schema {
     public String getDefaultNamespace() {
         return this.defaultNamespace;
     }
-
-    /*
-        public void setToken(String token) {
-            this.token = token;
-        }
-
-        public String getToken() {
-            return token;
-        }
-        */
     public void setTopLevelSimpleTypes(Map topLevelSimpleTypes) {
         this.topLevelSimpleTypes = topLevelSimpleTypes;
     }

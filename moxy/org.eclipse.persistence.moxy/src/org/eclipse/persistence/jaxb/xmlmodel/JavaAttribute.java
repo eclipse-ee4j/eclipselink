@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "java-attribute")
 @XmlSeeAlso({
+    XmlJavaTypeAdapter.class,
     XmlValue.class,
     XmlAnyElement.class,
     XmlElementRefs.class,

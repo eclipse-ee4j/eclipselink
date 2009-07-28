@@ -15,10 +15,7 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-
 
 /**
  * <p>Java class for anonymous complex type.
@@ -27,24 +24,22 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
+ *   &lt;complexContent>
+ *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
  *     &lt;/extension>
- *   &lt;/simpleContent>
+ *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "value"
-})
-@XmlRootElement(name = "xml-java-type-adapter")
-public class XmlJavaTypeAdapter {
+@XmlType(name = "")
+public class XmlJavaTypeAdapter extends JavaAttribute {
 
-    @XmlValue
+    @XmlAttribute
     protected String value;
     @XmlAttribute
     protected String type;

@@ -393,6 +393,9 @@ public class XmlElement
      *     
      */
     public String getDefaultValue() {
+        if (defaultValue == null) {
+            defaultValue = "\u0000";
+        }
         return defaultValue;
     }
 

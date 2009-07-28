@@ -65,7 +65,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, 1);
             shouldGenerateSchema = false;
         }
-        File schemaFile = outputResolver.schemaFiles.get(0);
+        File schemaFile = outputResolver.schemaFiles.get("http://www.eclipse.org/eclipselink/xsds/persistence/oxm");
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
@@ -103,7 +103,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -120,7 +120,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee-invalidnamespace.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
 
@@ -136,7 +136,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "address.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -153,7 +153,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "address-invalidnamespace.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
 }

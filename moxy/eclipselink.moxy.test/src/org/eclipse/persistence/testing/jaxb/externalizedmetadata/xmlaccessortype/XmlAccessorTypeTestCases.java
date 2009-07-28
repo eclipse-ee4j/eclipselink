@@ -48,7 +48,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
     public void testNoXmlAccessorTypeOverride() {
         outputResolver = generateSchema(CONTEXT_PATH, 1);
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -66,7 +66,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.field.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-field.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -84,7 +84,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.property.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-property.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -102,7 +102,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.publicmember.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-publicmember.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -120,7 +120,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-field.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -138,7 +138,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.classoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-publicmember.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -157,7 +157,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.javaclassoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-field.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -174,7 +174,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.nooverride.Employee.class }, 1);
         
         String src = PATH + "employee-none.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -192,7 +192,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         
         String src = PATH + "employee-property.xml";
         // since package-info sets to NONE, the following should fail
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, null, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
 }

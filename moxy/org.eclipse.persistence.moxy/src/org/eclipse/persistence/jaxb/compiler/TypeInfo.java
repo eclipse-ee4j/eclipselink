@@ -35,13 +35,15 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
 
 /**
  * INTERNAL:
  * <p>
- * <b>Purpose:</b>Used to store meta data about JAXB 2.0 Annotated classes during schema and mapping generation processes.
+ * <b>Purpose:</b>Used to store meta data about JAXB 2.0 Annotated classes during schema and mapping
+ * generation processes.
  * 
  * <p>
  * <b>Responsibilities:</b>
@@ -86,17 +88,23 @@ public class TypeInfo {
 
     private boolean isPreBuilt;
     private boolean isPostBuilt;
-    
+
     private boolean isSetXmlTransient;
-    
     private boolean isAnyAttributeProperty;
-    
+
     private List<String> xmlSeeAlso;
     private XmlRootElement xmlRootElement;
     private XmlType xmlType;
     private XmlAccessType xmlAccessType;
     private XmlAccessOrder xmlAccessOrder;
+    private XmlJavaTypeAdapter xmlJavaTypeAdapter;
 
+    /**
+     * This constructor sets the Helper to be used throughout XML and Annotations
+     * processing.  Other fields are initialized here as well.
+     * 
+     * @param helper
+     */
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
         properties = new HashMap<String, Property>();
@@ -106,13 +114,23 @@ public class TypeInfo {
 
         isSetXmlTransient = false;
         isPreBuilt = false;
-        isPostBuilt = false;;
+        isPostBuilt = false;
     }
 
+    /**
+     * Return the XmlDescriptor set on this TypeInfo.
+     * 
+     * @return the XmlDescriptor set on this TypeInfo, or null if none
+     */
     public XMLDescriptor getDescriptor() {
         return descriptor;
     }
 
+    /**
+     * Set the XmlDescriptor on this TypeInfo.
+     * 
+     * @param desc
+     */
     public void setDescriptor(XMLDescriptor desc) {
         // if there is an @XmlID annotation, we need to add
         // primary key field names to the descriptor
@@ -172,7 +190,12 @@ public class TypeInfo {
         }
         return propOrder.toArray(new String[propOrder.size()]);
     }
-    
+
+    /**
+     * Indicates that the propOrder has been set, i.e. is non-null
+     * 
+     * @return true if propOrder is non-null, false otherwise
+     */
     public boolean isSetPropOrder() {
         return propOrder != null;
     }
@@ -223,14 +246,14 @@ public class TypeInfo {
     public void setCompositor(TypeDefParticle particle) {
         compositor = particle;
     }
-    
+
     public ArrayList<String> getPropertyNames() {
         return propertyNames;
     }
 
     /**
-     * Return the TypeProperty 'idProperty'. This method will typically be used in conjunction with isIDSet method to determine if an @XmlID exists, and hence
-     * 'idProperty' is non-null.
+     * Return the TypeProperty 'idProperty'. This method will typically be used in conjunction with
+     * isIDSet method to determine if an @XmlID exists, and hence 'idProperty' is non-null.
      * 
      * @return
      */
@@ -238,10 +261,21 @@ public class TypeInfo {
         return idProperty;
     }
 
+    /**
+     * Return the Map of Properties for this TypeInfo.
+     * 
+     * @return
+     */
     public HashMap<String, Property> getProperties() {
         return properties;
     }
 
+    /**
+     * Put a Property in the Map of Properties for this TypeInfo.
+     * 
+     * @param name
+     * @param property
+     */
     public void addProperty(String name, Property property) {
         properties.put(name, property);
         propertyNames.add(name);
@@ -249,7 +283,8 @@ public class TypeInfo {
     }
 
     /**
-     * Sets the TypeProperty 'idProperty'. This indicates that an @XmlID annotation is set on a given field/method.
+     * Sets the TypeProperty 'idProperty'. This indicates that an @XmlID annotation is set on a
+     * given field/method.
      * 
      * @return
      */
@@ -257,6 +292,11 @@ public class TypeInfo {
         this.idProperty = idProperty;
     }
 
+    /**
+     * Set the Map of Properties for this TypeInfo.
+     * 
+     * @param properties
+     */
     public void setProperties(ArrayList<Property> properties) {
         if (properties != null) {
             for (int i = 0; i < properties.size(); i++) {
@@ -285,7 +325,8 @@ public class TypeInfo {
     }
 
     /**
-     * Indicates if an @XmlID is set on a field/property. If so, the TypeProperty 'idProperty' will be non-null.
+     * Indicates if an @XmlID is set on a field/property. If so, the TypeProperty 'idProperty' will
+     * be non-null.
      * 
      * @return
      */
@@ -313,22 +354,51 @@ public class TypeInfo {
         return schema;
     }
 
+    /**
+     * Return the xmladapter class for a given bound type class.
+     * 
+     * @param boundType
+     * @return
+     */
     public JavaClass getAdapterClass(JavaClass boundType) {
         return getAdaptersByClass().get(boundType.getQualifiedName());
     }
 
+    /**
+     * Return the xmladapter class for a given bound type class name.
+     * 
+     * @param boundType
+     * @return
+     */
     public JavaClass getAdapterClass(String boundTypeName) {
         return getAdaptersByClass().get(boundTypeName);
     }
 
+    /**
+     * Return the Map of XmlAdapters for this TypeInfo.
+     * 
+     * @return
+     */
     public HashMap<String, JavaClass> getAdaptersByClass() {
         return adaptersByClass;
     }
 
+    /**
+     * Put a bound type class to adapter class entry in the Map.
+     * 
+     * @param adapterClass
+     * @param boundType
+     */
     public void addAdapterClass(JavaClass adapterClass, JavaClass boundType) {
         adaptersByClass.put(boundType.getQualifiedName(), adapterClass);
     }
-
+    
+    /**
+     * Put a bound type class name to adapter class entry in the Map.
+     * 
+     * @param adapterClass
+     * @param boundTypeName
+     */
     public void addAdapterClass(JavaClass adapterClass, String boundTypeName) {
         adaptersByClass.put(boundTypeName, adapterClass);
     }
@@ -381,14 +451,30 @@ public class TypeInfo {
         this.xmlValueProperty = xmlValueProperty;
     }
 
+    /**
+     * Indicates if the class represented by this TypeInfo is marked XmlTransient.
+     *  
+     * @return
+     */
     public boolean isTransient() {
         return isTransient;
     }
 
+    /**
+     * Used to indicate that the class represented by this TypeInfo is marked 
+     * XmlTransient.
+     *  
+     * @return
+     */
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
     }
 
+    /**
+     * Return all non-transient properties that exist in the propOrder array.
+     * 
+     * @return
+     */
     public java.util.List<Property> getNonTransientPropertiesInPropOrder() {
         java.util.List<Property> propertiesInOrder = new ArrayList<Property>();
         String[] propOrder = getPropOrder();
@@ -412,7 +498,8 @@ public class TypeInfo {
                     propertiesInOrder.add(next);
                 }
             }
-            // attributes may not be in the prop order in which case we need to generate those mappings also
+            // attributes may not be in the prop order in which case we need to generate those
+            // mappings also
             for (int i = 0; i < propertyNamesCopy.size(); i++) {
                 String nextPropertyKey = propertyNamesCopy.get(i);
                 Property next = getProperties().get(nextPropertyKey);
@@ -424,96 +511,247 @@ public class TypeInfo {
         return propertiesInOrder;
     }
 
+    /**
+     * Indicates if XmlTransient is set.
+     * 
+     * @return
+     */
     public boolean isSetXmlTransient() {
         return isSetXmlTransient;
     }
 
-    public boolean isSetXmlSeeAlso() {
-        return xmlSeeAlso != null;
-    }
-
+    /**
+     * Set the XmlTransient for this TypeInfo.
+     * 
+     * @param isTransient
+     */
     public void setXmlTransient(boolean isTransient) {
         isSetXmlTransient = true;
         setTransient(isTransient);
     }
-    
+
+    /**
+     * Indicates if xmlSeeAlso has been set, i.e. is non-null
+     * 
+     * @return true is xmlSeeAlso has been set, i.e. is non-null, false otherwise
+     */
+    public boolean isSetXmlSeeAlso() {
+        return xmlSeeAlso != null;
+    }
+
+    /**
+     * Return the List of XmlSeeAlso class names for this TypeInfo.
+     * 
+     * @return
+     */
     public List<String> getXmlSeeAlso() {
         return xmlSeeAlso;
     }
-    
+
+    /**
+     * Set the List of XmlSeeAlso class names for this TypeInfo.
+     * 
+     * @param xmlSeeAlso
+     */
     public void setXmlSeeAlso(List<String> xmlSeeAlso) {
         this.xmlSeeAlso = xmlSeeAlso;
     }
-    
+
+    /**
+     * Indicates if xmlRootElement has been set, i.e. is non-null
+     * 
+     * @return true is xmlRootElement has been set, i.e. is non-null, false otherwise
+     */
     public boolean isSetXmlRootElement() {
         return xmlRootElement != null;
     }
-    
+
+    /**
+     * Return the xmlRootElement set on this TypeInfo.
+     * 
+     * @return
+     */
     public XmlRootElement getXmlRootElement() {
         return xmlRootElement;
     }
 
+    /**
+     * Set the xmlRootElement for this TypeInfo.
+     * 
+     * @param xmlRootElement
+     */
     public void setXmlRootElement(XmlRootElement xmlRootElement) {
         this.xmlRootElement = xmlRootElement;
     }
-    
+
+    /**
+     * Indicates if xmlType has been set, i.e. is non-null
+     * 
+     * @return true is xmlType has been set, i.e. is non-null, false otherwise
+     */
     public boolean isSetXmlType() {
         return xmlType != null;
     }
 
+    /**
+     * Return the xmlType set on this TypeInfo.
+     * 
+     * @return
+     */
     public XmlType getXmlType() {
         return xmlType;
     }
 
+    /**
+     * Set the xmlType for this TypeInfo.
+     * 
+     * @param xmlType
+     */
     public void setXmlType(XmlType xmlType) {
         this.xmlType = xmlType;
     }
     
+    /**
+     * Indicates if xmlAccessType has been set, i.e. is non-null
+     * 
+     * @return true is xmlAccessType has been set, i.e. is non-null, false otherwise
+     */
     public boolean isSetXmlAccessType() {
         return xmlAccessType != null;
     }
-    
+
+    /**
+     * Return the xmlAccessType for this TypeInfo.
+     * 
+     * @return
+     */
     public XmlAccessType getXmlAccessType() {
         return xmlAccessType;
     }
-    
+
+    /**
+     * Set the xmlAccessType for this TypeInfo.
+     * 
+     * @param xmlAccessType
+     */
     public void setXmlAccessType(XmlAccessType xmlAccessType) {
         this.xmlAccessType = xmlAccessType;
     }
-    
+
+    /**
+     * Indicates if xmlAccessOrder has been set, i.e. is non-null
+     * 
+     * @return true is xmlAccessOrder has been set, i.e. is non-null, false otherwise
+     */
     public boolean isSetXmlAccessOrder() {
         return xmlAccessOrder != null;
     }
-    
+
+    /**
+     * Return the xmlAccessOrder for this TypeInfo.
+     * 
+     * @return
+     */
     public XmlAccessOrder getXmlAccessOrder() {
         return xmlAccessOrder;
     }
-    
+
+    /**
+     * Set the xmlAccessOrder for this TypeInfo.
+     * 
+     * @param xmlAccessOrder
+     */
     public void setXmlAccessOrder(XmlAccessOrder xmlAccessOrder) {
         this.xmlAccessOrder = xmlAccessOrder;
     }
 
+    /**
+     * Indicates if this TypeInfo has completed the preBuildTypeInfo phase of
+     * processing.
+     * 
+     * @return true if this TypeInfo has completed the preBuildTypeInfo phase of
+     * processing, false otherwise
+     */
     public boolean isPreBuilt() {
         return isPreBuilt;
     }
-    
+
+    /**
+     * Set indicator that this TypeInfo has completed the preBuildTypeInfo
+     * phase of processing.
+     * 
+     */
     public void setPreBuilt(boolean isPreBuilt) {
         this.isPreBuilt = isPreBuilt;
     }
 
+    /**
+     * Indicates if this TypeInfo has completed the postBuildTypeInfo phase of
+     * processing.
+     * 
+     * @return true if this TypeInfo has completed the postBuildTypeInfo phase of
+     * processing, false otherwise
+     */
     public boolean isPostBuilt() {
         return isPostBuilt;
     }
-    
+
+    /**
+     * Set indicator that this TypeInfo has completed the postBuildTypeInfo
+     * phase of processing.
+     * 
+     */
     public void setPostBuilt(boolean isPostBuilt) {
         this.isPostBuilt = isPostBuilt;
     }
 
+    /**
+     * Return isAnyAttributeProperty.
+     * 
+     * @return
+     */
     public boolean isAnyAttributeProperty() {
         return isAnyAttributeProperty;
     }
 
+    /**
+     * Set the isAnyAttributeProperty.
+     * 
+     * @param isAnyAttributeProperty
+     */
     public void setAnyAttributeProperty(boolean isAnyAttributeProperty) {
         this.isAnyAttributeProperty = isAnyAttributeProperty;
+    }
+    
+    /**
+     * Indicates if an XmlJavaTypeAdapter has been set, i.e. the
+     * xmlJavaTypeAdapter property is non-null.
+     * 
+     * @return true if xmlJavaTypeAdapter is non-null, false otherwise
+     * @see XmlJavaTypeAdapter
+     */
+    public boolean isSetXmlJavaTypeAdapter() {
+        return getXmlJavaTypeAdapter() != null;
+    }
+
+    /**
+     * Return the xmlJavaTypeAdapter set on this Property.
+     * 
+     * @return xmlJavaTypeAdapter, or null if not set
+     * @see XmlJavaTypeAdapter
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Set an XmlJavaTypeAdapter on this Property.  This call sets the adapterClass
+     * property to the given adapter's value.
+     * 
+     * @param xmlJavaTypeAdapter
+     * @see XmlJavaTypeAdapter
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
+        this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
     }
 }

@@ -35,6 +35,7 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -458,12 +459,15 @@ public class JAXBContextFactory {
     private static Class[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, Class[] existingClasses) {
         Class[] additionalClasses = existingClasses;
         ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
-        for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
-            try {
-                javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
-            } catch (ClassNotFoundException e) {
-                // TODO: need an EclipseLink exception here
-                throw new RuntimeException(e);
+        JavaTypes jTypes = xmlBindings.getJavaTypes();
+        if (jTypes != null) {
+            for (JavaType javaType : jTypes.getJavaType()) {
+                try {
+                    javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
+                } catch (ClassNotFoundException e) {
+                    // TODO: need an EclipseLink exception here
+                    throw new RuntimeException(e);
+                }
             }
         }
 

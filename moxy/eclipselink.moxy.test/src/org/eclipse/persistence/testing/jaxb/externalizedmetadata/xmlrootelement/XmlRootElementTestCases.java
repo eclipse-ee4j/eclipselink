@@ -46,7 +46,7 @@ public class XmlRootElementTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -62,7 +62,7 @@ public class XmlRootElementTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee-invalid.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, null, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
 }

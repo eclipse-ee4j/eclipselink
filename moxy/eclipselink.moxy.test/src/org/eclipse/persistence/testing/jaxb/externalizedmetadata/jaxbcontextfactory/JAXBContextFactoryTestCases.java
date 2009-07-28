@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfac
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +53,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testLoadXmlFileViaPackage() {
         outputResolver = generateSchema(new Class[] { Employee.class }, 1);
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
         
@@ -66,11 +68,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testLoadMultipleXmlFilesViaSamePackage() {
         outputResolver = generateSchema(new Class[] { Employee.class, Address.class }, 1);
         String src = PATH + "address.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, null, outputResolver);
         // address is set to transient in Xml, should fail
         assertTrue("Schema validation passed unxepectedly", result != null);
         src = PATH + "employee.xml";
-        result = validateAgainstSchema(src, 0, outputResolver);
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -85,13 +87,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testLoadMultipleXmlFilesViaDifferentPackage() {
         outputResolver = generateSchema(new Class[] { Employee.class, Address.class, }, 1);
         String src = PATH + "myotherclass.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
         src = PATH + "employee.xml";
-        result = validateAgainstSchema(src, 0, outputResolver);
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
         src = PATH + "address.xml";
-        result = validateAgainstSchema(src, 0, outputResolver);
+        result = validateAgainstSchema(src, null, outputResolver);
         // address is set to transient in Xml, should fail
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
@@ -120,15 +122,32 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(contextPath, properties, 1);
         
         // validate schema against control schema
-        String result = compareSchemas(new File(PATH + "properties/schema.xsd"), outputResolver.schemaFiles.get(0));
-        assertFalse(result, result.length() > 0);
+        compareSchemas(new File(PATH + "properties/schema.xsd"), outputResolver.schemaFiles.get(EMPTY_NAMESPACE));
 
         // validate instance docs against schema
         String src = PATH + "properties/bar/employee.xml";
-        result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
         src = PATH + "properties/foo/home-address.xml";
-        result = validateAgainstSchema(src, 0, outputResolver);
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+    
+    public void testArrayOfTypes() {
+        try {
+            Field addressesField = org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.arrayoftypes.Employee.class.getDeclaredField("addresses");
+            Type[] types = new Type[2];
+            types[0] = addressesField.getGenericType(); 
+            types[1] = org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.arrayoftypes.Employee.class;
+            
+            String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.arrayoftypes";
+            String path = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/arrayoftypes/";
+            
+            outputResolver = generateSchema(types, contextPath, path, 1);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } 
     }
 }

@@ -47,17 +47,8 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
         }
         String messages = "";
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 1, outputResolver);
-        if (result != null) {
-            messages = result;
-            // account for map ordering differences between VMs
-            if (validateAgainstSchema(src, 0, outputResolver) == null) {
-                // success
-                return;
-            }
-            messages = messages + "; " + result;
-            fail(messages);
-        }
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -72,17 +63,8 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
         }
         String messages = "";
         String src = PATH + "mysimpleclass.xml";
-        String result = validateAgainstSchema(src, 1, outputResolver);
-        if (result != null) {
-            messages = result;
-            // account for map ordering differences between VMs
-            if (validateAgainstSchema(src, 0, outputResolver) == null) {
-                // success
-                return;
-            }
-            messages = messages + "; " + result;
-            fail(messages);
-        }
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -97,16 +79,7 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
         }
         String src = PATH + "myotherclass.xml";
         String messages = "";
-        String result = validateAgainstSchema(src, 1, outputResolver);
-        if (result != null) {
-            messages = result;
-            // account for map ordering differences between VMs
-            if (validateAgainstSchema(src, 0, outputResolver) == null) {
-                // success
-                return;
-            }
-            messages = messages + "; " + result;
-            fail(messages);
-        }
+        String result = validateAgainstSchema(src, "http://www.example.com/xsd", outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 }

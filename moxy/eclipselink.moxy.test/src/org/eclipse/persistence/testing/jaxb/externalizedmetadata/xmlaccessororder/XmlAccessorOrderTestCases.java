@@ -50,7 +50,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
     public void testXmlAccessorOrderOverride() {
         outputResolver = generateSchema(CONTEXT_PATH, 1);
         String src = PATH + "employee-ordered.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
@@ -64,7 +64,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
     public void testXmlAccessorOrderOverrideInvalidDoc() {
         outputResolver = generateSchema(CONTEXT_PATH, 1);
         String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, null, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
 
@@ -83,7 +83,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-ordered.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -101,7 +101,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.classoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
@@ -120,7 +120,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
         outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.javaclassoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 }

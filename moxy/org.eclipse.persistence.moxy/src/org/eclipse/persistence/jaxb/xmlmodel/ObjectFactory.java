@@ -37,6 +37,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _XmlTransient_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-transient");
+    private final static QName _XmlJavaTypeAdapter_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-java-type-adapter");
     private final static QName _XmlElement_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element");
     private final static QName _XmlAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute");
     private final static QName _JavaAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "java-attribute");
@@ -56,51 +57,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlJavaTypeAdapters }
-     * 
-     */
-    public XmlJavaTypeAdapters createXmlJavaTypeAdapters() {
-        return new XmlJavaTypeAdapters();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchemaType }
-     * 
-     */
-    public XmlSchemaType createXmlSchemaType() {
-        return new XmlSchemaType();
-    }
-
-    /**
-     * Create an instance of {@link XmlEnumValue }
-     * 
-     */
-    public XmlEnumValue createXmlEnumValue() {
-        return new XmlEnumValue();
-    }
-
-    /**
-     * Create an instance of {@link XmlTransient }
-     * 
-     */
-    public XmlTransient createXmlTransient() {
-        return new XmlTransient();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchemaTypes }
-     * 
-     */
-    public XmlSchemaTypes createXmlSchemaTypes() {
-        return new XmlSchemaTypes();
-    }
-
-    /**
      * Create an instance of {@link XmlValue }
      * 
      */
     public XmlValue createXmlValue() {
         return new XmlValue();
+    }
+
+    /**
+     * Create an instance of {@link XmlRootElement }
+     * 
+     */
+    public XmlRootElement createXmlRootElement() {
+        return new XmlRootElement();
     }
 
     /**
@@ -120,38 +89,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlBindings }
-     * 
-     */
-    public XmlBindings createXmlBindings() {
-        return new XmlBindings();
-    }
-
-    /**
-     * Create an instance of {@link XmlJavaTypeAdapter }
-     * 
-     */
-    public XmlJavaTypeAdapter createXmlJavaTypeAdapter() {
-        return new XmlJavaTypeAdapter();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchema.XmlNs }
-     * 
-     */
-    public XmlSchema.XmlNs createXmlSchemaXmlNs() {
-        return new XmlSchema.XmlNs();
-    }
-
-    /**
-     * Create an instance of {@link XmlAnyAttribute }
-     * 
-     */
-    public XmlAnyAttribute createXmlAnyAttribute() {
-        return new XmlAnyAttribute();
-    }
-
-    /**
      * Create an instance of {@link XmlElementRefs }
      * 
      */
@@ -160,11 +97,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlBindings.XmlEnums }
+     * Create an instance of {@link XmlTransient }
      * 
      */
-    public XmlBindings.XmlEnums createXmlBindingsXmlEnums() {
-        return new XmlBindings.XmlEnums();
+    public XmlTransient createXmlTransient() {
+        return new XmlTransient();
+    }
+
+    /**
+     * Create an instance of {@link XmlJavaTypeAdapters }
+     * 
+     */
+    public XmlJavaTypeAdapters createXmlJavaTypeAdapters() {
+        return new XmlJavaTypeAdapters();
+    }
+
+    /**
+     * Create an instance of {@link XmlJavaTypeAdapter }
+     * 
+     */
+    public XmlJavaTypeAdapter createXmlJavaTypeAdapter() {
+        return new XmlJavaTypeAdapter();
     }
 
     /**
@@ -184,19 +137,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlAnyElement }
+     * Create an instance of {@link JavaType }
      * 
      */
-    public XmlAnyElement createXmlAnyElement() {
-        return new XmlAnyElement();
-    }
-
-    /**
-     * Create an instance of {@link XmlBindings.JavaTypes }
-     * 
-     */
-    public XmlBindings.JavaTypes createXmlBindingsJavaTypes() {
-        return new XmlBindings.JavaTypes();
+    public JavaType createJavaType() {
+        return new JavaType();
     }
 
     /**
@@ -208,35 +153,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlRootElement }
-     * 
-     */
-    public XmlRootElement createXmlRootElement() {
-        return new XmlRootElement();
-    }
-
-    /**
      * Create an instance of {@link XmlSchema }
      * 
      */
     public XmlSchema createXmlSchema() {
         return new XmlSchema();
-    }
-
-    /**
-     * Create an instance of {@link JavaType.JavaAttributes }
-     * 
-     */
-    public JavaType.JavaAttributes createJavaTypeJavaAttributes() {
-        return new JavaType.JavaAttributes();
-    }
-
-    /**
-     * Create an instance of {@link XmlElements }
-     * 
-     */
-    public XmlElements createXmlElements() {
-        return new XmlElements();
     }
 
     /**
@@ -248,11 +169,91 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JavaType }
+     * Create an instance of {@link XmlAnyAttribute }
      * 
      */
-    public JavaType createJavaType() {
-        return new JavaType();
+    public XmlAnyAttribute createXmlAnyAttribute() {
+        return new XmlAnyAttribute();
+    }
+
+    /**
+     * Create an instance of {@link XmlBindings }
+     * 
+     */
+    public XmlBindings createXmlBindings() {
+        return new XmlBindings();
+    }
+
+    /**
+     * Create an instance of {@link XmlBindings.JavaTypes }
+     * 
+     */
+    public XmlBindings.JavaTypes createXmlBindingsJavaTypes() {
+        return new XmlBindings.JavaTypes();
+    }
+
+    /**
+     * Create an instance of {@link XmlSchemaTypes }
+     * 
+     */
+    public XmlSchemaTypes createXmlSchemaTypes() {
+        return new XmlSchemaTypes();
+    }
+
+    /**
+     * Create an instance of {@link XmlEnumValue }
+     * 
+     */
+    public XmlEnumValue createXmlEnumValue() {
+        return new XmlEnumValue();
+    }
+
+    /**
+     * Create an instance of {@link XmlSchema.XmlNs }
+     * 
+     */
+    public XmlSchema.XmlNs createXmlSchemaXmlNs() {
+        return new XmlSchema.XmlNs();
+    }
+
+    /**
+     * Create an instance of {@link XmlAnyElement }
+     * 
+     */
+    public XmlAnyElement createXmlAnyElement() {
+        return new XmlAnyElement();
+    }
+
+    /**
+     * Create an instance of {@link XmlSchemaType }
+     * 
+     */
+    public XmlSchemaType createXmlSchemaType() {
+        return new XmlSchemaType();
+    }
+
+    /**
+     * Create an instance of {@link XmlBindings.XmlEnums }
+     * 
+     */
+    public XmlBindings.XmlEnums createXmlBindingsXmlEnums() {
+        return new XmlBindings.XmlEnums();
+    }
+
+    /**
+     * Create an instance of {@link XmlElements }
+     * 
+     */
+    public XmlElements createXmlElements() {
+        return new XmlElements();
+    }
+
+    /**
+     * Create an instance of {@link JavaType.JavaAttributes }
+     * 
+     */
+    public JavaType.JavaAttributes createJavaTypeJavaAttributes() {
+        return new JavaType.JavaAttributes();
     }
 
     /**
@@ -262,6 +263,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-transient", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
     public JAXBElement<XmlTransient> createXmlTransient(XmlTransient value) {
         return new JAXBElement<XmlTransient>(_XmlTransient_QNAME, XmlTransient.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-java-type-adapter", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlJavaTypeAdapter> createXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        return new JAXBElement<XmlJavaTypeAdapter>(_XmlJavaTypeAdapter_QNAME, XmlJavaTypeAdapter.class, null, value);
     }
 
     /**

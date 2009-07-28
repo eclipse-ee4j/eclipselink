@@ -30,6 +30,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.internal.jaxb.JAXBSetMethodAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -152,18 +153,17 @@ public class MappingsGenerator {
         }
         
         XMLDescriptor descriptor = new XMLDescriptor();
-        
-        XmlRootElement rootElem = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
+        org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement rootElem = info.getXmlRootElement();
         if (rootElem == null) {
             elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
             namespace = packageNamespace;
             descriptor.setResultAlwaysXMLRoot(true);
         } else {
-            elementName = rootElem.name();
+            elementName = rootElem.getName();
             if (elementName.equals("##default")) {
                 elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
             }
-            namespace = rootElem.namespace();
+            namespace = rootElem.getNamespace();
             descriptor.setResultAlwaysXMLRoot(false);
         }
                 
@@ -226,12 +226,14 @@ public class MappingsGenerator {
         info.setDescriptor(xmlDescriptor);
     }
     public void generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        if (property.getAdapterClass() != null) {
+        if (property.isSetXmlJavaTypeAdapter()) {
             // need to check the adapter to determine whether we require a
             // direct mapping (anything we can create a descriptor for) or
             // a composite mapping
-            JavaClass adapterClass = property.getAdapterClass();
-            JavaClass valueType = property.getActualType();
+            
+            XmlJavaTypeAdapter xja = property.getXmlJavaTypeAdapter();
+            JavaClass adapterClass = helper.getJavaClass(xja.getValue());
+            JavaClass valueType = property.getActualType();            
                       
             // if the value type is something we have a descriptor for, create
             // a composite object mapping, otherwise create a direct mapping
