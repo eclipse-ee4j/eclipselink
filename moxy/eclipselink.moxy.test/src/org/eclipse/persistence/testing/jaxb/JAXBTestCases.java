@@ -320,15 +320,23 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         Object controlValue = controlObj.getValue();
         Object testValue = testObj.getValue();
 
+        if(controlValue == null) {
+        	if(testValue == null){
+        		return;
+        	}
+        	fail("Test value should have been null");
+        }else{
+        	if(testValue == null){
+        		fail("Test value should not have been null");	
+        	}
+        }
+        
         if(controlValue.getClass().isArray()){
             if(testValue.getClass().isArray()){
                 if(controlValue.getClass().getComponentType().isPrimitive()){
                     comparePrimitiveArrays(controlValue, testValue);
                 }else{
-                    assertEquals(((Object[])controlValue).length,((Object[])testValue).length);
-                    for(int i=0; i<((Object[])controlValue).length-1; i++){
-                        assertEquals(((Object[])controlValue)[i], ((Object[])testValue)[i]);
-                    }
+                	compareObjectArrays(controlValue, testValue);                   
                 }
             }else{
                 fail("Expected an array value but was an " + testValue.getClass().getName());
@@ -350,13 +358,26 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                 }
             }
         }else{
-            assertEquals(controlValue, testValue);
+        	compareValues(controlValue, testValue);
         }
     }
+    
+     protected void compareValues(Object controlValue, Object testValue){
+         assertEquals(controlValue, testValue);
+     }
+    
 
     protected void comparePrimitiveArrays(Object controlValue, Object testValue){
         fail("NEED TO COMPARE PRIMITIVE ARRAYS");
     }
+    
+    protected void  compareObjectArrays(Object controlValue, Object testValue){
+        assertEquals(((Object[])controlValue).length,((Object[])testValue).length);
+        for(int i=0; i<((Object[])controlValue).length-1; i++){
+            assertEquals(((Object[])controlValue)[i], ((Object[])testValue)[i]);
+        }
+    }
+
 
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();

@@ -16,6 +16,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
 import java.util.HashMap;
+
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.MarshalException;
@@ -110,9 +112,18 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		QName qname = elt.getName();
 		xmlroot.setLocalName(qname.getLocalPart());
 		xmlroot.setNamespaceURI(qname.getNamespaceURI());
-		if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE) {
+		if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType() == DataHandler.class ) {
 			xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-		} else {
+			//need a binary data mapping so need to wrap
+			Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
+			if(generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+				ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+				Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+				((WrappedValue)newObject).setValue(objectValue);
+				xmlroot.setObject(newObject);
+				return xmlroot;
+			}   			
+		}else {
 			xmlroot.setSchemaType((QName)org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
 		}
 		
@@ -123,9 +134,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 				Object newObject = desc.getInstantiationPolicy().buildNewInstance();
 				((WrappedValue)newObject).setValue(objectValue);
 				xmlroot.setObject(newObject);
+				return xmlroot;
 			}   
 		}
-				
+					
 		Class generatedClass = null;				
 		
 		if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
@@ -380,6 +392,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
 	public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
 	    this.qNameToGeneratedClasses = qNameToClass;
+	}
+	
+	private HashMap<String, Class> getClassToGeneratedClasses(){
+		return jaxbContext.getClassToGeneratedClasses();
 	}
 
 	public void setJaxbContext(JAXBContext jaxbContext) {

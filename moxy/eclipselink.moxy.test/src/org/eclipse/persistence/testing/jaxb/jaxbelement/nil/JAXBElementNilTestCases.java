@@ -36,7 +36,7 @@ public class JAXBElementNilTestCases extends JAXBElementTestCases {
     }
 
     public Object getControlObject() {        
-        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), targetClass, null);
+        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), Object.class, null);
     }
 
     public Document getWriteControlDocument() throws Exception {
@@ -45,9 +45,5 @@ public class JAXBElementNilTestCases extends JAXBElementTestCases {
         removeEmptyTextNodes(controlDocument);
         inputStream.close();
         return writeControlDocument;
-    }
-
-    // THIS TEST DOES NOT APPLY
-    public void testUnmarshallerHandler() throws Exception {
-    }
+    }  
 }

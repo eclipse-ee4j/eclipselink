@@ -959,6 +959,9 @@ public class SchemaGenerator {
     
     public void addGlobalElements(HashMap<QName, ElementDeclaration> additionalElements) {
         for (QName next : additionalElements.keySet()) {
+        	if(next == null){
+        		break;
+        	}
             String namespaceURI = next.getNamespaceURI();
             Schema targetSchema = getSchemaForNamespace(namespaceURI);
             if (targetSchema == null){

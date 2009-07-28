@@ -55,6 +55,9 @@
         <fileset
             dir="${eclipselink.moxy.plugins}"
             includes="${eclipselink.moxy.depend}"/>
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${activation.jar}, ${mail.jar}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
@@ -98,6 +101,9 @@
         <fileset
             dir="${eclipselink.moxy.plugins}"
             includes="${eclipselink.moxy.depend}"/>
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${activation.jar}, ${mail.jar}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.jar.name}"/>

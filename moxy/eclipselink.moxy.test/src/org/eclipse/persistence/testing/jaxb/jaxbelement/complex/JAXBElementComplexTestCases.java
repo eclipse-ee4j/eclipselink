@@ -48,10 +48,6 @@ public class JAXBElementComplexTestCases extends JAXBElementTestCases {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);
 
-        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), targetClass, peep);
-    }
-
-    // THIS TEST DOES NOT APPLY
-    public void testUnmarshallerHandler() throws Exception {
-    }
+        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), Object.class, peep);
+    }  
 }

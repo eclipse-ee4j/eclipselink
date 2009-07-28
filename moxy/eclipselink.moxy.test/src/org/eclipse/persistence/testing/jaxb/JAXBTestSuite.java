@@ -22,6 +22,8 @@ import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ListofObjects;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
@@ -71,6 +73,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementNestedTestCases.class);
         suite.addTestSuite(JAXBElementComplexTestCases.class);
         suite.addTestSuite(JAXBElementNilTestCases.class);
+        suite.addTestSuite(JAXBElementBase64TestCases.class);
+        suite.addTestSuite(JAXBElementDataHandlerTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
        // suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);

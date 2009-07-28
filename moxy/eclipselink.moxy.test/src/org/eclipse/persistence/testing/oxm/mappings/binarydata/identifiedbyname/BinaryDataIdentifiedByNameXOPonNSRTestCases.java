@@ -61,6 +61,9 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestC
 
     protected Object getControlObject() {
         Employee emp = Employee.example1();
+        String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
+        byte[] bytes = s.getBytes();
+        emp.setPhoto(bytes);
         emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
         return emp;
     }
@@ -70,6 +73,10 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestC
         xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         attachmentUnmarshaller = new MyAttachmentUnmarshaller();
         xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
+        
+    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
+    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+   
     }
     
     public void xmlToObjectTest(Object testObject) throws Exception {

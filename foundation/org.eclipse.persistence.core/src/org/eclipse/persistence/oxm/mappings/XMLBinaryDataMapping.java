@@ -225,7 +225,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                         field.getLastXPathFragment().getNamespaceURI());
             }
             if(c_id == null) {
-                XMLField textField = new XMLField(field.getXPath() + "/text()");
+            	XMLField textField = null;
+            	if(field.isSelfField()){
+                    textField = new XMLField("/text()");
+            	}else{
+                    textField = new XMLField(field.getXPath() + "/text()");
+            	}
                 textField.setNamespaceResolver(field.getNamespaceResolver());
                 textField.setSchemaType(field.getSchemaType());
                 record.put(textField, bytes);
@@ -252,9 +257,16 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     prefixAlreadyDefined = true;
                 }
                 
-                String incxpath = xpath + "/" + prefix + ":Include";
-
-                xpath += ("/" + prefix + include);
+                
+                String incxpath = null;
+                if(field.isSelfField()){
+                	incxpath = prefix + ":Include";
+                	xpath = (prefix + include);
+                }else{
+                    incxpath = xpath + "/" + prefix + ":Include";
+                    xpath += ("/" + prefix + include);
+                }
+                
                 XMLField xpathField = new XMLField(xpath);
                 xpathField.setNamespaceResolver(resolver);
                 record.put(xpathField, c_id);
@@ -290,7 +302,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             }
         } else {
             //inline
-            XMLField textField = new XMLField(field.getXPath() + "/text()");
+            XMLField textField = null;
+            if(field.isSelfField()){
+                textField = new XMLField("text()");
+            }else{
+                textField = new XMLField(field.getXPath() + "/text()");
+            }
             textField.setNamespaceResolver(field.getNamespaceResolver());
             textField.setSchemaType(field.getSchemaType());
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
@@ -347,7 +364,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 XMLField field = new XMLField(xpath);
                 field.setNamespaceResolver(tempResolver);
                 String includeValue = (String) record.get(field);
-                if (value != null) {
+                if (includeValue != null) {
                     if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
                     } else {

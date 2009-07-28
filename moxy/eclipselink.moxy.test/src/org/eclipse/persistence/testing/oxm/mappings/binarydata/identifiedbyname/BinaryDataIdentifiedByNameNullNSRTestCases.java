@@ -70,6 +70,9 @@ public class BinaryDataIdentifiedByNameNullNSRTestCases extends XMLMappingTestCa
         super.setUp();
         xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+        
+        byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
+    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     }
     
 }

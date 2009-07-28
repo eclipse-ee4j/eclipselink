@@ -21,6 +21,9 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
 import java.util.Vector;
+
+import javax.activation.DataHandler;
+
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.sessions.Project;
@@ -79,6 +82,9 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
         super.setUp();
         xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+        
+    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
+        
     }
     
 }

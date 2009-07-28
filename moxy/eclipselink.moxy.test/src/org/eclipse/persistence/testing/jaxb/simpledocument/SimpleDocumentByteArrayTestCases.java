@@ -37,16 +37,12 @@ public class SimpleDocumentByteArrayTestCases extends JAXBTestCases {
 	    	return value;      
 	    }
 	    
-	    public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
-	        assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
-	        assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
-	        Byte[] controlBytes = (Byte[])controlObj.getValue();
-	        Byte[] testBytes = (Byte[])testObj.getValue();
-	        assertEquals(controlBytes.length, testBytes.length);
-	        for(int i = 0; i < controlBytes.length; i++) {
-	        	assertEquals(controlBytes[i].byteValue(), testBytes[i].byteValue());
-	        }
-
-	    }
-	    
+	    protected void compareObjectArrays(Object controlValue, Object testValue){
+	    	 Byte[] controlBytes = (Byte[])controlValue;
+		     Byte[] testBytes = (Byte[])testValue;
+		     assertEquals(controlBytes.length, testBytes.length);
+		     for(int i = 0; i < controlBytes.length; i++) {
+		     	assertEquals(controlBytes[i].byteValue(), testBytes[i].byteValue());
+		     }
+	    }		    
 }

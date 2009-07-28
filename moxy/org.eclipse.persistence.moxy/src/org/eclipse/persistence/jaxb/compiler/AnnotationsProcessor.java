@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -390,14 +391,22 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         for (JavaClass javaClass : classes) {
-            if (javaClass.isArray()) {
-                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
-                    extraClasses.add(javaClass.getComponentType());
-                }
-                Class generatedClass = generateWrapperForArrayClass(javaClass);
-                extraClasses.add(helper.getJavaClass(generatedClass));
-                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
-                generatedClassesToArrayClasses.put(generatedClass, javaClass);
+        	if(areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, DataHandler.class)){
+                 if (this.globalElements == null) {        			 
+                     globalElements = new HashMap<QName, ElementDeclaration>();
+                 }
+        		 ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
+        		 globalElements.put(null, declaration);
+        	}
+        	else if (javaClass.isArray()){
+        	
+	                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
+	                    extraClasses.add(javaClass.getComponentType());
+	                }
+	                Class generatedClass = generateWrapperForArrayClass(javaClass);
+	                extraClasses.add(helper.getJavaClass(generatedClass));
+	                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+	                generatedClassesToArrayClasses.put(generatedClass, javaClass);            	
             } else if (isCollectionType(javaClass)) {
                 JavaClass componentClass;
                 if (javaClass.hasActualTypeArguments()) {

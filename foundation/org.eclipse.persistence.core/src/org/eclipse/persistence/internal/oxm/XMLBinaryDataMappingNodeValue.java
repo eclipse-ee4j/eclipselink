@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
@@ -79,8 +80,10 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         if (objectValue == null) {
             return true;
         }
-        marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-        marshalRecord.closeStartElement();
+        if(!xPathFragment.isSelfFragment){
+            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+            marshalRecord.closeStartElement();
+        }
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //object value should be a DataHandler
             String c_id = null;
@@ -170,7 +173,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 marshalRecord.characters(value);
             }
         }
-        marshalRecord.endElement(xPathFragment, namespaceResolver);
+        if(!xPathFragment.isSelfFragment()){
+        	marshalRecord.endElement(xPathFragment, namespaceResolver);
+        }
         return true;
     }
 
@@ -235,5 +240,15 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     
     public XMLBinaryDataMapping getMapping() {
         return this.xmlBinaryDataMapping;
+    }
+    
+    public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {   
+        unmarshalRecord.removeNullCapableValue(this);
+        BinaryDataUnmarshalRecord newRecord = new BinaryDataUnmarshalRecord(null, unmarshalRecord, this, xmlBinaryDataMapping);
+        return newRecord;     	
+    }
+    
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, Attributes attributes) {
+    	unmarshalRecord.getStringBuffer().reset();    	
     }
 }

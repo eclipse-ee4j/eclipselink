@@ -248,27 +248,27 @@ public class XPathNode {
             }
             return;
         }
-
-        int index = children.indexOf(xPathNode);
-        if (index >= 0) {
-            xPathNode = (XPathNode)children.get(index);
-        } else {
-            xPathNode.setParent(this);
-            if(!children.contains(xPathNode)) {
-                children.add(xPathNode);
+        boolean isSelfFragment = XPathFragment.SELF_FRAGMENT.equals(anXPathFragment);
+      
+        if(isSelfFragment){
+            children.add(xPathNode);
+            if (null == selfChildren) {
+                selfChildren = new ArrayList();
             }
-            if (XPathFragment.SELF_FRAGMENT.equals(anXPathFragment)) {
-                if (null == selfChildren) {
-                    selfChildren = new ArrayList();
-                }
-                if(!selfChildren.contains(xPathNode)) {
-                    selfChildren.add(xPathNode);
-                }
+            selfChildren.add(xPathNode);
+        }else{        
+            int index = children.indexOf(xPathNode);
+            if (index >= 0) {
+                xPathNode = (XPathNode)children.get(index);
             } else {
+                xPathNode.setParent(this);
+                if(!children.contains(xPathNode)) {
+                    children.add(xPathNode);
+                }             
                 childrenMap.put(anXPathFragment, xPathNode);
             }
         }
-
+	               
         if (aNodeValue.isOwningNode(anXPathFragment)) {
             if(aNodeValue.isMarshalNodeValue()) {
                 xPathNode.setMarshalNodeValue(aNodeValue);

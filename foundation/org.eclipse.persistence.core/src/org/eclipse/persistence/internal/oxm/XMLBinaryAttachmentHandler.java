@@ -16,8 +16,10 @@ import javax.activation.DataHandler;
 
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -69,6 +71,12 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+    	XMLField xmlField = null;
+    	if(isCollection) {
+            xmlField = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
+        } else {
+            xmlField = (XMLField)((XMLBinaryDataMapping)mapping).getField();
+        }
         if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
             //Get the attachment and set it in the object.
             XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
@@ -102,10 +110,15 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
                 record.setAttributeValue(data, mapping);
             }
             //Return control to the UnmarshalRecord
-            record.getXMLReader().setContentHandler(record);
+            if(!xmlField.isSelfField()){
+            	record.getXMLReader().setContentHandler(record);
+            }
         } else {
-            record.getXMLReader().setContentHandler(record);
-            record.endElement(namespaceURI, localName, qName);
+            if(!xmlField.isSelfField()){
+                //Return control to the parent record
+       		record.getXMLReader().setContentHandler(record);
+                record.endElement(namespaceURI, localName, qName);
+            }
         }
     }
 

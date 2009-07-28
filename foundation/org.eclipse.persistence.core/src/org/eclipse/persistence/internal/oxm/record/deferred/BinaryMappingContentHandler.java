@@ -35,13 +35,16 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
     private NodeValue nodeValue;
     private Converter converter;
     private boolean isCollection;
-    
+    private UnmarshalRecord workingUnmarshalRecord;
+    private boolean finished;          
+     
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
         this.converter = mapping.getConverter();
         this.nodeValue = nodeValue;
         this.isCollection = false;
+        this.finished = false;
     }
     
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataCollectionMapping mapping) {
@@ -54,16 +57,33 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
 
     public void processComplexElement() throws SAXException {
         getEvents().remove(0);
-        executeEvents(new XMLBinaryAttachmentHandler(this.getParent(), nodeValue, mapping, converter, isCollection));
+        workingUnmarshalRecord = new XMLBinaryAttachmentHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
+        executeEvents(workingUnmarshalRecord);
     }
     
     public void processSimpleElement() throws SAXException {
         getEvents().remove(0);
-        executeEvents(new XMLInlineBinaryHandler(this.getParent(), nodeValue, mapping, converter, isCollection));
+        workingUnmarshalRecord = new XMLInlineBinaryHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
+        executeEvents(workingUnmarshalRecord);
     }
     
     public void processEmptyElement() throws SAXException {
         processSimpleElement();
     }
+    
+    protected void executeEvents(UnmarshalRecord unmarshalRecord) throws SAXException {
+    	super.executeEvents(unmarshalRecord);    	
+    	finished = true;  
+    }
+
+    public UnmarshalRecord getWorkingUnmarshalRecord() {
+        return workingUnmarshalRecord;
+    }
+	
+    public boolean isFinished() {
+        return finished;
+    }
+
+ 
     
 }

@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
@@ -50,14 +51,17 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
        //Since we know this was a simple or empty element, we know that we only got a characters event and then this. Process the
        //text.
+       XMLField field = null;
        Object value = this.getStringBuffer().toString();
        resetStringBuffer();
 
        boolean isSwaRef = false;
        if(isCollection) {
            isSwaRef = ((XMLBinaryDataCollectionMapping)mapping).isSwaRef();
+           field = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
        } else {
            isSwaRef = ((XMLBinaryDataMapping)mapping).isSwaRef();
+           field = (XMLField)((XMLBinaryDataMapping)mapping).getField();
        }
            
 
@@ -93,9 +97,11 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            parent.setAttributeValue(value, mapping);
        }
        
-       //Return control to the parent record
-       parent.getXMLReader().setContentHandler(parent);
-       parent.endElement(namespaceURI, localName, qName);       
+       if(!field.isSelfField()){
+           //Return control to the parent record
+           parent.getXMLReader().setContentHandler(parent);
+           parent.endElement(namespaceURI, localName, qName);       
+       }
    }
 }
 

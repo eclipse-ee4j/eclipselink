@@ -79,6 +79,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private XMLContext xmlContext;
     private org.eclipse.persistence.jaxb.compiler.Generator generator;    
     private HashMap<QName, Class> qNameToGeneratedClasses;
+    private HashMap<String, Class> classToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
     private HashMap<java.lang.reflect.Type, QName> typeToSchemaType;
     private Type[] boundTypes;
@@ -86,13 +87,21 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public JAXBContext(XMLContext context) {
         super();
         xmlContext = context;
+/*        List<Session> sessions = xmlContext.getSessions();
+        
+        for (Session session : sessions) {
+        	XMLConversionManager mgr = (XMLConversionManager)session.getDatasourcePlatform().getConversionManager();
+        	mgr.getDefaultJavaTypes().put(ClassConstants.APBYTE, XMLConstants.BASE_64_BINARY_QNAME);
+        	mgr.getDefaultJavaTypes().put(ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
+        }*/
     }
     
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
-        super();
-        this.xmlContext = context;
+        
+        this(context);
         this.generator = generator;
         this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
+        this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
         this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
         this.boundTypes = boundTypes;
     }
@@ -135,6 +144,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
         }
         marshaller.setQNameToGeneratedClasses(this.qNameToGeneratedClasses);
+        //marshaller.setClassToGeneratedClasses(this.classToGeneratedClasses);
         marshaller.setJaxbContext(this);
         return marshaller;
     }
@@ -176,6 +186,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
     	this.qNameToGeneratedClasses = qNameToClass;
+    }
+    
+    public HashMap<String, Class> getClassToGeneratedClasses() {
+    	return classToGeneratedClasses;
+    }
+    
+    public void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
+    	this.classToGeneratedClasses = classToClass;
     }
     
     /**

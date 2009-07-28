@@ -40,12 +40,16 @@ public class JAXBElementTestCases extends JAXBTestCases {
 	protected Class target;
 
     public JAXBElementTestCases(String name) throws Exception {
-        super(name);
-        Class[] classes = new Class[1];
-        classes[0] = Person.class;
-        setClasses(classes);
+        super(name);        
+        setClasses(getClasses());
     }
 
+    public Class[] getClasses(){
+    	Class[] classes = new Class[1];
+        classes[0] = Person.class;
+        return classes;
+    }
+    
     /**
      * Satisfy the abstract method declaration in JAXBTestCases
      */
@@ -90,7 +94,7 @@ public class JAXBElementTestCases extends JAXBTestCases {
     }
 
     public void xmlToObjectTest(Object testObject) throws Exception {
-    	JAXBElement testObj = (JAXBElement ) testObject;
+    /*	JAXBElement testObj = (JAXBElement ) testObject;
         JAXBElement controlObj = (JAXBElement) getReadControlObject();
 
         log("\n**testXMLDocumentToObject**");
@@ -110,6 +114,8 @@ public class JAXBElementTestCases extends JAXBTestCases {
         this.assertEquals(controlObj.getName().getPrefix(), testObj.getName().getPrefix());
         this.assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
         this.assertEquals(controlObj.getValue(), testObj.getValue());
+        */
+    	super.xmlToObjectTest(testObject);
     }
 
     public void testObjectToStringWriter() throws Exception {
@@ -183,4 +189,5 @@ public class JAXBElementTestCases extends JAXBTestCases {
     public void testXMLToObjectFromInputStream() throws Exception {}
     public void testXMLToObjectFromURL() throws Exception {}
     public void testObjectToXMLStringWriter() throws Exception {}
+    public void testUnmarshallerHandler() throws Exception { }
 }

@@ -29,6 +29,8 @@ public class XMLBinaryDataMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataIdentifiedByNameEmptyNSRTestCases.class);
         suite.addTestSuite(BinaryDataIdentifiedByNameNullTestCases.class);
         suite.addTestSuite(BinaryDataEmptyElementTestCases.class);
+        suite.addTestSuite(BinaryDataSelfTestCases.class);
+        suite.addTestSuite(BinaryDataSelfDataHandlerTestCases.class);
         return suite;
     }
 

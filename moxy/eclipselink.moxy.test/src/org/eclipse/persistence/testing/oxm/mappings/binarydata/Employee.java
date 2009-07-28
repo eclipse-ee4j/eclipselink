@@ -28,6 +28,8 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javax.activation.DataHandler;
 
@@ -125,6 +127,47 @@ public class Employee {
 
         // hash equality changes
         equal = equal && equalByteArrays(getPhoto(), employeeObject.getPhoto());
+        
+        if(data == null && employeeObject.getData() != null){
+        	return false;
+        }
+        
+        if(data != null && employeeObject.getData() == null){
+        	return false;
+        }
+        
+        if(data != null){
+        	if(!data.getContentType().equals(employeeObject.getData().getContentType())){
+        	    return false;
+        	}
+    	    try {
+    	    	Object obj1 =  data.getContent();
+    	    	Object obj2 =  employeeObject.getData().getContent();
+    	    	if(data.getContent() instanceof ByteArrayInputStream && employeeObject.getData().getContent() instanceof ByteArrayInputStream){
+    	    		ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
+    	    		ByteArrayInputStream testStream = ((ByteArrayInputStream)employeeObject.getData().getContent());
+    	    		if(controlStream.available() != testStream.available()){
+    	    			return false;
+    	    		}
+    	    		
+    	    		byte[] controlBytes = new byte[controlStream.available()];
+    	    		byte[] testBytes = new byte[testStream.available()];
+    	    		
+    	    		if(!equalByteArrays(controlBytes, testBytes)){
+    	    			return false;
+    	    		}    	    		
+
+    	    	}else{
+					if(!data.getContent().equals(employeeObject.getData().getContent())){
+					   return false;
+					}
+    	    	}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}        
+        }
+        
         return equal;
     }
 

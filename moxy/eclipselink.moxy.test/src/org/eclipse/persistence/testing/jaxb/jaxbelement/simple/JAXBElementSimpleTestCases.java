@@ -46,16 +46,4 @@ public class JAXBElementSimpleTestCases extends JAXBElementTestCases {
         inputStream.close();
         return writeControlDocument;
     }
-
-    /*public Object getWriteControlObject() {
-        XMLRoot xmlRoot = new XMLRoot();
-        xmlRoot.setRootElementName(CONTROL_ELEMENT_NAME);
-        xmlRoot.setRootElementURI(CONTROL_NAMESPACE_URI);
-        xmlRoot.setObject(CONTROL_PERSON_NAME);
-        return xmlRoot;
-    }*/
-
-    // THIS TEST DOES NOT APPLY
-    public void testUnmarshallerHandler() throws Exception {
-    }
 }
