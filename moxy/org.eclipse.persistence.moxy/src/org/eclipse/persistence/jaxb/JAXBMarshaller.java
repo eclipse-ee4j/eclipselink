@@ -17,7 +17,6 @@ import java.io.Writer;
 import java.io.File;
 import java.util.HashMap;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.MarshalException;
@@ -112,7 +111,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		QName qname = elt.getName();
 		xmlroot.setLocalName(qname.getLocalPart());
 		xmlroot.setNamespaceURI(qname.getNamespaceURI());
-		if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType() == DataHandler.class ) {
+		if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler")) {
 			xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 			//need a binary data mapping so need to wrap
 			Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());

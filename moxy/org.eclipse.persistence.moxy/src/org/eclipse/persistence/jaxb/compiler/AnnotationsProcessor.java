@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -391,7 +390,7 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         for (JavaClass javaClass : classes) {
-        	if(areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, DataHandler.class)){
+        	if(areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER)){
                  if (this.globalElements == null) {        			 
                      globalElements = new HashMap<QName, ElementDeclaration>();
                  }

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
@@ -850,6 +849,22 @@ public class MappingsGenerator {
         return src.getRawName().equals(tgt.getCanonicalName());
     }
     
+    /**
+     * Compares a JavaModel JavaClass to a Class.  Equality is based on
+     * the raw name of the JavaClass compared to the canonical
+     * name of the Class.
+     * 
+     * @param src
+     * @param tgt
+     * @return
+     */
+    protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
+        if (src == null || tgtCanonicalName == null) {
+            return false;
+        }
+        return src.getRawName().equals(tgtCanonicalName);
+    }
+
     public XMLCompositeCollectionMapping generateMapMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
     	XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
@@ -1580,7 +1595,7 @@ public class MappingsGenerator {
                 }
                 
                 if(next == null){
-            		if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), DataHandler.class) ){
+            		if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") ){
             			addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
             			return;
             		}
@@ -1677,7 +1692,7 @@ public class MappingsGenerator {
                   ((XMLField)mapping.getField()).setIsTypedTextField(true);
                   ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
                   desc.addMapping(mapping);
-              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), DataHandler.class)){
+              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler")){
               	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping(); 
               	  mapping.setAttributeName("value");
               	  mapping.setXPath(".");
