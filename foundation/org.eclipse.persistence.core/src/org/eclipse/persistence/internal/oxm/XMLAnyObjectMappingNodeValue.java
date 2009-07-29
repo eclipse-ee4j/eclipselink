@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHan
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -44,7 +45,6 @@ import org.xml.sax.SAXException;
  */
 public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValue implements NullCapableValue {
     private XMLAnyObjectMapping xmlAnyObjectMapping;
-    private XMLDescriptor workingDescriptor;
 
     public XMLAnyObjectMappingNodeValue(XMLAnyObjectMapping xmlAnyObjectMapping) {
         super();
@@ -70,8 +70,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         Object objectValue = marshalContext.getAttributeValue(object, xmlAnyObjectMapping);
         if(xmlAnyObjectMapping.getConverter() != null) {
             objectValue = xmlAnyObjectMapping.getConverter().convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
-        }                       
-        
+        }
+
         if (null == objectValue) {
             return false;
         }
@@ -162,21 +162,12 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
-            workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
-            if (workingDescriptor == null) {         
-                QName qname = new QName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
-                workingDescriptor = xmlContext.getDescriptor(qname);
-                // Check if descriptor is for a wrapper, if it is null it out and let continue
-                if (workingDescriptor != null && workingDescriptor.isWrapper()) {
-                    workingDescriptor = null;
-                }                       
-            }  
+            XMLDescriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
 
             UnmarshalKeepAsElementPolicy policy = xmlAnyObjectMapping.getKeepAsElementPolicy();
             if (((workingDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
-            }else if (workingDescriptor != null) {              
+            }else if (workingDescriptor != null) {
                 processChild(xPathFragment, unmarshalRecord, atts, workingDescriptor, xmlAnyObjectMapping);                
             }else{
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyObjectMapping.usesXMLRoot());
@@ -197,16 +188,15 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this);
-        Object childObject = null;
-        if (null != unmarshalRecord.getChildRecord()) {
-            childObject = unmarshalRecord.getChildRecord().getCurrentObject();
+        UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
+        if (null != childRecord) {
+            Object childObject = childRecord.getCurrentObject();
             // OBJECT VALUE
             if(xmlAnyObjectMapping.getConverter() != null) {
                 childObject = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            }                       
-            if (!xmlAnyObjectMapping.usesXMLRoot()) {
-                unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
-            } else {
+            }
+            if (xmlAnyObjectMapping.usesXMLRoot()) {
+                XMLDescriptor workingDescriptor = childRecord.getDescriptor();
                 if (workingDescriptor != null) {
                     String prefix = xPathFragment.getPrefix();
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
@@ -216,6 +206,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
                     workingDescriptor = null;
                 }
+            } else {
+                unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
             }
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
@@ -274,7 +266,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
-        if (xmlRootFragment != null) {        
+        if (xmlRootFragment != null) {
             QName qname = ((XMLRoot) originalValue).getSchemaType();
             value = getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
             Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
@@ -299,13 +291,27 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     public XMLAnyObjectMapping getMapping() {
         return xmlAnyObjectMapping;
     }
-    
+
     public boolean isWhitespaceAware() {
         return false;
     }
-    
+
     public boolean isAnyMappingNodeValue() {
         return true;
-    }    
-    
+    }
+
+    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {
+        XMLDescriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
+        if (referenceDescriptor == null) {
+            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
+            QName qname = new QName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
+            referenceDescriptor = xmlContext.getDescriptor(qname);
+            // Check if descriptor is for a wrapper, if it is null it out and let continue
+            if (referenceDescriptor != null && referenceDescriptor.isWrapper()) {
+                referenceDescriptor = null;
+            }
+        }
+        return referenceDescriptor;
+    }
+
 }
