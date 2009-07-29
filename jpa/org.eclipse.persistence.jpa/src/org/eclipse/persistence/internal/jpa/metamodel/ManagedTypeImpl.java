@@ -25,6 +25,9 @@
  *     07/14/2009-2.0  mobrien - 266912: implement getDeclared*() functionality
  *       - Implement 14 functions for ManagedType - see design issue #43
  *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_43:_20090710:_Implement_getDeclaredX.28.29_methods
+ *     07/28/2009-2.0  mobrien - 284877: implement recursive functionality for hasDeclaredAttribute()
+ *       - see design issue #52
+ *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_52:_20090728:_JPA_2:_Implement_recursive_ManagedType.getDeclared.2A_algorithm_to_differentiate_by_IdentifiableType
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -262,7 +265,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         Set<Attribute<X, ?>> declaredAttributes = new HashSet<Attribute<X, ?>>();
         for(Iterator<Attribute<X, ?>> anIterator = allAttributes.iterator(); anIterator.hasNext();) {
             Attribute<? super X, ?> anAttribute = anIterator.next();
-            if(anAttribute.isCollection()) {
+            // Check the inheritance hierarchy for higher declarations
+            if(this.hasDeclaredAttribute(anAttribute.getName())) {
                 declaredAttributes.add((Attribute<X, ?>)anAttribute);
             }
         }
@@ -848,28 +852,107 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Recursively search the superclass tree of the current managedType
-     * for an attribute named "name".<p>
+     * for the named attribute.<p>
      * This internal function is used exclusively by the getDeclared*() calls on ManagedType objects.<p>
      * This function is type agnostic (Set, List, Map and Collection are treated as attributes)
      * @param attributeName - String name of possible declared attribute search
-     * @return
+     * @return true if the attribute is declared at this first level, 
+     *             false if no attribute is found in the superTree, or
+     *             false if the attribute is found declared higher up in the inheritance superTree
      */
     private boolean hasDeclaredAttribute(String attributeName) {
+        return hasDeclaredAttribute(attributeName, this.getMembers().get(attributeName));
+    }
+    
+    /**
+     * INTERNAL:
+     * Recursively search the superclass tree of the current managedType
+     * for the named attribute.<p>
+     * This internal function is used exclusively by the getDeclared*() calls on ManagedType objects.<p>
+     * This function is type agnostic (Set, List, Map and Collection are treated as attributes)
+     * @param attributeName - String name of possible declared attribute search
+     * @return true if the attribute is declared at this first level, 
+     *             false if no attribute is found in the superTree, or
+     *             false if the attribute is found declared higher up in the inheritance superTree
+     */
+    private boolean hasDeclaredAttribute(String attributeName, Attribute firstLevelAttribute) {
+        /*
+         * Issues: We need to take into account whether the superType is an Entity or MappedSuperclass
+         * - If superType is entity then inheriting entities will not have copies of the inherited mappings
+         * - however, if superType is mappedSuperclass then all inheriting mappedSuperclasses and the first
+         *   entity will have copies of the inherited mappings
+         * - Note: a sub-entity can override a mapping above it
+         * Use Cases:
+         *   UC1 Superclass declares attribute
+         *     UC1.1: Entity (searched) --> Entity --> Entity (declares attribute)
+         *     UC1.2: Entity (searched) --> Entity (copy of attribute) --> MappedSuperclass (declares attribute)
+         *     UC1.3: Entity (searched) --> MappedSuperclass --> Entity (declares attribute)
+         *     UC1.4: Entity (copy of attribute) (searched) --> MappedSuperclass (no copy of attribute) (searched) --> MappedSuperclass (declares attribute) (searched)
+         *     UC1.5: Entity (copy of attribute) (searched) --> MappedSuperclass (declares attribute) (searched) --> MappedSuperclass
+         *   UC2 Nobody declares attribute
+         *     UC2.1: Entity (searched) --> Entity --> MappedSuperclass (declares attribute)
+         *     UC2.2: Entity (searched) --> Entity --> Entity (declares attribute)
+         *     UC2.3: Entity (searched) --> MappedSuperclass (searched) --> MappedSuperclass (declares attribute)
+         *     UC2.4: Entity (searched) --> MappedSuperclass (searched) --> Entity (declares attribute)
+         *   UC3 Superclass declares attribute but child overrides it
+         *     UC3.1: Entity (searched) --> Entity --> MappedSuperclass (declares attribute)
+         *     UC3.2: Entity (searched) --> Entity --> Entity (declares attribute)
+         *     UC3.3: Entity (searched) --> MappedSuperclass (override attribute) (searched) --> MappedSuperclass (declares attribute)
+         *     UC3.4: Entity (searched) --> MappedSuperclass (override attribute) (searched) --> Entity (declares attribute) (searched)
+         *     UC3.5: Entity (override attribute) (searched) --> MappedSuperclass (searched) --> MappedSuperclass (declares attribute) (searched)
+         *     UC3.6: Entity (override attribute) (searched) --> MappedSuperclass (searched) --> Entity (declares attribute)
+         * Solution:
+         *   Results Expected for hasDeclaredAttribute()
+         *     True = attribute declared only on current type
+         *     False = attribute not found in superType tree or attribute found in more than one(1) level of the superType tree
+         *   Base Case
+         *     attribute found && no superType exists = true
+         *     attribute not found && no superType exists = false
+         *   Recursive Case
+         *     Exit(false) as soon as attribute is found in a superType - without continuing to the root
+         *     continue as long as we find an attribute in the superType (essentially only MappedSuperclass parents)          
+         **/
         Attribute anAttribute = this.getMembers().get(attributeName);
         ManagedTypeImpl<?> aSuperType = getManagedSuperType();        
         
-        // Keep searching the superType only when the attribute is not found == null
-        if(null == anAttribute && null != aSuperType) {
-            // recursive case            
-            return aSuperType.hasDeclaredAttribute(attributeName);
-        } else {
-            // base case
-            if(null != anAttribute) { // aSuperType == x (return regardless of whether the superType is null or not)
-                return true;
-            } else { // anAttribute == null && aSuperType == null
-                // we reached the root without finding an attribute declaration
+        // Base Case: If we are at the root, check for the attribute and return results immediately
+        if(null == aSuperType) {
+            if(null == anAttribute && null != firstLevelAttribute) { 
+                return true; 
+            } else {
+                // UC 1.3 (part of the else condition (anAttribute != null)) is handled by the return false in null != aSuperTypeAttribute
                 return false;
             }
+        } else {            
+           // Recursive Case: check hierarchy only if the immediate superclass is a MappedSuperclassType
+           //if(aSuperType.isMappedSuperclass()) { // merge later with getIdType() changes in queue 
+               Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
+               // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call 
+               if(null != aSuperTypeAttribute) {
+                   // return false immediately if a superType exists above the first level
+                   return false;
+               } else {
+                   // UC1.4 The immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
+                   if(null == aSuperTypeAttribute) {
+                       // UC 1.5: keep searching a possible chain of mappedSuperclasses
+                       return aSuperType.hasDeclaredAttribute(attributeName, firstLevelAttribute);
+                   } else {
+                       // superType does not contain the attribute - check that the current attribute and the first differ
+                       if(anAttribute != firstLevelAttribute) {
+                           return false;
+                       } else {
+                           return true;
+                       }
+                   }
+               }
+           /*} else {
+               // superType (Entity) may declare the attribute higher up - we do not need to check this
+               if(null == anAttribute) {
+                   return false;
+               } else {
+                   return true;
+               }
+           }*/
         }
     }
     
@@ -923,7 +1006,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             this.members.put(mapping.getAttributeName(), member);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return whether this type is identifiable.
