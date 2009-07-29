@@ -434,30 +434,30 @@ public class XMLMarshaller {
             writerRecord = new WriterRecord();
         }
         writerRecord.setMarshaller(this);
+        writer = new BufferedWriter(writer);
         writerRecord.setWriter(writer);
 
         //if this is a simple xml root, the session and descriptor will be null
         if (session == null || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             marshal(object, writerRecord, xmlDescriptor, isXMLRoot);
+        } else {
             try {
-                writer.flush();
-            } catch (IOException e) {
+                Node xmlDocument = objectToXMLNode(object, xmlDescriptor, isXMLRoot);
+                writerRecord.setSession(session);
+                if (isFragment()) {
+                    writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+                } else {
+                    writerRecord.startDocument(encoding, version);
+                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver());
+                    writerRecord.endDocument();
+                }
+            } catch (XMLPlatformException e) {
                 throw XMLMarshalException.marshalException(e);
             }
-            return;
         }
-
         try {
-            Node xmlDocument = objectToXMLNode(object, xmlDescriptor, isXMLRoot);
-            writerRecord.setSession(session);
-            if (isFragment()) {
-                writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
-            } else {
-                writerRecord.startDocument(encoding, version);
-                writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver());
-                writerRecord.endDocument();
-            }
-        } catch (XMLPlatformException e) {
+            writer.flush();
+        } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
     }
