@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -35,7 +36,9 @@ import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
@@ -320,17 +323,52 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)))&& (builder.getNodes().size() != 0) ) {
-                Object node = builder.getNodes().pop();
-                xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), node);
-            }			
-		}    	
+                if(unmarshalRecord.getTypeQName() != null){
+                    Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                    if(theClass != null){
+                        //handle simple text
+                        endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping.getConverter(), null, null);
+                        return;
+                    }
+                }
+                Element element = (Element) builder.getNodes().pop();
+                String xsiType = null;
+                if(null != element) {
+                    xsiType = element.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                }
+                if(null != xsiType) {
+                    xsiType = xsiType.trim();
+                    Object value = element;
+                    String namespace = null;
+                    int colonIndex = xsiType.indexOf(COLON);
+                    if (colonIndex > -1) {
+                        String prefix = xsiType.substring(0, colonIndex);
+                        namespace = unmarshalRecord.resolveNamespacePrefix(prefix);
+                        if(null == namespace) {
+                            namespace = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element, prefix);
+                        }
+                        String name = xsiType.substring(colonIndex + 1);
+                        QName qName = new QName(namespace, xsiType.substring(colonIndex + 1));
+                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
+                        if (theClass != null) {
+                            value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                        }
+                    }
+                    xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
+                } else {
+                    xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), element);
+                }
+            }
+        }
     }
-        
 
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {   
         try {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();          
-            
+            if (null == xmlDescriptor) {
+                xmlDescriptor = findReferenceDescriptor(null, unmarshalRecord, atts, xmlCompositeObjectMapping,xmlCompositeObjectMapping.getKeepAsElementPolicy());
+            }
+
             if(xmlDescriptor != null){
 	            if (xmlDescriptor.hasInheritance()) {
 	                unmarshalRecord.setAttributes(atts);
