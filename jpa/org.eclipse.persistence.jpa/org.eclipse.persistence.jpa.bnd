@@ -1,12 +1,12 @@
 Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink JPA
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
 Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
  org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional
 Implementation-Vendor: ${implementation.vendor}
-Implementation-Version: ${version.string}
-Specification-Vendor: ${specification.vendor}
-Bundle-Name: EclipseLink JPA
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
@@ -26,6 +26,6 @@ Import-Package:                                                         \
  org.eclipse.persistence.*;version="${version.string}",                 \
  org.osgi.*;resolution:=optional,                                       \
  org.w3c.*;resolution:=optional,                                        \
- org.xml.sax;resolution:=optional 
+ org.xml.sax.*;resolution:=optional 
 Specification-Version: ${release.version}
 
