@@ -1694,6 +1694,17 @@ public class ExpressionTestSuite extends TestSuite {
         addInCollectionTest();
         // Bug 247076 - LiteralExpression does not print SQL in statement 
         addTest(new LiteralExpressionTest());
+        // Bug 284884 - Quoted '?' symbol in expression literal causes ArrayIndexOutOfBoundsException 
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'?'", true));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'?'", false));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'???'", true));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'???'", false));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'? ? ?'", true));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("'? ? ?'", false));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123?123 '", true));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123?123 '", false));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", true));
+        addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", false));
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

@@ -649,7 +649,34 @@ public abstract class DatasourceCall implements Call {
                     token = queryString.substring(lastIndex, queryString.length());
                     lastIndex = -1;
                 } else {
-                    token = queryString.substring(lastIndex, tokenIndex);
+                    if (this.shouldProcessTokenInQuotes) {
+                        token = queryString.substring(lastIndex, tokenIndex);
+                    } else {
+                        boolean hasPairedQuoteBeforeMark = true;
+                        int quotePairIndex = tokenIndex;
+                        do {
+                            quotePairIndex = queryString.lastIndexOf('\'', quotePairIndex - 1);
+                            if (quotePairIndex != -1 && quotePairIndex > lastIndex){
+                                hasPairedQuoteBeforeMark = !hasPairedQuoteBeforeMark;
+                            } else {
+                                break;
+                            }
+                        } while (true);
+                        
+                        int endQuoteIndex = -1;
+                        if (!hasPairedQuoteBeforeMark) { // there is a begin quote, so search for end quote.
+                            endQuoteIndex = queryString.indexOf('\'', tokenIndex + 1);
+                        }
+                        if (endQuoteIndex != -1) { // there is a quote around the mark.
+                            token = queryString.substring(lastIndex, endQuoteIndex + 1);
+                            tokenIndex = -1;
+                            lastIndex = endQuoteIndex + 1;
+                        } else {
+                            // if no quote around the mark, write the rest of sql. 
+                            token = queryString.substring(lastIndex, tokenIndex);
+                            lastIndex = tokenIndex + 1;
+                        }
+                    }
                 }
                 writer.write(token);
                 if (tokenIndex != -1) {
