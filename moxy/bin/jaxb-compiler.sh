@@ -9,7 +9,7 @@ JVM_ARGS=-Xmx256m
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v200903100845.jar:\
-`dirname $0`/../jlib/moxy/javax.xml.bind_2.0.0.v20080604-1500.jar:\
+`dirname $0`/../jlib/moxy/javax.xml.bind_2.1.12.v20090708-1500.jar:\
 `dirname $0`/../jlib/moxy/javax.activation_1.1.0.v200806101325.jar:\
 `dirname $0`/../jlib/moxy/jaxb-impl.jar:\
 `dirname $0`/../jlib/moxy/jaxb-xjc.jar
