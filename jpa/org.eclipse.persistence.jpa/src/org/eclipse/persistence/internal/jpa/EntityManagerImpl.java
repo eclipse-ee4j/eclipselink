@@ -1169,7 +1169,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         try{
             verifyOpen();
-            if (criteriaQuery.getSelection() == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_SELECTION_FOR_CRITERIA_TODO"));
             return new EJBQueryImpl<T>(((CriteriaQueryImpl<T>)criteriaQuery).translate(), this);
         }catch (RuntimeException e){
             setRollbackOnly();

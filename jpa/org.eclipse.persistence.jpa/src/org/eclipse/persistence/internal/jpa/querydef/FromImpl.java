@@ -105,7 +105,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * @return the resulting fetch join
      */
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt){
-        if (((SingularAttribute)assoc).getType().equals(PersistenceType.BASIC)){
+        if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
         Class clazz = assoc.getBindableJavaType();
@@ -150,7 +150,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             node = this.currentNode.anyOfAllowingNone(assoc.getName());
         }
-        if (assoc.getElementType().equals(PersistenceType.BASIC)) {
+        if (assoc.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             if (assoc.getCollectionType().equals(CollectionType.COLLECTION)) {
                 fetch = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc);
             } else if (assoc.getCollectionType().equals(CollectionType.LIST)) {
@@ -275,7 +275,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         Attribute attribute = this.managedType.getAttribute(attName);
         Join join;
         if (attribute.isCollection()) {
-            if (!((PluralAttribute) attribute).getElementType().equals(PersistenceType.BASIC)) {
+            if (!((PluralAttribute) attribute).getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
                 if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
                     join = new CollectionJoinImpl<X, Y>(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
                 } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
@@ -298,7 +298,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             }
         }else{
             Class clazz = ((SingularAttribute)attribute).getBindableJavaType();
-            if (((SingularAttribute)attribute).getType().equals(PersistenceType.BASIC)){
+            if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
                 return new PathImpl<Y>(this, this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
             }else{
                 join = new JoinImpl(this, this.metamodel.type(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
@@ -313,7 +313,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
-        if (((SingularAttribute)attribute).getType().equals(PersistenceType.BASIC)){
+        if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
         Class clazz = attribute.getBindableJavaType();
@@ -356,7 +356,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             node = this.currentNode.anyOfAllowingNone(collection.getName());
         }
-        if (collection.getElementType().equals(PersistenceType.BASIC)) {
+        if (collection.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             join = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) collection);
         } else {
             join = new CollectionJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) collection);
@@ -376,7 +376,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             node = this.currentNode.anyOfAllowingNone(set.getName());
         }
-        if (set.getElementType().equals(PersistenceType.BASIC)) {
+        if (set.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             join = new BasicSetJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) set);
         } else {
             join = new SetJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) set);
@@ -396,7 +396,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             node = this.currentNode.anyOfAllowingNone(list.getName());
         }
-        if (list.getElementType().equals(PersistenceType.BASIC)) {
+        if (list.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             join = new BasicListJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) list);
         } else {
             join = new ListJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) list);
@@ -416,7 +416,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             node = this.currentNode.anyOfAllowingNone(map.getName());
         }
-        if (map.getElementType().equals(PersistenceType.BASIC)) {
+        if (map.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             join = new BasicMapJoinImpl(this, this.metamodel, clazz, node, (Bindable) map);
         } else {
             join = new MapJoinImpl(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) map);
@@ -425,11 +425,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
-    public <Y> Join<X, Y> join(String attributeName) {
+    public <X, Y> Join<X, Y> join(String attributeName) {
         return join(attributeName, JoinType.INNER);
     }
 
-    public <Y> Join<X, Y> join(String attributeName, JoinType jt) {
+    public <X, Y> Join<X, Y> join(String attributeName, JoinType jt) {
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
             org.eclipse.persistence.expressions.Expression node;
@@ -441,23 +441,23 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                 node = this.currentNode.anyOfAllowingNone(((PluralAttribute) attribute).getName());
             }
             Join join;
-            if (((PluralAttribute) attribute).getElementType().equals(PersistenceType.BASIC)) {
+            if (((PluralAttribute) attribute).getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
                 if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new BasicCollectionJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new BasicListJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new BasicListJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new BasicSetJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new BasicSetJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else{
                     join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 }
             } else {
                 if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new CollectionJoinImpl<X, Y>(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new CollectionJoinImpl(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new ListJoinImpl<X, Y>(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new ListJoinImpl(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new SetJoinImpl<X, Y>(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
+                    join = new SetJoinImpl(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 } else {
                     join = new MapJoinImpl(this, metamodel.type(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute);
                 }
@@ -469,11 +469,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
-    public <Y> CollectionJoin<X, Y> joinCollection(String attributeName) {
+    public <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName) {
         return joinCollection(attributeName, JoinType.INNER);
     }
 
-    public <Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt) {
+    public <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt) {
         try {
             return (CollectionJoin<X, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
@@ -481,11 +481,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
-    public <Y> ListJoin<X, Y> joinList(String attributeName) {
+    public <X, Y> ListJoin<X, Y> joinList(String attributeName) {
         return joinList(attributeName, JoinType.INNER);
     }
 
-    public <Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt) {
+    public <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt) {
         try {
             return (ListJoin<X, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
@@ -493,11 +493,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
-    public <K, Y> MapJoin<X, K, Y> joinMap(String attributeName) {
+    public <X, K, Y> MapJoin<X, K, Y> joinMap(String attributeName) {
         return joinMap(attributeName, JoinType.INNER);
     }
 
-    public <K, Y> MapJoin<X, K, Y> joinMap(String attributeName, JoinType jt) {
+    public <X, K, Y> MapJoin<X, K, Y> joinMap(String attributeName, JoinType jt) {
         try {
             return (MapJoin<X, K, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
@@ -505,11 +505,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
-    public <Y> SetJoin<X, Y> joinSet(String attributeName) {
+    public <X, Y> SetJoin<X, Y> joinSet(String attributeName) {
         return joinSet(attributeName, JoinType.INNER);
     }
 
-    public <Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt) {
+    public <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt) {
         try {
             return (SetJoin<X, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {

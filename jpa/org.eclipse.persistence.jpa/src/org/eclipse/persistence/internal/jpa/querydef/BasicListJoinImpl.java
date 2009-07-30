@@ -44,6 +44,8 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author gyorke
  * @since EclipseLink 2.0
  */
+@SuppressWarnings("hiding")
+
 public class BasicListJoinImpl<Z, E> extends ListJoinImpl<Z, E> {
     
     public <T> BasicListJoinImpl(Path<Z> parentPath, Metamodel metamodel, Class<E> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
@@ -132,27 +134,27 @@ public class BasicListJoinImpl<Z, E> extends ListJoinImpl<Z, E> {
     }
 
     @Override
-    public <Y> Join<E, Y> join(String attributeName, JoinType jt) {
+    public <E, Y> Join<E, Y> join(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <Y> CollectionJoin<E, Y> joinCollection(String attributeName, JoinType jt) {
+    public <E, Y> CollectionJoin<E, Y> joinCollection(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
     
     @Override
-    public <Y> ListJoin<E, Y> joinList(String attributeName, JoinType jt) {
+    public <E, Y> ListJoin<E, Y> joinList(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <L, W> MapJoin<E, L, W> joinMap(String attributeName, JoinType jt) {
+    public <E, L, W> MapJoin<E, L, W> joinMap(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <Y> SetJoin<E, Y> joinSet(String attributeName, JoinType jt) {
+    public <E, Y> SetJoin<E, Y> joinSet(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 

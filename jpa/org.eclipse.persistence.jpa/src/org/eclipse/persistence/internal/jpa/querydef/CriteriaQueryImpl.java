@@ -14,10 +14,13 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -26,9 +29,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -49,16 +58,14 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
-    protected List<Selection<?>> selections;
-    protected Selection selection;
-    protected Class<T> queryType;
+    protected SelectionImpl<?> selection;
+    protected Class<?> queryType;
     
     protected boolean distinct;
 
-    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Selection<T> initSelection, QueryBuilderImpl queryBuilder){
+    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
         super(metamodel, queryResult, queryBuilder);
-        this.selections = new ArrayList<Selection<?>>();
-        this.selection = initSelection;
+        this.queryType = result;
     }
 
     /**
@@ -68,8 +75,31 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *        is to be returned in the query result
      * @return the modified query
      */
-    public CriteriaQuery<T> select(Selection<? extends T> selection){
-        this.selection = selection;
+    public CriteriaQuery<T> select(Selection<? extends T> selection) {
+        this.selection = (SelectionImpl) selection;
+        if (selection.isCompoundSelection()) {
+            if (!selection.getJavaType().equals(Tuple.class) && !this.queryResult.equals(ResultType.TUPLE) && !this.queryResult.equals(ResultType.OBJECT_ARRAY)) {
+                int size = selection.getCompoundSelectionItems().size();
+                if (!discoverResultType(selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]))) {
+                    Object[] params = new Object[size + 1];
+                    params[0] = this.queryType;
+                    int count = 0;
+                    for (Selection select : selection.getCompoundSelectionItems()) {
+                        params[++count] = select.getJavaType();
+                    }
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
+                }
+            }
+        } else {
+            this.queryType = selection.getJavaType();
+            ManagedType type = this.metamodel.type(this.queryType);
+            if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+                this.queryResult = ResultType.ENTITY;
+            } else {
+                this.queryResult = ResultType.OTHER;
+            }
+        }
+        integrateRoot(selection);
         return this;
     }
 
@@ -116,10 +146,44 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections){
-        this.selections.clear();
-        for(Selection selection: selections){
-            this.selections.add(selection);
+        if (selections == null || selections.length == 0){
+            this.selection = null;
         }
+        if (this.queryType.equals(ClassConstants.OBJECT)){
+            if(selections.length > 1){
+                this.queryType = ClassConstants.AOBJECT;
+                this.selection = (SelectionImpl) this.queryBuilder.construct(ClassConstants.AOBJECT, selections);
+                this.queryResult = ResultType.OBJECT_ARRAY;
+            }else{
+                ManagedType type = this.metamodel.type(selections[0].getJavaType());
+                if (type == null || (!type.getPersistenceType().equals(PersistenceType.ENTITY))){
+                    this.queryResult = ResultType.OTHER;
+                }else{
+                    this.queryResult = ResultType.ENTITY;
+                }
+                this.queryType = selections[0].getJavaType();
+                this.selection = (SelectionImpl)selections[0];
+            }
+            return this;
+        }
+        if(selections.length > 1 || ! (this.queryType.isAssignableFrom(selections[0].getJavaType()))){
+        if (this.queryResult.equals(ResultType.OTHER) || this.queryResult.equals(ResultType.ENTITY)){
+            if(!discoverResultType(selections)){
+            Object[] params = new Object[selections.length];
+            params[0] = this.queryType;
+            int count = 0;
+            for (Selection select: selection.getCompoundSelectionItems()){
+                params[++count] = select.getJavaType();
+            }
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
+            }
+        }
+            this.selection = (SelectionImpl)this.queryBuilder.construct(this.queryType, selections);
+        }else{
+            this.selection = (SelectionImpl)selections[0];
+            
+        }
+        //TODO validate primitive return types but a multiselect
         return this;
     }
 
@@ -168,11 +232,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(List<Selection<?>> selectionList){
-        this.selections.clear();
-        for(Selection selection: selections){
-            this.selections.add(selection);
+        if (selectionList == null) {
+            this.selection = null;
+            return this;
         }
-        return this;
+        return this.multiselect(selectionList.toArray(new Selection[selectionList.size()]));
     }
 
     // override the return type only:
@@ -249,6 +313,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> having(Predicate... restrictions){
         throw new UnsupportedOperationException();
     }
+    
+    protected void initialRoot(RootImpl root, EntityType entity){
+        if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))){
+            //this is the first root, set return type and selection and query type
+            this.selection = root;
+            this.queryResult = ResultType.ENTITY;
+            this.queryType = entity.getJavaType();
+        }
+    }
 
     /**
      * Specify the ordering expressions that are used to order the query
@@ -265,6 +338,33 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> orderBy(Order... o){
         throw new UnsupportedOperationException();
     }
+    
+    public boolean discoverResultType(Selection<?> ... selections){
+        Class[] constructorArgs = new Class[selections.length];
+        int count = 0;
+        for (Selection select: selection.getCompoundSelectionItems()){
+            constructorArgs[++count] = select.getJavaType();
+        }
+        try{
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            AccessController.doPrivileged(new PrivilegedGetConstructorFor(this.queryType, constructorArgs, false));
+            this.queryResult = ResultType.CONSTRUCTOR;
+            return true;
+        } else {
+            PrivilegedAccessHelper.getConstructorFor(this.queryType, constructorArgs, false);
+            this.queryResult = ResultType.CONSTRUCTOR;
+            return true;
+        }
+        }catch(PrivilegedActionException ex){
+        } catch (NoSuchMethodException e) {
+        }
+        //did not find constructor, try for partial query
+        if (this.queryResult.equals(ResultType.ENTITY)){
+            this.queryResult = ResultType.PARTIAL;
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -280,7 +380,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query.
      */
     public CriteriaQuery<T> distinct(boolean distinct){
-        this.distinct= distinct;
+        super.distinct(distinct);
         return this;
     }
 
@@ -293,8 +393,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return query root corresponding to the given entity
      */
     public <X> Root<X> from(EntityType<X> entity){
-        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
         this.roots.add(root);
+        initialRoot(root, entity);
         return root;
     }
 
@@ -308,9 +409,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     public <X> Root<X> from(Class<X> entityClass) {
         EntityType<X> entity = this.metamodel.entity(entityClass);
-        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
-        return root;
+        return this.from(entity);
     }
 
     
@@ -336,7 +435,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the selection item of the query
      */
     public Selection<T> getSelection(){
-        return this.selection;
+        return (Selection<T>) this.selection;
     }
 
     /**
@@ -357,40 +456,61 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Database Query.
      */
     public DatabaseQuery translate(){
+        //TODO fetch joins
+        
         ObjectLevelReadQuery query = null;
-        if (this.queryResult.equals(ResultType.CONSTRUCTOR)){
-            ReportQuery rq = new ReportQuery();
-            rq.addConstructorReportItem(((ConstructorSelectionImpl)this.selection).translate());
-            rq.setShouldReturnSingleAttribute(true);
-            query = rq;
-        }else if (this.queryResult.equals(ResultType.ENTITY)){
-            query = new ReadAllQuery(this.getSelection().getJavaType());
+        if (this.queryResult.equals(ResultType.ENTITY)){
+            query = new ReadAllQuery(this.queryType);
         }else if (this.queryResult.equals(ResultType.PARTIAL)){
-            ReadAllQuery raq = new ReadAllQuery(this.getSelection().getJavaType());
-            for (Selection selection: this.selections){
+            ReadAllQuery raq = new ReadAllQuery(this.queryType);
+            for (Selection selection: this.selection.getCompoundSelectionItems()){
                 raq.addPartialAttribute(((SelectionImpl)selection).currentNode);
             }
             query = raq;
         }else{
-            ReportQuery reportQuery = null;
-            if (this.queryResult.equals(ResultType.TUPLE)){
-                reportQuery = new TupleQuery(this.selections);
-            }else{
-                reportQuery = new ReportQuery();
-                reportQuery.setShouldReturnWithoutReportQueryResult(true);
-            }
-            for (Selection selection: this.selections){
-                if (((SelectionImpl)selection).isConstructor()){
-                    reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)selection).translate());
+            if (this.roots == null || this.roots.isEmpty()) throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
+            ReportQuery reportQuery = new ReportQuery();
+            if (this.queryResult.equals(ResultType.CONSTRUCTOR)){
+                reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)this.selection).translate());
+                reportQuery.setShouldReturnSingleAttribute(true);
+            }else {
+                if (this.queryResult.equals(ResultType.TUPLE)){
+                    reportQuery = new TupleQuery(this.selection==null?new ArrayList():this.selection.getCompoundSelectionItems());
                 }else{
-                    reportQuery.addItem(selection.getAlias(), ((SelectionImpl)selection).getCurrentNode());
+                    reportQuery = new ReportQuery();
+                    reportQuery.setShouldReturnWithoutReportQueryResult(true);
+                }
+                if (this.selection != null){
+                    if (this.selection.isCompoundSelection()){
+                        for (Selection nested: this.selection.getCompoundSelectionItems()){
+                            if (((SelectionImpl)nested).isCompoundSelection()){
+                                reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)nested).translate());
+                            }else{
+                                reportQuery.addItem(nested.getAlias(), ((SelectionImpl)nested).getCurrentNode());
+                            }
+                        }
+                    }else{
+                        reportQuery.addItem(this.selection.getAlias(), ((SelectionImpl)this.selection).getCurrentNode());
+                    }
                 }
             }
+            if (this.where != null && ((ExpressionImpl)this.where).getCurrentNode() != null){
+                reportQuery.setReferenceClass(((ExpressionImpl)this.where).getCurrentNode().getBuilder().getQueryClass());
+            }else{
+            reportQuery.setReferenceClass(this.getRoots().iterator().next().getJavaType());
+        }
             query = reportQuery;
         }
-        query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
-        query.setSelectionCriteria(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
-        if (this.distinct) query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
+        if (this.where != null){
+            query.setSelectionCriteria(((ExpressionImpl)this.where).getCurrentNode());
+        }
+        if (this.distinct){
+            query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
+        }
+        else{
+            query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
+
+        }
         return query;
     }
 

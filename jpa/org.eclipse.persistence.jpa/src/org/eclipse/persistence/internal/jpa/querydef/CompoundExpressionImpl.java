@@ -38,15 +38,20 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * @author gyorke
  * @since EclipseLink 2.0
  */
-public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
+public class CompoundExpressionImpl extends ExpressionImpl<Boolean> implements Predicate {
     
-    protected BooleanOperator booloperator;
+    protected String operator;
+    protected List expressions;
     
-    public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
-        super(metamodel, expressionNode, parentExpressions);
-        this.booloperator = operator;
+    public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
+        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode);
+        this.expressions = new ArrayList(compoundExpressions);
     }
 
+    public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
+        this(metamodel, expressionNode, compoundExpressions);
+        this.operator = operator;
+    }
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
@@ -54,7 +59,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * @return boolean operator for the predicate
      */
     public BooleanOperator getOperator(){
-        return this.booloperator;
+        return BooleanOperator.AND;
     }
 
     /**
@@ -63,28 +68,49 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * @return boolean indicating if the predicate has been negated
      */
     public boolean isNegated(){
-        return this.booloperator == BooleanOperator.NOT;
+        return false;
     }
 
     /**
-     * @param operator the operator to set
+     * Return the top-level conjuncts or disjuncts of the predicate.
+     * 
+     * @return list boolean expressions forming the predicate
      */
-    public void setOperator(BooleanOperator operator) {
-        this.booloperator = operator;
+    public List<Expression<Boolean>> getExpressions(){
+        return new ArrayList();
     }
+
+    /**
+     * Apply negation to the predicate.
+     * 
+     * @return the negated predicate
+     */
+    public Predicate negate(){
+        if (this.currentNode == null){
+            return new PredicateImpl(this.metamodel, null, null, BooleanOperator.NOT);
+        }
+        List<Expression<?>> list = new ArrayList();
+        list.add(this);
+        return new PredicateImpl(this.metamodel, this.currentNode.not(), list, BooleanOperator.NOT);
+    }
+
     @Override
-    public boolean isPredicate(){
+    public boolean isCompoundExpression(){
         return true;
     }
     
     @Override
-    public boolean isCompoundExpression(){
+    public boolean isExpression(){
         return false;
     }
 
-    @Override
-    public boolean isExpression(){
-        return false;
+    
+    protected void findRoot(Set<Root<?>> roots){
+        if (this.expressions != null){
+            for (Object exp : this.expressions){
+                ((ExpressionImpl)exp).findRoot(roots);
+            }   
+        }
     }
 
 

@@ -71,6 +71,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCriteriaQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
@@ -206,11 +207,10 @@ public class FullRegressionTestSuite extends TestSuite{
         suite = new TestSuite();
         suite.setName("Criteria");
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedQueryTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
-        // Uncomment for development testing only - currently f:20, e:74
-        //fullSuite.addTest(suite);
+     //   suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCriteriaQueryTestSuite.suite());
+     //   suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
+        fullSuite.addTest(suite);
         
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());

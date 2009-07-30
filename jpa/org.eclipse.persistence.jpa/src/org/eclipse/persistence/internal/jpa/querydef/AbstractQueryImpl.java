@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -28,6 +29,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>
@@ -52,9 +54,10 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected Expression<Boolean> where; 
     protected ResultType queryResult;
     protected QueryBuilderImpl queryBuilder;
-    
+    protected boolean distinct;
+
     protected enum ResultType{
-        OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR
+        OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
     
     public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder){
@@ -129,7 +132,9 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
         if (restrictions == null || restrictions.length == 0){
             this.where = null;
         }
-        this.where = this.queryBuilder.and(restrictions);
+        Predicate predicate = this.queryBuilder.and(restrictions);
+        integrateRoot(predicate);
+        this.where = predicate;
         return this;
     }
 
@@ -177,7 +182,8 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * Specify whether duplicate query results will be eliminated. A true value
      * will cause duplicates to be eliminated. A false value will cause
      * duplicates to be retained. If distinct has not been specified, duplicate
-     * results must be retained.
+     * results must be retained. This method only overrides the return type of
+     * the corresponding AbstractQuery method.
      * 
      * @param distinct
      *            boolean value specifying whether duplicate results must be
@@ -186,8 +192,10 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query.
      */
     public AbstractQuery<T> distinct(boolean distinct){
-        throw new UnsupportedOperationException();
+        this.distinct= distinct;
+        return this;
     }
+
     /**
      * Return the selection of the query
      * @return the item to be returned in the query result
@@ -208,8 +216,8 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * 
      * @return where clause predicate
      */
-    public Predicate getRestriction(){
-        throw new UnsupportedOperationException();
+    public Expression<Boolean> getRestriction(){
+        return this.where;
     }
     
     /**
@@ -229,7 +237,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      *         eliminated
      */
     public boolean isDistinct(){
-        throw new UnsupportedOperationException();
+        return this.distinct;
     }
     
     /**
@@ -240,5 +248,37 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      */
     public <U> Subquery<U> subquery(Class<U> type){
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     *  Used to use a root from a different query.
+     */
+    
+    protected void integrateRoot(Expression<?> predicate){
+        Set<Root<?>> newRoots = new HashSet<Root<?>>();
+        ((ExpressionImpl)predicate).findRoot(newRoots);
+        if (this.roots.isEmpty()){
+            this.roots.addAll(newRoots);
+        }else{
+            boolean found = false;
+            for (Root root : newRoots){
+                if (this.roots.contains(root)){
+                    this.roots.addAll(newRoots);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
+            }
+        }
+    }
+
+    protected void integrateRoot(Selection<?> selection){
+        if (selection.isCompoundSelection()){
+            for (Selection subSelection: selection.getCompoundSelectionItems()){
+                integrateRoot(subSelection);
+            }
+        }
     }
 }

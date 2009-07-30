@@ -161,7 +161,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            name of the attribute for the target of the join
      * @return the resulting join
      */
-    <Y> Join<X, Y> join(String attributeName);
+    <X, Y> Join<X, Y> join(String attributeName);
 
     /**
      * Join to the specified Collection-valued attribute using an inner join.
@@ -170,7 +170,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            name of the attribute for the target of the join
      * @return the resulting join
      */
-    <Y> CollectionJoin<X, Y> joinCollection(String attributeName);
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName);
 
     /**
      * Join to the specified Set-valued attribute using an inner join.
@@ -179,7 +179,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            name of the attribute for the target of the join
      * @return the resulting join
      */
-    <Y> SetJoin<X, Y> joinSet(String attributeName);
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName);
 
     /**
      * Join to the specified List-valued attribute using an inner join.
@@ -188,7 +188,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            name of the attribute for the target of the join
      * @return the resulting join
      */
-    <Y> ListJoin<X, Y> joinList(String attributeName);
+    <X, Y> ListJoin<X, Y> joinList(String attributeName);
 
     /**
      * Join to the specified Map-valued attribute using an inner join.
@@ -197,7 +197,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            name of the attribute for the target of the join
      * @return the resulting join
      */
-    <K, V> MapJoin<X, K, V> joinMap(String attributeName);
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName);
 
     /**
      * Join to the specified attribute using the given join type.
@@ -208,7 +208,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> Join<X, Y> join(String attributeName, JoinType jt);
+    <X, Y> Join<X, Y> join(String attributeName, JoinType jt);
 
     /**
      * Join to the specified Collection-valued attribute using the given join
@@ -220,7 +220,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
 
     /**
      * Join to the specified Set-valued attribute using the given join type.
@@ -231,7 +231,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
 
     /**
      * Join to the specified List-valued attribute using the given join type.
@@ -242,7 +242,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
+    <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
 
     /**
      * Join to the specified Map-valued attribute using the given join type.
@@ -253,5 +253,5 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
 }

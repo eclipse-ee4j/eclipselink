@@ -541,14 +541,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<Computer> entityComputer2 = (EntityTypeImpl)metamodel.entity(Computer.class);                
                 Root from = criteriaQuery.from(entityComputer2);
                 Path path = from.get("name");
-                criteriaQuery.where(qb.equal(path, "name"));
+                criteriaQuery.where(qb.equal(path, "CM-5"));
                 Query query = em.createQuery(criteriaQuery);
                 results = query.getResultList();
                 if(results.size() > 0) {
                     Computer computer = (Computer)results.get(0);
                     assertNotNull(computer);
                 } else {
-                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER) were expected");
+                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER WHERE NAME = 'CM-5') were expected");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

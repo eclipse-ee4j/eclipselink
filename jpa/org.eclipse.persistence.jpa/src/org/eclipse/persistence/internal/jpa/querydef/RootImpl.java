@@ -1,5 +1,7 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.Set;
+
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Bindable;
@@ -21,5 +23,10 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
     public EntityType<X> getModel(){
         return (EntityType<X>)this.modelArtifact;
     }
+    
+    protected void findRoot(Set<Root<?>> roots){
+        roots.add(this);
+    }
+
 
 }

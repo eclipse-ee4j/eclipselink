@@ -78,7 +78,7 @@ public class TupleImpl implements Tuple {
      *         length of result list
      */
     public Object get(int i){
-        return this.rqr.get(i);
+        return this.rqr.getByIndex(i);
     }
 
     /**

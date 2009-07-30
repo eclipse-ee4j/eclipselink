@@ -14,8 +14,11 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.Set;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
@@ -48,6 +51,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>{
     public PathImpl(Path<?> parent, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
         super(metamodel, javaClass, expressionNode);
         this.pathParent = parent;
+        this.modelArtifact = modelArtifact;
     }
 
     /**
@@ -115,6 +119,10 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>{
 
     public <Y> Path<Y> get(String attName) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
+    }
+
+    protected void findRoot(Set<Root<?>> roots){
+        ((PathImpl)this.pathParent).findRoot(roots);
     }
 
 }

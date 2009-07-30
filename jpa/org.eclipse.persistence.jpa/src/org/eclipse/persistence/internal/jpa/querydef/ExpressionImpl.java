@@ -14,11 +14,16 @@
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
+
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>
@@ -35,19 +40,30 @@ import javax.persistence.metamodel.Metamodel;
  */
 public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
     protected Metamodel metamodel;
+    protected boolean isLiteral;
+    protected Object literal;
     
     public <T> ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
     }
     
+    public <T> ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
+        super(javaType, expressionNode);
+        this.metamodel = metamodel;
+        this.literal = value;
+        this.isLiteral = true;
+    }
+
     public <X> Expression<X> as(Class<X> type) {
         // TODO Auto-generated method stub
         return (Expression<X>) this;
     }
     
     public Predicate in(Object... values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
 
     /**
@@ -57,7 +73,15 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<?>... values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        for (Expression exp: values){
+            if (!((ExpressionImpl)exp).isLiteral()){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
+            }
+        }
+        
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
 
     /**
@@ -67,7 +91,9 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Collection<?> values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
     /**
      * Apply a predicate to test whether the expression is a member
@@ -76,19 +102,43 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<Collection<?>> values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()), list, "in");
     }
     
     public Predicate isNotNull() {
-        return new PredicateImpl(this.metamodel, this.currentNode.notNull(), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
 
     
     public Predicate isNull() {
-        return new PredicateImpl(this.metamodel, this.currentNode.isNull(), new ArrayList(), BooleanOperator.AND);
+        List list = new ArrayList();
+        list.add(this);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }
     
     public boolean isPredicate(){
         return false;
+    }
+
+    public boolean isCompoundExpression(){
+        return false;
+    }
+    public boolean isExpression(){
+        return true;
+    }
+    
+    public boolean isLiteral(){
+        return this.isLiteral;
+    }
+    protected void findRoot(Set<Root<?>> roots){
+        //no-op because an expression will have no root
+    }
+    
+    protected Object getValue(){
+        return this.getValue();
     }
 }

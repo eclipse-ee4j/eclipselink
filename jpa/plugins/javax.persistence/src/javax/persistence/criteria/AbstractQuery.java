@@ -156,7 +156,7 @@ public interface AbstractQuery<T> {
      * 
      * @return where clause predicate
      */
-    Predicate getRestriction();
+    Expression<Boolean> getRestriction();
 
     /**
      * Return the predicate that corresponds to the restriction(s) over the

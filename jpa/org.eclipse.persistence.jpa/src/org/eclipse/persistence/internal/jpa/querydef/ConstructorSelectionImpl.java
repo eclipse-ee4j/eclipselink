@@ -42,8 +42,8 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
         super(javaType, expressionNode);
         this.subSelections = new ArrayList<Selection<?>>();
     }
-
-    public boolean isConstructor(){
+@Override
+    public boolean isCompoundSelection(){
         return true;
     }
     
@@ -58,16 +58,20 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
         }
     }
     
-    public List<Selection<?>> getSelections(){
+    /**
+     * Return selection items composing a compound selection
+     * @return list of selection items
+     * @throws IllegalStateException if selection is not a compound
+     *           selection
+     */
+    public List<Selection<?>> getCompoundSelectionItems(){
         return this.subSelections;
     }
-    
     public ConstructorReportItem translate(){
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
-        ((ConstructorSelectionImpl)this).getSelections();
-        for(Selection selection : this.getSelections()){
-            if (((SelectionImpl)selection).isConstructor()){
+        for(Selection selection : this.subSelections){
+            if (((SelectionImpl)selection).isCompoundSelection()){
                 item.addItem(((ConstructorSelectionImpl)selection).translate());
             }else{
                 item.addAttribute(((SelectionImpl)selection).getCurrentNode());
