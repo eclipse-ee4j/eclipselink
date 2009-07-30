@@ -156,16 +156,8 @@
         </condition>
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
         <property name="p2.base.dir" value="${p2.repos.path}"/>
+        <property name="p2.base.url" value="file:${p2.base.dir}"/>
         
-        <!-- Set p2 repository url appropriately depending upon build target     -->
-        <condition property="p2.repos.url" value="${eclipselink.download.url}/incremental-updates/nightly">
-            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
-        </condition>
-        <condition property="p2.repos.url" value="${eclipselink.download.url}/updates/${release.version}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-        <property name="p2.repos.url" value="${eclipselink.download.url}/incremental-updates/milestone"/>
-
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
         <!-- specify location of eclipse SDK install to use                       -->

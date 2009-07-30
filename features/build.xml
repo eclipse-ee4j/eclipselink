@@ -66,7 +66,7 @@
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
         
         <!-- Defaults of Pre-Set variables -->
-        <property name="release.version"                    value="1.1.2"/>
+        <property name="release.version"                    value="1.1.3"/>
         <property name="version.qualifier"                  value="qualifier"/>
         <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
         <property name="eclipselink.install.prefix"         value="eclipselink"/>
@@ -77,8 +77,6 @@
         <property name="eclipselink.jpa.plugins"            value="jpa/plugins"/>
         <property name="specification.vendor"               value="Eclipse.org - EclipseLink Project"/>
         <property name="eclipselink.p2.archive.presigned"   value="${eclipselink.install.prefix}-P2-${release.version}${eclipselink.zip.suffix}"/>
-        <property name="P2.release.repos.name"              value="EclipseLink Repository"/>
-        <property name="P2.nightly.repos.name"              value="EclipseLink Nightly Build Repository"/>
         <property name="build.id"                           value="${release.version}"/>
         <!-- Helper definitions derived from Pre-set variables -->
         <property name="feature.build.dir"                  value="${classes.dir}/features"/>
@@ -104,9 +102,9 @@
         <property name="site.url"            value="file:${site.dir}/site.xml"/>
         <!-- Output definitions -->
         <property name="p2.base.url"             value="file:/${p2.base.dir}"/> <!-- DO NOT Override this one -->
-        <property name="p2.repos.url"            value="file:/${p2.base.dir}"/>
         <property name="P2.milestone.repos.name" value="EclipseLink Milestone Repository"/>
         <property name="P2.release.repos.name"   value="EclipseLink Repository"/>
+        <property name="P2.nightly.repos.name"              value="EclipseLink Nightly Build Repository"/>
         <property name="metadata.repos.name"     value="&quot;${P2.release.repos.name}&quot;"/>
         <property name="artifact.repos.name"     value="&quot;EclipseLink Artifacts&quot;"/>
     
@@ -139,7 +137,6 @@
         <echo message="p2.bundle.dir='${p2.bundle.dir}'"/>
         <echo message="bundle.install.file='${bundle.install.file}'"/>
         <echo message="site.url='${site.url}'"/>
-        <echo message="p2.repos.url='${p2.repos.url}'"/>
     
         <!-- Make sure necessary resources exist -->
         <available file="${bundle.install.file}" property="bundle.installer.exist"/>
@@ -341,7 +338,6 @@
     <target name="create-site-for-generation">
         <mkdir dir="${site.dir}"/>
         <delete file="${site.dir}/site.xml" quiet="true"/>
-        <!-- filter token="REPOS_URL"       value="${p2.repos.url}"/ -->
         <filter token="REPOS_URL"       value="${p2.base.url}"/>
         <filter token="VERSION"         value="${release.version}"/>
         <filter token="QUALIFIER"       value="${version.qualifier}"/>
@@ -352,8 +348,7 @@
         <echo message="p2.base.dir   ='${p2.base.dir}'"/>
         <echo message="p2.feature.dir='${p2.feature.dir}'"/>
         <echo message="p2.bundle.dir ='${p2.bundle.dir}'"/>
-        <echo message="p2.base.url   ='${p2.repos.url}'"/>
-        <echo message="p2.repos.url  ='${p2.repos.url}'"/>
+        <echo message="p2.base.url   ='${p2.base.url}'"/>
         <echo message="java.home     ='${java.home}'"/>
         <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
         <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
