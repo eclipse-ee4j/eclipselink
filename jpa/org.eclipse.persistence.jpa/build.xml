@@ -98,14 +98,14 @@
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <!-- Feature "Blurb" for Eclipse -->
-        <copy todir="${classes.dir}/feature">
+        <!-- copy todir="${classes.dir}/feature">
             <fileset dir="${resource.dir}/feature">
                 <include name="*.*"/>
                 <exclude name="about.mappings"/>
             </fileset>
         </copy>
         <filter token="QUALIFIER"       value="${version.qualifier}"/>
-        <copy todir="${classes.dir}/feature" file="${resource.dir}/feature/about.mappings" filtering="true"/>
+        <copy todir="${classes.dir}/feature" file="${resource.dir}/feature/about.mappings" filtering="true"/ -->
         <!-- Create product plugin jar -->
         <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${jpa.2.base.dir}">
@@ -117,9 +117,9 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
             <!-- Feature "Blurb" for Eclipse -->
-            <fileset dir="${classes.dir}/feature">
+            <!-- fileset dir="${classes.dir}/feature">
                 <include name="*.*"/>
-            </fileset>
+            </fileset -->
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
