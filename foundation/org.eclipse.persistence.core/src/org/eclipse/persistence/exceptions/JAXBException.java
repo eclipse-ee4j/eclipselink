@@ -47,6 +47,14 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_ID = 50016;
     public static final int INVALID_IDREF = 50017;
     public static final int INVALID_LIST = 50018;
+    public static final int VALUE_PARAMETER_TYPE_INCORRECT_FOR_OXM_XML = 50019;
+    public static final int KEY_PARAMETER_TYPE_INCORRECT = 50021;
+    public static final int VALUE_PARAMETER_TYPE_INCORRECT = 50022;
+    public static final int NULL_METADATA_SOURCE = 50023;
+    public static final int NULL_MAP_KEY = 50024;
+    public static final int COULD_NOT_LOAD_CLASS_FROM_METADATA = 50025;
+    public static final int COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL = 50026;
+    public static final int COULD_NOT_UNMARSHAL_METADATA = 50027;
     
     protected JAXBException(String message) {
         super(message);
@@ -188,4 +196,135 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(INVALID_TYPE_FOR_XMLVALUE_PROPERTY);
         return exception;
     }  
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the Key parameter type of the package name to 
+     * metadata source map is something other than String.  We require Map<String, Source>.
+     * 
+     * @return
+     */
+    public static JAXBException incorrectKeyParameterType() {
+        Object[] args = {};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, KEY_PARAMETER_TYPE_INCORRECT, args));
+        exception.setErrorCode(KEY_PARAMETER_TYPE_INCORRECT);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type (of the package 
+     * name to metadata source map) is something other than Source.  We require Map<String, Source>.
+     * 
+     * @return
+     */
+    public static JAXBException incorrectValueParameterType() {
+        Object[] args = {};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, VALUE_PARAMETER_TYPE_INCORRECT, args));
+        exception.setErrorCode(VALUE_PARAMETER_TYPE_INCORRECT);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type associated with 
+     * the 'eclipselink-oxm-xml' Key (in the properties map) is something other than Map<String, Source>.
+     * 
+     * @return
+     */
+    public static JAXBException incorrectValueParameterTypeForOxmXmlKey() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, VALUE_PARAMETER_TYPE_INCORRECT_FOR_OXM_XML, args));
+        exception.setErrorCode(VALUE_PARAMETER_TYPE_INCORRECT_FOR_OXM_XML);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value (in the package name 
+     * to metadata source map) is null.
+     * 
+     * @return
+     */
+    public static JAXBException nullMetadataSource(String key) {
+        Object[] args = { key };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_METADATA_SOURCE, args));
+        exception.setErrorCode(NULL_METADATA_SOURCE);
+        return exception;
+    }
+    
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the Key (in the package name 
+     * to metadata source map) is null.
+     * 
+     * @return
+     */
+    public static JAXBException nullMapKey() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_MAP_KEY, args));
+        exception.setErrorCode(NULL_MAP_KEY);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where a class that is declared in the metadata
+     * file cannot be loaded by the classloader. 
+     * 
+     * @param classname
+     * @return
+     */
+    public static JAXBException couldNotLoadClassFromMetadata(String classname) {
+        Object[] args = { classname };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_LOAD_CLASS_FROM_METADATA, args));
+        exception.setErrorCode(COULD_NOT_LOAD_CLASS_FROM_METADATA);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
+     * XmlModel.
+     * 
+     * @param e
+     * @return
+     */
+    public static JAXBException couldNotCreateContextForXmlModel() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL, args));
+        exception.setErrorCode(COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
+     * XmlModel.
+     * 
+     * @param e
+     * @return
+     */
+    public static JAXBException couldNotCreateContextForXmlModel(Exception ex) {
+        Object[] args = { ex };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL, args), ex);
+        exception.setErrorCode(COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where an exception occurs while unmarshalling 
+     * the eclipselink metadata file.
+     * 
+     * @param e
+     * @param metadataSystemId
+     * @return
+     */
+    public static JAXBException couldNotUnmarshalMetadata(Exception e) {
+        Object[] args = {  };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_UNMARSHAL_METADATA, args), e);
+        exception.setErrorCode(COULD_NOT_UNMARSHAL_METADATA);
+        return exception;
+    }
 }

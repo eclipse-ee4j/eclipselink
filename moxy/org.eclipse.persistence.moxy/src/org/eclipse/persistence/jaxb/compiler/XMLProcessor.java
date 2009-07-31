@@ -207,11 +207,10 @@ public class XMLProcessor {
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
                 Property oldProperty = typeInfo.getProperties().get(javaAttribute.getJavaAttribute());
-
+                // TODO: we should log a warning here
                 if (oldProperty == null) {
                     continue;
                 }
-
                 Property newProperty = processJavaAttribute(javaAttribute, oldProperty, nsInfo);
                 typeInfo.getProperties().put(javaAttribute.getJavaAttribute(), newProperty);
             }

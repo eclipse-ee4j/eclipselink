@@ -38,7 +38,15 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50015", "XmlElementWrapper is only allowed on a collection or array property but [{0}] is not a collection or array property."},
         {"50016", "Property [{0}] has an XmlID annotation but its type is not String."},
         {"50017", "Invalid XmlIDREF on property [{0}].  Class [{1}] is required to have a property annotated with XmlID."},
-        {"50018", "XmlList is only allowed on a collection property but [{0}] is not a collection property."}
+        {"50018", "XmlList is only allowed on a collection property but [{0}] is not a collection property."},
+        {"50019", "Invalid parameter type encountered while processing external metadata via properties Map.  The Value associated with Key [eclipselink-oxm-xml] is required to be one of [Map<String, Source>], where String = package, Source = handle to metadata file."},
+        {"50021", "Invalid parameter type encountered while processing external metadata via properties Map.  It is required that the Key be of type [String] (indicating package name)."},
+        {"50022", "Invalid parameter type encountered while processing external metadata via properties Map.  It is required that the Value be of type [Source] (handle to metadata file)."},
+        {"50023", "A null Value for Key [{0}] was encountered while processing external metadata via properties Map.  It is required that the Value be non-null and of type [Source] (handle to metadata file)."},
+        {"50024", "A null Key was encountered while processing external metadata via properties Map.  It is required that the Key be non-null and of type [String] (indicating package name)."},
+        {"50025", "Could not load class [{0}] declared in the external metadata file.  Please ensure that the class name is correct, and that the correct ClassLoader has been set."},
+        {"50026", "An exception occurred while attempting to create a JAXBContext for the XmlModel."},
+        {"50027", "An exception occurred while attempting to unmarshal externalized metadata file."}
     };
     
     /**

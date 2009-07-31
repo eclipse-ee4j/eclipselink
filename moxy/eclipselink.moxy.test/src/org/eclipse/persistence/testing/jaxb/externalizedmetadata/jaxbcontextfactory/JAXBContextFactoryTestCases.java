@@ -19,9 +19,11 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
@@ -32,6 +34,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
 public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private MySchemaOutputResolver outputResolver;
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
+    private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     
     /**
      * This is the preferred (and only) constructor.
@@ -139,15 +142,74 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             Type[] types = new Type[2];
             types[0] = addressesField.getGenericType(); 
             types[1] = org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.arrayoftypes.Employee.class;
-            
             String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.arrayoftypes";
             String path = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/arrayoftypes/";
-            
             outputResolver = generateSchema(types, contextPath, path, 1);
-            
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         } 
+    }
+
+    /**
+     * Test processing an eclipselink-oxm.xml file with no JavaTypes.
+     * 
+     */
+    public void testBindingsFileWithNoTypes() {
+        String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String metadataFile = PATH + "eclipselink-oxm-no-types.xml";
+        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory", new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] {}, properties);
+            jaxbContext.generateSchema(outputResolver);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+    
+    /**
+     * Test passing a String[] into the context factory via Class[].
+     * 
+     */
+    public void testStringArrayInClassesToBeBound() {
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { String[].class }, null);
+            jaxbContext.generateSchema(outputResolver);
+            String controlSchema = PATH + "stringarray/schema.xsd";
+            compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+    
+    /**
+     * Test passing a String[] into the context factory via Type[].
+     * 
+     */
+    public void testStringArrayInTypesToBeBound() {
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Type[] { String[].class }, null, loader);
+            jaxbContext.generateSchema(outputResolver);
+            String controlSchema = PATH + "stringarray/schema.xsd";
+            compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 }

@@ -261,7 +261,7 @@ public class JAXBContextFactory {
      * Convenience method for processing a properties map and creating a map of package names to
      * XmlBindings instances.
      * 
-     * It is assumed that: - the given map's key will be ECLIPSELINK_OXM_XML_KEY - the value will be
+     * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY, and the value will be
      * Map<String, Source>, where String = package, Source = metadata file
      * 
      * @param properties
@@ -275,16 +275,34 @@ public class JAXBContextFactory {
             try {
                 metadataFiles = (Map<String, Source>) properties.get(ECLIPSELINK_OXM_XML_KEY);
             } catch (ClassCastException x) {
-                // TODO: need an EclipseLink exception here (parameter incorrect)
-                throw new RuntimeException(x);
+                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
             }
             if (metadataFiles != null) {
-                Source metadataSource;
-                for (String key : metadataFiles.keySet()) {
-                    metadataSource = metadataFiles.get(key);
+                Iterator<String> keyIt = metadataFiles.keySet().iterator();
+                while (keyIt.hasNext()) {
+                    String key = null;
+                    try {
+                        key = keyIt.next();
+                    } catch (ClassCastException cce) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
+                    }
+                    if (key == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
+                    }
+                    Source metadataSource = null;
+                    try {
+                        metadataSource = metadataFiles.get(key);
+                    } catch (ClassCastException cce) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterType();
+                    } 
+                    if (metadataSource == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
+                    }
                     XmlBindings binding = getXmlBindings(metadataSource, classLoader);
                     if (binding != null) {
                         bindings.put(key, binding);
+                    } else {
+                        // TODO: log a warning here
                     }
                 }
             }
@@ -391,21 +409,25 @@ public class JAXBContextFactory {
      */
     private static XmlBindings getXmlBindings(Source metadataSource, ClassLoader classLoader) {
         XmlBindings xmlBindings = null;
-        if (metadataSource != null) {
-            Unmarshaller unmarshaller;
+        Unmarshaller unmarshaller;
+        // only create the JAXBContext for our XmlModel once
+        if (jaxbContext == null) {
             try {
-                // only create the JAXBContext for our XmlModel once
-                if (jaxbContext == null) {
-                    jaxbContext = (JAXBContext) createContext(METADATA_MODEL_PACKAGE, classLoader);
-                }
-                unmarshaller = jaxbContext.createUnmarshaller();
-                xmlBindings = (XmlBindings) unmarshaller.unmarshal(metadataSource);
-            } catch (JAXBException jaxbEx) {
-                // TODO: need an EclipseLink exception here
-                throw new RuntimeException(jaxbEx);
+                jaxbContext = (JAXBContext) createContext(METADATA_MODEL_PACKAGE, classLoader);
+            } catch (JAXBException e) {
+                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
+            }
+            if (jaxbContext == null) {
+                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
             }
         }
-        return xmlBindings;
+        try {
+            unmarshaller = jaxbContext.createUnmarshaller();
+            xmlBindings = (XmlBindings) unmarshaller.unmarshal(metadataSource);
+        } catch (JAXBException jaxbEx) {
+            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
+        }
+       return xmlBindings;
     }
 
     /**
@@ -421,12 +443,14 @@ public class JAXBContextFactory {
         Type[] additionalTypes = existingTypes;
 
         ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
-        for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
-            try {
-                javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
-            } catch (ClassNotFoundException e) {
-                // TODO: need an EclipseLink exception here
-                throw new RuntimeException(e);
+        JavaTypes jTypes = xmlBindings.getJavaTypes();
+        if (jTypes != null) {
+            for (JavaType javaType : jTypes.getJavaType()) {
+                try {
+                    javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
+                } catch (ClassNotFoundException e) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                }
             }
         }
 
@@ -465,8 +489,7 @@ public class JAXBContextFactory {
                 try {
                     javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
                 } catch (ClassNotFoundException e) {
-                    // TODO: need an EclipseLink exception here
-                    throw new RuntimeException(e);
+                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                 }
             }
         }
@@ -495,15 +518,17 @@ public class JAXBContextFactory {
      */
     private static ArrayList<Class> getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, ArrayList<Class> existingClasses) {
         ArrayList<Class> additionalClasses = existingClasses;
-        for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
-            try {
-                Class jClass = classLoader.loadClass(javaType.getName());
-                if (!additionalClasses.contains(jClass)) {
-                    additionalClasses.add(jClass);
+        JavaTypes jTypes = xmlBindings.getJavaTypes();
+        if (jTypes != null) {
+            for (JavaType javaType : jTypes.getJavaType()) {
+                try {
+                    Class jClass = classLoader.loadClass(javaType.getName());
+                    if (!additionalClasses.contains(jClass)) {
+                        additionalClasses.add(jClass);
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                 }
-            } catch (ClassNotFoundException e) {
-                // TODO: need an EclipseLink exception here
-                throw new RuntimeException(e);
             }
         }
         return additionalClasses;

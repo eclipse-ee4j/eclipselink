@@ -274,16 +274,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      * 
-     * @param src instance document to be validated
-     * @param outputResolver contains one or more schemas to validate against
-     *
-    protected String validateAgainstSchema(String src, MySchemaOutputResolver outputResolver) {
-        return validateAgainstSchema(src, 0, outputResolver);
-    }*/
-    
-    /**
-     * Validates a given instance doc against the generated schema.
-     * 
      * @param src
      * @param schemaIndex index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against

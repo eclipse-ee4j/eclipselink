@@ -138,7 +138,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             // initialize each callback in the map
             for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
                 MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(callIt.next());
-                // TODO:  what classloader do we want to use here?
                 cb.initialize(generator.getClass().getClassLoader());
             }
             marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
@@ -155,7 +154,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             // initialize each callback in the map
             for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
                 UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
-                // TODO:  what classloader do we want to use here?
                 cb.initialize(generator.getClass().getClassLoader());
             }
             unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
