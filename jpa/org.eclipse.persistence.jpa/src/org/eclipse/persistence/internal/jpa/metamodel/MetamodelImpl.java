@@ -72,10 +72,10 @@ public class MetamodelImpl implements Metamodel {
     /** The Map of embeddables in this metamodel keyed on Class **/
     protected Map<Class, EmbeddableTypeImpl<?>> embeddables;
 
-    /** The Map of managed types in this metamodel keyed on Class **/
+    /** The Map of managed types (Entity, Embeddable and MappedSuperclass) in this metamodel keyed on Class **/
     protected Map<Class, ManagedTypeImpl<?>> managedTypes;
     
-    /** The Map of types in this metamodel keyed on Class **/
+    /** The Map of types (Entity, Embeddable, MappedSuperclass and Basic - essentially Basic + managedTypes) in this metamodel keyed on Class **/
     private Map<Class, TypeImpl<?>> types;
 
     /** The Set of MappedSuperclassTypes in this metamodel**/
@@ -313,15 +313,20 @@ public class MetamodelImpl implements Metamodel {
      */
     public <X> ManagedType<X> type(Class<X> clazz) {
         Object aType = this.managedTypes.get(clazz);
-        return (ManagedType<X>)aType;
-        // IAE exception is disabled until bug# 285512 is fixed
-/*        if(aType instanceof ManagedType) {
-            return (ManagedType<X>) this.managedTypes.get(clazz);
-        } else {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "metamodel_class_incorrect_type_instance", 
-                    new Object[] { clazz, "ManagedType", aType}));
-        }*/
+        // Throw an IAE exception if the returned type is not a ManagedType
+        // However in this case the type will usually be null - as no Basic types are in the managedTypes Map
+        if(null == aType) {
+            // return null as there is no way to check the return type for isManagedType
+            return null;
+        } else {        
+            if(aType instanceof ManagedType) {
+                return (ManagedType<X>) this.managedTypes.get(clazz);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_class_incorrect_type_instance", 
+                        new Object[] { clazz, "ManagedType", aType}));
+            }
+        }
     }
     
     /**

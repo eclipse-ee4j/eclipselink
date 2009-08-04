@@ -1498,17 +1498,18 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertFalse(expectedIAExceptionThrown);            
 
-            // 20090803: 2 tests below commented until bug# 285512 is fixed
-/*            
-            // test variant path: null causes IAE
-            expectedIAExceptionThrown = false;            
+            // test variant path: null does not cause an IAE in this case because its return type cannot be checked for isManagedType
+            expectedIAExceptionThrown = false;
+            // Set type to a temporary type - to verify that we get null and not confuse a return of null with an "unset" null.
+            Type<?> aTypeFromNullClass = metamodel.type(Manufacturer.class);
             try {
-                Type<?> aType = metamodel.type(null);
+                aTypeFromNullClass = metamodel.type(null);
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
             }
-            assertTrue(expectedIAExceptionThrown);            
+            assertNull(aTypeFromNullClass);
+            assertFalse(expectedIAExceptionThrown);            
 
             // test variant path: wrong type (java simple type)
             expectedIAExceptionThrown = false;            
@@ -1521,7 +1522,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(expectedIAExceptionThrown);            
 
             // test variant path: wrong type (BasicType)
-*/
+
             /**
              *  Return the metamodel embeddable type representing the
              *  embeddable class.

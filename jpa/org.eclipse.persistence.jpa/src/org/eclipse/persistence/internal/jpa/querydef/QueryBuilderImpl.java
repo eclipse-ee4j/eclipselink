@@ -59,7 +59,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             ManagedType type = this.metamodel.type(resultClass);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)){
                 return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, resultClass , this);
-            }else {
+            } else {
                 return new CriteriaQueryImpl(this.metamodel, ResultType.OTHER, resultClass, this);
             }
         }
