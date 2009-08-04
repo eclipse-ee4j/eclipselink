@@ -185,7 +185,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
         QueryBuilder qb = em.getQueryBuilder();
         Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("bob")));
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
         TypedQuery<Employee> tq = em.createQuery(cq);
         List<Employee> result = tq.getResultList();
         assertFalse("No Employees were returned", result.isEmpty());
@@ -198,7 +198,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
         QueryBuilder qb = em.getQueryBuilder();
         Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("bob")));
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
         TypedQuery<Employee> tq = em.createQuery(cq);
         List<Employee> result = tq.getResultList();
         assertFalse("No Employees were returned", result.isEmpty());
