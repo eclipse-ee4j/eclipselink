@@ -121,6 +121,7 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
         <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
@@ -147,6 +148,7 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
     </target>
@@ -243,6 +245,7 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
     </target>
