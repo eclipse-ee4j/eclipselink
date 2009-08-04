@@ -98,10 +98,8 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
      *  Return the Java type of the represented attribute.
      *  @return Java type
      */
-    public Class<T> getJavaType() {
-        return getMapping().getAttributeClassification(); // returns null for OneToManyMapping
-    }
-    
+    public abstract Class<T> getJavaType();
+
     /**
      * INTERNAL:
      * Return the managed type representing the type in which the member was

@@ -49,6 +49,16 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
     
     /**
      * INTERNAL:
+     * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isEntity() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
      * @return
@@ -69,4 +79,23 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isMappedSuperclass() {
+        return isEntity();
+    }
+    
+    /**
+     * INTERNAL:
+     * Append the partial string representation of the receiver to the StringBuffer.
+     */
+    @Override
+    protected void toStringHelper(StringBuffer aBuffer) {
+        // No state information to add
+        return;
+    }
 }

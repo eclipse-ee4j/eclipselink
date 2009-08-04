@@ -51,6 +51,13 @@ public abstract class TypeImpl<X> implements Type<X> {
 
     /**
      * INTERNAL:
+     * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
+     * @return
+     */
+    public abstract boolean isEntity();
+    
+    /**
+     * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
      * @return
@@ -64,4 +71,30 @@ public abstract class TypeImpl<X> implements Type<X> {
      * @return
      */
     public abstract boolean isManagedType();
+    
+    /**
+     * INTERNAL:
+     * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
+     * @return
+     */
+    public abstract boolean isMappedSuperclass();
+
+    /**
+     * INTERNAL:
+     * Return the string representation of the receiver.
+     */
+    @Override
+    public String toString() {
+        StringBuffer aBuffer = new StringBuffer();
+        aBuffer.append(this.getClass().getSimpleName());
+        aBuffer.append("@");
+        aBuffer.append(hashCode());
+        aBuffer.append(" [ javaType: ");
+        aBuffer.append(this.getJavaType());
+        toStringHelper(aBuffer);
+        aBuffer.append("]");
+        return aBuffer.toString();
+    }
+
+    protected abstract void toStringHelper(StringBuffer aBuffer);
 }

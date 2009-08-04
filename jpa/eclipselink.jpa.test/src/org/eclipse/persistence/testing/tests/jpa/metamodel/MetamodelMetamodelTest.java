@@ -27,22 +27,20 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
@@ -50,36 +48,36 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ClassTypeExpression;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.EmbeddableTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
-import org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl;
-import org.eclipse.persistence.internal.jpa.querydef.SelectionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
-import org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Location;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.User;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 
 /**
  * Disclaimer:
- *    Yes I know the following are true for this test suite - but implementation time must be ""triaged"", and this testing code is at the bottom of the list when placed against actual implementation in the time provided.
+ *    Yes, the following are true for this test suite - but implementation time must be ""triaged"", and this testing code is at the bottom of the list when placed against actual implementation in the time provided.
  *    - Tests must be modular - not one big huge test case that either passes or fails - it is better to have 10's of granular failures instead of only 1
  *    - proper and fully optimized test cases
  *    - full exception handling
@@ -123,6 +121,36 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     public void setUp() {
         super.setUp();
+        // Drop all tables : Thank you Chris
+        /*java.util.Vector v = JUnitTestCase.getServerSession("metamodel1").executeSQL("select tablename from sys.systables where tabletype='T'");
+        for (int i=0; i<v.size(); i++){
+            try{
+                DatabaseRecord dr = (DatabaseRecord)v.get(i);
+                JUnitTestCase.getServerSession().executeNonSelectingSQL("Drop table "+dr.getValues().get(0));
+            } catch (Exception e){
+                System.out.println(e);
+            }
+        }*/        
+        /*JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_HIST_EMPLOY");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_CORPCOMPUTER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_COMPUTER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_HWDESIGNER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_MM_MEMORY");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_MM_PRO");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_COMPUTER_MM_USER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_SEQ");
+
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_COMPUTER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_USER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_HWDESIGNER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MEMORY");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_PROC");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_LOCATION");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_SWDESIGNER");
+        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF");
+        */        
     }
     
     public static Test suite() {
@@ -130,256 +158,15 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
         //suite.addTest(new MetamodelMetamodelTest("testMetamodelStringBasedQuery"));
         //suite.addTest(new MetamodelMetamodelTest("testMetamodelTypeSafeBasedQuery"));
-        suite.addTest(new MetamodelMetamodelTest("testImplementation"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodelFullImplementation"));
         return suite;
     }
 
     /**
-     * Test the Metamodel API using a TypeSafe query via the Criteria API (a user of the Metamodel)
+     * The following large single test case contains signatures of all the spec functions.
+     * Those that have a test are implemented, the missing ones may still be in development.
      */
-    public void testMetamodelTypeSafeBasedQuery() {
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
-        
-        Set<Computer> computersList = new HashSet();
-        List<Memory> memories = new ArrayList();
-        List<VectorProcessor> processors = new ArrayList();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList();
-        Computer computer1 = null;
-        Computer computer2 = null;
-        Manufacturer manufacturer = null;
-        User user = null;
-        HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;
-        VectorProcessor vectorProcessor1 = null;
-        Board board1 = null;
-        Memory memory1 = null;
-        Memory memory2 = null;
-        Location location1 = null;
-        Location location2 = null;        
-        boolean exceptionThrown = false;
-        Metamodel metamodel = null;
-
-        try {
-            emf = initialize();
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
-
-            // setup entity relationships
-            computer1 = new Computer();
-            computer2 = new Computer();
-            memory1 = new Memory();
-            memory2 = new Memory();
-            manufacturer = new Manufacturer();
-            user = new User();
-            hardwareDesigner1 = new HardwareDesigner();
-            softwareDesigner1 = new SoftwareDesigner();
-            vectorProcessor1 = new VectorProcessor();
-            board1 = new Board();
-            location1 = new Location();
-            location2 = new Location();        
-
-            // setup collections
-            computersList.add(computer1);
-            computersList.add(computer2);
-            processors.add(vectorProcessor1);
-            memories.add(memory1);
-            memories.add(memory2);
-            hardwareDesigners.add(hardwareDesigner1);
-
-            // set owning and inverse sides of 1:m and m:1 relationships
-            manufacturer.setComputers(computersList);
-            manufacturer.setHardwareDesigners(hardwareDesigners);
-            hardwareDesigner1.setEmployer(manufacturer);
-            hardwareDesigner1.setPrimaryEmployer(manufacturer);
-            hardwareDesigner1.setSecondaryEmployer(manufacturer);
-            computer1.setManufacturer(manufacturer);
-            computer2.setManufacturer(manufacturer);
-            board1.setMemories(memories);
-            memory1.setBoard(board1);
-            memory2.setBoard(board1);
-            board1.setProcessors(processors);
-            vectorProcessor1.setBoard(board1);            
-            softwareDesigner1.setPrimaryEmployer(manufacturer);
-            softwareDesigner1.setSecondaryEmployer(manufacturer);
-            
-            // set 1:1 relationships
-            computer1.setLocation(location1);
-            computer2.setLocation(location2);
-            
-            // set attributes
-            computer1.setName("CDC-6600");
-            computer2.setName("CM-5");
-            
-            // persist all entities to the database in a single transaction
-            em.persist(computer1);
-            em.persist(computer2);
-            em.persist(manufacturer);
-            em.persist(user);
-            em.persist(hardwareDesigner1);
-            em.persist(softwareDesigner1);
-            em.persist(vectorProcessor1);
-            em.persist(board1);
-            em.persist(memory1);
-            em.persist(memory2);
-            em.persist(location1);
-            em.persist(location2);        
-            
-            em.getTransaction().commit();            
-            
-            // get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
-            assertNotNull(metamodel);
-
-            // Setup TypeSafe Criteria API query  
-            QueryBuilder aQueryBuilder = em.getQueryBuilder();
-            // Setup a query to get a list (the JPA 1.0 way) and compare it to the (JPA 2.0 way)
-            // avoid a NPE on .where in query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
-            //TypedQuery<Computer> aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
-            Query aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
-            List<Computer> computersResultsList = aManufacturerQuery.getResultList();
-            Computer aComputer = (Computer)computersResultsList.get(0);
-/*
-            // Get the primary key of the Computer
-            CriteriaQuery<Tuple> aCriteriaQuery = aQueryBuilder.createQuery(Tuple.class);
-            Root from = cq.from(Employee.class);
-            cq.multiselect(from.get("id"), from.get("firstName"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
-            TypedQuery<Tuple> typedQuery = em.createQuery(cq);
-
-            typedQuery.setParameter("id", employee.getId());
-            typedQuery.setParameter("firstName", employee.getFirstName());
-
-            Tuple queryResult = typedQuery.getSingleResult();
-            assertTrue("Query Results do not match selection", queryResult.get(0).equals(employee.getId()) && queryResult.get(1).equals(employee.getFirstName()));
-*/            
-        } catch (Exception e) {
-            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-            e.printStackTrace();
-            exceptionThrown = true;
-        } finally {
-            assertFalse(exceptionThrown);
-            //finalizeForTest(em, entityMap);
-            if(null != em) {
-                cleanup(em);
-            }
-        }
-    }
-    
-    /**
-     * Test the Metamodel API or lack of using it via a Criteria API using string based queries
-     */
-    public void testMetamodelStringBasedQuery() {
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
-        Set<Computer> computersList = new HashSet();
-        List<Memory> memories = new ArrayList();
-        List<VectorProcessor> processors = new ArrayList();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList();
-        Computer computer1 = null;
-        Computer computer2 = null;
-        Manufacturer manufacturer = null;
-        User user = null;
-        HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;
-        VectorProcessor vectorProcessor1 = null;
-        //ArrayProcessor arrayProcessor1 = null;
-        Board board1 = null;
-        Memory memory1 = null;
-        Memory memory2 = null;
-        Location location1 = null;
-        Location location2 = null;        
-        boolean exceptionThrown = false;
-        Metamodel metamodel = null;
-
-        try {
-            emf = initialize();
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
-
-            // setup entity relationships
-            computer1 = new Computer();
-            computer2 = new Computer();
-            memory1 = new Memory();
-            memory2 = new Memory();
-            manufacturer = new Manufacturer();
-            user = new User();
-            hardwareDesigner1 = new HardwareDesigner();
-            softwareDesigner1 = new SoftwareDesigner();
-            vectorProcessor1 = new VectorProcessor();
-            board1 = new Board();
-            location1 = new Location();
-            location2 = new Location();        
-
-            // setup collections
-            computersList.add(computer1);
-            computersList.add(computer2);
-            processors.add(vectorProcessor1);
-            memories.add(memory1);
-            memories.add(memory2);
-            hardwareDesigners.add(hardwareDesigner1);
-
-            // set owning and inverse sides of 1:m and m:1 relationships
-            manufacturer.setComputers(computersList);
-            manufacturer.setHardwareDesigners(hardwareDesigners);
-            hardwareDesigner1.setEmployer(manufacturer);
-            hardwareDesigner1.setPrimaryEmployer(manufacturer);
-            hardwareDesigner1.setSecondaryEmployer(manufacturer);
-            computer1.setManufacturer(manufacturer);
-            computer2.setManufacturer(manufacturer);
-            board1.setMemories(memories);
-            memory1.setBoard(board1);
-            memory2.setBoard(board1);
-            board1.setProcessors(processors);
-            vectorProcessor1.setBoard(board1);            
-            softwareDesigner1.setPrimaryEmployer(manufacturer);
-            softwareDesigner1.setSecondaryEmployer(manufacturer);
-            
-            // set 1:1 relationships
-            computer1.setLocation(location1);
-            computer2.setLocation(location2);
-            
-            // set attributes
-            computer1.setName("CDC-6600");
-            computer2.setName("CM-5");
-            
-            // persist all entities to the database in a single transaction
-            em.persist(computer1);
-            em.persist(computer2);
-            em.persist(manufacturer);
-            em.persist(user);
-            em.persist(hardwareDesigner1);
-            em.persist(softwareDesigner1);
-            em.persist(vectorProcessor1);
-            //em.persist(arrayProcessor1);
-            em.persist(board1);
-            em.persist(memory1);
-            em.persist(memory2);
-            em.persist(location1);
-            em.persist(location2);        
-            
-            em.getTransaction().commit();            
-            
-            // get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
-            assertNotNull(metamodel);
-
-            // Setup a non TypeSafe Criteria API query
-            
-        } catch (Exception e) {
-            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-            e.printStackTrace();
-            exceptionThrown = true;
-        } finally {
-            assertFalse(exceptionThrown);
-            //finalizeForTest(em, entityMap);
-            if(null != em) {
-                cleanup(em);
-            }
-        }
-    }
-    
-    public void testImplementation() {
+    public void testMetamodelFullImplementation() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
         Set<Computer> computersList = new HashSet<Computer>();
@@ -410,12 +197,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
         try {
             emf = initialize();
-            //emf = initialize();
             em = emf.createEntityManager();
 
+            // Unset the metamodel - for repeated runs through this test
+            ((EntityManagerFactoryImpl)emf).setMetamodel(null);
             // Pre-Persist: get Metamodel representation of the entity schema
             metamodel = em.getMetamodel();
             assertNotNull(metamodel);
+            //System.out.println("_Metamodel just after initialization: " + metamodel);
 
             em.getTransaction().begin();
 
@@ -541,14 +330,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<Computer> entityComputer2 = (EntityTypeImpl)metamodel.entity(Computer.class);                
                 Root from = criteriaQuery.from(entityComputer2);
                 Path path = from.get("name");
-                criteriaQuery.where(qb.equal(path, "CM-5"));
+                criteriaQuery.where(qb.equal(path, "CM-5"));  
                 Query query = em.createQuery(criteriaQuery);
                 results = query.getResultList();
                 if(results.size() > 0) {
                     Computer computer = (Computer)results.get(0);
                     assertNotNull(computer);
                 } else {
-                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER WHERE NAME = 'CM-5') were expected");
+                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER WHERE NAME='CM-5') were expected");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -716,7 +505,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  Return the type that represents the type of the id.
              *  @return type of id
              */
-            //Type<?> getIdType();            
+            //Type<?> getIdType();       
+            
+            // Test EntityType
+            
             // Test normal path for an [Embeddable] type via @EmbeddedId
             expectedIAExceptionThrown = false;
             Type<?> locationIdType = null;
@@ -731,6 +523,26 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(locationIdType);
             assertEquals(PersistenceType.EMBEDDABLE, locationIdType.getPersistenceType());
             assertEquals(EmbeddedPK.class, locationIdType.getJavaType());
+
+            // check that the elementType and the owningType (managedType) are set correctly
+            // See issue 50 where some mapping types were not setting the elementType correctly (this includes aggregate types like Embeddable)
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_50:_20090727:_Handle_all_mapping_types_in_the_SingularAttribute_constructor
+            // Get the ManagedType and check this SingularAttribute PK
+            Attribute locationIdAttribute = entityLocation.getAttribute("primaryKey");
+            assertNotNull(locationIdAttribute);
+            assertTrue(locationIdAttribute instanceof SingularAttributeImpl);
+            assertFalse(locationIdAttribute.isCollection());
+            assertFalse(((AttributeImpl)locationIdAttribute).isPlural()); // non-spec.
+            ManagedType locationIdAttributeManagedType = locationIdAttribute.getDeclaringType();
+            assertEquals(entityLocation, locationIdAttributeManagedType);
+            ManagedTypeImpl locationIdAttributeManagedTypeImpl = ((SingularAttributeImpl)locationIdAttribute).getManagedTypeImpl();
+            assertEquals(locationIdType.getJavaType(), ((SingularAttributeImpl)locationIdAttribute).getBindableJavaType());
+            assertEquals(Bindable.BindableType.SINGULAR_ATTRIBUTE, ((SingularAttributeImpl)locationIdAttribute).getBindableType());
+            assertEquals(locationIdType.getJavaType(), locationIdAttribute.getJavaType());
+            Type embeddableType = ((SingularAttributeImpl)locationIdAttribute).getType();
+            assertNotNull(embeddableType);
+            assertNotSame(embeddableType, locationIdAttributeManagedType);
+            
 
 
             // Test normal path for a [Basic] type
@@ -749,10 +561,31 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(Integer.class, computerIdType.getJavaType());
 
             
+            
+            // Test MappedSuperclassType
+            // Test normal path for a [Basic] type
+            expectedIAExceptionThrown = false;
+            Type<?> personIdType = null;
+            MappedSuperclassTypeImpl<Person> msPerson = (MappedSuperclassTypeImpl)metamodel.type(Person.class);
+            assertNotNull(msPerson);
+            
+            try {
+                personIdType = msPerson.getIdType();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(personIdType);
+            assertEquals(PersistenceType.BASIC, personIdType.getPersistenceType());
+            assertEquals(Integer.class, personIdType.getJavaType());
+            
             // Verify all types (entities, embeddables, mappedsuperclasses and basic)
             try {
                 // get all 19 types (a non spec function - for testing introspection)
                 Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
+                System.out.println("_MetamodelMetamodelTest: all Types: " + typesMap);
                 // verify each one
                 assertNotNull(typesMap);
                 assertEquals(19, typesMap.size());
@@ -760,25 +593,179 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
             }
             /*
-            {class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner --> [DatabaseTable(CMP3_MM_SWDESIGNER)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK --> [])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.User=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.User --> [DatabaseTable(CMP3_MM_USER)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Location=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Location --> [DatabaseTable(CMP3_MM_LOCATION)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK --> [])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor --> [DatabaseTable(CMP3_MM_ARRAYPROC)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Memory=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Memory --> [DatabaseTable(CMP3_MM_MEMORY)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor --> [DatabaseTable(CMP3_MM_PROC)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Board=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Board --> [DatabaseTable(CMP3_MM_BOARD)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Computer=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Computer --> [DatabaseTable(CMP3_MM_COMPUTER)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner --> [DatabaseTable(CMP3_MM_HWDESIGNER)])], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation=MappedSuperclassTypeImpl@24202381 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Corporation --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.ManyToManyMapping[corporateComputers]]], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Designer=MappedSuperclassTypeImpl@22595578 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Designer --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.OneToOneMapping[secondaryEmployer], org.eclipse.persistence.mappings.OneToOneMapping[primaryEmployer]]], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Processor=MappedSuperclassTypeImpl@28381082 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Processor --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: []], 
-                class org.eclipse.persistence.testing.models.jpa.metamodel.Person=MappedSuperclassTypeImpl@24600030 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Person --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.DirectToFieldMapping[id-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.PERSON_ID], org.eclipse.persistence.mappings.DirectToFieldMapping[name-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.NAME]]], 
-                class java.lang.Integer=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@1b7e37, 
-                class java.lang.String=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@fb541d, 
-                int=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@4f5403}
+             * Metamodel model toString
+             * ************************************************************************************
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Person=MappedSuperclassTypeImpl@9206757 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Person 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Person --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.PERSON_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.NAME]]],
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation=MappedSuperclassTypeImpl@27921979 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Corporation --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.ManyToManyMapping[corporateComputers]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer=EntityTypeImpl@12565475 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_MANUF.PERSON_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->CMP3_MM_MANUF.NAME], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_MANUF.MANUF_VERSION], 
+            org.eclipse.persistence.mappings.OneToManyMapping[
+                computers], 
+            org.eclipse.persistence.mappings.OneToManyMapping[
+                hardwareDesignersMap], 
+            org.eclipse.persistence.mappings.ManyToManyMapping[
+                corporateComputers], 
+            org.eclipse.persistence.mappings.OneToManyMapping[
+                hardwareDesigners]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Memory=EntityTypeImpl@29905988 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Memory 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Memory --> [DatabaseTable(CMP3_MM_MEMORY)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_MEMORY.MEMORY_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_MEMORY.MEMORY_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                board]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Designer=MappedSuperclassTypeImpl@25971327 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Designer 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Designer --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                secondaryEmployer], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                primaryEmployer], 
+            org.eclipse.persistence.mappings.ManyToManyMapping[
+                historicalEmployers]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner=EntityTypeImpl@18107298 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner --> [DatabaseTable(CMP3_MM_HWDESIGNER)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_HWDESIGNER.PERSON_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->CMP3_MM_HWDESIGNER.NAME], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_HWDESIGNER.HWDESIGNER_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                employer], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                mappedEmployer], 
+            org.eclipse.persistence.mappings.ManyToManyMapping[
+                historicalEmployers], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                secondaryEmployer], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                primaryEmployer]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner=EntityTypeImpl@26130360 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner --> [DatabaseTable(CMP3_MM_SWDESIGNER)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_SWDESIGNER.PERSON_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->CMP3_MM_SWDESIGNER.NAME], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_SWDESIGNER.SWDESIGNER_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                secondaryEmployer], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                primaryEmployer], 
+            org.eclipse.persistence.mappings.ManyToManyMapping[
+                historicalEmployers]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Board=EntityTypeImpl@24223536 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Board 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Board --> [DatabaseTable(CMP3_MM_BOARD)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_BOARD.BOARD_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_BOARD.BOARD_VERSION], 
+            org.eclipse.persistence.mappings.OneToManyMapping[
+                memories], 
+            org.eclipse.persistence.mappings.OneToManyMapping[
+                processors]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK=EmbeddableTypeImpl@29441291 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK descriptor: 
+        RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK --> []), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                pk_part1-->LOCATION_ID]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Location=EntityTypeImpl@9050487 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Location 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Location --> [DatabaseTable(CMP3_MM_LOCATION)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_LOCATION.LOCATION_VERSION], 
+            org.eclipse.persistence.mappings.AggregateObjectMapping[
+                primaryKey]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor=EntityTypeImpl@9300338 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor --> [DatabaseTable(CMP3_MM_PROC)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_PROC.VECTPROC_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_PROC.VECTPROC_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                board]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor=EntityTypeImpl@14247087 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor --> [DatabaseTable(CMP3_MM_ARRAYPROC)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_ARRAYPROC.ARRAYPROC_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_ARRAYPROC.ARRAYPROC_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                board]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Computer=EntityTypeImpl@8355938 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Computer 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Computer --> [DatabaseTable(CMP3_MM_COMPUTER)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_COMPUTER.COMPUTER_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->CMP3_MM_COMPUTER.NAME], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_COMPUTER.COMPUTER_VERSION], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                manufacturer], 
+            org.eclipse.persistence.mappings.OneToOneMapping[
+                location]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.User=EntityTypeImpl@12968655 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.User 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.User --> [DatabaseTable(CMP3_MM_USER)]), 
+        mappings: [
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                id-->CMP3_MM_USER.PERSON_ID], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                name-->CMP3_MM_USER.NAME], 
+            org.eclipse.persistence.mappings.DirectToFieldMapping[
+                version-->CMP3_MM_USER.USER_VERSION]]], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.Processor=MappedSuperclassTypeImpl@24044524 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Processor 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Processor --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
+        mappings: []], 
+    class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK=EmbeddableTypeImpl@6367194 [ 
+        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK 
+        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK --> []), 
+        mappings: []], 
+    class java.lang.Integer=BasicTypeImpl@33083511 [ 
+        javaType: class java.lang.Integer], 
+    class java.lang.String=BasicTypeImpl@4086417 [ 
+        javaType: class java.lang.String], 
+    int=BasicTypeImpl@28057122 [ 
+        javaType: int]}
                 */
             
             // Verify ManagedType operations
@@ -813,6 +800,52 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  Return the attributes declared by the managed type.
              */
              //java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
+            expectedIAExceptionThrown = false;            
+            try {
+                /**
+                 * Hierarchy:
+                 *   Person : MappedSuperclass
+                 *     +
+                 *     +- id : Integer
+                 *     +- name : String
+                 *     
+                 *     Corporation : MappedSuperclass extends Person
+                 *       +
+                 *       +- corpComputers : Set 
+                 *       
+                 *       Manufacturer : Entity extends Corporation
+                 *         +
+                 *         +- computers : Set
+                 *         +- hardwareDesigners : Set
+                 *         +- hardwareDesignersMap : Map
+                 *         +- version : int
+                 */
+                Set<Attribute<Manufacturer, ?>> declaredAttributesSet = entityManufacturer.getDeclaredAttributes();
+                //System.out.println("entityManufacturer.getDeclaredAttributes() " + declaredAttributesSet);
+                assertNotNull(declaredAttributesSet);
+                // We should see 4 declared out of 7 attributes for Manufacturer 
+                assertEquals(4, declaredAttributesSet.size());
+                // Id is declared 2 levels above
+                assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("id"))); //
+                // name is declared 2 levels above
+                assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("name"))); //
+                // corpComputers is declared 1 level above
+                assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("corporateComputers"))); //
+                // version is declared at this level
+                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("version"))); //
+                // computers is declared at this level
+                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("computers"))); //
+                // hardwareDesigners is declared at this level
+                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
+                // hardwareDesignersMap is declared at this level
+                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("hardwareDesignersMap"))); //                
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+           
+            
 
             /**
              *  Return the single-valued attribute of the managed 
@@ -1374,7 +1407,188 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              */
             //public boolean hasVersionAttribute() {
 
+
+            // Verify MetamodelImpl operations
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /**
+             *  Return the metamodel entity type representing the entity.
+             *  @param cls  the type of the represented entity
+             *  @return the metamodel entity type
+             *  @throws IllegalArgumentException if not an entity
+             */
+            //<X> EntityType<X> entity(Class<X> cls);
+            // test normal path
+            expectedIAExceptionThrown = false;            
+            try {
+                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
             
+            // test variant path: null causes IAE
+            expectedIAExceptionThrown = false;            
+            try {
+                EntityType<Manufacturer> aType = metamodel.entity(null);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (java simple type)
+            expectedIAExceptionThrown = false;            
+            try {
+                EntityType<Integer> aType = metamodel.entity(Integer.class);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (BasicType)
+            
+
+            /**
+             *  Return the metamodel managed type representing the 
+             *  entity, mapped superclass, or embeddable class.
+             *  @param cls  the type of the represented managed class
+             *  @return the metamodel managed type
+             *  @throws IllegalArgumentException if not a managed class
+             */
+            //<X> ManagedType<X> type(Class<X> cls);
+            // test normal path (subtype = Basic)
+/*            expectedIAExceptionThrown = false;            
+            try {
+                Type<Manufacturer> aType = metamodel.type(Basic.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+*/
+            // test normal path (subtype = Embeddable)
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<EmbeddedPK> aType = metamodel.type(EmbeddedPK.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
+            // test normal path: (subtype = Entity)
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<Manufacturer> aType = metamodel.type(Manufacturer.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+
+            // test normal path: (subtype = MappedSuperclass)
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<Person> aType = metamodel.type(Person.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+
+            // 20090803: 2 tests below commented until bug# 285512 is fixed
+/*            
+            // test variant path: null causes IAE
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<?> aType = metamodel.type(null);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (java simple type)
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<?> aType = metamodel.embeddable(Integer.class);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (BasicType)
+*/
+            /**
+             *  Return the metamodel embeddable type representing the
+             *  embeddable class.
+             *  @param cls  the type of the represented embeddable class
+             *  @return the metamodel embeddable type
+             *  @throws IllegalArgumentException if not an embeddable class
+             */
+            //<X> EmbeddableType<X> embeddable(Class<X> cls);
+            // test normal path
+            expectedIAExceptionThrown = false;            
+            try {
+                EmbeddableType<EmbeddedPK> aType = metamodel.embeddable(EmbeddedPK.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
+            // test variant path: null causes IAE
+            expectedIAExceptionThrown = false;            
+            try {
+                EmbeddableType<Manufacturer> aType = metamodel.embeddable(null);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (subtype = Entity)
+            expectedIAExceptionThrown = false;            
+            try {
+                EmbeddableType<Manufacturer> aType = metamodel.embeddable(Manufacturer.class);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (java simple type)
+            expectedIAExceptionThrown = false;            
+            try {
+                EmbeddableType<?> aType = metamodel.embeddable(Integer.class);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+
+            // test variant path: wrong type (BasicType)
+
+            /**
+             *  Return the metamodel managed types.
+             *  @return the metamodel managed types
+             */
+            //java.util.Set<ManagedType<?>> getManagedTypes();
+
+            /**
+             * Return the metamodel entity types.
+             * @return the metamodel entity types
+             */
+            //java.util.Set<EntityType<?>> getEntities();
+
+            /**
+             * Return the metamodel embeddable types.
+             * @return the metamodel embeddable types
+             */
+            //java.util.Set<EmbeddableType<?>> getEmbeddables();            
             
             
             // get some static (non-runtime) attributes parameterized by <Owning type, return Type>
@@ -1557,6 +1771,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             e.printStackTrace();
             exceptionThrown = true;
         } finally {
+            // Runtime behavior should not affect the metamodel
+            // MetamodelImpl@15868511 [ 19 Types: , 16 ManagedTypes: , 10 EntityTypes: , 4 MappedSuperclassTypes: , 2 EmbeddableTypes: ]
+            //System.out.println("_Metamodel at test end: " + metamodel);
             assertFalse(exceptionThrown);
             //finalizeForTest(em, entityMap);
             try {
@@ -1607,4 +1824,251 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         public java.util.Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
         public void setMappedSuperclasses(
 */
+    
+    /**
+     * Test the Metamodel API using a TypeSafe query via the Criteria API (a user of the Metamodel)
+     */
+    public void testMetamodelTypeSafeBasedQuery() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        
+        Set<Computer> computersList = new HashSet();
+        List<Memory> memories = new ArrayList();
+        List<VectorProcessor> processors = new ArrayList();
+        List<HardwareDesigner> hardwareDesigners = new ArrayList();
+        Computer computer1 = null;
+        Computer computer2 = null;
+        Manufacturer manufacturer = null;
+        User user = null;
+        HardwareDesigner hardwareDesigner1 = null;
+        SoftwareDesigner softwareDesigner1 = null;
+        VectorProcessor vectorProcessor1 = null;
+        Board board1 = null;
+        Memory memory1 = null;
+        Memory memory2 = null;
+        Location location1 = null;
+        Location location2 = null;        
+        boolean exceptionThrown = false;
+        Metamodel metamodel = null;
+
+        try {
+            emf = initialize();
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            // setup entity relationships
+            computer1 = new Computer();
+            computer2 = new Computer();
+            memory1 = new Memory();
+            memory2 = new Memory();
+            manufacturer = new Manufacturer();
+            user = new User();
+            hardwareDesigner1 = new HardwareDesigner();
+            softwareDesigner1 = new SoftwareDesigner();
+            vectorProcessor1 = new VectorProcessor();
+            board1 = new Board();
+            location1 = new Location();
+            location2 = new Location();        
+
+            // setup collections
+            computersList.add(computer1);
+            computersList.add(computer2);
+            processors.add(vectorProcessor1);
+            memories.add(memory1);
+            memories.add(memory2);
+            hardwareDesigners.add(hardwareDesigner1);
+
+            // set owning and inverse sides of 1:m and m:1 relationships
+            manufacturer.setComputers(computersList);
+            manufacturer.setHardwareDesigners(hardwareDesigners);
+            hardwareDesigner1.setEmployer(manufacturer);
+            hardwareDesigner1.setPrimaryEmployer(manufacturer);
+            hardwareDesigner1.setSecondaryEmployer(manufacturer);
+            computer1.setManufacturer(manufacturer);
+            computer2.setManufacturer(manufacturer);
+            board1.setMemories(memories);
+            memory1.setBoard(board1);
+            memory2.setBoard(board1);
+            board1.setProcessors(processors);
+            vectorProcessor1.setBoard(board1);            
+            softwareDesigner1.setPrimaryEmployer(manufacturer);
+            softwareDesigner1.setSecondaryEmployer(manufacturer);
+            
+            // set 1:1 relationships
+            computer1.setLocation(location1);
+            computer2.setLocation(location2);
+            
+            // set attributes
+            computer1.setName("CDC-6600");
+            computer2.setName("CM-5");
+            
+            // persist all entities to the database in a single transaction
+            em.persist(computer1);
+            em.persist(computer2);
+            em.persist(manufacturer);
+            em.persist(user);
+            em.persist(hardwareDesigner1);
+            em.persist(softwareDesigner1);
+            em.persist(vectorProcessor1);
+            em.persist(board1);
+            em.persist(memory1);
+            em.persist(memory2);
+            em.persist(location1);
+            em.persist(location2);        
+            
+            em.getTransaction().commit();            
+            
+            // get Metamodel representation of the entity schema
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+
+            // Setup TypeSafe Criteria API query  
+            QueryBuilder aQueryBuilder = em.getQueryBuilder();
+            // Setup a query to get a list (the JPA 1.0 way) and compare it to the (JPA 2.0 way)
+            // avoid a NPE on .where in query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
+            //TypedQuery<Computer> aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
+            Query aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
+            List<Computer> computersResultsList = aManufacturerQuery.getResultList();
+            Computer aComputer = (Computer)computersResultsList.get(0);
+/*
+            // Get the primary key of the Computer
+            CriteriaQuery<Tuple> aCriteriaQuery = aQueryBuilder.createQuery(Tuple.class);
+            Root from = cq.from(Employee.class);
+            cq.multiselect(from.get("id"), from.get("firstName"));
+            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            TypedQuery<Tuple> typedQuery = em.createQuery(cq);
+
+            typedQuery.setParameter("id", employee.getId());
+            typedQuery.setParameter("firstName", employee.getFirstName());
+
+            Tuple queryResult = typedQuery.getSingleResult();
+            assertTrue("Query Results do not match selection", queryResult.get(0).equals(employee.getId()) && queryResult.get(1).equals(employee.getFirstName()));
+*/            
+        } catch (Exception e) {
+            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+            e.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            assertFalse(exceptionThrown);
+            //finalizeForTest(em, entityMap);
+            if(null != em) {
+                cleanup(em);
+            }
+        }
+    }
+    
+    /**
+     * Test the Metamodel API or lack of using it via a Criteria API using string based queries
+     */
+    public void testMetamodelStringBasedQuery() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        Set<Computer> computersList = new HashSet();
+        List<Memory> memories = new ArrayList();
+        List<VectorProcessor> processors = new ArrayList();
+        List<HardwareDesigner> hardwareDesigners = new ArrayList();
+        Computer computer1 = null;
+        Computer computer2 = null;
+        Manufacturer manufacturer = null;
+        User user = null;
+        HardwareDesigner hardwareDesigner1 = null;
+        SoftwareDesigner softwareDesigner1 = null;
+        VectorProcessor vectorProcessor1 = null;
+        //ArrayProcessor arrayProcessor1 = null;
+        Board board1 = null;
+        Memory memory1 = null;
+        Memory memory2 = null;
+        Location location1 = null;
+        Location location2 = null;        
+        boolean exceptionThrown = false;
+        Metamodel metamodel = null;
+
+        try {
+            emf = initialize();
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            // setup entity relationships
+            computer1 = new Computer();
+            computer2 = new Computer();
+            memory1 = new Memory();
+            memory2 = new Memory();
+            manufacturer = new Manufacturer();
+            user = new User();
+            hardwareDesigner1 = new HardwareDesigner();
+            softwareDesigner1 = new SoftwareDesigner();
+            vectorProcessor1 = new VectorProcessor();
+            board1 = new Board();
+            location1 = new Location();
+            location2 = new Location();        
+
+            // setup collections
+            computersList.add(computer1);
+            computersList.add(computer2);
+            processors.add(vectorProcessor1);
+            memories.add(memory1);
+            memories.add(memory2);
+            hardwareDesigners.add(hardwareDesigner1);
+
+            // set owning and inverse sides of 1:m and m:1 relationships
+            manufacturer.setComputers(computersList);
+            manufacturer.setHardwareDesigners(hardwareDesigners);
+            hardwareDesigner1.setEmployer(manufacturer);
+            hardwareDesigner1.setPrimaryEmployer(manufacturer);
+            hardwareDesigner1.setSecondaryEmployer(manufacturer);
+            computer1.setManufacturer(manufacturer);
+            computer2.setManufacturer(manufacturer);
+            board1.setMemories(memories);
+            memory1.setBoard(board1);
+            memory2.setBoard(board1);
+            board1.setProcessors(processors);
+            vectorProcessor1.setBoard(board1);            
+            softwareDesigner1.setPrimaryEmployer(manufacturer);
+            softwareDesigner1.setSecondaryEmployer(manufacturer);
+            
+            // set 1:1 relationships
+            computer1.setLocation(location1);
+            computer2.setLocation(location2);
+            
+            // set attributes
+            computer1.setName("CDC-6600");
+            computer2.setName("CM-5");
+            
+            // persist all entities to the database in a single transaction
+            em.persist(computer1);
+            em.persist(computer2);
+            em.persist(manufacturer);
+            em.persist(user);
+            em.persist(hardwareDesigner1);
+            em.persist(softwareDesigner1);
+            em.persist(vectorProcessor1);
+            //em.persist(arrayProcessor1);
+            em.persist(board1);
+            em.persist(memory1);
+            em.persist(memory2);
+            em.persist(location1);
+            em.persist(location2);        
+            
+            em.getTransaction().commit();            
+            
+            // get Metamodel representation of the entity schema
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+
+            // Setup a non TypeSafe Criteria API query
+            
+        } catch (Exception e) {
+            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+            e.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            assertFalse(exceptionThrown);
+            //finalizeForTest(em, entityMap);
+            if(null != em) {
+                cleanup(em);
+            }
+        }
+    }
+    
+    
 }

@@ -15,16 +15,30 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @MappedSuperclass
 public abstract class Designer extends Person {
 
+    // Verify special handling for PK for OneToMany (custom descriptor with fake PK name)
+    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    // However, bidirectional relationships are not allowed to MappedSuperclasses - as they have no identity
+    @OneToMany(fetch=EAGER, cascade=ALL)
+    @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
+                joinColumns = @JoinColumn(name="PERSON_ID"))   
+    private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();    
+    
     // The M:1 side is the owning side - but this is a unidirectional mapping
     // The ManyToOne will resolve to a OneToOne internally without a unique PK restriction
     @ManyToOne(fetch=EAGER)//LAZY)
@@ -56,5 +70,11 @@ public abstract class Designer extends Person {
         this.secondaryEmployer = employer;
     }
     
-    
+    public Collection<Manufacturer> getHistoricalEmployers() {
+        return historicalEmployers;
+    }
+
+    public void setHistoricalEmployers(Collection<Manufacturer> historicalEmployers) {
+        this.historicalEmployers = historicalEmployers;
+    }
 }

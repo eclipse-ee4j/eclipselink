@@ -14,15 +14,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p>
@@ -105,6 +112,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
         SingularAttribute<? super X, Y> anAttribute = null;
         Class<Y> realType = null;
+        //boolean isId = this.accessor.isId();
         if(type != realType) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                 "metamodel_identifiable_id_attribute_type_incorrect", 
@@ -117,7 +125,51 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  Return the type that represents the type of the id.
      *  @return type of id
      */
-    public abstract Type<?> getIdType();
+    public Type<?> getIdType() {
+        // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
+        // descriptor.getPrimaryKeyPolicy().getIdClass();
+        CMPPolicy cmpPolicy = getDescriptor().getCMPPolicy();
+
+        if (null == cmpPolicy) {
+            // Composite key support (IE: @EmbeddedId)            
+            List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
+            // Check the primaryKeyFields on the descriptor - for MappedSuperclass pseudo-Descriptors
+            if(pkMappings.size() == 0) {
+                // Search the mappings for Id mappings
+                DatabaseMapping aMapping = null;
+                for(Iterator<DatabaseMapping> mappingsIterator = getDescriptor().getMappings().iterator(); mappingsIterator.hasNext();) {
+                    aMapping = mappingsIterator.next();
+                    if(aMapping.isDerivedIdMapping()) {
+                        String attributeName = aMapping.getAttributeName();
+                        // get the attribute Id (declared or not)
+                        Attribute anAttribute = this.getAttribute(attributeName);
+                        if(anAttribute != null) {
+                            return this.getMetamodel().getType(anAttribute.getJavaType());
+                        }
+                        
+                    }
+                }
+            }
+            
+            if (pkMappings.size() == 1) {
+                Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
+                // lookup class in our types map
+                Type<?> aType = this.metamodel.getType(aClass);
+                return aType;
+            }
+        }
+        
+        // Single Key support using any Java class - built in or user defined
+        // There already is an instance of the PKclass on the policy
+        if (cmpPolicy instanceof CMP3Policy) {
+            // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
+            return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
+        }
+        // Non-specification mandated exception        
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_incompatible_persistence_config_for_getIdType", 
+                new Object[] { this }));        
+    }
     
     /**
      *  Return the identifiable type that corresponds to the most
@@ -178,7 +230,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
     public boolean isIdentifiableType() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Set the superType for this IdentifiableType - only after all ManagedTypes 

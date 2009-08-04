@@ -38,8 +38,23 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  */ 
 public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set<V>, V> implements SetAttribute<X, V> {
 
+    /**
+     * INTERNAL:
+     * @param managedType
+     * @param mapping
+     */
     protected SetAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
-        super(managedType, mapping);
+        super(managedType, mapping, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * @param managedType
+     * @param mapping
+     * @param validationEnabled
+     */
+    protected SetAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        super(managedType, mapping, validationEnabled);
     }
 
     /**

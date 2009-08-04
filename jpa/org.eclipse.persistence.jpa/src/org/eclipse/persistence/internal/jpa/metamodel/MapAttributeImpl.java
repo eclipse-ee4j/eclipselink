@@ -51,8 +51,23 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
     /** The key type that this Map type is based on **/
     private Type<K> keyType;
     
+    /**
+     * INTERNAL:
+     * @param managedType
+     * @param mapping
+     */
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
-        super(managedType, mapping);
+        this(managedType, mapping, false);
+    }
+
+    /**
+     * INTERNAL:
+     * @param managedType
+     * @param mapping
+     * @param validationEnabled
+     */
+    protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        super(managedType, mapping, validationEnabled);
 
         MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
         Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
@@ -68,7 +83,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                 } else {
                     if(null == policy.getElementDescriptor()) {
                         // check for a keyMapping on the mapping
-                        if(policy.isMappedKeyMapPolicy()) {
+                        if(policy.isMappedKeyMapPolicy()) {                            
                             MapKeyMapping mapKeyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
                             RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
                             // If the reference descriptor is null then we are on a direct mapping
@@ -76,8 +91,10 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                                 throw new IllegalArgumentException("Unsupported operation on " + managedType);
                             } else {
                                 if(null == descriptor.getCMPPolicy()) { // for __PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME
-                                    //throw new IllegalArgumentException("Unsupported operation on " + managedType);
-                                    javaClass = Object.class;
+                                    javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
+                                    if(null == javaClass) {
+                                        javaClass = Object.class;
+                                    }
                                 } else {
                                     javaClass = descriptor.getCMPPolicy().getPKClass();        
                                 }
@@ -88,6 +105,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                 }
             } else {
                 // Handle EmbeddableType
+                System.out.println("_embeddableType: " + this + " mapping: " + mapping);
             }
         } else {            
             if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping

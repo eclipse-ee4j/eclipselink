@@ -418,6 +418,20 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
         return metaModel;
     }
 
+    /**
+     * INTERNAL:
+     * Convenience function to allow us to reset the Metamodel 
+     * in the possible case that we want to regenerate it.
+     * This function is outside of the JPA 2.0 specification.
+     * @param aMetamodel
+     */
+    public void setMetamodel(Metamodel aMetamodel) {
+        if(!this.isOpen()) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
+        }
+        metaModel = aMetamodel;
+    }
+    
 	/**
 	 * @see javax.persistence.EntityManagerFactory#getSupportedProperties()
 	 * @since Java Persistence API 2.0

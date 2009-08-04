@@ -48,4 +48,24 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         return PersistenceType.EMBEDDABLE;
     }
 
+    /**
+     * INTERNAL:
+     * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isEntity() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isMappedSuperclass() {
+        return isEntity();
+    }
+    
 }

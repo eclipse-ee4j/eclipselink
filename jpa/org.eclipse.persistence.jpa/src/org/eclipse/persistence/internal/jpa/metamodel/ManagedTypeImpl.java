@@ -94,8 +94,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         this.metamodel = metamodel;
         // Cache the ManagedType on the descriptor 
         descriptor.setProperty(getClass().getName(), this);
-        // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize()
-        //initialize(); // initialize after all types are instantiated
+        // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize() after all types are instantiated
     }
 
     /**
@@ -925,7 +924,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             }
         } else {            
            // Recursive Case: check hierarchy only if the immediate superclass is a MappedSuperclassType
-           //if(aSuperType.isMappedSuperclass()) { // merge later with getIdType() changes in queue 
+           if(aSuperType.isMappedSuperclass()) {  
                Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
                // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call 
                if(null != aSuperTypeAttribute) {
@@ -945,14 +944,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                        }
                    }
                }
-           /*} else {
+           } else {
                // superType (Entity) may declare the attribute higher up - we do not need to check this
+               // TODO: verify handling of XML mapped non-Entity (plain Java Class) inherited mappings
+               // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_53:_20090729:_Verify_that_inheritied_non-JPA_class_mappings_are_handled_by_the_Metamodel
                if(null == anAttribute) {
                    return false;
                } else {
                    return true;
                }
-           }*/
+           }
         }
     }
     
@@ -965,14 +966,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     protected void initialize() { // TODO: Check all is*Policy() calls
         /*
-         * Issue 1: The hierarchy of the Metamodel API has Collection alongside List, Set and Map.
-         *              However, in a normal Java collections framework Collection is an 
-         *              abstract superclass of List, Set and Map (with Map not really a Collection).
-         *              We therefore need to treat Collection here as a peer of the other "collections".
+         * Design Issue 37:
+         * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_37:_20090708:_CollectionAttribute_acts_as_a_peer_of_Map.2C_Set.2C_List_but_should_be_a_super_interface 
+         *     The hierarchy of the Metamodel API has Collection alongside List, Set and Map.
+         * However, in a normal Java collections framework Collection is an 
+         * abstract superclass of List, Set and Map (with Map not really a Collection).
+         * We therefore need to treat Collection here as a peer of the other "collections".
          */
         this.members = new HashMap<String, Attribute<X, ?>>();
 
-        // Get all mappings on the relationalDescriptor
+        // Get and process all mappings on the relationalDescriptor
         for (Iterator<DatabaseMapping> i = getDescriptor().getMappings().iterator(); i.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping) i.next();
             AttributeImpl<X, ?> member = null;
@@ -983,24 +986,24 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 CollectionMapping colMapping = (CollectionMapping) mapping;
                 if (colMapping.getContainerPolicy().isMapPolicy()) {
                     // Handle Map type mappings
-                    member = new MapAttributeImpl(this, colMapping);
+                    member = new MapAttributeImpl(this, colMapping, true);
                     // check mapping.attributeAcessor.attributeField.type=Collection
                 } else if (colMapping.getContainerPolicy().isListPolicy()) { // TODO: isListPolicy() will return true for IndirectList (a lazy Collection)                    
                     // Handle List type mappings
-                    member = new ListAttributeImpl(this, colMapping);
+                    member = new ListAttributeImpl(this, colMapping, true);
                 } else {
                     // Handle Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
                     if (colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(Set.class) ||
                             colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(IndirectSet.class)) {
-                        member = new SetAttributeImpl(this, colMapping);
+                        member = new SetAttributeImpl(this, colMapping, true);
                     } else {
                         // Handle Collection type mappings as a default
-                        member = new CollectionAttributeImpl(this, colMapping);
+                        member = new CollectionAttributeImpl(this, colMapping, true);
                     }
                 }
             } else {
                 // Handle 1:1 single object and direct mappings
-                member = new SingularAttributeImpl(this, mapping);
+                member = new SingularAttributeImpl(this, mapping, true);
             }
 
             this.members.put(mapping.getAttributeName(), member);
@@ -1030,10 +1033,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     }
    
     /**
-     * Return the string representation of the receiver.
+     * INTERNAL:
+     * Append the partial string representation of the receiver to the StringBuffer.
      */
     @Override
-    public String toString() {
-        return "ManagedTypeImpl[" + getDescriptor() + "]";
+    protected void toStringHelper(StringBuffer aBuffer) {    
+        aBuffer.append(" descriptor: ");
+        aBuffer.append(this.getDescriptor());
+        if(null != this.getDescriptor()) {
+            aBuffer.append(", mappings: ");
+            aBuffer.append(this.getDescriptor().getMappings());
+        }
     }
 }

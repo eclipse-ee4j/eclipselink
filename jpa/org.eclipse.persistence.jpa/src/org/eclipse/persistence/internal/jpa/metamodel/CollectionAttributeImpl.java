@@ -45,7 +45,18 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
      * @param mapping
      */
     protected CollectionAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
-        super(managedType, mapping);
+        this(managedType, mapping, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * Construct an instance of Collection for the managed type managedType
+     * @param managedType
+     * @param mapping
+     * @param validationEnabled
+     */
+    protected CollectionAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        super(managedType, mapping, validationEnabled);
     }
 
     /**

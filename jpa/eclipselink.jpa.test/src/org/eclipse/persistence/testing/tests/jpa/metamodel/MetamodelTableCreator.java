@@ -22,6 +22,7 @@ public class MetamodelTableCreator extends TableCreator {
     /**
      * 
      * DDL schema cleanup order
+DROP TABLE CMP3_MM_HIST_EMPLOY
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP
 DROP TABLE CMP3_MM_MANUF_MM_CORPCOMPUTER
 DROP TABLE CMP3_MM_MANUF_MM_COMPUTER
@@ -59,6 +60,7 @@ DROP TABLE CMP3_MM_MANUF
         addTableDefinition(buildMANUFACTURER_CORPCOMPUTER_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable());
+        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
         addTableDefinition(buildBOARD_PROCESSORTable());
         // n:n
@@ -176,7 +178,7 @@ DROP TABLE CMP3_MM_MANUF
         table.addField(field9);        
 
         // from MappedSuperclass
-        // 1:1 unidrectional
+        // 1:1 unidirectional
         FieldDefinition field7 = new FieldDefinition();
         field7.setName("PRIME_EMPLOYER_PERSON_ID");
         field7.setTypeName("NUMERIC");
@@ -252,7 +254,7 @@ DROP TABLE CMP3_MM_MANUF
         table.addField(field6);
 */        
         // from MappedSuperclass
-        // 1:1 unidrectional
+        // 1:1 unidirectional
         FieldDefinition field7 = new FieldDefinition();
         field7.setName("PRIME_EMPLOYER_PERSON_ID");
         field7.setTypeName("NUMERIC");
@@ -275,6 +277,18 @@ DROP TABLE CMP3_MM_MANUF
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
         table.addField(field8);        
+
+        // 1:m with JoinTable - by default
+/*        FieldDefinition field9 = new FieldDefinition();
+        field9.setName("HIST_EMPLOYER_PERSON_ID");
+        field9.setTypeName("NUMERIC");
+        field9.setSize(15);
+        field9.setShouldAllowNull(false);
+        field9.setIsPrimaryKey(false);
+        field9.setUnique(false);
+        field9.setIsIdentity(false);
+        field9.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field9);*/        
         
         
         return table;
@@ -668,6 +682,35 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
 
+    public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_HIST_EMPLOY");
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("MANUF_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field1);        
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("DESIGNER_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
+        table.addField(field2);        
+
+        return table;
+    }
+    
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_HWDES_MAP");

@@ -20,9 +20,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 
@@ -58,15 +56,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     }
     
     /**
-     *  Return the type that represents the type of the id.
-     *  @return type of id
-     */
-    @Override
-    public Type<?> getIdType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
-    /**
      *  Return the persistence type.
      *  @return persistence type
      */ 
@@ -76,21 +65,21 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
 
     /**
      * INTERNAL:
-     * Return the string representation of the receiver.
+     * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
+     * @return
      */
     @Override
-    public String toString() {
-        StringBuffer aBuffer = new StringBuffer();
-        aBuffer.append(this.getClass().getSimpleName());
-        aBuffer.append("@");
-        aBuffer.append(hashCode());
-        aBuffer.append(" [descriptor: ");
-        aBuffer.append(this.getDescriptor());
-        if(null != this.getDescriptor()) {
-            aBuffer.append(", mappings: ");
-            aBuffer.append(this.getDescriptor().getMappings());
-        }
-        aBuffer.append("]");
-        return aBuffer.toString();
+    public boolean isEntity() {
+        return false;
+    }
+   
+    /**
+     * INTERNAL:
+     * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isMappedSuperclass() {
+        return !isEntity();
     }
 }

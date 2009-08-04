@@ -42,6 +42,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -85,23 +86,14 @@ public class MetamodelImpl implements Metamodel {
         initialize();
     }
 
-    public MetamodelImpl(EntityManagerFactory emf) {
-        // Create a new Metamodel using the EclipseLink session on the EMF
-        this(JpaHelper.getServerSession(emf));
-    }
-
     public MetamodelImpl(EntityManager em) {
         // Create a new Metamodel using the EclipseLink session on the EM
         this(JpaHelper.getEntityManager(em).getServerSession());
     }
 
-    /**
-     * INTERNAL:
-     * Return the DatabaseSession associated with this Metamodel
-     * @return
-     */
-    public DatabaseSession getSession() {
-        return this.session;
+    public MetamodelImpl(EntityManagerFactory emf) {
+        // Create a new Metamodel using the EclipseLink session on the EMF
+        this(JpaHelper.getServerSession(emf));
     }
 
     /**
@@ -112,7 +104,14 @@ public class MetamodelImpl implements Metamodel {
      *  @throws IllegalArgumentException if not an embeddable class
      */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
-        return (EmbeddableType<X>) this.embeddables.get(clazz);
+        Object aType = this.embeddables.get(clazz);
+        if(aType instanceof EmbeddableType) {
+            return (EmbeddableType<X>) this.embeddables.get(clazz);
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_incorrect_type_instance", 
+                    new Object[] { clazz, "EmbeddableType", aType}));
+        }
     }
 
     /**
@@ -122,20 +121,18 @@ public class MetamodelImpl implements Metamodel {
      *  @throws IllegalArgumentException if not an entity
      */
     public <X> EntityType<X> entity(Class<X> clazz) {
-        return (EntityType<X>) this.entities.get(clazz);
+        Object aType = this.entities.get(clazz);
+        if(aType instanceof EntityType) {
+            return (EntityType<X>) this.entities.get(clazz);
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_incorrect_type_instance", 
+                    new Object[] { clazz, "EntityType", aType}));
+        }
+        
+        
     }
-
-    /**
-     *  Return the metamodel managed type representing the 
-     *  entity, mapped superclass, or embeddable class.
-     *  @param clazz  the type of the represented managed class
-     *  @return the metamodel managed type
-     *  @throws IllegalArgumentException if not a managed class
-     */
-    public <X> ManagedType<X> type(Class<X> clazz) {
-        return (ManagedType<X>) this.managedTypes.get(clazz);
-    }
-
+    
     /**
      * Return the metamodel embeddable types.
      * @return the metamodel embeddable types
@@ -160,6 +157,64 @@ public class MetamodelImpl implements Metamodel {
         return new LinkedHashSet<ManagedType<?>>(this.managedTypes.values());
     }
 
+    /**
+     * INTERNAL:
+     * Return the Set of MappedSuperclassType objects
+     * @return
+     */
+    public Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
+        return mappedSuperclasses;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the DatabaseSession associated with this Metamodel
+     * @return
+     */
+    public DatabaseSession getSession() {
+        return this.session;
+    }
+
+    /**
+     * INTERNAL:
+     * Return a Type representation of a java Class for use by the Metamodel Attributes.<p>
+     * This function will handle all Metamodel defined and core java classes.
+     * 
+     * @param javaClass
+     * @return
+     */
+    public <X> TypeImpl<X> getType(Class<X> javaClass) {
+        // Return an existing matching type on the metamodel keyed on class name
+        TypeImpl type = this.types.get(javaClass);
+        // No longer required because of delayed initialization on Types
+        
+        // the type was not cached yet on the metamodel - lets add it - usually a non Metamodel class like Integer
+        if (null == type) {
+            // make types field modification thread-safe
+            synchronized (this.types) {
+                // check for a cached type right after we synchronize
+                type = this.types.get(javaClass);
+                // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
+                if(null == type) {                    
+                    type = new BasicTypeImpl<X>(javaClass);
+                    // add the type to the types map keyed on Java class
+                    this.types.put(javaClass, type);
+                }
+            } // synchronized end
+        }        
+        return type;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the Map of types on this metamodel.
+     * This includes all Entity, MappedSuperclass, Embeddable and Basic types
+     * @return
+     */
+    public Map<Class, TypeImpl<?>> getTypes() {
+        return types;
+    }
+    
     /**
      * INTERNAL:
      * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.
@@ -208,11 +263,11 @@ public class MetamodelImpl implements Metamodel {
                 // Add the MappedSuperclass to our Set of MappedSuperclasses
                 this.mappedSuperclasses.add(mappedSuperclassType);
                 
-                // Also add the MappedSuperclass to the Map of ManagedTypes
+                // Add the MappedSuperclass to the Map of ManagedTypes
                 // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
                 this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
                 
-                // Also add this MappedSuperclass to the Collection of Types
+                // Add this MappedSuperclass to the Collection of Types
                 this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
             }
         } catch (Exception e) {
@@ -250,52 +305,77 @@ public class MetamodelImpl implements Metamodel {
     }
 
     /**
-     * INTERNAL:
-     * Return a Type representation of a java Class for use by the Metamodel Attributes.<p>
-     * This function will handle all Metamodel defined and core java classes.
-     * 
-     * @param javaClass
-     * @return
+     *  Return the metamodel managed type representing the 
+     *  entity, mapped superclass, or embeddable class.
+     *  @param clazz  the type of the represented managed class
+     *  @return the metamodel managed type
+     *  @throws IllegalArgumentException if not a managed class
      */
-    public <X> TypeImpl<X> getType(Class<X> javaClass) {
-        // Return an existing matching type on the metamodel keyed on class name
-        TypeImpl type = this.types.get(javaClass);
-        // No longer required because of delayed initialization on Types
-        
-        // the type was not cached yet on the metamodel - lets add it - usually a non Metamodel class like Integer
-        if (null == type) {
-            // make types field modification thread-safe
-            synchronized (this.types) {
-                // check for a cached type right after we synchronize
-                type = this.types.get(javaClass);
-                // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
-                if(null == type) {                    
-                    type = new BasicTypeImpl<X>(javaClass);
-                    // add the type to the types map keyed on Java class
-                    this.types.put(javaClass, type);
-                }
-            } // synchronized end
-        }        
-        return type;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the Map of types on this metamodel.
-     * This includes all Entity, MappedSuperclass, Embeddable and Basic types
-     * @return
-     */
-    public Map<Class, TypeImpl<?>> getTypes() {
-        return types;
+    public <X> ManagedType<X> type(Class<X> clazz) {
+        Object aType = this.managedTypes.get(clazz);
+        return (ManagedType<X>)aType;
+        // IAE exception is disabled until bug# 285512 is fixed
+/*        if(aType instanceof ManagedType) {
+            return (ManagedType<X>) this.managedTypes.get(clazz);
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_incorrect_type_instance", 
+                    new Object[] { clazz, "ManagedType", aType}));
+        }*/
     }
     
     /**
      * INTERNAL:
-     * Return the Set of MappedSuperclassType objects
-     * @return
+     * Return the string representation of the receiver.
      */
-    public Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
-        return mappedSuperclasses;
+    @Override
+    public String toString() {
+        StringBuffer aBuffer = new StringBuffer();
+        aBuffer.append(this.getClass().getSimpleName());
+        aBuffer.append("@");
+        aBuffer.append(hashCode());
+        aBuffer.append(" [");
+        if(null != this.types) {
+            aBuffer.append(" ");            
+            aBuffer.append(this.types.size());
+            aBuffer.append(" Types: ");
+            //aBuffer.append(this.types.keySet());    
+        } else { 
+            aBuffer.append(" Types unitialized");
+        }
+        if(null != this.managedTypes) {
+            aBuffer.append(", ");            
+            aBuffer.append(this.managedTypes.size());
+            aBuffer.append(" ManagedTypes: ");
+            //aBuffer.append(this.managedTypes.keySet());    
+        } else { 
+            aBuffer.append(", ManagedTypes unitialized");
+        }
+        if(null != this.entities) {
+            aBuffer.append(", ");            
+            aBuffer.append(this.entities.size());
+            aBuffer.append(" EntityTypes: ");
+            //aBuffer.append(this.entities.keySet());    
+        } else { 
+            aBuffer.append(", EntityTypes unitialized");
+        }
+        if(null != this.mappedSuperclasses) {
+            aBuffer.append(", ");            
+            aBuffer.append(this.mappedSuperclasses.size());
+            aBuffer.append(" MappedSuperclassTypes: ");
+            //aBuffer.append(this.mappedSuperclasses);    
+        } else { 
+            aBuffer.append(", MappedSuperclassTypes unitialized");
+        }
+        if(null != this.embeddables) {
+            aBuffer.append(", ");            
+            aBuffer.append(this.embeddables.size());
+            aBuffer.append(" EmbeddableTypes: ");
+            //aBuffer.append(this.embeddables.keySet());    
+        } else { 
+            aBuffer.append(", EmbeddableTypes unitialized");
+        }
+        aBuffer.append("]");
+        return aBuffer.toString();
     }
-
 }

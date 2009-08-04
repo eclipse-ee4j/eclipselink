@@ -38,8 +38,23 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  */ 
 public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.List<V>, V> implements ListAttribute<X, V> {
 
+    /**
+     * INTERNAL:
+     * @param managedType
+     * @param mapping
+     */
     protected ListAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
-        super(managedType, mapping);
+        super(managedType, mapping, false);
+    }
+
+    /**
+     * 
+     * @param managedType
+     * @param mapping
+     * @param validationEnabled
+     */
+    protected ListAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        super(managedType, mapping, validationEnabled);
     }
 
     /**

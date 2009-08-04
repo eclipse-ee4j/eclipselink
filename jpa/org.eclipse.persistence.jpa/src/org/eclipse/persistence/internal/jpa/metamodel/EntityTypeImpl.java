@@ -26,11 +26,7 @@ import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Type;
 
-import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.jpa.CMP3Policy;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p>
@@ -75,40 +71,6 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     }
     
     /**
-     *  Return the type that represents the type of the id.
-     *  @return type of id
-     */
-    @Override
-    public Type<?> getIdType() {
-        // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
-        // descriptor.getPrimaryKeyPolicy().getIdClass();
-        CMPPolicy cmpPolicy = getDescriptor().getCMPPolicy();
-        
-        if (null == cmpPolicy) {
-            // Composite key support (IE: @EmbeddedId)
-            java.util.List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
-            
-            if (pkMappings.size() == 1) {
-                Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
-                // lookup class in our types map
-                Type<?> aType = this.metamodel.getType(aClass);
-                return aType;
-            }
-        }
-        
-        // Single Key support using any Java class - built in or user defined
-        // There already is an instance of the PKclass on the policy
-        if (cmpPolicy instanceof CMP3Policy) {
-            // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
-            return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
-        }
-        // Non-specification mandated exception        
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_incompatible_persistence_config_for_getIdType", 
-                new Object[] { this }));        
-    }
-    
-    /**
      *  Return the entity name
      *  @return entity name
      */
@@ -123,4 +85,25 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     public Type.PersistenceType getPersistenceType() {
         return Type.PersistenceType.ENTITY;
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isEntity() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
+     * @return
+     */
+    @Override
+    public boolean isMappedSuperclass() {
+        return !isEntity();
+    }
+    
 }

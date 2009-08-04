@@ -22,7 +22,10 @@ import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
 /**
  * <p>
@@ -47,29 +50,47 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     /** The type representing this collection type **/
     protected Type<V> elementType;
     
+
     /**
      * INTERNAL:
+     * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
      * @param managedType
      * @param mapping
+     * @param validationEnabled
      */
-    protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
-        // Note: Implementation is incomplete when the elementDescriptor on the containerPolicy is null
+    protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        // Note: 20090730 Implementation is incomplete when the elementDescriptor on the containerPolicy is null
         super(managedType, mapping);
-
         ClassDescriptor elementDesc = mapping.getContainerPolicy().getElementDescriptor();
 
+        // Set the element type on this attribute
         if (elementDesc != null) {
+            // Mappings: OneToMany, 
             this.elementType = (Type<V>)getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // TODO: BasicCollection (DirectCollectionMapping)
             // See CollectionContainerPolicy
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
                 //CollectionContainerPolicy policy = (CollectionContainerPolicy) mapping.getContainerPolicy();
-                //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());
+                //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());                
+                Class attributeClass = null;
+                if(mapping.isDirectCollectionMapping()) {
+                    attributeClass = ((DirectCollectionMapping)mapping).getDirectField().getType();                    
+                }
+                if(null == attributeClass && validationEnabled) {
+                    // TODO: refactor
+                    attributeClass = Object.class;
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
+                }
+                this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
             }
             // TODO: Handle DirectMapContainerPolicy
             if(mapping.isMapKeyMapping()) {
                 MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
+                Class attributeClass = policy.getElementClass();
+                if(null == attributeClass && validationEnabled) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
+                }
                 this.elementType = (Type<V>)getMetamodel().getType(policy.getElementClass());
             }
         }
