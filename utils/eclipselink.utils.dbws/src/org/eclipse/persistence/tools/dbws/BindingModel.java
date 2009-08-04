@@ -23,8 +23,8 @@ import java.util.ArrayList;
 
 public class BindingModel {
 
-    protected String name;
-    protected String type;
+    public String name;
+    public String type;
 
     public String getName() {
         return name;

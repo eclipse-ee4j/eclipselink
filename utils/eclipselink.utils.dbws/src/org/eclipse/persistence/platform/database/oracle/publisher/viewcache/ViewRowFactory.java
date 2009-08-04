@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,62 +12,77 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
-import java.util.Hashtable;
-import org.eclipse.persistence.platform.database.oracle.publisher.Util;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-@SuppressWarnings("unchecked")
-public class ViewRowFactory implements ViewRow {
+//EclipseLink imports
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_COLL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_METHOD_PARAMS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_METHOD_RESULTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_OBJECTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_QUEUE_TABLES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_SYNONYMS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPE_ATTRS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPE_METHODS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.USER_ARGUMENTS;
+
+public class ViewRowFactory extends AbstractViewRow implements ViewRow {
+
+    private transient Map<String, Field> m_fieldCache;
 
     public ViewRowFactory() {
-        m_fieldCache = new Hashtable();
+        m_fieldCache = new HashMap<String, Field>();
     }
 
     /*
      * Create a new ViewRow
      */
-    public static ViewRow createViewRow(String view, String[] columns, ResultSet rs)
-        throws java.sql.SQLException {
+    public static ViewRow createViewRow(String view, String[] columns, ResultSet rs) throws SQLException {
         ViewRow vr = null;
         if (columns.length == 1) {
             vr = new SingleColumnViewRow(rs);
         }
-        else if (view.equalsIgnoreCase(Util.ALL_ARGUMENTS)) {
+        else if (view.equalsIgnoreCase(ALL_ARGUMENTS)) {
             vr = new AllArguments(rs);
         }
-        else if (view.equalsIgnoreCase(Util.USER_ARGUMENTS)) {
+        else if (view.equalsIgnoreCase(USER_ARGUMENTS)) {
             vr = new UserArguments(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_COLL_TYPES")) {
+        else if (view.equalsIgnoreCase(ALL_COLL_TYPES)) {
             vr = new AllCollTypes(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_TYPES")) {
+        else if (view.equalsIgnoreCase(ALL_TYPES)) {
             vr = new AllTypes(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_TYPE_METHODS")) {
+        else if (view.equalsIgnoreCase(ALL_TYPE_METHODS)) {
             vr = new AllTypeMethods(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_TYPE_ATTRS")) {
+        else if (view.equalsIgnoreCase(ALL_TYPE_ATTRS)) {
             vr = new AllTypeAttrs(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_METHOD_RESULTS")) {
+        else if (view.equalsIgnoreCase(ALL_METHOD_RESULTS)) {
             vr = new AllMethodResults(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_METHOD_PARAMS")) {
+        else if (view.equalsIgnoreCase(ALL_METHOD_PARAMS)) {
             vr = new AllMethodParams(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_OBJECTS")) {
+        else if (view.equalsIgnoreCase(ALL_OBJECTS)) {
             vr = new AllObjects(rs);
         }
-        else if (view.equalsIgnoreCase("ALL_QUEUE_TABLES")) {
+        else if (view.equalsIgnoreCase(ALL_QUEUE_TABLES)) {
             vr = new AllQueueTables(rs);
         }
-        else if (view.equalsIgnoreCase(Util.ALL_SYNONYMS)) {
+        else if (view.equalsIgnoreCase(ALL_SYNONYMS)) {
             vr = new AllSynonyms(rs);
         }
         else {
-            throw new java.sql.SQLException("View cache does not support " + view);
+            throw new SQLException("View cache does not support " + view);
         }
         return vr;
     }
@@ -80,10 +95,10 @@ public class ViewRowFactory implements ViewRow {
         if (columns.length > 0) {
             projectList = columns;
         }
-        else if (view.equalsIgnoreCase(Util.ALL_ARGUMENTS)) {
+        else if (view.equalsIgnoreCase(ALL_ARGUMENTS)) {
             projectList = AllArguments.getProjectList();
         }
-        else if (view.equalsIgnoreCase(Util.USER_ARGUMENTS)) {
+        else if (view.equalsIgnoreCase(USER_ARGUMENTS)) {
             projectList = UserArguments.getProjectList();
         }
         if (projectList == null) {
@@ -100,13 +115,13 @@ public class ViewRowFactory implements ViewRow {
     }
 
     public static boolean hasSequence(String view) {
-        return view.equalsIgnoreCase(Util.USER_ARGUMENTS)
-            || view.equalsIgnoreCase(Util.ALL_ARGUMENTS);
+        return view.equalsIgnoreCase(USER_ARGUMENTS)
+            || view.equalsIgnoreCase(ALL_ARGUMENTS);
     }
 
     public static boolean hasPosition(String view) {
-        return view.equalsIgnoreCase(Util.USER_ARGUMENTS)
-            || view.equalsIgnoreCase(Util.ALL_ARGUMENTS);
+        return view.equalsIgnoreCase(USER_ARGUMENTS)
+            || view.equalsIgnoreCase(ALL_ARGUMENTS);
     }
 
     public boolean equals(String key, Object value) {
@@ -114,11 +129,11 @@ public class ViewRowFactory implements ViewRow {
         try {
             // for serialization
             if (m_fieldCache == null) {
-                m_fieldCache = new Hashtable();
+                m_fieldCache = new HashMap<String, Field>();
             }
             Field field = (Field)m_fieldCache.get(key);
             if (field == null) {
-                Class cls = getClass();
+                Class<?> cls = getClass();
                 Field[] fields = cls.getFields();
                 for (int i = 0; i < fields.length; i++) {
                     if (fields[i].getName().equalsIgnoreCase(key)) {
@@ -128,9 +143,7 @@ public class ViewRowFactory implements ViewRow {
                 }
             }
             if (field == null) {
-                System.err
-                    .println("ERROR: " + getClass().getName() + " does not have field " + key);
-                // return false;
+                System.err.println("ERROR: " + getClass().getName() + " does not have field " + key);
             }
             Object fieldValue = field.get(this);
             if (key.equals("OWNER")) {
@@ -153,13 +166,12 @@ public class ViewRowFactory implements ViewRow {
             }
         }
         catch (SecurityException e) {
-            // TODO: should we note this exception?
+            // ignore
         }
         catch (IllegalAccessException e) {
-            // TODO: should we note this exception?
+            // ignore
         }
         return eq;
     }
 
-    private transient Hashtable m_fieldCache;
 }

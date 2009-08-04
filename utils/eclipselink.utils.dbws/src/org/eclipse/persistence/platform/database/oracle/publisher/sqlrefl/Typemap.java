@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -13,23 +13,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
-import java.util.Hashtable;
+//javase imports
+import java.util.Map;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 
 /**
  * NB - this class does <b>NOT</b> implement the {@link java.util.Map} API
  */
-@SuppressWarnings("unchecked")
-public class Typemap {
-    public static final int UNSUPPORTED_TYPE = 0;
 
+public class Typemap {
+
+    public static final int UNSUPPORTED_TYPE = 0;
     public static final int BYTE_ARRAY = UNSUPPORTED_TYPE + 1;
     public static final int DOUBLE = BYTE_ARRAY + 1;
     public static final int FLOAT = DOUBLE + 1;
     public static final int INT = FLOAT + 1;
     public static final int SHORT = INT + 1;
     public static final int BOOLEAN = SHORT + 1;
-
     public static final int OS_BFILE = BOOLEAN + 1;
     public static final int OS_BLOB = OS_BFILE + 1;
     public static final int OS_CHAR = OS_BLOB + 1;
@@ -45,19 +47,14 @@ public class Typemap {
     public static final int OS_TIMESTAMP = OS_BINARY_DOUBLE + 1;
     public static final int OS_TIMESTAMPTZ = OS_TIMESTAMP + 1;
     public static final int OS_TIMESTAMPLTZ = OS_TIMESTAMPTZ + 1;
-
     public static final int OS_CUSTOMDATUM = OS_TIMESTAMPLTZ + 1;
-
     public static final int OS_NSTRING = OS_CUSTOMDATUM + 1;
-
     public static final int JL_DOUBLE = OS_NSTRING + 1;
     public static final int JL_FLOAT = JL_DOUBLE + 1;
     public static final int JL_INTEGER = JL_FLOAT + 1;
     public static final int JL_SHORT = JL_INTEGER + 1;
     public static final int JL_STRING = JL_SHORT + 1;
-
     public static final int JM_BIGDECIMAL = JL_STRING + 1;
-
     public static final int JS_ARRAY = JM_BIGDECIMAL + 1;
     public static final int JS_BLOB = JS_ARRAY + 1;
     public static final int JS_CLOB = JS_BLOB + 1;
@@ -66,7 +63,6 @@ public class Typemap {
     public static final int JS_SQLDATA = JS_RESULTSET + 1;
     public static final int JS_DATE = JS_SQLDATA + 1;
     public static final int JS_TIMESTAMP = JS_DATE + 1;
-
     public static final int OCI_BFILELOCATOR = JS_TIMESTAMP + 1;
     public static final int OCI_BLOBLOCATOR = OCI_BFILELOCATOR + 1;
     public static final int OCI_CLOBLOCATOR = OCI_BLOBLOCATOR + 1;
@@ -78,7 +74,6 @@ public class Typemap {
     public static final int OCI_STRING = OCI_RAW + 1;
     public static final int C_GENERATEDTYPE = OCI_STRING + 1;
     public static final int OCI_TABLE = C_GENERATEDTYPE + 1;
-
     public static final int OCCI_BFILE = OCI_TABLE + 1;
     public static final int OCCI_BYTES = OCCI_BFILE + 1;
     public static final int OCCI_BLOB = OCCI_BYTES + 1;
@@ -101,8 +96,93 @@ public class Typemap {
     private static final int ORACLE_TYPES_TIMESTAMPLTZ = -102;
     private static final int ORACLE_TYPES_TIMESTAMPTZ = -101;
 
-    /**
-     */
+    static final String[] NAMES = {"<unsupported type>",
+        "byte[]", "double", "float", "int", "short", "boolean",
+        "oracle.sql.BFILE", "oracle.sql.BLOB", "oracle.sql.CHAR", "oracle.sql.CLOB", "oracle.sql.DATE",
+        "oracle.sql.NUMBER", "oracle.sql.RAW", "oracle.sql.ROWID",
+        "oracle.sql.NCHAR", "oracle.sql.NCLOB",
+        "oracle.sql.BINARY_FLOAT", "oracle.sql.BINARY_DOUBLE",
+        "oracle.sql.TIMESTAMP", "oracle.sql.TIMESTAMPTZ", "oracle.sql.TIMESTAMPLTZ",
+        null, "java.lang.String",
+        "Double", "Float", "Integer", "Short", "String",
+        "java.math.BigDecimal",
+        "java.sql.Array", "java.sql.Blob", "java.sql.Clob", "java.sql.Ref", "java.sql.ResultSet",
+        null, "java.sql.Date", "java.sql.Timestamp",
+        "OCIBFileLocator *", "OCIBlobLocator *", "OCIClobLocator *", "OCIDate",
+        "OCIDateTime *", "OCIInterval *",
+        "OCINumber", "OCIRaw *", "OCIString *", null, null,
+        "oracle::occi::Bfile", "oracle::occi::Bytes", "oracle::occi::Blob", "oracle::occi::Clob",
+        "oracle::occi::Date", "oracle::occi::Timestamp", "oracle::occi::IntervalYM",
+        "oracle::occi::IntervalDS", "oracle::occi::Number", "OCCI_STD_NAMESPACE::string",
+        "OCCI_STD_NAMESPACE::wstring", null, null, null, null
+    };
+    static final String[] ACCESSOR_METHODS = {null, // "<unsupported type>",
+        "Bytes", "Double", "Float", "Int", "Short", "Boolean",
+        "BFILE", "BLOB", "CHAR", "CLOB", "DATE", "NUMBER", "RAW", "ROWID",
+        "NCHAR", "NCLOB",
+        "Object", "Object",
+        "TIMESTAMP", "TIMESTAMPTZ", "TIMESTAMPLTZ",
+        null, "String",
+        "Double", "Float", "Int", "Short", "String",
+        "BigDecimal",
+        "Array", "Blob", "Clob", "Ref", "Cursor", null, "Date", "Timestamp",
+        null, // "nullOCIBFileLocator *",
+        null, // "OCIBlobLocator *",
+        null, // "OCIClobLocator *",
+        null, // "OCIDate",
+        null, // "OCIDateTime *",
+        null, // "OCIInterval *",
+        null, // "OCINumber",
+        null, // "OCIRaw *",
+        null, // "OCIString *",
+        null, null,
+        null, // "oracle::occi::Bfile",
+        null, // "oracle::occi::Bytes",
+        null, // "oracle::occi::Blob",
+        null, // "oracle::occi::Clob",
+        null, // "oracle::occi::Date",
+        null, // "oracle::occi::Timestamp",
+        null, // "oracle::occi::IntervalYM",
+        null, // "oracle::occi::IntervalDS",
+        null, // "oracle::occi::Number",
+        null, // "OCCI_STD_NAMESPACE::string",
+        null, // "OCCI_STD_NAMESPACE::wstring",
+        null, null, null, null
+    };
+
+    protected String m_package;
+    protected Map<String, String> m_field_map = null;
+    protected int m_mapping;
+    protected int arrayMap;
+    protected int bfileMap;
+    protected int binaryMap;
+    protected int blobMap;
+    protected int charMap;
+    protected int ncharMap;
+    protected int clobMap;
+    protected int cursorMap;
+    protected int dateMap;
+    protected int timeMap;
+    protected int timestampMap;
+    protected int intervalYMMap;
+    protected int intervalDSMap;
+    protected int decimalMap;
+    protected int doubleMap;
+    protected int floatMap;
+    protected int integerMap;
+    protected int longVarBinaryMap;
+    protected int numericMap;
+    protected int realMap;
+    protected int refMap;
+    protected int rowidMap;
+    protected int smallintMap;
+    protected int structMap;
+    protected int varcharMap;
+    protected int tableMap;
+    protected int binaryFloatMap;
+    protected int binaryDoubleMap;
+    protected SqlReflector m_reflector;
+
     public Typemap(TypeClass s, SqlReflector reflector) {
         if (s != null && (s instanceof JavaType)) {
             m_field_map = null;
@@ -168,8 +248,7 @@ public class Typemap {
         if (!m_mapInitialized) {
             javaMapping();
             m_mapInitialized = true;
-        }
-        ;
+        };
 
         switch (sqlTypecode) {
             case OracleTypes.ARRAY:
@@ -362,118 +441,4 @@ public class Typemap {
         return opaque;
     }
 
-    protected String m_package;
-    protected Hashtable m_field_map = null;
-
-    protected int m_mapping;
-
-    protected int arrayMap;
-    protected int bfileMap;
-    protected int binaryMap;
-    protected int blobMap;
-    protected int charMap;
-    protected int ncharMap;
-    protected int clobMap;
-    protected int cursorMap;
-    protected int dateMap;
-    protected int timeMap;
-    protected int timestampMap;
-    protected int intervalYMMap;
-    protected int intervalDSMap;
-    protected int decimalMap;
-    protected int doubleMap;
-    protected int floatMap;
-    protected int integerMap;
-    protected int longVarBinaryMap;
-    protected int numericMap;
-    protected int realMap;
-    protected int refMap;
-    protected int rowidMap;
-    protected int smallintMap;
-    protected int structMap;
-    protected int varcharMap;
-    protected int tableMap;
-    protected int binaryFloatMap;
-    protected int binaryDoubleMap;
-
-    protected SqlReflector m_reflector;
-
-    static final String[] NAMES = {"<unsupported type>",
-
-    "byte[]", "double", "float", "int", "short", "boolean",
-
-    "oracle.sql.BFILE", "oracle.sql.BLOB", "oracle.sql.CHAR", "oracle.sql.CLOB", "oracle.sql.DATE",
-        "oracle.sql.NUMBER", "oracle.sql.RAW", "oracle.sql.ROWID",
-
-        "oracle.sql.NCHAR", "oracle.sql.NCLOB",
-
-        "oracle.sql.BINARY_FLOAT", "oracle.sql.BINARY_DOUBLE",
-
-        "oracle.sql.TIMESTAMP", "oracle.sql.TIMESTAMPTZ", "oracle.sql.TIMESTAMPLTZ",
-
-        null, "java.lang.String",
-
-        "Double", "Float", "Integer", "Short", "String",
-
-        "java.math.BigDecimal",
-
-        "java.sql.Array", "java.sql.Blob", "java.sql.Clob", "java.sql.Ref", "java.sql.ResultSet",
-        null, "java.sql.Date", "java.sql.Timestamp",
-
-        "OCIBFileLocator *", "OCIBlobLocator *", "OCIClobLocator *", "OCIDate",
-
-        "OCIDateTime *", "OCIInterval *",
-
-        "OCINumber", "OCIRaw *", "OCIString *", null, null,
-
-        "oracle::occi::Bfile", "oracle::occi::Bytes", "oracle::occi::Blob", "oracle::occi::Clob",
-        "oracle::occi::Date", "oracle::occi::Timestamp", "oracle::occi::IntervalYM",
-        "oracle::occi::IntervalDS", "oracle::occi::Number", "OCCI_STD_NAMESPACE::string",
-        "OCCI_STD_NAMESPACE::wstring", null, null, null, null};
-
-    static final String[] ACCESSOR_METHODS = {null, // "<unsupported type>",
-
-        "Bytes", "Double", "Float", "Int", "Short", "Boolean",
-
-        "BFILE", "BLOB", "CHAR", "CLOB", "DATE", "NUMBER", "RAW", "ROWID",
-
-        "NCHAR", "NCLOB",
-
-        "Object", "Object",
-
-        "TIMESTAMP", "TIMESTAMPTZ", "TIMESTAMPLTZ",
-
-        null, "String",
-
-        "Double", "Float", "Int", "Short", "String",
-
-        "BigDecimal",
-
-        "Array", "Blob", "Clob", "Ref", "Cursor", null, "Date", "Timestamp",
-
-        null, // "nullOCIBFileLocator *",
-        null, // "OCIBlobLocator *",
-        null, // "OCIClobLocator *",
-        null, // "OCIDate",
-
-        null, // "OCIDateTime *",
-        null, // "OCIInterval *",
-
-        null, // "OCINumber",
-        null, // "OCIRaw *",
-        null, // "OCIString *",
-        null, null,
-
-        null, // "oracle::occi::Bfile",
-        null, // "oracle::occi::Bytes",
-        null, // "oracle::occi::Blob",
-        null, // "oracle::occi::Clob",
-        null, // "oracle::occi::Date",
-        null, // "oracle::occi::Timestamp",
-        null, // "oracle::occi::IntervalYM",
-        null, // "oracle::occi::IntervalDS",
-        null, // "oracle::occi::Number",
-        null, // "OCCI_STD_NAMESPACE::string",
-        null, // "OCCI_STD_NAMESPACE::wstring",
-        null, null, null, null};
 }

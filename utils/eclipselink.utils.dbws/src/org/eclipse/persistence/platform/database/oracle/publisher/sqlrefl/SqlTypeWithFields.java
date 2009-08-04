@@ -1,29 +1,47 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Mike Norman - from Proof-of-concept, become production code
  ******************************************************************************/
-package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
+package  org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
-import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllTypes;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.FieldInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TYPE_NAME;
 
-@SuppressWarnings("unchecked")
 public abstract class SqlTypeWithFields extends SqlType {
+
+    protected static Map<String, Boolean> m_builtin;
+    static {
+        m_builtin = new HashMap<String, Boolean>();
+        m_builtin.put("VARCHAR2", Boolean.TRUE);
+        m_builtin.put("NUMBER", Boolean.TRUE);
+        m_builtin.put("DATE", Boolean.TRUE);
+        m_builtin.put("BOOLEAN", Boolean.TRUE);
+    }
+
+    protected List<AttributeField> m_fieldsPublishedOnly;
+    protected List<AttributeField> m_fields;
 
     public SqlTypeWithFields(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
         SqlReflector reflector) throws SQLException {
@@ -33,7 +51,7 @@ public abstract class SqlTypeWithFields extends SqlType {
     public boolean isTopLevel() {
         return false;
     }
-    
+
     /**
      * Returns an array of Field objects reflecting all the fields declared by this
      * SqlTypeWithFields object. Returns an array of length 0 if this SqlTypeWithFields object
@@ -41,7 +59,7 @@ public abstract class SqlTypeWithFields extends SqlType {
      */
     // [3190197] Add publishedOnly: false - return Fields including
     // those not published as well
-    public AttributeField[] getDeclaredFields(boolean publishedOnly) throws java.sql.SQLException,
+    public List<AttributeField> getDeclaredFields(boolean publishedOnly) throws SQLException,
         PublisherException {
         if (publishedOnly) {
             if (m_fieldsPublishedOnly == null) {
@@ -58,69 +76,57 @@ public abstract class SqlTypeWithFields extends SqlType {
         }
     }
 
-    private AttributeField[] reflectFields(boolean publishedOnly) throws SQLException, PublisherException {
+    private List<AttributeField> reflectFields(boolean publishedOnly) throws SQLException,
+        PublisherException {
         return reflectFields(publishedOnly, getFieldInfo(), m_reflector, this, false);
     }
 
-    static AttributeField[] reflectFields(boolean publishedOnly, FieldInfo[] sfi, SqlReflector reflector,
-        SqlType parent, boolean isGrandparent) throws SQLException, PublisherException {
-        ArrayList fieldsCS = new ArrayList();
+    public static List<AttributeField> reflectFields(boolean publishedOnly, List<FieldInfo> sfi,
+        SqlReflector reflector, SqlType parent, boolean isGrandparent) throws SQLException,
+        PublisherException {
+        ArrayList<AttributeField> fieldsCS = new ArrayList<AttributeField>();
         ViewCache viewCache = reflector.getViewCache();
         // JavaMap map = new JavaMap(parent, reflector);
         Typemap map = new Typemap(parent, reflector);
-        for (int ii = 0; sfi != null && ii < sfi.length; ii++) {
+        for (int ii = 0; sfi != null && ii < sfi.size(); ii++) {
             try {
+                FieldInfo fi = sfi.get(ii);
                 @SuppressWarnings("unused")
-                int idx = sfi[ii].fieldNo;
-                if (publishedOnly && map.getMemberName(sfi[ii].fieldName) == null) {
+                int idx = fi.fieldNo;
+                if (publishedOnly && map.getMemberName(fi.fieldName) == null) {
                     continue;
                 }
                 // [2954993] Workaround
-                String fieldTypeOwner = sfi[ii].fieldTypeOwner;
-                if (m_builtin.get(sfi[ii].fieldTypeName) == null) {
-                    Iterator iter = viewCache.getRows(Util.ALL_TYPES, new String[0], new String[]{
-                        "OWNER", Util.TYPE_NAME, "PREDEFINED"}, new Object[]{fieldTypeOwner,
-                        sfi[ii].fieldTypeName, "NO"}, new String[0]);
+                String fieldTypeOwner = fi.fieldTypeOwner;
+                if (m_builtin.get(fi.fieldTypeName) == null) {
+                    Iterator<ViewRow> iter = viewCache.getRows(ALL_TYPES, new String[0],
+                        new String[]{"OWNER", TYPE_NAME, "PREDEFINED"}, new Object[]{
+                            fieldTypeOwner, fi.fieldTypeName, "NO"}, new String[0]);
                     if (!iter.hasNext()) {
-                        iter = viewCache.getRows(Util.ALL_TYPES, new String[0], new String[]{
-                            "TYPE_NAME", "PREDEFINED"}, new Object[]{sfi[ii].fieldTypeName, "NO"},
+                        iter = viewCache.getRows(ALL_TYPES, new String[0], new String[]{
+                            "TYPE_NAME", "PREDEFINED"}, new Object[]{fi.fieldTypeName, "NO"},
                             new String[0]);
                         if (iter.hasNext()) {
                             fieldTypeOwner = ((AllTypes)iter.next()).owner;
                         }
                     }
                 }
-                fieldsCS.add(new AttributeField(sfi[ii].fieldName, reflector.addPlsqlDBType(fieldTypeOwner,
-                    sfi[ii].fieldTypeName, sfi[ii].fieldTypeSubname, sfi[ii].fieldTypeMod,
+                fieldsCS.add(new AttributeField(fi.fieldName, reflector.addPlsqlDBType(
+                    fieldTypeOwner, fi.fieldTypeName, fi.fieldTypeSubname,
+                    fi.fieldTypeMod,
                     false, // No NCHAR-considerations for fields!
-                    sfi[ii].fieldPackageName, sfi[ii].fieldMethodName, sfi[ii].fieldMethodNo,
-                    sfi[ii].fieldSequence, parent, isGrandparent), sfi[ii].fieldDataLength,
-                    sfi[ii].fieldDataPrecision, sfi[ii].fieldDataScale,
-                    sfi[ii].fieldCharacterSetName, reflector));
+                    fi.fieldPackageName, fi.fieldMethodName, fi.fieldMethodNo,
+                    fi.fieldSequence, parent, isGrandparent), fi.fieldDataLength,
+                    fi.fieldDataPrecision, fi.fieldDataScale,
+                    fi.fieldCharacterSetName, reflector));
             }
             catch (SQLException e) {
                 e.printStackTrace();
-            }
-            ;
+            };
         }
-        AttributeField[] sqlFields = new AttributeField[fieldsCS.size()];
-        for (int i = 0; i < sqlFields.length; i++) {
-            sqlFields[i] = (AttributeField)fieldsCS.get(i);
-        }
-        return sqlFields;
+        return fieldsCS;
     }
 
-    protected abstract FieldInfo[] getFieldInfo() throws SQLException;
+    protected abstract List<FieldInfo> getFieldInfo() throws SQLException;
 
-    protected AttributeField[] m_fieldsPublishedOnly;
-    protected AttributeField[] m_fields;
-    protected static HashMap m_builtin;
-
-    static {
-        m_builtin = new HashMap();
-        m_builtin.put("VARCHAR2", Boolean.TRUE);
-        m_builtin.put("NUMBER", Boolean.TRUE);
-        m_builtin.put("DATE", Boolean.TRUE);
-        m_builtin.put("BOOLEAN", Boolean.TRUE);
-    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,19 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AllMethodParams extends ViewRowFactory implements ViewRow {
-    // Attributes
-    public String paramName;
-    public String paramNo;
-    public String paramMode;
-    public String paramTypeMod;
-    public String paramTypeOwner;
-    public String paramTypeName;
-    public String characterSetName;
-    public String methodName;
-    public String methodNo;
 
     public static int iPARAM_NAME;
     public static int iPARAM_NO;
@@ -37,7 +29,18 @@ public class AllMethodParams extends ViewRowFactory implements ViewRow {
     public static int iMETHOD_NO;
     private static boolean m_indexed = false;
 
-    public AllMethodParams(ResultSet rs) throws java.sql.SQLException {
+    // Attributes
+    public String paramName;
+    public String paramNo;
+    public String paramMode;
+    public String paramTypeMod;
+    public String paramTypeOwner;
+    public String paramTypeName;
+    public String characterSetName;
+    public String methodName;
+    public String methodNo;
+
+    public AllMethodParams(ResultSet rs) throws SQLException {
         super();
         if (!m_indexed) {
             m_indexed = true;
@@ -60,6 +63,11 @@ public class AllMethodParams extends ViewRowFactory implements ViewRow {
         characterSetName = rs.getString(iCHARACTER_SET_NAME);
         methodName = rs.getString(iMETHOD_NAME);
         methodNo = rs.getString(iMETHOD_NO);
+    }
+
+    @Override
+    public boolean isAllMethodParams() {
+        return true;
     }
 
     public String toString() {

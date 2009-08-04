@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,13 +12,34 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 
-@SuppressWarnings("unchecked")
 public class FieldInfo {
-    public FieldInfo(AllTypeAttrs r) throws java.sql.SQLException {
+
+    public String fieldName;
+    public String fieldTypeName;
+    public String fieldTypeSubname;
+    public String fieldTypeOwner;
+    public String fieldTypeMod;
+    public String fieldMethodName;
+    public String fieldMethodNo;
+    public String fieldPackageName;
+    public String fieldCharacterSetName;
+    public int fieldSequence;
+    public int fieldDataLevel;
+    public int fieldDataLength;
+    public int fieldDataPrecision;
+    public int fieldDataScale;
+    public int fieldNo;
+
+    public FieldInfo(AllTypeAttrs r) throws SQLException {
         fieldName = r.attrName;
         fieldTypeName = r.attrTypeName;
         fieldTypeSubname = null;
@@ -36,7 +57,7 @@ public class FieldInfo {
         fieldCharacterSetName = r.characterSetName;
     }
 
-    public FieldInfo(UserArguments r) throws java.sql.SQLException {
+    public FieldInfo(UserArguments r) throws SQLException {
         fieldNo = r.POSITION;
         fieldName = r.ARGUMENT_NAME;
         fieldTypeOwner = r.TYPE_OWNER;
@@ -70,45 +91,27 @@ public class FieldInfo {
         fieldCharacterSetName = r.CHARACTER_SET_NAME;
     }
 
-    public static FieldInfo[] getFieldInfo(Iterator iter) throws java.sql.SQLException {
-        ArrayList v = new ArrayList();
+    public static List<FieldInfo> getFieldInfo(Iterator<ViewRow> iter) throws SQLException {
+        ArrayList<ViewRow> v = new ArrayList<ViewRow>();
         while (iter.hasNext()) {
             v.add(iter.next());
         }
         return getFieldInfo(v);
     }
 
-    public static FieldInfo[] getFieldInfo(ArrayList v) throws java.sql.SQLException {
-        ArrayList a = new ArrayList();
+    public static List<FieldInfo> getFieldInfo(ArrayList<ViewRow> v) throws SQLException {
+        ArrayList<FieldInfo> a = new ArrayList<FieldInfo>();
         for (int i = 0; i < v.size(); i++) {
-            Object obj = v.get(i);
-            if (obj instanceof UserArguments) {
-                a.add(new FieldInfo((UserArguments)obj));
+            ViewRow vr = v.get(i);
+            if (vr.isUserArguments() || vr.isAllArguments()) {
+                UserArguments userArguments = (UserArguments)vr;
+                a.add(new FieldInfo(userArguments));
             }
-            else {
-                a.add(new FieldInfo((AllTypeAttrs)obj));
+            else if (vr.isAllTypeAttrs()) {
+                AllTypeAttrs allTypeAttrs = (AllTypeAttrs)vr;
+                a.add(new FieldInfo(allTypeAttrs));
             }
         }
-        FieldInfo[] r = new FieldInfo[a.size()];
-        for (int i = 0; i < a.size(); i++) {
-            r[i] = (FieldInfo)a.get(i);
-        }
-        return r;
+        return a;
     }
-
-    public String fieldName;
-    public String fieldTypeName;
-    public String fieldTypeSubname;
-    public String fieldTypeOwner;
-    public String fieldTypeMod;
-    public String fieldMethodName;
-    public String fieldMethodNo;
-    public String fieldPackageName;
-    public String fieldCharacterSetName;
-    public int fieldSequence;
-    public int fieldDataLevel;
-    public int fieldDataLength;
-    public int fieldDataPrecision;
-    public int fieldDataScale;
-    public int fieldNo;
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
 // Includes all the columns in ALL_ARGUMENTS and USER_AUGUMENTS
 
-@SuppressWarnings("unchecked")
-public class UserArguments extends ViewRowFactory implements ViewRow, java.io.Serializable {
+public class UserArguments extends ViewRowFactory implements ViewRow {
     // Attributes
     public String PACKAGE_NAME;
     public String OBJECT_NAME; // DO _NOT_ REFACTOR THIS!
@@ -106,6 +106,11 @@ public class UserArguments extends ViewRowFactory implements ViewRow, java.io.Se
         OBJECT_ID = rs.getInt(iOBJECT_ID);
     }
 
+    @Override
+    public boolean isUserArguments() {
+        return true;
+    }
+
     public String toString() {
         return OBJECT_NAME + "," + PACKAGE_NAME + "," + OVERLOAD + "," + ARGUMENT_NAME + ","
             + POSITION + "," + sequence + "," + DATA_LEVEL + "," + DATA_TYPE + "," + IN_OUT + ","
@@ -113,6 +118,7 @@ public class UserArguments extends ViewRowFactory implements ViewRow, java.io.Se
             + "," + TYPE_OWNER + "," + TYPE_NAME + "," + TYPE_SUBNAME + "," + OBJECT_ID;
     }
 
+    @SuppressWarnings("unchecked")
     public static void orderByPosition(ArrayList rows) {
         for (int i = 0; i < rows.size() - 1; i++) {
             UserArguments rowi = (UserArguments)rows.get(i);
@@ -133,6 +139,7 @@ public class UserArguments extends ViewRowFactory implements ViewRow, java.io.Se
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void orderBySequence(ArrayList rows) {
         for (int i = 0; i < rows.size() - 1; i++) {
             UserArguments rowi = (UserArguments)rows.get(i);

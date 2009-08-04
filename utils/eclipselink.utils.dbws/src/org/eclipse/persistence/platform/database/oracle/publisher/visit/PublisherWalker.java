@@ -13,6 +13,7 @@
 package org.eclipse.persistence.platform.database.oracle.publisher.visit;
 
 //javase imports
+import java.util.List;
 
 //EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.AttributeField;
@@ -53,10 +54,10 @@ public class PublisherWalker implements PublisherVisitor {
             targetTypeName = sqlObjectType.getTargetTypeName();
         }
         int numAttributes = 0;
-        AttributeField[] fields = null;
+        List<AttributeField> fields = null;
         try {
             fields = sqlObjectType.getDeclaredFields(false);
-            numAttributes = fields.length;
+            numAttributes = fields.size();
         }
         catch (Exception e) {
         }
@@ -103,7 +104,7 @@ public class PublisherWalker implements PublisherVisitor {
     public void visit(SqlPackageType sqlPackageType) {
         listener.beginPackage(sqlPackageType.getName());
         try {
-            ProcedureMethod[] declaredMethods = sqlPackageType.getDeclaredMethods();
+            List<ProcedureMethod> declaredMethods = sqlPackageType.getDeclaredMethods();
             for (ProcedureMethod m : declaredMethods) {
                 m.accept(this);
             }
@@ -117,7 +118,7 @@ public class PublisherWalker implements PublisherVisitor {
     public void visit(SqlToplevelType sqlToplevelType) {
         listener.beginPackage("toplevel");
         try {
-            ProcedureMethod[] declaredMethods = sqlToplevelType.getDeclaredMethods();
+            List<ProcedureMethod> declaredMethods = sqlToplevelType.getDeclaredMethods();
             for (ProcedureMethod m : declaredMethods) {
                 m.accept(this);
             }
@@ -133,23 +134,27 @@ public class PublisherWalker implements PublisherVisitor {
         if (plsqlRecordType.hasConversion()) {
             targetTypeName = plsqlRecordType.getTargetTypeName();
         }
-        AttributeField[] fields = null;
+        List<AttributeField> fields = null;
         int fieldsLength = 0;
         try {
             fields = plsqlRecordType.getFields(true);
-            fieldsLength = fields.length;
+            fieldsLength = fields.size();
         }
         catch (Exception e) { /* ignore */ }
         listener.beginPlsqlRecord(plsqlRecordType.getTypeName(), targetTypeName, fieldsLength);
         if (fields != null && fieldsLength > 0) {
             for (int idx = 0; idx < fieldsLength; idx++) {
-                AttributeField f = fields[idx];
+                AttributeField f = fields.get(idx);
                 listener.beginPlsqlRecordField(f.getName(), idx);
                 ((SqlType)f.getType()).accept(this);
                 listener.endPlsqlRecordField(f.getName(), idx);
             }
         }
-        listener.endPlsqlRecord(plsqlRecordType.getTypeName());
+        try {
+            listener.endPlsqlRecord(plsqlRecordType.getTypeName(),
+                plsqlRecordType.getSqlTypeDecl(), plsqlRecordType.getSqlTypeDrop());
+        }
+        catch (Exception e) { /* ignore */ }
     }
 
     public void visit(PlsqlTableType plsqlTableType) {
@@ -164,7 +169,11 @@ public class PublisherWalker implements PublisherVisitor {
             }
         }
         catch (Exception e) { /* ignore */ }
-        listener.endPlsqlTable(plsqlTableType.getTypeName());
+        try {
+            listener.endPlsqlTable(plsqlTableType.getTypeName(),
+                plsqlTableType.getSqlTypeDecl(), plsqlTableType.getSqlTypeDrop());
+        }
+        catch (Exception e) { /* ignore */ }
     }
 
     public void visit(ProcedureMethod method) {

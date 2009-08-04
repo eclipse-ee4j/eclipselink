@@ -93,14 +93,14 @@ public class OracleHelper {
         else {
             typ = procedureModel.getJPubType();
         }
-        ProcedureMethod[] methods = null;
+        List<ProcedureMethod> methods = null;
         try {
             methods = typ.getDeclaredMethods();
         }
         catch (Exception e) {
             // TODO 
         }
-        if (methods.length > 0) {
+        if (methods.size() > 0) {
             dbStoredProcedures = new ArrayList<DbStoredProcedure>();
             for (ProcedureMethod m : methods) {
                 DbStoredProcedure dbStoredProcedure = null;

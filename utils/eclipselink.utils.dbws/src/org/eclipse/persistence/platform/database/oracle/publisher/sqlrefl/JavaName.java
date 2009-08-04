@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -17,8 +17,14 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
  * class name within the package, and the "generated" name of the class.
  */
 public class JavaName extends LangName {
+
     static String m_defaultPackage;
-    String m_usePackage;
+
+    // Generated user class interface
+    protected String m_useItfPackage, m_useItf;
+    // Declared Java class interface
+    protected String m_declItfPackage, m_declItf;
+    protected String m_usePackage;
 
     /**
      * Initializes a JavaName with a package name, use name, and decl name. If the supplied package
@@ -27,9 +33,9 @@ public class JavaName extends LangName {
      * that JPub generates. It is different from the use name, the name of the class that represents
      * the SQL type, if the class is user-written. The user tells JPub that this is the case by
      * putting the clause "GENERATE <decl class name> AS <use class name> in the input file.
-     * 
+     *
      * * @param package the package in which the class is declared
-     * 
+     *
      * @param useName
      *            the use name (class name for use as opposed to declaration)
      * @param declName
@@ -209,7 +215,7 @@ public class JavaName extends LangName {
      * Returns the name to be used to refer to this class. If the package in which this class is
      * mentioned is the use package of this class, return the unqualified use class name. Otherwise,
      * return use package name + "." + use class name.
-     * 
+     *
      * * @param currPackage the package in which the reference occurs
      */
     public String getUseClass(String currPackage) {
@@ -251,7 +257,7 @@ public class JavaName extends LangName {
     /**
      * Initialize the JavaName class with the default package name, used when a JavaName is created
      * without an explciit package name.
-     * 
+     *
      * * @param defaultPackage the name of the default package
      */
     public static void setDefaultPackage(String defaultPackage) {
@@ -262,9 +268,4 @@ public class JavaName extends LangName {
         return m_defaultPackage;
     }
 
-    // Generated user class interface
-    private String m_useItfPackage, m_useItf;
-
-    // Declared Java class interface
-    private String m_declItfPackage, m_declItf;
 }

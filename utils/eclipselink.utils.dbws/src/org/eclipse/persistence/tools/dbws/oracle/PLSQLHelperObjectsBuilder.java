@@ -27,6 +27,8 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
+import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+
 import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
@@ -37,6 +39,11 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     protected String schemaName = null;
     protected String currentMethodName = null;
     protected int currentMethodArgIdx = -1;
+    protected DBWSBuilder dbwsBuilder;
+
+    public PLSQLHelperObjectsBuilder(DBWSBuilder dbwsBuilder) {
+        this.dbwsBuilder = dbwsBuilder;
+    }
 
     protected String trimOffSchemaName(String s) {
         if (s.startsWith(schemaName)) {
@@ -95,7 +102,11 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     }
 
     @Override
-    public void endPlsqlTable(String tableName) {
+    public void endPlsqlTable(String tableName, String typeDeclaration, String typeDropDDL) {
+        if (!"".equals(typeDeclaration)) {
+            dbwsBuilder.getTypeDDL().add(typeDeclaration);
+            dbwsBuilder.getTypeDropDDL().add(typeDropDDL);
+        }
         PLSQLCollection plsqlCollection = (PLSQLCollection)typeStack.pop();
         plsqlCollection.setJavaTypeName(
             plsqlCollection.getTypeName().toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
@@ -168,7 +179,11 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     }
 
     @Override
-    public void endPlsqlRecord(String plsqlRecordName) {
+    public void endPlsqlRecord(String plsqlRecordName, String typeDeclaration, String typeDropDDL) {
+        if (!"".equals(typeDeclaration)) {
+            dbwsBuilder.getTypeDDL().add(typeDeclaration);
+            dbwsBuilder.getTypeDropDDL().add(typeDropDDL);
+        }
         PLSQLrecord plsqlRecord = (PLSQLrecord)typeStack.pop();
         if (!typeStack.empty()) {
             DatabaseType top = typeStack.peek();

@@ -49,7 +49,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC1);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC1.toUpperCase());
@@ -80,7 +80,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC2);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC2.toUpperCase());
@@ -111,7 +111,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC3);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC3.toUpperCase());
@@ -156,7 +156,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC4);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC4.toUpperCase());
@@ -172,7 +172,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC5);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC5.toUpperCase());
@@ -192,7 +192,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern(PROC6);
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(builder);
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
         pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC6.toUpperCase());

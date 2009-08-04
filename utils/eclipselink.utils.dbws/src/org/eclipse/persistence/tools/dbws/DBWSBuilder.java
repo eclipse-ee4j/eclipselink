@@ -33,12 +33,14 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -256,6 +258,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
         new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
     protected NamingConventionTransformer topTransformer;
+    protected Set<String> typeDDL = new HashSet<String>();
+    protected Set<String> typeDropDDL = new HashSet<String>();
 
     public DBWSBuilder() {
         super();
@@ -871,7 +875,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
          * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
          * ObjectRelationalDataTypeDescriptors and mappings, XMLDescriptors and mappings
          */
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(this);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder(getTargetNamespace());
         PublisherListenerChainAdapter chain = new PublisherListenerChainAdapter();
@@ -1669,6 +1673,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             setTargetNamespace(targetNamespace);
         }
         return targetNamespace;
+    }
+
+    public Set<String> getTypeDDL() {
+        return typeDDL;
+    }
+
+    public Set<String> getTypeDropDDL() {
+        return typeDropDDL;
     }
 
     public void useSOAP12() {

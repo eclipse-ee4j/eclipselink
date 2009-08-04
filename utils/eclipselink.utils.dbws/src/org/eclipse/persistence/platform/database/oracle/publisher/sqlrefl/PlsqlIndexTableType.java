@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,11 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//EclipseLink imports
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.MAX_IDENTIFIER_LENGTH;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.getDefaultTypeLen;
 
 public class PlsqlIndexTableType extends SqlType {
-    PlsqlIndexTableType(SqlName sqlName, boolean isNumeric) {
+
+    protected int m_elemTypecode;
+    protected int m_maxLen;
+    protected int m_maxElemLen;
+
+    public PlsqlIndexTableType(SqlName sqlName, boolean isNumeric) {
         super(sqlName, OracleTypes.PLSQL_INDEX_TABLE);
         m_maxLen = MAX_IDENTIFIER_LENGTH;
         if (isNumeric) {
@@ -30,7 +36,7 @@ public class PlsqlIndexTableType extends SqlType {
         }
     }
 
-    PlsqlIndexTableType(SqlName sqlName, boolean isNumeric, int maxLen, int maxElemLen) {
+    public PlsqlIndexTableType(SqlName sqlName, boolean isNumeric, int maxLen, int maxElemLen) {
         super(sqlName, OracleTypes.PLSQL_INDEX_TABLE);
         m_elemTypecode = isNumeric ? OracleTypes.NUMERIC : OracleTypes.CHAR;
         m_maxLen = maxLen;
@@ -48,8 +54,4 @@ public class PlsqlIndexTableType extends SqlType {
     public int getMaxElemLen() {
         return m_maxElemLen;
     }
-
-    private int m_elemTypecode;
-    private int m_maxLen;
-    private int m_maxElemLen;
 }

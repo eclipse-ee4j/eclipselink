@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,16 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
@@ -34,65 +38,40 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Sing
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.UserArguments;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCacheManager;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_COLL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_OBJECTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPE_ATTRS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ATTR_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ATTR_TYPE_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.DEFAULT_VARCHAR_LEN;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ELEM_TYPE_NAME;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_COLLECTION;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_PACKAGE;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_TOPLEVEL;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_TYPE;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.MAX_IDENTIFIER_LENGTH;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OBJECT_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OVERLOAD;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OWNER;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.PACKAGE_NAME;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TYPE_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.getDefaultTypeLen;
 
 /*
  * SQL Type Reflection Facility
  */
-@SuppressWarnings("unchecked")
 public class SqlReflector {
 
     public static final String CHAR_CS = "CHAR_CS";
     public static final String NCHAR_CS = "NCHAR_CS";
-
     public static final String ROWTYPE = "ROWTYPE";
     public static final String ROWTYPE_PL = ROWTYPE + "_PL";
     public static final String ROWTYPE_SQL = ROWTYPE + "_SQL";
-
-    private ViewCacheManager m_viewCacheManager;
-    private ViewCache m_viewCache;
-    private Connection m_conn;
-
-    private Boolean m_isPre920 = null;
-    private boolean m_geq9i;
-    private boolean m_transitive = true;
-
-    private String m_user;
-
-    // A hashtable holding both predefined types and user types
-    // for quick looking up.
-    private Hashtable m_allTypes;
-    private Hashtable m_predefTypes;
-    /*
-     * User types to be published can be added into m_userTypes in difference phases of publishing:
-     * (1) First the types specified by the -sql option in the jpub command line are added (2)
-     * JavaPublisher starts to publish the types in m_userTypes (3) When publishing a type, the
-     * types on which that types depend on are reflected and added to the m_userTypes (4) On
-     * finishing a type, JavaPublisher publishes the next type in the m_userTypes list. The
-     * publishing order seems to be breadth-first.
-     */
-    private Vector m_userTypes;
-
-    // -overwritedbtypes=false
-    private HashSet m_allTypeNames;
-    private HashSet m_allGeneratedTypeNames;
-    private int m_allGeneratedTypeNamesMagicNumber;
     private static final int MAGIC_NUMBER = 0;
-
-    private Hashtable m_allDefaultArgsHolderTypeNames;
-    private HashSet m_isReused;
-
-    private boolean m_getTypeCodeWarning = false;
-
-    private SqlStmtType m_sqlStmtType;
-
-    private int m_rowtypeDistinguisher = 0;
-    private WrapperPackageMetadata m_wrapperPackageMetadata;
 
     public static final SqlType BFILE_TYPE = new SqlType("BFILE", OracleTypes.BFILE);
     public static final SqlType BINARY_INTEGER_TYPE =
@@ -104,51 +83,33 @@ public class SqlReflector {
     public static final SqlType CHAR_TYPE = new SqlType("CHAR", OracleTypes.CHAR);
     public static final SqlType CLOB_TYPE = new SqlType("CLOB", OracleTypes.CLOB);
     public static final SqlType DATE_TYPE = new SqlType("DATE", OracleTypes.DATE);
-
     public static final SqlType NCHAR_TYPE = new SqlType("NCHAR", SqlType.ORACLE_TYPES_NCHAR);
     public static final SqlType NCLOB_TYPE = new SqlType("NCLOB", SqlType.ORACLE_TYPES_NCLOB);
-
     /*
      * public static final SqlType TIME_TYPE = new SqlType("TIME", OracleTypes.TIME); public static
      * final SqlType TIME_WTZ_TYPE = new SqlType("TIME WITH TIME ZONE", OracleTypes.TIME); public
      * static final SqlType TIMETZ_TYPE = // alternate spelling new SqlType("TIME WITH TZ",
      * OracleTypes.TIME);
      */
-
     public static final SqlType TIMESTAMP_TYPE = new SqlType("TIMESTAMP", OracleTypes.TIMESTAMP);
-    public static final SqlType TIMESTAMP_WTZ_TYPE = new SqlType("TIMESTAMP WITH TZ", -101 /*
-                                                                                            * ==OracleTypes
-                                                                                            * .
-                                                                                            * TIMESTAMPTZ
-                                                                                            */);
+    public static final SqlType TIMESTAMP_WTZ_TYPE =
+        new SqlType("TIMESTAMP WITH TZ", -101 ); // ==OracleTypes.TIMESTAMPTZ
     public static final SqlType TIMESTAMPTZ_TYPE = // alternate spelling
-    new SqlType("TIMESTAMP WITH TIME ZONE", -101 /* ==OracleTypes.TIMESTAMPTZ */);
+        new SqlType("TIMESTAMP WITH TIME ZONE", -101 ); // ==OracleTypes.TIMESTAMPTZ
     public static final SqlType TIMESTAMPTZ_TYPE0 = // alternate spelling
-    new SqlType("TIMESTAMPTZ", -101 /* ==OracleTypes.TIMESTAMPTZ */);
-    public static final SqlType TIMESTAMP_WLTZ_TYPE = new SqlType("TIMESTAMP WITH LOCAL TZ", -102 /*
-                                                                                                   * ==OracleTypes
-                                                                                                   * .
-                                                                                                   * TIMESTAMPLTZ
-                                                                                                   */);
+        new SqlType("TIMESTAMPTZ", -101 ); // ==OracleTypes.TIMESTAMPTZ
+    public static final SqlType TIMESTAMP_WLTZ_TYPE =
+        new SqlType("TIMESTAMP WITH LOCAL TZ", -102 ); // ==OracleTypes.TIMESTAMPLTZ
     public static final SqlType TIMESTAMPLTZ_TYPE = // alternate spelling
-    new SqlType("TIMESTAMP WITH LOCAL TIME ZONE", -102 /* ==OracleTypes.TIMESTAMPLTZ */);
+    new SqlType("TIMESTAMP WITH LOCAL TIME ZONE", -102 ); // ==OracleTypes.TIMESTAMPLTZ
     public static final SqlType TIMESTAMPLTZ_TYPE0 = // alternate spelling
-    new SqlType("TIMESTAMPLTZ", -102 /* ==OracleTypes.TIMESTAMPLTZ */);
-
-    /*
-     * public static final SqlType INTERVAL_YM_TYPE = new SqlType("INTERVAL YEAR TO MONTH",
-     * OracleTypes.INTERVALYM); public static final SqlType INTERVAL_DS_TYPE = new
-     * SqlType("INTERVAL DAY TO SECOND", OracleTypes.INTERVALDS);
-     */
-
+    new SqlType("TIMESTAMPLTZ", -102 ); // ==OracleTypes.TIMESTAMPLTZ
     public static final SqlType DECIMAL_TYPE = new SqlType("DECIMAL", OracleTypes.DECIMAL);
     public static final SqlType DOUBLE_PRECISION_TYPE = new SqlType("DOUBLE PRECISION",
         OracleTypes.DOUBLE);
-
     public static final SqlType FLOAT_TYPE = new SqlType("FLOAT", OracleTypes.FLOAT);
     public static final SqlType FLOAT38TYPE = new SqlType("FLOAT38", OracleTypes.NUMBER);
-
-    // TODO: Using the two types, 101 (OracleTypes.BDOUBLE),
+    // TBD: Using the two types, 101 (OracleTypes.BDOUBLE),
     // 100 (OracleType.BFLOAT), results in <unsupported type>,
     // e.g., for the command
     // jpub -u scott/tiger -sql=sys.xmltype:XMLType
@@ -156,7 +117,6 @@ public class SqlReflector {
     public static final SqlType BINARY_FLOAT_TYPE = new SqlType("BINARY_FLOAT", 100); // OracleTypes.BFLOAT
     // Note: not referencing OracleTypes.BDOULBE and BFLOAT is
     // to avoid incompatible with pre-10i JDBC drivers
-
     public static final SqlType INTEGER_TYPE = new SqlType("INTEGER", OracleTypes.INTEGER);
     public static final SqlType INT_TYPE = new SqlType("INT", OracleTypes.INTEGER);
     public static final SqlType LONG_TYPE =
@@ -202,11 +162,42 @@ public class SqlReflector {
     public static final SqlType UNKNOWN_TYPE = new SqlType("<unknown type or type not found>",
         OracleTypes.UNSUPPORTED);
 
+    protected ViewCacheManager m_viewCacheManager;
+    protected ViewCache m_viewCache;
+    protected Connection m_conn;
+    protected Boolean m_isPre920 = null;
+    protected boolean m_geq9i;
+    protected boolean m_transitive = true;
+    protected String m_user;
+    // A hashtable holding both predefined types and user types
+    // for quick looking up.
+    protected Map<Name, TypeClass> m_allTypes;
+    protected Map<Name, TypeClass> m_predefTypes;
+    /*
+     * User types to be published can be added into m_userTypes in difference phases of publishing:
+     * (1) First the types specified by the -sql option in the jpub command line are added (2)
+     * JavaPublisher starts to publish the types in m_userTypes (3) When publishing a type, the
+     * types on which that types depend on are reflected and added to the m_userTypes (4) On
+     * finishing a type, JavaPublisher publishes the next type in the m_userTypes list. The
+     * publishing order seems to be breadth-first.
+     */
+    protected List<TypeClass> m_userTypes;
+    // -overwritedbtypes=false
+    protected HashSet<String> m_allTypeNames;
+    protected HashSet<String> m_allGeneratedTypeNames;
+    protected int m_allGeneratedTypeNamesMagicNumber;
+    protected Map<String, String> m_allDefaultArgsHolderTypeNames;
+    protected HashSet<String>m_isReused;
+    protected boolean m_getTypeCodeWarning = false;
+    protected SqlStmtType m_sqlStmtType;
+    protected int m_rowtypeDistinguisher = 0;
+    protected WrapperPackageMetadata m_wrapperPackageMetadata;
+    protected Map<String, SqlType> m_typeMap = new HashMap<String, SqlType>();
+
     public SqlReflector(Connection conn, String user) {
         m_viewCacheManager = new ViewCacheManager(conn);
         m_user = user;
         reset(conn);
-
     }
 
     public void reset(Connection conn) {
@@ -229,18 +220,18 @@ public class SqlReflector {
             m_viewCache.reset(m_conn);
         }
 
-        m_allTypes = new Hashtable();
-        m_predefTypes = new Hashtable();
-        m_userTypes = new Vector();
+        m_allTypes = new HashMap<Name, TypeClass>();
+        m_predefTypes = new HashMap<Name, TypeClass>();
+        m_userTypes = new ArrayList<TypeClass>();
         sqlTypeInit();
 
-        m_allTypeNames = new HashSet();
-        m_allGeneratedTypeNames = new HashSet();
+        m_allTypeNames = new HashSet<String>();
+        m_allGeneratedTypeNames = new HashSet<String>();
         m_allGeneratedTypeNamesMagicNumber = MAGIC_NUMBER;
-        m_allDefaultArgsHolderTypeNames = new Hashtable();
+        m_allDefaultArgsHolderTypeNames = new HashMap<String, String>();
         m_sqlStmtType = null;
 
-        m_isReused = new HashSet();
+        m_isReused = new HashSet<String>();
         m_wrapperPackageMetadata = null;
 
         if (conn != null) {
@@ -250,7 +241,7 @@ public class SqlReflector {
 
     public void loadAllTypeNames() {
         try {
-            Iterator iter = m_viewCache.getRows(Util.ALL_TYPES, new String[]{Util.TYPE_NAME},
+            Iterator<ViewRow> iter = m_viewCache.getRows(ALL_TYPES, new String[]{TYPE_NAME},
                 new String[0], new Object[0], new String[0]);
             while (iter.hasNext()) {
                 SingleColumnViewRow row = (SingleColumnViewRow)iter.next();
@@ -258,15 +249,13 @@ public class SqlReflector {
             }
         }
         catch (Exception e) { /* Cannot access ALL_TYPES table */
-            e.printStackTrace();
-            ;
+            e.printStackTrace();;
         }
-
     }
 
     // Determine the SQL type name for a PL/SQL type
     public String determineSqlName(String packageName, String[] sourceName, TypeClass parentType,
-        boolean[] isRowType, AttributeField[] fields, SqlType elemType, SqlType valueType)
+        boolean[] isRowType, List<AttributeField> fields, SqlType elemType, SqlType valueType)
         throws SQLException {
         String parentName = null; // Java name for the PL/SQL package
         if (parentType != null) {
@@ -302,8 +291,8 @@ public class SqlReflector {
         return determineSqlName(name, toBeDistinguished, fields, elemType, valueType);
     }
 
-    private String determineSqlName(String name, boolean toBeDistinguished, AttributeField[] fields,
-        SqlType elemType, SqlType valueType) throws SQLException {
+    private String determineSqlName(String name, boolean toBeDistinguished,
+        List<AttributeField> fields, SqlType elemType, SqlType valueType) throws SQLException {
 
         String origName = name;
         if (valueType != null) {
@@ -315,18 +304,18 @@ public class SqlReflector {
 
         if (m_allTypeNames.contains(name)) {
             boolean match = true;
-            Iterator iter;
+            Iterator<ViewRow> iter;
             if (fields != null) {
-                HashSet hs = new HashSet();
-                for (int i = 0; i < fields.length; i++) {
-                    String fieldType = ((SqlName)fields[i].getType().getNameObject())
+                HashSet<String> hs = new HashSet<String>();
+                for (int i = 0; i < fields.size(); i++) {
+                    AttributeField af = fields.get(i);
+                    String fieldType = ((SqlName)af.getType().getNameObject())
                         .getTargetTypeName();
-                    hs.add(fieldType + fields[i].getName());
+                    hs.add(fieldType + af.getName());
                 }
-
-                iter = m_viewCache.getRows(Util.ALL_TYPE_ATTRS, new String[]{"CONCAT("
-                    + Util.ATTR_TYPE_NAME + "," + Util.ATTR_NAME + ")"},
-                    new String[]{Util.TYPE_NAME}, new Object[]{name}, new String[0]);
+                iter = m_viewCache.getRows(ALL_TYPE_ATTRS, new String[]{"CONCAT("
+                    + ATTR_TYPE_NAME + "," + ATTR_NAME + ")"},
+                    new String[]{TYPE_NAME}, new Object[]{name}, new String[0]);
                 int count = 0;
                 while (iter.hasNext()) {
                     String attr = ((SingleColumnViewRow)iter.next()).getValue();
@@ -338,8 +327,8 @@ public class SqlReflector {
                 match = match && (count == hs.size());
             }
             else if (elemType != null) {
-                iter = m_viewCache.getRows(Util.ALL_COLL_TYPES, new String[]{Util.ELEM_TYPE_NAME},
-                    new String[]{Util.TYPE_NAME}, new Object[]{name}, new String[0]);
+                iter = m_viewCache.getRows(ALL_COLL_TYPES, new String[]{ELEM_TYPE_NAME},
+                    new String[]{TYPE_NAME}, new Object[]{name}, new String[0]);
                 if (iter.hasNext()) {
                     String elemTypeNameInDb = ((SingleColumnViewRow)iter.next()).getValue();
                     String elemTypeName = elemType.getSqlName().getTargetTypeName();
@@ -350,8 +339,8 @@ public class SqlReflector {
                 }
             }
             else if (valueType != null) {
-                iter = m_viewCache.getRows(Util.ALL_TYPE_ATTRS, new String[]{Util.ATTR_TYPE_NAME},
-                    new String[]{Util.TYPE_NAME}, new Object[]{name}, new String[0]);
+                iter = m_viewCache.getRows(ALL_TYPE_ATTRS, new String[]{ATTR_TYPE_NAME},
+                    new String[]{TYPE_NAME}, new Object[]{name}, new String[0]);
                 if (iter.hasNext()) {
                     String valueTypeNameInDb = ((SingleColumnViewRow)iter.next()).getValue();
                     String valueTypeName = valueType.getSqlName().getTargetTypeName();
@@ -408,7 +397,7 @@ public class SqlReflector {
 
     private void sqlTypeInit() {
         if (!m_allTypes.isEmpty()) {
-            m_allTypes = new Hashtable();
+            m_allTypes = new HashMap<Name, TypeClass>();
         }
         m_allTypes.put(BFILE_TYPE.m_name, BFILE_TYPE);
         m_allTypes.put(BINARY_INTEGER_TYPE.m_name, BINARY_INTEGER_TYPE);
@@ -417,15 +406,13 @@ public class SqlReflector {
         m_allTypes.put(CHAR_TYPE.m_name, CHAR_TYPE);
         m_allTypes.put(CLOB_TYPE.m_name, CLOB_TYPE);
         m_allTypes.put(DATE_TYPE.m_name, DATE_TYPE);
-
         m_allTypes.put(NCHAR_TYPE.m_name, NCHAR_TYPE);
         m_allTypes.put(NCLOB_TYPE.m_name, NCLOB_TYPE);
-
         /*
-         * m_allTypes.put(TIME_TYPE.m_name, TIME_TYPE); m_allTypes.put(TIME_WTZ_TYPE.m_name,
-         * TIME_WTZ_TYPE); m_allTypes.put(TIMETZ_TYPE.m_name, TIMETZ_TYPE);
+         * m_allTypes.put(TIME_TYPE.m_name, TIME_TYPE);
+         * m_allTypes.put(TIME_WTZ_TYPE.m_name,TIME_WTZ_TYPE);
+         * m_allTypes.put(TIMETZ_TYPE.m_name, TIMETZ_TYPE);
          */
-
         m_allTypes.put(TIMESTAMP_TYPE.m_name, TIMESTAMP_TYPE);
         m_allTypes.put(TIMESTAMP_WTZ_TYPE.m_name, TIMESTAMP_WTZ_TYPE);
         m_allTypes.put(TIMESTAMPTZ_TYPE.m_name, TIMESTAMPTZ_TYPE);
@@ -433,12 +420,10 @@ public class SqlReflector {
         m_allTypes.put(TIMESTAMP_WLTZ_TYPE.m_name, TIMESTAMP_WLTZ_TYPE);
         m_allTypes.put(TIMESTAMPLTZ_TYPE.m_name, TIMESTAMPLTZ_TYPE);
         m_allTypes.put(TIMESTAMPLTZ_TYPE0.m_name, TIMESTAMPLTZ_TYPE0);
-
         /*
          * m_allTypes.put(INTERVAL_YM_TYPE.m_name, INTERVAL_YM_TYPE);
          * m_allTypes.put(INTERVAL_YM_TYPE.m_name, INTERVAL_YM_TYPE);
          */
-
         m_allTypes.put(DECIMAL_TYPE.m_name, DECIMAL_TYPE);
         m_allTypes.put(BINARY_DOUBLE_TYPE.m_name, BINARY_DOUBLE_TYPE);
         m_allTypes.put(DOUBLE_PRECISION_TYPE.m_name, DOUBLE_PRECISION_TYPE);
@@ -598,8 +583,8 @@ public class SqlReflector {
                 return new SqlToplevelType(sqlName, parentType, signatureFilter, this);
             }
             else if ((whatIsIt & IS_PACKAGE) != 0) {
-                Iterator rowIter = m_viewCache.getRows(Util.ALL_OBJECTS,
-                    new String[]{"'PACKAGE' AS TYPECODE"}, new String[]{"OWNER", "OBJECT_NAME",
+                Iterator<ViewRow> rowIter = m_viewCache.getRows(ALL_OBJECTS,
+                    new String[]{"'PACKAGE' AS TYPECODE"}, new String[]{OWNER, OBJECT_NAME,
                         "OBJECT_TYPE", "STATUS"}, new Object[]{schema, type, "PACKAGE", "VALID"},
                     new String[0]);
 
@@ -616,16 +601,14 @@ public class SqlReflector {
             }
 
             /* determine whether this is an opaque type */
-            Iterator iter = m_viewCache.getRows(Util.ALL_TYPES, new String[0], new String[]{
-                "OWNER", Util.TYPE_NAME, "PREDEFINED"}, new Object[]{schema, type, "NO"},
+            Iterator<ViewRow> iter = m_viewCache.getRows(ALL_TYPES, new String[0], new String[]{
+                OWNER, TYPE_NAME, "PREDEFINED"}, new Object[]{schema, type, "NO"},
                 new String[0]);
             if (iter.hasNext()) {
                 AllTypes allTypes = (AllTypes)iter.next();
                 String typeCode = allTypes.typeCode;
                 byte[] typeOID = allTypes.typeOid;
                 int dbTypeCode = 0;
-                @SuppressWarnings("unused")
-                String name;
                 int kind = 0;
                 if (!m_getTypeCodeWarning) {
                     try {
@@ -637,7 +620,6 @@ public class SqlReflector {
                             throw new SQLException("no data from sqljutl.get_typecode call");
                         }
                         dbTypeCode = ((Integer)outParams[0]).intValue();
-                        name = (String)outParams[1];
                         kind = ((Integer)outParams[2]).intValue();
                     }
                     catch (SQLException exn) {
@@ -669,20 +651,22 @@ public class SqlReflector {
                 }
                 else if (typeCode.equals("OBJECT")) {
                     result = new SqlObjectType(sqlName, generateMe, parentType, this);
-                    if (SqlName.langIsOtt()) { /*
-                                                * For C only. Maura - I'm not sure about this, but
-                                                * it seems that a ref typedef has to be generated
-                                                * for every struct. That's the purpose of the
-                                                * following SqlRefType
-                                                */
-
+                    if (SqlName.langIsOtt()) {
+                        /*
+                         * For C only. Maura - I'm not sure about this, but
+                         * it seems that a ref typedef has to be generated
+                         * for every struct. That's the purpose of the
+                         * following SqlRefType
+                         */
                         new SqlRefType(sqlName, result, parentType, generateMe, this);
                     }
-                    if (PublisherModifier.isIncomplete(result.getModifiers())) { /*
-                                                                         * give warning about
-                                                                         * incomplete type and
-                                                                         * continue
-                                                                         */
+                    if (PublisherModifier.isIncomplete(result.getModifiers())) {
+                        /*
+                         * give warning
+                         * about incomplete
+                         * type and
+                         * continue
+                         */
                         int line = sqlName.getLine();
                         int column = sqlName.getColumn();
                         String mesg = "incomplete type " + sqlName.toString();
@@ -697,8 +681,8 @@ public class SqlReflector {
                     if ((whatIsIt & IS_COLLECTION) == 0) {
                         throw new PublisherException("collection found " + sqlName.toString());
                     }
-                    Iterator iter3 = m_viewCache.getRows("ALL_COLL_TYPES", new String[0],
-                        new String[]{"OWNER", "TYPE_NAME"}, new Object[]{schema, type},
+                    Iterator<ViewRow> iter3 = m_viewCache.getRows(ALL_COLL_TYPES, new String[0],
+                        new String[]{OWNER, TYPE_NAME}, new Object[]{schema, type},
                         new String[0]);
                     if (iter3.hasNext()) {
                         AllCollTypes act = (AllCollTypes)iter3.next();
@@ -836,26 +820,26 @@ public class SqlReflector {
 
         // Start processing PL/SQL types
         // Check wether the ROWTYPE has bee published
-        RowtypeInfo[] rowtypeInfoA = null;
+        List<RowtypeInfo> rowtypeInfoA = null;
         if (modifier != null && type != null && modifier.equals("PL/SQL RECORD")
             && type.equals("PL/SQL RECORD")) {
             rowtypeInfoA = reflectRowtypeInfo(packageName, methodName, methodNo, sequence);
             for (int i = 0; i < m_userTypes.size(); i++) {
                 boolean found = true;
-                TypeClass p = (TypeClass)m_userTypes.elementAt(i);
+                TypeClass p = m_userTypes.get(i);
                 if (!(p instanceof PlsqlRecordType)) {
                     continue;
                 }
-                RowtypeInfo[] rowtypeInfoB = ((PlsqlRecordType)p).getRowtypeInfo();
+                List<RowtypeInfo> rowtypeInfoB = ((PlsqlRecordType)p).getRowtypeInfo();
                 if (rowtypeInfoB == null || rowtypeInfoA == null
-                    || rowtypeInfoA.length != rowtypeInfoB.length) {
+                    || rowtypeInfoA.size() != rowtypeInfoB.size()) {
                     found = false;
                     continue;
                 }
-                for (int ja = 0; ja < rowtypeInfoA.length; ja++) {
+                for (int ja = 0; ja < rowtypeInfoA.size(); ja++) {
                     boolean microFound = false;
-                    for (int jb = 0; jb < rowtypeInfoB.length; jb++) {
-                        if (rowtypeInfoA[ja].equals(rowtypeInfoB[jb])) {
+                    for (int jb = 0; jb < rowtypeInfoB.size(); jb++) {
+                        if (rowtypeInfoA.get(ja).equals(rowtypeInfoB.get(jb))) {
                             microFound = true;
                             break;
                         }
@@ -903,10 +887,10 @@ public class SqlReflector {
         // Case 1: result is null
         // Case 2: result not null, predefined, OracleTypes_TBD
         if (modifier != null && modifier.equals("PL/SQL RECORD")) {
-            FieldInfo[] fieldInfo = PlsqlRecordType.getFieldInfo(packageName, methodName, methodNo,
+            List<FieldInfo> fieldInfo = PlsqlRecordType.getFieldInfo(packageName, methodName, methodNo,
                 sequence, this);
-            AttributeField[] fields = PlsqlRecordType
-                .reflectFields(false, fieldInfo, this, parentType, true /* isGrandparent */);
+            List<AttributeField> fields = PlsqlRecordType.reflectFields(false, fieldInfo, this,
+                parentType, true /* isGrandparent */);
             // if predefined, overwrite entry already in m_predefiendTypes
             if (predefined) {
                 String hint = result.getHint();
@@ -971,57 +955,49 @@ public class SqlReflector {
     /*
      * look up rowtype columns
      */
-    RowtypeInfo[] reflectRowtypeInfo(String packageName, String methodName, String methodNo,
-        int sequence)
-
-    throws java.sql.SQLException {
+    List<RowtypeInfo> reflectRowtypeInfo(String packageName, String methodName, String methodNo,
+        int sequence) throws SQLException {
         // Although package_name and type_name derived from getPlsqlTypeName()
         // can be used for the queries, we use method and sequence
         // to be more general. If this type is defined via CURSOR%ROWTYPE,
         // method, method_no and sequence has to be used to
         // identify this type in ALL_ARGUMENTS.
-        Iterator iter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], new String[]{
-            "PACKAGE_NAME", "OBJECT_NAME", "OVERLOAD"}, new Object[]{packageName, methodName,
+        Iterator<ViewRow> iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{
+           PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{packageName, methodName,
             methodNo}, new String[0]);
-        Vector viewRows = new Vector();
+        ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) { // DISTINCT not enforced
             UserArguments item = (UserArguments)iter.next();
-            viewRows.addElement(item);
+            viewRows.add(item);
         }
-        RowtypeInfo[] rowtypeInfoA = RowtypeInfo.getRowtypeInfo(viewRows);
-
+        List<RowtypeInfo> rowtypeInfoA = RowtypeInfo.getRowtypeInfo(viewRows);
         int data_level = 0;
-        for (int i = 0; i < rowtypeInfoA.length; i++) {
-            RowtypeInfo rti = (RowtypeInfo)rowtypeInfoA[i];
+        for (int i = 0; i < rowtypeInfoA.size(); i++) {
+            RowtypeInfo rti = rowtypeInfoA.get(i);
             if (sequence == -1 || sequence == rti.sequence()) {
                 data_level = rti.data_level();
                 break;
             }
         }
         int next_rec_sequence = -1;
-        for (int i = 0; i < rowtypeInfoA.length; i++) {
-            RowtypeInfo rti = (RowtypeInfo)rowtypeInfoA[i];
+        for (int i = 0; i < rowtypeInfoA.size(); i++) {
+            RowtypeInfo rti = rowtypeInfoA.get(i);
             if (data_level == rti.data_level() && (sequence == -1 || sequence < rti.sequence())) {
                 next_rec_sequence = rti.sequence();
                 break;
             }
         }
         data_level++;
-        Vector rowtypeInfoW = new Vector();
-        for (int i = 0; i < rowtypeInfoA.length; i++) {
-            RowtypeInfo rti = (RowtypeInfo)rowtypeInfoA[i];
+        ArrayList<RowtypeInfo> rowtypeInfoW = new ArrayList<RowtypeInfo>();
+        for (int i = 0; i < rowtypeInfoA.size(); i++) {
+            RowtypeInfo rti = rowtypeInfoA.get(i);
             if ((sequence == -1 || sequence < rti.sequence()) && data_level == rti.data_level()
             // && data_level <= rti.data_level()
                 && (next_rec_sequence == -1 || next_rec_sequence > rti.sequence())) {
-                rowtypeInfoW.addElement(rti);
+                rowtypeInfoW.add(rti);
             }
         }
-        rowtypeInfoA = new RowtypeInfo[rowtypeInfoW.size()];
-        for (int i = 0; i < rowtypeInfoW.size(); i++) {
-            rowtypeInfoA[i] = (RowtypeInfo)rowtypeInfoW.elementAt(i);
-            rowtypeInfoA[i].data_level(rowtypeInfoA[i].data_level() - data_level + 1);
-        }
-        return rowtypeInfoA;
+        return rowtypeInfoW;
     }
 
     public SqlType addPredefType(String schema, String type, int typecode, String javaName,
@@ -1033,7 +1009,7 @@ public class SqlReflector {
         int pos;
         String annotation;
         boolean isPlsqlIndexTable = false;
-        int maxLen = Integer.valueOf(Util.DEFAULT_VARCHAR_LEN);
+        int maxLen = Integer.valueOf(DEFAULT_VARCHAR_LEN);
         int maxElemLen = -1;
         boolean isNumeric = true;
         if ((pos = javaName.indexOf("[")) >= 0) {
@@ -1065,7 +1041,7 @@ public class SqlReflector {
             }
             javaName = javaName + "[]";
             if (maxElemLen == -1) {
-                maxElemLen = Integer.valueOf(Util.getDefaultTypeLen("VARCHAR2"));
+                maxElemLen = Integer.valueOf(getDefaultTypeLen("VARCHAR2"));
             }
         }
         else {
@@ -1086,7 +1062,6 @@ public class SqlReflector {
         return st;
     }
 
-    @SuppressWarnings("unused")
     public SqlType addPredefType(SqlName name, int typecode) throws PublisherException {
         // To determine whether the Java type implements ORAData or CustomData
         boolean isPrimitive = true;
@@ -1094,7 +1069,7 @@ public class SqlReflector {
             .getDeclPackage() + ".")
             : "")
             + name.getDeclClass();
-        Class declClass = null;
+        Class<?> declClass = null;
         try {
             declClass = Class.forName(declClassName);
         }
@@ -1112,12 +1087,12 @@ public class SqlReflector {
         }
         else if (declClass != null) {
             try {
-                java.lang.reflect.Field f = declClass.getField("_SQL_TYPENAME");
+                declClass.getField("_SQL_TYPENAME");
                 isPrimitive = false;
             }
             catch (Throwable t) {
                 try {
-                    java.lang.reflect.Field f = declClass.getField("_SQL_NAME");
+                    declClass.getField("_SQL_NAME");
                     isPrimitive = false;
                 }
                 catch (Throwable t2) {
@@ -1164,9 +1139,11 @@ public class SqlReflector {
     }
 
     public void addType(Name name, TypeClass type, boolean generateMe) {
-        m_allTypes.put(name, type);
         if (generateMe) {
-            m_userTypes.addElement(type);
+            m_userTypes.add(type);
+        }
+        if (name instanceof SqlName && type instanceof SqlType) {
+            m_allTypes.put((SqlName)name, (SqlType)type);
         }
     }
 
@@ -1193,61 +1170,10 @@ public class SqlReflector {
         return result;
     }
 
-    /**
-     * This method returns an iterator of all the user-defined PL/SQL types, ordered by dependency.
-     * I.e., a type depending on another type appears later in the enumeration.
-     */
-    public Enumeration getPlsqlUserTypes() {
-
-        // To make the order of this enumeration deterministic, lets first
-        // get the PL/SQL types sorted by name.
-        Vector sortedPlsqlTypes = new Vector();
-        for (int i = 0; i < m_userTypes.size(); i++) {
-            if (!(m_userTypes.elementAt(i) instanceof SqlType)) {
-                continue;
-            }
-            SqlType t = (SqlType)m_userTypes.elementAt(i);
-            String name = t.getName();
-
-            if (t.isPlsqlRecord() || t.isPlsqlTable() || t instanceof DefaultArgsHolderType) {
-                boolean inserted = false;
-                for (int j = 0; j < sortedPlsqlTypes.size(); j++) {
-                    String name2 = ((SqlType)sortedPlsqlTypes.elementAt(j)).getName();
-                    if (name.compareTo(name2) < 0) {
-                        sortedPlsqlTypes.insertElementAt(t, j);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) {
-                    sortedPlsqlTypes.addElement(t);
-                }
-            }
-        }
-
-        Vector plsqlUserTypes = new Vector();
-        for (int i = 0; i < sortedPlsqlTypes.size(); i++) {
-            SqlType t = (SqlType)sortedPlsqlTypes.elementAt(i);
-
-            boolean inserted = false;
-            for (int j = 0; j < plsqlUserTypes.size(); j++) {
-                if (((SqlType)plsqlUserTypes.elementAt(j)).dependsOn(t)) {
-                    plsqlUserTypes.insertElementAt(t, j);
-                    inserted = true;
-                    break;
-                }
-            }
-            if (!inserted) {
-                plsqlUserTypes.addElement(t);
-            }
-        }
-        return plsqlUserTypes.elements();
-    }
-
     public boolean isUserType(TypeClass t) {
         if (t instanceof SqlType) {
             for (int i = 0; i < m_userTypes.size(); i++) {
-                if (m_userTypes.elementAt(i).equals(t)) {
+                if (m_userTypes.get(i).equals(t)) {
                     return true;
                 }
             }
@@ -1274,7 +1200,7 @@ public class SqlReflector {
         return _findType(m_predefTypes, sqlName);
     }
 
-    private SqlType _findType(Hashtable ht, SqlName sqlName) {
+    private SqlType _findType(Map<Name, TypeClass> ht, SqlName sqlName) {
         return (SqlType)ht.get(sqlName);
         /*
          * Enumeration keys = ht.keys(); while (keys.hasMoreElements()) { Object key =
@@ -1297,11 +1223,11 @@ public class SqlReflector {
     /**
      * Add all types declared in the given schema to the set of types to be translated.
      */
-    public void addAllTypes(String schema) throws java.sql.SQLException, PublisherException {
+    public void addAllTypes(String schema) throws SQLException, PublisherException {
         if (m_conn != null) {
-            Iterator iter = m_viewCache
-                .getRows(Util.ALL_TYPES, new String[0], new String[]{Util.OWNER, "PREDEFINED"},
-                    new Object[]{schema, "NO"}, new String[]{Util.TYPE_NAME});
+            Iterator<ViewRow> iter = m_viewCache
+                .getRows(ALL_TYPES, new String[0], new String[]{OWNER, "PREDEFINED"},
+                    new Object[]{schema, "NO"}, new String[]{TYPE_NAME});
             while (iter.hasNext()) {
                 AllTypes allTypes = (AllTypes)iter.next();
                 addSqlDBType(schema, allTypes.typeName, null, "", false, null);
@@ -1311,8 +1237,8 @@ public class SqlReflector {
 
     public void addAllPackages(String schema) throws SQLException, PublisherException {
         if (m_conn != null) {
-            PreparedStatement stmt = m_conn
-                .prepareStatement("SELECT OBJECT_NAME AS TYPE_NAME FROM ALL_OBJECTS WHERE OWNER = :1 AND OBJECT_TYPE = 'PACKAGE' AND STATUS='VALID'");
+            PreparedStatement stmt = m_conn.prepareStatement("SELECT OBJECT_NAME AS TYPE_NAME FROM " +
+            		"ALL_OBJECTS WHERE OWNER = :1 AND OBJECT_TYPE = 'PACKAGE' AND STATUS='VALID'");
             stmt.setString(1, schema);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -1345,15 +1271,15 @@ public class SqlReflector {
     }
 
     /* Add Java non-array types for publishing */
-    public JavaType addJavaType(String typeName, AttributeField[] fields, ProcedureMethod[] methods,
-        boolean genPattern, TypeClass sqlType) throws SQLException {
+    public JavaType addJavaType(String typeName, List<AttributeField> fields,
+        List<ProcedureMethod> methods, boolean genPattern, TypeClass sqlType) throws SQLException {
         if (typeName == null) {
             return null;
         }
         JavaType jt = null;
         for (int i = 0; i < m_userTypes.size(); i++) {
-            if (m_userTypes.elementAt(i) instanceof JavaType) {
-                JavaType jTypeTmp = (JavaType)m_userTypes.elementAt(i);
+            if (m_userTypes.get(i) instanceof JavaType) {
+                JavaType jTypeTmp = (JavaType)m_userTypes.get(i);
                 JavaName jNameTmp = new JavaName(null, typeName, null, null, null);
                 if (jTypeTmp.getJavaName().equals(jNameTmp)) {
                     jt = jTypeTmp;
@@ -1368,7 +1294,7 @@ public class SqlReflector {
             javaName = (JavaName)genPattern(javaName, typeName, false);
         }
         jt = new JavaBaseType(javaName, fields, methods, sqlType);
-        m_userTypes.addElement(jt);
+        m_userTypes.add(jt);
         return jt;
     }
 
@@ -1377,9 +1303,9 @@ public class SqlReflector {
      * type has methods
      */
     public boolean hasMethodsInSubclasses(TypeClass who) throws SQLException, PublisherException {
-        Enumeration v = m_userTypes.elements();
-        while (v.hasMoreElements()) {
-            Object t = v.nextElement();
+        Iterator<TypeClass> iter = m_userTypes.iterator();
+        while (iter.hasNext()) {
+            TypeClass t = iter.next();
             if (!(t instanceof SqlType)) {
                 continue;
             }
@@ -1407,17 +1333,14 @@ public class SqlReflector {
         if (m_isPre920 == null) {
             try {
                 String v = m_conn.getMetaData().getDatabaseProductVersion().toUpperCase();
-
                 if (v.startsWith("ORACLE DATABASE 10G") || v.startsWith("ORACLE DATABASE 11G")) {
                     m_isPre920 = new Boolean(false);
                     return false;
                 }
-
                 int pos = v.indexOf("ORACLE");
                 if (0 < pos) {
                     v = v.substring(pos);
                 }
-
                 String vp = v.substring(0, "ORACLExx".length()).toUpperCase();
                 if (vp.equals("ORACLE12")
                     || vp.equals("ORACLE11")
@@ -1450,7 +1373,6 @@ public class SqlReflector {
             if (0 < pos) {
                 dv = dv.substring(pos);
             }
-
             geq9i = dv.startsWith("ORACLE9") || dv.startsWith("ORACLE DATABASE 10G")
                 || dv.startsWith("ORACLE DATABASE 11G") || dv.startsWith("ORACLE1")
                 || dv.startsWith("ORACLE2") || dv.startsWith("ORACLE3");
@@ -1474,7 +1396,7 @@ public class SqlReflector {
         return m_userTypes.isEmpty();
     }
 
-    public Hashtable getTypeMap() {
+    public Map<String, SqlType> getTypeMap() {
         return m_typeMap;
     }
 
@@ -1569,7 +1491,6 @@ public class SqlReflector {
         return uniqueName;
     }
 
-    private Hashtable m_typeMap;
 
     public ViewCache getViewCache() {
         return m_viewCache;
@@ -1597,8 +1518,8 @@ public class SqlReflector {
      * Returns all the user-defined SqlTypes. New types may be appended to the end of the
      * enumeration as the existing types are published or navigated.
      */
-    public Enumeration getUserTypes() {
-        return m_userTypes.elements();
+    public Iterator<TypeClass> getUserTypes() {
+        return m_userTypes.iterator();
     }
 
     /**
@@ -1617,7 +1538,5 @@ public class SqlReflector {
         m_wrapperPackageMetadata.addMethod(new WrapperMethodMetadata(name, paramTypes, paramNames,
             returnType));
     }
-    /*
-     * END Public APIs provided to JDeveloper
-     */
+
 }

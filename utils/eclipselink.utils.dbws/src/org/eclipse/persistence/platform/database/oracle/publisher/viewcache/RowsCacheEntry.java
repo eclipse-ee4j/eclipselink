@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,28 +12,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
-import java.io.Externalizable;
-import java.io.IOException;
+//javase imports
 import java.util.ArrayList;
 
-@SuppressWarnings("unchecked")
-public class RowsCacheEntry implements Externalizable {
-    private String m_view;
-    private String[] m_selects;
-    private String[] m_keys;
-    private Object[] m_values;
-    private ArrayList m_rows;
+public class RowsCacheEntry {
+
+    protected String m_view;
+    protected String[] m_selects;
+    protected String[] m_keys;
+    protected Object[] m_values;
+    protected ArrayList<ViewRow> m_rows;
 
     public RowsCacheEntry() {
         // for serialization
     }
 
     public RowsCacheEntry(String view, String[] selects, String[] keys, Object[] values,
-        ArrayList rows) {
+        ArrayList<ViewRow> rowsV) {
         m_view = view;
         m_keys = keys;
         m_values = values;
-        m_rows = rows;
+        m_rows = rowsV;
         m_selects = selects;
     }
 
@@ -53,13 +52,13 @@ public class RowsCacheEntry implements Externalizable {
         return m_values;
     }
 
-    public ArrayList getRows() {
+    public ArrayList<ViewRow> getRows() {
         return m_rows;
     }
 
     /**
      * Instance "this" is the cache query
-     * 
+     *
      * @param to
      *            the target query
      * @return ${to} MINUS ${this}
@@ -70,18 +69,6 @@ public class RowsCacheEntry implements Externalizable {
             if (m_selects.length == 0 || to.getSelects().length == 1) {
                 if (m_keys.length < to.getKeys().length) {
                     boolean compatible = true;
-                    /*
-                     * String[] toKeys = to.getKeys(); HashSet toHash = new HashSet(); HashSet mHash
-                     * = new HashSet(); for (int i=0; i<toKeys; i++) { toHash.add(toKeys[i]); } for
-                     * (int i=0; i<m_keys; i++) { mHash.add(m_keys[i]); if
-                     * (!toHash.contains(m_keys[i])) { compatible = false; } } if (compatible) {
-                     * ArrayList diffKeys = new ArrayList(); ArrayList diffValues = new ArrayList();
-                     * for (int i=0; i<toKeys; i++) { if (!mHash.contains(toKeys[i])) {
-                     * diffKeys.add(toKeys[i]); diffValues.add(to.getValues()[i]); } } diff = new
-                     * RowsCacheEntry( m_view, (String[]) diffKeys.toArray(new String[0]),
-                     * diffValues.toArray(new Object[0]), m_rows); }
-                     */
-
                     for (int i = 0; i < m_keys.length; i++) {
                         boolean match = false;
                         for (int j = 0; j < to.getKeys().length; j++) {
@@ -110,8 +97,8 @@ public class RowsCacheEntry implements Externalizable {
                             break;
                         }
                     }
-                    ArrayList keys = new ArrayList();
-                    ArrayList values = new ArrayList();
+                    ArrayList<String> keys = new ArrayList<String>();
+                    ArrayList<Object> values = new ArrayList<Object>();
                     for (int j = 0; j < to.getKeys().length; j++) {
                         boolean match = false;
                         for (int i = 0; i < m_keys.length; i++) {
@@ -125,44 +112,15 @@ public class RowsCacheEntry implements Externalizable {
                         }
                     }
                     if (compatible) {
-                        diff = new RowsCacheEntry(m_view, m_selects, (String[])keys
-                            .toArray(new String[0]), values.toArray(new Object[0]), m_rows);
+                        diff = new RowsCacheEntry(m_view, m_selects,
+                            keys.toArray(new String[keys.size()]),
+                            values.toArray(new Object[values.size()]),
+                            m_rows);
                     }
                 }
             }
         }
         return diff;
-    }
-
-    public void readExternal(java.io.ObjectInput in) throws IOException, ClassNotFoundException {
-        m_view = (String)in.readObject();
-        m_selects = (String[])in.readObject();
-        m_keys = (String[])in.readObject();
-        m_values = (Object[])in.readObject();
-        // in.readObject(new Integer(m_values.length));
-        // for (int i=0; i<m_values.length; i++) {
-        // in.readObject(m_values[i]);
-        // }
-        int rowsSize = ((Integer)in.readObject()).intValue();
-        m_rows = new ArrayList(rowsSize);
-        for (int i = 0; i < rowsSize; i++) {
-            m_rows.add(in.readObject());
-        }
-    }
-
-    public void writeExternal(java.io.ObjectOutput out) throws IOException {
-        out.writeObject(m_view);
-        out.writeObject(m_selects);
-        out.writeObject(m_keys);
-        out.writeObject(m_values);
-        // out.writeObject(new Integer(m_values.length));
-        // for (int i=0; i<m_values.length; i++) {
-        // out.writeObject(m_values[i]);
-        // }
-        out.writeObject(new Integer(m_rows.size()));
-        for (int i = 0; i < m_rows.size(); i++) {
-            out.writeObject(m_rows.get(i));
-        }
     }
 
     public String printSummary() {

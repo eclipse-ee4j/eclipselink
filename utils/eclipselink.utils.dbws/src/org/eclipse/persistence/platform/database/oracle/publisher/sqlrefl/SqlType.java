@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,9 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
@@ -23,8 +28,8 @@ import org.eclipse.persistence.platform.database.oracle.publisher.visit.Publishe
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.SCHEMA_IF_NEEDED;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.printTypeWithLength;
 
-@SuppressWarnings("unchecked")
 public class SqlType extends TypeClass {
+
     // The following type constants are used by the database
     // to distinguish the various Opaque and SQLJ Object type
     // flavours
@@ -44,6 +49,12 @@ public class SqlType extends TypeClass {
     public static final int ORACLE_TYPES_NCLOB = -72055;
     public static final int ORACLE_TYPES_BOOLEAN = -72056;
     public static final int ORACLE_TYPES_TBD = -72057;
+
+    protected String m_version;
+    protected SqlReflector m_reflector; // null for predefined types
+    protected ViewCache m_viewCache;
+    protected SqlType m_parentType;
+    protected boolean m_isReused;
 
     public SqlName getSqlName() {
         return (SqlName)m_name;
@@ -88,7 +99,7 @@ public class SqlType extends TypeClass {
 
     /**
      * Returns the version string of a SqlType.
-     * 
+     *
      * * @return the version string of the type.
      */
     public String getVersion() {
@@ -97,7 +108,7 @@ public class SqlType extends TypeClass {
 
     /**
      * Set the version string of a declared type.
-     * 
+     *
      * * @param version the version string of the type
      */
     public void setVersion(String version) {
@@ -108,8 +119,9 @@ public class SqlType extends TypeClass {
      * Get the attribute hashtable associated with a SqlType. The attributes in the hashtable were
      * registered via addAttribute().
      */
-    public Hashtable getAttributes() {
-        return (Hashtable)getAnnotation();
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getAttributes() {
+        return (Map<String, String>)getAnnotation();
     }
 
     /**
@@ -122,25 +134,19 @@ public class SqlType extends TypeClass {
         if (javaField == null) {
             javaField = sqlField;
         }
-
-        // System.out.println("[SqlType] Add "+ this +" field: "+ dbField + " -> " + javaField);
-        // //D+
-
-        Hashtable h = (Hashtable)getAnnotation();
-        Vector v = getNamedTranslations();
-
+        @SuppressWarnings("unchecked")
+        Map<String, String> h = (Map<String, String>)getAnnotation();
+        List<String> v = getNamedTranslations();
         if (h == null) {
-            h = new Hashtable();
+            h = new HashMap<String, String>();
             setAnnotation(h);
         }
-
         if (v == null) {
-            v = new Vector();
+            v = new ArrayList<String>();
             setNamedTranslations(v);
         }
-
         Object old = h.put(dbField, javaField);
-        v.addElement(sqlField);
+        v.add(sqlField);
         if (old != null) {
             throw new IllegalArgumentException("Redeclaration of field " + dbField + " in " + this
                 + "!");
@@ -195,18 +201,18 @@ public class SqlType extends TypeClass {
     // Determine whether "this" type depends on "t"
     // For instance, if "t" is a field of "this",
     // or the element type of "this"
-    private Vector m_dependTypes = null;
+    private List<SqlType> m_dependTypes = null;
 
     boolean dependsOn(SqlType t) {
         if (m_dependTypes == null) {
-            m_dependTypes = new Vector();
+            m_dependTypes = new ArrayList<SqlType>();
             if (isPlsqlRecord() || this instanceof DefaultArgsHolderType) {
                 try {
-                    AttributeField[] fields = getDeclaredFields(true);
-                    for (int i = 0; i < fields.length; i++) {
-                        SqlType st = (SqlType)fields[i].getType();
+                    List<AttributeField> fields = getDeclaredFields(true);
+                    for (int i = 0; i < fields.size(); i++) {
+                        SqlType st = (SqlType)fields.get(i).getType();
                         if (st.isPlsqlRecord() || st.isPlsqlTable()) {
-                            m_dependTypes.addElement(st);
+                            m_dependTypes.add(st);
                         }
                     }
                 }
@@ -218,7 +224,7 @@ public class SqlType extends TypeClass {
                 try {
                     SqlType st = (SqlType)((PlsqlTableType)this).getComponentType();
                     if (st.isPlsqlRecord() || st.isPlsqlTable()) {
-                        m_dependTypes.addElement(st);
+                        m_dependTypes.add(st);
                     }
                 }
                 catch (Exception e) {
@@ -230,7 +236,7 @@ public class SqlType extends TypeClass {
             return true;
         }
         for (int i = 0; i < m_dependTypes.size(); i++) {
-            if (((SqlType)m_dependTypes.elementAt(i)).dependsOn(t)) {
+            if (((SqlType)m_dependTypes.get(i)).dependsOn(t)) {
                 return true;
             }
         }
@@ -266,7 +272,7 @@ public class SqlType extends TypeClass {
      * <p/>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
-    static Hashtable m_convFuns = new Hashtable();
+    //static Hashtable m_convFuns = new Hashtable();
 
     public String getOutOfConversion() {
         // For SqlRefType, getSqlName()==null
@@ -316,13 +322,13 @@ public class SqlType extends TypeClass {
         String sqlTypeDecl = "";
         if (isPlsqlRecord() && !getSqlName().isReused()) {
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName() + " AS OBJECT (\n";
-            AttributeField[] fields = ((PlsqlRecordType)this).getFields(true);
-            for (int i = 0; i < fields.length; i++) {
+            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlTypeDecl += ",\n";
                 }
-                sqlTypeDecl += "      " + Util.unreserveSql(fields[i].getName()) + " ";
-                sqlTypeDecl += fields[i].printTypeWithLength(SCHEMA_IF_NEEDED);
+                sqlTypeDecl += "      " + Util.unreserveSql(fields.get(i).getName()) + " ";
+                sqlTypeDecl += fields.get(i).printTypeWithLength(SCHEMA_IF_NEEDED);
             }
             sqlTypeDecl += "\n);";
         }
@@ -338,7 +344,7 @@ public class SqlType extends TypeClass {
         else if ((this instanceof DefaultArgsHolderType) && !getSqlName().isReused()) {
             DefaultArgsHolderType holder = (DefaultArgsHolderType)this;
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTypeName() + " AS OBJECT (\n";
-            AttributeField vfield = holder.getFields(false)[0];
+            AttributeField vfield = holder.getFields(false).get(0);
             sqlTypeDecl += "      " + vfield.getName() + " ";
             sqlTypeDecl += vfield.printTypeWithLength();
             sqlTypeDecl += "\n);";
@@ -348,8 +354,9 @@ public class SqlType extends TypeClass {
 
     // Drop the generated SQL type
     public String getSqlTypeDrop() throws SQLException, PublisherException {
-        return getSqlName().isReused() ? "" : "DROP TYPE " + getTargetTypeName() + " FORCE; \n"
-            + "show errors\n";
+        //return getSqlName().isReused() ? "" : "DROP TYPE " + getTargetTypeName() + " FORCE; \n"
+        //    + "show errors\n";
+		return "DROP TYPE " + getTargetTypeName() + " FORCE;";
     }
 
     // PL/SQL package declaration for conversion functions
@@ -365,13 +372,13 @@ public class SqlType extends TypeClass {
             sqlConvPkgDecl += "\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE"
                 + "\n";
             sqlConvPkgDecl += "\tTYPE " + getTypeName() + " IS RECORD (\n";
-            AttributeField[] fields = ((PlsqlRecordType)this).getFields(true);
-            for (int i = 0; i < fields.length; i++) {
+            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlConvPkgDecl += ",\n";
                 }
-                sqlConvPkgDecl += "\t\t" + fields[i].getName() + " "
-                    + fields[i].printTypeWithLength();
+                sqlConvPkgDecl += "\t\t" + fields.get(i).getName() + " "
+                    + fields.get(i).printTypeWithLength();
             }
             sqlConvPkgDecl += ");";
         }
@@ -429,17 +436,18 @@ public class SqlType extends TypeClass {
         }
         String stmts = "";
         if (isPlsqlRecord()) {
-            AttributeField[] fields = getFields(true);
+            List<AttributeField> fields = getFields(true);
             for (int i = 0; i < java.lang.reflect.Array.getLength(fields); i++) {
+                AttributeField af = fields.get(i);
                 stmts += formatPrefix
                     + maybePlsql
                     + "."
-                    + fields[i].getName()
+                    + af.getName()
                     + " := "
-                    + ((fields[i].getType().hasConversion() && fields[i].getType()
-                        .getIntoConversion() != null) ? fields[i].getType().getIntoConversion()
-                        + "(" + maybeSql + "." + Util.unreserveSql(fields[i].getName()) + ");\n"
-                        : maybeSql + "." + Util.unreserveSql(fields[i].getName()) + ";\n");
+                    + ((af.getType().hasConversion() && af.getType()
+                        .getIntoConversion() != null) ? af.getType().getIntoConversion()
+                        + "(" + maybeSql + "." + Util.unreserveSql(af.getName()) + ");\n"
+                        : maybeSql + "." + Util.unreserveSql(af.getName()) + ";\n");
             }
         }
         else { // if (isPlsqlTable())
@@ -478,23 +486,24 @@ public class SqlType extends TypeClass {
         }
         String stmts = "";
         if (isPlsqlRecord()) {
-            AttributeField[] fields = getFields(true);
+            List<AttributeField> fields = getFields(true);
             stmts += formatPrefix + maybeSql + " := " + getTargetTypeName() + "(NULL";
-            for (int i = 1; i < fields.length; i++) {
+            for (int i = 1; i < fields.size(); i++) {
                 stmts += ", NULL";
             }
             stmts += ");\n";
 
-            for (int i = 0; i < fields.length; i++) {
+            for (int i = 0; i < fields.size(); i++) {
+                AttributeField af = fields.get(i);
                 stmts += formatPrefix
                     + maybeSql
                     + "."
-                    + Util.unreserveSql(fields[i].getName())
+                    + Util.unreserveSql(af.getName())
                     + " := "
-                    + ((fields[i].getType().hasConversion() && fields[i].getType()
-                        .getOutOfConversion() != null) ? fields[i].getType().getOutOfConversion()
-                        + "(" + maybePlsql + "." + fields[i].getName() + ");\n" : maybePlsql + "."
-                        + fields[i].getName() + ";\n");
+                    + ((af.getType().hasConversion() && af.getType()
+                        .getOutOfConversion() != null) ? af.getType().getOutOfConversion()
+                        + "(" + maybePlsql + "." + af.getName() + ");\n" : maybePlsql + "."
+                        + af.getName() + ";\n");
             }
         }
         else { // if (isPlsqlTable())
@@ -533,12 +542,6 @@ public class SqlType extends TypeClass {
         }
         return stmts;
     }
-
-    private String m_version;
-    protected SqlReflector m_reflector; // null for predefined types
-    protected ViewCache m_viewCache;
-    protected SqlType m_parentType;
-    protected boolean m_isReused;
 
     public void accept(PublisherVisitor v) {
         ((PublisherWalker)v).visit(this);

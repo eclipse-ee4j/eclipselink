@@ -1,35 +1,50 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Mike Norman - from Proof-of-concept, become production code
  ******************************************************************************/
-package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
+package  org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
-import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllSynonyms;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.FieldInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.MethodInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ParamInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ResultInfo;
-import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.SingleColumnViewRow;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.UserArguments;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.DATA_LEVEL;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OBJECT_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OWNER;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.PACKAGE_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.POSITION;
 
-@SuppressWarnings("unchecked")
 public class SqlPackageType extends SqlTypeWithMethods {
+
+    protected String m_synonymOwner;
+    protected String m_synonymName;
+    protected String[] m_executeNames;
+    protected ParamInfoValues m_paramInfoValues;
+
     public boolean isPackage() {
         return true;
     }
@@ -37,18 +52,17 @@ public class SqlPackageType extends SqlTypeWithMethods {
     public SqlPackageType(SqlName sqlName, SqlType parentType, MethodFilter signatureFilter,
         SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, signatureFilter, reflector);
-        initSecurityAttributes(sqlName);
+        //initSecurityAttributes(sqlName);
     }
 
-    // No database reflection. Currently used by oracle.j2ee.ws.db.genproxy.PlsqlProxy.
-    public SqlPackageType(SqlName sqlName, ProcedureMethod[] methods, SqlReflector reflector)
+    public SqlPackageType(SqlName sqlName, List<ProcedureMethod> methods, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, null, null, reflector);
         m_methods = methods;
-        initSecurityAttributes(sqlName);
+        //initSecurityAttributes(sqlName);
     }
 
-    protected FieldInfo[] getFieldInfo() {
+    protected List<FieldInfo> getFieldInfo() {
         return null;
     }
 
@@ -64,65 +78,36 @@ public class SqlPackageType extends SqlTypeWithMethods {
         return m_synonymName != null || m_executeNames.length > 0;
     }
 
+    /*
     protected void initSecurityAttributes(SqlName sqlName) throws SQLException {
         String owner = sqlName.getContextName();
         String name = sqlName.getTypeName();
         // ("SELECT OWNER, SYNONYM_NAME FROM ALL_SYNONYMS WHERE TABLE_OWNER=:1 AND TABLE_NAME=:2");
-        Iterator iter = m_viewCache.getRows(Util.ALL_SYNONYMS, new String[0], new String[]{
-            Util.TABLE_OWNER, Util.TABLE_NAME}, new Object[]{owner, name}, new String[0]);
+        Iterator<ViewRow> iter = m_viewCache.getRows(ALL_SYNONYMS, new String[0], new String[]{
+            TABLE_OWNER, TABLE_NAME}, new Object[]{owner, name}, new String[0]);
         if (iter.hasNext()) {
             AllSynonyms row = (AllSynonyms)iter.next();
             m_synonymOwner = row.OWNER;
             m_synonymName = row.SYNONYM_NAME;
         }
         // ("SELECT GRANTEE FROM ALL_TAB_PRIVS WHERE TABLE_SCHEMA=:1 AND TABLE_NAME=:2 AND PRIVILEGE='EXECUTE'");
-        iter = m_viewCache.getRows(Util.ALL_TAB_PRIVS, new String[]{Util.GRANTEE}, new String[]{
-            Util.TABLE_SCHEMA, Util.TABLE_NAME, Util.PRIVILEGE}, new Object[]{owner, name,
-            "EXECUTE"}, new String[0]);
-        ArrayList al = new ArrayList();
+        iter = m_viewCache.getRows(ALL_TAB_PRIVS, new String[]{GRANTEE}, new String[]{TABLE_SCHEMA,
+            TABLE_NAME, PRIVILEGE}, new Object[]{owner, name, "EXECUTE"}, new String[0]);
+        ArrayList<String> al = new ArrayList<String>();
         while (iter.hasNext()) {
             SingleColumnViewRow row = (SingleColumnViewRow)iter.next();
             al.add(row.getValue());
         }
-        m_executeNames = (String[])al.toArray(new String[0]);
+        m_executeNames = al.toArray(new String[al.size()]);
     }
-
-    public String[] getSecurityDeclarations() {
-        String grant = "";
-        String revoke = "";
-        String schema = ((SqlName)m_name).getSchemaName();
-        String wrapperPkg = "";
-        if (getSynonymName() != null && schema != null && schema.length() > 0) {
-            grant += "CREATE OR REPLACE PUBLIC SYNONYM " + wrapperPkg + " for " + schema + "."
-                + wrapperPkg + ";\n";
-            grant += "/\nshow errors\n";
-            revoke += "DROP PUBLIC synonym " + wrapperPkg + ";\n";
-            revoke += "show errors\n";
-        }
-        String[] names = getExecuteNames();
-        if (names != null && names.length > 0) {
-            for (int i = 0; i < names.length; i++) {
-                grant += "GRANT EXECUTE on " + schema + "." + wrapperPkg + " to " + names[i]
-                    + ";\n";
-                grant += "show errors\n";
-                revoke += "REVOKE EXECUTE on " + schema + "." + wrapperPkg + " from " + names[i]
-                    + ";\n";
-                revoke += "show errors\n";
-            }
-        }
-        return new String[]{grant, revoke};
-    }
-
-    protected String m_synonymOwner;
-    protected String m_synonymName;
-    protected String[] m_executeNames;
+    */
 
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         /*
          * POSITION of Nth argument is N SEQUENCE of Nth argument is >= N POSITION of function
          * result is 0 SEQUENCE of function result is 1 Special case: If there are no arguments or
          * function results, a row appears anyway, with POSITION=1, SEQUENCE=0.
-         * 
+         *
          * All of which explains the rather strange query below. #sql smi = {SELECT OBJECT_NAME AS
          * METHOD_NAME, OVERLOAD AS METHOD_NO, 'PUBLIC' AS METHOD_TYPE, NVL(MAX(DECODE(SEQUENCE, 0,
          * 0, POSITION)), 0) AS PARAMETERS, NVL(MAX(1-POSITION), 0) AS RESULTS FROM ALL_ARGUMENTS
@@ -132,15 +117,15 @@ public class SqlPackageType extends SqlTypeWithMethods {
         String[] keys = null;
         Object[] values = null;
         if (m_methodFilter != null && m_methodFilter.isSingleMethod()) {
-            keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.OBJECT_NAME, Util.DATA_LEVEL};
+            keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
             values = new Object[]{schema, name, m_methodFilter.getSingleMethodName(),
                 new Integer(0)};
         }
         else {
-            keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL};
+            keys = new String[]{OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL};
             values = new Object[]{schema, name, new Integer(0)};
         }
-        Iterator iter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], keys, values,
+        Iterator<ViewRow> iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
             new String[0]);
         MethodInfo[] minfo = MethodInfo.groupBy(iter);
         return minfo;
@@ -163,31 +148,33 @@ public class SqlPackageType extends SqlTypeWithMethods {
             String[] keys = null;
             Object[] values = null;
             if (methodFilter != null && methodFilter.isSingleMethod()) {
-                keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.OBJECT_NAME,
-                    Util.DATA_LEVEL, Util.POSITION};
+                keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME,
+                    DATA_LEVEL, POSITION};
                 values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
                     new Integer(0), new Integer(0)};
             }
             else {
-                keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL, Util.POSITION};
+                keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL, POSITION};
                 values = new Object[]{schema, name, new Integer(0), new Integer(0)};
             }
 
-            Iterator iter = viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], keys, values,
+            Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
                 new String[0]);
             while (iter.hasNext()) {
                 UserArguments item = (UserArguments)iter.next();
                 String key = makeKey(item.OBJECT_NAME /* METHOD_NAME */, item.OVERLOAD/* METHOD_NO */);
                 if (m_ht.get(key) == null) {
-                    m_ht.put(key, item);
+                    ArrayList<ViewRow> itemWrapper = new ArrayList<ViewRow>();
+                    itemWrapper.add(item);
+                    m_ht.put(key, itemWrapper);
                 }
             }
         }
 
         public ResultInfo get(String method_name, String method_no) throws java.sql.SQLException {
-            Object row = m_ht.get(makeKey(method_name, method_no));
+            ArrayList<ViewRow> row = m_ht.get(makeKey(method_name, method_no));
             ResultInfo rinfo = null;
-            rinfo = new ResultInfo((UserArguments)row);
+            rinfo = new ResultInfo((UserArguments)row.get(0));
             return rinfo;
         }
     }
@@ -200,60 +187,15 @@ public class SqlPackageType extends SqlTypeWithMethods {
         return m_paramInfoValues.get(methodName, methodNo);
     }
 
-    private ParamInfoValues m_paramInfoValues;
-
-    private static class ParamInfoValues extends InfoValues {
-        public ParamInfoValues(String schema, String name, MethodFilter methodFilter,
-            ViewCache viewCache) throws SQLException {
-            super(schema, name);
-            String[] keys = null;
-            Object[] values = null;
-            if (methodFilter != null && methodFilter.isSingleMethod()) {
-                keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.OBJECT_NAME,
-                    Util.DATA_LEVEL};
-                values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
-                    new Integer(0)};
-            }
-            else {
-                keys = new String[]{Util.OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL};
-                values = new Object[]{schema, name, new Integer(0)};
-            }
-            Iterator iter = viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], keys, values,
-                new String[0]);
-            ArrayList viewRows = new ArrayList();
-            while (iter.hasNext()) {
-                UserArguments item = (UserArguments)iter.next();
-                if (item.ARGUMENT_NAME != null) {
-                    viewRows.add(item);
-                }
-            }
-            UserArguments.orderByPosition(viewRows);
-            for (int i = 0; i < viewRows.size(); i++) {
-                UserArguments item = (UserArguments)viewRows.get(i);
-                String key = makeKey(item.OBJECT_NAME/* METHOD_NAME */, item.OVERLOAD/* METHOD_NO */);
-                ArrayList v = (ArrayList)m_ht.get(key);
-                if (v == null) {
-                    v = new ArrayList();
-                    m_ht.put(key, v);
-                }
-                v.add(item);
-            }
-        }
-
-        public ParamInfo[] get(String method, String method_no) throws java.sql.SQLException {
-            ArrayList v = (ArrayList)m_ht.get(makeKey(method, method_no));
-            if (v == null) {
-                v = new ArrayList(); // zero parameter
-            }
-            return ParamInfo.getParamInfo(v);
-        }
-    }
-
     private static class InfoValues {
+        protected String m_schema;
+        protected String m_name;
+        protected Map<String, ArrayList<ViewRow>> m_ht;
+
         public InfoValues(String schema, String name) throws SQLException {
             m_schema = schema;
             m_name = name;
-            m_ht = new Hashtable();
+            m_ht = new HashMap<String, ArrayList<ViewRow>>();
         }
 
         protected static String makeKey(String method, String method_no) {
@@ -264,10 +206,51 @@ public class SqlPackageType extends SqlTypeWithMethods {
             return ((schema == null) ? m_schema == null : schema.equals(m_schema))
                 && ((name == null) ? m_name != null : name.equals(m_name));
         }
+    }
+    private static class ParamInfoValues extends InfoValues {
+        public ParamInfoValues(String schema, String name, MethodFilter methodFilter,
+            ViewCache viewCache) throws SQLException {
+            super(schema, name);
+            String[] keys = null;
+            Object[] values = null;
+            if (methodFilter != null && methodFilter.isSingleMethod()) {
+                keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
+                values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
+                    new Integer(0)};
+            }
+            else {
+                keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL};
+                values = new Object[]{schema, name, new Integer(0)};
+            }
+            Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
+                new String[0]);
+            ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
+            while (iter.hasNext()) {
+                UserArguments item = (UserArguments)iter.next();
+                if (item.ARGUMENT_NAME != null) {
+                    viewRows.add(item);
+                }
+            }
+            UserArguments.orderByPosition(viewRows);
+            for (int i = 0; i < viewRows.size(); i++) {
+                UserArguments item = (UserArguments)viewRows.get(i);
+                String key = makeKey(item.OBJECT_NAME/* METHOD_NAME */, item.OVERLOAD/* METHOD_NO */);
+                ArrayList<ViewRow> v = m_ht.get(key);
+                if (v == null) {
+                    v = new ArrayList<ViewRow>();
+                    m_ht.put(key, v);
+                }
+                v.add(item);
+            }
+        }
 
-        protected String m_schema;
-        protected String m_name;
-        protected Hashtable m_ht;
+        public ParamInfo[] get(String method, String method_no) throws SQLException {
+            ArrayList<ViewRow> v = m_ht.get(makeKey(method, method_no));
+            if (v == null) {
+                v = new ArrayList<ViewRow>(); // zero parameter
+            }
+            return ParamInfo.getParamInfo(v);
+        }
     }
 
     public void accept(PublisherVisitor v) {

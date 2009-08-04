@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,16 +12,28 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
 import java.util.Iterator;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
-import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllCollTypes;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllTypes;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ElemInfo;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_COLL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_TYPES;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OWNER;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TYPE_NAME;
 
-@SuppressWarnings("unchecked")
 public class SqlCollectionType extends SqlType {
+
+    protected int m_elemTypeLength;
+    protected int m_elemTypePrecision;
+    protected int m_elemTypeScale;
+    protected boolean m_isNChar;
+
     public SqlCollectionType(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
         SqlReflector reflector) {
         super(sqlName, typecode, generateMe, parentType, reflector);
@@ -66,28 +78,22 @@ public class SqlCollectionType extends SqlType {
         return m_elementType;
     }
 
-    @SuppressWarnings("unused")
     protected ElemInfo getElemInfo() throws SQLException {
         ElemInfo elemInfo = null;
         SqlName sqlName = getSqlName();
         String schema = sqlName.getSchemaName();
         String type = sqlName.getTypeName();
-
-        Iterator scti = m_viewCache.getRows("ALL_COLL_TYPES", new String[0], new String[]{"OWNER",
-            "TYPE_NAME"}, new Object[]{schema, type}, new String[0]);
-
-        String elemTypeName = null;
-        String elemTypeOwner = null;
-        String elemTypeMod = null;
+        Iterator<ViewRow> scti = m_viewCache.getRows(ALL_COLL_TYPES, new String[0], new String[]{
+            OWNER, TYPE_NAME}, new Object[]{schema, type}, new String[0]);
         if (scti.hasNext()) {
             AllCollTypes viewRow = (AllCollTypes)scti.next();
             m_isNChar = SqlReflector.NCHAR_CS.equals(viewRow.characterSetName);
             elemInfo = new ElemInfo(viewRow);
             if (SqlReflector.isNull(elemInfo.elemTypeMod)
                 && !SqlReflector.isNull(elemInfo.elemTypeName)) {
-                scti = m_viewCache.getRows(Util.ALL_TYPES, new String[0], new String[]{"OWNER",
-                    "TYPE_NAME"}, new Object[]{elemInfo.elemTypeOwner, elemInfo.elemTypeName},
-                    new String[0]);
+                scti = m_viewCache.getRows(ALL_TYPES, new String[0],
+                    new String[]{OWNER, TYPE_NAME}, new Object[]{elemInfo.elemTypeOwner,
+                        elemInfo.elemTypeName}, new String[0]);
                 if (scti.hasNext()) {
                     elemInfo.elemTypeMod = ((AllTypes)scti.next()).typeCode;
                 }
@@ -113,9 +119,4 @@ public class SqlCollectionType extends SqlType {
     public boolean isNChar() {
         return m_isNChar;
     }
-
-    protected int m_elemTypeLength;
-    protected int m_elemTypePrecision;
-    protected int m_elemTypeScale;
-    protected boolean m_isNChar;
 }

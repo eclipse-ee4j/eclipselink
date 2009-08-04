@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,18 +12,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 
 /*
  * All SQL statements are published as methods in one Java class,
  * which is described by the instance of this singleton class
  */
-@SuppressWarnings("unchecked")
+
 public class SqlStmtType extends SqlType {
+
+    public static ResultSet rset = null;
+
+    protected List<ProcedureMethod> m_methods = new ArrayList<ProcedureMethod>();
 
     SqlStmtType(SqlName sqlName, SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.SQL_STATEMENTS, true, null, reflector);
@@ -38,11 +46,8 @@ public class SqlStmtType extends SqlType {
      * SqlTypeWithMethods object. Returns an array of length 0 if the SqlTypeWithMethods declares no
      * methods
      */
-    public ProcedureMethod[] getDeclaredMethods() {
-        ProcedureMethod[] methods = new ProcedureMethod[m_methods.size()];
-        for (int i = 0; i < m_methods.size(); i++) {
-            methods[i] = (ProcedureMethod)m_methods.elementAt(i);
-        }
+    public List<ProcedureMethod> getDeclaredMethods() {
+        List<ProcedureMethod> methods = new ArrayList<ProcedureMethod>(m_methods);
         return methods;
     }
 
@@ -60,7 +65,6 @@ public class SqlStmtType extends SqlType {
         return PublisherModifier.PUBLIC;
     }
 
-    public static ResultSet rset = null;
 
     protected static void closeResultSet(ResultSet ps) {
         try {
@@ -83,8 +87,6 @@ public class SqlStmtType extends SqlType {
             // Closing resources. OK to ignore exception.
         }
     }
-
-    Vector m_methods;
 
     public boolean hasMethods() throws SQLException, PublisherException {
         /* subclasses with methods override this */

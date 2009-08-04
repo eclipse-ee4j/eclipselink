@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,20 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.util.ArrayList;
 
-/**
- * ViewCachePool: a round-robin pool of ViewCache instances
- */
-@SuppressWarnings("unchecked")
 class ViewCachePool {
+
+    protected ArrayList<ViewCache> m_pool;
+    protected int m_capacity;
+
     ViewCachePool() {
         this(1);
     }
 
     ViewCachePool(int capacity) {
         m_capacity = capacity;
-        m_pool = new ArrayList();
+        m_pool = new ArrayList<ViewCache>();
     }
 
     void setCapacity(int size) {
@@ -37,7 +38,7 @@ class ViewCachePool {
 
     synchronized void add(ViewCache viewCache) {
         for (int i = 0; i < m_pool.size(); i++) {
-            ViewCache v = (ViewCache)m_pool.get(i);
+            ViewCache v = m_pool.get(i);
             if (v.getUser().equalsIgnoreCase(viewCache.getUser())) {
                 m_pool.remove(i);
             }
@@ -54,7 +55,7 @@ class ViewCachePool {
 
     ViewCache get(String userName) {
         for (int i = 0; i < m_pool.size(); i++) {
-            ViewCache v = (ViewCache)m_pool.get(i);
+            ViewCache v = m_pool.get(i);
             if (v.getUser().equalsIgnoreCase(userName)) {
                 return v;
             }
@@ -63,7 +64,7 @@ class ViewCachePool {
     }
 
     ViewCache get(int i) {
-        return (ViewCache)m_pool.get(i);
+        return m_pool.get(i);
     }
 
     int size() {
@@ -74,7 +75,7 @@ class ViewCachePool {
         if (m_pool.size() == 0) {
             return null;
         }
-        return (ViewCache)m_pool.remove(0);
+        return m_pool.remove(0);
     }
 
     synchronized void clear() {
@@ -84,10 +85,7 @@ class ViewCachePool {
     void refresh() {
         int len = m_pool.size();
         for (int i = 0; i < len; i++) {
-            ((ViewCache)m_pool.get(i)).refresh();
+            m_pool.get(i).refresh();
         }
     }
-
-    private ArrayList m_pool;
-    private int m_capacity;
 }

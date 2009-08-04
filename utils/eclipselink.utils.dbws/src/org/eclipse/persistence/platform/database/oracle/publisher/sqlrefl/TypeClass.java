@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,9 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 
 /**
@@ -25,15 +28,14 @@ import org.eclipse.persistence.platform.database.oracle.publisher.PublisherExcep
  * <p/>
  * This class is analogous to java.lang.Class.
  */
-@SuppressWarnings("unchecked")
 public abstract class TypeClass {
 
     protected Name m_name;
-    private boolean m_isPrimitive;
+    protected boolean m_isPrimitive;
     protected int m_typecode;
-    private Object m_annotation;
-    private String m_hint;
-    private Vector m_namedTranslations;
+    protected Object m_annotation;
+    protected String m_hint;
+    protected List<String> m_namedTranslations;
 
     /** The following methods are adapted from java.lang.Class */
 
@@ -49,28 +51,28 @@ public abstract class TypeClass {
      * Returns an array of Field objects reflecting all the fields declared by this Type object.
      * Returns an array of length 0 if this Type object declares no fields.
      */
-    public AttributeField[] getDeclaredFields(boolean publishedOnly) throws SecurityException, SQLException,
+    public List<AttributeField> getDeclaredFields(boolean publishedOnly) throws SecurityException, SQLException,
         PublisherException {
         /* derived classes that have fields override this */
-        return new AttributeField[0];
+        return null;
     }
 
     /**
      * Returns an array of Method objects reflecting all the methods declared by this Type object.
      * Returns an array of length 0 if the Type declares no methods
      */
-    public ProcedureMethod[] getDeclaredMethods() throws SecurityException, SQLException, PublisherException {
-        return new ProcedureMethod[0];
+    public List<ProcedureMethod> getDeclaredMethods() throws SecurityException, SQLException, PublisherException {
+        return null;
     }
 
     /**
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
-    public AttributeField[] getFields(boolean publishedOnly) throws SecurityException, SQLException,
+    public List<AttributeField> getFields(boolean publishedOnly) throws SecurityException, SQLException,
         PublisherException {
         /* derived classes that have fields override this */
-        return new AttributeField[0];
+        return null;
     }
 
     /**
@@ -186,11 +188,11 @@ public abstract class TypeClass {
         m_hint = s;
     }
 
-    public Vector getNamedTranslations() {
+    public List<String> getNamedTranslations() {
         return m_namedTranslations;
     }
 
-    public void setNamedTranslations(Vector v) {
+    public void setNamedTranslations(List<String> v) {
         m_namedTranslations = v;
     }
 
@@ -298,5 +300,4 @@ public abstract class TypeClass {
     public String getIntoConversionQualified() {
         return null;
     }
-
 }

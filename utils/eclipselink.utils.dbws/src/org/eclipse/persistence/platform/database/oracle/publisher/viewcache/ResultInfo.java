@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,13 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 
-@SuppressWarnings("unchecked")
 public class ResultInfo {
-    public ResultInfo(AllMethodResults r) throws java.sql.SQLException {
+
+    public String resultTypeName;
+    public String resultTypeSubname;
+    public boolean ncharFormOfUse;
+    public String resultTypeOwner;
+    public String resultTypeMod;
+    public String methodName;
+    public String methodNo;
+    public int sequence;
+    public int dataLength;
+    public int dataPrecision;
+    public int dataScale;
+
+    public ResultInfo(AllMethodResults r) throws SQLException {
         resultTypeMod = r.resultTypeMod;
         resultTypeOwner = r.resultTypeOwner;
         resultTypeName = r.resultTypeName;
@@ -56,7 +72,7 @@ public class ResultInfo {
         dataScale = 0;
     }
 
-    public ResultInfo(UserArguments r) throws java.sql.SQLException {
+    public ResultInfo(UserArguments r) throws SQLException {
         resultTypeMod = ""; // null in SqlPackageType
         if ("REF".equalsIgnoreCase(r.DATA_TYPE) || "PL/SQL RECORD".equalsIgnoreCase(r.DATA_TYPE)
             || "PL/SQL TABLE".equalsIgnoreCase(r.DATA_TYPE)
@@ -90,36 +106,20 @@ public class ResultInfo {
         dataScale = r.DATA_SCALE;
     }
 
-    public static ResultInfo getResultInfo(Iterator iter) throws java.sql.SQLException {
-        Vector a = new Vector();
+    public static ResultInfo getResultInfo(Iterator<ViewRow> iter) throws SQLException {
+        ArrayList<ResultInfo> a = new ArrayList<ResultInfo>();
         while (iter.hasNext()) {
-            Object obj = iter.next();
-            if (obj instanceof UserArguments) {
-                a.addElement(new ResultInfo((UserArguments)obj));
+            ViewRow vr = iter.next();
+            if (vr.isUserArguments() || vr.isAllArguments()) {
+                a.add(new ResultInfo((UserArguments)vr));
             }
-            else {
-                a.addElement(new ResultInfo((AllMethodResults)obj));
+            else if (vr.isAllMethodResults()) {
+                a.add(new ResultInfo((AllMethodResults)vr));
             }
         }
-        ResultInfo[] r = new ResultInfo[a.size()];
-        for (int i = 0; i < a.size(); i++) {
-            r[i] = (ResultInfo)a.elementAt(i);
+        if (a.size() == 0) {
+            throw new SQLException("Exhausted ResultSet in ResultInfo");
         }
-        if (r.length == 0) {
-            throw new java.sql.SQLException("Exhausted ResultSet in ResultInfo");
-        }
-        return r[0];
+        return a.get(0);
     }
-
-    public String resultTypeName;
-    public String resultTypeSubname;
-    public boolean ncharFormOfUse;
-    public String resultTypeOwner;
-    public String resultTypeMod;
-    public String methodName;
-    public String methodNo;
-    public int sequence;
-    public int dataLength;
-    public int dataPrecision;
-    public int dataScale;
 }

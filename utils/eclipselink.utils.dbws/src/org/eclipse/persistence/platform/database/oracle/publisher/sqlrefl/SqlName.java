@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,10 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 
 /**
@@ -30,12 +32,48 @@ import org.eclipse.persistence.platform.database.oracle.publisher.Util;
  * SQL name are captured in the SqlName instance. The two names are accessed via getTypeName(), and
  * getTargetTypeName().
  */
-// TODO clean up use of toUpperCase and dbifyName
 public class SqlName extends Name {
+
+    public final static String ROWTYPE = "ROWTYPE";
+    public final static String ROWTYPE_PL = ROWTYPE + "_PL";
+    public final static String ROWTYPE_SQL = ROWTYPE + "_SQL";
+    private static int m_rowtypeDistinguisher = 0;
+    private final static String PUBLIC = "PUBLIC.";
+    static String m_defaultSchema;
+    static int m_case;
+    static int m_targetLang;
+    protected static int m_sql2PLCounter = 0;
+    protected static int m_pl2SQLCounter = 0;
+
+    protected boolean m_fromDB;
+    protected boolean m_contextFromIntype;
+    protected int m_line = 0;
+    protected int m_column = 0;
+    protected boolean m_quoted;
+    protected boolean m_printAsIs;
+    /**
+     * The original database type for the type represented. - If (m_sourceName==m_name), this type
+     * does not need conversion and can be published into Java classes directly. - If
+     * (m_sourceName!=m_name), this type is typically a PL/SQL type, which needs to be converted
+     * into and out of a SQL type in the published code. In this case, m_name represents that SQL
+     * type
+     */
+    protected String m_sourceName;
+    // If the record type is defined via CURSOR%ROWTYPE
+    protected boolean m_isRowType = false;
+    protected boolean m_isReused = false;
+    // If the type is built-in or predefined by -defaulttypemap, -addtypemap
+    protected boolean m_predefined = false;
+    protected Boolean m_hasConversion;
+    protected String m_convertOutOf;
+    protected String m_convertInto;
+    protected String m_convertOutOfQualified;
+    protected String m_convertIntoQualified;
+
     /**
      * Initializes a SqlName with the schema and name of a declared entity. If "schema" is null, the
      * default schema will be used.
-     * 
+     *
      * @param schema
      *            the schema in which the entity is declared
      * @param type
@@ -97,7 +135,7 @@ public class SqlName extends Name {
     /**
      * Create a SqlName instance for a PL/SQL type, which requires extra identifying information,
      * such the names for the package and method that mentions this PL/SQL type.
-     * 
+     *
      * @param schema
      * @param type
      * @param parentType
@@ -148,10 +186,10 @@ public class SqlName extends Name {
      * PL/SQL package - the associated PL/SQL package name Generated names are subject to length and
      * conflict check. If length excceeds PL/SQL identifier limit, the name will be chopped. If
      * conflicts occurs, the name will be pos-fixed with numeric values,
-     * 
+     *
      **/
-    public static String determineSqlName(String packageName, String[] sourceName, TypeClass parentType,
-        boolean[] isRowType, SqlReflector reflector) {
+    public static String determineSqlName(String packageName, String[] sourceName,
+        TypeClass parentType, boolean[] isRowType, SqlReflector reflector) {
         String parentName = null; // Java name for the PL/SQL package
         if (parentType != null) {
             SqlName parentSqlName = (SqlName)parentType.getNameObject();
@@ -225,6 +263,11 @@ public class SqlName extends Name {
         if (m_name.equals("TIMESTAMP WITH TZ")) {
             return "TIMESTAMP WITH TIME ZONE";
         }
+		// "BOOLEAN" is really "PL/SQL BOOLEAN" which doesn't have a JDBC equivalent
+        // use INTEGER and SYS.SQLJUTL.INT2BOOL/SYS.SQLJUTL.BOOL2INT conversion
+        if (m_name.equals("BOOLEAN")) {
+            return "INTEGER";
+        }
         return m_name;
     }
 
@@ -236,9 +279,9 @@ public class SqlName extends Name {
      * Returns the use class name of a SqlName. This includes the package name if the Java class is
      * not in the current package. If the Java name has not been created yet, it is constructed
      * using the CASE and PACKAGE options.
-     * 
+     *
      * * @param SqlName the SQL name of the type
-     * 
+     *
      * @param currPackage
      *            the package from which the class is referenced
      * @return the name of an SQL type.
@@ -347,7 +390,7 @@ public class SqlName extends Name {
      * name generated when the class is used, rather than declared, if the use class is
      * user-written. The user tells JPub that this is the case by putting the clause
      * "GENERATE <decl name> AS <use name>" in the input file.
-     * 
+     *
      * * @return the decl class name of a type.
      */
     public String getDeclClass() {
@@ -360,7 +403,7 @@ public class SqlName extends Name {
      * the package name generated when the package is used, rather than declared, if the use package
      * is user-written. The user tells JPub that this is the case by putting the clause "GENERATE
      * <decl name> AS <use name> in the input file.
-     * 
+     *
      * * @return the decl package name of a type.
      */
     public String getDeclPackage() {
@@ -456,9 +499,9 @@ public class SqlName extends Name {
      * supplied when this SqlName was constructed, the omitSchemaName flag is ignored, and the
      * returned name includes the schema name. If a null schema name was supplied when this SqlName
      * was declared, the returned name includes the schema name only if omitSchemaName == false.
-     * 
+     *
      * * @param omitSchemaName suggestion not to include the schema name
-     * 
+     *
      * @return the name of the declared entity as a quoted string
      */
     public String toQuotedString(boolean omitSchemaName) {
@@ -496,7 +539,7 @@ public class SqlName extends Name {
     /**
      * Initialize the SqlName class with the default schema name, used when a SqlName is created
      * without an explciit schema name.
-     * 
+     *
      * * @param defaultSchema the name of the default schema
      */
     public static void setDefaultSchema(String defaultSchema) {
@@ -619,7 +662,6 @@ public class SqlName extends Name {
     public static boolean isAlpha(char ch) {
         String lettersStr = new String("abcdefghijklmnopqrstuvwxyz");
         char[] chars = lettersStr.toCharArray();
-        /* Arrays.sort(lettersArray); */
 
         ch = Character.toLowerCase(ch);
         int len = chars.length;
@@ -803,15 +845,13 @@ public class SqlName extends Name {
                     rs.close();
                 }
                 catch (SQLException _) {
-                }
-            ;
+                };
             if (stmt != null)
                 try {
                     stmt.close();
                 }
                 catch (SQLException _) {
-                }
-            ;
+                };
         }
 
         String dbName = isQuoted(s) ? s.substring(1, s.length() - 1) : (upper_s == null) ? ""
@@ -826,43 +866,4 @@ public class SqlName extends Name {
         return name;
     }
 
-    static String m_defaultSchema;
-    static int m_case;
-    static int m_targetLang;
-    protected boolean m_fromDB;
-    private boolean m_contextFromIntype;
-    private int m_line = 0;
-    private int m_column = 0;
-    private boolean m_quoted;
-    private boolean m_printAsIs;
-
-    /**
-     * The original database type for the type represented. - If (m_sourceName==m_name), this type
-     * does not need conversion and can be published into Java classes directly. - If
-     * (m_sourceName!=m_name), this type is typically a PL/SQL type, which needs to be converted
-     * into and out of a SQL type in the published code. In this case, m_name represents that SQL
-     * type
-     */
-    protected String m_sourceName;
-    // If the record type is defined via CURSOR%ROWTYPE
-    protected boolean m_isRowType = false;
-    protected boolean m_isReused = false;
-
-    // If the type is built-in or predefined by -defaulttypemap, -addtypemap
-    private boolean m_predefined = false;
-
-    private Boolean m_hasConversion;
-    private String m_convertOutOf;
-    private String m_convertInto;
-    private String m_convertOutOfQualified;
-    private String m_convertIntoQualified;
-    private static int m_sql2PLCounter = 0;
-    private static int m_pl2SQLCounter = 0;
-
-    public final static String ROWTYPE = "ROWTYPE";
-    public final static String ROWTYPE_PL = ROWTYPE + "_PL";
-    public final static String ROWTYPE_SQL = ROWTYPE + "_SQL";
-
-    private static int m_rowtypeDistinguisher = 0;
-    private final static String PUBLIC = "PUBLIC.";
 }

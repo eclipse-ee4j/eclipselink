@@ -90,7 +90,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
         stac.push(tableHelper);
     }
     @Override
-    public void endPlsqlTable(String tableName) {
+    public void endPlsqlTable(String tableName, String typeDDL, String typeDropDDL) {
         ListenerHelper top = stac.pop();
         ListenerHelper next  = stac.peek();
         TableHelper tableHelper = null;

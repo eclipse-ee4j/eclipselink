@@ -1,24 +1,28 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Mike Norman - from Proof-of-concept, become production code
  ******************************************************************************/
-package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
+package  org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
@@ -26,9 +30,10 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Meth
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ParamInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ResultInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.SingleColumnViewRow;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
 
-@SuppressWarnings("unchecked")
 public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
+
     public SqlTypeWithMethods(SqlName sqlName, int typecode, boolean generateMe,
         SqlType parentType, MethodFilter signatureFilter, SqlReflector reflector)
         throws SQLException {
@@ -41,22 +46,22 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
      * SqlTypeWithMethods object. Returns an array of length 0 if the SqlTypeWithMethods declares no
      * methods
      */
-    public ProcedureMethod[] getDeclaredMethods() throws java.sql.SQLException, PublisherException {
+    public List<ProcedureMethod> getDeclaredMethods() throws SQLException, PublisherException {
         if (m_methods == null) {
             m_methods = reflectMethods(getSqlName());
         }
         return m_methods;
     }
 
-    public boolean hasMethods() throws java.sql.SQLException, PublisherException {
-        ProcedureMethod[] m = getDeclaredMethods();
-        return m.length > 0;
+    public boolean hasMethods() throws SQLException, PublisherException {
+        List<ProcedureMethod> m = getDeclaredMethods();
+        return m != null && m.size() > 0;
     }
 
-    private ProcedureMethod[] reflectMethods(SqlName sqlName) throws SQLException, PublisherException {
+    private List<ProcedureMethod> reflectMethods(SqlName sqlName) throws SQLException, PublisherException {
         String schema = sqlName.getSchemaName();
         String type = sqlName.getTypeName();
-        ArrayList methodl = new ArrayList();
+        ArrayList<ProcedureMethod> methodl = new ArrayList<ProcedureMethod>();
 
         /* get method information */
         MethodInfo[] minfo = getMethodInfo(schema, type);
@@ -114,10 +119,10 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
             /* get parameter information */
             int paramCount = parameters;
-            Vector paramTypes_v = new Vector();
-            Vector paramNames_v = new Vector();
-            Vector paramModes_v = new Vector();
-            Vector paramNCharFormOfUse_v = new Vector();
+            List<TypeClass> paramTypes_v = new ArrayList<TypeClass>();
+            List<String> paramNames_v = new ArrayList<String>();
+            List<Integer> paramModes_v = new ArrayList<Integer>();
+            List<Boolean> paramNCharFormOfUse_v = new ArrayList<Boolean>();
             int firstNoDefault = -1;
             boolean[] paramDefaults = new boolean[paramCount];
             if (paramCount > 0) {
@@ -160,16 +165,16 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 }
                 for (int i = 0; i < paramCount && paramMethodName[i] != null; i++) {
                     try {
-                        paramNames_v.addElement(paramName[i]);
+                        paramNames_v.add(paramName[i]);
                         String mode = paramMode[i];
-                        paramModes_v.addElement(new Integer((mode == null) ? ProcedureMethod.INOUT : (mode
+                        paramModes_v.add(new Integer((mode == null) ? ProcedureMethod.INOUT : (mode
                             .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
                             : ProcedureMethod.INOUT))));
-                        paramTypes_v.addElement(m_reflector.addPlsqlDBType(paramTypeOwner[i],
+                        paramTypes_v.add(m_reflector.addPlsqlDBType(paramTypeOwner[i],
                             paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
                             mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
                             sequence[i], this));
-                        paramNCharFormOfUse_v.addElement(new Boolean(mcharFormOfUse[i]));
+                        paramNCharFormOfUse_v.add(new Boolean(mcharFormOfUse[i]));
                     }
                     catch (SQLException e) {
                         e.printStackTrace();
@@ -189,11 +194,10 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             int[] paramModes = new int[len];
             boolean[] paramNCharFormOfUse = new boolean[len];
             for (int i = 0; i < len; i++) {
-                paramTypes[i] = (TypeClass)(paramTypes_v.elementAt(i));
-                paramNames[i] = (String)(paramNames_v.elementAt(i));
-                paramModes[i] = ((Integer)(paramModes_v.elementAt(i))).intValue();
-                paramNCharFormOfUse[i] = ((Boolean)(paramNCharFormOfUse_v.elementAt(i)))
-                    .booleanValue();
+                paramTypes[i] = (TypeClass)(paramTypes_v.get(i));
+                paramNames[i] = paramNames_v.get(i);
+                paramModes[i] = paramModes_v.get(i).intValue();
+                paramNCharFormOfUse[i] = paramNCharFormOfUse_v.get(i).booleanValue();
             }
 
             paramTypes = generateDefaultArgsHolderParamTypes(paramTypes, paramDefaults,
@@ -230,11 +234,8 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 }
             }
         }
-        ProcedureMethod[] methods = new ProcedureMethod[methodl.size()];
-        for (int i = 0; i < methods.length; i++) {
-            methods[i] = (ProcedureMethod)methodl.get(i);
-        }
-        return (ProcedureMethod[])Util.sort(methods);
+        Collections.sort(methodl);
+        return methodl;
     }
 
     protected abstract MethodInfo[] getMethodInfo(String schema, String name) throws SQLException;
@@ -266,9 +267,9 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
         /*
          * Connection conn = null; PreparedStatement stmt = null; ResultSet rs = null;
-         * 
+         *
          * conn = m_reflector.getConnection();
-         * 
+         *
          * if (overload == null || overload.equals("")) { stmt =conn.prepareStatement(
          * "SELECT DEFAULTED FROM ALL_ARGUMENTS WHERE OBJECT_ID=:1 AND OBJECT_NAME=:2 AND SEQUENCE=:3 AND OVERLOAD IS NULL"
          * ); } else { stmt =conn.prepareStatement(
@@ -279,7 +280,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
          * "Y".equalsIgnoreCase(defaulted) ? 1 : 0; }
          */
         try {
-            Iterator rowIter;
+            Iterator<ViewRow> rowIter;
             if (overload == null || overload.equals("")) {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
@@ -302,7 +303,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                     "Pre-10.2 database do not support DEFAULTED in ALL_ARGUMENTS");
             }
         }
-        catch (Exception se) { // java.sql.SQLException: ORA-00904: "DEFAULTED": invalid identifier
+        catch (Exception se) { // SQLException: ORA-00904: "DEFAULTED": invalid identifier
             // se.printStackTrace();
             // conn = m_reflector.getConnection();
             try {
@@ -314,7 +315,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
                 /*
                  * if (stmt != null) { stmt.close(); } if (rs != null) { rs.close(); }
-                 * 
+                 *
                  * stmt =
                  * conn.prepareStatement("SELECT SYS.SQLJUTL.HAS_DEFAULT(:1, :2, :3, :4) FROM DUAL"
                  * ); stmt.setInt(oidIdx, object_id); stmt.setString(methodNameIdx, methodName);
@@ -327,7 +328,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 String sqljutl = "SYS.SQLJUTL.HAS_DEFAULT(" + object_id + ", " + "'"
                     + methodName.toUpperCase() + "', " + sequence + ","
                     + ((overload == null || overload.equals("")) ? "0" : overload) + ")";
-                Iterator rowIter = m_viewCache.getRows(Util.DUAL, new String[]{sqljutl},
+                Iterator<ViewRow> rowIter = m_viewCache.getRows(Util.DUAL, new String[]{sqljutl},
                     new String[0], new Object[0], new String[0]);
 
                 if (rowIter.hasNext()) {
@@ -393,6 +394,6 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
         return defaultParamTypes;
     }
 
-    protected ProcedureMethod[] m_methods;
+    protected List<ProcedureMethod> m_methods;
     protected MethodFilter m_methodFilter = null;
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,14 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.Map;
 
-@SuppressWarnings("unchecked")
+
 public class MethodInfo {
-    public MethodInfo(UserArguments row) throws java.sql.SQLException {
+
+    public String methodName;
+    public String methodNo;
+    public String methodType;
+    public int parameters;
+    public int results;
+
+    public MethodInfo(UserArguments row) throws SQLException {
         methodName = row.OBJECT_NAME;
         methodNo = row.OVERLOAD;
         methodType = "PUBLIC";
@@ -38,7 +46,7 @@ public class MethodInfo {
         }
     }
 
-    public MethodInfo(AllTypeMethods row) throws java.sql.SQLException {
+    public MethodInfo(AllTypeMethods row) throws SQLException {
         methodName = row.methodName;
         methodNo = row.methodNo;
         methodType = row.methodType;
@@ -46,36 +54,29 @@ public class MethodInfo {
         results = row.results;
     }
 
-    public static MethodInfo[] getMethodInfo(Iterator iter) throws java.sql.SQLException {
-        Vector a = new Vector();
+    public static MethodInfo[] getMethodInfo(Iterator<ViewRow> iter) throws SQLException {
+        ArrayList<MethodInfo> a = new ArrayList<MethodInfo>();
         while (iter.hasNext()) {
-            Object obj = iter.next();
-            if (obj instanceof AllArguments) {
-                a.addElement(new MethodInfo((AllArguments)obj));
+            ViewRow vr = iter.next();
+            if (vr.isAllArguments() || vr.isUserArguments()) {
+                a.add(new MethodInfo((AllArguments)vr));
             }
-            else if (obj instanceof UserArguments) {
-                a.addElement(new MethodInfo((UserArguments)obj));
-            }
-            else {
-                a.addElement(new MethodInfo((AllTypeMethods)obj));
+            else if (vr.isAllTypeMethods()) {
+                a.add(new MethodInfo((AllTypeMethods)vr));
             }
         }
-        MethodInfo[] r = new MethodInfo[a.size()];
-        for (int i = 0; i < a.size(); i++) {
-            r[i] = (MethodInfo)a.elementAt(i);
-        }
-        return r;
+        return a.toArray(new MethodInfo[a.size()]);
     }
 
     // GROUP BY: METHOD_NAME, METHOD_NO: MAX(PARAMETERS). MAX(RESULTS)
-    public static MethodInfo[] groupBy(Iterator iter) throws java.sql.SQLException {
+    public static MethodInfo[] groupBy(Iterator<ViewRow> iter) throws java.sql.SQLException {
         MethodInfo[] minfo = getMethodInfo(iter);
-        Hashtable ht = new Hashtable();
+        Map<String,MethodInfo> miMap = new HashMap<String,MethodInfo>();
         for (int i = 0; i < minfo.length; i++) {
             String key = minfo[i].methodName + "," + minfo[i].methodNo;
-            MethodInfo mi = (MethodInfo)ht.get(key);
+            MethodInfo mi = miMap.get(key);
             if (mi == null) {
-                ht.put(key, minfo[i]);
+                miMap.put(key, minfo[i]);
             }
             if (mi != null && mi.parameters < minfo[i].parameters) {
                 mi.parameters = minfo[i].parameters;
@@ -84,18 +85,6 @@ public class MethodInfo {
                 mi.results = minfo[i].results;
             }
         }
-        minfo = new MethodInfo[ht.size()];
-        Enumeration htEnum = ht.elements();
-        int i = 0;
-        while (htEnum.hasMoreElements()) {
-            minfo[i++] = (MethodInfo)htEnum.nextElement();
-        }
-        return minfo;
+        return miMap.values().toArray(new MethodInfo[miMap.size()]);
     }
-
-    public String methodName;
-    public String methodNo;
-    public String methodType;
-    public int parameters;
-    public int results;
 }

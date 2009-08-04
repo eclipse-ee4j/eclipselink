@@ -20,10 +20,10 @@ public interface PublisherListener {
     public void beginPlsqlRecord(String recordName, String targetTypeName, int numFields);
     public void beginPlsqlRecordField(String fieldName, int idx);
     public void endPlsqlRecordField(String fieldName, int idx);
-    public void endPlsqlRecord(String recordName);
+    public void endPlsqlRecord(String recordName, String typeDDL, String typeDropDDL);
 
     public void beginPlsqlTable(String tableName, String targetTypeName);
-    public void endPlsqlTable(String tableName);
+    public void endPlsqlTable(String tableName, String typeDDL, String typeDropDDL);
 
     public void beginMethod(String methodName, int len);
     public void handleMethodReturn(String returnTypeName);

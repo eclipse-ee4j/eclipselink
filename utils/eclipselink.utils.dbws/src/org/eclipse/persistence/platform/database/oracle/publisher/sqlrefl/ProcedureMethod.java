@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,19 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 
 /**
  * A Method provides information about a single method of a type.
  */
-public class ProcedureMethod implements Sortable {
+public class ProcedureMethod implements Comparable<ProcedureMethod> {
 
     public static final int IN = 1;
     public static final int OUT = 2;
     public static final int INOUT = IN ^ OUT;
     public static final int RETURN = 4;
     public static final int ALL = 0;
-    
+
+    protected String m_name;
+    protected int m_modifiers;
+    protected TypeClass m_returnType;
+    protected TypeClass[] m_paramTypes;
+    protected String[] m_paramNames;
+    protected int[] m_paramModes;
+    protected boolean[] m_paramDefaults;
+    protected boolean m_hasDefault;
+    protected boolean m_keepMethodName = false;
+    protected String m_overloadNumber;
+
     /**
      * Construct a Method
      */
@@ -49,7 +61,6 @@ public class ProcedureMethod implements Sortable {
         return m_modifiers;
     }
 
-    
     /**
      * Construct a Method
      */
@@ -147,8 +158,11 @@ public class ProcedureMethod implements Sortable {
     public void setKeepMethodName(boolean keep) {
         m_keepMethodName = keep;
     }
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
+    }
 
-    public String getSortingKey() {
+    protected String getSortingKey() {
         String key = m_name;
         if (m_overloadNumber != null) {
             for (int i = 0; i < 6 - m_overloadNumber.length(); i++) {
@@ -164,19 +178,7 @@ public class ProcedureMethod implements Sortable {
         }
         return key;
     }
-
-    protected String m_name;
-    protected int m_modifiers;
-    protected TypeClass m_returnType;
-    protected TypeClass[] m_paramTypes;
-    protected String[] m_paramNames;
-    protected int[] m_paramModes;
-    protected boolean[] m_paramDefaults;
-    protected boolean m_hasDefault;
-    protected boolean m_keepMethodName = false;
-    protected String m_overloadNumber;
-
-    public void accept(PublisherVisitor v) {
-        v.visit(this);
+    public int compareTo(ProcedureMethod other) {
+        return getSortingKey().compareTo(other.getSortingKey());
     }
 }

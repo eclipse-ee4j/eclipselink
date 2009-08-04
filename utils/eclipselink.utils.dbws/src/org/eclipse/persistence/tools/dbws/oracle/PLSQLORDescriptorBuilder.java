@@ -68,7 +68,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
         stac.push(tableHelper);
     }
     @Override
-    public void endPlsqlTable(String tableName) {
+    public void endPlsqlTable(String tableName, String typeDDL, String typeDropDDL) {
         ListenerHelper top = stac.pop();
         TableHelper tableHelper = (TableHelper)stac.peek();
         String tableAlias = tableHelper.targetTypeName().toLowerCase();
@@ -190,7 +190,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
         }
     }
     @Override
-    public void endPlsqlRecord(String plsqlRecordName) {
+    public void endPlsqlRecord(String recordName, String typeDDL, String typeDropDDL) {
     }
     @Override
     public void endMethodArg(String argName) {

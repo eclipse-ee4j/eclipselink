@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,23 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Vector;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ElemInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.PlsqlElemHelper;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.PlsqlElemInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OBJECT_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OVERLOAD;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.PACKAGE_NAME;
 
 /**
  * Describe PL/SQL table type, including index-by tables
  */
-@SuppressWarnings("unchecked")
 public class PlsqlTableType extends SqlCollectionType {
+
+    protected ElemInfo m_elemInfo;
+
     public PlsqlTableType(SqlName sqlName, int typeCode, ElemInfo elemInfo, SqlType elemType,
         int[] details, boolean generateMe, SqlType parentType, SqlReflector reflector) {
         super(sqlName, typeCode, generateMe, parentType, reflector);
@@ -52,12 +60,10 @@ public class PlsqlTableType extends SqlCollectionType {
             typeName = typeName.substring(typeName.indexOf('.') + 1);
         }
 
-        @SuppressWarnings("unused")
-        Vector rowV = new Vector();
-        Iterator iter;
+        Iterator<ViewRow> iter;
         if (packageName != null && packageName.length() > 0) {
-            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{Util.PACKAGE_NAME,
-                Util.OBJECT_NAME, Util.OVERLOAD}, new Object[]{packageName, methodName, methodNo},
+            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{PACKAGE_NAME,
+                OBJECT_NAME, OVERLOAD}, new Object[]{packageName, methodName, methodNo},
             // new String[0]);
                 new String[]{"SEQUENCE"});
         }
@@ -122,7 +128,7 @@ public class PlsqlTableType extends SqlCollectionType {
     public static final int DETAILS_TYPE_PRECISION = 1;
     public static final int DETAILS_TYPE_SCALE = 2;
 
-    static TypeClass getComponentType(ElemInfo elemInfo, SqlReflector reflector, SqlType parentType,
+    public static TypeClass getComponentType(ElemInfo elemInfo, SqlReflector reflector, SqlType parentType,
         int[] details) throws SQLException, PublisherException {
         SqlType result = null;
         try {
@@ -156,32 +162,12 @@ public class PlsqlTableType extends SqlCollectionType {
      */
     private static String getIndexType(SqlName sqlName, ViewCache viewCache) throws SQLException {
         return "NUMBER";
-        /*
-         * Don't think I know how to figure out the index type String indexType = "NUMBER"; String
-         * schema = sqlName.getSchemaName(); String typeName = sqlName.getTypeName(); if
-         * (typeName.indexOf('.')>=0) { typeName = typeName.substring(typeName.indexOf('.') +1); }
-         * 
-         * Vector rowV = new Vector(); Iterator iter; String[] keys = new String[0]; // toplevel
-         * publishing Object[] values = new Object[0]; // toplevel publishing if (packageName!=null
-         * && packageName.length()>0) { keys = new String[]{Util.PACKAGE_NAME}; values = new
-         * Object[]{packageName}; } iter = viewCache.getRows(m_options.getPlsqlView(), keys,
-         * values); String objectName= null; int position = -1; int sequence = -1; int dataLevel =
-         * -1; while (iter.hasNext() && objectName==null) { AllArguments row = (AllArguments)
-         * iter.next(); if (objectName==null && schema!=null && schema.equals(row.TYPE_OWNER) &&
-         * typeName!=null && typeName.equals(row.TYPE_SUBNAME)) { objectName = row.OBJECT_NAME;
-         * position = row.POSITION; sequence = row.SEQUENCE; dataLevel = row.DATA_LEVEL; } }
-         * sequence++; dataLevel++; iter = viewCache.getRows(m_options.getPlsqlView(), keys,
-         * values); while (iter.hasNext()) { AllArguments row = (AllArguments) iter.next(); if
-         * (position == row.POSITION && sequence==row.SEQUENCE && dataLevel==row.DATA_LEVEL &&
-         * objectName.equals(row.OBJECT_NAME)) { indexType = row.PLS_TYPE; if (indexType==null)
-         * indexType = row.DATA_TYPE; if (indexType!=null) break; } } return indexType;
-         */
     }
 
     /**
      * Create a PL/SQL table type. If -plsqlindexbytable is set and whenever possible, the method
      * will return predefined scalar index-by table types, which will be mapped into Java arrays.
-     * 
+     *
      * @param sqlName
      * @param typeCode
      * @param elemInfo
@@ -200,8 +186,7 @@ public class PlsqlTableType extends SqlCollectionType {
 
     public static SqlType newInstance(SqlName sqlName, int typeCode, ElemInfo elemInfo,
         SqlType elemType, int[] details, boolean generateMe, SqlType parentType,
-        boolean isGrandparent, SqlReflector reflector) throws java.sql.SQLException,
-        org.eclipse.persistence.platform.database.oracle.publisher.PublisherException {
+        boolean isGrandparent, SqlReflector reflector) throws SQLException, PublisherException {
         /**
          * Identify toplevel scalar PL/SQL indexby table, to be mapped to predefined PL/SQL indexby
          * table type. Under the following situations, predefined scalar index-by table types cannot
@@ -224,8 +209,6 @@ public class PlsqlTableType extends SqlCollectionType {
             parentType, reflector);
     }
 
-    private ElemInfo m_elemInfo;
-    
     public void accept(PublisherVisitor v) {
         v.visit(this);
     }

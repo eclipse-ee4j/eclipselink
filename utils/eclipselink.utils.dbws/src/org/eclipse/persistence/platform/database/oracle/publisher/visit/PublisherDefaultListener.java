@@ -24,7 +24,7 @@ public class PublisherDefaultListener implements PublisherListener {
 
     public void beginPlsqlTable(String tableName, String targetTypeName) {
     }
-    public void endPlsqlTable(String tableName) {
+    public void endPlsqlTable(String tableName, String typeDDL, String typeDropDDL) {
     }
 
     public void beginPlsqlRecord(String recordName, String targetTypeName , int numFields) {
@@ -33,7 +33,7 @@ public class PublisherDefaultListener implements PublisherListener {
     }
     public void endPlsqlRecordField(String fieldName, int idx) {
     }
-    public void endPlsqlRecord(String recordName) {
+    public void endPlsqlRecord(String recordName, String typeDDL, String typeDropDDL) {
     }
 
     public void beginMethod(String methodName, int numArgs) {

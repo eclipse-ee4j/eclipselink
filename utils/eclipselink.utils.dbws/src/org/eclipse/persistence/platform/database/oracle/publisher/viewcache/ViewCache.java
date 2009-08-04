@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,14 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
+import java.io.ObjectOutput;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.OracleTypes;
@@ -29,10 +37,19 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.AL
 @SuppressWarnings("unchecked")
 public class ViewCache implements Externalizable {
 
+    static final String VIEW_CACHE_PREFIX = "viewcachefor";
     public static final String PARAMETER_USER = "USER";
     public static final String PARAMETER_ALL = "ALL";
 
-    public Iterator getRows(String view, String[] columns, String[] keys, Object[] values,
+    protected Connection m_conn;
+    protected String m_user;
+    protected Map m_rowsCacheIndex;
+    protected ArrayList m_rowsCache;
+    protected int m_hits;
+    protected int m_visits;
+    protected boolean m_viewCacheDebug = false;
+
+    public Iterator<ViewRow> getRows(String view, String[] columns, String[] keys, Object[] values,
         String[] orderby) throws java.sql.SQLException {
         m_visits++;
         String cKey = makeKey(view, columns, keys, values, orderby);
@@ -126,7 +143,7 @@ public class ViewCache implements Externalizable {
                     System.out.println("viewcache.execute.query: " + stmtText);
                 }
                 rset = stmt.executeQuery();
-                rowsV = new ArrayList();
+                rowsV = new ArrayList<ViewRow>();
                 while (rset.next()) {
                     rowsV.add(ViewRowFactory.createViewRow(view, columns, rset));
                     if (m_viewCacheDebug) {
@@ -324,7 +341,7 @@ public class ViewCache implements Externalizable {
     public ViewCache(Connection conn, String user) {
         m_conn = conn;
         m_user = user;
-        m_rowsCacheIndex = new Hashtable();
+        m_rowsCacheIndex = new HashMap();
         m_rowsCache = new ArrayList();
         m_hits = 0;
         m_visits = 0;
@@ -448,7 +465,7 @@ public class ViewCache implements Externalizable {
 
         // m_rowsCacheIndex (String, ArrayList<ViewRow>)
         int rowsCacheIndexSize = ((Integer)in.readObject()).intValue();
-        m_rowsCacheIndex = new Hashtable(rowsCacheIndexSize);
+        m_rowsCacheIndex = new HashMap(rowsCacheIndexSize);
         for (int i = 0; i < rowsCacheIndexSize; i++) {
             String key = (String)in.readObject();
             int rowsSize = ((Integer)in.readObject()).intValue();
@@ -461,7 +478,7 @@ public class ViewCache implements Externalizable {
         }
     }
 
-    public void writeExternal(java.io.ObjectOutput out) throws IOException {
+    public void writeExternal(ObjectOutput out) throws IOException {
         if (m_viewCacheDebug) {
             System.out.println("viewcache.write.external");
         }
@@ -479,11 +496,11 @@ public class ViewCache implements Externalizable {
 
         // m_rowsCacheIndex (String, ArrayList<ViewRow>)
         out.writeObject(new Integer(m_rowsCacheIndex.size()));
-        Enumeration keys = m_rowsCacheIndex.keys();
-        Enumeration values = m_rowsCacheIndex.elements();
-        while (keys.hasMoreElements()) {
-            out.writeObject(keys.nextElement());
-            ArrayList rows = (ArrayList)values.nextElement();
+        Iterator keys = m_rowsCacheIndex.keySet().iterator();
+        Iterator values = m_rowsCacheIndex.values().iterator();
+        while (keys.hasNext()) {
+            out.writeObject(keys.next());
+            ArrayList rows = (ArrayList)values.next();
             out.writeObject(new Integer(rows.size()));
             for (int i = 0; i < rows.size(); i++) {
                 out.writeObject(rows.get(i));
@@ -506,7 +523,7 @@ public class ViewCache implements Externalizable {
 
     /*
      * if the name is quoted, the quotes are removed.
-     * 
+     *
      * public static String dbifyName(String s, SqlReflector reflector) { if (s == null ||
      * s.equals("") || reflector == null || reflector.getConnection() == null) { return s; } return
      * dbifyName(s, reflector.getViewCache()); }
@@ -543,13 +560,4 @@ public class ViewCache implements Externalizable {
         return dbName;
     }
 
-    private Connection m_conn;
-    private String m_user;
-    private Hashtable m_rowsCacheIndex;
-    private ArrayList m_rowsCache;
-    private int m_hits;
-    private int m_visits;
-    private boolean m_viewCacheDebug = false;
-
-    static final String VIEW_CACHE_PREFIX = "viewcachefor";
 }

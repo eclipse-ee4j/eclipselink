@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,10 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
-import java.util.Vector;
+//javase imports
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class RowtypeInfo extends SequencedInfo {
+
+    public String argument_name;
+    public String type_owner;
+    public String type_name;
+    public String type_subname;
+    public String modifier;
+    public String data_type;
+    public int data_level;
+    public int data_length;
+    public int data_precision;
+    public int data_scale;
+
     public RowtypeInfo(UserArguments item) {
         argument_name = item.ARGUMENT_NAME;
         type_owner = item.TYPE_OWNER;
@@ -107,30 +121,21 @@ public class RowtypeInfo extends SequencedInfo {
         data_level = dl;
     }
 
-    public String argument_name;
-    public String type_owner;
-    public String type_name;
-    public String type_subname;
-    public String modifier;
-    public String data_type;
-    public int data_level;
-    public int data_length;
-    public int data_precision;
-    public int data_scale;
-
-    public static RowtypeInfo[] getRowtypeInfo(Vector viewRows) throws java.sql.SQLException {
-        Vector a = new Vector();
+    public static List<RowtypeInfo> getRowtypeInfo(ArrayList<ViewRow> viewRows) throws SQLException {
+        ArrayList<RowtypeInfo> a = new ArrayList<RowtypeInfo>();
         for (int i = 0; i < viewRows.size(); i++) {
-            RowtypeInfo rif = new RowtypeInfo((UserArguments)viewRows.elementAt(i));
-            a.addElement(rif);
+            RowtypeInfo rif = new RowtypeInfo((UserArguments)viewRows.get(i));
+            a.add(rif);
         }
         if (a.size() == 0) {
             return null;
         }
-        RowtypeInfo[] r = new RowtypeInfo[a.size()];
-        for (int i = 0; i < a.size(); i++) {
-            r[i] = (RowtypeInfo)a.elementAt(i);
+        RowtypeInfo[] r = a.toArray(new RowtypeInfo[a.size()]);
+        RowtypeInfo[] rr = (RowtypeInfo[])reorder(r);
+        ArrayList<RowtypeInfo> aa = new ArrayList<RowtypeInfo>();
+        for (RowtypeInfo rti : rr) {
+            aa.add(rti);
         }
-        return (RowtypeInfo[])reorder(r);
+        return aa;
     }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,8 +35,6 @@ public class OracleTypes {
     public static final int FIXED_CHAR = 999;
     public static final int FLOAT = 6;
     public static final int INTEGER = 4;
-    // public static final int INTERVALDS = -104;
-    // public static final int INTERVALYM = -103;
     public static final int JAVA_OBJECT = 2000;
     public static final int JAVA_STRUCT = 2008;
     public static final int LONGVARBINARY = -4;
@@ -64,6 +62,7 @@ public class OracleTypes {
 
     public static final int SQL_STATEMENTS = 1996;
     public static final int PACKAGE = 1999;
+    public static final int TOPLEVEL = 1998;
     public static final int UNSUPPORTED = 1997;
     public static final int TABLE = 1995;
     public static final int INTERVALYM = 1994;

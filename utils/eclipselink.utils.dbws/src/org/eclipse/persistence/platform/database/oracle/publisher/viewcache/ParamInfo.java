@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,13 +12,33 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 
-@SuppressWarnings("unchecked")
 public class ParamInfo {
-    public ParamInfo(AllMethodParams r) throws java.sql.SQLException {
+
+    public String paramName;
+    public String paramMode;
+    public int paramNo;
+    public String paramTypeName;
+    public String paramTypeSubname;
+    public boolean ncharFormOfUse;
+    public String paramTypeOwner;
+    public String paramTypeMod;
+    public String methodName;
+    public String methodNo;
+    public int sequence;
+    public int dataLength;
+    public int dataPrecision;
+    public int dataScale;
+    public int objectId;
+
+    public ParamInfo(AllMethodParams r) throws SQLException {
         paramName = r.paramName;
         paramMode = r.paramMode;
         paramTypeMod = r.paramTypeMod;
@@ -58,7 +78,7 @@ public class ParamInfo {
         dataScale = 0;
     }
 
-    public ParamInfo(UserArguments r) throws java.sql.SQLException {
+    public ParamInfo(UserArguments r) throws SQLException {
         paramName = r.ARGUMENT_NAME;
         paramNo = r.POSITION;
         paramMode = r.IN_OUT;
@@ -100,45 +120,25 @@ public class ParamInfo {
         objectId = r.OBJECT_ID;
     }
 
-    public static ParamInfo[] getParamInfo(Iterator iter) throws java.sql.SQLException {
-        ArrayList a = new ArrayList();
+    public static ParamInfo[] getParamInfo(Iterator<ViewRow> iter) throws SQLException {
+        ArrayList<ViewRow> a = new ArrayList<ViewRow>();
         while (iter.hasNext()) {
             a.add(iter.next());
         }
         return getParamInfo(a);
     }
 
-    public static ParamInfo[] getParamInfo(ArrayList v) throws java.sql.SQLException {
-        ArrayList a = new ArrayList();
+    public static ParamInfo[] getParamInfo(ArrayList<ViewRow> v) throws SQLException {
+        ArrayList<ParamInfo> a = new ArrayList<ParamInfo>();
         for (int i = 0; i < v.size(); i++) {
-            Object obj = v.get(i);
-            if (obj instanceof AllMethodParams) {
-                a.add(new ParamInfo((AllMethodParams)obj));
+            ViewRow vr = v.get(i);
+            if (vr.isAllMethodParams()) {
+                a.add(new ParamInfo((AllMethodParams)vr));
             }
-            else {
-                a.add(new ParamInfo((UserArguments)obj));
+            else if (vr.isUserArguments() || vr.isAllArguments()) {
+                a.add(new ParamInfo((UserArguments)vr));
             }
         }
-        ParamInfo[] r = new ParamInfo[a.size()];
-        for (int i = 0; i < a.size(); i++) {
-            r[i] = (ParamInfo)a.get(i);
-        }
-        return r;
+        return a.toArray(new ParamInfo[a.size()]);
     }
-
-    public String paramName;
-    public String paramMode;
-    public int paramNo;
-    public String paramTypeName;
-    public String paramTypeSubname;
-    public boolean ncharFormOfUse;
-    public String paramTypeOwner;
-    public String paramTypeMod;
-    public String methodName;
-    public String methodNo;
-    public int sequence;
-    public int dataLength;
-    public int dataPrecision;
-    public int dataScale;
-    public int objectId;
 }

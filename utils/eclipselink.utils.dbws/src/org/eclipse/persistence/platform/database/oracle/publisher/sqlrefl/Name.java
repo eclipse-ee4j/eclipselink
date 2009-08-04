@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,12 +18,19 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
  * This class implements 'equals' and 'hash', so that Names may be stored in Hashtables.
  */
 public abstract class Name {
+
+    public static final String NO_CONTEXT = "";
+
+    protected String m_context;
+    protected String m_name;
+    protected Object m_annotation;
+
     /**
      * Initializes a Name with the context and simple name of a declared entity. The context and
      * name arguments may not be null.
-     * 
+     *
      * * @param context the context in which the entity is declared
-     * 
+     *
      * @param name
      *            the declared name of the entity in the context
      */
@@ -156,9 +163,4 @@ public abstract class Name {
     protected Name() {
     }
 
-    public static final String NO_CONTEXT = "";
-
-    protected String m_context;
-    protected String m_name;
-    Object m_annotation;
 }

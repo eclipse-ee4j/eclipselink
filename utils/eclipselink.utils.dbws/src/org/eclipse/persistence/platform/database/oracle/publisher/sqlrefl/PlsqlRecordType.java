@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,22 +12,36 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+//EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
-import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.FieldInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.PlsqlTypeInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.RowtypeInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.UserArguments;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewRow;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.DATA_LEVEL;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OBJECT_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.OVERLOAD;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.PACKAGE_NAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.SEQUENCE;
 
-@SuppressWarnings("unchecked")
 public class PlsqlRecordType extends SqlTypeWithFields {
-    public PlsqlRecordType(SqlName sqlName, FieldInfo[] fieldInfo, AttributeField[] fields,
-        RowtypeInfo[] rowtypeInfo, boolean generateMe, SqlType parentType, SqlReflector reflector)
+
+    // Locating PL/SQL RECORD, esp., ROWTYPE in ALL_ARGUMENTS
+    protected List<FieldInfo> m_fieldInfo;
+    protected List<RowtypeInfo> m_rowtypeInfo;
+
+    public PlsqlRecordType(SqlName sqlName, List<FieldInfo> fieldInfo, List<AttributeField> fields,
+        List<RowtypeInfo> rowtypeInfo, boolean generateMe, SqlType parentType, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.PLSQL_RECORD, generateMe, parentType, reflector);
         m_rowtypeInfo = rowtypeInfo;
@@ -35,7 +49,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         m_fields = fields;
     }
 
-    public AttributeField[] getDeclaredFields(boolean publishedOnly) throws java.sql.SQLException,
+    public List<AttributeField> getDeclaredFields(boolean publishedOnly) throws SQLException,
         PublisherException {
         if (!publishedOnly) {
             return m_fields;
@@ -44,17 +58,14 @@ public class PlsqlRecordType extends SqlTypeWithFields {
             return m_fieldsPublishedOnly;
         }
         else {
-            ArrayList fieldsCS = new ArrayList();
+            ArrayList<AttributeField> fieldsCS = new ArrayList<AttributeField>();
             PLSQLMap map = new PLSQLMap(m_parentType, m_reflector);
-            for (int i = 0; i < m_fields.length; i++) {
-                if (map.getMemberName(m_fields[i].getName()) != null) {
-                    fieldsCS.add(m_fields[i]);
+            for (int i = 0; i < m_fields.size(); i++) {
+                if (map.getMemberName(m_fields.get(i).getName()) != null) {
+                    fieldsCS.add(m_fields.get(i));
                 }
             }
-            m_fieldsPublishedOnly = new AttributeField[fieldsCS.size()];
-            for (int i = 0; i < m_fieldsPublishedOnly.length; i++) {
-                m_fieldsPublishedOnly[i] = (AttributeField)fieldsCS.get(i);
-            }
+            m_fieldsPublishedOnly = new ArrayList<AttributeField>(fieldsCS);
             return m_fieldsPublishedOnly;
         }
     }
@@ -63,16 +74,16 @@ public class PlsqlRecordType extends SqlTypeWithFields {
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
-    public AttributeField[] getFields(boolean publishedOnly) throws SecurityException,
-        java.sql.SQLException, PublisherException {
+    public List<AttributeField> getFields(boolean publishedOnly) throws SecurityException,
+        SQLException, PublisherException {
         return getDeclaredFields(publishedOnly);
     }
 
-    protected FieldInfo[] getFieldInfo() {
+    protected List<FieldInfo> getFieldInfo() {
         return m_fieldInfo;
     }
 
-    static FieldInfo[] getFieldInfo(String packageName, String methodName, String methodNo,
+    public static List<FieldInfo> getFieldInfo(String packageName, String methodName, String methodNo,
         int sequence, SqlReflector reflector) throws SQLException {
 
         int data_level = -1;
@@ -85,10 +96,10 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         // identify this type in ALL_ARGUMENTS.
 
         ViewCache viewCache = reflector.getViewCache();
-        Iterator iter = viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], new String[]{
-            Util.PACKAGE_NAME, Util.OBJECT_NAME, Util.OVERLOAD}, new Object[]{packageName,
-            methodName, methodNo}, new String[]{Util.SEQUENCE});
-        ArrayList viewRows = new ArrayList();
+        Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{
+            PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{packageName,
+            methodName, methodNo}, new String[]{SEQUENCE});
+        ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) {
             UserArguments item = (UserArguments)iter.next();
             viewRows.add(item);
@@ -107,11 +118,10 @@ public class PlsqlRecordType extends SqlTypeWithFields {
             }
         }
         data_level++;
-
-        iter = viewCache.getRows(Util.ALL_ARGUMENTS, new String[0], new String[]{Util.PACKAGE_NAME,
-            Util.OBJECT_NAME, Util.OVERLOAD, Util.DATA_LEVEL}, new Object[]{packageName,
-            methodName, methodNo, new Integer(data_level)}, new String[]{Util.SEQUENCE});
-        viewRows = new ArrayList();
+        iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{PACKAGE_NAME,
+            OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{packageName,
+            methodName, methodNo, new Integer(data_level)}, new String[]{SEQUENCE});
+        viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) { // DISTINCT
             UserArguments item = (UserArguments)iter.next();
             if ((sequence == -1 || item.sequence > sequence)
@@ -122,15 +132,11 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         return FieldInfo.getFieldInfo(viewRows);
     }
 
-    public void accept(PublisherVisitor v) {
-        v.visit(this);
-    }
-    
-    RowtypeInfo[] getRowtypeInfo() {
+    public List<RowtypeInfo> getRowtypeInfo() {
         return m_rowtypeInfo;
     }
 
-    // Locating PL/SQL RECORD, esp., ROWTYPE in ALL_ARGUMENTS
-    private FieldInfo[] m_fieldInfo;
-    private RowtypeInfo m_rowtypeInfo[];
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
+    }
 }

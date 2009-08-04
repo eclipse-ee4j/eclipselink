@@ -10,16 +10,13 @@
  * Contributors:
  *     Mike Norman - from Proof-of-concept, become production code
  ******************************************************************************/
-
 package org.eclipse.persistence.platform.database.oracle.publisher;
 
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
+//javase imports
+import java.util.List;
 
-//TODO
-// (1) have a Filter instance contains all the criteria
-//     to avoid the majority of the static methods.
-// (2) generated PL/SQL wrapper needs not to include types for
-//     pruned methods
+//EclipseLink imports
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
 
 public abstract class MethodFilter {
     /*
@@ -38,7 +35,7 @@ public abstract class MethodFilter {
         return null;
     }
 
-    public String[] getMethodNames() {
-        return new String[0];
+    public List<String> getMethodNames() {
+        return null;
     }
 }

@@ -48,9 +48,9 @@ public class PublisherListenerChainAdapter implements PublisherListener {
             listener.beginPlsqlTable(tableName, targetTypeName);
         }
     }
-    public void endPlsqlTable(String tableName) {
+    public void endPlsqlTable(String tableName, String typeDDL, String typeDropDDL) {
         for (PublisherListener listener : chain) {
-            listener.endPlsqlTable(tableName);
+            listener.endPlsqlTable(tableName, typeDDL, typeDropDDL);
         }
     }
 
@@ -69,9 +69,9 @@ public class PublisherListenerChainAdapter implements PublisherListener {
             listener.endPlsqlRecordField(fieldName, idx);
         }
     }
-    public void endPlsqlRecord(String recordName) {
+    public void endPlsqlRecord(String recordName, String typeDDL, String typeDropDDL) {
         for (PublisherListener listener : chain) {
-            listener.endPlsqlRecord(recordName);
+            listener.endPlsqlRecord(recordName, typeDDL, typeDropDDL);
         }
     }
 

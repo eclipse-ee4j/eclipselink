@@ -13,10 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+//javase imports
 import java.util.ArrayList;
 
-@SuppressWarnings("unchecked")
 public class WrapperPackageMetadata {
+
+    private String name;
+    private ArrayList<WrapperMethodMetadata> wrapperMethods = new ArrayList<WrapperMethodMetadata>();
+    
     public WrapperPackageMetadata(String name) {
         this.name = name;
     }
@@ -26,13 +30,10 @@ public class WrapperPackageMetadata {
     }
 
     public WrapperMethodMetadata[] getWrapperMethods() {
-        return (WrapperMethodMetadata[])wrapperMethods.toArray(new WrapperMethodMetadata[0]);
+        return  wrapperMethods.toArray(new WrapperMethodMetadata[wrapperMethods.size()]);
     }
 
     public String getName() {
         return name;
     }
-
-    private String name;
-    private ArrayList wrapperMethods = new ArrayList();
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998-2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,17 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
+//javase imports
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 // Includes all the columns in ALL_TYPE_METHODS
 
 public class AllTypeMethods extends ViewRowFactory implements ViewRow {
-    // Attributes
-    public String methodName;
-    public String methodNo;
-    public String methodType;
-    public int parameters;
-    public int results;
 
     public static int iMETHOD_NAME = -1;
     public static int iMETHOD_NO = -1;
@@ -30,7 +26,14 @@ public class AllTypeMethods extends ViewRowFactory implements ViewRow {
     public static int iPARAMETERS = -1;
     public static int iRESULTS = -1;
 
-    public AllTypeMethods(ResultSet rset) throws java.sql.SQLException {
+    // Attributes
+    public String methodName;
+    public String methodNo;
+    public String methodType;
+    public int parameters;
+    public int results;
+
+    public AllTypeMethods(ResultSet rset) throws SQLException {
         super();
         if (iMETHOD_NAME == -1) {
             iMETHOD_NAME = rset.findColumn("METHOD_NAME");
@@ -45,6 +48,11 @@ public class AllTypeMethods extends ViewRowFactory implements ViewRow {
         methodType = rset.getString(iMETHOD_TYPE);
         parameters = rset.getInt(iPARAMETERS);
         results = rset.getInt(iRESULTS);
+    }
+
+    @Override
+    public boolean isAllTypeMethods() {
+        return true;
     }
 
     public String toString() {
