@@ -11,9 +11,9 @@ Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Include-Resource:\
- ${core.2.base.dir}/about.html,\
- ${core.2.base.dir}/readme.html,\
- ${core.2.base.dir}/license.html,\
+ ${jpa.2.base.dir}/about.html,\
+ ${jpa.2.base.dir}/readme.html,\
+ ${jpa.2.base.dir}/license.html,\
  org/eclipse/persistence/jpa=resource/org/eclipse/persistence/jpa,\
  META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
  META-INF/services/javax.annotation.processing.Processor=resource/META-INF/services/javax.annotation.processing.Processor

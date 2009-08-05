@@ -39,7 +39,7 @@
     <property name="core.2.buildsys.dir" value="${core.2.base.dir}/buildsystem"/>
 
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property file="${core.build.location}/build.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -69,7 +69,7 @@
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build Core component"/>
-    <target name="bnd"   depends="clean, compile, bnd-package" description="build JPA component using bnd"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build Core component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">

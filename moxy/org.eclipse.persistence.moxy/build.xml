@@ -36,9 +36,10 @@
         <contains string="${moxy.build.location}" substring="moxy"/>
     </condition>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
+    <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
 
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property file="${moxy.build.location}/build.properties"/>
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>
@@ -59,11 +60,13 @@
        <format property="build.date" pattern="yyyyMMdd"/>
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.qualifier" value="qualifier"/>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+    <property name="build.type"            value="SNAPSHOT"/>
+    <property name="svn.revision"          value="NA"/>
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor" value="${specification.vendor}"/>
 
     <!-- Set Compile Path-->
     <path id="moxy.compile.path">
@@ -80,6 +83,7 @@
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build MOXy component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build MOXy component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -121,7 +125,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="META-INF/services/javax.xml.bind.JAXBContext"/>
+                <include name="META-INF/services/*"/>
             </fileset>
         </jar>
         <jar jarfile="${moxy.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
@@ -182,6 +186,40 @@
         <echo message=" javax.xml.stream.events;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.stream.util;version=&quot;1.0.0&quot;;resolution:=optional${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+    </target>
+
+    <target name="bnd-package">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${moxy.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.moxy.bnd"
+            output="${moxy.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${moxy.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink MOXY Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${moxy.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
     </target>
 
 </project>
