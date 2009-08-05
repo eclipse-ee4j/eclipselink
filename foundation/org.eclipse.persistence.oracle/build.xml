@@ -41,6 +41,7 @@
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
     <property name="oracle.2.common.plugins.dir" value="${oracle.2.base.dir}/plugins"/>
+    <property name="oracle.2.buildsys.dir" value="${oracle.2.base.dir}/buildsystem"/>
     <property name="oracle.plugins.dir" value="../plugins"/>
 
     <property file="${user.home}/build.properties"/>
@@ -49,7 +50,7 @@
     <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
-    <property file="build.properties"/>
+    <property file="${oracle.build.location}/build.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -61,7 +62,9 @@
     <property name="svn.revision" value="NA"/>
     <property name="version.qualifier" value="qualifier"/>
     <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+    <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor"  value="${specification.vendor}"/>
 
     <!-- Set Compile Path-->
     <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
@@ -71,6 +74,9 @@
         <fileset
             dir="${oracle.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
+        <fileset
+            dir="${oracle.extensions.depend.dir}/11"
+            includes="${oracle.extensions.depend.jars}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
@@ -83,6 +89,7 @@
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build oracle component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build Oracle component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -197,7 +204,7 @@
         <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
-    
+
     <target name="repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF" duplicate="preserve">
             <fileset dir="${oracle.2.base.dir}">
@@ -233,4 +240,71 @@
         </jar>
     </target>
 
+    <target name="bnd-package">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${oracle.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.oracle.bnd"
+            output="${oracle.plugins.dir}/${ant.project.name}.jar"/>
+        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.source.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+    
+    <target name="bnd-repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${oracle.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${oracle.plugins.dir}/${ant.project.name}.jar"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.oracle.bnd"
+            output="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.plugins.dir}">
+                <include name="${ant.project.name}.source.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
 </project>
