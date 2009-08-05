@@ -356,9 +356,9 @@ public class AnnotationsProcessor {
     }
 
     /**
-     * Process a given set of JavaClass instances. Global elements will processed (via @XmlRootElement, 
-     * @XmlIDREFs) will be validated, and call back methods will be handled as required. This method 
-     * is typically called after init, preBuildTypeInfo, and postBuildTypeInfo have been called.
+     * Process a given set of JavaClass instances. @XmlIDREFs will be validated, and call back methods 
+     * will be handled as required. This method is typically called after init, preBuildTypeInfo, and 
+     * postBuildTypeInfo have been called.
      * 
      * @param classes
      */
@@ -396,9 +396,7 @@ public class AnnotationsProcessor {
                  }
         		 ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
         		 globalElements.put(null, declaration);
-        	}
-        	else if (javaClass.isArray()){
-        	
+        	} else if (javaClass.isArray()){
 	                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
 	                    extraClasses.add(javaClass.getComponentType());
 	                }

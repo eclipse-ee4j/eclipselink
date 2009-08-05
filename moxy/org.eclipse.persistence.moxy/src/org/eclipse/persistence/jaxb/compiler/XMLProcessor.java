@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +64,20 @@ public class XMLProcessor {
     public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput) {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
+        annotationsProcessor.init();
+        
+        // build a map of packages to JavaClass so we only process the JavaClasses for a given package
+        // additional classes - i.e. ones from packages not listed in XML - will be processed later
+        Map<String, ArrayList<JavaClass>> pkgToClassMap = buildPackageToJavaClassMap();
+        
         // process each XmlBindings in the map
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
+            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            if (classesToProcess == null) {
+                continue;
+            }
+
             xmlBindings = xmlBindingMap.get(packageName);
 
             // handle @XmlSchema override
@@ -74,10 +87,9 @@ public class XMLProcessor {
             }
 
             // build an array of JavaModel classes to process
-            JavaClass[] javaClasses = getClassesToProcess(xmlBindings);
+            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 
             // pre-build the TypeInfo objects
-            annotationsProcessor.init();
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
 
             nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
@@ -177,6 +189,17 @@ public class XMLProcessor {
                     }
                 }
             }
+            // remove the entry for this package from the map
+            pkgToClassMap.remove(packageName);
+        }
+        
+        // now process remaining classes
+        Iterator<ArrayList<JavaClass>> classIt = pkgToClassMap.values().iterator();
+        while (classIt.hasNext()) {
+            ArrayList<JavaClass> jClassList = classIt.next();
+            JavaClass[] jClassArray = (JavaClass[]) jClassList.toArray(new JavaClass[jClassList.size()]);
+            annotationsProcessor.buildNewTypeInfo(jClassArray);
+            annotationsProcessor.processJavaClasses(jClassArray);
         }
         
         // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo
@@ -438,5 +461,46 @@ public class XMLProcessor {
             }
         }
         return (JavaClass[]) allClasses.toArray(new JavaClass[allClasses.size()]);
+    }
+    
+    /**
+     * Convenience method for building a Map of package to classes.
+     * 
+     * @return
+     */
+    private Map<String, ArrayList<JavaClass>> buildPackageToJavaClassMap() {
+        Map<String, ArrayList<JavaClass>> theMap = new HashMap<String, ArrayList<JavaClass>>();
+
+        XmlBindings xmlBindings;
+        for (String packageName : xmlBindingMap.keySet()) {
+            xmlBindings = xmlBindingMap.get(packageName);
+            ArrayList classes = new ArrayList<JavaClass>();
+            // add binding classes - the Java Model will be used to get a JavaClass via class name
+            JavaTypes jTypes = xmlBindings.getJavaTypes();
+            if (jTypes != null) {
+                for (JavaType javaType : jTypes.getJavaType()) {
+                    classes.add(jModelInput.getJavaModel().getClass(javaType.getName()));
+                }
+            }
+            theMap.put(packageName, classes);
+        }
+        
+        // add any other classes that aren't declared via external metadata
+        for (JavaClass jClass : jModelInput.getJavaClasses()) {
+            // need to verify that the class isn't already in one of our lists
+            String pkg = jClass.getPackageName();
+            ArrayList<JavaClass> existingClasses = theMap.get(pkg);
+            if (existingClasses != null) {
+                if (!AnnotationsProcessor.classExistsInArray(jClass.getQualifiedName(), existingClasses)) {
+                    existingClasses.add(jClass);
+                }
+            } else {
+                ArrayList classes = new ArrayList<JavaClass>();
+                classes.add(jClass);
+                theMap.put(pkg, classes);
+            }
+        }
+        
+        return theMap;
     }
 }

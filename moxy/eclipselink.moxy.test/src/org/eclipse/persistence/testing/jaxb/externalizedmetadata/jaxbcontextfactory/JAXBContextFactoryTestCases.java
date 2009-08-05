@@ -26,15 +26,18 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a.BeanA;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b.BeanB;
 
 /**
- * Tests loading one or more eclipselink-oxm.xml files via package, when none are
- * found in the properties map or on a context path. *
+ * Tests various JAXBContext creation methods.
+ *  
  */
 public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private MySchemaOutputResolver outputResolver;
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
+    private static final String BEAN_NAMESPACE = "defaultTns";
     
     /**
      * This is the preferred (and only) constructor.
@@ -102,9 +105,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Test loading metadata via properties and context path.  Here, the eclipselink-oxm.xml file
-     * for the bar package will be in the properties map, and the eclipselink-oxm.xml file for the
-     * foo package will be looked up via context path.
+     * Test loading metadata via properties map.
      * 
      * Positive test.
      */
@@ -119,6 +120,15 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar", new StreamSource(iStream));
+
+        metadataFile = PATH + "properties/foo/eclipselink-oxm.xml";
+        
+        iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo", new StreamSource(iStream));
+
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
         
@@ -178,34 +188,92 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
     
     /**
-     * Test passing a String[] into the context factory via Class[].
+     * Test passing a String[] into the context factory via Type[].
      * 
      */
-    public void testStringArrayInClassesToBeBound() {
+    public void testStringArrayInTypesToBeBound() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        String metadataFile = PATH + "stringarray/a/eclipselink-oxm.xml";
+        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a", new StreamSource(iStream));
+
+        metadataFile = PATH + "stringarray/b/eclipselink-oxm.xml";
+        iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
+
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { String[].class }, null);
+            Type[] types = { 
+                    BeanA.class, 
+                    BeanB.class,
+                    String[].class
+                };
+
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(types, properties, loader);
             jaxbContext.generateSchema(outputResolver);
-            String controlSchema = PATH + "stringarray/schema.xsd";
+            String controlSchema = PATH + "stringarray/bean_schema.xsd";
+            compareSchemas(outputResolver.schemaFiles.get(BEAN_NAMESPACE), new File(controlSchema));
+            controlSchema = PATH + "stringarray/string_array_schema.xsd";
             compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
     }
-    
+
     /**
-     * Test passing a String[] into the context factory via Type[].
+     * Test passing a String[] into the context factory via Class[].
      * 
      */
-    public void testStringArrayInTypesToBeBound() {
+    public void testStringArrayInClassesToBeBound() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        String metadataFile = PATH + "stringarray/a/eclipselink-oxm.xml";
+        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a", new StreamSource(iStream));
+
+        metadataFile = PATH + "stringarray/b/eclipselink-oxm.xml";
+        iStream = classLoader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
+
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Type[] { String[].class }, null, loader);
+            Class<?>[] types = { 
+                    BeanA.class, 
+                    BeanB.class,
+                    String[].class
+                };
+
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(types, properties, loader);
             jaxbContext.generateSchema(outputResolver);
-            String controlSchema = PATH + "stringarray/schema.xsd";
+            String controlSchema = PATH + "stringarray/bean_schema.xsd";
+            compareSchemas(outputResolver.schemaFiles.get(BEAN_NAMESPACE), new File(controlSchema));
+            controlSchema = PATH + "stringarray/string_array_schema.xsd";
             compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
         } catch (JAXBException e) {
             e.printStackTrace();

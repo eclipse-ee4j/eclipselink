@@ -33,12 +33,10 @@
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="manager" type="manager" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="address" type="address"/>
    <xsd:element name="home-address" type="homeAddress"/>
    <xsd:element name="employee" type="employee"/>
 </xsd:schema>
