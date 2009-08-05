@@ -461,6 +461,25 @@ public class QueryBuilderImpl implements QueryBuilder {
     public Predicate isFalse(Expression<Boolean> x){
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(false), buildList(x), "equals");
     }
+    
+    //null tests:
+    /**
+     * Create a predicate to test whether the expression is null.
+     * @param x expression
+     * @return predicate
+     */
+    public Predicate isNull(Expression<?> x){
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
+    }
+    
+    /**
+     * Create a predicate to test whether the expression is not null.
+     * @param x expression
+     * @return predicate
+     */
+    public Predicate isNotNull(Expression<?> x){
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
+    }
 
     // equality:
     /**
@@ -1301,25 +1320,6 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
-        //TODO
-        return null;
-    }
-
-    /**
-     * Create a predicate to test whether the expression is null.
-     * @param x expression
-     * @return predicate
-     */
-    public Predicate isNull(Expression<?> x){
-        //TODO
-        return null;
-    }
-    /**
-     * Create a predicate to test whether the expression is not null.
-     * @param x expression
-     * @return predicate
-     */
-    public Predicate isNotNull(Expression<?> x){
         //TODO
         return null;
     }

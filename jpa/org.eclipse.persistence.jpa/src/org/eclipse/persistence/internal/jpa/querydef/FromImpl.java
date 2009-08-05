@@ -144,11 +144,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         org.eclipse.persistence.expressions.Expression node;
         Fetch fetch;
         if (jt.equals(JoinType.LEFT)) {
-            node = this.currentNode.anyOf(assoc.getName());
+            node = this.currentNode.anyOfAllowingNone(assoc.getName());
         } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
         } else {
-            node = this.currentNode.anyOfAllowingNone(assoc.getName());
+            node = this.currentNode.anyOf(assoc.getName());
         }
         if (assoc.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
             if (assoc.getCollectionType().equals(CollectionType.COLLECTION)) {

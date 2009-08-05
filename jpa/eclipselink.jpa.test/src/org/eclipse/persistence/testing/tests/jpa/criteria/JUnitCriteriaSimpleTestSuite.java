@@ -31,6 +31,7 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
@@ -273,7 +274,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        root.fetch("phoneNumbers");
+        root.fetch("phoneNumbers", JoinType.LEFT);
         List result = em.createQuery(cq).getResultList();
         
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -541,6 +542,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             cq.distinct(true);
             Root<Employee> root = cq.from(Employee.class);
+            cq.select(root.<String>get("firstName"));
             cq.where( qb.equal(root.get("lastName"), qb.literal(emp.getLastName())));
             List result = em.createQuery(cq).getResultList();
             
@@ -576,9 +578,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Set testSet = new HashSet();
         for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
             String ids = "";
-            Object[] row = (Object[])iterator.next();
-            Employee emp = (Employee)row[0];
-            String string = (String)row[1];
+            javax.persistence.Tuple row = (javax.persistence.Tuple)iterator.next();
+            Employee emp = row.get(0, Employee.class);
+            String string = row.get(1, String.class);
             ids = "_" + emp.getId() + "_" + string;
             assertFalse("Result was not distinct", testSet.contains(ids));
             testSet.add(ids);
@@ -1065,8 +1067,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"John\" OR emp.firstName = \"Bob\" AND emp.lastName = \"Smith\""
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression empFName = cq.from(Employee.class).get("firstName");
-        Predicate andOpp = qb.and(qb.equal(empFName, "Bob"), qb.equal(empFName, "Smith"));
+        Root<Employee> root = cq.from(Employee.class);
+        javax.persistence.criteria.Expression empFName = root.get("firstName");
+        Predicate andOpp = qb.and(qb.equal(empFName, "Bob"), qb.equal(root.get("lastName"), "Smith"));
         cq.where( qb.or( qb.equal(empFName, "John"), andOpp ) );
 
         List result = em.createQuery(cq).getResultList();
@@ -1735,9 +1738,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         //"SELECT DISTINCT employee.address FROM Employee employee WHERE employee.lastName LIKE '%Way%'"
         QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        CriteriaQuery<Address> cq = qb.createQuery(Address.class);
+        Root<Employee> root = cq.from(Employee.class);
         cq.distinct(true);
-        cq.where(qb.like(cq.from(Employee.class).<String>get("lastName"), "%Way%"));
+        cq.select(root.<Address>get("address"));
+        cq.where(qb.like(root.<String>get("lastName"), "%Way%"));
 
         List result = em.createQuery(cq).getResultList();
 
@@ -2066,8 +2071,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<String> cq = qb.createQuery(String.class);
         Root<Employee> root = cq.from(Employee.class);
-        cq.select(root.<String>get("firstname"));
-        cq.orderBy(qb.asc(root.get("firstname")));
+        cq.select(root.<String>get("firstName"));
+        cq.orderBy(qb.asc(root.get("firstName")));
 
         List result = em.createQuery(cq).getResultList();
 

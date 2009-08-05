@@ -228,7 +228,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         qb = em.getQueryBuilder();
         cq = qb.createQuery(MasterCorporal.class);
         from = cq.from(MasterCorporal.class);
-        cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("id").get("sargeantId"), sargeant.getSargeantId()) ) );
+        cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("id").get("sargeantPK"), sargeant.getSargeantId()) ) );
 
         Query query2 = em.createQuery(cq);        
         MasterCorporal results2 = (MasterCorporal)query2.getSingleResult();

@@ -13,28 +13,18 @@
 
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -44,15 +34,11 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -103,25 +89,25 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheFirstCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHitsOnSession"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPrimaryKeyCacheHits"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryREADLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryREADLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
         suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
-        suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
+        //suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testCursors"));
-        suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
-        suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
-        suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
+        //suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
+        //suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
+        //suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
         
         return suite;
     }

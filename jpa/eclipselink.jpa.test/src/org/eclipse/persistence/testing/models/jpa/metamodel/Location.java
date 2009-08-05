@@ -47,9 +47,6 @@ public class Location implements java.io.Serializable {
     @Column(name="LOCATION_ID")    
     protected EmbeddedPK primaryKey;
     
-    // Inverse side of a bidirectional 1:1 with Computer as the owning side
-    @OneToOne(fetch=EAGER, mappedBy="location")
-    
     @Version
     @Column(name="LOCATION_VERSION")
     private int version;

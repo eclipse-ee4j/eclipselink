@@ -61,8 +61,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     protected SelectionImpl<?> selection;
     protected Class<?> queryType;
     
-    protected boolean distinct;
-
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
         super(metamodel, queryResult, queryBuilder);
         this.queryType = result;
@@ -490,7 +488,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             }
                         }
                     }else{
-                        reportQuery.addItem(this.selection.getAlias(), ((SelectionImpl)this.selection).getCurrentNode());
+                        reportQuery.addAttribute(this.selection.getAlias(), ((SelectionImpl)this.selection).getCurrentNode(), ((SelectionImpl)this.selection).getJavaType());
                     }
                 }
             }
