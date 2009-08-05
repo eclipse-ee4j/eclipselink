@@ -121,7 +121,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         try {
             String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
             if(namespaceURI == null) {
-                xmlStreamWriter.writeStartElement(xPathFragment.getLocalName());
+                xmlStreamWriter.writeStartElement("", xPathFragment.getLocalName(), "");
                 String defaultNamespace = xmlStreamWriter.getNamespaceContext().getNamespaceURI("");
                 if(defaultNamespace != null && !defaultNamespace.equals("")) {
                     xmlStreamWriter.writeDefaultNamespace("");
