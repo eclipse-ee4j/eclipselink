@@ -34,6 +34,7 @@
     <echo message="asm.build.location = '${asm.build.location}'"/>
     <property name="asm.2.common.plugins.dir" value=".."/>
     <property name="asm.2.base.dir" value="../.."/>
+    <property name="asm.2.buildsys.dir" value="${asm.2.base.dir}/buildsystem"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -41,11 +42,14 @@
        <format property="build.date" pattern="yyyyMMdd"/>
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
-    <property name="release.version"     value="2.0.0"/>
-    <property name="build.type"          value="SNAPSHOT"/>
-    <property name="svn.revision"        value="NA"/>
-    <property name="version.string"      value="${release.version}.qualifier"/>
-    <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+    <property name="release.version"       value="2.0.0"/>
+    <property name="build.type"            value="SNAPSHOT"/>
+    <property name="svn.revision"          value="NA"/>
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor" value="${specification.vendor}"/>
 
     <property name="eclipselink.asm.bndl.prefix" value="${ant.project.name}"/>
     <property name="src.dir"                     value="src"/>
@@ -54,6 +58,7 @@
 
     <!-- build -->
     <target name="build" depends="clean, generate-manifest, package" description="build asm"/>
+    <target name="bnd"   depends="clean, bnd-package" description="build ASM component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -123,6 +128,18 @@
         <echo message=" org.eclipse.persistence.internal.libraries.asm.xml;version=&quot;${version.string}&quot;${line.separator}"             file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                           file="${temp.dir}/MANIFEST.MF" append="true"/>
+    </target>
+    
+    <target name="bnd-package">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${asm.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${asm.classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.asm.bnd"
+            output="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
     </target>
 
 </project>
