@@ -31,6 +31,10 @@ import java.util.zip.ZipEntry;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JarInputStreamURLArchive implements Archive {
+    /*
+     * Implementation Note: This class does not have any dependency on either
+     * EclipseLink or GlassFish implementation classes. Please retain this separation.
+     */
     private URL url;
 
     private List<String> entries = new ArrayList<String>();

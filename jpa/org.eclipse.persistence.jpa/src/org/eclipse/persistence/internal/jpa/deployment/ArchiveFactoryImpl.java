@@ -35,8 +35,8 @@ import org.eclipse.persistence.internal.helper.Helper;
  */
 public class ArchiveFactoryImpl {
     /*
-     * Implementation Note: This class does not have any dependency on TopLink
-     * or GlassFish implementation classes. Please retain this searation.
+     * Implementation Note: This class does not have any dependency on either
+     * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
     private Logger logger;

@@ -30,8 +30,8 @@ import java.net.MalformedURLException;
  */
 public class DirectoryArchive implements Archive {
     /*
-     * Implementation Note: This class does not have any dependency on TopLink
-     * or GlassFish implementation classes. Please retain this searation.
+     * Implementation Note: This class does not have any dependency on either
+     * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
     /**

@@ -33,6 +33,10 @@ import java.net.MalformedURLException;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JarFileArchive implements Archive {
+    /*
+     * Implementation Note: This class does not have any dependency on either
+     * EclipseLink or GlassFish implementation classes. Please retain this separation.
+     */
     private JarFile jarFile;
 
     private URL rootURL;

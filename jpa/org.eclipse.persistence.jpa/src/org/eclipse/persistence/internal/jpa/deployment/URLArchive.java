@@ -21,15 +21,15 @@ import java.util.Iterator;
 /**
  * This is an implementation of {@link Archive} when container returns a url
  * that is not one of the familiar URL types like file or jar URLs. So, we can
- * not recurssively walk thru' it's hierarchy. As a result {@link #getEntries()}
+ * not recursively walk thru' its hierarchy. As a result {@link #getEntries()}
  * returns an empty collection.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class URLArchive implements Archive {
     /*
-     * Implementation Note: This class does not have any dependency on TopLink
-     * or GlassFish implementation classes. Please retain this searation.
+     * Implementation Note: This class does not have any dependency on either
+     * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
     /**
