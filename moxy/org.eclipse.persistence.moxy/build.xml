@@ -53,7 +53,6 @@
     <!--       which JDK is used                                           -->
     <property name="moxy.local.depend" value="${jaxb-api.lib}"/>
 
-
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
