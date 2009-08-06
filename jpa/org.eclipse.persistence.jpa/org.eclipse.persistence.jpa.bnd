@@ -16,7 +16,6 @@ Include-Resource:\
  ${jpa.2.base.dir}/license.html,\
  org/eclipse/persistence/jpa=resource/org/eclipse/persistence/jpa,\
  META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
- META-INF/services/javax.annotation.processing.Processor=resource/META-INF/services/javax.annotation.processing.Processor
 Import-Package:                                                         \
  javax.persistence.*;version="[1.99.4, 2.1)",                           \
  javax.sql.*;resolution:=optional,                                      \
