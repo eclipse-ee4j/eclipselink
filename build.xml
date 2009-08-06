@@ -214,6 +214,21 @@
         <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="build"/>
     </target>
+    
+    <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
+    <target name="bnd-core">
+        <ant antfile="build.xml" dir="${jpa.prototype}"       target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"     target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"    target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"  target="bnd-repackage"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}" target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}" target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"    target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="bnd"/>
+    </target>
 
     <!-- Compiles all utils components. -->
     <target name="build-util" depends="build-dbws-util, build-mw-and-rename"/>
