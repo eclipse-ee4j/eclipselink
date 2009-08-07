@@ -7,7 +7,6 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
-Import-Package:                                                         \
- *
+Import-Package: *
 Specification-Version: 
 
