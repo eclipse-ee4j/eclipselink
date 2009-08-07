@@ -22,7 +22,6 @@ import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
-import org.eclipse.persistence.eis.mappings.EISMapping;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -192,6 +191,11 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         return getMapping().isOptional();
     }
 
+    /**
+     * INTERNAL:
+     * Return whether the attribute is plural or singular
+     * @return
+     */
     @Override
     public boolean isPlural() {
         return false;
@@ -253,7 +257,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      * Return the type that represents the type of the attribute.
      * @return type of attribute
      */
-     public Type<T> getType() {
+    public Type<T> getType() {
         return elementType;
     }
     

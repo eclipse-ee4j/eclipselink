@@ -5,12 +5,14 @@
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Board</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Computer</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Corporation</class>
-        <class>org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Location</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer</class>
-        <!-- class>org.eclipse.persistence.testing.models.jpa.metamodel.Processor</class-->
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.Processor</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner</class>
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.User</class>        
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor</class>
+        <!-- class>org.eclipse.persistence.testing.models.jpa.metamodel.ScalarProcessor</class-->                
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor</class>        
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

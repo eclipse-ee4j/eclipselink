@@ -110,7 +110,8 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          the identifiable type has an id class
      */
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-        SingularAttribute<? super X, Y> anAttribute = null;
+        throw new PersistenceException("Not Yet Implemented");
+/*        SingularAttribute<? super X, Y> anAttribute = null;
         Class<Y> realType = null;
         //boolean isId = this.accessor.isId();
         if(type != realType) {
@@ -118,7 +119,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                 "metamodel_identifiable_id_attribute_type_incorrect", 
                 new Object[] { anAttribute, this, type, realType}));
         }
-        return anAttribute;
+        return anAttribute;*/
     }
     
     /**
@@ -190,14 +191,15 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          given type is not present in the identifiable type
      */
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-        SingularAttribute<? super X, Y> anAttribute = null;
+        throw new PersistenceException("Not Yet Implemented");
+/*        SingularAttribute<? super X, Y> anAttribute = null;
         Class<Y> realType = null;
         if(type != realType) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                 "metamodel_identifiable_version_attribute_type_incorrect", 
                 new Object[] { anAttribute, this, type, realType}));
         }
-        return anAttribute;
+        return anAttribute;*/
     }
     
     /**

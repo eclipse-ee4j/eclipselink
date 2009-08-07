@@ -178,6 +178,7 @@ public class MetamodelImpl implements Metamodel {
     /**
      * INTERNAL:
      * Return a Type representation of a java Class for use by the Metamodel Attributes.<p>
+     * If a type does not yet exist - one will be created and added to the Metamodel - this usually only for Basic types.<p>
      * This function will handle all Metamodel defined and core java classes.
      * 
      * @param javaClass
@@ -186,15 +187,13 @@ public class MetamodelImpl implements Metamodel {
     public <X> TypeImpl<X> getType(Class<X> javaClass) {
         // Return an existing matching type on the metamodel keyed on class name
         TypeImpl type = this.types.get(javaClass);
-        // No longer required because of delayed initialization on Types
-        
         // the type was not cached yet on the metamodel - lets add it - usually a non Metamodel class like Integer
         if (null == type) {
             // make types field modification thread-safe
             synchronized (this.types) {
                 // check for a cached type right after we synchronize
                 type = this.types.get(javaClass);
-                // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
+                // If a type is not found (not created during metamodel.initialize() - it is usually a Basic type
                 if(null == type) {                    
                     type = new BasicTypeImpl<X>(javaClass);
                     // add the type to the types map keyed on Java class
@@ -229,8 +228,8 @@ public class MetamodelImpl implements Metamodel {
         this.mappedSuperclasses = new HashSet<MappedSuperclassTypeImpl<?>>();
 
         // Process all Entity and Embeddable types
-        for (Iterator<RelationalDescriptor> i = this.getSession().getDescriptors().values().iterator(); i.hasNext();) {
-            RelationalDescriptor descriptor = i.next();
+        for (Iterator<RelationalDescriptor> identifiableTypeIterator = this.getSession().getDescriptors().values().iterator(); identifiableTypeIterator.hasNext();) {
+            RelationalDescriptor descriptor = identifiableTypeIterator.next();
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, descriptor);
 
             this.types.put(managedType.getJavaType(), managedType);
@@ -242,47 +241,50 @@ public class MetamodelImpl implements Metamodel {
             if (managedType.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
                 this.embeddables.put(managedType.getJavaType(), (EmbeddableTypeImpl<?>) managedType);
             }
+            
+            // Process all Basic Types
+            // Iterate by typeName
+            // see
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_54:_20090803:_Metamodel.type.28Clazz.29_should_differentiate_between_null_and_BasicType
         }
         
         // TODO: Add all BASIC types
+        
         
         // TODO: verify that all entities or'd with embeddables matches the number of types
         
         // Handle all MAPPED_SUPERCLASS types
         // Get mapped superclass types from the native project (not a regular descriptor)
-        try {
-            Project project = this.getSession().getProject();
-            Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
-            for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
-                RelationalDescriptor descriptor = anIterator.next();
-                // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMappedSuperclassAccessor)
-                // getActiveSession will return a possible external transaction controller session when running on an application server container 
-                ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
-                descriptor.convertClassNamesToClasses(classLoader);
-                MappedSuperclassTypeImpl<?> mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
-                // Add the MappedSuperclass to our Set of MappedSuperclasses
-                this.mappedSuperclasses.add(mappedSuperclassType);
-                
-                // Add the MappedSuperclass to the Map of ManagedTypes
-                // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
-                this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
-                
-                // Add this MappedSuperclass to the Collection of Types
-                this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
-            }
-        } catch (Exception e) {
-            // TODO: add real exception handling
-            e.printStackTrace();
+        Project project = this.getSession().getProject();
+        Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
+        for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
+            RelationalDescriptor descriptor = anIterator.next();
+            // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMappedSuperclassAccessor)
+            // getActiveSession will return a possible external transaction controller session when running on an application server container 
+            ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
+            descriptor.convertClassNamesToClasses(classLoader);
+            MappedSuperclassTypeImpl<?> mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
+            // Add the MappedSuperclass to our Set of MappedSuperclasses
+            this.mappedSuperclasses.add(mappedSuperclassType);
+
+            // Add the MappedSuperclass to the Map of ManagedTypes
+            // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
+            this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
+
+            // Add this MappedSuperclass to the Collection of Types
+            this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
         }
 
-        // Initialize-delayed (process all mappings) all types (This includes all IdentifiableTypes = Entity and MappedSuperclass types)
-        // To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly
-        List<TypeImpl> aTypeList = new ArrayList<TypeImpl>(this.types.values());
-        for(int index=0; index < aTypeList.size(); index++) {
-            TypeImpl<?> aType = aTypeList.get(index);
-            if(aType.isManagedType()) {
-                ((ManagedTypeImpl<?>)aType).initialize();
-            }
+        /**
+         * Delayed-Initialization (process all mappings) of all Managed types
+         *  (This includes all IdentifiableTypes = Entity and MappedSuperclass types).
+         * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.
+         * The following code section may add BasicTypes to the types map.
+         */
+        List<ManagedTypeImpl<?>> aManagedTypeList = new ArrayList<ManagedTypeImpl<?>>(this.managedTypes.values());
+        for(Iterator<ManagedTypeImpl<?>> managedTypeImplIterator = aManagedTypeList.iterator(); managedTypeImplIterator.hasNext();) {
+            ManagedTypeImpl<?> aType = managedTypeImplIterator.next();
+            aType.initialize();
         }
         
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)

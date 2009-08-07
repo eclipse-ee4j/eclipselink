@@ -16,6 +16,7 @@
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import java.util.Collection;
@@ -25,6 +26,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -51,12 +55,19 @@ public class Board implements java.io.Serializable{
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")
-    private Collection<VectorProcessor> processors = new HashSet<VectorProcessor>();
+    private Collection<Processor> processors = new HashSet<Processor>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")
     private Collection<Memory> memories = new HashSet<Memory>();
 
+    // The M:1 side is the owning side for "circuitBoards"
+    @ManyToOne(fetch=EAGER)
+    @JoinTable(name="CMP3_MM_COMPUTER_MM_BOARD", 
+            joinColumns = @JoinColumn(name="BOARD_ID"), 
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))   
+    private Computer computer;
+    
     public Board() {}
 
     public int getVersion() { 
@@ -67,11 +78,11 @@ public class Board implements java.io.Serializable{
         this.version = version;
     }
 
-    public Collection<VectorProcessor> getProcessors() {
+    public Collection<Processor> getProcessors() {
         return processors;
     }
 
-    public void setProcessors(Collection<VectorProcessor> processors) {
+    public void setProcessors(Collection<Processor> processors) {
         this.processors = processors;
     }
 
@@ -91,5 +102,11 @@ public class Board implements java.io.Serializable{
         this.id = id;
     }
 
-    
+    public Computer getComputer() {
+        return computer;
+    }
+
+    public void setComputer(Computer computer) {
+        this.computer = computer;
+    }
 }

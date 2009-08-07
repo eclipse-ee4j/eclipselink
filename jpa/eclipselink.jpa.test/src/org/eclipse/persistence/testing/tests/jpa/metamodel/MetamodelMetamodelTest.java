@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.ClassTypeExpression;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
@@ -60,9 +62,13 @@ import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
@@ -71,6 +77,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Location;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.User;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
@@ -169,22 +176,26 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public void testMetamodelFullImplementation() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
+        Collection<Board> boardCollection = new HashSet<Board>();        
         Set<Computer> computersList = new HashSet<Computer>();
-        Collection<Memory> memories = new HashSet<Memory>();
-        Collection<VectorProcessor> processors = new HashSet<VectorProcessor>();
+        Collection<Memory> vectorMemories = new HashSet<Memory>();
+        Collection<Memory> arrayMemories = new HashSet<Memory>();
+        Collection<Processor> vectorProcessors = new HashSet<Processor>();
+        Collection<Processor> arrayProcessors = new HashSet<Processor>();
         Collection<HardwareDesigner> hardwareDesigners = new HashSet<HardwareDesigner>();
         Map<String, HardwareDesigner> mappedDesigners = new HashMap<String, HardwareDesigner>();
-        Computer computer1 = null;
-        Computer computer2 = null;
+        Computer arrayComputer1 = null;
+        Computer vectorComputer2 = null;
         Manufacturer manufacturer = null;
         User user = null;
         HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;
-        VectorProcessor vectorProcessor1 = null;
-        //ArrayProcessor arrayProcessor1 = null;
-        Board board1 = null;
-        Memory memory1 = null;
-        Memory memory2 = null;
+        SoftwareDesigner softwareDesigner1 = null;        
+        Processor vectorProcessor1 = null;
+        Processor arrayProcessor1 = null;
+        Board arrayBoard1 = null;
+        Board vectorBoard2 = null;
+        Memory arrayMemory1 = null;
+        Memory vectorMemory2 = null;
         Location location1 = null;
         Location location2 = null;   
         
@@ -209,27 +220,28 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             em.getTransaction().begin();
 
             // setup entity relationships
-            computer1 = new Computer();
-            computer2 = new Computer();
-            memory1 = new Memory();
-            memory2 = new Memory();
+            arrayComputer1 = new Computer();
+            vectorComputer2 = new Computer();
+            arrayMemory1 = new Memory();
+            vectorMemory2 = new Memory();
             manufacturer = new Manufacturer();
             user = new User();
             hardwareDesigner1 = new HardwareDesigner();
             softwareDesigner1 = new SoftwareDesigner();
             vectorProcessor1 = new VectorProcessor();
-            //arrayProcessor1 = new ArrayProcessor();
-            board1 = new Board();
+            arrayProcessor1 = new ArrayProcessor();
+            arrayBoard1 = new Board();
+            vectorBoard2 = new Board();
             location1 = new Location();
             location2 = new Location();        
 
             // setup collections
-            computersList.add(computer1);
-            computersList.add(computer2);
-            processors.add(vectorProcessor1);
-            //processors.add(arrayProcessor1);
-            memories.add(memory1);
-            memories.add(memory2);
+            computersList.add(arrayComputer1);
+            computersList.add(vectorComputer2);
+            vectorProcessors.add(vectorProcessor1);
+            arrayProcessors.add(arrayProcessor1);
+            arrayMemories.add(arrayMemory1);
+            vectorMemories.add(vectorMemory2);
             hardwareDesigners.add(hardwareDesigner1);
             
             mappedDesigners.put(hardwareDesigner1.getName(), hardwareDesigner1);
@@ -242,43 +254,49 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             hardwareDesigner1.setSecondaryEmployer(manufacturer);
             // both sides of the relationship are set
             hardwareDesigner1.setMappedEmployer(manufacturer);
-            computer1.setManufacturer(manufacturer);
-            computer2.setManufacturer(manufacturer);
-            board1.setMemories(memories);
-            memory1.setBoard(board1);
-            memory2.setBoard(board1);
-            board1.setProcessors(processors);
-            //arrayProcessor1.setBoard(board1);
-            vectorProcessor1.setBoard(board1);            
+            arrayComputer1.setManufacturer(manufacturer);
+            vectorComputer2.setManufacturer(manufacturer);
+            arrayBoard1.setMemories(arrayMemories);
+            vectorBoard2.setMemories(vectorMemories);
+            arrayMemory1.setBoard(arrayBoard1);
+            vectorMemory2.setBoard(vectorBoard2);
+            arrayBoard1.setProcessors(arrayProcessors);
+            vectorBoard2.setProcessors(vectorProcessors);
+            arrayProcessor1.setBoard(arrayBoard1);
+            vectorProcessor1.setBoard(vectorBoard2);            
             
             softwareDesigner1.setPrimaryEmployer(manufacturer);
             softwareDesigner1.setSecondaryEmployer(manufacturer);
             
+            arrayComputer1.setCircuitBoards(boardCollection);
+            arrayBoard1.setComputer(arrayComputer1);
+            vectorBoard2.setComputer(vectorComputer2);
             
             // set 1:1 relationships
-            computer1.setLocation(location1);
-            computer2.setLocation(location2);
+            arrayComputer1.setLocation(location1);
+            vectorComputer2.setLocation(location2);
             
             // set attributes
-            computer1.setName("CDC-6600");
-            computer2.setName("CM-5");
+            arrayComputer1.setName("CM-5");
+            vectorComputer2.setName("CDC-6600");
             
             // setup embedded objects
             location1.setPrimaryKey(embeddedPKforLocation1);
             location2.setPrimaryKey(embeddedPKforLocation2);
                 
             // persist all entities to the database in a single transaction
-            em.persist(computer1);
-            em.persist(computer2);
+            em.persist(arrayComputer1);
+            em.persist(vectorComputer2);
             em.persist(manufacturer);
             em.persist(user);
             em.persist(hardwareDesigner1);
             em.persist(softwareDesigner1);
             em.persist(vectorProcessor1);
-            //em.persist(arrayProcessor1);
-            em.persist(board1);
-            em.persist(memory1);
-            em.persist(memory2);
+            em.persist(arrayProcessor1);
+            em.persist(arrayBoard1);
+            em.persist(vectorBoard2);
+            em.persist(arrayMemory1);
+            em.persist(vectorMemory2);
             em.persist(location1);
             em.persist(location2);        
             
@@ -559,8 +577,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(computerIdType);
             assertEquals(PersistenceType.BASIC, computerIdType.getPersistenceType());
             assertEquals(Integer.class, computerIdType.getJavaType());
-
-            
             
             // Test MappedSuperclassType
             // Test normal path for a [Basic] type
@@ -1496,7 +1512,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
             }
-            assertFalse(expectedIAExceptionThrown);            
+            assertFalse(expectedIAExceptionThrown);
 
             // test variant path: null does not cause an IAE in this case because its return type cannot be checked for isManagedType
             expectedIAExceptionThrown = false;
@@ -1651,6 +1667,74 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Attribute employerAttribute = entityHardwareDesigner.getAttribute("employer");
             assertTrue(null != employerAttribute);
 
+            
+            // Test SingularAttribute
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /**
+             * Return the Java type of the represented object.
+             * If the bindable type of the object is PLURAL_ATTRIBUTE,
+             * the Java element type is returned. If the bindable type is
+             * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+             * represented entity or attribute is returned.
+             * @return Java type
+             */
+            //public Class<T> getBindableJavaType() {
+            
+            
+            //public boolean isId() {
+            // will test AttributeImpl.getDescriptor
+            expectedIAExceptionThrown = false;            
+            Type<EmbeddedPK> anEmbeddableType = null;            
+            try {
+                anEmbeddableType = metamodel.type(EmbeddedPK.class);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(anEmbeddableType);            
+            assertNotNull(entityLocation.getAttribute("primaryKey"));
+            assertTrue(entityLocation.getAttribute("primaryKey") instanceof SingularAttributeImpl);
+            assertTrue(((SingularAttribute)entityLocation.getAttribute("primaryKey")).isId());
+            
+            
+
+            /** 
+             *  Can the attribute be null.
+             *  @return boolean indicating whether or not the attribute can
+             *          be null
+             */
+            //public boolean isOptional() {
+
+            //public boolean isPlural() {
+            
+            /**
+             *  Is the attribute a version attribute.
+             *  @return boolean indicating whether or not attribute is 
+             *          a version attribute
+             */
+            //public boolean isVersion() {
+
+            //public Bindable.BindableType getBindableType() {
+            
+            /**
+             *  Return the Java type of the represented attribute.
+             *  @return Java type
+             */
+            //public Class<T> getJavaType() {
+            
+            /**
+             * Return the type that represents the type of the attribute.
+             * @return type of attribute
+             */
+             //public Type<T> getType() {
+            
+            /**
+             * Return the String representation of the receiver.
+             */
+            //public String toString() {
+            
+            
             
 
             // Variant use cases
@@ -1825,251 +1909,5 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         public java.util.Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
         public void setMappedSuperclasses(
 */
-    
-    /**
-     * Test the Metamodel API using a TypeSafe query via the Criteria API (a user of the Metamodel)
-     */
-    public void testMetamodelTypeSafeBasedQuery() {
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
-        
-        Set<Computer> computersList = new HashSet();
-        List<Memory> memories = new ArrayList();
-        List<VectorProcessor> processors = new ArrayList();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList();
-        Computer computer1 = null;
-        Computer computer2 = null;
-        Manufacturer manufacturer = null;
-        User user = null;
-        HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;
-        VectorProcessor vectorProcessor1 = null;
-        Board board1 = null;
-        Memory memory1 = null;
-        Memory memory2 = null;
-        Location location1 = null;
-        Location location2 = null;        
-        boolean exceptionThrown = false;
-        Metamodel metamodel = null;
-
-        try {
-            emf = initialize();
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
-
-            // setup entity relationships
-            computer1 = new Computer();
-            computer2 = new Computer();
-            memory1 = new Memory();
-            memory2 = new Memory();
-            manufacturer = new Manufacturer();
-            user = new User();
-            hardwareDesigner1 = new HardwareDesigner();
-            softwareDesigner1 = new SoftwareDesigner();
-            vectorProcessor1 = new VectorProcessor();
-            board1 = new Board();
-            location1 = new Location();
-            location2 = new Location();        
-
-            // setup collections
-            computersList.add(computer1);
-            computersList.add(computer2);
-            processors.add(vectorProcessor1);
-            memories.add(memory1);
-            memories.add(memory2);
-            hardwareDesigners.add(hardwareDesigner1);
-
-            // set owning and inverse sides of 1:m and m:1 relationships
-            manufacturer.setComputers(computersList);
-            manufacturer.setHardwareDesigners(hardwareDesigners);
-            hardwareDesigner1.setEmployer(manufacturer);
-            hardwareDesigner1.setPrimaryEmployer(manufacturer);
-            hardwareDesigner1.setSecondaryEmployer(manufacturer);
-            computer1.setManufacturer(manufacturer);
-            computer2.setManufacturer(manufacturer);
-            board1.setMemories(memories);
-            memory1.setBoard(board1);
-            memory2.setBoard(board1);
-            board1.setProcessors(processors);
-            vectorProcessor1.setBoard(board1);            
-            softwareDesigner1.setPrimaryEmployer(manufacturer);
-            softwareDesigner1.setSecondaryEmployer(manufacturer);
-            
-            // set 1:1 relationships
-            computer1.setLocation(location1);
-            computer2.setLocation(location2);
-            
-            // set attributes
-            computer1.setName("CDC-6600");
-            computer2.setName("CM-5");
-            
-            // persist all entities to the database in a single transaction
-            em.persist(computer1);
-            em.persist(computer2);
-            em.persist(manufacturer);
-            em.persist(user);
-            em.persist(hardwareDesigner1);
-            em.persist(softwareDesigner1);
-            em.persist(vectorProcessor1);
-            em.persist(board1);
-            em.persist(memory1);
-            em.persist(memory2);
-            em.persist(location1);
-            em.persist(location2);        
-            
-            em.getTransaction().commit();            
-            
-            // get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
-            assertNotNull(metamodel);
-
-            // Setup TypeSafe Criteria API query  
-            QueryBuilder aQueryBuilder = em.getQueryBuilder();
-            // Setup a query to get a list (the JPA 1.0 way) and compare it to the (JPA 2.0 way)
-            // avoid a NPE on .where in query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
-            //TypedQuery<Computer> aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
-            Query aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
-            List<Computer> computersResultsList = aManufacturerQuery.getResultList();
-            Computer aComputer = (Computer)computersResultsList.get(0);
-/*
-            // Get the primary key of the Computer
-            CriteriaQuery<Tuple> aCriteriaQuery = aQueryBuilder.createQuery(Tuple.class);
-            Root from = cq.from(Employee.class);
-            cq.multiselect(from.get("id"), from.get("firstName"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
-            TypedQuery<Tuple> typedQuery = em.createQuery(cq);
-
-            typedQuery.setParameter("id", employee.getId());
-            typedQuery.setParameter("firstName", employee.getFirstName());
-
-            Tuple queryResult = typedQuery.getSingleResult();
-            assertTrue("Query Results do not match selection", queryResult.get(0).equals(employee.getId()) && queryResult.get(1).equals(employee.getFirstName()));
-*/            
-        } catch (Exception e) {
-            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-            e.printStackTrace();
-            exceptionThrown = true;
-        } finally {
-            assertFalse(exceptionThrown);
-            //finalizeForTest(em, entityMap);
-            if(null != em) {
-                cleanup(em);
-            }
-        }
-    }
-    
-    /**
-     * Test the Metamodel API or lack of using it via a Criteria API using string based queries
-     */
-    public void testMetamodelStringBasedQuery() {
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
-        Set<Computer> computersList = new HashSet();
-        List<Memory> memories = new ArrayList();
-        List<VectorProcessor> processors = new ArrayList();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList();
-        Computer computer1 = null;
-        Computer computer2 = null;
-        Manufacturer manufacturer = null;
-        User user = null;
-        HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;
-        VectorProcessor vectorProcessor1 = null;
-        //ArrayProcessor arrayProcessor1 = null;
-        Board board1 = null;
-        Memory memory1 = null;
-        Memory memory2 = null;
-        Location location1 = null;
-        Location location2 = null;        
-        boolean exceptionThrown = false;
-        Metamodel metamodel = null;
-
-        try {
-            emf = initialize();
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
-
-            // setup entity relationships
-            computer1 = new Computer();
-            computer2 = new Computer();
-            memory1 = new Memory();
-            memory2 = new Memory();
-            manufacturer = new Manufacturer();
-            user = new User();
-            hardwareDesigner1 = new HardwareDesigner();
-            softwareDesigner1 = new SoftwareDesigner();
-            vectorProcessor1 = new VectorProcessor();
-            board1 = new Board();
-            location1 = new Location();
-            location2 = new Location();        
-
-            // setup collections
-            computersList.add(computer1);
-            computersList.add(computer2);
-            processors.add(vectorProcessor1);
-            memories.add(memory1);
-            memories.add(memory2);
-            hardwareDesigners.add(hardwareDesigner1);
-
-            // set owning and inverse sides of 1:m and m:1 relationships
-            manufacturer.setComputers(computersList);
-            manufacturer.setHardwareDesigners(hardwareDesigners);
-            hardwareDesigner1.setEmployer(manufacturer);
-            hardwareDesigner1.setPrimaryEmployer(manufacturer);
-            hardwareDesigner1.setSecondaryEmployer(manufacturer);
-            computer1.setManufacturer(manufacturer);
-            computer2.setManufacturer(manufacturer);
-            board1.setMemories(memories);
-            memory1.setBoard(board1);
-            memory2.setBoard(board1);
-            board1.setProcessors(processors);
-            vectorProcessor1.setBoard(board1);            
-            softwareDesigner1.setPrimaryEmployer(manufacturer);
-            softwareDesigner1.setSecondaryEmployer(manufacturer);
-            
-            // set 1:1 relationships
-            computer1.setLocation(location1);
-            computer2.setLocation(location2);
-            
-            // set attributes
-            computer1.setName("CDC-6600");
-            computer2.setName("CM-5");
-            
-            // persist all entities to the database in a single transaction
-            em.persist(computer1);
-            em.persist(computer2);
-            em.persist(manufacturer);
-            em.persist(user);
-            em.persist(hardwareDesigner1);
-            em.persist(softwareDesigner1);
-            em.persist(vectorProcessor1);
-            //em.persist(arrayProcessor1);
-            em.persist(board1);
-            em.persist(memory1);
-            em.persist(memory2);
-            em.persist(location1);
-            em.persist(location2);        
-            
-            em.getTransaction().commit();            
-            
-            // get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
-            assertNotNull(metamodel);
-
-            // Setup a non TypeSafe Criteria API query
-            
-        } catch (Exception e) {
-            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-            e.printStackTrace();
-            exceptionThrown = true;
-        } finally {
-            assertFalse(exceptionThrown);
-            //finalizeForTest(em, entityMap);
-            if(null != em) {
-                cleanup(em);
-            }
-        }
-    }
-    
-    
+ 
 }

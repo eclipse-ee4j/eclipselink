@@ -15,11 +15,73 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.MappedSuperclass;
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.GenerationType.TABLE;
+import static javax.persistence.InheritanceType.JOINED;
 
-//@Entity(name="ProcessorMetamodel")
-//@Table(name="CMP3_MM_PROCESSOR")
-//public interface Processor {
-@MappedSuperclass
-public abstract class Processor {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
+
+// OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
+// http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance
+
+@Entity(name="ProcessorMetamodel")
+@Table(name="CMP3_MM_PROC")
+@Inheritance(strategy=JOINED)
+public class Processor {
+    @Id
+    @GeneratedValue(strategy=TABLE, generator="PROC_MM_TABLE_GENERATOR")
+    @TableGenerator(
+        name="PROC_MM_TABLE_GENERATOR", 
+        table="CMP3_MM_PROC_SEQ", 
+        pkColumnName="SEQ_MM_NAME", 
+        valueColumnName="SEQ_MM_COUNT",
+        pkColumnValue="CUST_MM_SEQ"
+    )
+    @Column(name="PROC_ID")    
+    private Integer id;
+ 
+  @Version
+  @Column(name="PROC_VERSION")
+  private int version;
+    
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_BOARD_MM_PROC", 
+            joinColumns = @JoinColumn(name="PROC_ID"), 
+            inverseJoinColumns =@JoinColumn(name="BOARD_ID"))   
+    private Board board;
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+    
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    public int getVersion() { 
+        return version; 
+    }
+
+    protected void setVersion(int version) {
+        this.version = version;
+    }
 }

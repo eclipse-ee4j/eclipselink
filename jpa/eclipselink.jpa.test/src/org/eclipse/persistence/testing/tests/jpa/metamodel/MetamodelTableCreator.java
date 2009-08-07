@@ -27,16 +27,23 @@ DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP
 DROP TABLE CMP3_MM_MANUF_MM_CORPCOMPUTER
 DROP TABLE CMP3_MM_MANUF_MM_COMPUTER
 DROP TABLE CMP3_MM_MANUF_MM_HWDESIGNER
+DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP
 DROP TABLE CMP3_MM_BOARD_MM_MEMORY
 DROP TABLE CMP3_MM_BOARD_MM_PROC
+DROP TABLE CMP3_MM_BOARD_MM_COMPUTER
 DROP TABLE CMP3_MM_COMPUTER_MM_USER
+DROP TABLE CMP3_MM_COMPUTER_MM_BOARD
 DROP TABLE CMP3_MM_BOARD_SEQ
+DROP TABLE CMP3_MM_PERSON_SEQ
+DROP TABLE CMP3_MM_PROC_SEQ
 
 DROP TABLE CMP3_MM_COMPUTER
 DROP TABLE CMP3_MM_USER
 DROP TABLE CMP3_MM_HWDESIGNER
 DROP TABLE CMP3_MM_MEMORY
 DROP TABLE CMP3_MM_PROC
+DROP TABLE CMP3_MM_VECTPROC
+DROP TABLE CMP3_MM_ARRAYPROC
 DROP TABLE CMP3_MM_LOCATION
 DROP TABLE CMP3_MM_BOARD
 DROP TABLE CMP3_MM_SWDESIGNER
@@ -53,7 +60,9 @@ DROP TABLE CMP3_MM_MANUF
         addTableDefinition(buildCOMPUTERTable());
         addTableDefinition(buildBOARDTable());
         addTableDefinition(buildMEMORYTable());        
+        addTableDefinition(buildPROCESSORTable());        
         addTableDefinition(buildVECTORPROCESSORTable());
+        addTableDefinition(buildARRAYPROCESSORTable());
         addTableDefinition(buildLOCATIONTable());
         // 1:n
         addTableDefinition(buildMANUFACTURER_COMPUTER_JOINTable());
@@ -62,7 +71,8 @@ DROP TABLE CMP3_MM_MANUF
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
-        addTableDefinition(buildBOARD_PROCESSORTable());
+        addTableDefinition(buildBOARD_PROCESSOR_JOINTable());
+        addTableDefinition(buildCOMPUTER_BOARD_JOINTable());
         // n:n
         addTableDefinition(buildCOMPUTER_USER_JOINTable());        
     }
@@ -417,6 +427,18 @@ DROP TABLE CMP3_MM_MANUF
         field4.setIsIdentity(false);
         table.addField(field4);
 
+        // 1:m does not require a JoinTable - only a JoinColumn
+        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("COMPUTER_COMPUTER_ID");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
+        table.addField(field6);        
+        
         return table;
     }
 
@@ -468,13 +490,14 @@ DROP TABLE CMP3_MM_MANUF
         
         return table;
     }
-    
-    public static TableDefinition buildVECTORPROCESSORTable() {
+
+    // Entity --> Entity inheritance
+    public static TableDefinition buildPROCESSORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_PROC");
 
         FieldDefinition field = new FieldDefinition();
-        field.setName("VECTPROC_ID");
+        field.setName("PROC_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
@@ -484,7 +507,7 @@ DROP TABLE CMP3_MM_MANUF
         table.addField(field);
     
         FieldDefinition field4 = new FieldDefinition();
-        field4.setName("VECTPROC_VERSION");
+        field4.setName("PROC_VERSION");
         field4.setTypeName("NUMERIC");
         field4.setSize(15);
         field4.setShouldAllowNull(true);
@@ -493,6 +516,19 @@ DROP TABLE CMP3_MM_MANUF
         field4.setIsIdentity(false);
         table.addField(field4);
 
+        // OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
+        // http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance
+        // discriminator column (for inheritance)
+        FieldDefinition field3 = new FieldDefinition();
+        field3.setName("DTYPE");
+        field3.setTypeName("VARCHAR");
+        field3.setSize(80);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        table.addField(field3);
+        
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("BOARD_BOARD_ID");
@@ -508,6 +544,87 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
 
+    
+    public static TableDefinition buildVECTORPROCESSORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_VECTPROC");
+
+        // JOINED @Inheritance still requires a PK field on the sub entity table
+        FieldDefinition field = new FieldDefinition();
+        field.setName("PROC_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+/*        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("VECTPROC_VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+*/
+        // 1:m does not require a JoinTable - only a JoinColumn
+/*        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("BOARD_BOARD_ID");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
+        table.addField(field6);        
+*/        
+        return table;
+    }
+
+    public static TableDefinition buildARRAYPROCESSORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_ARRAYPROC");
+
+        // JOINED @Inheritance still requires a PK field on the sub entity table
+        FieldDefinition field = new FieldDefinition();
+        field.setName("PROC_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+/*        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("ARRAYPROC_VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+*/
+        // 1:m does not require a JoinTable - only a JoinColumn
+/*        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("BOARD_BOARD_ID");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
+        table.addField(field6);        
+*/        
+        return table;
+    }
+    
     public static TableDefinition buildLOCATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_LOCATION");
@@ -570,7 +687,7 @@ DROP TABLE CMP3_MM_MANUF
         field4.setIsIdentity(false);
         table.addField(field4);
 
-        FieldDefinition field3 = new FieldDefinition();
+/*        FieldDefinition field3 = new FieldDefinition();
         field3.setName("NAME");
         field3.setTypeName("VARCHAR");
         field3.setSize(80);
@@ -579,7 +696,7 @@ DROP TABLE CMP3_MM_MANUF
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-
+*/
         // Bidirectional OneToOne with Computer.location - unidirectional for now
 /*        FieldDefinition field5 = new FieldDefinition();
         field5.setName("COMPUTER_COMPUTER_ID");
@@ -769,7 +886,7 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
 
-    public static TableDefinition buildBOARD_PROCESSORTable() {
+    public static TableDefinition buildBOARD_PROCESSOR_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_BOARD_MM_PROC");
 
@@ -792,12 +909,41 @@ DROP TABLE CMP3_MM_MANUF
         field2.setIsPrimaryKey(false);
         field2.setUnique(false);
         field2.setIsIdentity(false);
-        field2.setForeignKeyFieldName("CMP3_MM_PROC.VECTPROC_ID");
+        field2.setForeignKeyFieldName("CMP3_MM_PROC.PROC_ID");
         table.addField(field2);        
 
         return table;
     }
 
+    public static TableDefinition buildCOMPUTER_BOARD_JOINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_COMPUTER_MM_BOARD");
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("BOARD_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        field2.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
+        table.addField(field2);        
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("COMPUTER_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
+        table.addField(field1);        
+        
+        return table;
+    }
+    
     public static TableDefinition buildCOMPUTER_USER_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_COMPUTER_MM_USER");

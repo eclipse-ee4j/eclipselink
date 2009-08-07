@@ -15,8 +15,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
+
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +28,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -70,6 +74,12 @@ public class Computer implements java.io.Serializable {
             inverseJoinColumns =@JoinColumn(name="PERSON_ID"))   
     private Corporation corporation;*/
     
+    
+    // Inverse side 
+    @OneToMany(cascade=ALL, mappedBy="computer")
+    // A Collection where the Collection type (Map, Set, List) is not defined at design time
+    private Collection<Board> circuitBoards;
+
     public Computer() {}
 
     public Manufacturer getManufacturer() {
@@ -112,4 +122,11 @@ public class Computer implements java.io.Serializable {
         this.version = version;
     }
 
+    public Collection<Board> getCircuitBoards() {
+        return circuitBoards;
+    }
+
+    public void setCircuitBoards(Collection<Board> circuitBoards) {
+        this.circuitBoards = circuitBoards;
+    }
 }
