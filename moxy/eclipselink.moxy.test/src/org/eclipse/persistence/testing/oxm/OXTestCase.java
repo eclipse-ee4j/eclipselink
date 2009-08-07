@@ -213,7 +213,7 @@ public abstract class OXTestCase extends XMLTestCase {
         return description + shortClassName + ": " + super.getName();
     }
 
-    protected void removeEmptyTextNodes(Node node) {
+    public static void removeEmptyTextNodes(Node node) {
         NodeList nodeList = node.getChildNodes();
         Node childNode;
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
@@ -228,7 +228,7 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
 
-    protected String removeWhiteSpaceFromString(String s) {
+    public static String removeWhiteSpaceFromString(String s) {
         String returnString = s.replaceAll(" ", "");
         returnString = returnString.replaceAll("\n", "");
         returnString = returnString.replaceAll("\t", "");

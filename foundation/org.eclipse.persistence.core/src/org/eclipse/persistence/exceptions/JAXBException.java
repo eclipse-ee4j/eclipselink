@@ -55,6 +55,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int COULD_NOT_LOAD_CLASS_FROM_METADATA = 50025;
     public static final int COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL = 50026;
     public static final int COULD_NOT_UNMARSHAL_METADATA = 50027;
+    public static final int COULD_NOT_CREATE_CUSTOMIZER_INSTANCE = 50028;
+    public static final int INVALID_CUSTOMIZER_CLASS = 50029;
     
     protected JAXBException(String message) {
         super(message);
@@ -244,6 +246,7 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where the Value (in the package name 
      * to metadata source map) is null.
      * 
+     * @param key
      * @return
      */
     public static JAXBException nullMetadataSource(String key) {
@@ -287,7 +290,6 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
      * 
-     * @param e
      * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel() {
@@ -302,7 +304,7 @@ public class JAXBException extends EclipseLinkException {
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
      * 
-     * @param e
+     * @param ex
      * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel(Exception ex) {
@@ -318,7 +320,6 @@ public class JAXBException extends EclipseLinkException {
      * the eclipselink metadata file.
      * 
      * @param e
-     * @param metadataSystemId
      * @return
      */
     public static JAXBException couldNotUnmarshalMetadata(Exception e) {
@@ -327,4 +328,27 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_UNMARSHAL_METADATA);
         return exception;
     }
+
+    /**
+     * This exception should be used when a descriptor customizer instance cannot be created.
+     * 
+     * @param e
+     * @param javaClassName
+     * @param customizerClassName
+     * @return
+     */
+    public static JAXBException couldNotCreateCustomizerInstance(Exception e, String customizerClassName) {
+        Object[] args = { customizerClassName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_CREATE_CUSTOMIZER_INSTANCE, args), e);
+        exception.setErrorCode(COULD_NOT_CREATE_CUSTOMIZER_INSTANCE);
+        return exception;
+    }
+    
+    public static JAXBException invalidCustomizerClass(Exception e, String customizerClassName) {
+        Object[] args = { customizerClassName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_CUSTOMIZER_CLASS, args), e);
+        exception.setErrorCode(INVALID_CUSTOMIZER_CLASS);
+        return exception;
+    }
+    
 }

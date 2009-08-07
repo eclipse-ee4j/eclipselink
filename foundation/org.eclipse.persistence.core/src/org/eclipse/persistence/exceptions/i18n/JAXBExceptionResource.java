@@ -46,7 +46,9 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50024", "A null Key was encountered while processing external metadata via properties Map.  It is required that the Key be non-null and of type [String] (indicating package name)."},
         {"50025", "Could not load class [{0}] declared in the external metadata file.  Please ensure that the class name is correct, and that the correct ClassLoader has been set."},
         {"50026", "An exception occurred while attempting to create a JAXBContext for the XmlModel."},
-        {"50027", "An exception occurred while attempting to unmarshal externalized metadata file."}
+        {"50027", "An exception occurred while attempting to unmarshal externalized metadata file."},
+        {"50028", "A new instance of [{0}] could not be created."},
+        {"50029", "The class [{0}] provided on the XmlCustomizer does not implement the org.eclipse.persistence.config.DescriptorCustomizer interface."}
     };
     
     /**

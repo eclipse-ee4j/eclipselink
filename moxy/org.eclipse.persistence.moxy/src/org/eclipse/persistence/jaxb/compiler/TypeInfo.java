@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
@@ -99,6 +100,8 @@ public class TypeInfo {
     private XmlAccessOrder xmlAccessOrder;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
 
+    private DescriptorCustomizer descriptorCustomizer;
+    
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
      * processing.  Other fields are initialized here as well.
@@ -753,5 +756,37 @@ public class TypeInfo {
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
         this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
+    }
+    
+    /**
+     * Indicates if a DescriptorCustomizer has been set, i.e. the
+     * descriptorCustomizer property is non-null.
+     * 
+     * @return true if descriptorCustomizer is non-null, false otherwise
+     * @see DescriptorCustomizer
+     */
+   public boolean isSetDescriptorCustomizer() {
+        return this.descriptorCustomizer != null;
+    }
+    
+    /**
+     * Return the DescriptorCustomizer set on this TypeInfo, or null if none
+     * is set.
+     * 
+     * @return the DescriptorCustomizer set on this TypeInfo, or null if none is set
+     * @see DescriptorCustomizer
+     */
+    public DescriptorCustomizer getDescriptorCustomizer() {
+        return this.descriptorCustomizer;
+    }
+
+    /**
+     * Sets the DescriptorCustomizer on this TypeInfo.
+     * 
+     * @param descriptorCustomizer
+     * @see DescriptorCustomizer
+     */
+    public void setDescriptorCustomizer(DescriptorCustomizer descriptorCustomizer) {
+        this.descriptorCustomizer = descriptorCustomizer;
     }
 }

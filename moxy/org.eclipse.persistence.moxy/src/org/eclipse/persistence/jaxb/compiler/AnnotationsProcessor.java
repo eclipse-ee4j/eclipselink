@@ -63,6 +63,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -89,6 +90,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 
 /**
  * INTERNAL:
@@ -232,6 +235,9 @@ public class AnnotationsProcessor {
 
             // handle class level @XmlJavaTypeAdapters
             processClassLevelAdapters(javaClass, info);
+
+            // handle descriptor customizer
+            preProcessCustomizer(javaClass, info);
             
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
@@ -327,6 +333,7 @@ public class AnnotationsProcessor {
                     throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
                 }
             }
+            
             validatePropOrderForInfo(info);
         }
         return typeInfo;
@@ -2817,5 +2824,34 @@ public class AnnotationsProcessor {
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
         postBuildTypeInfo(javaClasses);
+    }
+    
+    /**
+     * Pre-process a descriptor customizer.  Here, the given JavaClass is checked
+     * for the existence of an @XmlCustomizer annotation.
+     * 
+     * Note that the post processing of the descriptor customizers will take place
+     * in MappingsGenerator's generateProject method, after the descriptors and 
+     * mappings have been generated.
+     * 
+     * @param jClass
+     * @param tInfo
+     * @see XmlCustomizer
+     * @see MappingsGenerator
+     */
+    private void preProcessCustomizer(JavaClass jClass, TypeInfo tInfo) {
+        XmlCustomizer xmlCustomizer = (XmlCustomizer) helper.getAnnotation(jClass, XmlCustomizer.class);
+        if (xmlCustomizer != null) {
+            try {
+                DescriptorCustomizer descriptorCustomizer = (DescriptorCustomizer) PrivilegedAccessHelper.newInstanceFromClass(xmlCustomizer.value());
+                tInfo.setDescriptorCustomizer(descriptorCustomizer);
+            } catch (IllegalAccessException iae) {
+                throw JAXBException.couldNotCreateCustomizerInstance(iae, xmlCustomizer.value().getName());
+            } catch (InstantiationException ie) {
+                throw JAXBException.couldNotCreateCustomizerInstance(ie, xmlCustomizer.value().getName());
+            } catch (ClassCastException cce) {
+                throw JAXBException.invalidCustomizerClass(cce, xmlCustomizer.value().getName());
+            }
+        }
     }
 }

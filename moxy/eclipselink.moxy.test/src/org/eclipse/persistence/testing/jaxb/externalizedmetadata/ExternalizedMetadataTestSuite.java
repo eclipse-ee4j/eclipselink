@@ -13,11 +13,13 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.xmlcustomizer.CustomizerExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSchemaTestCases;
@@ -47,6 +49,8 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAdapterTestCases.class);
         suite.addTestSuite(XmlAttributeTestCases.class);
         suite.addTestSuite(ExceptionHandlingTestCases.class);
+        suite.addTestSuite(XmlCustomizerTestCases.class);
+        suite.addTestSuite(CustomizerExceptionTestCases.class);
         return suite;
     }
     

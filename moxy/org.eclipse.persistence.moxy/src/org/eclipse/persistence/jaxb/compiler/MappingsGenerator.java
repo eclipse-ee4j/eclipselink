@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
@@ -135,6 +136,16 @@ public class MappingsGenerator {
         
         // Now create mappings
         generateMappings();
+        
+        // apply customizers if necessary
+        Set<Entry<String, TypeInfo>> entrySet = this.typeInfo.entrySet();
+        for (Entry<String, TypeInfo> entry : entrySet) {
+            TypeInfo tInfo = entry.getValue();
+            if (tInfo.isSetDescriptorCustomizer()) {
+                tInfo.getDescriptorCustomizer().customize(tInfo.getDescriptor());
+            }
+        }
+        
         processGlobalElements(project);
         wrapperCounter = 0;
         return project;
