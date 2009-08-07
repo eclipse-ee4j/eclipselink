@@ -42,6 +42,8 @@
     </condition>
     <property name="oracle.2.common.plugins.dir" value="${oracle.2.base.dir}/plugins"/>
     <property name="oracle.2.buildsys.dir" value="${oracle.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
     <property name="oracle.plugins.dir" value="../plugins"/>
 
     <property file="${user.home}/build.properties"/>
@@ -241,7 +243,8 @@
     </target>
 
     <target name="bnd-package">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${oracle.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"
@@ -275,7 +278,8 @@
     </target>
     
     <target name="bnd-repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${oracle.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${oracle.plugins.dir}/${ant.project.name}.jar"
             eclipse="false"

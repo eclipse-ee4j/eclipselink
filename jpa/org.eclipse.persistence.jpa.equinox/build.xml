@@ -36,6 +36,8 @@
     </condition>
     <property name="equinox.2.common.plugins.dir" value="${equinox.2.base.dir}/plugins"/>
     <property name="equinox.2.buildsys.dir" value="${equinox.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${equinox.2.buildsys.dir}/${bndtool.jar}"/>
     <property name="equinox.2.jpa.plugins.dir" value="../plugins"/>
     <property name="extensions.depend.dir" value="${equinox.2.base.dir}/../extension.lib.external"/>
     <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
@@ -185,7 +187,8 @@
     </target>
 
     <target name="bnd-package" if="compile.ok">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${equinox.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

@@ -217,6 +217,7 @@
     
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="bnd-core">
+        <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
         <ant antfile="build.xml" dir="${jpa.prototype}"       target="bnd"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"     target="bnd"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="bnd"/>

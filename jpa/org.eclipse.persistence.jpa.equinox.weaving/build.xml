@@ -37,6 +37,8 @@
     </condition>
     <property name="weaving.2.common.plugins.dir" value="${weaving.2.base.dir}/plugins"/>
     <property name="weaving.2.buildsys.dir" value="${weaving.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${weaving.2.buildsys.dir}/${bndtool.jar}"/>
     <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
     <property name="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"/>
     <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
@@ -172,7 +174,8 @@
     </target>
 
     <target name="bnd-package" if="osgi.bundle.exist">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${weaving.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

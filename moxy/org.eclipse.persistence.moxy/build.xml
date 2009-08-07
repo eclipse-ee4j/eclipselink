@@ -37,6 +37,8 @@
     </condition>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
     <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${moxy.2.buildsys.dir}/${bndtool.jar}"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="${moxy.build.location}/build.properties"/>
@@ -188,7 +190,8 @@
     </target>
 
     <target name="bnd-package">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${moxy.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

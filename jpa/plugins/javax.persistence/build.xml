@@ -39,6 +39,8 @@
     </condition>
     <property name="jpaproto.2.common.plugins.dir" value="${jpaproto.2.base.dir}/plugins"/>
     <property name="jpaproto.2.buildsys.dir" value="${jpaproto.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${jpaproto.2.buildsys.dir}/${bndtool.jar}"/>
 
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
@@ -168,7 +170,8 @@
     </target>
 
     <target name="bnd-package">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${jpaproto.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

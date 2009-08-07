@@ -35,6 +35,8 @@
     <property name="antlr.2.common.plugins.dir" value=".."/>
     <property name="antlr.2.base.dir" value="../.."/>
     <property name="antlr.2.buildsys.dir" value="${antlr.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${antlr.2.buildsys.dir}/${bndtool.jar}"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -125,7 +127,8 @@
     </target>
     
     <target name="bnd-package">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${antlr.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${antlr.classes.dir}"
             eclipse="false"
