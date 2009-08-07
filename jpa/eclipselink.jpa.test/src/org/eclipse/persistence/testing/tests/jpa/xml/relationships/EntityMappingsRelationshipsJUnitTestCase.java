@@ -180,7 +180,9 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
-            em.remove(em.find(Customer.class, customerId));
+            Customer c = em.find(Customer.class, customerId);
+            em.refresh(c);
+            em.remove(c);
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
