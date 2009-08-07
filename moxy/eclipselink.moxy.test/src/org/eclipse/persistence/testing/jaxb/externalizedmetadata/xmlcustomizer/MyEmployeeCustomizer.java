@@ -23,7 +23,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
  * @see DescriptorCustomizer
  */
 public class MyEmployeeCustomizer implements DescriptorCustomizer {
-    @Override
+
     public void customize(ClassDescriptor descriptor) throws Exception {
         XMLDirectMapping firstNameMapping = (XMLDirectMapping) descriptor.getMappingForAttributeName("firstName");
         XMLField fnxField = (XMLField) firstNameMapping.getField();
@@ -33,4 +33,5 @@ public class MyEmployeeCustomizer implements DescriptorCustomizer {
         XMLField lnxField = (XMLField) lastNameMapping.getField();
         lnxField.setXPath("last-name/text()");
     }
+    
 }
