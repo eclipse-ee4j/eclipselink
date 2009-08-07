@@ -56,7 +56,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private Map<QName, SDOType> wrappersHashMap;
 
     /** Map of interfaces -> SDOType */
-    private Map<Class, SDOType> interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
+    private Map<Class, SDOType> interfacesToSDOTypeHashMap;
 
     /** Map of impl classes -> SDOType */
     private Map<Class, SDOType> implClassesToSDOType = new HashMap<Class, SDOType>();
@@ -131,13 +131,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         // set context before initializing maps
         aHelperContext = aContext;
 
-        initWrapperTypes();
         initCommonjHashMap();
-        initCommonjJavaHashMap();        
-        initTypesHashMap();  
-        initXsdToSDOType();
-        initSdoToXSDType();
-        initOpenProps();
+        initCommonjJavaHashMap();
+        
+        reset();
     }
 
     public void initWrapperTypes() {
@@ -986,19 +983,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     public void reset() {
         interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
+        namespaceResolver = null;
 
         initWrapperTypes();
         initWrappersHashMap();
         initTypesHashMap();
 
-        namespaceResolver = new NamespaceResolver();
-        initOpenProps();
-
-        SDOType openSequencedType = (SDOType) typesHashMap.get(new QName(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType"));
-        openSequencedType.getXmlDescriptor().setNamespaceResolver(null);
-
         initSdoToXSDType();
         initXsdToSDOType();
+        initOpenProps();
     }
 
     /**
