@@ -1048,8 +1048,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
             if (!writeORProject) {
+                // check for any named queries - SimpleXMLFormatProject's sometimes need them
+                if (orProject.getQueries().size() > 0) {
+                    writeORProject = true;
+                }
                 // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-                if (orProject.getDescriptors().size() > 0) {
+                else if (orProject.getDescriptors().size() > 0) {
                     Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                     for (ClassDescriptor desc : descriptors) {
                         if (desc.isObjectRelationalDataTypeDescriptor()) {
