@@ -169,10 +169,17 @@
     <!-- Cleans all build generated files. -->
     <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
 
-    <target name="clean-runtime" description="Clean the runtime projects">
+    <target name="clean-runtime" depends="clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
+    <!--   This allows testing to call a specific target that won't remove the default 
+           (or dropped-in copy of) eclipselink and the persistence jar, while still 
+           allowing unchanged operation by developers and users to clean all built artifacts. -->
+    <target name="clean-runtime-checkedin" description="Clean the runtime projects">
+        <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
+        <delete file="${eclipselink.jar.name}"/>
+    </target>
+    <target name="clean-runtime-built" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
-        <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
@@ -184,7 +191,6 @@
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
-        <delete file="${eclipselink.jar.name}"/>
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
