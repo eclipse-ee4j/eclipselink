@@ -23,42 +23,28 @@ import java.util.Map;
  */
 public class MetadataAnnotation {
     /** The name of the annotation. */
-    protected String name;
+    protected String m_name;
     
     /** Map of attribute names and values. */
-    protected Map<String, Object> attributes = new HashMap<String, Object>();
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
+    protected Map<String, Object> m_attributes = new HashMap<String, Object>();
 
     /**
+     * INTERNAL:
+     */
+    public void addAttribute(String key, Object value) {
+        m_attributes.put(key, value);
+    }
+    
+    /**
+     * INTERNAL:
      * Return the attribute value, or null if not set.
      */
     public Object getAttribute(String name) {
-        return this.attributes.get(name);
+        return m_attributes.get(name);
     }
 
     /**
-     * Return the attribute value, or "" if not set.
-     */
-    public Object getAttributeString(String name) {
-        Object value = getAttribute(name);
-        if (value == null) {
-            return "";
-        }
-        return value;
-    }
-
-    /**
+     * INTERNAL:
      * Return the attribute value, or an empty array if not set.
      */
     public Object getAttributeArray(String name) {
@@ -68,12 +54,52 @@ public class MetadataAnnotation {
         }
         return value;
     }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, Object> getAttributes() {
+        return m_attributes;
     }
 
+    /**
+     * INTERNAL:
+     * Return the attribute value, or "" if not set.
+     */
+    public Object getAttributeString(String name) {
+        Object value = getAttribute(name);
+        if (value == null) {
+            return "";
+        }
+        return value;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        m_attributes = attributes;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     */
     public String toString() {
-        return "@" + getName();
+        return "@" + getName() + "(" + m_attributes + ")";
+        //return "@" + getName();
     }
 }

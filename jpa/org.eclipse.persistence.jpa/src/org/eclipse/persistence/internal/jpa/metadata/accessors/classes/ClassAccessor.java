@@ -720,6 +720,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         return false;
     }
     
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents an entity class.
+     */
+    public boolean isEntityAccessor() {
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Generic class level merging details for entities, mapped superclasses
@@ -753,18 +761,22 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL: 
+     */
+    public abstract void preProcess();
+    
+    /**
+     * INTERNAL:
+     */
+    public abstract void preProcessForCanonicalModel();
+    
+    /**
+     * INTERNAL: 
      * Implemented by EntityAccessor, EmbeddableAccessor and 
      * MappedSuperclassAccessor. They must call this method to set the
      * isProcessed flag.
      */
     @Override
     public abstract void process();
-    
-    /**
-     * INTERNAL:
-     * 
-     */
-    public abstract void preProcess();
     
     /**
      * INTERNAL:

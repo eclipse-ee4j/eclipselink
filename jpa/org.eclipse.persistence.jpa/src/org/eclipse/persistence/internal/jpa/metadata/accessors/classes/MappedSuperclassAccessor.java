@@ -34,7 +34,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.AssociationOverride;
@@ -424,6 +423,17 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Add the accessors and converters from this mapped superclass.
         addAccessors();
         addConverters();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void preProcessForCanonicalModel() {
+        setIsPreProcessed();
+        
+        processAccessType();
+        addAccessors();
     }
     
     /**
@@ -863,15 +873,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Used to process mapped superclasses when creating descriptors for a metamodel.
-     * The MappedSuperclass Descriptors here are separate from non-MappedSuperclass Descriptors.
+     * Used to process mapped superclasses when creating descriptors for a 
+     * metamodel. The MappedSuperclass Descriptors here are separate from 
+     * non-MappedSuperclass Descriptors.
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
     public void processMetamodelDescriptor() {        
-        for(Iterator<MappedSuperclassAccessor> mappedSuperclassIterator = 
-            getProject().getMappedSuperclassAccessors().values().iterator();
-            mappedSuperclassIterator.hasNext();) {
-            mappedSuperclassIterator.next().processAccessors();
+        for (MappedSuperclassAccessor mappedSuperclass : getProject().getMetamodelMappedSuperclasses()) {
+            mappedSuperclass.processAccessors();
         }
     }
     

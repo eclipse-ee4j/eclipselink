@@ -242,7 +242,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
      */
-    protected void discoverMappedSuperclassesAndInheritanceParents() {
+    protected void discoverMappedSuperclassesAndInheritanceParents(boolean discoverMappedSuperclasses) {
         // Clear out any previous mapped superclasses and inheritance parents
         // that were discovered.
         clearMappedSuperclassesAndInheritanceParents();
@@ -293,8 +293,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     // current descriptor.
                     currentAccessor.resolveGenericTypes(genericParent, parent, lastAccessor.getDescriptor());                
                 } else {
-                    // Might be a mapped superclass, check and add as needed.
-                    currentAccessor.addPotentialMappedSuperclass(parent);
+                    if (discoverMappedSuperclasses) {
+                        // Might be a mapped superclass, check and add as needed.
+                        currentAccessor.addPotentialMappedSuperclass(parent);
+                    }
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
@@ -519,6 +521,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
     }
     
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents an entity class.
+     */
+    @Override
+    public boolean isEntityAccessor() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -566,6 +577,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void preProcess() {
+        preProcess(true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Pre-process the items of interest on an entity class. The order of 
+     * processing is important, care must be taken if changes must be made.
+     */
+    public void preProcess(boolean discoverMappedSuperclasses) {
         setIsPreProcessed();
         
         // If we are not already an inheritance subclass (meaning we were not
@@ -574,7 +594,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // the chain upwards and we can not guarantee which entity will be
         // processed first in an inheritance hierarchy.
         if (! getDescriptor().isInheritanceSubclass()) {
-            discoverMappedSuperclassesAndInheritanceParents();
+            discoverMappedSuperclassesAndInheritanceParents(discoverMappedSuperclasses);
         }
         
         // If we are an inheritance subclass process out root first.
@@ -586,9 +606,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // to itself. The first entity in the hierarchy (going down) that
             // does not specify an explicit type will be used to determine
             // the default access type.
-            ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
+            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isPreProcessed()) {
-                parentAccessor.preProcess();
+                parentAccessor.preProcess(discoverMappedSuperclasses);
             }
         }
         
@@ -615,6 +635,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Finally, add our immediate accessors and converters.
         addAccessors();
         addConverters();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void preProcessForCanonicalModel() {
+        preProcess(false);
     }
     
     /**
@@ -1006,7 +1034,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // class and mapped superclasses (taking metadata-complete into 
         // consideration). Go through the mapped superclasses first, top->down 
         // only if the exclude superclass listeners flag is not set.
-        discoverMappedSuperclassesAndInheritanceParents();
+        discoverMappedSuperclassesAndInheritanceParents(true);
         
         if (! getDescriptor().excludeSuperclassListeners()) {
             int mappedSuperclassesSize = m_mappedSuperclasses.size();

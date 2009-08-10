@@ -666,6 +666,15 @@ public class MetadataProject {
      * This method will attempt to look up the embeddable accessor for the
      * reference class provided. If no accessor is found, null is returned.
      */
+    public EmbeddableAccessor getEmbeddableAccessor(MetadataClass cls) {
+        return getEmbeddableAccessor(cls, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will attempt to look up the embeddable accessor for the
+     * reference class provided. If no accessor is found, null is returned.
+     */
     public EmbeddableAccessor getEmbeddableAccessor(MetadataClass cls, boolean checkIsIdClass) {
         EmbeddableAccessor accessor = m_embeddableAccessors.get(cls.getName());
 
@@ -697,11 +706,18 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * This method will attempt to look up the embeddable accessor for the
-     * reference class provided. If no accessor is found, null is returned.
+     * Return the embeddable accessor with the given classname.
      */
-    public EmbeddableAccessor getEmbeddableAccessor(MetadataClass cls) {
-        return getEmbeddableAccessor(cls, false);
+    public EmbeddableAccessor getEmbeddableAccessor(String className) {
+        return m_embeddableAccessors.get(className);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the embeddable accessor with the given classname.
+     */
+    public Collection<EmbeddableAccessor> getEmbeddableAccessors() {
+        return m_embeddableAccessors.values();
     }
     
     /**
@@ -746,16 +762,35 @@ public class MetadataProject {
      * INTERNAL:
      */
     public MappedSuperclassAccessor getMappedSuperclass(MetadataClass cls) {
-        return m_mappedSuperclasses.get(cls.getName());
+        return getMappedSuperclass(cls.getName());
     }
     
     /**
      * INTERNAL:
-     * Return the Map of MappedSuperclassAccessors keyed on className
+     */
+    public MappedSuperclassAccessor getMappedSuperclass(String className) {
+        return m_mappedSuperclasses.get(className);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Collection<MappedSuperclassAccessor> getMappedSuperclasses() {
+        return m_mappedSuperclasses.values();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the collection of metamodel MappedSuperclassAccessors. This
+     * collection is NOT and should NOT be used for any deployment descriptor 
+     * metadata processing. It is used solely with the metamodel.
+     * @see getMappedSuperclass(MetadataClass)
+     * @see getMappedSuperclass(String)
+     * @see getMappedSuperclasses()
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
-    public HashMap<String, MappedSuperclassAccessor> getMappedSuperclassAccessors() {
-        return m_mappedSuperclassAccessors;
+    public Collection<MappedSuperclassAccessor> getMetamodelMappedSuperclasses() {
+        return m_mappedSuperclassAccessors.values();
     }
     
     /**
@@ -817,14 +852,28 @@ public class MetadataProject {
      * INTERNAL:
      */
     public boolean hasEmbeddable(MetadataClass cls) {
-        return m_embeddableAccessors.containsKey(cls.getName());
+        return hasEmbeddable(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasEmbeddable(String className) {
+        return m_embeddableAccessors.containsKey(className);
     }
     
     /**
      * INTERNAL:
      */
     public boolean hasEntity(MetadataClass cls) {
-        return m_entityAccessors.containsKey(cls.getName());
+        return hasEntity(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasEntity(String className) {
+        return m_entityAccessors.containsKey(className);
     }
     
     /**
@@ -838,7 +887,14 @@ public class MetadataProject {
      * INTERNAL:
      */
     public boolean hasMappedSuperclass(MetadataClass cls) {
-        return m_mappedSuperclasses.containsKey(cls.getName());
+        return hasMappedSuperclass(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasMappedSuperclass(String className) {
+        return m_mappedSuperclasses.containsKey(className);
     }
     
     /**

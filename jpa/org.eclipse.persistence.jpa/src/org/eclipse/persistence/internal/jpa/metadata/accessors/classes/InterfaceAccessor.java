@@ -92,6 +92,14 @@ public class InterfaceAccessor extends ClassAccessor {
      * INTERNAL:
      */
     @Override
+    public void preProcessForCanonicalModel() {
+        // Does nothing at this point ... perhaps it will in the future ...
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public void process() {
         // Does nothing at this point ... perhaps it will in the future ...
     }    

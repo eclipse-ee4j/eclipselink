@@ -26,13 +26,11 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  */
 public abstract class MetadataAccessibleObject {
     protected MetadataFactory m_factory;
-    protected MetadataLogger m_logger;
     
     /**
      * INTERNAL:
      */
-    public MetadataAccessibleObject(MetadataFactory factory, MetadataLogger logger) {
-        m_logger = logger;
+    public MetadataAccessibleObject(MetadataFactory factory) {
         m_factory = factory;
     }
     
@@ -46,14 +44,20 @@ public abstract class MetadataAccessibleObject {
      * INTERNAL:
      */
     public MetadataLogger getLogger() {
-        return m_logger;
+        return m_factory.getLogger();
     }
 
+    /**
+     * INTERNAL:
+     */
     public MetadataFactory getMetadataFactory() {
         return m_factory;
     }
 
+    /**
+     * INTERNAL:
+     */
     public void setMetadataFactory(MetadataFactory factory) {
-        this.m_factory = factory;
+        m_factory = factory;
     }
 }

@@ -115,6 +115,15 @@ public class EmbeddableAccessor extends ClassAccessor {
         addConverters();
     }
     
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void preProcessForCanonicalModel() {        
+        preProcess();
+    }
+    
     /**
      * INTERNAL:
      * Process the items of interest on an embeddable class.

@@ -31,10 +31,12 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.lang.model.type.PrimitiveType;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -61,12 +63,11 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-//import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
- * Parent object that is used to hold onto a valid JPA decorated method
- * field or class.
+ * Parent object that is used to hold onto a valid JPA decorated method, field 
+ * or class.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -78,33 +79,75 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /** The name of the element, i.e. class name, field name, method name. */
     private String m_name;
     /** Defines elements modifiers, i.e. private/static/transient. */
-    private int modifiers;
+    private int m_modifiers;
     /** Used to cache the type metadata class, but cannot be cached in the case of generics. */
     private MetadataClass m_rawClass;
     /**
      * Defines the generic types of the elements type.
      * This is null if no generics are used.
      * This is a list of class/type names from the class/field/method signature.
-     * The size of the list varries depending on how many generics are present,
+     * The size of the list varies depending on how many generics are present,
      * i.e.
      * - Map<String, Long> -> ["java.util.Map", "java.lang.String", "java.lang.Long"]
      * - Beverage<T> extends Object -> [T, :, java.lang.Object, java.lang.Object]
      */
-    private List<String> genericType;
+    private List<String> m_genericType;
+    
     /** Defines the field type, or method return type class name. */
-    private String type;
+    private String m_type;
+    
+    // Used with the APT processor. Stores the PrimitiveType is this annotated
+    // element is a primitive
+    PrimitiveType m_primitiveType;
+
     /** Defines the attribute name of a field, or property name of a method. */
     private String m_attributeName;
+    
     /** Stores any annotations defined for the element, keyed by annotation name. */
-    private Map<String, MetadataAnnotation> m_annotations = new HashMap<String, MetadataAnnotation>();
+    private Map<String, MetadataAnnotation> m_annotations; 
     
     /**
      * INTERNAL:
      */
-    public MetadataAnnotatedElement(MetadataFactory factory, MetadataLogger logger) {
-        super(factory, logger);
+    public MetadataAnnotatedElement(MetadataFactory factory) {
+        super(factory);
+        
+        m_annotations = new HashMap<String, MetadataAnnotation>();
     }
 
+    /**
+     * INTERNAL:
+     */
+    public void addAnnotation(MetadataAnnotation annotation) {
+        m_annotations.put(annotation.getName(), annotation);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addGenericType(String genericType) {
+        if (m_genericType == null) {
+            m_genericType = new ArrayList<String>();
+        }
+        
+        m_genericType.add(genericType);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        
+        if (getName() == null) {
+            return ((MetadataAnnotatedElement)object).getName() == null;
+        }
+        
+        return (object.getClass() == getClass()) && getName().equals(((MetadataAnnotatedElement)object).getName());
+    }
+    
     /**
      * INTERNAL:
      * Return the annotated element for this accessor. Note: This method does 
@@ -162,17 +205,24 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     */
+    public List<String> getGenericType() {
+        return m_genericType;
+    }
+    
+    /**
+     * INTERNAL:
      * This should only be called for accessor's of type Map. It will return
      * the map key type if generics are used, null otherwise.
      */
     public MetadataClass getMapKeyClass(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
             // The Map key may be a generic itself, or just the class value.
-            String type = descriptor.getGenericType(this.genericType.get(2));
+            String type = descriptor.getGenericType(m_genericType.get(2));
             if (type != null) {
                 return getMetadataFactory().getClassMetadata(type);
             }
-            return getMetadataFactory().getClassMetadata(this.genericType.get(1));
+            return getMetadataFactory().getClassMetadata(m_genericType.get(1));
         } else {
             return null;
         }
@@ -181,8 +231,24 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    public int getModifiers() {
+        return m_modifiers;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public String getName() {
         return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * If this annotated element was built from java model elements and is
+     * a primitive type, this primitive type will be set.
+     */
+    public PrimitiveType getPrimitiveType() {
+        return m_primitiveType;
     }
     
     /**
@@ -226,30 +292,32 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         if (isGenericCollectionType()) {
             // TODO: This is guessing, need to be more logical.
             // Collection<String> -> [Collection, String], get element class.
-            String elementClass = this.genericType.get(1);
+            String elementClass = m_genericType.get(1);
             // If size is greater than 4 then assume it is a double generic Map,
             // Map<T, Phone> -> [Map, T, Z, T, X]
-            if (this.genericType.size() > 4) {
-                elementClass = this.genericType.get(4);
-            } else if (this.genericType.size() > 3) {
+            if (m_genericType.size() > 4) {
+                elementClass = m_genericType.get(4);
+            } else if (m_genericType.size() > 3) {
                 // If size is greater than 3 then assume it is a generic Map,
                 // Map<T, Phone> -> [Map, T, Z, Phone]
-                elementClass = this.genericType.get(3);
-            } else if (this.genericType.size() > 2) {
+                elementClass = m_genericType.get(3);
+            } else if (m_genericType.size() > 2) {
                 // If size is greater than 2 then assume it is a Map,
                 // Map<String, Phone> -> [Map, String, Phone]
-                elementClass = this.genericType.get(2);
+                elementClass = m_genericType.get(2);
             }
             if (elementClass.length() == 1) {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
             }            
             MetadataClass metadataClass = getMetadataFactory().getClassMetadata(elementClass);
-            // 266912: We do not currently handle resolution of the parameterized generic type when the accessor is a MappedSuperclass
-            // elementClass will be null in this case so a lookup of the metadataClass will also return null on our custom descriptor
-            if(null == metadataClass && descriptor.isMappedSuperclass()) {
+            // 266912: We do not currently handle resolution of the parameterized 
+            // generic type when the accessor is a MappedSuperclass elementClass 
+            // will be null in this case so a lookup of the metadataClass will 
+            // also return null on our custom descriptor
+            if (metadataClass == null && descriptor.isMappedSuperclass()) {
                 // default to Void for all use case 7 instances above
-                return new MetadataClass(this.getMetadataFactory(), Void.class);
+                return new MetadataClass(getMetadataFactory(), Void.class);
             } else {
                 return metadataClass;
             }
@@ -260,11 +328,25 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     */
+    public String getType() {
+        return m_type;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessible object has 1 or more declared 
      * persistence annotations.
      */
     public boolean hasDeclaredAnnotations(MetadataDescriptor descriptor) {
         return getDeclaredAnnotationsCount(descriptor) > 0;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public int hashCode() {
+        return getName().hashCode();
     }
     
     /**
@@ -387,7 +469,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Method to return whether a collection type is a generic.
      */
     public boolean isGenericCollectionType() {
-        return (this.genericType != null) && (this.genericType.size() > 1);
+        return (m_genericType != null) && (m_genericType.size() > 1);
     }
     
     /**
@@ -395,9 +477,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Method to return whether a type is a generic.
      */
     public boolean isGenericType() {
-        return (this.genericType != null)
-                    && (this.genericType.size() > 1)
-                    && (this.genericType.get(0).length() == 1);
+        return (m_genericType != null)
+                    && (m_genericType.size() > 1)
+                    && (m_genericType.get(0).length() == 1);
     }
     
     /**
@@ -477,9 +559,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Map rather than strict equality.
      */
     public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
-        MetadataClass rawClass = getRawClass(descriptor);
-        
-        return rawClass.isCollection();
+        return getRawClass(descriptor).isCollection();
     }
     
     /**
@@ -579,59 +659,62 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     * Set the annotations of this accessible object.
      */
-    protected void setAttributeName(String attributeName) {
+    public void setAnnotations(Map<String, MetadataAnnotation> annotations) {
+        m_annotations = annotations;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setAttributeName(String attributeName) {
         m_attributeName = attributeName;
     }
     
     /**
      * INTERNAL:
      */
-    protected void setName(String name) {
+    public void setGenericType(List<String> genericType) {
+        m_genericType = genericType;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setModifiers(int modifiers) {
+        m_modifiers = modifiers;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setName(String name) {
         m_name = name;
     }
-
-    public int getModifiers() {
-        return modifiers;
-    }
-
-    public void setModifiers(int modifiers) {
-        this.modifiers = modifiers;
+    
+    /**
+     * INTERNAL:
+     * If this annotated element was built from java model elements and is
+     * a primitive type this method will be called.
+     */
+    public void setPrimitiveType(PrimitiveType primitiveType) {
+        m_primitiveType = primitiveType;
+        m_type = primitiveType.toString();
     }
     
-    public int hashCode() {
-        return getName().hashCode();
+    /**
+     * INTERNAL: 
+     */
+    public void setType(String type) {
+        m_type = type;
     }
     
-    public boolean equals(Object object) {
-        if (object == null) {
-            return false;
-        }
-        if (getName() == null) {
-            return ((MetadataAnnotatedElement)object).getName() == null;
-        }
-        return (object.getClass() == getClass())
-                && getName().equals(((MetadataAnnotatedElement)object).getName());
-    }
-    
+    /**
+     * INTERNAL:
+     */
     public String toString() {
         String className = getClass().getSimpleName();
         return className.substring("Metadata".length(), className.length()).toLowerCase() + " " + getName();
-    }
-
-    public List<String> getGenericType() {
-        return genericType;
-    }
-
-    public void setGenericType(List<String> genericType) {
-        this.genericType = genericType;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

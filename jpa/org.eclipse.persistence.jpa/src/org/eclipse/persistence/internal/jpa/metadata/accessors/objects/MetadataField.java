@@ -21,11 +21,10 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
- * An object to hold onto a valid EJB 3.0 decorated field.
+ * An object to hold onto a valid JPA decorated field.
  * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
@@ -34,8 +33,8 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
-    public MetadataField(MetadataFactory factory, MetadataLogger logger) {
-        super(factory, logger);
+    public MetadataField(MetadataFactory factory) {
+        super(factory);
     }
         
     /**

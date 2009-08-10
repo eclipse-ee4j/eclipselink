@@ -18,6 +18,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,11 +34,10 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
- * An object to hold onto a valid EJB 3.0 decorated method.
+ * An object to hold onto a valid JPA decorated method.
  * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
@@ -45,26 +45,62 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 public class MetadataMethod extends MetadataAnnotatedElement {
 
     /** Class that the method is defined in. */
-    protected MetadataClass metadataClass;
+    protected MetadataClass m_metadataClass;
     
     /** Class name of method return type. */
-    protected String returnType;
+    protected String m_returnType;
 
     /** List of class names of method parameters. */
-    protected List<String> parameters;
+    protected List<String> m_parameters;
     
     /** Corresponding set method, if the method is an accessor get method. */
-    protected MetadataMethod setMethod;
+    protected MetadataMethod m_setMethod;
     
     /** Used to store multiple methods with the same name in a class. */
-    protected MetadataMethod next;
+    protected MetadataMethod m_next;
         
     /**
      * Create the method from the class metadata.
      */
-    public MetadataMethod(MetadataFactory factory, MetadataClass metadataClass, MetadataLogger logger) {
-        super(factory, logger);
-        this.metadataClass = metadataClass;
+    public MetadataMethod(MetadataFactory factory, MetadataClass metadataClass) {
+        super(factory);
+        m_metadataClass = metadataClass;
+        m_parameters = new ArrayList<String>();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addParameter(String parameter) {
+        m_parameters.add(parameter);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass getMetadataClass() {
+        return m_metadataClass;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataMethod getNext() {
+        return m_next;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<String> getParameters() {
+        return m_parameters;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getReturnType() {
+        return m_returnType;
     }
     
     /**
@@ -73,10 +109,10 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * null if the corresponding set method is not found.
      */ 
     public MetadataMethod getSetMethod() {
-        if (this.setMethod == null) {
-            this.setMethod = getSetMethod(getMetadataClass());
+        if (m_setMethod == null) {
+            m_setMethod = getSetMethod(getMetadataClass());
         }
-        return this.setMethod;
+        return m_setMethod;
     }
     
     /**
@@ -84,7 +120,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * Method to convert a getMethod into a setMethod.
      */ 
     public void setSetMethod(MetadataMethod method) {
-        this.setMethod = method;
+        m_setMethod = method;
     }
     
     /**
@@ -219,36 +255,32 @@ public class MetadataMethod extends MetadataAnnotatedElement {
         return (getName().startsWith(Helper.GET_PROPERTY_METHOD_PREFIX) || getName().startsWith(Helper.IS_PROPERTY_METHOD_PREFIX)) && hasAttributeName();
     }
 
-    public MetadataMethod getNext() {
-        return next;
-    }
-
-    public void setNext(MetadataMethod next) {
-        this.next = next;
-    }
-
-    public String getReturnType() {
-        return returnType;
-    }
-
-    public void setReturnType(String returnType) {
-        this.returnType = returnType;
-        setType(returnType);
-    }
-
-    public List<String> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<String> parameters) {
-        this.parameters = parameters;
-    }
-
-    public MetadataClass getMetadataClass() {
-        return metadataClass;
-    }
-
+    /**
+     * INTERNAL:
+     */
     public void setMetadataClass(MetadataClass metadataClass) {
-        this.metadataClass = metadataClass;
+        m_metadataClass = metadataClass;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setNext(MetadataMethod next) {
+        m_next = next;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setParameters(List<String> parameters) {
+        m_parameters = parameters;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setReturnType(String returnType) {
+        m_returnType = returnType;
+        setType(returnType);
     }
 }
