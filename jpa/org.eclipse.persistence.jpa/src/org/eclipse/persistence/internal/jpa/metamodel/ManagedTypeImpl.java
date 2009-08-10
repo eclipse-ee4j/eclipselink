@@ -36,6 +36,8 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +63,9 @@ import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -969,9 +974,24 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     
     /**
      * INTERNAL:
-     * Initialise the members of this ManagedType based on the mappings defined on the descriptor.
+     * Handle the case where we were unable to determine the element type of the plural attribute.
+     * Normally this function is never required and should have a code coverage of 0%.
+     * @param managedType
+     * @param colMapping
+     * @param validation
+     */
+    private AttributeImpl initializePluralAttributeTypeNotFound(ManagedTypeImpl managedType, CollectionMapping collectionMapping, boolean validation) {
+        // default to List
+        // TODO: System.out.println("_Warning: type is null on " + colMapping);                                            
+        AttributeImpl<X, ?> member = new ListAttributeImpl(managedType, collectionMapping, validation);
+        return member; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize the members of this ManagedType based on the mappings defined on the descriptor.
      * We process the appropriate Map, List, Set, Collection or Object/primitive types.<p>
-     * Initialisation should occur after all types in the metamodel have been created already.
+     * Initialization should occur after all types in the metamodel have been created already.
      * 
      */
     protected void initialize() { // TODO: Check all is*Policy() calls
@@ -992,6 +1012,23 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             DatabaseMapping mapping = (DatabaseMapping) i.next();
             AttributeImpl<X, ?> member = null;
 
+            /**
+             * The following section will determine the plural attribute type for each mapping on the managedType.
+             * Special handling is required for differentiation of List and Collection
+             * beyond their shared IndirectList ContainerPolicy,
+             * as even though a List is an implementation of Collection in Java,
+             * In the Metamodel we treat the Collection as a peer of a List.
+             * 
+             * Collection.class   --> via IndirectList          --> CollectionAttributeImpl
+             *    List.class          --> via IndirectList          -->  ListAttributeImpl 
+             *    Set.class           --> SetAttributeImpl
+             *    Map.class         -->  MapAttributeImpl
+             *    
+             * If the type is Embeddable then special handling will be required to get the plural type.
+             * The embeddable's MethodAttributeAccessor will not have the getMethod set.
+             * We can however use reflection and get the returnType directly from the class
+             * using the getMethodName on the accessor.   
+             */            
             // Tie into the collection hierarchy at a lower level
             if (mapping.isCollectionMapping()) {
                 // Handle 1:m, n:m collection mappings
@@ -1016,15 +1053,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                 MappedSuperclassTypeImpl aMappedSuperclass = ((MappedSuperclassTypeImpl)this);
                                 AttributeImpl inheritingTypeMember = aMappedSuperclass.getMemberFromInheritingType(colMapping.getAttributeName());
                                 aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
-                                if(null == aField) {
-                                    aType = Collection.class;
-                                } else {
-                                    aType = aField.getType();
-                                }
-                            } else {
-                                aType = List.class;
-                            }                        
-                        } else {
+                            }
+                        }
+                        if(null != aField) {
                             aType = aField.getType();
                         }
                         // This attribute is declared as List 
@@ -1035,42 +1066,92 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                 // This attribute is therefore declared as Collection
                                 member = new CollectionAttributeImpl(this, colMapping, true);
                             } else {
-                                // TODO: System.out.println("_Warning: type is null on " + colMapping);
-                                member = new CollectionAttributeImpl(this, colMapping, true);
+                                member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                             }
                         }
                     } else {
                         // handle variations of missing get/set methods - only for Collection vs List
                         if(colMapping.getAttributeAccessor() instanceof MethodAttributeAccessor) {
+                            /**
+                             * The following call will perform a getMethod call for us.
+                             * If no getMethod exists, we will secondarily check the getMethodName below.
+                             */
                             aType = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeClass();
                             if(aType == Collection.class) {
                                 member = new CollectionAttributeImpl(this, colMapping, true);
                             } else if(aType == List.class) {
                                 member = new ListAttributeImpl(this, colMapping, true);
                             } else {
-                                // Type may be null when no getMethod exists for the class such as an embeddable
-                                // Here we check the returnType on the declared method on the class directly                                
+                                /**
+                                 * In this block we have the following scenario:
+                                 * 1) The access type is "field"
+                                 * 2) The get method is not set on the entity
+                                 * 3) The get method is named differently than the attribute
+                                 */                                
+                                // Type may be null when no getMethod exists for the class for a ManyToMany mapping
+                                // Here we check the returnType on the declared method on the class directly
                                 String getMethodName = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getGetMethodName();
                                 if(null == getMethodName) {
-                                    // default to List
-                                    member = new ListAttributeImpl(this, colMapping, true);
-                                } else {
+                                    // Check declaredFields in the case where we have no getMethod or getMethodName
                                     try {
-                                        Method aMethod = this.getJavaType().getDeclaredMethod(getMethodName);
-                                        aType = aMethod.getReturnType();
-                                        if(aType == Collection.class) {
-                                            member = new CollectionAttributeImpl(this, colMapping, true);
-                                        } else if(aType == List.class) {
-                                            member = new ListAttributeImpl(this, colMapping, true);
+                                        Field field = null;
+                                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                                            try {
+                                                field = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                                                        this.getJavaType(), colMapping.getAttributeName(), false));
+                                            } catch (PrivilegedActionException exception) {
+                                                member = initializePluralAttributeTypeNotFound(this, colMapping, true);                                            
+                                            }
                                         } else {
-                                            // default to List
-                                            // TODO: System.out.println("_Warning: type is null on " + colMapping);                                            
-                                            member = new ListAttributeImpl(this, colMapping, true);
+                                            field = PrivilegedAccessHelper.getDeclaredField(
+                                                    this.getJavaType(), colMapping.getAttributeName(), false);
+                                        }                                        
+                                        if(null == field) {
+                                            member = initializePluralAttributeTypeNotFound(this, colMapping, true);
+                                        } else {
+                                            aType = field.getType();
+                                            if(aType == Collection.class) {
+                                                member = new CollectionAttributeImpl(this, colMapping, true);
+                                            } else if(aType == List.class) {
+                                                member = new ListAttributeImpl(this, colMapping, true);
+                                            } else {
+                                                member = initializePluralAttributeTypeNotFound(this, colMapping, true);
+                                            }
                                         }
                                     } catch (Exception e) {
-                                        // TODO: System.out.println("_Warning: type is null on " + colMapping);
-                                        // default to List
-                                        member = new ListAttributeImpl(this, colMapping, true);
+                                        member = initializePluralAttributeTypeNotFound(this, colMapping, true);
+                                    }
+                                } else {
+                                    /**
+                                     * Field access Handling:
+                                     * If a get method name exists, we check the return type on the method directly
+                                     * using reflection.
+                                     * In all failure cases we default to the List type.
+                                     */
+                                    try {
+                                        Method aMethod = null;                                        
+                                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                            aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                                                    this.getJavaType(), getMethodName, null));
+                                        } else {
+                                            aMethod = PrivilegedAccessHelper.getDeclaredMethod(
+                                                    this.getJavaType(), getMethodName, null);
+                                        }
+                                        
+                                        if(null == aMethod) {
+                                            member = initializePluralAttributeTypeNotFound(this, colMapping, true);
+                                        } else {
+                                            aType = aMethod.getReturnType();
+                                            if(aType == Collection.class) {
+                                                member = new CollectionAttributeImpl(this, colMapping, true);
+                                            } else if(aType == List.class) {
+                                                member = new ListAttributeImpl(this, colMapping, true);
+                                            } else {
+                                                member = initializePluralAttributeTypeNotFound(this, colMapping, true);
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                                     }
                                 }
                             }
