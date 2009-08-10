@@ -182,7 +182,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         Collection<Memory> arrayMemories = new HashSet<Memory>();
         Collection<Processor> vectorProcessors = new HashSet<Processor>();
         Collection<Processor> arrayProcessors = new HashSet<Processor>();
-        Collection<HardwareDesigner> hardwareDesigners = new HashSet<HardwareDesigner>();
+        List<HardwareDesigner> hardwareDesigners = new ArrayList<HardwareDesigner>();
         Map<String, HardwareDesigner> mappedDesigners = new HashMap<String, HardwareDesigner>();
         Computer arrayComputer1 = null;
         Computer vectorComputer2 = null;
@@ -1118,8 +1118,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             try {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                 // UC4 - the attribute is on the immediate superclass
-                ListAttribute<Manufacturer, Computer> anAttribute = 
-                    entityManufacturer.getDeclaredList("corporateComputers", entityComputer.getJavaType());
+                CollectionAttribute<Manufacturer, Computer> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("corporateComputers", entityComputer.getJavaType());
                 //System.out.println("entityManufacturer.getDeclaredList(corporateComputers) " + anAttribute);
             } catch (IllegalArgumentException iae) {
                 // expecting
@@ -1305,6 +1305,21 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name is not declared in the managed type
              */
             //CollectionAttribute<X, ?> getDeclaredCollection(String name); 
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC4 - the attribute is on the immediate superclass
+                CollectionAttribute<Manufacturer, Computer> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("corporateComputers", entityComputer.getJavaType());
+                //System.out.println("entityManufacturer.getDeclaredList(corporateComputers) " + anAttribute);
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
 
             /**
              *  Return the Set-valued attribute declared by the managed type 

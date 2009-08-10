@@ -78,6 +78,8 @@ public class Computer implements java.io.Serializable {
     // Inverse side 
     @OneToMany(cascade=ALL, mappedBy="computer")
     // A Collection where the Collection type (Map, Set, List) is not defined at design time
+    // see design issue #58
+    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
     private Collection<Board> circuitBoards;
 
     public Computer() {}

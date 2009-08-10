@@ -19,6 +19,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -55,7 +56,7 @@ public class Board implements java.io.Serializable{
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")
-    private Collection<Processor> processors = new HashSet<Processor>();
+    private Collection<Processor> processors = new ArrayList<Processor>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")

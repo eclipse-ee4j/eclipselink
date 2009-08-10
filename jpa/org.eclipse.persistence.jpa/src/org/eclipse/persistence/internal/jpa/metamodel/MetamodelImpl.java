@@ -275,17 +275,6 @@ public class MetamodelImpl implements Metamodel {
             this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
         }
 
-        /**
-         * Delayed-Initialization (process all mappings) of all Managed types
-         *  (This includes all IdentifiableTypes = Entity and MappedSuperclass types).
-         * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.
-         * The following code section may add BasicTypes to the types map.
-         */
-        List<ManagedTypeImpl<?>> aManagedTypeList = new ArrayList<ManagedTypeImpl<?>>(this.managedTypes.values());
-        for(Iterator<ManagedTypeImpl<?>> managedTypeImplIterator = aManagedTypeList.iterator(); managedTypeImplIterator.hasNext();) {
-            ManagedTypeImpl<?> aType = managedTypeImplIterator.next();
-            aType.initialize();
-        }
         
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
@@ -301,9 +290,34 @@ public class MetamodelImpl implements Metamodel {
                 // If there is no superclass (besides Object for a top level identifiable type) then keep the supertype set to null
                 // See design issue #42 - we return Object for top-level types (with no superclass) and null if the supertype was not set
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
-                ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);                    
+                ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);
+                // set back pointer if mappedSuperclass
+                if(null != identifiableTypeSuperclass && ((IdentifiableTypeImpl)identifiableTypeSuperclass).isMappedSuperclass()) {
+                    ((MappedSuperclassTypeImpl)identifiableTypeSuperclass).addInheritingType(((IdentifiableTypeImpl)potentialIdentifiableType));
+                }
             }
         }        
+        
+        //1 - process all non-mappedSuperclass types first so we pick up attribute types
+        //2 - process mappedSuperclass types and lookup collection attribute types on inheriting entity types when field is not set
+        
+        /**
+         * Delayed-Initialization (process all mappings) of all Managed types
+         *  (This includes all IdentifiableTypes = Entity and MappedSuperclass types).
+         * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.
+         * The following code section may add BasicTypes to the types map.
+         */
+        for(Iterator<EntityTypeImpl<?>> managedTypeImplIterator = (new ArrayList<EntityTypeImpl<?>>(entities.values())).iterator(); managedTypeImplIterator.hasNext();) {
+            managedTypeImplIterator.next().initialize();
+        }
+        for(Iterator<EmbeddableTypeImpl<?>> managedTypeImplIterator = (new ArrayList<EmbeddableTypeImpl<?>>(embeddables.values())).iterator(); managedTypeImplIterator.hasNext();) {
+            managedTypeImplIterator.next().initialize();
+        }
+        for(Iterator<MappedSuperclassTypeImpl<?>> managedTypeImplIterator = (new ArrayList<MappedSuperclassTypeImpl<?>>(mappedSuperclasses)).iterator(); managedTypeImplIterator.hasNext();) {
+            managedTypeImplIterator.next().initialize();
+        }
+
+    
     }
 
     /**

@@ -17,9 +17,11 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.CascadeType.ALL;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +44,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="employer")
-    private Collection<HardwareDesigner> hardwareDesigners = new HashSet<HardwareDesigner>();
+    private List<HardwareDesigner> hardwareDesigners = new ArrayList<HardwareDesigner>();
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     //@OneToMany(cascade=ALL, mappedBy="manufacturer")
@@ -81,11 +83,11 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         aComputer.setManufacturer(null);
     }
 
-    public Collection<HardwareDesigner> getHardwareDesigners() {
+    public List<HardwareDesigner> getHardwareDesigners() {
         return hardwareDesigners;
     }
 
-    public void setHardwareDesigners(Collection<HardwareDesigner> designers) {
+    public void setHardwareDesigners(List<HardwareDesigner> designers) {
         this.hardwareDesigners = designers;
     }
 

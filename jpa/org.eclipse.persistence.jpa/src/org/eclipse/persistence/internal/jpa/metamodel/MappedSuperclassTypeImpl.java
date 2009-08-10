@@ -20,6 +20,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.persistence.metamodel.MappedSuperclassType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -41,19 +45,55 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  */ 
 public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
     
+    /** The map of types that inherit from this mappedSuperclass */
+    protected Map<Class, IdentifiableTypeImpl> inheritingTypes;
+    
     protected MappedSuperclassTypeImpl(Class<?> object, MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
         this(metamodel, relationalDescriptor);
     }
 
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {        
         super(metamodel, relationalDescriptor);
+        inheritingTypes = new HashMap<Class, IdentifiableTypeImpl>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
+    }
+    
+    /**
+     * INTERNAL:
+     * Add an inheriting subclass to the map of types that inherit from this mappedSuperclass.
+     * @param identifiableType
+     */
+    protected void addInheritingType(IdentifiableTypeImpl identifiableType) {
+        if(null == inheritingTypes) {
+            inheritingTypes = new HashMap<Class, IdentifiableTypeImpl>();
+        }
+        inheritingTypes.put(identifiableType.getJavaType(), identifiableType);
     }
     
     public static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, Class object, RelationalDescriptor relationalDescriptor) {
         MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(object, metamodel, relationalDescriptor);
         return mappedSuperclassTypeImpl;
     }
+
+    /**
+     * INTERNAL:
+     *    MappedSuperclasses need special handling to get their type from an inheriting subclass.
+     *    This function determines the type for an attribute by returning the same inherited attribute from a subclass
+     * @param name
+     * @return
+     */
+    public AttributeImpl getMemberFromInheritingType(String name) {
+        AttributeImpl inheritedAttribute = null;
+        // search the inheriting types map for an attribute matching the attribute name
+        for(Iterator<IdentifiableTypeImpl> anIterator = inheritingTypes.values().iterator(); anIterator.hasNext();) {
+            IdentifiableTypeImpl inheritingType = anIterator.next();
+            if(inheritingType.members.containsKey(name)) {
+                return (AttributeImpl)inheritingType.getAttribute(name);
+            }
+        }
+        // we will return a null attribute in the case that a MappedSuperclass has no implementing entities
+        return inheritedAttribute;
+    }    
     
     /**
      *  Return the persistence type.

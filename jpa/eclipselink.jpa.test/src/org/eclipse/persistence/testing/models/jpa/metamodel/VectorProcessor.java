@@ -15,26 +15,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 @Entity(name="VectorProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
 public class VectorProcessor extends Processor implements java.io.Serializable{
-//    @Version
-//    @Column(name="VECTPROC_VERSION")
-//    private int version;
-    
     public VectorProcessor() {}
-
-/*    public int getVersion() { 
-        return version; 
-    }
-    
-    protected void setVersion(int version) {
-        this.version = version;
-    }
-*/
 }

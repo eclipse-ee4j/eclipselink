@@ -28,12 +28,19 @@
  *     07/28/2009-2.0  mobrien - 284877: implement recursive functionality for hasDeclaredAttribute()
  *       - see design issue #52
  *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_52:_20090728:_JPA_2:_Implement_recursive_ManagedType.getDeclared.2A_algorithm_to_differentiate_by_IdentifiableType
+ *     08/08/2009-2.0  mobrien - 266912: implement Collection and List separation during attribute initialization
+ *       - see design issue #58
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,8 +56,11 @@ import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -959,19 +969,21 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     
     /**
      * INTERNAL:
-     * Initialize the members of this ManagedType based on the mappings defined on the descriptor.
+     * Initialise the members of this ManagedType based on the mappings defined on the descriptor.
      * We process the appropriate Map, List, Set, Collection or Object/primitive types.<p>
-     * Initialization should occur after all types in the metamodel have been created already.
+     * Initialisation should occur after all types in the metamodel have been created already.
      * 
      */
     protected void initialize() { // TODO: Check all is*Policy() calls
         /*
-         * Design Issue 37:
-         * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_37:_20090708:_CollectionAttribute_acts_as_a_peer_of_Map.2C_Set.2C_List_but_should_be_a_super_interface 
+         * Design Issue 37 and 58:
+         * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_37:_20090708:_CollectionAttribute_acts_as_a_peer_of_Map.2C_Set.2C_List_but_should_be_a_super_interface
+         * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List 
+         * 
          *     The hierarchy of the Metamodel API has Collection alongside List, Set and Map.
          * However, in a normal Java collections framework Collection is an 
          * abstract superclass of List, Set and Map (with Map not really a Collection).
-         * We therefore need to treat Collection here as a peer of the other "collections".
+         * We therefore need to treat Collection here as a peer of the other "collections" while also treating it as a non-instantiated superclass.
          */
         this.members = new HashMap<String, Attribute<X, ?>>();
 
@@ -984,21 +996,100 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             if (mapping.isCollectionMapping()) {
                 // Handle 1:m, n:m collection mappings
                 CollectionMapping colMapping = (CollectionMapping) mapping;
-                if (colMapping.getContainerPolicy().isMapPolicy()) {
+                ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
+                if (collectionContainerPolicy.isMapPolicy()) {
                     // Handle Map type mappings
                     member = new MapAttributeImpl(this, colMapping, true);
                     // check mapping.attributeAcessor.attributeField.type=Collection
-                } else if (colMapping.getContainerPolicy().isListPolicy()) { // TODO: isListPolicy() will return true for IndirectList (a lazy Collection)                    
-                    // Handle List type mappings
-                    member = new ListAttributeImpl(this, colMapping, true);
+                } else if (collectionContainerPolicy.isListPolicy()) { 
+                    /**
+                     * Handle lazy Collections and Lists and the fact that both return an IndirectList policy.
+                     * We check the type on the attributeField of the attributeAccessor on the mapping
+                     */
+                    Class aType = null;
+                    if(colMapping.getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
+                        Field aField = ((InstanceVariableAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeField();                        
+                        // MappedSuperclasses need special handling to get their type from an inheriting subclass
+                        if(null == aField) { // MappedSuperclass field will not be set
+                            if(this.isMappedSuperclass()) {
+                                // get inheriting subtype member (without handling @override annotations)
+                                MappedSuperclassTypeImpl aMappedSuperclass = ((MappedSuperclassTypeImpl)this);
+                                AttributeImpl inheritingTypeMember = aMappedSuperclass.getMemberFromInheritingType(colMapping.getAttributeName());
+                                aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
+                                if(null == aField) {
+                                    aType = Collection.class;
+                                } else {
+                                    aType = aField.getType();
+                                }
+                            } else {
+                                aType = List.class;
+                            }                        
+                        } else {
+                            aType = aField.getType();
+                        }
+                        // This attribute is declared as List 
+                        if(aType == List.class) {                    
+                            member = new ListAttributeImpl(this, colMapping, true);
+                        } else {
+                            if(aType == Collection.class) {
+                                // This attribute is therefore declared as Collection
+                                member = new CollectionAttributeImpl(this, colMapping, true);
+                            } else {
+                                // TODO: System.out.println("_Warning: type is null on " + colMapping);
+                                member = new CollectionAttributeImpl(this, colMapping, true);
+                            }
+                        }
+                    } else {
+                        // handle variations of missing get/set methods - only for Collection vs List
+                        if(colMapping.getAttributeAccessor() instanceof MethodAttributeAccessor) {
+                            aType = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeClass();
+                            if(aType == Collection.class) {
+                                member = new CollectionAttributeImpl(this, colMapping, true);
+                            } else if(aType == List.class) {
+                                member = new ListAttributeImpl(this, colMapping, true);
+                            } else {
+                                // Type may be null when no getMethod exists for the class such as an embeddable
+                                // Here we check the returnType on the declared method on the class directly                                
+                                String getMethodName = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getGetMethodName();
+                                if(null == getMethodName) {
+                                    // default to List
+                                    member = new ListAttributeImpl(this, colMapping, true);
+                                } else {
+                                    try {
+                                        Method aMethod = this.getJavaType().getDeclaredMethod(getMethodName);
+                                        aType = aMethod.getReturnType();
+                                        if(aType == Collection.class) {
+                                            member = new CollectionAttributeImpl(this, colMapping, true);
+                                        } else if(aType == List.class) {
+                                            member = new ListAttributeImpl(this, colMapping, true);
+                                        } else {
+                                            // default to List
+                                            // TODO: System.out.println("_Warning: type is null on " + colMapping);                                            
+                                            member = new ListAttributeImpl(this, colMapping, true);
+                                        }
+                                    } catch (Exception e) {
+                                        // TODO: System.out.println("_Warning: type is null on " + colMapping);
+                                        // default to List
+                                        member = new ListAttributeImpl(this, colMapping, true);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } else {
                     // Handle Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
-                    if (colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(Set.class) ||
-                            colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(IndirectSet.class)) {
+                    if (collectionContainerPolicy.getContainerClass().isAssignableFrom(Set.class) ||
+                            collectionContainerPolicy.getContainerClass().isAssignableFrom(IndirectSet.class)) {
                         member = new SetAttributeImpl(this, colMapping, true);
                     } else {
-                        // Handle Collection type mappings as a default
-                        member = new CollectionAttributeImpl(this, colMapping, true);
+                        // Check for non-lazy Collection policy
+                        if(collectionContainerPolicy.isCollectionPolicy()) {
+                            member = new CollectionAttributeImpl(this, colMapping, true);
+                        } else {
+                            // Handle Collection type mappings as a default
+                            // TODO: System.out.println("_Warning: defaulting to non-Set specific Collection type on " + colMapping);
+                            member = new CollectionAttributeImpl(this, colMapping, true);
+                        }
                     }
                 }
             } else {

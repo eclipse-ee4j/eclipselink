@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
 public abstract class Corporation extends Person {
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    // Internally processed as a @ManyToMany because it is on a MappedSuperclass
     @OneToMany(cascade=ALL)//, mappedBy="corporation")
     //@JoinColumn(name="CORP_COMPUTERS")
     private Collection<Computer> corporateComputers = new HashSet<Computer>();

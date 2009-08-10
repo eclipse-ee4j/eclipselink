@@ -15,25 +15,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 @Entity(name="ArrayProcessorMetamodel")
 @Table(name="CMP3_MM_ARRAYPROC")
 public class ArrayProcessor extends Processor implements java.io.Serializable{
-//    @Version
-//    @Column(name="ARRAYPROC_VERSION")
-//    private int version;
-
     public ArrayProcessor() {}
-
-/*    public int getVersion() { 
-        return version; 
-    }
-    
-    protected void setVersion(int version) {
-        this.version = version;
-    }*/
 }

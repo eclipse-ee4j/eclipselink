@@ -34,6 +34,7 @@ public abstract class Designer extends Person {
     // Verify special handling for PK for OneToMany (custom descriptor with fake PK name)
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     // However, bidirectional relationships are not allowed to MappedSuperclasses - as they have no identity
+    // This @OneToMany implements internally as a @ManyToMany
     @OneToMany(fetch=EAGER, cascade=ALL)
     @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
                 joinColumns = @JoinColumn(name="PERSON_ID"))   
