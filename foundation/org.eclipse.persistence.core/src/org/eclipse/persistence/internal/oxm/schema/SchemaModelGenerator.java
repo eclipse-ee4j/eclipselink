@@ -600,7 +600,7 @@ public class SchemaModelGenerator {
             // do nothing;
             return;
         }
-        
+
         // Handle ID
         boolean isPk = isFragPrimaryKey(frag, mapping);
         String schemaTypeString = null;
@@ -619,22 +619,25 @@ public class SchemaModelGenerator {
                 return;
             }
         }
-        
+
         if (frag.isAttribute()) {
             Attribute attr = buildAttribute(mapping, schemaTypeString);
             ct.getOrderedAttributes().add(attr);
         } else {
-        	seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
-        	frag = getTargetXPathFragment(frag);
-    	
-    		Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
+            seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
+            frag = getTargetXPathFragment(frag);
+
+            Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
             if (elem == null) {
-            	if (frag.getNamespaceURI() != null) {
-            		elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
-            	} else {
-		            elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
-            	}
-	            seq.addElement(elem);
+                if (frag.getNamespaceURI() != null) {
+                    elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+                } else {
+                    elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
+                }
+                if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+                    elem.setNillable(true);
+                }
+                seq.addElement(elem);
             }
         }
     }
@@ -676,6 +679,11 @@ public class SchemaModelGenerator {
                 element = buildElement(frag, schemaTypeString, Occurs.ZERO, Occurs.UNBOUNDED);
             }
         }
+        
+        if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+            element.setNillable(true);
+        }
+        
         seq.addElement(element);
     }
 
@@ -721,6 +729,15 @@ public class SchemaModelGenerator {
         	// set an anonymous complex type
             element.setComplexType(ctype);
         }
+        
+        boolean isNillable = false;
+        if (!collection) {
+            isNillable = ((XMLCompositeObjectMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
+        } else {
+            isNillable = ((XMLCompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();            
+        }
+        element.setNillable(isNillable);
+        
         seq.addElement(element);
     }
 
