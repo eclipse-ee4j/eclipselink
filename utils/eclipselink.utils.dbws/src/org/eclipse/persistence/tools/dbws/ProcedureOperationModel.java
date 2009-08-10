@@ -68,6 +68,7 @@ public class ProcedureOperationModel extends OperationModel {
     protected String procedurePattern;
     protected int overload; // Oracle-specific
     protected SqlTypeWithMethods typ; // cache JPub description of operation
+    protected boolean isAdvancedJDBC = false;
 
     public ProcedureOperationModel() {
         super();
@@ -114,6 +115,13 @@ public class ProcedureOperationModel extends OperationModel {
     @Override
     public boolean isProcedureOperation() {
         return true;
+    }
+
+    public boolean isAdvancedJDBCProcedureOperation() {
+        return isAdvancedJDBC;
+    }
+    public void setIsAdvancedJDBCProcedureOperation(boolean isAdvancedJDBC) {
+        this.isAdvancedJDBC = isAdvancedJDBC;
     }
 
     public boolean isPLSQLProcedureOperation() {

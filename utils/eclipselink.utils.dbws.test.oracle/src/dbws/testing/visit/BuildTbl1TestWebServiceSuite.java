@@ -71,6 +71,7 @@ public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements
         builder.setTargetNamespace(ADVJDBC_BUILD_TBL1_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName(ADVJDBC_BUILD_TBL1_TEST);
+        pModel.setIsAdvancedJDBCProcedureOperation(true);
         pModel.setCatalogPattern(ADVJDBC_TOPLEVEL_PACKAGE_NAME);
         pModel.setProcedurePattern(ADVJDBC_BUILD_TBL1);
         pModel.setReturnType("somepackage_tbl1Type");

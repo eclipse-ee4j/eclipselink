@@ -71,6 +71,7 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
         builder.setTargetNamespace(ADVJDBC_BUILD_EMPARRAY_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName(ADVJDBC_BUILD_EMPARRAY_TEST);
+        pModel.setIsAdvancedJDBCProcedureOperation(true);
         pModel.setCatalogPattern(ADVJDBC_ANOTHER_PACKAGE_NAME);
         pModel.setProcedurePattern(ADVJDBC_BUILD_EMPARRAY);
         pModel.setReturnType("emp_info_arrayType");

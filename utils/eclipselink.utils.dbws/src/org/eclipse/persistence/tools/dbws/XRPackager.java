@@ -219,9 +219,9 @@ public class XRPackager implements DBWSPackager {
         orSessionConfig.setName(projectName + "-" + DBWS_OR_SESSION_NAME_SUFFIX);
         ProjectConfig orProjectConfig = builder.buildORProjectConfig();
         orSessionConfig.setPrimaryProject(orProjectConfig);
-            String orSessionCustomizerClassName = builder.getOrSessionCustomizerClassName();
-            if (orSessionCustomizerClassName != null && !"".equals(orSessionCustomizerClassName)) {
-                orSessionConfig.setSessionCustomizerClass(orSessionCustomizerClassName);
+        String orSessionCustomizerClassName = builder.getOrSessionCustomizerClassName();
+        if (orSessionCustomizerClassName != null && !"".equals(orSessionCustomizerClassName)) {
+            orSessionConfig.setSessionCustomizerClass(orSessionCustomizerClassName);
         }
         DatabaseLoginConfig dlc = new DatabaseLoginConfig();
         dlc.setBindAllParameters(true);

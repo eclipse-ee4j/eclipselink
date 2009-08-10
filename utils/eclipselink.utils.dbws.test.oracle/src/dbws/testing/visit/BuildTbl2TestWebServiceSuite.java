@@ -73,6 +73,7 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
         builder.setTargetNamespace(ADVJDBC_BUILD_TBL2_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName(ADVJDBC_BUILD_TBL2_TEST);
+        pModel.setIsAdvancedJDBCProcedureOperation(true);
         pModel.setCatalogPattern(ADVJDBC_TOPLEVEL_PACKAGE_NAME);
         pModel.setProcedurePattern(ADVJDBC_BUILD_TBL2);
         pModel.setReturnType("somepackage_tbl2Type");

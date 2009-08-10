@@ -275,6 +275,13 @@ public class DBWSBuilderModelProject extends Project {
         procedurePatternMapping.setXPath("@procedurePattern");
         descriptor.addMapping(procedurePatternMapping);
 
+        XMLDirectMapping isAdvancedJDBCMapping = new XMLDirectMapping();
+        isAdvancedJDBCMapping.setAttributeName("isAdvancedJDBC");
+        isAdvancedJDBCMapping.setConverter(converter);
+        isAdvancedJDBCMapping.setNullValue(Boolean.FALSE);
+        isAdvancedJDBCMapping.setXPath("@isAdvancedJDBC");
+        descriptor.addMapping(isAdvancedJDBCMapping);
+
         return descriptor;
     }
     protected ClassDescriptor buildPLSQLProcedureOperationModelDescriptor() {

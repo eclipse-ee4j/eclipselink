@@ -71,6 +71,7 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
         builder.setTargetNamespace(ADVJDBC_ECHO_EMPOBJECT_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName(ADVJDBC_ECHO_EMPOBJECT_TEST);
+        pModel.setIsAdvancedJDBCProcedureOperation(true);
         pModel.setCatalogPattern(ADVJDBC_PACKAGE_NAME);
         pModel.setProcedurePattern(ADVJDBC_ECHO_EMPOBJECT);
         pModel.setReturnType("emp_objectType");

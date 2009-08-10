@@ -72,6 +72,7 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
         builder.setTargetNamespace(ADVJDBC_BUILD_CRECORD_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName(ADVJDBC_BUILD_CRECORD_TEST);
+        pModel.setIsAdvancedJDBCProcedureOperation(true);
         pModel.setCatalogPattern(ADVJDBC_TOPLEVEL_PACKAGE_NAME);
         pModel.setProcedurePattern(ADVJDBC_BUILD_CRECORD);
         pModel.setReturnType("somepackage_crecordType");

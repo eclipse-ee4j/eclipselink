@@ -57,7 +57,7 @@ import static org.junit.Assert.assertTrue;
 
 import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
-public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
+public class TopLevelPLSQLStoredProcedureTestSuite extends BuilderTestSuite {
 
     public static String DBWS_BUILDER_XML_USERNAME =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -74,10 +74,10 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
             "<property name=\"driver\">oracle.jdbc.OracleDriver</property>" +
             "<property name=\"platformClassname\">org.eclipse.persistence.platform.database.oracle.Oracle11Platform</property>" +
         "</properties>" +
-        "<procedure " +
-           "name=\"testEcho\" " +
-           "procedurePattern=\"TESTECHO\" " +
-           "isSimpleXMLFormat=\"true\" " +
+        "<plsql-procedure " +
+           "name=\"testBoolean\" " +
+           "catalogPattern=\"TOPLEVEL\" " +
+           "procedurePattern=\"BOOL_IN_TEST\" " +
         "/>" +
       "</dbws-builder>";
     
@@ -85,6 +85,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
     public static DBWSBuilder builder = new DBWSBuilder();
     public static XRServiceAdapter xrService = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_SESSIONS_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
@@ -113,7 +114,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
         xrPackager.setSessionsFileName(builder.getSessionsFileName());
         xrPackager.setDBWSBuilder(builder);
         builder.setPackager(xrPackager);
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+        builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSIONS_STREAM, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
             DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
             null);
         XRServiceFactory factory = new XRServiceFactory() {
@@ -182,24 +183,24 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
     }
 
     @Test
-    public void testEcho() {
-        Invocation invocation = new Invocation("testEcho");
-        invocation.setParameter("T", "Hello");
+    public void testBoolean() {
+        Invocation invocation = new Invocation("testBoolean");
+        invocation.setParameter("X", Integer.valueOf(1));
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(TEST_ECHO_RESULT));
+        Document controlDoc = xmlParser.parse(new StringReader(TEST_BOOLEAN_RESULT));
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
-    public static final String TEST_ECHO_RESULT =
+    public static final String TEST_BOOLEAN_RESULT =
       "<?xml version = '1.0' encoding = 'UTF-8'?>" +
       "<simple-xml-format>" +
          "<simple-xml>" +
-            "<result>test-Hello</result>" +
+            "<result>1</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
 }

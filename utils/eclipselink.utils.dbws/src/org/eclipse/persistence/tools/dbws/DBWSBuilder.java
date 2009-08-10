@@ -612,7 +612,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     protected List<DbStoredProcedure> loadProcedures(ProcedureOperationModel procedureModel,
         boolean isOracle) {
-        if (isOracle) { // use OracleHelper
+        if (isOracle && (procedureModel.isPLSQLProcedureOperation() || procedureModel.isAdvancedJDBC)) { // use OracleHelper
             return OracleHelper.buildStoredProcedure(getConnection(), getUsername(), databasePlatform,
                 procedureModel);
         }
@@ -1072,11 +1072,37 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
-            if (!(oxProject instanceof SimpleXMLFormatProject)) {
+            if (dbTables.size() > 0) {
                 writeOXProject = true;
             }
-            else if (oxProject.getOrderedDescriptors().size() > 1) {
-                    writeOXProject = true;
+            else if (dbStoredProcedures.size() > 0) {
+                for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
+                    for (DbStoredArgument storedArgument : storedProcedure.getArguments()) {
+                        if (storedArgument instanceof PLSQLStoredArgument) {
+                            writeOXProject = true;
+                            break;
+                        }
+                    }
+                    if (writeOXProject) {
+                        break;
+                    }
+                }
+                if (!writeOXProject) {
+                    // check for any named queries - SimpleXMLFormatProject's sometimes need them
+                    if (orProject.getQueries().size() > 0) {
+                        writeOXProject = true;
+                    }
+                    // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
+                    else if (orProject.getDescriptors().size() > 0) {
+                        Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
+                        for (ClassDescriptor desc : descriptors) {
+                            if (desc.isObjectRelationalDataTypeDescriptor()) {
+                                writeOXProject = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             if (writeOXProject) {
                 XMLContext context = new XMLContext(new ObjectPersistenceWorkbenchXMLProject());
@@ -1380,8 +1406,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
             if (!useProjectXML) {
+                // check for any named queries - SimpleXMLFormatProject's sometimes need them
+                if (orProject.getQueries().size() > 0) {
+                    useProjectXML = true;
+                }
                 // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-                if (orProject.getDescriptors().size() > 0) {
+                else if (orProject.getDescriptors().size() > 0) {
                     Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                     for (ClassDescriptor desc : descriptors) {
                         if (desc.isObjectRelationalDataTypeDescriptor()) {
@@ -1391,7 +1421,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                 }
             }
-        }        
+        }
         if (useProjectXML) {
             orProjectConfig = new ProjectXMLConfig();
             String pathPrefix = packager.getOrProjectPathPrefix();
@@ -1425,8 +1455,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
             if (!useProjectXML) {
+                // check for any named queries - SimpleXMLFormatProject's sometimes need them
+                if (orProject.getQueries().size() > 0) {
+                    useProjectXML = true;
+                }
                 // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-                if (orProject.getDescriptors().size() > 0) {
+                else if (orProject.getDescriptors().size() > 0) {
                     Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                     for (ClassDescriptor desc : descriptors) {
                         if (desc.isObjectRelationalDataTypeDescriptor()) {

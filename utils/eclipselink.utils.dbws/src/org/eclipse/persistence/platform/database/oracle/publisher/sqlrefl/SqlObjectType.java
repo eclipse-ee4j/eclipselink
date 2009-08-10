@@ -68,7 +68,13 @@ public class SqlObjectType extends SqlTypeWithMethods {
      * <p/>
      */
     public boolean isObject() {
-        return true;
+        // special case BOOLEAN - not really a SqlObjectType
+        if ("BOOLEAN".equals(m_name.getSimpleName())) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public void setFields(List<AttributeField> fields) {

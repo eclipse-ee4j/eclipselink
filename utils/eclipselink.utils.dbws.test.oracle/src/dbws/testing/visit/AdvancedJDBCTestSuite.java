@@ -238,8 +238,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     "<xsd:schema targetNamespace=\"urn:struct1\" xmlns=\"urn:struct1\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
         "<xsd:complexType name=\"regionType\">" +
            "<xsd:sequence>" +
-              "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-              "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+              "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
+              "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
            "</xsd:sequence>" +
         "</xsd:complexType>" +
         "<xsd:element name=\"regionType\" type=\"regionType\"/>" +
@@ -527,16 +527,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     "<xsd:schema targetNamespace=\"urn:struct2\" xmlns=\"urn:struct2\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
        "<xsd:complexType name=\"emp_addressType\">" +
           "<xsd:sequence>" +
-             "<xsd:element name=\"street\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"suburb\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
              "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"postcode\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
           "</xsd:sequence>" +
        "</xsd:complexType>" +
        "<xsd:complexType name=\"regionType\">" +
           "<xsd:sequence>" +
-             "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
           "</xsd:sequence>" +
        "</xsd:complexType>" +
        "<xsd:element name=\"emp_addressType\" type=\"emp_addressType\"/>" +
@@ -1030,24 +1030,24 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:struct3\" xmlns=\"urn:struct3\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"emp_addressType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"street\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"suburb\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
                  "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"postcode\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"emp_objectType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"employee_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"employee_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
                  "<xsd:element name=\"address\" type=\"emp_addressType\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"employee_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"date_of_hire\" type=\"xsd:date\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"employee_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"date_of_hire\" type=\"xsd:date\" nillable=\"true\" minOccurs=\"0\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"regionType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"emp_objectType\" type=\"emp_objectType\"/>" +
@@ -1302,8 +1302,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:empArray\" xmlns=\"urn:empArray\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"emp_infoType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"emp_info_arrayType\">" +
@@ -1464,7 +1464,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:tbl1\" elementFormDefault=\"qualified\" targetNamespace=\"urn:tbl1\">" +
             "<xsd:complexType name=\"somepackage_tbl1Type\">" +
                 "<xsd:sequence>" +
-                    "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+                    "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
                 "</xsd:sequence>" +
             "</xsd:complexType>" +
             "<xsd:element name=\"somepackage_tbl1Type\" type=\"somepackage_tbl1Type\"/>" +
@@ -1616,7 +1616,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:tbl5\" xmlns=\"urn:tbl5\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"somepackage_tbl5Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:date\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_tbl5Type\" type=\"somepackage_tbl5Type\"/>" +
@@ -1960,7 +1960,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:aRecord\" xmlns=\"urn:aRecord\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"somepackage_tbl2Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_arecordType\">" +
@@ -1968,23 +1968,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<xsd:element name=\"t1\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                          "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
                  "<xsd:element name=\"t2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                          "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
-                 "<xsd:element name=\"t3\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"t3\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl1Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
@@ -2401,7 +2401,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<xsd:element name=\"c2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
@@ -2409,7 +2409,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl2Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_arecordType\">" +
@@ -2417,23 +2417,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<xsd:element name=\"t1\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
                  "<xsd:element name=\"t2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
-                 "<xsd:element minOccurs=\"0\" name=\"t3\" type=\"xsd:integer\"/>" +
+                 "<xsd:element minOccurs=\"0\" name=\"t3\" nillable=\"true\" type=\"xsd:integer\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl1Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_crecordType\" type=\"somepackage_crecordType\"/>" +
