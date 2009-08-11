@@ -220,9 +220,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             // The Map key may be a generic itself, or just the class value.
             String type = descriptor.getGenericType(m_genericType.get(2));
             if (type != null) {
-                return getMetadataFactory().getClassMetadata(type);
+                return getMetadataFactory().getMetadataClass(type);
             }
-            return getMetadataFactory().getClassMetadata(m_genericType.get(1));
+            return getMetadataFactory().getMetadataClass(m_genericType.get(1));
         } else {
             return null;
         }
@@ -263,11 +263,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (isGenericType()) {
                 String type = descriptor.getGenericType(getGenericType().get(0));
                 if (type == null) {
-                    return getMetadataFactory().getClassMetadata("java.lang.String");
+                    return getMetadataFactory().getMetadataClass("java.lang.String");
                 }
-                return getMetadataFactory().getClassMetadata(type);
+                return getMetadataFactory().getMetadataClass(type);
             }
-            return getMetadataFactory().getClassMetadata(getType());
+            return getMetadataFactory().getMetadataClass(getType());
         }
         
         return m_rawClass;    
@@ -310,7 +310,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
             }            
-            MetadataClass metadataClass = getMetadataFactory().getClassMetadata(elementClass);
+            MetadataClass metadataClass = getMetadataFactory().getMetadataClass(elementClass);
             // 266912: We do not currently handle resolution of the parameterized 
             // generic type when the accessor is a MappedSuperclass elementClass 
             // will be null in this case so a lookup of the metadataClass will 

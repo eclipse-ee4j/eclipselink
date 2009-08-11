@@ -304,7 +304,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         // Make sure the entityListenerClass is initialized (default listeners
         // are cloned and m_entityListenerClass may be null)
         if (m_entityListenerClass == null) {
-            m_entityListenerClass = getMetadataFactory().getClassMetadata(m_className);
+            m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
         
         // Initialize the listener class (reload the listener class)

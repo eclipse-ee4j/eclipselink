@@ -151,7 +151,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     @Override
     public MetadataClass getReferenceClass() {
         MetadataClass cls = getReferenceClassFromGeneric();
-        return (cls == null) ? getMetadataFactory().getClassMetadata(void.class.getName()) : cls;
+        return (cls == null) ? getMetadataFactory().getMetadataClass(void.class.getName()) : cls;
     }
     
     /**

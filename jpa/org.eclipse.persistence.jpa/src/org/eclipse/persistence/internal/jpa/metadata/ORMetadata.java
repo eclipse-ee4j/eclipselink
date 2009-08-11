@@ -132,7 +132,7 @@ public abstract class ORMetadata {
      * Return the MetadataClass for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
-        return getMetadataFactory().getClassMetadata(className);
+        return getMetadataFactory().getMetadataClass(className);
     }
 
     /**
@@ -243,7 +243,7 @@ public abstract class ORMetadata {
      * here is that an entity mappings object will be available. 
      */
     protected MetadataClass initXMLClassName(String className) {
-        return getMetadataFactory().getClassMetadata(getEntityMappings().getFullClassName(className));
+        return getMetadataFactory().getMetadataClass(getEntityMappings().getFullClassName(className));
     }
     
     /**

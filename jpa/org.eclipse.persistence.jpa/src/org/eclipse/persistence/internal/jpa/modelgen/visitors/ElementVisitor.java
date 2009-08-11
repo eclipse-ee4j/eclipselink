@@ -189,7 +189,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         // Visit the enclosed elements.
         for (Element enclosedElement : typeElement.getEnclosedElements()) {
             if (enclosedElement.getKind().isClass()) {
-                metadataClass.addEnclosedClass(factory.getClassMetadata(enclosedElement));
+                metadataClass.addEnclosedClass(factory.getMetadataClass(enclosedElement));
             } else {
                 enclosedElement.accept(this, metadataClass);
             }
@@ -197,13 +197,13 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         
         // Add the interfaces.
         for (TypeMirror interfaceCls : typeElement.getInterfaces()) {
-            metadataClass.addInterface(factory.getClassMetadata(interfaceCls).getName());
+            metadataClass.addInterface(factory.getMetadataClass(interfaceCls).getName());
         }
         
         // Set the superclass name (if there is one) 
         TypeMirror superclass = typeElement.getSuperclass();
         if (superclass != null) {
-            metadataClass.setSuperclassName(factory.getClassMetadata(superclass).getName());
+            metadataClass.setSuperclassName(factory.getMetadataClass(superclass).getName());
         }
         
         // Visit the type element for type and generic type.
@@ -233,7 +233,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
     public MetadataField visitVariable(VariableElement variableElement, MetadataClass metadataClass) {
         MetadataField field = new MetadataField(metadataClass.getMetadataFactory());
         
-        // Set the name
+        // Set the name.
         field.setName(variableElement.getSimpleName().toString());
         
         // Set the attribute name (same as name in this case)
@@ -243,7 +243,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         TypeVisitor<MetadataField, MetadataField> visitor = new TypeVisitor<MetadataField, MetadataField>(m_processingEnv);
         variableElement.asType().accept(visitor, field);
         
-        // Set the modifiers
+        // Set the modifiers.
         field.setModifiers(getModifiers(variableElement.getModifiers()));
 
         // Set the annotations.

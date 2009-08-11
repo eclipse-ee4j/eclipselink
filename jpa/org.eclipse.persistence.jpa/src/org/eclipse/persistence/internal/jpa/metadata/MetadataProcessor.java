@@ -51,6 +51,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 
@@ -260,7 +261,7 @@ public class MetadataProcessor {
         // contents with an existing accessor and we only want that to happen 
         // in the XML case.
         for (String className : classNames) {
-            MetadataClass candidateClass = m_factory.getClassMetadata(className);
+            MetadataClass candidateClass = m_factory.getMetadataClass(className);
             // Bug 227630: Do not process a null class whether it was from a 
             // NPE or a CNF, a warning or exception is thrown in loadClass() 
             if (candidateClass != null) {
@@ -420,7 +421,7 @@ public class MetadataProcessor {
      * Note: Do not change the order of invocation of various methods.
      */
     public void processEntityMappings() {
-        m_factory = new MetadataFactory(m_project.getLogger(), m_loader);
+        m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
         
         // 1 - Process persistence unit meta data/defaults defined in ORM XML 
         // instance documents in the persistence unit. If multiple conflicting 

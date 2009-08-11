@@ -247,10 +247,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // that were discovered.
         clearMappedSuperclassesAndInheritanceParents();
         
-        EntityAccessor lastAccessor = this;
         EntityAccessor currentAccessor = this;
         MetadataClass parent = getJavaClass().getSuperclass();
-        List<String> genericParent = getJavaClass().getGenericType();
+        List<String> genericTypes = getJavaClass().getGenericType();
+        
+        // We keep a list of potential subclass accessors to ensure they 
+        // have their root parent descriptor set correctly.
         List<EntityAccessor> subclassAccessors = new ArrayList<EntityAccessor>();
         subclassAccessors.add(currentAccessor);
         
@@ -263,9 +265,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     // Set the immediate parent's descriptor to the current descriptor.
                     currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
                 
-                    // Remember the last accessor first ...
-                    lastAccessor = currentAccessor;
-                    // ... now, update the current accessor.
+                    // Update the current accessor.
                     currentAccessor = parentAccessor;
                 
                     // Clear out any previous mapped superclasses and inheritance 
@@ -291,7 +291,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericParent, parent, lastAccessor.getDescriptor());                
+                    currentAccessor.resolveGenericTypes(genericTypes, parent);                
                 } else {
                     if (discoverMappedSuperclasses) {
                         // Might be a mapped superclass, check and add as needed.
@@ -300,16 +300,16 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericParent, parent, currentAccessor.getDescriptor());
+                    currentAccessor.resolveGenericTypes(genericTypes, parent);
                 }
             
                 // Get the next parent and keep processing ...
-                genericParent = parent.getGenericType();
+                genericTypes = parent.getGenericType();
                 parent = parent.getSuperclass();
             }
         } else {
             // Resolve any generic types we have (we may be an inheritance root).
-            currentAccessor.resolveGenericTypes(genericParent, parent, currentAccessor.getDescriptor());
+            currentAccessor.resolveGenericTypes(genericTypes, parent);
         }
         
         // Set our root descriptor of the inheritance hierarchy on all the 
@@ -1287,38 +1287,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * This method resolves generic types. Resolving generic types will be
+     * the responsibility of the metadata factory since each factory could have 
+     * its own means to do so and not respect a generic format on the metadata
+     * objects.
      */
-    protected void resolveGenericTypes(List<String> genericParent, MetadataClass parent, MetadataDescriptor subDescriptor) {
-        // If we have a generic parent we need to grab our generic types
-        // that may be used (and therefore need to be resolved) to map
-        // accessors correctly.
-        if (genericParent != null) {
-            // This classes generic map to its parent generic types,
-            // the generics also include the superclass, and interfaces.
-            // The parent generics include the type and ":" and class.
-            List<String> parentGenerics = parent.getGenericType();
-            if (parentGenerics != null) {
-                List genericParentTemp = new java.util.ArrayList(genericParent);
-                genericParentTemp.removeAll(getJavaClass().getInterfaces());
-                int size = genericParentTemp.size();
-                int parentIndex = 0;
-                for (int index = genericParent.indexOf(parent.getName()) + 1; index < size; index++) {
-                    String actualTypeArgument = genericParent.get(index);
-                    String variable = parentGenerics.get(parentIndex);
-                    parentIndex = parentIndex + 3;
-                    // We are building bottom up and need to link up
-                    // any TypeVariables with the actual class from the
-                    // originating entity.
-                    if (actualTypeArgument.length() == 1) {
-                        index++;
-                        actualTypeArgument = genericParent.get(index);
-                        getDescriptor().addGenericType(variable, getDescriptor().getGenericType(actualTypeArgument));
-                    } else {
-                        getDescriptor().addGenericType(variable, actualTypeArgument);
-                    }
-                }
-            }
-        }
+    protected void resolveGenericTypes(List<String> genericTypes, MetadataClass parent) {
+        getMetadataFactory().resolveGenericTypes(getJavaClass(), genericTypes, parent, getDescriptor());
     }
     
     /**

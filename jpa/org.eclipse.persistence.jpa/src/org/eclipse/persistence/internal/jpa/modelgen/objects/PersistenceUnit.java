@@ -81,7 +81,7 @@ public class PersistenceUnit {
         // excluding unlisted classes then add a new EntityAccessor.
         
         if (! m_project.hasEntity(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass entityClass = m_factory.getClassMetadata(element);
+            MetadataClass entityClass = m_factory.getMetadataClass(element);
             EntityAccessor entityAccessor = new EntityAccessor(entityClass.getAnnotation(Entity.class), entityClass, m_project);
             m_project.addEntityAccessor(entityAccessor);
         } 
@@ -96,7 +96,7 @@ public class PersistenceUnit {
         // If it does contain the mapped superclass accessor already and we are 
         // not excluding unlisted classes then add a new MappedSuperclassAccessor.
         if (! m_project.hasMappedSuperclass(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass mappedSuperclassClass = m_factory.getClassMetadata(element);
+            MetadataClass mappedSuperclassClass = m_factory.getMetadataClass(element);
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclassClass.getAnnotation(MappedSuperclass.class), mappedSuperclassClass, m_project);
             m_project.addMappedSuperclass(element.toString(), mappedSuperclassAccessor);
         }
@@ -111,7 +111,7 @@ public class PersistenceUnit {
         // If it does contain the mapped superclass accessor already and we are 
         // not excluding unlisted classes then add a new MappedSuperclassAccessor.
         if (! m_project.hasEmbeddable(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass embeddableClass = m_factory.getClassMetadata(element);
+            MetadataClass embeddableClass = m_factory.getMetadataClass(element);
             EmbeddableAccessor embeddableAccessor = new EmbeddableAccessor(embeddableClass.getAnnotation(Embeddable.class), embeddableClass, m_project); 
             m_project.addEmbeddableAccessor(embeddableAccessor);
         }

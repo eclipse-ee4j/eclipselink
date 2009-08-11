@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -47,6 +48,19 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
     
     /**
      * INTERNAL:
+     */
+    private String getRawClass(String type) {
+        // This seems ridiculous ... there must be API to extract just the 
+        // raw class??? Using simpleName hacks off the package ...
+        if (type.indexOf("<") > -1) {
+            return type.substring(0, type.indexOf("<"));
+        }
+        
+        return type;
+    }
+    
+    /**
+     * INTERNAL:
      * Visit a declared array field.
      */
     @Override
@@ -61,9 +75,9 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitDeclared(DeclaredType declaredType, MetadataAnnotatedElement annotatedElement) {
-        // Set the type, use the erasure.
-        annotatedElement.setType(m_processingEnv.getTypeUtils().erasure(declaredType).toString());
-        // Internally, Eclipselink also wants this.
+        // Set the type, which is the raw class.
+        annotatedElement.setType(getRawClass(declaredType.toString()));
+        // Internally, Eclipselink also wants this (raw class in the 0 position of the generic list).
         annotatedElement.addGenericType(annotatedElement.getType());
         
         for (TypeMirror typeArgument : declaredType.getTypeArguments()) {
@@ -98,7 +112,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         
         // Set the parameters.
         for (TypeMirror parameter : executableType.getParameterTypes()) {
-            method.addParameter(m_processingEnv.getTypeUtils().erasure(parameter).toString());
+            method.addParameter(getRawClass(parameter.toString()));
         }
         
         // Visit the return type (will set the type and generic types).
@@ -114,7 +128,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitNoType(NoType noType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(noType.toString());
+        annotatedElement.setType(void.class.toString());
         return annotatedElement;
     }
 
@@ -163,7 +177,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitWildcard(WildcardType wildcardType, MetadataAnnotatedElement annotatedElement) {
-        //m_processingEnv.getMessager().printMessage(Kind.NOTE, "WildcardType visit NOT IMPLEMENTED : " + wildcardType);
+        m_processingEnv.getMessager().printMessage(Kind.NOTE, "WildcardType visit NOT IMPLEMENTED : " + wildcardType);
         return null;
     }
 }

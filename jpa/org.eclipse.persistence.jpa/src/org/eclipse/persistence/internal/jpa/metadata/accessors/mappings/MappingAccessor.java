@@ -562,7 +562,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             }
             return referenceClass;
         } else {
-            return getMetadataFactory().getClassMetadata(void.class.getName());
+            return getMetadataFactory().getMetadataClass(void.class.getName());
         }
     }
     

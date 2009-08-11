@@ -172,16 +172,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
         
-        //if (getInterfaces().isEmpty()) {
-          //  return false;
-        //}
-        
         if (getInterfaces().contains(className)) {
             return true;
         }
         
         for (String interfaceName : getInterfaces()) {
-            if (getMetadataFactory().getClassMetadata(interfaceName).extendsInterface(className)) {
+            if (getMetadataFactory().getMetadataClass(interfaceName).extendsInterface(className)) {
                 return true;
             }
         }
@@ -317,7 +313,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public MetadataClass getSuperclass() {
-        return getMetadataFactory().getClassMetadata(m_superclass);
+        return getMetadataFactory().getMetadataClass(m_superclass);
     }
 
     /**

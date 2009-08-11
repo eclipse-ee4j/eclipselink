@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -22,6 +23,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -29,9 +31,8 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
 
 /**
- * The metadata factory that employs java mirrors to create MetadataClass.
- * This factory is used for Mirror elements, any JDK classes run through the
- * existing ASM factory that we use for regular metadata processing. 
+ * This metadata factory employs java mirrors to create MetadataClass and is
+ * used with the canonical model processor.
  * 
  * @author Guy Pelletier
  * @since Eclipselink 2.0
@@ -40,7 +41,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
     private ProcessingEnvironment m_processingEnv;
     private HashSet<String> m_roundElements;
     
-    private Map<String, MetadataClass> m_metadataClasses;
+    private Map<String, MetadataClass> m_metadataClassesFromElements;
 
     /**
      * INTERNAL:
@@ -54,13 +55,13 @@ public class MetadataMirrorFactory extends MetadataFactory {
     protected MetadataMirrorFactory(MetadataLogger logger, ClassLoader loader) {
         super(logger, loader);
         m_roundElements = new HashSet<String>();
-        m_metadataClasses = new HashMap<String, MetadataClass>();
+        m_metadataClassesFromElements = new HashMap<String, MetadataClass>();
     }
     
     /**
      * INTERNAL:
      */
-    protected MetadataClass buildClassMetadata(Element element) {
+    protected MetadataClass buildMetadataClass(Element element) {
         MetadataClass metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
                 
         // Kick off the visiting of elements.
@@ -69,12 +70,12 @@ public class MetadataMirrorFactory extends MetadataFactory {
             
         // The name off the metadata class is a qualified name from a type
         // element. Set this on the MetadataFactory map.
-        getMetadata().put(metadataClass.getName(), metadataClass);
+        addMetadataClass(metadataClass);
         
         // For our own safety we cache another map of metadata class keyed on 
         // the toString value the Element we built it for. This ensures we are 
         // always dealing with the correct related metadata class.
-        m_metadataClasses.put(element.toString(), metadataClass);
+        m_metadataClassesFromElements.put(element.toString(), metadataClass);
             
         return metadataClass;
     }
@@ -84,12 +85,34 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * If the adds a new element will build it and add it to our list of
      * MetadataClasses.
      */
-    public MetadataClass getClassMetadata(Element element) {
-        if (m_metadataClasses.containsKey(element.toString())) {
-            return m_metadataClasses.get(element.toString());
+    public MetadataClass getMetadataClass(Element element) {
+        if (m_metadataClassesFromElements.containsKey(element.toString())) {
+            return m_metadataClassesFromElements.get(element.toString());
         } else {
-            return buildClassMetadata(element);
+            return buildMetadataClass(element);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This assumes that every class that is accessed in the pre-process
+     * methods will have a class metadata built for them already. That is,
+     * our visitor must visit every class that the pre-process will want to
+     * look at. All return types and field types need a metadata class or
+     * else kaboom ... null pointer!
+     */
+    @Override
+    public MetadataClass getMetadataClass(String className) {
+        if (! metadataClassExists(className)) {
+            // By the time this method is called we should have built a 
+            // MetadataClass for all the model elements (and then some ... ) 
+            // which are the only classes we really care about. This is acting 
+            // like a catch all and for any jdk classes just return a 
+            // MetadataClass with the same class name.
+            addMetadataClass(new MetadataClass(this, className));
+        }
+        
+        return getMetadataClasses().get(className);
     }
     
     /**
@@ -97,23 +120,13 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * If the adds a new element will build it and add it to our list of
      * MetadataClasses.
      */
-    public MetadataClass getClassMetadata(TypeMirror typeMirror) {
+    public MetadataClass getMetadataClass(TypeMirror typeMirror) {
         Element element = m_processingEnv.getTypeUtils().asElement(typeMirror);
         
         if (element == null) {
-            // TODO: Humm ... bit of a hack? Can't explain it though. Sometimes
-            // getting a typeMirror for <none> ...
-            String name = typeMirror.toString();
-            
-            if (m_metadataClasses.containsKey(name)) {
-                return m_metadataClasses.get(name);
-            } else {
-                MetadataClass metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
-                m_metadataClasses.put(name, metadataClass);
-                return metadataClass;
-            }
+            return getMetadataClass(typeMirror.toString());
         } else {
-            return getClassMetadata(element);
+            return getMetadataClass(element);
         }
     }
     
@@ -146,9 +159,18 @@ public class MetadataMirrorFactory extends MetadataFactory {
             // Ignore generated classes, we are not going to visit them
             // or do anything with them at this point.
             if (! element.getSimpleName().toString().endsWith("_")) {
-                m_roundElements.add(buildClassMetadata(element).getName());
+                m_roundElements.add(buildMetadataClass(element).getName());
             }
         }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
+        // TODO does nothing right now and will fail.
+        // This method is called during pre-process stage.
     }
 }
 
