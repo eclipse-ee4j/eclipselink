@@ -1,9 +1,8 @@
 @REM User MUST set DRIVER_CLASSPATH to point to their desired driver jar(s), such as JDBC and J2C.  For example:
-@REM DRIVER_CLASSPATH=/eclipselink/product/10.1.0/db/jdbc/lib/ojdbc14.jar;/eclipselink/product/10.1.0/j2c/lib/aqapi.jar
+@REM DRIVER_CLASSPATH=c:\some_dir\jdbc\ojdbc14.jar;c:\some_other_dir\j2c\aqapi.jar
 @REM 
 @REM Note: DRIVER_CLASSPATH should NOT contain any classes for your persistent business objects - these are 
 @REM configured in the Mapping Workbench project.
-set DRIVER_CLASSPATH=
 
 @REM User MUST set JAVA_HOME to point a supported JRE. If none
 @REM is provided for INSTALL_JAVA_HOME then the system JAVA_HOME
