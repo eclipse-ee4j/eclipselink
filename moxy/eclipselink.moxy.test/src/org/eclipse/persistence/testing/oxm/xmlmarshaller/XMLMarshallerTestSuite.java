@@ -18,6 +18,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas.SetSchemasTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas.SetXmlSchemaTestCases;
+import org.eclipse.persistence.testing.oxm.xmlmarshaller.stax.UnmarshalLevelTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.structureValidation.StructureValidationTestSuite;
 
 public class XMLMarshallerTestSuite extends TestCase {
@@ -46,6 +47,7 @@ public class XMLMarshallerTestSuite extends TestCase {
         suite.addTestSuite(XMLContextConstructorUsingXMLSessionConfigLoader.class);
         suite.addTestSuite(XMLContextStoreXMLDescriptorSimpleType.class);
         suite.addTestSuite(UnmarshalChildElementNSTestCases.class);
+        suite.addTestSuite(UnmarshalLevelTestCases.class);
         return suite;
     }
 

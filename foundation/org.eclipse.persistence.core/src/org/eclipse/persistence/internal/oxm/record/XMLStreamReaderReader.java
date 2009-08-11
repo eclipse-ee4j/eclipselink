@@ -40,6 +40,7 @@ public class XMLStreamReaderReader extends XMLReader {
     private ContentHandler contentHandler;
     private LexicalHandler lexicalHandler;
     private ErrorHandler errorHandler;
+    private int depth = 0;
 
     public XMLStreamReaderReader() {
     }
@@ -123,10 +124,12 @@ public class XMLStreamReaderReader extends XMLReader {
                 break;
             }
             case XMLStreamReader.END_DOCUMENT: {
+                depth--;
                 getContentHandler().endDocument();
                 return;
             }
             case XMLStreamReader.END_ELEMENT: {
+                depth--;
                 String prefix = xmlStreamReader.getPrefix();
                 if(null == prefix || EMPTY_STRING.equals(prefix)) {
                     getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName());                    
@@ -157,10 +160,12 @@ public class XMLStreamReaderReader extends XMLReader {
                 break;
             }
             case XMLStreamReader.START_DOCUMENT: {
+                depth++;
                 getContentHandler().startDocument();
                 break;
             }
             case XMLStreamReader.START_ELEMENT: {
+                depth++;
                 String prefix = xmlStreamReader.getPrefix();
                 if(null == prefix || EMPTY_STRING.equals(prefix)) {
                     getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
@@ -171,7 +176,7 @@ public class XMLStreamReaderReader extends XMLReader {
             }
         }
         try {
-            if(xmlStreamReader.hasNext()) {
+            if(depth > 0 && xmlStreamReader.hasNext()) {
                 xmlStreamReader.next();
                 parse(xmlStreamReader);
             }
