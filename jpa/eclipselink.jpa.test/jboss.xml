@@ -75,7 +75,6 @@
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@username@" value="${db.user}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@password@" value="${db.pwd}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@url@" value="${db.url}"/>
-        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@oci-url@" value="${db.oci.url}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@driverclass@" value="${db.driver}"/>
     </target>
 

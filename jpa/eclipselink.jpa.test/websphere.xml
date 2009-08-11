@@ -39,12 +39,6 @@
     <property file="${user.home}/websphere.properties"/>
     <property file="./websphere.properties"/>
 
-    <condition property="is.oci">
-            <and>
-                <isset property="db.oci.url"/>
-                <contains string="${db.oci.url}" substring="oci"/>
-            </and>
-    </condition>
     <!-- This copy junit.jar to WebSphere server lib/ext. -->
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
@@ -79,25 +73,7 @@
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
               <arg line="-lang jython -f ${was.home}/bin/configWebSphere.py"/>
         </exec>
-        <antcall target="config-oci-datasource" inheritRefs="true"/>
     </target>
-
-    <!-- Config OCI DataSource On WLS -->
-    <target name="config-oci-datasource" if="is.oci">
-        <echo message="*****Config WebSphere Server OCI DataSource*****"/>
-        <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere_oci.py" tofile="${was.home}/bin/configWebSphere_oci.py"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%oracleDriver%%" value="${jdbc.driver.jar}"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%hostName%%" value="${instance.host}"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%dbUser%%" value="${db.user}"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%dbPassword%%" value="${db.pwd}"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%dbURL_OCI%%" value="${db.oci.url}"/>
-        <replace file="${was.home}/bin/configWebSphere_oci.py" token="%%eclipselinkLibDir%%" value="${eclipselink.jar.dir}"/>
-        <sleep seconds="20"/>
-        <exec executable="${was.home}/bin/wsadmin.${suffix}">
-              <arg line="-lang jython -f ${was.home}/bin/configWebSphere_oci.py"/>
-        </exec>
-    </target>
-
 
     <!-- websphere-setup removes and recreates datasource and shared library, so we don't need to do anything in websphere-reset. -->
     <target name="websphere-reset">

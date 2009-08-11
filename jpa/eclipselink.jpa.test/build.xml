@@ -129,15 +129,6 @@
                 <isset property="is.jboss"/>
             </not>
         </condition>
-
-        <condition property="OCI_DS_NAME" value="java:/EclipseLinkDS_OCI">
-            <contains string="${server.name}" substring="jboss"/>
-        </condition>
-        <condition property="OCI_DS_NAME" value="jdbc/EclipseLinkDS_OCI">
-            <not>
-                <isset property="is.jboss"/>
-            </not>
-        </condition>
     </target>
 
     <!-- Configures paths for trunk checkout. -->
@@ -524,7 +515,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
-            <param name="DB_URL" value="${db.oci.url}"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
     </target>
 
@@ -1106,9 +1097,6 @@
             <include name="*.xml"/>
         </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
-            <include name="*.xml"/>
-        </replace>
-        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%oci-data-source-name%%' value="${OCI_DS_NAME}">
             <include name="*.xml"/>
         </replace>
 
