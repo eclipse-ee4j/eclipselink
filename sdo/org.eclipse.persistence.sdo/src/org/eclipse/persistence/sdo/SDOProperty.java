@@ -633,9 +633,8 @@ public class SDOProperty implements Property, Serializable {
         mapping.setMimeTypePolicy(mimeTypePolicy);
         mapping.setXPath(xpath);
 
-        if (getXsdType() != null) {
-            ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        }
+        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        
         if (shouldAddInstanceClassConverter()) {
             InstanceClassConverter converter = new InstanceClassConverter();
             converter.setCustomClass(getType().getInstanceClass());
@@ -657,9 +656,8 @@ public class SDOProperty implements Property, Serializable {
         mapping.setMimeTypePolicy(mimeTypePolicy);
         mapping.setXPath(xpath);
 
-        if (getXsdType() != null) {
-            ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        }
+        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+
         if (shouldAddInstanceClassConverter()) {
             InstanceClassConverter converter = new InstanceClassConverter();
             converter.setCustomClass(getType().getInstanceClass());

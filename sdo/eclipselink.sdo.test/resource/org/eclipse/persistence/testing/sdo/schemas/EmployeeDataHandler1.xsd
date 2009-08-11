@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" sdoJava:package="defaultPackage" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:element name="employeeType" type="EmployeeType"/>
+   <xsd:complexType name="EmployeeType">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="photo" type="base64Binary-DataHandler" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="javax.activation.DataHandler">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+</xsd:schema>
