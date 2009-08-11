@@ -109,14 +109,19 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (value instanceof Node) {
             marshalRecord.node((org.w3c.dom.Node)value, namespaceResolver);
         }
+        return true;
     }
 
     public XMLFragmentCollectionMapping getMapping() {
         return xmlFragmentCollectionMapping;
+    }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
     }
 
 }

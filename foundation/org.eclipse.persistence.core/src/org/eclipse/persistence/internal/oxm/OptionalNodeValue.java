@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -41,7 +42,12 @@ public class OptionalNodeValue extends NodeValue {
     	// We are only supporting direct marshalling for now
    		return false;
     }
-    
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        // We are only supporting direct marshalling for now
+        return false;
+    }
+
     /**
      * During an unmarshal event we output an empty array for a null value
      */

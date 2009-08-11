@@ -61,8 +61,12 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         if (xmlFragmentMapping.isReadOnly()) {
             return false;
         }
-        marshalRecord.openStartGroupingElements(namespaceResolver);
         Object attributeValue = marshalContext.getAttributeValue(object, xmlFragmentMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, attributeValue, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object attributeValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        marshalRecord.openStartGroupingElements(namespaceResolver);
         if (!(attributeValue instanceof Node)) {
             return false;
         }

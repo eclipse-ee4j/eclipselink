@@ -61,6 +61,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     protected ContainerPolicy containerPolicy; // type of container used to hold the aggregate objects
     private static final String SPACE = " ";
     private boolean usesSingleNode;
+    private boolean reuseContainer;
 
     /**
      * PUBLIC:
@@ -349,6 +350,24 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     public boolean isCollectionMapping() {
         return true;
+    }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
     }
 
 }

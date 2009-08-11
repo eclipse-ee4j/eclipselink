@@ -94,12 +94,15 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if (xmlCompositeObjectMapping.isReadOnly()) {
             return false;
         }
+        Object objectValue = marshalContext.getAttributeValue(object, xmlCompositeObjectMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
 
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xPathFragment.hasLeafElementType()) {
             marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
         }
-        Object objectValue = marshalContext.getAttributeValue(object, xmlCompositeObjectMapping);
-              
+
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlCompositeObjectMapping.getConverter() != null) {
             Converter converter = xmlCompositeObjectMapping.getConverter();

@@ -78,6 +78,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     private boolean isSwaRef;
     private Class collectionContentType;
     private static final String INCLUDE = "Include";
+    private boolean reuseContainer;
 
     public XMLBinaryDataCollectionMapping() {
         collectionContentType = ClassConstants.APBYTE;
@@ -451,4 +452,23 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     public Class getCollectionContentType() {
         return collectionContentType;
     }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
+
 }

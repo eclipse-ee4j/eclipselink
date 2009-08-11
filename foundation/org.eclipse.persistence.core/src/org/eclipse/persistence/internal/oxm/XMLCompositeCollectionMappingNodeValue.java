@@ -213,7 +213,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
     }
     
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xPathFragment.hasLeafElementType()) {
             marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
         }
@@ -228,8 +228,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
         }
         if (null == value) {
-            xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-            return;
+            return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
         
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
@@ -240,7 +239,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && value instanceof org.w3c.dom.Node) {
             marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
-            return;
+            return true;
         }
         
         if(descriptor != null){                    
@@ -269,7 +268,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().afterMarshal(value);
-        }            
+        }
+        return true;
     }
 
     public XMLCompositeCollectionMapping getMapping() {
@@ -279,4 +279,9 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
         unmarshalRecord.addAttributeValue(this, value, collection);            	
     }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
+    }
+
 }

@@ -65,8 +65,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         if (xmlBinaryDataMapping.isReadOnly()) {
             return false;
         }
-        XMLMarshaller marshaller = marshalRecord.getMarshaller();
         Object objectValue = marshalContext.getAttributeValue(object, xmlBinaryDataMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataMapping.getConverter() != null) {
             Converter converter = xmlBinaryDataMapping.getConverter();
             if (converter instanceof XMLConverter) {

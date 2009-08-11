@@ -60,14 +60,17 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        XPathFragment rootFragment = null;
-
         if (xmlAnyObjectMapping.isReadOnly()) {
             return false;
         }
+        Object objectValue = marshalContext.getAttributeValue(object, xmlAnyObjectMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
+        XPathFragment rootFragment = null;
 
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
-        Object objectValue = marshalContext.getAttributeValue(object, xmlAnyObjectMapping);
         if(xmlAnyObjectMapping.getConverter() != null) {
             objectValue = xmlAnyObjectMapping.getConverter().convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
         }
@@ -192,9 +195,6 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         if (null != childRecord) {
             Object childObject = childRecord.getCurrentObject();
             // OBJECT VALUE
-            if(xmlAnyObjectMapping.getConverter() != null) {
-                childObject = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            }
             if (xmlAnyObjectMapping.usesXMLRoot()) {
                 XMLDescriptor workingDescriptor = childRecord.getDescriptor();
                 if (workingDescriptor != null) {
@@ -203,12 +203,13 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
                     childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false);
-                    unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
                     workingDescriptor = null;
                 }
-            } else {
-                unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
             }
+            if(xmlAnyObjectMapping.getConverter() != null) {
+                childObject = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            }
+            unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
 

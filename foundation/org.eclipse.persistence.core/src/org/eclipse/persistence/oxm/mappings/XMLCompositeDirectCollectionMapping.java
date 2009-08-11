@@ -220,6 +220,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isCDATA;
     private boolean isWriteOnly;
     private AbstractNullPolicy nullPolicy;
+    private boolean reuseContainer;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -395,6 +396,24 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
     public void setNullPolicy(AbstractNullPolicy value) {
         this.nullPolicy = value;
+    }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
     }
 
 }

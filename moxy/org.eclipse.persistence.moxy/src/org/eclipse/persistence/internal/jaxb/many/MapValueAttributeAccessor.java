@@ -42,6 +42,9 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
     
     public Object getAttributeValueFromObject(Object object)throws DescriptorException {
         Object value = nestedAccessor.getAttributeValueFromObject(object);
+        if(null == value) {
+            return null;
+        }
     
         Object results = containerPolicy.containerInstance(((Map)value).size());            
         Iterator iter =  ((Map)value).keySet().iterator();

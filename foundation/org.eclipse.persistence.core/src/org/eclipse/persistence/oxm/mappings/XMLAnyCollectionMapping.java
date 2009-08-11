@@ -163,6 +163,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
     private boolean isWhitespacePreservedForMixedContent = false;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter valueConverter;
+    private boolean reuseContainer;
 
     public XMLAnyCollectionMapping() {
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
@@ -792,4 +793,23 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
     public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace) {
         this.isWhitespacePreservedForMixedContent = preserveWhitespace;
     }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
+
 }

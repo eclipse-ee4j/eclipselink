@@ -13,8 +13,8 @@
 package org.eclipse.persistence.testing.oxm.mappings.choice;
 
 public class Address {
-    String street;
-    String city;
+    public String street;
+    public String city;
     
     public boolean equals(Object obj) {
         Address addr = (Address)obj;

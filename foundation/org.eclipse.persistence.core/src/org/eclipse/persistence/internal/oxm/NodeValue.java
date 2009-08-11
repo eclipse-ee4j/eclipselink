@@ -95,6 +95,21 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
+     * This method provides an optimization in cases where the value has already
+     * been calculated.
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param objectValue
+     * @param session
+     * @param namespaceResolver
+     * @param marshalContext
+     * @return
+     */
+    public abstract boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
+
+    /**
+     * INTERNAL:
      * Override this method if the NodeValue is applicable to sequenced objects.
      * @param xPathFragment
      * @param marshalRecord

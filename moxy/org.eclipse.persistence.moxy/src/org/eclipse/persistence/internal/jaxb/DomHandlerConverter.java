@@ -101,11 +101,11 @@ public class DomHandlerConverter implements XMLConverter {
 	}
 	
 	public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-		return null;
+		return convertDataValueToObjectValue(dataValue, session, null);
 	}
 	
 	public Object convertObjectValueToDataValue(Object objectValue, Session session) {
-		return null;
+		return convertObjectValueToDataValue(objectValue, session, null);
 	}
 	
 }

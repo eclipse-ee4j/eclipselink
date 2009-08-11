@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -40,6 +42,14 @@ public class InheritanceNodeValue extends NodeValue {
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
+    }
+
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, null, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (marshalRecord.getLeafElementType() != null) {

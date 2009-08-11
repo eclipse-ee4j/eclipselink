@@ -73,7 +73,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     private boolean isNamespaceDeclarationIncluded;
     private boolean isSchemaInstanceIncluded;
     private boolean isWriteOnly;
-    
+    private boolean reuseContainer;
+
     public XMLAnyAttributeMapping() {
         this.containerPolicy = new DirectMapContainerPolicy(HashMap.class);
         this.isNamespaceDeclarationIncluded = true;
@@ -413,6 +414,23 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
 
 }

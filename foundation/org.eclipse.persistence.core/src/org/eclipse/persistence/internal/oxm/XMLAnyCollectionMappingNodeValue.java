@@ -221,9 +221,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return generatedNamespace;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (null == value) {
-            return;
+            return false;
         }
 
         boolean wasXMLRoot = false;
@@ -241,7 +241,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             wasXMLRoot = true;
             value = ((XMLRoot) value).getObject();
             if(null == value){
-                return;
+                return false;
             }
         }
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
@@ -254,7 +254,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 childSession = marshaller.getXMLContext().getSession(value);
             } catch (XMLMarshalException e) {               
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
-                return;
+                return true;
             }
             descriptor = (XMLDescriptor) childSession.getDescriptor(value);
             objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
@@ -318,6 +318,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 }
             }
         }
+        return true;
     }
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
@@ -350,6 +351,10 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     
     public boolean isAnyMappingNodeValue() {
         return true;
+    }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
     }
 
 }

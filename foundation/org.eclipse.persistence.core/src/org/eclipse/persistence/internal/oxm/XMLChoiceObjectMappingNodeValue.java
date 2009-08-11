@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -45,7 +48,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         this.xmlField = xmlField;
         initializeNodeValue();
     }
-    
+
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
@@ -68,38 +71,56 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        Object value = xmlChoiceMapping.getAttributeValueFromObject(object);
+        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
+    }
+
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        if(xmlChoiceMapping.isReadOnly()) {
+            return false;
+        }
+        Object value = xmlChoiceMapping.getFieldValue(object, session, marshalRecord);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(value instanceof XMLRoot) {
-        	XMLRoot root = (XMLRoot)value;
-        	XPathFragment fragment = this.xmlField.getXPathFragment();
-        	while(fragment != null && !fragment.nameIsText) {
-        		if(fragment.getNextFragment() == null || fragment.getHasText()) {
-        			if(fragment.getLocalName().equals(root.getLocalName())) {
-    					String fragUri = fragment.getNamespaceURI();
-    					String namespaceUri = root.getNamespaceURI();
-    					if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
-    						return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-    					}
-        			}
-        		}
-        		fragment = fragment.getNextFragment();
-        	}
-        	//if we didn't find a node value associated with this xmlroot, try finding one for the 
-        	//value's class
+            XMLRoot root = (XMLRoot)value;
+            XPathFragment fragment = this.xmlField.getXPathFragment();
+            while(fragment != null && !fragment.nameIsText) {
+                if(fragment.getNextFragment() == null || fragment.getHasText()) {
+                    if(fragment.getLocalName().equals(root.getLocalName())) {
+                        String fragUri = fragment.getNamespaceURI();
+                        String namespaceUri = root.getNamespaceURI();
+                        if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+                            return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+                        }
+                    }
+                }
+                fragment = fragment.getNextFragment();
+            }
+            //if we didn't find a node value associated with this xmlroot, try finding one for the 
+            //value's class
             if(root.getObject() != null && xmlChoiceMapping.getClassToFieldMappings().get(root.getObject().getClass()) == this.xmlField) {
                 return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
             }
         } else {
-        	if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
-        		return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-        	}
+            if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
+                return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+            }
         }
         return false;
     }
-    
+
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
-        this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord);
+        if(null != xmlChoiceMapping.getConverter()) {
+            UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
+            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceMapping.getConverter()));
+            this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord);
+            unmarshalRecord.setUnmarshalContext(unmarshalContext);
+        } else {
+            this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord);
+        }
     }
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
@@ -111,6 +132,5 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
     }    
-    
-    
+
 }

@@ -27,7 +27,9 @@ public class ReferenceProperty extends Property {
 		if(referencedElements == null) {
 			referencedElements = new ArrayList<ElementDeclaration>();
 		}
-		referencedElements.add(element);
+		if(!referencedElements.contains(element)) {
+			referencedElements.add(element);
+		}
 	}
 	
 	public boolean isReference() {

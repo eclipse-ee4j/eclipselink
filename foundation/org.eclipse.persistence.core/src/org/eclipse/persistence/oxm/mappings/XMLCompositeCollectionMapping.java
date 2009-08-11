@@ -154,6 +154,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     
     private boolean isWriteOnly;
+    private boolean reuseContainer = false;
 
     public XMLCompositeCollectionMapping() {
         super();
@@ -696,5 +697,23 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         super.setAttributeValueInObject(object, value);
     }    
-    
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
+
 }

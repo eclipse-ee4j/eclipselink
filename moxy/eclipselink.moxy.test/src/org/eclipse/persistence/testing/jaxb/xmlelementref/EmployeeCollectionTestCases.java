@@ -29,7 +29,7 @@ public class EmployeeCollectionTestCases  extends JAXBTestCases {
         setClasses(classes);
     }
 
-    public Object getWriteControlObject() {
+    protected Object getControlObject() {
     	EmployeeCollection employee = new EmployeeCollection();
 	    ArrayList choices = new ArrayList();
 	    choices.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, new Integer(21)));
@@ -39,20 +39,6 @@ public class EmployeeCollectionTestCases  extends JAXBTestCases {
 	    nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Integer.class, new Integer(29)));
 	    choices.add(nestedEmployee);
 	    choices.add(new JAXBElement(new QName("root"), String.class, "Value2"));
-	    employee.refs = choices;
-	    return employee;
-	 }
-
-    protected Object getControlObject() {
-    	EmployeeCollection employee = new EmployeeCollection();
-	    ArrayList choices = new ArrayList();
-	    choices.add(new JAXBElement(new QName("myns", "integer-root"), Object.class, new Integer(21)));
-	    choices.add(new JAXBElement(new QName("root"), Object.class, "Value1"));
-	    EmployeeCollection nestedEmployee = new EmployeeCollection();
-	    nestedEmployee.refs = new ArrayList();
-	    nestedEmployee.refs.add(new JAXBElement(new QName("myns", "integer-root"), Object.class, new Integer(29)));
-	    choices.add(nestedEmployee);
-	    choices.add(new JAXBElement(new QName("root"), Object.class, "Value2"));
 	    employee.refs = choices;
 	    return employee;
 	 }

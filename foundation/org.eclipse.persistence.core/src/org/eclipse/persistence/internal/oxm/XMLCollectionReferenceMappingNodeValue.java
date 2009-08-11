@@ -219,7 +219,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
@@ -233,7 +233,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             QName schemaType;
             Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
-                return;
+                return false;
             }
             schemaType = getSchemaType(xmlField, fieldValue, session);
             String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
@@ -249,11 +249,16 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 }
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
-
         }
+        return true;
     }
 
     public XMLCollectionReferenceMapping getMapping() {
         return xmlCollectionReferenceMapping;
     }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
+    }
+
 }

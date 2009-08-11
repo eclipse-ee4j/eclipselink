@@ -54,6 +54,10 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             return false;
         }
         Object objectValue = marshalContext.getAttributeValue(object, xmlDirectMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
         // Check for a null value 
         if (null == fieldValue) {

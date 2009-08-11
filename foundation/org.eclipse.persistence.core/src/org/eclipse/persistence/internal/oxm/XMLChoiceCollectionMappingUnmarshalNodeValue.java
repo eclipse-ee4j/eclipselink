@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -68,7 +69,14 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this.containerNodeValue);
-        this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
+        if(null != xmlChoiceCollectionMapping.getConverter()) {
+            UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
+            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceCollectionMapping.getConverter()));
+            this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
+            unmarshalRecord.setUnmarshalContext(unmarshalContext);            
+        } else {
+            this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
+        }
     }
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
@@ -96,8 +104,9 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return true;
     }  
     
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         //empty impl in the unmarshal node value
+        return false;
     }
     
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
@@ -120,5 +129,9 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     public XMLChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
     }    
-    
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
+    }
+
 }

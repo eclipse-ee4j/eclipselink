@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -32,7 +34,15 @@ public class TypeNodeValue extends NodeValue {
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
+    }
+
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object objectValue = directMapping.getAttributeValueFromObject(object);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = directMapping.getFieldValue(objectValue, session);
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
@@ -43,15 +53,15 @@ public class TypeNodeValue extends NodeValue {
             return false;
         }
         if(xmlField.getSchemaType() == null){
-    		if(schemaType.equals(XMLConstants.STRING_QNAME)){
-    			return false;
-    		}
+            if(schemaType.equals(XMLConstants.STRING_QNAME)){
+                return false;
+            }
         }else{
-        	if(xmlField.isSchemaType(schemaType)){
-        		return false;
-        	}
-        }           
-                       
+            if(xmlField.isSchemaType(schemaType)){
+                return false;
+            }
+        }
+
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type";
         String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());

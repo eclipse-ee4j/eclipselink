@@ -157,9 +157,9 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(objectValue == null) {
-            return;
+            return false;
         }
         boolean addDeclaration = false;
         boolean removePrefix = false;
@@ -270,10 +270,15 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         if (removePrefix) {
             marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
         }
+        return true;
     }
 
     public XMLBinaryDataCollectionMapping getMapping() {
         return xmlBinaryDataCollectionMapping;
+    }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
     }
 
 }

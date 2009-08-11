@@ -39,6 +39,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -81,7 +82,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, Converter> fieldsToConverters;
+    private Converter converter;
     private boolean isWriteOnly;
+    
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
 
     public XMLChoiceObjectMapping() {
@@ -91,6 +94,22 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
 
+    }
+
+    /**
+     * Return the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public Converter getConverter() {
+        return converter;
+    }
+
+    /**
+     * Set the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public void setConverter(Converter converter) {
+        this.converter = converter;
     }
 
     /**
@@ -155,6 +174,21 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
+    }
+
+    /**
+    * INTERNAL:
+    */
+    public Object getFieldValue(Object object, AbstractSession session, XMLRecord record) {
+        Object attributeValue = super.getAttributeValueFromObject(object);
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                attributeValue = ((XMLConverter)getConverter()).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
+            } else {
+                attributeValue = getConverter().convertObjectValueToDataValue(attributeValue, session);
+            }
+        }
+        return attributeValue;
     }
 
     /**
@@ -318,6 +352,27 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             fieldsToConverters = new HashMap<XMLField, Converter>();
         }               
         fieldsToConverters.put(field, converter);       
+    }
+
+    public Converter getConverter(XMLField field) {
+        if(null != this.fieldsToConverters) {
+            Converter converter = fieldsToConverters.get(field);
+            if(null != converter) {
+                return converter;
+            }
+            if(null != this.choiceElementMappings) {
+                DatabaseMapping mapping = (DatabaseMapping) this.choiceElementMappings.get(field);
+                if(null == mapping) {
+                    return null;
+                }
+                if(mapping.isAbstractCompositeDirectCollectionMapping()) {
+                    return ((XMLCompositeDirectCollectionMapping)mapping).getValueConverter();
+                } else if(mapping.isAbstractDirectMapping()) {
+                    return ((XMLDirectMapping)mapping).getConverter();
+                }
+            }
+        }
+        return null;
     }
 
     public ArrayList getChoiceFieldToClassAssociations() {

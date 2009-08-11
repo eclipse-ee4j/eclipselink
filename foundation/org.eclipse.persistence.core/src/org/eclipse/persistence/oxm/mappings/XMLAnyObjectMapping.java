@@ -493,6 +493,9 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if (getField() != null) {
             setField(getDescriptor().buildField(getField()));
         }
+        if (null != converter) {
+            converter.initialize(this, session);
+        }
     }
 
     public boolean isXMLMapping() {

@@ -18,12 +18,14 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.XMLRoot;
 import java.util.Iterator;
@@ -78,7 +80,15 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Converter converter = xmlChoiceCollectionMapping.getConverter();
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
+            } else {
+                value = converter.convertObjectValueToDataValue(value, session);
+            }
+        }
     	NodeValue associatedNodeValue = null;
     	XMLField associatedField = null;
     	Object fieldValue = value;
@@ -116,6 +126,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
                 }
             }
         }
+    	return true;
     }
 
     private XMLField getFieldForName(String localName, String namespaceUri) {
@@ -165,5 +176,9 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     public XMLChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
     }    
-    
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
+    }
+
 }

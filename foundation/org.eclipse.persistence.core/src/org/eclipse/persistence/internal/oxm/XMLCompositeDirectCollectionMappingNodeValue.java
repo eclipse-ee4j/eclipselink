@@ -253,7 +253,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCompositeDirectCollectionMapping.hasValueConverter()) {
             if (xmlCompositeDirectCollectionMapping.getValueConverter() instanceof XMLConverter) {
                 value = ((XMLConverter) xmlCompositeDirectCollectionMapping.getValueConverter()).convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
@@ -292,7 +292,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 marshalRecord.endElement(nextFragment, namespaceResolver);
             }
         }
-
+        return true;
     }
 
     public XMLCompositeDirectCollectionMapping getMapping() {
@@ -301,6 +301,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
     public boolean isWhitespaceAware() {
         return !xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode();
+    }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
     }
 
 }

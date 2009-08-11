@@ -37,7 +37,8 @@ import org.w3c.dom.Text;
  */
 public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
     private boolean isWriteOnly;
-    
+    private boolean reuseContainer;
+
     public XMLFragmentCollectionMapping() {
         super();
     }
@@ -167,6 +168,24 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }    
-    
+    }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
+
 }

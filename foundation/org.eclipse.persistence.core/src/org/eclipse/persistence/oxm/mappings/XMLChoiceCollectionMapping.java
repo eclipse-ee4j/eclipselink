@@ -84,7 +84,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private ContainerPolicy containerPolicy;
     private boolean isWriteOnly;
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
-    
+    private boolean reuseContainer;
+    private Converter converter;
+
     public XMLChoiceCollectionMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
@@ -92,6 +94,22 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
+    }
+
+    /**
+     * Return the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public Converter getConverter() {
+        return converter;
+    }
+
+    /**
+     * Set the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public void setConverter(Converter converter) {
+        this.converter = converter;
     }
 
     /**
@@ -330,6 +348,27 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         fieldsToConverters.put(field, converter);
     }
 
+    public Converter getConverter(XMLField field) {
+        if(null != this.fieldsToConverters) {
+            Converter converter = fieldsToConverters.get(field);
+            if(null != converter) {
+                return converter;
+            }
+            if(null != this.choiceElementMappings) {
+                DatabaseMapping mapping = (DatabaseMapping) this.choiceElementMappings.get(field);
+                if(null == mapping) {
+                    return null;
+                }
+                if(mapping.isAbstractCompositeDirectCollectionMapping()) {
+                    return ((XMLCompositeDirectCollectionMapping)mapping).getValueConverter();
+                } else if(mapping.isAbstractDirectMapping()) {
+                    return ((XMLDirectMapping)mapping).getConverter();
+                }
+            }
+        }
+        return null;
+    }
+
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
         if(this.fieldToClassNameMappings.size() > 0) {
@@ -424,6 +463,24 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }    
-    
+    }
+
+    /**
+     * Return true if the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public boolean getReuseContainer() {
+        return reuseContainer;
+    }
+
+    /**
+     * Specify whether the original container on the object should be used if 
+     * present.  If it is not present then the container policy will be used to
+     * create the container. 
+     */
+    public void setReuseContainer(boolean reuseContainer) {
+        this.reuseContainer = reuseContainer;
+    }
+
 }

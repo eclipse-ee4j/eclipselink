@@ -341,6 +341,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         return (XMLDescriptor) treeObjectBuilder.getDescriptor();
     }
 
+    public UnmarshalContext getUnmarshalContext() {
+        return unmarshalContext;
+    }
+
+    public void setUnmarshalContext(UnmarshalContext unmarshalContext) {
+        this.unmarshalContext = unmarshalContext;
+    }
+
     public void startDocument() throws SAXException {
         startDocument(null);
     }
@@ -376,11 +384,16 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             if (null != containerValues) {
                 containersMap = new HashMap(containerValues.size());
                 ContainerValue containerValue;
-                Object containerInstance;
                 int containerValuesSize = containerValues.size();
                 for (int x = 0; x < containerValuesSize; x++) {
                     containerValue = (ContainerValue)containerValues.get(x);
-                    containerInstance = containerValue.getContainerInstance();
+                    Object containerInstance = null;
+                    if(containerValue.getReuseContainer()) {
+                        containerInstance = containerValue.getMapping().getAttributeAccessor().getAttributeValueFromObject(object);
+                    }
+                    if(null == containerInstance) {
+                        containerInstance = containerValue.getContainerInstance();
+                    }
                     containersMap.put(containerValue, containerInstance);
                 }
             }

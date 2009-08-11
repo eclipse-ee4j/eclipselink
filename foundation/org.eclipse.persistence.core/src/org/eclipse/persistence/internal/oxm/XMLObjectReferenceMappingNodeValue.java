@@ -149,6 +149,10 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
             return false;
         }
         Object targetObject = marshalContext.getAttributeValue(object, xmlObjectReferenceMapping);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, targetObject, session, namespaceResolver, marshalContext);
+    }
+
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
             return false;

@@ -124,11 +124,16 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return true;
     }
 
-    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return true;
     }
 
     public XMLAnyAttributeMapping getMapping() {
         return xmlAnyAttributeMapping;
+    }
+
+    public boolean getReuseContainer() {
+        return getMapping().getReuseContainer();
     }
 
 }
