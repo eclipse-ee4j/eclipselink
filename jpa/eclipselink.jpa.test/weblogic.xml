@@ -66,13 +66,6 @@
         </classpath>
     </taskdef>
 
-    <condition property="is.oci">
-            <and>
-                <isset property="db.oci.url"/>
-                <contains string="${db.oci.url}" substring="oci"/>
-            </and>
-    </condition>
-
     <!-- This creates the server domain. -->
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>
@@ -139,31 +132,6 @@
                 <set attribute="Targets" value="${myserver}"/>
             </create>
         </wlconfig>
-        <antcall target="config-oci-datasource" inheritRefs="true"/>
-    </target>
-
-    <!-- Config OCI DataSource On WLS -->
-    <target name="config-oci-datasource" if="is.oci">
-        <echo message="config datasource"/>
-        <wlconfig url="${server.url}" username="${server.user}" password="${server.pwd}">
-            <query domain="mydomain" type="Server" name="myserver"
-                property="myserver"/>
-            <create type="JDBCConnectionPool" name="ejbPool_oci">
-                    <set attribute="CapacityIncrement" value="2"/>
-                    <set attribute="DriverName" value="${db.driver}"/>
-                    <set attribute="InitialCapacity" value="1"/>
-                    <set attribute="MaxCapacity" value="50"/>
-                    <set attribute="Password" value="${db.pwd}"/>
-                    <set attribute="Properties" value="user=${db.user}"/>
-                    <set attribute="URL" value="${db.oci.url}"/>
-                    <set attribute="Targets" value="${myserver}"/>
-            </create>
-            <create type="JDBCTxDataSource" name="EclipseLinkDS_OCI">
-                <set attribute="JNDIName" value="jdbc/EclipseLinkDS_OCI"/>
-                <set attribute="PoolName" value="ejbPool_oci"/>
-                <set attribute="Targets" value="${myserver}"/>
-            </create>
-        </wlconfig>
     </target>
 
     <!--
@@ -176,19 +144,6 @@
                 <delete/>
             </query>
             <query domain="mydomain" type="JDBCConnectionPool" name="ejbPool">
-                <delete/>
-            </query>
-        </wlconfig>
-        <antcall target="remove-oci-datasource" inheritRefs="true"/>
-    </target>
-    
-    <!-- remove OCI DataSource On WLS -->
-    <target name="remove-oci-datasource" if="is.oci">
-        <wlconfig url="${server.url}" username="${server.user}" password="${server.pwd}">
-            <query domain="mydomain" type="JDBCDataSource" name="EclipseLinkDS_OCI">
-                <delete/>
-            </query>
-            <query domain="mydomain" type="JDBCConnectionPool" name="ejbPool_oci">
                 <delete/>
             </query>
         </wlconfig>
