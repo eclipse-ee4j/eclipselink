@@ -77,9 +77,6 @@
             dir="${oracle.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
         <fileset
-            dir="${oracle.extensions.depend.dir}/11"
-            includes="${oracle.extensions.depend.jars}"/>
-        <fileset
             dir="${oracle.extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
         <fileset
