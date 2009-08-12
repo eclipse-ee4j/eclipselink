@@ -54,9 +54,9 @@ public class Computer implements java.io.Serializable {
     private int version;
 
     @OneToOne(fetch=EAGER)
-    @JoinColumn(name="LOCATION_LOCATION_ID", referencedColumnName="LOCATION_ID")    
+    @JoinColumn(name="GALACTIC_GALACTIC_ID", referencedColumnName="GALACTIC_ID")    
     //@Column(name="LOCATION_ID", unique=false, nullable=false, updatable=false)
-    private Location location;
+    private GalacticPosition location;
     
     private String name;
 
@@ -92,11 +92,11 @@ public class Computer implements java.io.Serializable {
         this.manufacturer = manufacturer;
     }
 
-    public Location getLocation() {
+    public GalacticPosition getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(GalacticPosition location) {
         this.location = location;
     }
 

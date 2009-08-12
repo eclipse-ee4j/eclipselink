@@ -22,9 +22,10 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity(name="LocationMetamodel")
-@Table(name="CMP3_MM_LOCATION")
-public class Location implements java.io.Serializable {
-    /*@GeneratedValue(strategy=TABLE, generator="LOCATION_MM_TABLE_GENERATOR")
+@Table(name="CMP3_MM_GALACTIC")//LOCATION")
+public class Location extends CoordinateMS implements java.io.Serializable {
+    /*@Id
+    @GeneratedValue(strategy=TABLE, generator="LOCATION_MM_TABLE_GENERATOR")
     @TableGenerator(
         name="LOCATION_MM_TABLE_GENERATOR", 
         table="CMP3_MM_LOCATION_SEQ", 
@@ -35,32 +36,32 @@ public class Location implements java.io.Serializable {
     @Column(name="LOCATION_ID")    
     private Integer id;*/
     
-    // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
+/*    // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
     @EmbeddedId
     @Column(name="LOCATION_ID")    
-    protected EmbeddedPK primaryKey;
+    protected EmbeddedPK primaryKey;*/
     
-    @Version
+/*    @Version
     @Column(name="LOCATION_VERSION")
-    private int version;
+    private int version;*/
     
     public Location() {}
 
-    public EmbeddedPK getPrimaryKey() {
+/*    public EmbeddedPK getPrimaryKey() {
         return primaryKey;
     }
 
     public void setPrimaryKey(EmbeddedPK primaryKey) {
         this.primaryKey = primaryKey;
-    }
+    }*/
     
-    public int getVersion() { 
+/*    public int getVersion() { 
         return version; 
     }
     
     protected void setVersion(int version) {
         this.version = version;
-    }
+    }*/
 
 /*    public Integer getId() {
         return id;

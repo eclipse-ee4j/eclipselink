@@ -33,7 +33,10 @@
  *          override on RelationalDescriptor, but requiring a contains check prior to a put
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *          in support of the custom descriptors holding mappings required by the Metamodel
+ *     08/11/2009-2.0 Michael O'Brien 
+ *       - 284147: do not add a pseudo PK Field for MappedSuperclasses when
+ *         1 or more PK fields already exist on the descriptor. 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -413,7 +416,7 @@ public class MetadataProject {
      * Note: The mapped-superclasses that are added here are those that are 
      * defined in XML only!
      */
-    public void addMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
+    public void addMetamodelMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
         if (m_mappedSuperclasses.containsKey(className)) {
             m_mappedSuperclasses.get(className).merge(mappedSuperclass);
         } else {
@@ -446,26 +449,35 @@ public class MetadataProject {
             // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
             accessor.getDescriptor().setClassAccessor(accessor);
             accessor.processAccessType();
-            // Generics Handler: Check if the referenceType is not set for Collection accessors
+            // Set the referenceClass for Id mappings
+            // Generics Handler: Check if the referenceType is not set for Collection accessors            
             accessor.addAccessors();
             // Add the accessor to our custom Map keyed on className for separate processing in stage2
             m_mappedSuperclassAccessors.put(className, accessor);
-            MetadataDescriptor descriptor = accessor.getDescriptor();
-            // Fake out a database table and primary key
+            MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
+            // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
+            RelationalDescriptor relationalDescriptor = (RelationalDescriptor)metadataDescriptor.getClassDescriptor();
+            
+            // Fake out a database table and primary key for MappedSuperclasses
             // We require string names for table processing that does not actually goto the database.
             // There will be no conflict with customer values
             // The descriptor is assumed never to be null
-            descriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
-            descriptor.getClassDescriptor().addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
-            // We store our descriptor on the core project for later retrieval by MetamodelImpl
-            // Why not on MetadataProject? because the Metadata processing is transient 
-            RelationalDescriptor relationalDescriptor = (RelationalDescriptor)descriptor.getClassDescriptor();
+            metadataDescriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
+            // Add PK field to the relationalDescriptor only if there are none yet - or "will be none"
+            // Check accessor collection on the metadataDescriptor (note: getIdAttributeName() and getIdAttributeNames() are not populated yet - so are unavailable
+            // We will check for an IdAccessor instance as one of the accessors directly
+            if(!metadataDescriptor.hasIdAccessor()) {
+                relationalDescriptor.addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
+            }
+            
             /*
+             * We store our descriptor on the core project for later retrieval by MetamodelImpl.
+             * Why not on MetadataProject? because the Metadata processing is transient. 
              * We could set the javaClass on the descriptor for the current classLoader
              * but we do not need it until metamodel processing time avoiding a _persistence_new call.
              * See MetamodelImpl.initialize()
              */
-            m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
+             m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
         }
     }
     

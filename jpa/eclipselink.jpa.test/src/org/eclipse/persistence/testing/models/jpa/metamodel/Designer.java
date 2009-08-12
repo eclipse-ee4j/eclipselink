@@ -31,14 +31,6 @@ import javax.persistence.OneToOne;
 @MappedSuperclass
 public abstract class Designer extends Person {
 
-    // Verify special handling for PK for OneToMany (custom descriptor with fake PK name)
-    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    // However, bidirectional relationships are not allowed to MappedSuperclasses - as they have no identity
-    // This @OneToMany implements internally as a @ManyToMany
-    @OneToMany(fetch=EAGER, cascade=ALL)
-    @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
-                joinColumns = @JoinColumn(name="PERSON_ID"))   
-    private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();    
     
     // The M:1 side is the owning side - but this is a unidirectional mapping
     // The ManyToOne will resolve to a OneToOne internally without a unique PK restriction
@@ -69,13 +61,5 @@ public abstract class Designer extends Person {
 
     public void setSecondaryEmployer(Manufacturer employer) {
         this.secondaryEmployer = employer;
-    }
-    
-    public Collection<Manufacturer> getHistoricalEmployers() {
-        return historicalEmployers;
-    }
-
-    public void setHistoricalEmployers(Collection<Manufacturer> historicalEmployers) {
-        this.historicalEmployers = historicalEmployers;
     }
 }

@@ -45,6 +45,7 @@ DROP TABLE CMP3_MM_PROC
 DROP TABLE CMP3_MM_VECTPROC
 DROP TABLE CMP3_MM_ARRAYPROC
 DROP TABLE CMP3_MM_LOCATION
+DROP TABLE CMP3_MM_GALACTIC
 DROP TABLE CMP3_MM_BOARD
 DROP TABLE CMP3_MM_SWDESIGNER
 DROP TABLE CMP3_MM_MANUF
@@ -61,9 +62,10 @@ DROP TABLE CMP3_MM_MANUF
         addTableDefinition(buildBOARDTable());
         addTableDefinition(buildMEMORYTable());        
         addTableDefinition(buildPROCESSORTable());        
-        addTableDefinition(buildVECTORPROCESSORTable());
-        addTableDefinition(buildARRAYPROCESSORTable());
-        addTableDefinition(buildLOCATIONTable());
+        //addTableDefinition(buildVECTORPROCESSORTable());
+        //addTableDefinition(buildARRAYPROCESSORTable());
+        //addTableDefinition(buildLOCATIONTable());
+        addTableDefinition(buildGALACTICPOSITIONTable());
         // 1:n
         addTableDefinition(buildMANUFACTURER_COMPUTER_JOINTable());
         addTableDefinition(buildMANUFACTURER_CORPCOMPUTER_JOINTable());
@@ -377,14 +379,14 @@ DROP TABLE CMP3_MM_MANUF
 
         // Bidirectional OneToOne with Location.computer
         FieldDefinition field5 = new FieldDefinition();
-        field5.setName("LOCATION_LOCATION_ID");
+        field5.setName("GALACTIC_GALACTIC_ID");
         field5.setTypeName("NUMERIC");
         field5.setSize(15);
         field5.setShouldAllowNull(false);
         field5.setIsPrimaryKey(false);
         field5.setUnique(false);
         field5.setIsIdentity(false);
-        field5.setForeignKeyFieldName("CMP3_MM_LOCATION.LOCATION_ID");
+        field5.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
         //field5.setForeignKeyFieldName("CMP3_MM_LOCATION.PK_PART1");
         table.addField(field5);
         
@@ -547,7 +549,7 @@ DROP TABLE CMP3_MM_MANUF
     
     public static TableDefinition buildVECTORPROCESSORTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_MM_VECTPROC");
+        table.setName("CMP3_MM_PROC");
 
         // JOINED @Inheritance still requires a PK field on the sub entity table
         FieldDefinition field = new FieldDefinition();
@@ -587,7 +589,7 @@ DROP TABLE CMP3_MM_MANUF
 
     public static TableDefinition buildARRAYPROCESSORTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_MM_ARRAYPROC");
+        table.setName("CMP3_MM_PROC");
 
         // JOINED @Inheritance still requires a PK field on the sub entity table
         FieldDefinition field = new FieldDefinition();
@@ -625,12 +627,12 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
     
-    public static TableDefinition buildLOCATIONTable() {
+    public static TableDefinition buildGALACTICPOSITIONTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_MM_LOCATION");
+        table.setName("CMP3_MM_GALACTIC");
 
 /*        FieldDefinition field = new FieldDefinition();
-        field.setName("LOCATION_ID");
+        field.setName("GALACTIC_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
@@ -640,11 +642,8 @@ DROP TABLE CMP3_MM_MANUF
         table.addField(field);
 */    
 
-        /*
-         * Commented 20090720 in favor of a the composite key EmbeddedPK
-         */
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("LOCATION_ID");
+        fieldID.setName("GALACTIC_ID");
         fieldID.setTypeName("NUMBER");
         fieldID.setSize(19);
         fieldID.setSubSize(0);
@@ -678,7 +677,7 @@ DROP TABLE CMP3_MM_MANUF
 
         
         FieldDefinition field4 = new FieldDefinition();
-        field4.setName("LOCATION_VERSION");
+        field4.setName("GALACTIC_VERSION");
         field4.setTypeName("NUMERIC");
         field4.setSize(15);
         field4.setShouldAllowNull(true);
@@ -687,6 +686,97 @@ DROP TABLE CMP3_MM_MANUF
         field4.setIsIdentity(false);
         table.addField(field4);
 
+/*        FieldDefinition field3 = new FieldDefinition();
+        field3.setName("NAME");
+        field3.setTypeName("VARCHAR");
+        field3.setSize(80);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        table.addField(field3);
+*/
+        // for MappedSuperclass
+/*        // 1:1 unidirectional
+        FieldDefinition field7 = new FieldDefinition();
+        field7.setName("FUTURE_POS_GALACTIC_ID");
+        field7.setTypeName("NUMERIC");
+        field7.setSize(15);
+        field7.setShouldAllowNull(false);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        field7.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
+        table.addField(field7);
+*/        
+        // OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
+        // http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance
+        // discriminator column (for inheritance)
+        FieldDefinition field13 = new FieldDefinition();
+        field13.setName("DTYPE");
+        field13.setTypeName("VARCHAR");
+        field13.setSize(80);
+        field13.setShouldAllowNull(true);
+        field13.setIsPrimaryKey(false);
+        field13.setUnique(false);
+        field13.setIsIdentity(false);
+        table.addField(field13);
+        
+        
+        return table;
+    }
+
+    public static TableDefinition buildLOCATIONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_LOCATION");
+
+        /*
+         * Commented 20090720 in favor of a the composite key EmbeddedPK
+         */
+/*        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("LOCATION_ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);//true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+*/        
+        /*FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("PK_PART1");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);//true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);*/
+
+        /*FieldDefinition fieldID2 = new FieldDefinition();
+        fieldID2.setName("PK_PART2");
+        fieldID2.setTypeName("NUMBER");
+        fieldID2.setSize(19);
+        fieldID2.setSubSize(0);
+        fieldID2.setIsPrimaryKey(true);
+        fieldID2.setIsIdentity(true);
+        fieldID2.setUnique(false);//true);
+        fieldID2.setShouldAllowNull(false);
+        table.addField(fieldID2);*/
+
+        
+/*        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("LOCATION_VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+*/
 /*        FieldDefinition field3 = new FieldDefinition();
         field3.setName("NAME");
         field3.setTypeName("VARCHAR");
@@ -709,6 +799,31 @@ DROP TABLE CMP3_MM_MANUF
         field5.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
         table.addField(field5);
 */
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("GALACTIC_ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);//true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+/*        // from MappedSuperclass
+        // 1:1 unidirectional
+        FieldDefinition field7 = new FieldDefinition();
+        field7.setName("FUTURE_POS_GALACTIC_ID");
+        field7.setTypeName("NUMERIC");
+        field7.setSize(15);
+        field7.setShouldAllowNull(false);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        field7.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
+        table.addField(field7);        
+*/        
         return table;
     }
     

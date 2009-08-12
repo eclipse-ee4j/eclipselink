@@ -15,12 +15,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.persistence.TableGenerator;
 
 @MappedSuperclass
@@ -37,6 +45,17 @@ public abstract class Person {
     // InstanceVariableAttributeAccessor testing
     @Column(name="PERSON_ID")    
     private Integer id;
+    
+    
+    // Verify special handling for PK for OneToMany (custom descriptor with fake PK name)
+    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    // However, bidirectional relationships are not allowed to MappedSuperclasses - as they have no identity
+    // This @OneToMany implements internally as a @ManyToMany
+    @OneToMany(fetch=EAGER, cascade=ALL)
+    @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
+                joinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"),
+                inverseJoinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"))   
+    private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();    
     
     private String name;
 
@@ -56,4 +75,13 @@ public abstract class Person {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Collection<Manufacturer> getHistoricalEmployers() {
+        return historicalEmployers;
+    }
+
+    public void setHistoricalEmployers(Collection<Manufacturer> historicalEmployers) {
+        this.historicalEmployers = historicalEmployers;
+    }
+    
 }

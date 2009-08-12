@@ -72,6 +72,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
+import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Location;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
@@ -196,8 +197,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         Board vectorBoard2 = null;
         Memory arrayMemory1 = null;
         Memory vectorMemory2 = null;
-        Location location1 = null;
-        Location location2 = null;   
+        GalacticPosition location1 = null;
+        GalacticPosition location2 = null;   
         
         // Embedded objects
         EmbeddedPK embeddedPKforLocation1 = new EmbeddedPK();        
@@ -232,8 +233,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             arrayProcessor1 = new ArrayProcessor();
             arrayBoard1 = new Board();
             vectorBoard2 = new Board();
-            location1 = new Location();
-            location2 = new Location();        
+            location1 = new GalacticPosition();
+            location2 = new GalacticPosition();        
 
             // setup collections
             computersList.add(arrayComputer1);
@@ -275,14 +276,17 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // set 1:1 relationships
             arrayComputer1.setLocation(location1);
             vectorComputer2.setLocation(location2);
+            // No get/set accessors on purpose for testing
+            //location1.futurePosition = location2;
+            //location2.futurePosition = location1;
             
             // set attributes
             arrayComputer1.setName("CM-5");
             vectorComputer2.setName("CDC-6600");
             
             // setup embedded objects
-            location1.setPrimaryKey(embeddedPKforLocation1);
-            location2.setPrimaryKey(embeddedPKforLocation2);
+//            location1.setPrimaryKey(embeddedPKforLocation1);
+//            location2.setPrimaryKey(embeddedPKforLocation2);
                 
             // persist all entities to the database in a single transaction
             em.persist(arrayComputer1);
@@ -330,7 +334,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             EntityTypeImpl<Memory> entityMemory = (EntityTypeImpl)metamodel.entity(Memory.class);
             assertNotNull(entityMemory);
             //System.out.println("_Entity: " + entityMemory + " @" + entityMemory.hashCode());
-            EntityTypeImpl<Location> entityLocation =(EntityTypeImpl) metamodel.entity(Location.class);
+            EntityTypeImpl<GalacticPosition> entityLocation =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
             assertNotNull(entityLocation);
             //System.out.println("_Entity: " + entityLocation + " @" + entityLocation.hashCode());
             
@@ -386,9 +390,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(String.class, nameJavaType);
             
             // OneToOne Entity
-            Class locationJavaType = ((SingularAttribute<Computer, Location>)entityComputer.getAttribute("location")).getBindableJavaType();
+            Class locationJavaType = ((SingularAttribute<Computer, GalacticPosition>)entityComputer.getAttribute("location")).getBindableJavaType();
             assertNotNull(locationJavaType);
-            assertEquals(Location.class, locationJavaType);
+            assertEquals(GalacticPosition.class, locationJavaType);
             
             
             
@@ -482,7 +486,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Test error path (null return)
             expectedIAExceptionThrown = false;
-            IdentifiableType<? super Location> superTypeLocation = null;
+            IdentifiableType<? super GalacticPosition> superTypeLocation = null;
             try {
                 superTypeLocation = entityLocation.getSupertype();
             } catch (IllegalArgumentException iae) {
@@ -526,7 +530,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //Type<?> getIdType();       
             
             // Test EntityType
-            
+/*            
             // Test normal path for an [Embeddable] type via @EmbeddedId
             expectedIAExceptionThrown = false;
             Type<?> locationIdType = null;
@@ -561,7 +565,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(embeddableType);
             assertNotSame(embeddableType, locationIdAttributeManagedType);
             
-
+*/
 
             // Test normal path for a [Basic] type
             expectedIAExceptionThrown = false;
@@ -599,12 +603,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Verify all types (entities, embeddables, mappedsuperclasses and basic)
             try {
-                // get all 19 types (a non spec function - for testing introspection)
+                // get all 21 types (a non spec function - for testing introspection)
                 Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
                 System.out.println("_MetamodelMetamodelTest: all Types: " + typesMap);
                 // verify each one
                 assertNotNull(typesMap);
-                assertEquals(19, typesMap.size());
+                assertEquals(21, typesMap.size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -799,9 +803,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              //java.util.Set<Attribute<? super X, ?>> getAttributes();
             Set<Attribute<? super Manufacturer, ?>> attributeSet = entityManufacturer.getAttributes();
             assertNotNull(attributeSet);
-            // We should see 6 attributes (3 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
+            // We should see 7 attributes (3 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
             // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
-            assertEquals(7, attributeSet.size());
+            assertEquals(8, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("version"))); //
@@ -810,6 +814,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("corporateComputers"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesignersMap"))); //
+            // ManyToMany Collection Attribute from Person MappedSuperclass
+            assertTrue(attributeSet.contains(entityManufacturer.getCollection("historicalEmployers"))); //
+            assertTrue(entityManufacturer.getCollection("historicalEmployers").isCollection()); //
 
             
             /**
@@ -977,7 +984,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             try {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                 // UC1 - the attribute does not exist on the managedType (regardless of whether it is on any superType)
-                CollectionAttribute<Manufacturer, Location> anAttribute = 
+                CollectionAttribute<Manufacturer, GalacticPosition> anAttribute = 
                     entityManufacturer.getDeclaredCollection("locations", entityLocation.getJavaType());
             } catch (IllegalArgumentException iae) {
                 // expecting
@@ -1077,7 +1084,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             try {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                 // UC1 - the attribute does not exist on the managedType (regardless of whether it is on any superType)
-                ListAttribute<Manufacturer, Location> anAttribute = 
+                ListAttribute<Manufacturer, GalacticPosition> anAttribute = 
                     entityManufacturer.getDeclaredList("locations", entityLocation.getJavaType());
             } catch (IllegalArgumentException iae) {
                 // expecting
@@ -1699,15 +1706,19 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //public boolean isId() {
             // will test AttributeImpl.getDescriptor
             expectedIAExceptionThrown = false;            
-            Type<EmbeddedPK> anEmbeddableType = null;            
+            //Type<EmbeddedPK> anEmbeddableType = null;            
+            Type<Integer> anEmbeddableType = null;
             try {
-                anEmbeddableType = metamodel.type(EmbeddedPK.class);
+                // Note: type() will only return managedTypes (not BasicTypes)
+                //anEmbeddableType = metamodel.type(EmbeddedPK.class);
+                // The following call will instantiate a Basic type if it is not found
+                anEmbeddableType = ((MetamodelImpl)metamodel).getType(Integer.class);
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
             }
             assertFalse(expectedIAExceptionThrown);
-            assertNotNull(anEmbeddableType);            
+            assertNotNull("EmbeddableId type is null", anEmbeddableType);            
             assertNotNull(entityLocation.getAttribute("primaryKey"));
             assertTrue(entityLocation.getAttribute("primaryKey") instanceof SingularAttributeImpl);
             assertTrue(((SingularAttribute)entityLocation.getAttribute("primaryKey")).isId());

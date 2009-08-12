@@ -34,7 +34,7 @@ public class EmbeddedPK implements Serializable {
         pkColumnValue="CUST_MM_SEQ"
     )
     //@Basic(optional = false)
-    @Column(name = "LOCATION_ID", nullable = false)
+    @Column(name = "GALACTIC_ID", nullable = false)
     private int pk_part1;
 
     //@Basic(optional = false)

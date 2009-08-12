@@ -15,11 +15,41 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
-@Entity(name="ArrayProcessorMetamodel")
-@Table(name="CMP3_MM_PROC")
-public class ArrayProcessor extends Processor implements java.io.Serializable{
-    public ArrayProcessor() {}
+@MappedSuperclass
+public class CoordinateMS extends GalacticPosition {
+
+    private Integer longitude;
+    private Integer Lattitude;
+    private Integer elevation;
+    
+    
+    
+    public CoordinateMS() {}
+
+    public Integer getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Integer longitude) {
+        this.longitude = longitude;
+    }
+
+    public Integer getLattitude() {
+        return Lattitude;
+    }
+
+    public void setLattitude(Integer lattitude) {
+        Lattitude = lattitude;
+    }
+
+    public Integer getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(Integer elevation) {
+        this.elevation = elevation;
+    }
+    
 }

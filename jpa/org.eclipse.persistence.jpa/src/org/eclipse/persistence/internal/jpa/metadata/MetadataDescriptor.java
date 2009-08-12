@@ -41,7 +41,11 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: add isMappedSuperclass() helper function in support
- *         of MappedSuperclass handling for the Metamodel API. 
+ *         of MappedSuperclass handling for the Metamodel API.
+ *     08/11/2009-2.0 Michael O'Brien 
+ *       - 284147: So we do not add a pseudo PK Field for MappedSuperclasses when
+ *         1 or more PK fields already exist on the descriptor. 
+ *         Add m_idAccessor map and hasIdAccessor() function.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -68,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Embeddabl
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
@@ -126,6 +131,7 @@ public class MetadataDescriptor {
     private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
     private Map<String, MappingAccessor> m_accessors;
+    private Map<String, IdAccessor> m_idAccessors;
     private Map<String, MappingAccessor> m_primaryKeyAccessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
@@ -181,6 +187,7 @@ public class MetadataDescriptor {
         m_pkClassIDs = new HashMap<String, String>();
         m_genericTypes = new HashMap<String, String>();
         m_accessors = new HashMap<String, MappingAccessor>();
+        m_idAccessors = new HashMap<String, IdAccessor>();
         m_primaryKeyAccessors = new HashMap<String, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
         m_pkJoinColumnAssociations = new HashMap<String, String>();
@@ -208,10 +215,16 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      * We must check for null since buildAccessor from ClassAccessor may return
-     * a null if ignore default mappings is set to true.
+     * a null if ignore default mappings is set to true.</p>
+     * If the accessor is an IdAccessor we store it in a separate map for use
+     * during MappedSuperclass processing.
      */
     public void addAccessor(MappingAccessor accessor) {
         m_accessors.put(accessor.getAttributeName(), accessor);
+        // Store IdAccessors in a separate map for use by hasIdAccessor()
+        if(accessor.isId()) {
+            m_idAccessors.put(accessor.getAttributeName(), (IdAccessor)accessor);
+        }
     }
     
     /**
@@ -326,6 +339,9 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Add a field representing the primary key or part of a composite primary key
+     * to the List of primary key fields on the relational descriptor associated
+     * with this metadata descriptor.</p>
      */
     public void addPrimaryKeyField(DatabaseField field, MappingAccessor accessor) {
         m_descriptor.addPrimaryKeyField(field);
@@ -497,6 +513,7 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Return the RelationalDescriptor instance associated with this MetadataDescriptor
      */
     public ClassDescriptor getClassDescriptor() {
         return m_descriptor;
@@ -1045,6 +1062,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Return whether there is an IdAccessor on this descriptor.
+     * @return
+     */
+    public boolean hasIdAccessor() {
+        return !m_idAccessors.isEmpty();        
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasMappingForAttributeName(String attributeName) {
         return m_descriptor.getMappingForAttributeName(attributeName) != null;
@@ -1300,6 +1326,7 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Set the RelationalDescriptor instance associated with this MetadataDescriptor
      */
     public void setDescriptor(ClassDescriptor descriptor) {
         m_descriptor = descriptor;

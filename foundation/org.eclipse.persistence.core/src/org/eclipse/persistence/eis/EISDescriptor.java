@@ -37,11 +37,11 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * <p>An <code>EISDescriptor</code> defines the mapping from a JCA data 
  * structure to a Java object.  There are two types of EIS descriptors:
  * <ul>
- * <li>Root - indicates to the TopLink runtime that the EIS descriptor's 
+ * <li>Root - indicates to the EclipseLink runtime that the EIS descriptor's 
  * reference class is a parent class: no other class will reference it by way of 
  * a composite object mapping or composite collection mapping.  For an EIS root 
  * descriptor, EIS interactions can be defined to invoke methods on an EIS
- * <li>Composite - indicates to the TopLink runtime that the EIS descriptor's 
+ * <li>Composite - indicates to the EclipseLink runtime that the EIS descriptor's 
  * reference class may be referenced by a composite object mapping or composite 
  * collection mapping
  * </ul>

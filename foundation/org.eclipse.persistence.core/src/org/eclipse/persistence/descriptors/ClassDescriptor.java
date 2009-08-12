@@ -445,7 +445,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #addMultipleTableForeignKeyFieldName(String, String);
      */
     public void addPrimaryKeyFieldName(String fieldName) {
-        getPrimaryKeyFields().add(new DatabaseField(fieldName));
+        addPrimaryKeyField(new DatabaseField(fieldName));
     }
 
     /**

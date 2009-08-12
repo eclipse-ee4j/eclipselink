@@ -89,6 +89,8 @@ public abstract class TypeImpl<X> implements Type<X> {
         aBuffer.append(this.getClass().getSimpleName());
         aBuffer.append("@");
         aBuffer.append(hashCode());
+        aBuffer.append(":");
+        aBuffer.append(this.getJavaType().getSimpleName());
         aBuffer.append(" [ javaType: ");
         aBuffer.append(this.getJavaType());
         toStringHelper(aBuffer);

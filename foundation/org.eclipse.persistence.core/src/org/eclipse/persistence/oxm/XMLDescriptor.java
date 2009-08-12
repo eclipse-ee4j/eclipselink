@@ -42,7 +42,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
  *
  * An XMLDescriptor is a set of mappings that describe how an objects's data is to be represented in an
  * XML document. XML descriptors describe Java objects that you map to simple and complex types defined
- * by an XML schema document (XSD). Using XML descriptors in a TopLink XML project, you can configure XML mappings.
+ * by an XML schema document (XSD). Using XML descriptors in an EclipseLink XML project, you can configure XML mappings.
  *
  * @see org.eclipse.persistence.oxm.mappings
  */
@@ -114,7 +114,7 @@ public class XMLDescriptor extends ClassDescriptor {
      * Return if unmapped information from the XML document should be maintained for this
      * descriptor
      * By default unmapped data is not preserved.
-     * @return if this decriptor should preserve unmapped data
+     * @return if this descriptor should preserve unmapped data
      */
     public boolean shouldPreserveDocument() {
         return this.shouldPreserveDocument;
@@ -125,7 +125,7 @@ public class XMLDescriptor extends ClassDescriptor {
      * Specifies that object built from this descriptor should retain any unmapped
      * information from their original XML Document when being written back out.
      * By default unmapped data is not preserved.
-     * @return if this decriptor should preserve unmapped data
+     * @return if this descriptor should preserve unmapped data
      */
     public void setShouldPreserveDocument(boolean shouldPreserveDocument) {
         this.shouldPreserveDocument = shouldPreserveDocument;
@@ -395,9 +395,9 @@ public class XMLDescriptor extends ClassDescriptor {
     }
 
     /**
-        * INTERNAL:
-        * Allow the descriptor to initialize any dependencies on this session.
-        */
+     * INTERNAL:
+     * Allow the descriptor to initialize any dependencies on this session.
+     */
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(PREINITIALIZED)) {
