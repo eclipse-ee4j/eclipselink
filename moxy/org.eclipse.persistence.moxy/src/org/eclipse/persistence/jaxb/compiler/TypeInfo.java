@@ -99,8 +99,7 @@ public class TypeInfo {
     private XmlAccessType xmlAccessType;
     private XmlAccessOrder xmlAccessOrder;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
-
-    private DescriptorCustomizer descriptorCustomizer;
+    private String xmlCustomizer;
     
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
@@ -759,34 +758,23 @@ public class TypeInfo {
     }
     
     /**
-     * Indicates if a DescriptorCustomizer has been set, i.e. the
-     * descriptorCustomizer property is non-null.
-     * 
-     * @return true if descriptorCustomizer is non-null, false otherwise
-     * @see DescriptorCustomizer
-     */
-   public boolean isSetDescriptorCustomizer() {
-        return this.descriptorCustomizer != null;
-    }
-    
-    /**
-     * Return the DescriptorCustomizer set on this TypeInfo, or null if none
+     * Return the XmlCustomizer class name set on this TypeInfo, or null if none
      * is set.
      * 
-     * @return the DescriptorCustomizer set on this TypeInfo, or null if none is set
+     * @return the XmlCustomizer class name set on this TypeInfo, or null if none is set
      * @see DescriptorCustomizer
      */
-    public DescriptorCustomizer getDescriptorCustomizer() {
-        return this.descriptorCustomizer;
+    public String getXmlCustomizer() {
+        return xmlCustomizer;
     }
 
     /**
-     * Sets the DescriptorCustomizer on this TypeInfo.
+     * Sets the XmlCustomizer class name on this TypeInfo.
      * 
-     * @param descriptorCustomizer
+     * @param xmlCustomizer
      * @see DescriptorCustomizer
      */
-    public void setDescriptorCustomizer(DescriptorCustomizer descriptorCustomizer) {
-        this.descriptorCustomizer = descriptorCustomizer;
+    public void setXmlCustomizer(String xmlCustomizerClassName) {
+        this.xmlCustomizer = xmlCustomizerClassName;
     }
 }

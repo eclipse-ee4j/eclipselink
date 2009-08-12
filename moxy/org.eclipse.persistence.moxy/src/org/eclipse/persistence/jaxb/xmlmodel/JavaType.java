@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlList;
  *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-inline-binary-data"/>
  *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-accessor-order"/>
  *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-accessor-type"/>
+ *       &lt;attribute name="xml-customizer" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -85,6 +86,8 @@ public class JavaType {
     protected XmlAccessOrder xmlAccessorOrder;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-customizer")
+    protected String xmlCustomizer;
     
     /**
      * Gets the value of the xmlType property.
@@ -373,7 +376,32 @@ public class JavaType {
     public boolean isSetXmlAccessorType() {
         return xmlAccessorType != null;
     }
-    
+
+    /**
+     * Gets the value of the xmlCustomizer property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlCustomizer() {
+        return xmlCustomizer;
+    }
+
+    /**
+     * Sets the value of the xmlCustomizer property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlCustomizer(String value) {
+        this.xmlCustomizer = value;
+    }
+
+
     /**
      * <p>Java class for anonymous complex type.
      * 
@@ -420,16 +448,17 @@ public class JavaType {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
          * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
          * 
          * 
          */

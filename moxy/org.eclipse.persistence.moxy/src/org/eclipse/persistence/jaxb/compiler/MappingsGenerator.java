@@ -33,6 +33,8 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
 import org.eclipse.persistence.internal.jaxb.JAXBElementConverter;
@@ -142,8 +144,21 @@ public class MappingsGenerator {
         Set<Entry<String, TypeInfo>> entrySet = this.typeInfo.entrySet();
         for (Entry<String, TypeInfo> entry : entrySet) {
             TypeInfo tInfo = entry.getValue();
-            if (tInfo.isSetDescriptorCustomizer()) {
-                tInfo.getDescriptorCustomizer().customize(tInfo.getDescriptor());
+            if (tInfo.getXmlCustomizer() != null) {
+                String customizerClassName = tInfo.getXmlCustomizer();
+                try {
+                    Class customizerClass = PrivilegedAccessHelper.getClassForName(customizerClassName);
+                    DescriptorCustomizer descriptorCustomizer = (DescriptorCustomizer) PrivilegedAccessHelper.newInstanceFromClass(customizerClass);
+                    descriptorCustomizer.customize(tInfo.getDescriptor());
+                } catch (IllegalAccessException iae) {
+                    throw JAXBException.couldNotCreateCustomizerInstance(iae, customizerClassName);
+                } catch (InstantiationException ie) {
+                    throw JAXBException.couldNotCreateCustomizerInstance(ie, customizerClassName);
+                } catch (ClassCastException cce) {
+                    throw JAXBException.invalidCustomizerClass(cce, customizerClassName);
+                } catch (ClassNotFoundException cnfe) {
+                    throw JAXBException.couldNotCreateCustomizerInstance(cnfe, customizerClassName);
+                }
             }
         }
         

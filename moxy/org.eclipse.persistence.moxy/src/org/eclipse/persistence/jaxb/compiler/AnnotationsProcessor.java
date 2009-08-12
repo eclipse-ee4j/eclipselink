@@ -2842,16 +2842,7 @@ public class AnnotationsProcessor {
     private void preProcessCustomizer(JavaClass jClass, TypeInfo tInfo) {
         XmlCustomizer xmlCustomizer = (XmlCustomizer) helper.getAnnotation(jClass, XmlCustomizer.class);
         if (xmlCustomizer != null) {
-            try {
-                DescriptorCustomizer descriptorCustomizer = (DescriptorCustomizer) PrivilegedAccessHelper.newInstanceFromClass(xmlCustomizer.value());
-                tInfo.setDescriptorCustomizer(descriptorCustomizer);
-            } catch (IllegalAccessException iae) {
-                throw JAXBException.couldNotCreateCustomizerInstance(iae, xmlCustomizer.value().getName());
-            } catch (InstantiationException ie) {
-                throw JAXBException.couldNotCreateCustomizerInstance(ie, xmlCustomizer.value().getName());
-            } catch (ClassCastException cce) {
-                throw JAXBException.invalidCustomizerClass(cce, xmlCustomizer.value().getName());
-            }
-        }
+            tInfo.setXmlCustomizer(xmlCustomizer.value().getName());
+        }            
     }
 }

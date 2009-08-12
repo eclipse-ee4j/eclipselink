@@ -152,6 +152,10 @@ public class XMLProcessor {
                     if (javaType.getXmlType() != null) {
                         info.setXmlType(javaType.getXmlType());
                     }
+                    // handle @XmlCustomizer override
+                    if (javaType.getXmlCustomizer() != null) {
+                        info.setXmlCustomizer(javaType.getXmlCustomizer());
+                    }
                 }
             }
 
