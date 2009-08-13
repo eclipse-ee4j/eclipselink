@@ -42,7 +42,7 @@ public class XmlRootElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlRootElementOverrideValid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee.xml";
@@ -58,7 +58,7 @@ public class XmlRootElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlRootElementOverrideInvalid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee-invalid.xml";

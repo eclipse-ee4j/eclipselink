@@ -42,7 +42,7 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
      */
     public void testEmployeeGeneration() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 2);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             shouldGenerateSchema = false;
         }
         String messages = "";
@@ -58,7 +58,7 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSeeAlsoSamePackage() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 2);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             shouldGenerateSchema = false;
         }
         String messages = "";
@@ -74,7 +74,7 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSeeAlsoOtherPackage() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 2);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             shouldGenerateSchema = false;
         }
         String src = PATH + "myotherclass.xml";

@@ -46,7 +46,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testNoXmlAccessorTypeOverride() {
-        outputResolver = generateSchema(CONTEXT_PATH, 1);
+        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);

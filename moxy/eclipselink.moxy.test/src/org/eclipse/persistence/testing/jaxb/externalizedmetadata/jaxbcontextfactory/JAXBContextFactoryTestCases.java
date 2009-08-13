@@ -35,6 +35,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfact
  */
 public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private MySchemaOutputResolver outputResolver;
+    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String BEAN_NAMESPACE = "defaultTns";
@@ -57,7 +58,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testLoadXmlFileViaPackage() {
-        outputResolver = generateSchema(new Class[] { Employee.class }, 1);
+        outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -72,7 +73,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * 1 x Positive test, 1x Negative test
      */
     public void testLoadMultipleXmlFilesViaSamePackage() {
-        outputResolver = generateSchema(new Class[] { Employee.class, Address.class }, 1);
+        outputResolver = generateSchema(new Class[] { Employee.class, Address.class }, CONTEXT_PATH, PATH, 1);
         String src = PATH + "address.xml";
         String result = validateAgainstSchema(src, null, outputResolver);
         // address is set to transient in Xml, should fail
@@ -91,7 +92,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * 2 x Positive tests, 1x Negative test
      */
     public void testLoadMultipleXmlFilesViaDifferentPackage() {
-        outputResolver = generateSchema(new Class[] { Employee.class, Address.class, }, 1);
+        outputResolver = generateSchema(new Class[] { Employee.class, Address.class, }, CONTEXT_PATH, PATH, 1);
         String src = PATH + "myotherclass.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);

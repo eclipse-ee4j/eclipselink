@@ -48,7 +48,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAccessorOrderOverride() {
-        outputResolver = generateSchema(CONTEXT_PATH, 1);
+        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
         String src = PATH + "employee-ordered.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -62,7 +62,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
      * Negative test.
      */
     public void testXmlAccessorOrderOverrideInvalidDoc() {
-        outputResolver = generateSchema(CONTEXT_PATH, 1);
+        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
         String src = PATH + "employee-unordered.xml";
         String result = validateAgainstSchema(src, null, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);

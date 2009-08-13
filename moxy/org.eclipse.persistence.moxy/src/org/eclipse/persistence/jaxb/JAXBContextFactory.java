@@ -25,7 +25,6 @@ import java.util.StringTokenizer;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -87,8 +86,6 @@ public class JAXBContextFactory {
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
         // Check properties map for eclipselink-oxm.xml entries
         Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
-        // Check package(s) for eclipselink-oxm.xml file(s) not listed in properties map
-        xmlBindings = getXmlBindingsFromPackages(classesToBeBound, classLoader, xmlBindings);
         for (String key : xmlBindings.keySet()) {
             classesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, classesToBeBound);
         }
@@ -127,7 +124,6 @@ public class JAXBContextFactory {
         classes = getXmlBindingsClassesFromMap(xmlBindingMap, classLoader, classes);
 
         StringTokenizer tokenizer = new StringTokenizer(contextPath, ":");
-        XmlBindings xmlBindings = null;
         while (tokenizer.hasMoreElements()) {
             String path = tokenizer.nextToken();
             try {
@@ -161,13 +157,6 @@ public class JAXBContextFactory {
                 } catch (Exception ex) {
                 }
             }
-            // Check context path for eclipselink-oxm.xml file(s) not listed in properties map
-            InputStream iStream = classLoader.getResourceAsStream(path.replace('.', '/') + "/eclipselink-oxm.xml");
-            if (iStream != null && !xmlBindingMap.containsKey(path)) {
-                xmlBindings = getXmlBindings(new StreamSource(iStream), classLoader);
-                classes = getXmlBindingsClasses(xmlBindings, classLoader, classes);
-                xmlBindingMap.put(path, xmlBindings);
-            }
         }
         if (classes.size() == 0) {
             org.eclipse.persistence.exceptions.JAXBException jaxbException = org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
@@ -186,8 +175,6 @@ public class JAXBContextFactory {
     public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
         // Check properties map for eclipselink-oxm.xml entries
         Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
-        // Check package(s) for eclipselink-oxm.xml file(s) not listed in properties map
-        xmlBindings = getXmlBindingsFromPackages(typesToBeBound, classLoader, xmlBindings);
         for (String key : xmlBindings.keySet()) {
             typesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, typesToBeBound);
         }
@@ -309,95 +296,7 @@ public class JAXBContextFactory {
         }
         return bindings;
     }
-
-    /**
-     * Convenience method for processing a Class array and creating a map of package names to
-     * XmlBindings instances. Each package will be checked for an eclipselink-oxm.xml file.
-     * Existing bindings (processed via properties map) will not be overwritten. 
-     * 
-     * @param classes
-     * @param classLoader
-     * @param existingBindings
-     * @return
-     */
-    private static Map<String, XmlBindings> getXmlBindingsFromPackages(Class[] classes, ClassLoader classLoader, Map<String, XmlBindings> existingBindings) {
-        Map<String, XmlBindings> bindings = existingBindings;
-        if (classes != null) {
-            for (Class cls : classes) {
-                String packageName = "";
-                if (cls.getPackage() != null) {
-                    packageName = cls.getPackage().getName();
-                } else {
-                    // dynamically generated classes don't have a package - use brute force
-                    String className = cls.getName();
-                    int idx = className.lastIndexOf('.');
-                    if (idx > 0) {
-                        packageName = className.substring(0, idx);
-                    }
-                }
-
-                // only need to process a package once
-                if (bindings.containsKey(packageName)) {
-                    continue;
-                }
-                InputStream iStream = classLoader.getResourceAsStream(packageName.replace('.', '/') + "/eclipselink-oxm.xml");
-                if (iStream == null) {
-                    continue;
-                }
-                Source metadataSource = new StreamSource(iStream);
-                XmlBindings binding = getXmlBindings(metadataSource, classLoader);
-                if (binding != null) {
-                    bindings.put(packageName, binding);
-                }
-            }
-        }
-        return bindings;
-    }
-
-    /**
-     * Convenience method for processing a Type array and creating a map of package names to
-     * XmlBindings instances. Each package will be checked for an eclipselink-oxm.xml file.
-     * Existing bindings (processed via properties map) will not be overwritten. 
-     * 
-     * @param types
-     * @param classLoader
-     * @param existingBindings
-     * @return
-     */
-    private static Map<String, XmlBindings> getXmlBindingsFromPackages(Type[] types, ClassLoader classLoader, Map<String, XmlBindings> existingBindings) {
-        Map<String, XmlBindings> bindings = existingBindings;
-        if (types != null) {
-            for (Type type : types) {
-                String packageName = "";
-                if (type.getClass().getPackage() != null) {
-                    packageName = type.getClass().getPackage().getName();
-                } else {
-                    // dynamically generated classes don't have a package - use brute force
-                    String className = type.getClass().getName();
-                    int idx = className.lastIndexOf('.');
-                    if (idx > 0) {
-                        packageName = className.substring(0, idx);
-                    }
-                }
-
-                // only need to process a package once
-                if (bindings.containsKey(packageName)) {
-                    continue;
-                }
-                InputStream iStream = classLoader.getResourceAsStream(packageName.replace('.', '/') + "/eclipselink-oxm.xml");
-                if (iStream == null) {
-                    continue;
-                }
-                Source metadataSource = new StreamSource(iStream);
-                XmlBindings binding = getXmlBindings(metadataSource, classLoader);
-                if (binding != null) {
-                    bindings.put(packageName, binding);
-                }
-            }
-        }
-        return bindings;
-    }
-
+    
     /**
      * Convenience method for creating an XmlBindings object based on a given Source. The method
      * will load the eclipselink metadata model and unmarshal the Source. This assumes that the

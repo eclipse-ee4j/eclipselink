@@ -62,7 +62,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaOverride() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         File schemaFile = outputResolver.schemaFiles.get("http://www.eclipse.org/eclipselink/xsds/persistence/oxm");
@@ -99,7 +99,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
      */
     public void testEmployeeValidation() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee.xml";
@@ -116,7 +116,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInvalidEmployeeValidation() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee-invalidnamespace.xml";
@@ -132,7 +132,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
      */
     public void testAddressValidation() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "address.xml";
@@ -149,7 +149,7 @@ public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInvalidAddressValidation() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "address-invalidnamespace.xml";

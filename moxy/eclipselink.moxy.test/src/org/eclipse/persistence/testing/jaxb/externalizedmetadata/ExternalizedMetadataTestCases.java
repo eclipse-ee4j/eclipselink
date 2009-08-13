@@ -143,11 +143,34 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param path eclipselink-oxm.xml file will be searched for on this path
      * @param expectedSchemaCount
      */
-    public MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, String path, int expectedSchemaCount) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    public MySchemaOutputResolver generateSchema(String contextPath, String path, int expectedSchemaCount) {
         String metadataFile = path + "eclipselink-oxm.xml";
         
-        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(contextPath, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        return generateSchema(contextPath, properties, expectedSchemaCount);
+    }
+
+    /**
+     * Generate the schema(s) for a given set of classes, and apply the eclipselink-oxm.xml 
+     * file found on the path.  The eclipselink-oxm.xml will be stored in the property map 
+     * using the contextPath as a key (maps package name to xml metadata file).
+     * 
+     * @param classes
+     * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
+     * @param path eclipselink-oxm.xml file will be searched for on this path
+     * @param expectedSchemaCount
+     */
+    public MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, String path, int expectedSchemaCount) {
+        String metadataFile = path + "eclipselink-oxm.xml";
+        
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
@@ -157,7 +180,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            generateSchema(classes, properties, outputResolver, classLoader); 
+            generateSchema(classes, properties, outputResolver, loader); 
         } catch (Exception ex) {
             ex.printStackTrace();
             fail("Schema generation failed unexpectedly: " + ex.toString());

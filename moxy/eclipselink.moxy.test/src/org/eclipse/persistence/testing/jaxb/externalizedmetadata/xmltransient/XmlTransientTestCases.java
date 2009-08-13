@@ -55,7 +55,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlTransientOnClassValid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String result = validateAgainstSchema(PATH + "employee.xml", EMPTY_NAMESPACE, outputResolver);
@@ -70,7 +70,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlTransientOnClassInvalid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String result = validateAgainstSchema(PATH + "address.xml", null, outputResolver);
@@ -85,7 +85,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlTransientOnProperty() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String result = validateAgainstSchema(PATH + "employee-invalidproperty.xml", null, outputResolver);
@@ -100,7 +100,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlTransientOnField() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String result = validateAgainstSchema(PATH + "employee-invalidfield.xml", null, outputResolver);

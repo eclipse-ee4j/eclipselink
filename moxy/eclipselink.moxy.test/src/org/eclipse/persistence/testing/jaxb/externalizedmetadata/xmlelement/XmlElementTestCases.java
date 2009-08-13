@@ -43,7 +43,7 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementOverride() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 2);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             // validate schema
             String controlSchema = PATH + "schema.xsd";
             compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -63,7 +63,7 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementOverrideInvalid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 2);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             // validate schema
             String controlSchema = PATH + "schema.xsd";
             compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));

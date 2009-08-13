@@ -42,7 +42,7 @@ public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testEmployeeXmlTypeOverride() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee.xml";
@@ -59,7 +59,7 @@ public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testEmployeeXmlTypeOverrideInvalid() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, 1);
+            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
             shouldGenerateSchema = false;
         }
         String src = PATH + "employee-invalid.xml";
