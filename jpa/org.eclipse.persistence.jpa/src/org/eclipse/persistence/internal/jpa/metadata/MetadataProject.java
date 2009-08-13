@@ -203,7 +203,7 @@ public class MetadataProject {
      * All mappedSuperclass accessors, identity is handled by keying on className.
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
-    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclassAccessors;
+    private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
     /**
      * INTERNAL:
@@ -248,7 +248,7 @@ public class MetadataProject {
         
         m_accessorsWithDerivedIDs = new HashSet<ClassAccessor>();
         
-        m_mappedSuperclassAccessors = new HashMap<String, MappedSuperclassAccessor>();
+        m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
     }
     
     /**
@@ -416,7 +416,7 @@ public class MetadataProject {
      * Note: The mapped-superclasses that are added here are those that are 
      * defined in XML only!
      */
-    public void addMetamodelMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
+    public void addMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
         if (m_mappedSuperclasses.containsKey(className)) {
             m_mappedSuperclasses.get(className).merge(mappedSuperclass);
         } else {
@@ -440,12 +440,12 @@ public class MetadataProject {
      * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */    
-    public void addMappedSuperclassAccessor(MetadataClass metadataClass, MappedSuperclassAccessor accessor) {
+    public void addMetamodelMappedSuperclass(MetadataClass metadataClass, MappedSuperclassAccessor accessor) {
         // If metadataClass is null, then get it from the location on the accessor
         String className = metadataClass.getName();
         
         // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
-        if(null != className && !m_mappedSuperclassAccessors.containsKey(className)) {
+        if(null != className && !m_metamodelMappedSuperclasses.containsKey(className)) {
             // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
             accessor.getDescriptor().setClassAccessor(accessor);
             accessor.processAccessType();
@@ -453,7 +453,7 @@ public class MetadataProject {
             // Generics Handler: Check if the referenceType is not set for Collection accessors            
             accessor.addAccessors();
             // Add the accessor to our custom Map keyed on className for separate processing in stage2
-            m_mappedSuperclassAccessors.put(className, accessor);
+            m_metamodelMappedSuperclasses.put(className, accessor);
             MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
             // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
             RelationalDescriptor relationalDescriptor = (RelationalDescriptor)metadataDescriptor.getClassDescriptor();
@@ -477,7 +477,7 @@ public class MetadataProject {
              * but we do not need it until metamodel processing time avoiding a _persistence_new call.
              * See MetamodelImpl.initialize()
              */
-             m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
+            m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
         }
     }
     
@@ -802,7 +802,7 @@ public class MetadataProject {
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
     public Collection<MappedSuperclassAccessor> getMetamodelMappedSuperclasses() {
-        return m_mappedSuperclassAccessors.values();
+        return m_metamodelMappedSuperclasses.values();
     }
     
     /**
@@ -1278,7 +1278,7 @@ public class MetadataProject {
      */
     public void processStage2() {
         // 266912: process mappedSuperclasses separately from entity descriptors
-        for(MappedSuperclassAccessor msAccessor : m_mappedSuperclassAccessors.values()) {
+        for(MappedSuperclassAccessor msAccessor : m_metamodelMappedSuperclasses.values()) {
             if(!msAccessor.isProcessed()) {               
                 msAccessor.processMetamodelDescriptor();    
             }

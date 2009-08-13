@@ -452,7 +452,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      * Process the accessType for a MappedSuperclass.
-     * This function is referenced by MetadataProject.addMappedSuperclassAccessor().
+     * This function is referenced by MetadataProject.addMetamodelMappedSuperclass().
      * The overridden function on the subclass must be used in all other cases.
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */

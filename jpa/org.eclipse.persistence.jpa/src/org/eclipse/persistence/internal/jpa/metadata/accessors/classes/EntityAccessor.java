@@ -196,7 +196,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                         metadataClass,
                         getProject());
                 // process what type of access is on the superclass (in case inheriting members differ in their access type)
-                getProject().addMappedSuperclassAccessor(metadataClass, msAccessor);
+                getProject().addMetamodelMappedSuperclass(metadataClass, msAccessor);
             }
         } else {
             // Reload the accessor from XML to get our own instance not already on the project
@@ -204,7 +204,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             m_mappedSuperclasses.add(msAccessor);
             // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
             // Note: we must again reload our accessor from XML or we will be sharing instances of the descriptor
-            getProject().addMappedSuperclassAccessor(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
+            getProject().addMetamodelMappedSuperclass(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
         }
     }
     

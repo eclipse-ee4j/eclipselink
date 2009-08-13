@@ -259,7 +259,7 @@ public class MetamodelImpl implements Metamodel {
         Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
         for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
             RelationalDescriptor descriptor = anIterator.next();
-            // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMappedSuperclassAccessor)
+            // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass)
             // getActiveSession will return a possible external transaction controller session when running on an application server container 
             ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
             descriptor.convertClassNamesToClasses(classLoader);

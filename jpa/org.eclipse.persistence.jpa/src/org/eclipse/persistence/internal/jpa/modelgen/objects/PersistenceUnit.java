@@ -98,7 +98,7 @@ public class PersistenceUnit {
         if (! m_project.hasMappedSuperclass(elementString) && ! excludeUnlistedClasses()) {
             MetadataClass mappedSuperclassClass = m_factory.getMetadataClass(element);
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclassClass.getAnnotation(MappedSuperclass.class), mappedSuperclassClass, m_project);
-            m_project.addMetamodelMappedSuperclass(element.toString(), mappedSuperclassAccessor);
+            m_project.addMappedSuperclass(element.toString(), mappedSuperclassAccessor);
         }
     }
     

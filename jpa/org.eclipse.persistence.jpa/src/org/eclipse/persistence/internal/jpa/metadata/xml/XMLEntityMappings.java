@@ -517,7 +517,7 @@ public class XMLEntityMappings extends ORMetadata {
             mappedSuperclass.setEntityMappings(this);
             
             // Add it to the project. This will merge it if necessary.
-            m_project.addMetamodelMappedSuperclass(mappedSuperclassClass.getName(), mappedSuperclass);
+            m_project.addMappedSuperclass(mappedSuperclassClass.getName(), mappedSuperclass);
         }
     }
     
