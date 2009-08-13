@@ -47,7 +47,9 @@
         - build.all : compiles all components and tests, including Oracle extensions
         - build-eclipselink-jar : compiles all components except tests, packages eclipselink.jar
         - clean : removes all build generated files
-        - clean-runtime : removes all runtime specific (product) build generated files
+        - clean-runtime : removes all runtime specific (product) build generated files (calls both clean-runtime-checkedin and clean-runtime-built)
+        - clean-runtime-checkedin : removes all runtime specific (product) build generated files, that are part of the svn repository (checked in with build)
+        - clean-runtime-built : removes all runtime specific (product) files generated during the build, but that are NOT checked in
         - clean-testing : removes all testing specific build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
@@ -170,8 +172,8 @@
     <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
 
     <target name="clean-runtime" depends="clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
-    <!--   This allows testing to call a specific target that won't remove the default 
-           (or dropped-in copy of) eclipselink and the persistence jar, while still 
+    <!--   This allows testing to call a specific target that won't remove the default
+           (or dropped-in copy of) eclipselink and the persistence jar, while still
            allowing unchanged operation by developers and users to clean all built artifacts. -->
     <target name="clean-runtime-checkedin" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
@@ -220,7 +222,7 @@
         <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="build"/>
     </target>
-    
+
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="bnd-core">
         <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
@@ -313,8 +315,8 @@
                     javax/persistence/AccessType.class,
                     javax/persistence/Cache.class,
                     javax/persistence/Cacheable.class,
-					javax/persistence/CacheStoreMode.class,
-					javax/persistence/CacheRetrieveMode.class,
+                    javax/persistence/CacheStoreMode.class,
+                    javax/persistence/CacheRetrieveMode.class,
                     javax/persistence/LockModeType.class,
                     javax/persistence/LockTimeoutException.class,
                     javax/persistence/PessimisticLockException.class,
@@ -344,18 +346,18 @@
                     javax/persistence/SelectItem.class,
                     javax/persistence/QueryBuilder.class,
                     javax/persistence/TypedQuery.class,
-                    javax/persistence/criteria/QueryBuilder$Trimspec.class, 
+                    javax/persistence/criteria/QueryBuilder$Trimspec.class,
                     javax/persistence/criteria/QueryBuilder$SimpleCase.class,
                     javax.persistence/criteria/QueryBuilder$Coalesce.class,
                     javax.persistence/criteria/QueryBuilder$In.class,
                     javax/persistence/criteria/QueryBuilder$Case.class,
-					javax/persistence/PredicateOperand.class,
+                    javax/persistence/PredicateOperand.class,
                     javax/persistence/PathExpression.class,
-					javax/persistence/PersistenceUtil.class,
-					javax/persistence/Tuple.class,
-					javax/persistence/TupleElement.class,
-                    javax/persistence/metamodel/Attribute.class, 
-                    javax/persistence/metamodel/Type$PersistenceType.class, 
+                    javax/persistence/PersistenceUtil.class,
+                    javax/persistence/Tuple.class,
+                    javax/persistence/TupleElement.class,
+                    javax/persistence/metamodel/Attribute.class,
+                    javax/persistence/metamodel/Type$PersistenceType.class,
                     javax/persistence/criteria/Predicate$BooleanOperator.class,
                     javax/persistence/metamodel/Attribute$PersistentAttributeType.class,
                     javax/persistence/metamodel/BasicType.class,
@@ -371,7 +373,7 @@
                     javax/persistence/metamodel/MappedSuperclassType.class,
                     javax/persistence/metamodel/Metamodel.class,
                     javax/persistence/metamodel/PluralAttribute.class,
-                    javax/persistence/metamodel/PluralAttribute$CollectionType.class, 
+                    javax/persistence/metamodel/PluralAttribute$CollectionType.class,
                     javax/persistence/metamodel/SetAttribute.class,
                     javax/persistence/metamodel/SingularAttribute.class,
                     javax/persistence/metamodel/StaticMetamodel.class,
@@ -388,7 +390,7 @@
                     javax/persistence/criteria/ListJoin.class,
                     javax/persistence/criteria/MapJoin.class,
                     javax/persistence/criteria/Order.class,
-					javax/persistnece/criteria/ParameterExpression,
+                    javax/persistnece/criteria/ParameterExpression,
                     javax/persistence/criteria/Path.class,
                     javax/persistence/criteria/PluralJoin.class,
                     javax/persistence/criteria/Predicate.class,
@@ -508,6 +510,9 @@
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
         <property name="javadoc.title" value="${javadoc.prefixTitle} ${version.string} ${javadoc.postfixTitle}"/>
+        <delete dir="${build.dir}/commonj.sdo"/>
+        <unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
+        <delete dir="${eclipselink.javadocs}"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
@@ -549,6 +554,9 @@
             </fileset>
             <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
             </fileset>
             <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
