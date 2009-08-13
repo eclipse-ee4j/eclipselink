@@ -47,6 +47,10 @@
         - build.all : compiles all components and tests, including Oracle extensions
         - build-eclipselink-jar : compiles all components except tests, packages eclipselink.jar
         - clean : removes all build generated files
+        - clean-runtime : removes all runtime specific (product) build generated files (calls both clean-runtime-checkedin and clean-runtime-built)
+        - clean-runtime-checkedin : removes all runtime specific (product) build generated files, that are part of the svn repository (checked in with build)
+        - clean-runtime-built : removes all runtime specific (product) files generated during the build, but that are NOT checked in
+        - clean-testing : removes all testing specific build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-extensions : compiles Oracle extensions and tests
@@ -126,6 +130,7 @@
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence.jar}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
@@ -145,6 +150,9 @@
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
+    <!-- compiles and builds all components, packages eclipselink.jar and src zip. -->
+    <target name="build-src" depends="build-eclipselink-jar, package-src-jar" description="build EclipseLink jar and source zip"/>
+
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
@@ -160,10 +168,18 @@
 <!-- ================================================================================= -->
 
     <!-- Cleans all build generated files. -->
-    <target name="clean" description="Clean the build">
+    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
+
+    <target name="clean-runtime" depends="clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
+    <!--   This allows testing to call a specific target that won't remove the default
+           (or dropped-in copy of) eclipselink and the persistence jar, while still
+           allowing unchanged operation by developers and users to clean all built artifacts. -->
+    <target name="clean-runtime-checkedin" description="Clean the runtime projects">
+        <delete file="${eclipselink.jar.name}"/>
+    </target>
+    <target name="clean-runtime-built" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
-        <!-- ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/ -->
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
@@ -175,22 +191,23 @@
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+    </target>
+
+    <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="build.xml" dir="${eclipselink.core.test}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
-        <delete file="${eclipselink.jar.name}"/>
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <!-- ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/ -->
         <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>
@@ -376,10 +393,14 @@
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
-        <property name="javadoc.title" value="${javadoc.prefixTitle} ${version.string} ${javadoc.postfixTitle}"/>
-		<delete dir="${build.dir}/commonj.sdo"/>
-		<unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
-		<delete dir="${eclipselink.javadocs}"/>
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <delete dir="${build.dir}/commonj.sdo"/>
+        <delete dir="${build.dir}/javax.xml.bind"/>
+        <delete dir="${eclipselink.javadocs}"/>
+        <unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
+        <!-- unzip src="${eclipselink.moxy.plugins}/javax.xml.bind/JAXB.source_2.0.0.v20080604-1500.jar" dest="${build.dir}/javax.xml.bind/src"/>
+        -->
         <javadoc
             maxmemory="384m"
             Verbose="false"
@@ -387,7 +408,7 @@
             destdir="${eclipselink.javadocs}"
             useexternalfile="yes"
             additionalparam="-breakiterator -quiet"
-            windowtitle="${javadoc.title}"
+            windowtitle="${eclipselink.javadoc.title}"
             >
             <classpath>
                 <path refid="javadoc.path"/>
@@ -396,9 +417,20 @@
             <tag name ="since" scope="all" description="Since:" />
             <tag name ="SBGen" scope="all" description="SBGen:" />
             <tag name ="bug" enabled="true" description="Related Bugs:" />
-            <doctitle><![CDATA[${javadoc.title}]]></doctitle>
-            <header><![CDATA[${javadoc.title}]]></header>
+            <doctitle><![CDATA[${eclipselink.javadoc.title}]]></doctitle>
+            <header><![CDATA[${eclipselink.javadoc.title}]]></header>
 
+            <!-- *** include Dependent APIs in Javadoc  *** --> 
+            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+                <include name="javax/persistence/**/*.java"/>
+            </fileset>
+            <!-- fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+                <include name="**/*.java"/>
+            </fileset -->
+            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
+            </fileset>
+            <!-- *** EclipseLink modules *** --> 
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
@@ -418,12 +450,6 @@
             <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
-            </fileset>
-            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
-                <include name="javax/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
-                <include name="commonj/sdo/**/*.java"/>
             </fileset>
             <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
