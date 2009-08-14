@@ -595,7 +595,9 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLDirectMapping(XMLDirectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XPathFragment frag = ((XMLField) mapping.getField()).getXPathFragment();
+        XMLField xmlField = (XMLField) mapping.getField();
+        
+        XPathFragment frag = xmlField.getXPathFragment();
         if (frag.isSelfFragment()) {
             // do nothing;
             return;
@@ -622,6 +624,9 @@ public class SchemaModelGenerator {
 
         if (frag.isAttribute()) {
             Attribute attr = buildAttribute(mapping, schemaTypeString);
+            if (xmlField.isRequired()) {
+                attr.setUse(Attribute.REQUIRED);
+            }
             ct.getOrderedAttributes().add(attr);
         } else {
             seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
@@ -637,6 +642,9 @@ public class SchemaModelGenerator {
                 if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
                     elem.setNillable(true);
                 }
+                if (xmlField.isRequired()) {
+                    elem.setMinOccurs("1");
+                }
                 seq.addElement(elem);
             }
         }
@@ -651,15 +659,15 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLCompositeDirectCollectionMapping(XMLCompositeDirectCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XMLField field = ((XMLField) (mapping).getField());
+        XMLField xmlField = ((XMLField) (mapping).getField());
 
-        XPathFragment frag = field.getXPathFragment();
+        XPathFragment frag = xmlField.getXPathFragment();
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
     	frag = getTargetXPathFragment(frag);
 
-        String schemaTypeString = getSchemaTypeForElement(field, mapping.getAttributeElementClass(), workingSchema);
+        String schemaTypeString = getSchemaTypeForElement(xmlField, mapping.getAttributeElementClass(), workingSchema);
         Element element = null;
-        if (field.usesSingleNode()) {
+        if (xmlField.usesSingleNode()) {
             SimpleType st = new SimpleType();
             org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
 
@@ -669,7 +677,7 @@ public class SchemaModelGenerator {
             list.setItemType(schemaTypeString);
             st.setList(list);
 
-            element = buildElement(field.getXPathFragment(), null, Occurs.ZERO, null);
+            element = buildElement(xmlField.getXPathFragment(), null, Occurs.ZERO, null);
             element.setSimpleType(st);
         } else {
             if (frag.getNamespaceURI() != null) {
@@ -683,7 +691,11 @@ public class SchemaModelGenerator {
         if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
             element.setNillable(true);
         }
-        
+
+        if (xmlField.isRequired()) {
+            element.setMinOccurs("1");
+        }
+
         seq.addElement(element);
     }
 
@@ -702,13 +714,15 @@ public class SchemaModelGenerator {
      * @param collection
      */
     protected void processXMLCompositeMapping(AggregateMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, boolean collection) {
+        XMLField xmlField = (XMLField) mapping.getField();
+        
         String refClassName = mapping.getReferenceClassName();
         XMLDescriptor refDesc = getDescriptorByName(refClassName, descriptors);
         if (refDesc == null) {
             throw DescriptorException.descriptorIsMissing(refClassName, mapping);
         }
         
-        XPathFragment frag = ((XMLField) mapping.getField()).getXPathFragment();
+        XPathFragment frag = xmlField.getXPathFragment();
     	seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
     	frag = getTargetXPathFragment(frag);
     	
@@ -737,7 +751,11 @@ public class SchemaModelGenerator {
             isNillable = ((XMLCompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();            
         }
         element.setNillable(isNillable);
-        
+
+        if (xmlField.isRequired()) {
+            element.setMinOccurs("1");
+        }
+
         seq.addElement(element);
     }
 

@@ -552,7 +552,7 @@ public class SchemaModelProject extends Project {
         XMLDirectMapping maxOccursMapping = new XMLDirectMapping();
         maxOccursMapping.setAttributeName("maxOccurs");
         maxOccursMapping.setXPath("@maxOccurs");
-        minOccursMapping.setNullValue(Occurs.ONE);
+        maxOccursMapping.setNullValue(Occurs.ONE);
         descriptor.addMapping(maxOccursMapping);
 
         XMLDirectMapping nillableMapping = new XMLDirectMapping();
@@ -892,7 +892,7 @@ public class SchemaModelProject extends Project {
         XMLDirectMapping maxOccursMapping = new XMLDirectMapping();
         maxOccursMapping.setAttributeName("maxOccurs");
         maxOccursMapping.setXPath("@maxOccurs");
-        minOccursMapping.setNullValue(Occurs.ONE);
+        maxOccursMapping.setNullValue(Occurs.ONE);
         descriptor.addMapping(maxOccursMapping);
 
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();

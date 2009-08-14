@@ -286,6 +286,7 @@ public class XMLField extends DatabaseField {
     private XPathFragment xPathFragment;
     private XPathFragment lastXPathFragment;
     private boolean isCDATA = false;
+    private boolean isRequired = false;
 
     /** Makes this maintain the collection of items in a single attribute or element instead of having one element per item in the collection.
     * Default is false */
@@ -784,4 +785,27 @@ public class XMLField extends DatabaseField {
         }
         return getSchemaType().equals(schemaType);    	
     }
+
+    /**
+     * Indicates if this XMLField represents a "required" XML element or attribute
+     * ([minOccurs="1"] for elements, [use="required"] for attributes).  NOTE: This
+     * API is used only for Schema Generation.
+     * 
+     * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
+     */
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    /**
+     * Set whether this XMLField represents a "required" XML element or attribute
+     * ([minOccurs="1"] for elements, [use="required"] for attributes).  NOTE: This
+     * API is used only for Schema Generation.
+     * 
+     * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
+     */
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
 }

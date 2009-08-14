@@ -325,4 +325,19 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    @Override
+    protected ClassDescriptor buildXMLFieldDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLFieldDescriptor();
+
+        XMLDirectMapping isRequiredMapping = new XMLDirectMapping();
+        isRequiredMapping.setAttributeName("isRequired");
+        isRequiredMapping.setGetMethodName("isRequired");
+        isRequiredMapping.setSetMethodName("setRequired");
+        isRequiredMapping.setXPath(getPrimaryNamespaceXPath() + "@is-required");
+        isRequiredMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(isRequiredMapping);
+
+        return descriptor;
+    }    
+    
 }

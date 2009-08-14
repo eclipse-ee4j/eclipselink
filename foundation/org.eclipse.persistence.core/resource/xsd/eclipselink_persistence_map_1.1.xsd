@@ -3712,6 +3712,7 @@
             </xsd:annotation>
           </xsd:element>
         </xsd:sequence>
+        <xsd:attribute name="is-required" type="xsd:boolean"/>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
