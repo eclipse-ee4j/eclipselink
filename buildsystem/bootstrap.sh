@@ -47,11 +47,11 @@ then
             #temporarily store Name of Milestone in TARGET
             #Syntax: ./bootstrap.sh milestone M4 QUALIFIER [branch]
             #  milestone - tells system that it will be promoting a build to a milestone
-            #  M4        - an example of the milestone. Used in dir storage, and maven. 
+            #  M4        - an example of the milestone. Used in dir storage, and maven.
             #              Also of note "release" is a special milestone value that tells
             #              the system to promote build to the release for the version.
-            #  QUALIFIER - gives the system all the info it needs to identify the build 
-            #              to promote.              
+            #  QUALIFIER - gives the system all the info it needs to identify the build
+            #              to promote.
             TARGET=${BRANCH}
             BRANCH=$4
             TARG_NM=${TARGET}
@@ -101,8 +101,9 @@ else
 fi
 
 echo "Target     ='${TARGET}'"
-echo "Branch name='${BRANCH_NM}'"
+echo "Target name='${TARG_NM}'"
 echo "Branch     ='${BRANCH}'"
+echo "Branch name='${BRANCH_NM}'"
 
 SVN_EXEC=`which svn`
 if [ $? -ne 0 ]
@@ -178,7 +179,7 @@ getPrevRevision() {
         ## exclude "build unnecessary" cb's without effecting other build types
         if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ]
         then
-            PREV_REV=`head -175 ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+            PREV_REV=`cat ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
             break
         fi
     done
@@ -334,7 +335,7 @@ then
         echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
-    
+
     ## Parse $QUALIFIER for SVN revision value
     SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
     if [ "${SVNREV}" = "" ]
@@ -369,12 +370,12 @@ fi
 
 if [ "${TEST}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
+    ANT_BASEARG="${ANT_BASEARG} -D_NoUpdateSrc=1"
 fi
 
 if [ "${UD2M}" = "true" ]
 then
-    ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_DoNotUpdate=1"
+    ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_NoUpdateSrc=1"
 fi
 
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
@@ -423,19 +424,19 @@ FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failur
 BUILD_FAILED="false"
 
 #set -x
-## Verify Build Started bothering with setting up for an email or post-processing
-## if [ not "build unnecessary"  ] - (an aborted cb attempt due to no changes)
+## Verify Build Started before bothering with setting up for an email or post-processing
+## if [ not "build unnecessary"  ] - (if build wasn't aborted due to no changes)
 ##
 if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
-    VERSION=`head -175 ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
+    VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo "Generating summary email for ${VERSION} build."
 
     ## find the current revision
     ##
-    CUR_REV=`head -175 ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+    CUR_REV=`cat ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
 
     ## find the revision of the last build
     ##
@@ -482,11 +483,21 @@ then
         else
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
             BUILD_FAILED="true"
+            TESTS_FAILED="true"
         fi
 
     else
         MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
         BUILD_FAILED="true"
+    fi
+
+    if [ "${TESTS_FAILED}" = "true" ]
+    then
+        if [ "${TARG_NM}" = "cb" ]
+        then
+            # Zip up test results and copy them to appropriate location
+            ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
+        fi
     fi
 
     if [ "${BUILD_FAILED}" = "true" ]

@@ -129,7 +129,7 @@
 
     <target name="common-init">
         <property file="${basedir}/autobuild.properties"/>
-        
+
         <!-- Set version.string appropriately. variable should only be used for   -->
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
@@ -157,7 +157,7 @@
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
         <property name="p2.base.dir" value="${p2.repos.path}"/>
         <property name="p2.base.url" value="file:${p2.base.dir}"/>
-        
+
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
         <!-- specify location of eclipse SDK install to use                       -->
@@ -179,7 +179,7 @@
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
-        
+
         <!-- generate string for tag creation (only used if milestone, or release build)  -->
         <condition property="milestone.tag" value="${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
@@ -197,7 +197,7 @@
         <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
         <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
         <echo message="env.PATH        = '${env.PATH}'"/>
-        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>   
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
         <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=" "/>
@@ -373,7 +373,7 @@
             <available file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
         </waitfor>
     </target>
-    
+
     <target name="wait-report-timeout" if="signing.time.limit.exceeded">
         <echo message="Signing aborted, wait time exceeded!"/>
     </target>
@@ -489,7 +489,7 @@
         <property name="signed.jar.path" value="${temp.rebuild.path}/signed"/>
         <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.p2.archive.signed}"/>
     </target>
-       
+
     <target name="regen-archives" depends="regen-installer-archive, regen-plugin-archive"/>
     <target name="regen-installer-archive">
         <!--     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again. -->
@@ -508,9 +508,9 @@
         <!-- Rezip EclipseLink Installer Zip -->
         <!-- zip destfile="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.path}/install" includes="**/*" />
-        </zip --> 
+        </zip -->
     </target>
-    
+
     <target name="regen-plugin-archive">
         <echo message="Creating signed versions of Plugins archive..."/>
         <!-- unzip original PluginInstaller to working dir -->
@@ -528,9 +528,9 @@
         <!-- Rezip EclipseLink Plugins Zip -->
         <zip destfile="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.path}/bundlezip" includes="**/*" />
-        </zip> 
+        </zip>
     </target>
-    
+
     <target name="gen-build-for-maven">
         <!-- MUST BE DONE AFTER Recreating "signed" version of the archives -->
         <echo message="Prepare for Maven publishing"/>
@@ -619,6 +619,36 @@
             <property name="bundle.installer.exist" value="true"/>
         </ant>
         <delete dir="${temp.rebuild.path}" failonerror="false"/>
+    </target>
+
+    <!-- Helper target for cb processing -->
+    <!--   Is intendended only to be called by build post-processing if a cb fails tests -->
+    <!--   Variables used defined only on command-line of script:                        -->
+    <!--       test.result.zip      - name of zip containing test result files           -->
+    <!--       test.result.dest.dir - location of "failed build" result dir              -->
+    <!--                                                                                 -->
+    <target name="save-tst-results" depends="init">
+        <echo message="build.root.dir=${build.root.dir}"/>
+        <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
+        <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
+        <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
+        <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
+        <zip destfile="${basedir}/${test.result.zip}">
+            <zipfileset dir="${build.root.dir}">
+                <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
+                <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
+                <include name="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
+                <include name="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
+                <include name="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
+                <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
+                <include name="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
+            </zipfileset>
+        </zip>
+        <copy todir="${test.result.dest.dir}" file="${basedir}/${test.result.zip}"  failonerror="false"/>
+        <delete file="${basedir}/${test.result.zip}" failonerror="false"/>
     </target>
 
 </project>
