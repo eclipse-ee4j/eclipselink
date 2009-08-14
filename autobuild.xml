@@ -163,7 +163,7 @@
         <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
         <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
         <echo message="env.PATH        = '${env.PATH}'"/>
-        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>   
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
         <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=" "/>
@@ -431,7 +431,7 @@
             </patternset>
         </unzip>
     </target>
-    
+
     <target name="extract-plugin-archive">
         <!-- unzip original PluginInstaller to working dir -->
         <unzip dest="${temp.rebuild.path}/bundlezip" src="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
@@ -440,7 +440,7 @@
             </patternset>
         </unzip>
     </target>
-    
+
     <target name="gen-build-for-maven" depends="extract-installer-archive, extract-plugin-archive">
         <!-- MUST BE DONE AFTER extracting a version of the archives -->
         <echo message="Prepare for Maven publishing"/>

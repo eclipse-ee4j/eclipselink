@@ -370,12 +370,12 @@ fi
 
 if [ "${TEST}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
+    ANT_BASEARG="${ANT_BASEARG} -D_NoUpdateSrc=1"
 fi
 
 if [ "${UD2M}" = "true" ]
 then
-    ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_DoNotUpdate=1"
+    ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_NoUpdateSrc=1"
 fi
 
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
@@ -425,7 +425,7 @@ BUILD_FAILED="false"
 
 #set -x
 ## Verify Build Started before bothering with setting up for an email or post-processing
-## if [ not "build unnecessary"  ] - (an aborted cb attempt due to no changes)
+## if [ not "build unnecessary"  ] - (if build wasn't aborted due to no changes)
 ##
 if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
