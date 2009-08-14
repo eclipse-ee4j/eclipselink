@@ -1815,6 +1815,12 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         javaTypes.put(ClassConstants.SHORT, XMLConstants.SHORT_QNAME);
         javaTypes.put(ClassConstants.UTILDATE, XMLConstants.DATE_TIME_QNAME);
 
+        javaTypes.put(ClassConstants.CHAR, XMLConstants.UNSIGNED_INT_QNAME);
+        javaTypes.put(ClassConstants.PCHAR, XMLConstants.UNSIGNED_INT_QNAME);
+        javaTypes.put(ClassConstants.DURATION, XMLConstants.DURATION_QNAME);
+        javaTypes.put(XMLConstants.UUID, XMLConstants.STRING_QNAME);
+        javaTypes.put(ClassConstants.XML_GREGORIAN_CALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
+
         return javaTypes;
     }
 

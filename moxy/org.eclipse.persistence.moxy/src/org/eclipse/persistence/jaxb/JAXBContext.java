@@ -87,13 +87,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public JAXBContext(XMLContext context) {
         super();
         xmlContext = context;
-/*        List<Session> sessions = xmlContext.getSessions();
-        
-        for (Session session : sessions) {
-        	XMLConversionManager mgr = (XMLConversionManager)session.getDatasourcePlatform().getConversionManager();
-        	mgr.getDefaultJavaTypes().put(ClassConstants.APBYTE, XMLConstants.BASE_64_BINARY_QNAME);
-        	mgr.getDefaultJavaTypes().put(ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
-        }*/
     }
     
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
