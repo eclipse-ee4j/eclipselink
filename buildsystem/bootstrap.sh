@@ -544,6 +544,18 @@ then
     else
        echo "     failed."
     fi
+else
+    if [ "`cat ${DATED_LOG} | grep -n  -m1 env.TARGET |  cut -d= -f2 | tr -d '\047' | tr -d ' '`" = "nightly" ]
+    then
+        if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
+        echo "Because no changes to the repository were detected." > ${MAILBODY}
+        echo " " >> ${MAILBODY}
+        echo "The build log can be found at: ${DATED_LOG}" >> ${MAILBODY}
+        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build aborted."
+        MAILLIST=${SUCC_MAILLIST}
+        echo "Sending 'Nightly Aborted' email..."
+        cat ${MAILBODY} | ${MAIL_EXEC} -r ${MAILFROM} -s "BUILD STATUS:: ${MAIL_SUBJECT}" ${MAILLIST}
+    fi
 fi
 
 ## Remove tmp directory
