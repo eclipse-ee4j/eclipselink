@@ -353,6 +353,7 @@
     <RunTestsuite testsuite-name="P4testWebService"/>
     <RunTestsuite testsuite-name="P5testWebService"/>
     <RunTestsuite testsuite-name="P6testWebService"/>
+    <RunTestsuite testsuite-name="PLSQLHelperObjectsBuilderTest"/>
     <RunTestsuite testsuite-name="TopLevelPLSQLStoredProcedureTest"/>
     <RunTestsuite testsuite-name="TopLevelStoredProcedureTest"/>
     <TeardownDatabase filename="alltests"/>
