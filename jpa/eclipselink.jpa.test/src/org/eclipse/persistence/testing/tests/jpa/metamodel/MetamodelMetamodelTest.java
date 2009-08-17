@@ -71,6 +71,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
@@ -588,6 +589,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Type<?> personIdType = null;
             MappedSuperclassTypeImpl<Person> msPerson = (MappedSuperclassTypeImpl)metamodel.type(Person.class);
             assertNotNull(msPerson);
+            MappedSuperclassTypeImpl<Corporation> msCorporation = (MappedSuperclassTypeImpl)metamodel.type(Corporation.class);
+            assertNotNull(msCorporation);
             
             try {
                 personIdType = msPerson.getIdType();
@@ -821,6 +824,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             /**
              *  Return the attributes declared by the managed type.
+             *  Testing for Design Issue 52:
+             *  http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
              */
              //java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
             expectedIAExceptionThrown = false;            
@@ -831,28 +836,29 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  *     +
                  *     +- id : Integer
                  *     +- name : String
+                 *     +- historicalEmployers : Manufacturer
                  *     
                  *     Corporation : MappedSuperclass extends Person
                  *       +
-                 *       +- corpComputers : Set 
+                 *       +- corporateComputers : Collection 
                  *       
                  *       Manufacturer : Entity extends Corporation
                  *         +
                  *         +- computers : Set
-                 *         +- hardwareDesigners : Set
+                 *         +- hardwareDesigners : List
                  *         +- hardwareDesignersMap : Map
                  *         +- version : int
                  */
                 Set<Attribute<Manufacturer, ?>> declaredAttributesSet = entityManufacturer.getDeclaredAttributes();
                 //System.out.println("entityManufacturer.getDeclaredAttributes() " + declaredAttributesSet);
                 assertNotNull(declaredAttributesSet);
-                // We should see 4 declared out of 7 attributes for Manufacturer 
+                // We should see 4 declared out of 8 attributes for Manufacturer 
                 assertEquals(4, declaredAttributesSet.size());
                 // Id is declared 2 levels above
                 assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("id"))); //
                 // name is declared 2 levels above
                 assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("name"))); //
-                // corpComputers is declared 1 level above
+                // corporateComputers is declared 1 level above
                 assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("corporateComputers"))); //
                 // version is declared at this level
                 assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("version"))); //
@@ -861,7 +867,34 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // hardwareDesigners is declared at this level
                 assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
                 // hardwareDesignersMap is declared at this level
-                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("hardwareDesignersMap"))); //                
+                assertTrue(declaredAttributesSet.contains(entityManufacturer.getAttribute("hardwareDesignersMap"))); //
+                // historicalEmployers is declared 2 levels above
+                assertFalse(declaredAttributesSet.contains(entityManufacturer.getAttribute("historicalEmployers"))); //
+                
+                Set<Attribute<Corporation, ?>> declaredAttributesSetForCorporation = msCorporation.getDeclaredAttributes();
+                assertNotNull(declaredAttributesSetForCorporation);
+                // We should see 1 declared out of 4 attributes for Computer 
+                assertEquals(1, declaredAttributesSetForCorporation.size());
+                // Id is declared 1 level above
+                //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("id"))); //
+                // name is declared 1 level above but is not visible in a ms-->ms hierarchy
+                //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("name"))); //
+                // corporateComputers is declared at this level
+                assertTrue(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("corporateComputers"))); //
+                // historicalEmployers is declared 1 level above but is not visible in a ms-->ms hierarchy
+                //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("historicalEmployers"))); //                
+
+                Set<Attribute<Person, ?>> declaredAttributesSetForPerson = msPerson.getDeclaredAttributes();
+                assertNotNull(declaredAttributesSetForPerson);
+                // We should see 3 declared out of 3 attributes for Person 
+                assertEquals(3, declaredAttributesSetForPerson.size());
+                // Id is declared at this level
+                assertTrue(declaredAttributesSetForPerson.contains(msPerson.getAttribute("id"))); //
+                // name is declared at this level
+                assertTrue(declaredAttributesSetForPerson.contains(msPerson.getAttribute("name"))); //
+                // historicalEmployers is declared at this level
+                assertTrue(declaredAttributesSetForPerson.contains(msPerson.getAttribute("historicalEmployers"))); //
+
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -1238,9 +1271,80 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 expectedIAExceptionThrown = true;            
             }
             assertTrue(expectedIAExceptionThrown);
-            
-            
 
+            expectedIAExceptionThrown = false;            
+            Attribute<Manufacturer, ?> aListAttribute = null;
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // the attribute is on the class
+                aListAttribute = entityManufacturer.getDeclaredAttribute("hardwareDesigners");//, entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aListAttribute);
+
+
+            // check the root
+            expectedIAExceptionThrown = false;            
+            Attribute<Person, Manufacturer> aCollectionAttribute = null;
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // the attribute is on the class
+                IdentifiableType person = entityManufacturer.getSupertype().getSupertype();
+                aCollectionAttribute = person.getDeclaredAttribute("historicalEmployers");//, entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aCollectionAttribute);
+            // check managed type
+            assertEquals(msPerson, aCollectionAttribute.getDeclaringType());            
+            // check element type
+            //assertEquals(entityManufacturer, aCollectionAttribute.getDeclaringType());
+
+
+            // positive: check one level down from the root
+            expectedIAExceptionThrown = false;            
+            Attribute<Corporation,?> aCollectionAttribute2 = null;
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // the attribute is on the class
+                IdentifiableType corporation = entityManufacturer.getSupertype();                
+                aCollectionAttribute2 = corporation.getDeclaredAttribute("corporateComputers");//, entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aCollectionAttribute2);
+
+            // negative: check one level down from the root
+            expectedIAExceptionThrown = false;            
+            aCollectionAttribute2 = null;
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // the attribute is on the class
+                IdentifiableType corporation = entityManufacturer.getSupertype();                
+                aCollectionAttribute2 = corporation.getDeclaredAttribute("notFound");//, entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            // we expect an IAE on getAttribute(name) if name does not exist
+            assertTrue(expectedIAExceptionThrown);
+            
+            
             /**
              *  Return the single-valued attribute of the managed type that
              *  corresponds to the specified name in the represented type.
@@ -1437,6 +1541,23 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *           type has a single id attribute
              */
             //public boolean hasSingleIdAttribute() {
+            // verify false for "no" type of Id attribute
+            // test normal path
+// 20090817: mid-implementation in parallel dev stream
+/*            
+            expectedIAExceptionThrown = false;
+            boolean hasSingleIdAttribute = false;
+            try {
+                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertTrue(hasSingleIdAttribute);
+*/            
+            
             
             /**
              *  Whether or not the identifiable type has a version attribute.
