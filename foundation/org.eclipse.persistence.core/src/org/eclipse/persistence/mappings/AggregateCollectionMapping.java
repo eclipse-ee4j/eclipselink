@@ -628,6 +628,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+                batchQuery.setSession(null); //reset session as it is no longer needed.
             }
         }
         Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));

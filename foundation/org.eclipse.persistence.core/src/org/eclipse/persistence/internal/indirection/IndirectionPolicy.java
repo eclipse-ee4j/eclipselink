@@ -187,6 +187,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public abstract Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session);
 
     /**
+     * INTERNAL:
+     *    Return the original indirection object for a unit of work indirection object.
+     */
+    public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session){
+        return getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
+    }
+
+    /**
      * INTERNAL: Return the original valueHolder object. Access to the
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.

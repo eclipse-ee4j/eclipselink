@@ -242,6 +242,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                     mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+      //          batchQuery.setSession(null); //reset session as it is no longer needed.
             }
         }
         Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));

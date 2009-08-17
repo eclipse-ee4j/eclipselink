@@ -219,6 +219,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
                     containerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+                query.setSession(null); //reset session as it is no longer needed.
             }
         }
         Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));

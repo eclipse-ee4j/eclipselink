@@ -47,6 +47,8 @@ import junit.framework.*;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.indirection.BatchValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -70,6 +72,7 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -96,6 +99,8 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -187,6 +192,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
 */
+
         suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
@@ -201,6 +207,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
+
         /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
 */
@@ -230,6 +237,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedNoException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
+
         /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
@@ -293,6 +301,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
+        
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
         return suite;
     }
 
@@ -2084,6 +2097,204 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
             throw exception;
+        }
+    }
+
+    // Test Not using the persist operation on commit.
+    public void testNoPersistOnCommit() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Project project = new SmallProject();
+        project.setName("SomeProject");
+        try {
+            em.persist(project);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager();
+            beginTransaction(em);
+            ((RepeatableWriteUnitOfWork)JpaHelper.getEntityManager(em).getUnitOfWork()).setDiscoverUnregisteredNewObjectsWithoutPersist(true);
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            project = em.find(Project.class, project.getId());
+            project.setTeamLeader(emp);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager();
+            clearCache();
+            beginTransaction(em);
+            ((RepeatableWriteUnitOfWork)JpaHelper.getEntityManager(em).getUnitOfWork()).setDiscoverUnregisteredNewObjectsWithoutPersist(true);
+            project = em.find(Project.class, project.getId());
+            emp = project.getTeamLeader();
+            em.remove(emp);
+            commitTransaction(em);
+
+            em = createEntityManager();
+            beginTransaction(em);
+            boolean exceptionThrown = false;
+            emp = em.find(Employee.class, emp.getId());
+            assertNull("Employee Not Deleted", emp);
+            commitTransaction(em);
+            closeEntityManager(em);
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        } finally {
+            try {
+                em = createEntityManager();
+                clearCache();
+                beginTransaction(em);
+                em.remove(em.find(Project.class, project.getId()));
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                // ignore
+
+            }
+        }
+    }
+
+    // Test Not using the persist operation on commit.
+    public void testNoPersistOnCommitProperties() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties());
+        properties.put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "true");
+        
+        EntityManager em = createEntityManager(properties);
+        beginTransaction(em);
+        Project project = new SmallProject();
+        project.setName("SomeProject");
+        try {
+            em.persist(project);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            project = em.find(Project.class, project.getId());
+            project.setTeamLeader(emp);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager(properties);
+            clearCache();
+            beginTransaction(em);
+            project = em.find(Project.class, project.getId());
+            emp = project.getTeamLeader();
+            em.remove(emp);
+            commitTransaction(em);
+
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            boolean exceptionThrown = false;
+            emp = em.find(Employee.class, emp.getId());
+            assertNull("Employee Not Deleted", emp);
+            commitTransaction(em);
+            closeEntityManager(em);
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        } finally {
+            try {
+                em = createEntityManager();
+                clearCache();
+                beginTransaction(em);
+                em.remove(em.find(Project.class, project.getId()));
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                // ignore
+
+            }
+        }
+    }
+
+    // Test Not using the persist operation on commit.
+    public void testNoPersistOnFlushProperties() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties());
+        properties.put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "true");
+        
+        EntityManager em = createEntityManager(properties);
+        beginTransaction(em);
+        Project project = new SmallProject();
+        project.setName("SomeProject");
+        try {
+            em.persist(project);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            project = em.find(Project.class, project.getId());
+            project.setTeamLeader(emp);
+            em.flush();
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(project);
+            closeEntityManager(em);
+
+            em = createEntityManager(properties);
+            clearCache();
+            beginTransaction(em);
+            project = em.find(Project.class, project.getId());
+            emp = project.getTeamLeader();
+            em.remove(emp);
+            commitTransaction(em);
+
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            boolean exceptionThrown = false;
+            emp = em.find(Employee.class, emp.getId());
+            assertNull("Employee Not Deleted", emp);
+            commitTransaction(em);
+            closeEntityManager(em);
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        } finally {
+            try {
+                em = createEntityManager();
+                clearCache();
+                beginTransaction(em);
+                em.remove(em.find(Project.class, project.getId()));
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                // ignore
+
+            }
         }
     }
 
@@ -4007,6 +4218,100 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
     }
     
+    /**
+     * This test ensures that the eclipselink.batch query hint works. It tests
+     * two things.
+     * 
+     * 1. That the batch read attribute is properly added to the queyr 2. That
+     * the query will execute
+     * 
+     * It does not do any verification that the batch reading feature actually
+     * works. That is left for the batch reading testing to do.
+     */
+    public void testForUOWInSharedCacheWithBatchQueryHint(){
+        int id1 = 0;
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Employee manager = new Employee();
+        manager.setFirstName("Marvin");
+        manager.setLastName("Malone");
+        PhoneNumber number = new PhoneNumber("cell", "613", "888-8888");
+        manager.addPhoneNumber(number);
+        number = new PhoneNumber("home", "613", "888-8880");
+        manager.addPhoneNumber(number);
+        em.persist(manager);
+        id1 = manager.getId();
+        
+        Employee emp = new Employee();
+        emp.setFirstName("Melvin");
+        emp.setLastName("Malone");
+        emp.setManager(manager);
+        manager.addManagedEmployee(emp);
+        number = new PhoneNumber("cell", "613", "888-9888");
+        emp.addPhoneNumber(number);
+        number = new PhoneNumber("home", "613", "888-0880");
+        emp.addPhoneNumber(number);
+        em.persist(emp);
+        
+        emp = new Employee();
+        emp.setFirstName("David");
+        emp.setLastName("Malone");
+        emp.setManager(manager);
+        manager.addManagedEmployee(emp);
+        number = new PhoneNumber("cell", "613", "888-9988");
+        emp.addPhoneNumber(number);
+        number = new PhoneNumber("home", "613", "888-0980");
+        emp.addPhoneNumber(number);
+        em.persist(emp);
+        
+        commitTransaction(em);
+        closeEntityManager(em);
+        clearCache();
+        
+
+        //org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        em = createEntityManager();
+        beginTransaction(em);
+        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        query.setHint(QueryHints.BATCH, "e.phoneNumbers");
+
+        List resultList = query.getResultList();
+        emp = (Employee)resultList.get(0);
+        emp.setFirstName("somethingelse"+System.currentTimeMillis());
+        
+        // execute random other query
+        em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone'").getResultList();
+        ((Employee)resultList.get(1)).getPhoneNumbers().hashCode();
+        
+        commitTransaction(em);
+try{
+    emp = (Employee)JpaHelper.getServerSession(getEntityManagerFactory()).getIdentityMapAccessor().getFromIdentityMap(emp);
+        assertNotNull("Error, phone numbers is empty.  Not Batch Read", emp.getPhoneNumbers());
+        assertFalse("PhoneNumbers was empty.  This should not be the case as the test created phone numbers", emp.getPhoneNumbers().isEmpty());
+        assertTrue("Phonee numbers was not an indirectList", emp.getPhoneNumbers() instanceof IndirectList);
+        assertNotNull("valueholder was null in triggered batch attribute",((IndirectList)emp.getPhoneNumbers()).getValueHolder());
+        BatchValueHolder bvh = (BatchValueHolder)((IndirectList)emp.getPhoneNumbers()).getValueHolder();
+        if (bvh.getQuery() != null && bvh.getQuery().getSession() != null && bvh.getQuery().getSession().isUnitOfWork()){
+            fail("In Shared Cache a UOW was set within a BatchValueHolder's query object");
+        }
+        closeEntityManager(em);
+}finally{
+        em = createEntityManager();
+        beginTransaction(em);
+        emp = em.find(Employee.class, id1);
+        Iterator it = emp.getManagedEmployees().iterator();
+        while (it.hasNext()){
+            Employee managedEmp = (Employee)it.next();
+            it.remove();
+            managedEmp.setManager(null);
+            em.remove(managedEmp);
+        }
+        em.remove(emp);
+        commitTransaction(em);
+}
+    }
+
     /**
      * This test ensures that the eclipselink.fetch query hint works.
      * It tests two things. 

@@ -857,7 +857,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                //this may be a batch valueholder built into a UOW make sure to reset the session before placing in shared cache
+                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObjectForMerge(getAttributeValueFromObject(source), mergeManager.getSession()));
                 return;
             }
         }

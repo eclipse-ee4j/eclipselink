@@ -402,6 +402,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(eachReferenceObject));
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+                query.setSession(null); //reset session as it is no longer needed.
             }
         }
 
