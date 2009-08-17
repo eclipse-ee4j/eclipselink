@@ -1666,6 +1666,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             return true;
         }
         getDescriptor().getQueryManager().putCachedExpressionQuery(this);
+        this.isExecutionClone = false;
         return false;
     }
 

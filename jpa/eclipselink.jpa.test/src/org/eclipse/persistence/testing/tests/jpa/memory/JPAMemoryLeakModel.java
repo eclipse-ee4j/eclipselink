@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreat
 import org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
 import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
@@ -44,6 +45,7 @@ public class JPAMemoryLeakModel extends TestModel {
         addTest(buildInsertTest());
         addTest(buildUpdateTest());
         addTest(buildParameterizedBatchWriteTest());
+        addTest(buildExpressionCacheTest());
     }
 
     /**
@@ -192,6 +194,29 @@ public class JPAMemoryLeakModel extends TestModel {
         return test;
     }
     
+    /**
+     * Test that update allow the garbage collection of the objects.
+     */
+    public TestCase buildExpressionCacheTest() {
+        MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            public void test() {
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
+                DescriptorQueryManager queryManager = ((JpaEntityManager)manager).getUnitOfWork().getDescriptor(Employee.class).getQueryManager();
+                queryManager.setExpressionQueryCacheMaxSize(queryManager.getExpressionQueryCacheMaxSize());
+                ((JpaEntityManager)manager).getUnitOfWork().readAllObjects(Employee.class);
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork());
+                manager.getTransaction().commit();
+                addWeakReference(manager);
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork());
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork().getParent());
+                manager.close();
+            }
+        };
+        test.setName("ExpressionCacheTest");
+        return test;
+    }
+
     /**
      * Test that read allow the garbage collection of the objects.
      */
