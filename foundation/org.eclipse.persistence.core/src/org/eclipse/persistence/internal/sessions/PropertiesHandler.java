@@ -175,6 +175,7 @@ public class PropertiesHandler {
             addProp(new FlushModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, "true"));
+            addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new ExclusiveConnectionModeProp());

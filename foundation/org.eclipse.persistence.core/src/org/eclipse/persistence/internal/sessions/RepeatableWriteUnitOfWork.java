@@ -64,13 +64,34 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected transient Set<Class> classesToBeInvalidated;
     
+    /**
+     * Alters the behaviour of the RWUOW commit to function like the UOW with respect to Entity lifecycle
+     */
+    protected boolean discoverUnregisteredNewObjectsWithoutPersist;
+    
+    
     public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession, ReferenceMode referenceMode){
         super(parentSession, referenceMode);
         this.shouldTerminateTransaction = true;
         this.shouldNewObjectsBeCached = true;
         this.isWithinFlush = false;
+        this.discoverUnregisteredNewObjectsWithoutPersist = false;
     }
     
+    /**
+     * @return the discoverUnregisteredNewObjectsWithoutPersist
+     */
+    public boolean shouldDiscoverUnregisteredNewObjectsWithoutPersist() {
+        return discoverUnregisteredNewObjectsWithoutPersist;
+    }
+
+    /**
+     * @param discoverUnregisteredNewObjectsWithoutPersist the discoverUnregisteredNewObjectsWithoutPersist to set
+     */
+    public void setDiscoverUnregisteredNewObjectsWithoutPersist(boolean discoverUnregisteredNewObjectsWithoutPersist) {
+        this.discoverUnregisteredNewObjectsWithoutPersist = discoverUnregisteredNewObjectsWithoutPersist;
+    }
+
     /**
      * INTERNAL:
      * This method will clear all registered objects from this UnitOfWork.
@@ -178,8 +199,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * References to deleted objects will also currently cause them to be undeleted.
      */
     public void discoverUnregisteredNewObjects(Map clones, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects) {
-        for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
-            discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects);
+        if (this.discoverUnregisteredNewObjectsWithoutPersist){
+            super.discoverUnregisteredNewObjects(clones, newObjects, unregisteredExistingObjects, visitedObjects);
+        }else{
+            for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
+                discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects);
+            }
         }
     }
     
@@ -305,7 +330,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
-        calculateChanges(getCloneMapping(), changeSet, false);
+        calculateChanges(getCloneMapping(), changeSet, false || this.discoverUnregisteredNewObjectsWithoutPersist);
         
         // Write those changes to the database.
         if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {

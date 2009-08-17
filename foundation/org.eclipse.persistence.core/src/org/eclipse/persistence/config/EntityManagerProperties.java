@@ -77,6 +77,14 @@ public class EntityManagerProperties {
     public static final String PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT = PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT;
     
     /**
+     * Specifies that the EntityManager will search all managed objects and persist any related non-managed
+     * new objects that are found ignoring any absence of CascadeType.PERSIST settings.
+     * Also the Entity lifecycle Persist operation will not be cascaded to related entities.
+     * This setting replicates the traditional EclipseLink native functionality.
+     */
+    public static final String PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES = PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES;
+
+    /**
      * Allows the EntityManager FlushMode to be set as a persistence property.
      * This can be set to either "AUTO" or "COMMIT".
      * By default the flush mode is AUTO, which requires an automatic flush before all query execution.

@@ -135,6 +135,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     /** Determine if does-exist should be performed on persist. */
     protected boolean shouldValidateExistence;
+
+    protected boolean commitWithoutPersistRules;
     
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
@@ -166,6 +168,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.flushMode = FlushModeType.AUTO;
         this.flushClearCache = FlushClearCache.DEFAULT;
         this.persistOnCommit = true;
+        this.commitWithoutPersistRules = false;
         this.isOpen = true;
         initialize(properties);
     }
@@ -183,6 +186,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.closeOnCommit = factory.getCloseOnCommit();
         this.flushMode = factory.getFlushMode();
         this.persistOnCommit = factory.getPersistOnCommit();
+        this.commitWithoutPersistRules = factory.getCommitWithoutPersistRules();
         this.referenceMode = factory.getReferenceMode();
         this.flushClearCache = factory.getFlushClearCache();
         this.shouldValidateExistence = factory.shouldValidateExistence();
@@ -1216,6 +1220,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
+            this.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(this.commitWithoutPersistRules);
             this.extendedPersistenceContext.setFlushClearCache(this.flushClearCache);
             this.extendedPersistenceContext.setShouldValidateExistence(this.shouldValidateExistence);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
@@ -1335,6 +1340,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             String persistOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
             if (persistOnCommit != null) {
                 this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
+            }
+            String commitWithoutPersist = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
+            if (commitWithoutPersist != null) {
+                this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
             }
             String shouldValidateExistence = getPropertiesHandlerProperty(EntityManagerProperties.VALIDATE_EXISTENCE);
             if (shouldValidateExistence != null) {
