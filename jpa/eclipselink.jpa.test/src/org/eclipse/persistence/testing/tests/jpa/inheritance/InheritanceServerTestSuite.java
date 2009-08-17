@@ -18,7 +18,7 @@ import junit.framework.Test;
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
-public class ServerTestSuite extends TestSuite {
+public class InheritanceServerTestSuite extends TestSuite {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();

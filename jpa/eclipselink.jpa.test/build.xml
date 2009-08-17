@@ -1329,7 +1329,7 @@
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
         </junit>
     </target>
-	
+
     <!-- Run an ear on the server using prompt runner. -->
     <target name="server-run-test-prompt" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
@@ -1394,7 +1394,6 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
-        <antcall target="server-test-advanced2" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
@@ -1430,20 +1429,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.ServerTestSuite"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
-    </target>
-
-    <target name="server-test-advanced2">
-        <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-advanced-model"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
-            <param name="TEST_NAME" value="eclipselink-advanced-model"/>
-            <param name="EAR_NAME" value="eclipselink-advanced-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1495,7 +1481,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
             <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1508,7 +1494,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/relationships"/>
             <param name="TEST_NAME" value="eclipselink-relationships-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-relationships-field-access-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.FRServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1521,7 +1507,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/inheritance"/>
             <param name="TEST_NAME" value="eclipselink-inheritance-model"/>
             <param name="EAR_NAME" value="eclipselink-inheritance-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inheritance.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inheritance.InheritanceServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1534,7 +1520,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/inherited"/>
             <param name="TEST_NAME" value="eclipselink-inherited-model"/>
             <param name="EAR_NAME" value="eclipselink-inherited-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inherited.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1561,7 +1547,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jpql"/>
             <param name="TEST_NAME" value="eclipselink-jpql-model"/>
             <param name="EAR_NAME" value="eclipselink-jpql-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.jpql.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1599,7 +1585,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/relationships"/>
             <param name="TEST_NAME" value="eclipselink-relationships-model"/>
             <param name="EAR_NAME" value="eclipselink-relationships-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.relationships.ServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipsServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

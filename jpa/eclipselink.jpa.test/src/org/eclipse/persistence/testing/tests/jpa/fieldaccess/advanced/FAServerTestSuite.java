@@ -31,7 +31,7 @@ import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQ
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
-public class ServerTestSuite extends TestSuite {
+public class FAServerTestSuite extends TestSuite {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();

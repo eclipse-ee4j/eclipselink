@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
-//import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
 //import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
@@ -32,15 +32,15 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUn
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
-public class ServerTestSuite extends TestSuite {
+public class AdvancedServerTestSuite extends TestSuite {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Advanced ServerTestSuite");
         
+        suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
-        //suite.addTest(EntityManagerJUnitTestSuite.suite()); - run separately since not all EM didn't close
         //suite.addTest(SQLResultSetMappingTestSuite.suite()); - hangup for J2SE
         suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());

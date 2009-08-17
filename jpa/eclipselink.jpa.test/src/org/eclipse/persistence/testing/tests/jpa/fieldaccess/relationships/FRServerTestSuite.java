@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.jpa.jpql;
+package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
@@ -18,23 +18,15 @@ import junit.framework.Test;
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
-public class ServerTestSuite extends TestSuite {
+public class FRServerTestSuite extends TestSuite {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("JPQL ServerTestSuite");
-        suite.addTest(AdvancedQueryTestSuite.suite());
-        suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
-        suite.addTest(JUnitJPQLComplexTestSuite.suite());
-        suite.addTest(JUnitJPQLDateTimeTestSuite.suite());
-        suite.addTest(JUnitJPQLExamplesTestSuite.suite());
-        suite.addTest(JUnitJPQLInheritanceTestSuite.suite());
-        suite.addTest(JUnitJPQLModifyTestSuite.suite());
-        suite.addTest(JUnitJPQLParameterTestSuite.suite());
-        suite.addTest(JUnitJPQLSimpleTestSuite.suite());
-        suite.addTest(JUnitJPQLUnitTestSuite.suite());
-        suite.addTest(JUnitJPQLValidationTestSuite.suite());
-
+        suite.setName("Fieldaccess Relationships ServerTestSuite");
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
+        suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
+        
         return suite;
     }
 }
