@@ -21,6 +21,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
@@ -62,7 +63,7 @@ public class MetadataField extends MetadataAnnotatedElement {
     public boolean isValidPersistenceField(MetadataDescriptor descriptor, boolean userDecorated) {
         if (! isValidPersistenceElement(getModifiers())) {
             if (userDecorated) {
-                throw ValidationException.mappingMetadataAppliedToInvalidAttribute(this, descriptor.getJavaClass());
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
             }
             
             return false;

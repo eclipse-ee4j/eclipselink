@@ -271,7 +271,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_mapped_superclass_id_class", "Ignoring the id class on the mapped superclass [{1}] for the entity class [{0}] since an id class was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting on the mapped superclass [{1}] for the entity class [{0}] since read only metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since existence checking metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },        
-                        
+                       
+        { "metadata_warning_ignore_mapping_metadata", "Ignoring the javax.persistence metadata applied to the attribute [{0}] from class [{1}]. javax.persistence metadata is ignored on fields or properties that are transient, static or abstract." },
+        
         { "annotation_warning_ignore_annotation", "Ignoring the annotation [{0}] on the element [{1}] because of an XML metadata-complete setting of true for this class." },        
         { "annotation_warning_ignore_private_owned", "Ignoring @PrivateOwned on element [{1}] within entity class [{0}]. A @PrivateOwned can only be used with a @OneToOne, @OneToMany and @VariableOneToOne. Also note, private ownership is implied with a @BasicCollection and @BasicMap." },
         { "annotation_warning_ignore_return_insert", "Ignoring the @ReturnInsert on the element [{0}]. A @ReturnInsert is only supported with a basic mapping." },

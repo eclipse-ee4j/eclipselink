@@ -34,6 +34,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
@@ -237,8 +238,8 @@ public class MetadataMethod extends MetadataAnnotatedElement {
                 } else if (!hasSetMethod()) {
                     throw ValidationException.noCorrespondingSetterMethodDefined(descriptor.getJavaClass(), this);
                 } else {
-                    // General, catch all remaining exception cases. 
-                    throw ValidationException.mappingMetadataAppliedToInvalidAttribute(this, descriptor.getJavaClass());
+                    // General, catch all remaining cases and log a warning message.
+                    getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
                 }
             }
             
