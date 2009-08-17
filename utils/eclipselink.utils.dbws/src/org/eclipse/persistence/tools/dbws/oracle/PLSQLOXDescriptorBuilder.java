@@ -123,6 +123,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                 XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setXPath("item");
+                XMLField xField = (XMLField)itemsMapping.getField();
+                xField.setRequired(true);
                 itemsMapping.useCollectionClassName("java.util.ArrayList");
                 itemsMapping.setReferenceClassName(((RecordHelper)next).recordName().toLowerCase());
                 xdesc.addMapping(itemsMapping);
@@ -138,6 +140,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                     itemsMapping.setUsesSingleNode(true);
                     itemsMapping.setXPath("item/text()");
+                    XMLField xField = (XMLField)itemsMapping.getField();
+                    xField.setRequired(true);
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
                     AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
                     nullPolicy.setNullRepresentedByEmptyNode(false);
@@ -152,6 +156,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
                     itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                     itemsMapping.setXPath("item");
+                    XMLField xField = (XMLField)itemsMapping.getField();
+                    xField.setRequired(true);
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
                     itemsMapping.setReferenceClassName(((TableHelper)next).tableName().toLowerCase() +
                         COLLECTION_WRAPPER_SUFFIX);
@@ -202,6 +208,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
                         fieldMapping.setAttributeName(lfieldName);
                         fieldMapping.setXPath(lfieldName);
+                        XMLField xField = (XMLField)fieldMapping.getField();
+                        xField.setRequired(true);
                         fieldMapping.setReferenceClassName(tblHelper.tableName().toLowerCase());
                         xdesc.addMapping(fieldMapping);
                     }
@@ -223,6 +231,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                         fieldMapping.setAttributeName(lfieldName);
                         fieldMapping.setUsesSingleNode(true);
                         fieldMapping.setXPath(lfieldName + "/item/text()");
+                        XMLField xField = (XMLField)fieldMapping.getField();
+                        xField.setRequired(true);
                         fieldMapping.useCollectionClassName("java.util.ArrayList");
                         AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
                         nullPolicy.setNullRepresentedByEmptyNode(false);
@@ -238,6 +248,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
                     fieldMapping.setAttributeName(lfieldName);
                     fieldMapping.setXPath(lfieldName);
+                    XMLField xField = (XMLField)fieldMapping.getField();
+                    xField.setRequired(true);
                     fieldMapping.setReferenceClassName(((RecordHelper)top).recordName().toLowerCase());
                     xdesc.addMapping(fieldMapping);
                 }
@@ -246,6 +258,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                 XMLDirectMapping fieldMapping = new XMLDirectMapping();
                 fieldMapping.setAttributeName(lfieldName);
                 XMLField xField = new XMLField(lfieldName + "/text()");
+                xField.setRequired(true);
                 QName qnameFromDatabaseType = qnameFromDatabaseType(top);
                 xField.setSchemaType(qnameFromDatabaseType);
                 // special case to avoid Calendar problems

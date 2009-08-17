@@ -114,6 +114,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         XMLDirectMapping fieldMapping = new XMLDirectMapping();
                         fieldMapping.setAttributeName(attributeName);
                         XMLField xField = new XMLField(attributeName + "/text()");
+                        xField.setRequired(true);
                         QName qnameFromDatabaseType = qnameFromDatabaseType(listenerHelper);
                         xField.setSchemaType(qnameFromDatabaseType);
                         // special case to avoid Calendar problems
@@ -160,8 +161,9 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         dirCollectMapping.setAttributeName(attributeName);
                         dirCollectMapping.setUsesSingleNode(true);
                         dirCollectMapping.setXPath(attributeName + "/text()");
-                        ((XMLField)dirCollectMapping.getField()).setSchemaType(
-                            qnameFromDatabaseType(componentType));
+                        XMLField xField = (XMLField)dirCollectMapping.getField();
+                        xField.setRequired(true);
+                        xField.setSchemaType(qnameFromDatabaseType(componentType));
                         dirCollectMapping.useCollectionClassName("java.util.ArrayList");
                         AbstractNullPolicy nullPolicy = dirCollectMapping.getNullPolicy();
                         nullPolicy.setNullRepresentedByEmptyNode(false);
@@ -186,8 +188,9 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                     itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                     itemsMapping.setUsesSingleNode(true);
                     itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
-                    ((XMLField)itemsMapping.getField()).setSchemaType(
-                        qnameFromDatabaseType(componentType));
+                    XMLField xField = (XMLField)itemsMapping.getField();
+                    xField.setRequired(true);
+                    xField.setSchemaType(qnameFromDatabaseType(componentType));
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
                     AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
                     nullPolicy.setNullRepresentedByEmptyNode(false);
@@ -217,6 +220,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             fieldMapping.setAttributeName(fieldName.toLowerCase());
                             XMLField field = new XMLField(fieldName.toLowerCase() + "/" + 
                                 ITEM_MAPPING_NAME + "/text()");
+                            field.setRequired(true);
                             fieldMapping.setField(field);
                             field.setSchemaType(qnameFromDatabaseType(componentType));
                             fieldMapping.useCollectionClassName("java.util.ArrayList");
@@ -285,6 +289,8 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                                 compMapping.setAttributeName(attributeName);
                                 compMapping.setReferenceClassName(xdesc.getJavaClassName());
                                 compMapping.setXPath(attributeName);
+                                XMLField xField = (XMLField)compMapping.getField();
+                                xField.setRequired(true);
                                 xdesc2.addMapping(compMapping);
                             }
                             // last attribute, pop ObjectTypeHelper off stack

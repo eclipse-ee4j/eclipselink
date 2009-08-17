@@ -802,6 +802,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 xdm.setXPath(xPath);
                 XMLField xmlField = (XMLField)xdm.getField();
+                xmlField.setRequired(true);
                 xmlField.setSchemaType(qName);
                 if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
                     // need xsd namespaces 

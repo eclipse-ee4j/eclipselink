@@ -191,7 +191,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                "<attribute-mappings>" +
                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                      "<attribute-name>reg_id</attribute-name>" +
-                     "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
+                     "<field is-required=\"true\" name=\"reg_id/text()\" xsi:type=\"node\">" +
                         "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                      "</field>" +
                      "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
@@ -202,7 +202,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                   "</attribute-mapping>" +
                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                      "<attribute-name>reg_name</attribute-name>" +
-                     "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
+                     "<field is-required=\"true\" name=\"reg_name/text()\" xsi:type=\"node\">" +
                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                      "</field>" +
                      "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -238,8 +238,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     "<xsd:schema targetNamespace=\"urn:struct1\" xmlns=\"urn:struct1\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
         "<xsd:complexType name=\"regionType\">" +
            "<xsd:sequence>" +
-              "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
-              "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+              "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+              "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\"/>" +
            "</xsd:sequence>" +
         "</xsd:complexType>" +
         "<xsd:element name=\"regionType\" type=\"regionType\"/>" +
@@ -418,7 +418,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
+                   "<field is-required=\"true\" name=\"reg_id/text()\" xsi:type=\"node\">" +
                       "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                    "</field>" +
                    "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
@@ -429,7 +429,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
+                   "<field is-required=\"true\" name=\"reg_name/text()\" xsi:type=\"node\">" +
                        "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                     "</field>" +
                     "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -464,7 +464,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>street</attribute-name>" +
-                  "<field name=\"street/text()\" xsi:type=\"node\">" +
+                  "<field is-required=\"true\" name=\"street/text()\" xsi:type=\"node\">" +
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -475,7 +475,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>suburb</attribute-name>" +
-                  "<field name=\"suburb/text()\" xsi:type=\"node\">" +
+                  "<field is-required=\"true\" name=\"suburb/text()\" xsi:type=\"node\">" +
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -487,11 +487,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                   "<attribute-name>addr_region</attribute-name>" +
                   "<reference-class>advanced_object_demo.region</reference-class>" +
-                  "<field name=\"addr_region\" xsi:type=\"node\"/>" +
+                  "<field is-required=\"true\" name=\"addr_region\" xsi:type=\"node\"/>" +
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>postcode</attribute-name>" +
-                  "<field name=\"postcode/text()\" xsi:type=\"node\">" +
+                  "<field is-required=\"true\" name=\"postcode/text()\" xsi:type=\"node\">" +
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.math.BigInteger</attribute-classification>" +
@@ -527,16 +527,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     "<xsd:schema targetNamespace=\"urn:struct2\" xmlns=\"urn:struct2\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
        "<xsd:complexType name=\"emp_addressType\">" +
           "<xsd:sequence>" +
-             "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\"/>" +
+             "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\"/>" +
+             "<xsd:element name=\"addr_region\" type=\"regionType\"/>" +
+             "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\"/>" +
           "</xsd:sequence>" +
        "</xsd:complexType>" +
        "<xsd:complexType name=\"regionType\">" +
           "<xsd:sequence>" +
-             "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
-             "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+             "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\"/>" +
           "</xsd:sequence>" +
        "</xsd:complexType>" +
        "<xsd:element name=\"emp_addressType\" type=\"emp_addressType\"/>" +
@@ -847,7 +847,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>reg_id</attribute-name>" +
-                       "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"reg_id/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
@@ -858,7 +858,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>reg_name</attribute-name>" +
-                       "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"reg_name/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -893,7 +893,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>employee_id</attribute-name>" +
-                       "<field name=\"employee_id/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"employee_id/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
@@ -905,11 +905,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>address</attribute-name>" +
                        "<reference-class>advanced_object_demo.emp_address</reference-class>" +
-                       "<field name=\"address\" xsi:type=\"node\"/>" +
+                       "<field is-required=\"true\" name=\"address\" xsi:type=\"node\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>employee_name</attribute-name>" +
-                       "<field name=\"employee_name/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"employee_name/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -920,7 +920,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>date_of_hire</attribute-name>" +
-                       "<field name=\"date_of_hire/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"date_of_hire/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}date</schema-type>" +
                           "<xml-to-java-conversion-pair>" +
                               "<qname>{http://www.w3.org/2001/XMLSchema}date</qname>" +
@@ -969,7 +969,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>street</attribute-name>" +
-                       "<field name=\"street/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"street/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -980,7 +980,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>suburb</attribute-name>" +
-                       "<field name=\"suburb/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"suburb/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -992,11 +992,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>addr_region</attribute-name>" +
                        "<reference-class>advanced_object_demo.region</reference-class>" +
-                       "<field name=\"addr_region\" xsi:type=\"node\"/>" +
+                       "<field is-required=\"true\" name=\"addr_region\" xsi:type=\"node\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>postcode</attribute-name>" +
-                       "<field name=\"postcode/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"postcode/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
@@ -1030,24 +1030,24 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:struct3\" xmlns=\"urn:struct3\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"emp_addressType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"street\" type=\"xsd:string\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"suburb\" type=\"xsd:string\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"addr_region\" type=\"regionType\"/>" +
+                 "<xsd:element name=\"postcode\" type=\"xsd:integer\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"emp_objectType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"employee_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"address\" type=\"emp_addressType\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"employee_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"date_of_hire\" type=\"xsd:date\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"employee_id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"address\" type=\"emp_addressType\"/>" +
+                 "<xsd:element name=\"employee_name\" type=\"xsd:string\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"date_of_hire\" type=\"xsd:date\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"regionType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"reg_name\" type=\"xsd:string\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"emp_objectType\" type=\"emp_objectType\"/>" +
@@ -1229,7 +1229,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>id</attribute-name>" +
-                       "<field name=\"id/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"id/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
@@ -1240,7 +1240,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>name</attribute-name>" +
-                       "<field name=\"name/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"name/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
@@ -1302,8 +1302,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:empArray\" xmlns=\"urn:empArray\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"emp_infoType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"id\" type=\"xsd:decimal\" nillable=\"true\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"name\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"name\" type=\"xsd:string\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"emp_info_arrayType\">" +
@@ -1423,7 +1423,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1464,7 +1464,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:tbl1\" elementFormDefault=\"qualified\" targetNamespace=\"urn:tbl1\">" +
             "<xsd:complexType name=\"somepackage_tbl1Type\">" +
                 "<xsd:sequence>" +
-                    "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
+                    "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
                 "</xsd:sequence>" +
             "</xsd:complexType>" +
             "<xsd:element name=\"somepackage_tbl1Type\" type=\"somepackage_tbl1Type\"/>" +
@@ -1575,7 +1575,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}date</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1616,7 +1616,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:tbl5\" xmlns=\"urn:tbl5\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"somepackage_tbl5Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:date\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_tbl5Type\" type=\"somepackage_tbl5Type\"/>" +
@@ -1812,7 +1812,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t1</attribute-name>" +
-                       "<field name=\"t1/item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t1/item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1828,7 +1828,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t2</attribute-name>" +
-                       "<field name=\"t2/item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t2/item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1844,7 +1844,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
-                       "<field name=\"t3/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t3/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
@@ -1881,7 +1881,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1921,7 +1921,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -1960,7 +1960,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema targetNamespace=\"urn:aRecord\" xmlns=\"urn:aRecord\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"somepackage_tbl2Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:decimal\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_arecordType\">" +
@@ -1968,23 +1968,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<xsd:element name=\"t1\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
+                          "<xsd:element name=\"item\" type=\"xsd:string\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
                  "<xsd:element name=\"t2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
+                          "<xsd:element name=\"item\" type=\"xsd:decimal\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
-                 "<xsd:element name=\"t3\" type=\"xsd:integer\" nillable=\"true\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"t3\" type=\"xsd:integer\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl1Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element name=\"item\" type=\"xsd:string\" nillable=\"true\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                 "<xsd:element name=\"item\" type=\"xsd:string\" nillable=\"true\" maxOccurs=\"unbounded\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
@@ -2205,11 +2205,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>c1</attribute-name>" +
                        "<reference-class>toplevel.somepackage_arecord</reference-class>" +
-                       "<field name=\"c1\" xsi:type=\"node\"/>" +
+                       "<field is-required=\"true\" name=\"c1\" xsi:type=\"node\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>c2</attribute-name>" +
-                       "<field name=\"c2/item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"c2/item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -2251,7 +2251,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t1</attribute-name>" +
-                       "<field name=\"t1/item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t1/item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -2267,7 +2267,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t2</attribute-name>" +
-                       "<field name=\"t2/item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t2/item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -2283,7 +2283,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
-                       "<field name=\"t3/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"t3/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
@@ -2318,7 +2318,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -2358,7 +2358,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                       "<field is-required=\"true\" name=\"item/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
@@ -2397,11 +2397,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:cRecord\" elementFormDefault=\"qualified\" targetNamespace=\"urn:cRecord\">" +
            "<xsd:complexType name=\"somepackage_crecordType\">" +
               "<xsd:sequence>" +
-                 "<xsd:element minOccurs=\"0\" name=\"c1\" type=\"somepackage_arecordType\"/>" +
+                 "<xsd:element name=\"c1\" type=\"somepackage_arecordType\"/>" +
                  "<xsd:element name=\"c2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
@@ -2409,7 +2409,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl2Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
+                 "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_arecordType\">" +
@@ -2417,23 +2417,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<xsd:element name=\"t1\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
                  "<xsd:element name=\"t2\">" +
                     "<xsd:complexType>" +
                        "<xsd:sequence>" +
-                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
+                          "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:decimal\"/>" +
                        "</xsd:sequence>" +
                     "</xsd:complexType>" +
                  "</xsd:element>" +
-                 "<xsd:element minOccurs=\"0\" name=\"t3\" nillable=\"true\" type=\"xsd:integer\"/>" +
+                 "<xsd:element name=\"t3\" nillable=\"true\" type=\"xsd:integer\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:complexType name=\"somepackage_tbl1Type\">" +
               "<xsd:sequence>" +
-                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
+                 "<xsd:element maxOccurs=\"unbounded\" name=\"item\" nillable=\"true\" type=\"xsd:string\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_crecordType\" type=\"somepackage_crecordType\"/>" +
