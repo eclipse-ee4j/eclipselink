@@ -33,6 +33,10 @@ public class ForUpdateOfClause extends ForUpdateClause {
         getLockedExpressions().addElement(expression);
     }
 
+    public void addLockedExpression(FieldExpression expression) {
+        getLockedExpressions().addElement(expression);
+    }
+
     public Vector getLockedExpressions() {
         if (lockedExpressions == null) {
             lockedExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
@@ -83,11 +87,17 @@ public class ForUpdateOfClause extends ForUpdateClause {
     
             printer.setIsFirstElementPrinted(false);
             for (Enumeration enumtr = getLockedExpressions().elements(); enumtr.hasMoreElements();) {
-                ObjectExpression next = (ObjectExpression)enumtr.nextElement();
-    
+                Expression next = (Expression)enumtr.nextElement();
                 // Necessary as this was determined in query framework.
-                next = (ObjectExpression)next.rebuildOn(clonedBuilder);
-                next.writeForUpdateOfFields(printer, statement);
+                next = (Expression)next.rebuildOn(clonedBuilder);
+                if(next.isObjectExpression()) {
+                    ObjectExpression objectExp = (ObjectExpression)next;        
+                    objectExp.writeForUpdateOfFields(printer, statement);
+                } else {
+                    // must be FieldExpression
+                    FieldExpression fieldExp = (FieldExpression)next;
+                    fieldExp.writeForUpdateOf(printer, statement);
+                }
             }
             if (lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
                 printer.printString(printer.getSession().getPlatform().getNoWaitString());
@@ -110,10 +120,14 @@ public class ForUpdateOfClause extends ForUpdateClause {
         ExpressionBuilder clonedBuilder = statement.getBuilder();
         Enumeration enumtr = getLockedExpressions().elements();
         while (enumtr.hasMoreElements() && aliases.size() < expected) {
-            ObjectExpression next = (ObjectExpression)enumtr.nextElement();
+            Expression next = (Expression)enumtr.nextElement();
 
             // Necessary as this was determined in query framework.
-            next = (ObjectExpression)next.rebuildOn(clonedBuilder);
+            next = (Expression)next.rebuildOn(clonedBuilder);
+            // next is either ObjectExpression or FieldExpression
+            if(next.isFieldExpression()) {
+                next = ((FieldExpression)next).getBaseExpression();
+            }
             DatabaseTable[] expAliases = next.getTableAliases().keys();
             for(int i=0; i<expAliases.length; i++) {
                 aliases.add(expAliases[i]);

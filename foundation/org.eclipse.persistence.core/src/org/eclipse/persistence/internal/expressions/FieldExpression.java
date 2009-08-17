@@ -335,4 +335,16 @@ public class FieldExpression extends DataExpression {
         }
 
     }
+    
+    /**
+     * INTERNAL:
+     * writes the field for fine-grained pessimistic locking.
+     */
+    protected void writeForUpdateOf(ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        if (printer.getPlatform().shouldPrintAliasForUpdate()) {
+            writeAlias(printer, field, statement);
+        } else {
+            writeField(printer, field, statement);                
+        }
+    }
 }

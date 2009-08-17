@@ -2652,7 +2652,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         
         ReadQuery targetQuery = getSelectionQuery();
 
-        if ((getHistoryPolicy() != null) || (sourceQuery.getSession().getAsOfClause() != null) || ((sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) && (sourceQuery.shouldCascadeAllParts() || (sourceQuery.shouldCascadePrivateParts() && isPrivateOwned()) || (sourceQuery.shouldCascadeByMapping() && this.cascadeRefresh)))) {
+        boolean extendingPessimisticLockScope = isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY; 
+        if ((getHistoryPolicy() != null) || (sourceQuery.getSession().getAsOfClause() != null) || ((sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) && (sourceQuery.shouldCascadeAllParts() || (sourceQuery.shouldCascadePrivateParts() && isPrivateOwned()) || (sourceQuery.shouldCascadeByMapping() && this.cascadeRefresh))) || extendingPessimisticLockScope) {
             targetQuery = (ReadQuery)targetQuery.clone();
             // Code copied roughly from initializeSelectionStatement.
             SQLSelectStatement statement = new SQLSelectStatement();
@@ -2662,7 +2663,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 statement.addField((DatabaseField)((DirectMapMapping)this).getDirectKeyField().clone());
             }
             statement.setWhereClause((Expression)getSelectionCriteria().clone());
-            statement.getBuilder().asOf(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
+            if(sourceQuery.isObjectLevelReadQuery()) {
+                statement.getBuilder().asOf(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
+            }
+            if(extendingPessimisticLockScope) {
+                statement.setLockingClause(new ForUpdateClause(sourceQuery.getLockMode()));
+            }
             if (getHistoryPolicy() != null) {
                 ExpressionBuilder builder = statement.getBuilder();
                 if (sourceQuery.getSession().getAsOfClause() != null) {

@@ -463,6 +463,7 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean isSelectForUpateSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
+        // Both DB2 and Derby support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
             warning("This database does not support FOR UPDATE.");

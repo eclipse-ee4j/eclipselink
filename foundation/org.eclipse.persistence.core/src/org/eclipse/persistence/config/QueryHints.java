@@ -631,5 +631,16 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setInMemoryQueryIndirectionPolicyState(int)
      */
     public static final String INDIRECTION_POLICY = "eclipselink.cache-usage.indirection-policy";
+    
+    /**
+     * "javax.persistence.lock.scope"
+     * <p> By default pessimistic lock applied to only the tables mapped to the object being locked.
+     * <p> It could be extended to apply also to relation (join) tables (ManyToMany and OneToOne case),
+     * and CollectionTables (ElementCollection case). 
+     * Valid values are defined in PessimisticLockScope.
+     * @see javax.persistence.PessimisticLockScope
+     * @see javax.persistence.LockModeType
+     */
+    public static final String PESSIMISTIC_LOCK_SCOPE = "javax.persistence.lock.scope";
 
 }

@@ -580,6 +580,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Add all the inverseJoinColumns (target foreign keys) to the mapping.
         String defaultTargetFieldName = getAttributeName();
         addManyToManyRelationKeyFields(getJoinColumnsAndValidate(joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+        
+        // The spec. requires pessimistic lock to be extend-able to JoinTable.
+        mapping.setShouldExtendPessimisticLockScope(true);
     }
     
     /**

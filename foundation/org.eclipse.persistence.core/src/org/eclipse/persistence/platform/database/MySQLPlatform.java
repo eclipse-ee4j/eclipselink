@@ -425,6 +425,19 @@ public class MySQLPlatform extends DatabasePlatform {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether locking clause could be selectively applied only to some tables in a ReadQuery.
+     * Example: the following locks the rows in SALARY table, doesn't lock the rows in EMPLOYEE table: 
+     *   on Oracle platform (method returns true):
+     *     SELECT t0.EMP_ID..., t1.SALARY FROM EMPLOYEE t0, SALARY t1 WHERE ... FOR UPDATE t1.SALARY
+     *   on SQLServer platform (method returns true):
+     *     SELECT t0.EMP_ID..., t1.SALARY FROM EMPLOYEE t0, SALARY t1 WITH (UPDLOCK) WHERE ...
+     */
+    public boolean supportsIndividualTableLocking() {
+        return false;
+    }
+    
     @Override
     public boolean supportsStoredFunctions() {
         return true;

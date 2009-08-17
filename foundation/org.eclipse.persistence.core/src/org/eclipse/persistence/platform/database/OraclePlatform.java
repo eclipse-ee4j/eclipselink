@@ -756,6 +756,14 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * INTERNAL:
+     * Indicates whether SELECT DISTINCT ... FOR UPDATE is allowed by the platform (Oracle doesn't allow this).
+     */
+    public boolean isForUpdateCompatibleWithDistinct() {
+        return false;
+    }
+    
+    /**
      * Return true if the given exception occurred as a result of a lock
      * time out exception (WAIT clause).
      */

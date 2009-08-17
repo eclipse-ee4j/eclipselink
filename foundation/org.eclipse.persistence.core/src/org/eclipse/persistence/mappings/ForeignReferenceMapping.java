@@ -93,6 +93,21 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** This is a way (after cloning) to force the initialization of the selection criteria */
     protected boolean forceInitializationOfSelectionCriteria;
     
+    /**
+     * Indicates whether and how pessimistic lock scope should be extended 
+     */
+    enum ExtendPessimisticLockScope {
+        // should not be extended.
+        NONE,
+        // should be extended in mapping's selectQuery.
+        TARGET_QUERY,
+        // should be extended in the source query.
+        SOURCE_QUERY,
+        // should be extended in a dedicated query (which doesn't do anything else).
+        DEDICATED_QUERY
+    }
+    ExtendPessimisticLockScope extendPessimisticLockScope;
+    
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
         this.hasCustomSelectionQuery = false;
@@ -104,6 +119,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.cascadeRemove = false;
         this.requiresTransientWeavedFields = true;
         this.forceInitializationOfSelectionCriteria = false;
+        this.extendPessimisticLockScope = ExtendPessimisticLockScope.NONE;
     }
 
     /**
@@ -180,6 +196,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
                                                                             clone, unitOfWork, true);// building clone directly from row.
         setAttributeValueInObject(clone, clonedAttributeValue);
+        if(isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
+            // need to instantiate to extended the lock beyond the source object table(s).
+            this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
+        }
     }
 
     /**
@@ -322,6 +342,27 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         setIndirectionPolicy(new NoIndirectionPolicy());
     }
 
+    /**
+     * INTERNAL:
+     * Called if shouldExtendPessimisticLockScopeInTargetQuery() is true.
+     * Adds locking clause to the target query to extend pessimistic lock scope.
+     */
+    protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
+        targetQuery.setLockMode(sourceQuery.getLockMode());
+    }
+    
+    /**
+     * INTERNAL:
+     * Called if shouldExtendPessimisticLockScopeInSourceQuery is true.
+     * Adds fields to be locked to the where clause of the source query.
+     * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
+     * 
+     * This method must be implemented in subclasses that allow
+     * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
+     */
+    public void extendPessimisticLockScopeInSourceQuery(ObjectLevelReadQuery sourceQuery) {
+    }
+    
     /**
      * INTERNAL:
      * Extract the value from the batch optimized query, this should be supported by most query types.
@@ -577,6 +618,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         return attributeValue;
     }
 
+    /**
+     * INTERNAL:
+     * Should be overridden by subclass that allows setting
+     * extendPessimisticLockScope to DEDICATED_QUERY. 
+     */
+    protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Return the mapping's indirection policy.
@@ -1153,6 +1203,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         setCustomSelectionQuery(getSelectionQuery());
     }
 
+    /**
+     * ADVANCED:
+     * Indicates whether pessimistic lock of ObjectLevelReadQuery with isPessimisticLockScopeExtended set to true  
+     * should be applied through this mapping beyond the tables mapped to the source object.
+     */
+    public void setShouldExtendPessimisticLockScope(boolean shouldExtend) {
+        extendPessimisticLockScope = shouldExtend ? ExtendPessimisticLockScope.TARGET_QUERY : ExtendPessimisticLockScope.NONE;  
+    }
+    
     protected void setTempSession(AbstractSession session) {
         this.tempInitSession = session;
     }
@@ -1183,6 +1242,27 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether pessimistic lock of ObjectLevelReadQuery with isPessimisticLockScopeExtended set to true  
+     * should be applied through this mapping beyond the tables mapped to the source object.
+     */
+    public boolean shouldExtendPessimisticLockScope() {
+        return extendPessimisticLockScope != ExtendPessimisticLockScope.NONE;
+    }
+    
+    public boolean shouldExtendPessimisticLockScopeInSourceQuery() {
+        return extendPessimisticLockScope == ExtendPessimisticLockScope.SOURCE_QUERY;
+    }
+    
+    public boolean shouldExtendPessimisticLockScopeInTargetQuery() {
+        return extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY;
+    }
+    
+    public boolean shouldExtendPessimisticLockScopeInDedicatedQuery() {
+        return extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -1460,30 +1540,49 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
 
         // If the source query is cascading then the target query must use the same settings.
-        if (targetQuery.isObjectLevelReadQuery() && (sourceQuery.shouldCascadeAllParts() || (this.isPrivateOwned && sourceQuery.shouldCascadePrivateParts()) || (this.cascadeRefresh && sourceQuery.shouldCascadeByMapping()))) {
-            // If the target query has already been cloned (we're refreshing) avoid 
-            // re-cloning the query again.
-            if (targetQuery == this.selectionQuery) {
-                // perf: bug#4751950, first prepare the query before cloning.
-                if (targetQuery.shouldPrepare()) {
-                    targetQuery.checkPrepare(executionSession, row);
+        if (targetQuery.isObjectLevelReadQuery()) {
+            if (sourceQuery.shouldCascadeAllParts() || (this.isPrivateOwned && sourceQuery.shouldCascadePrivateParts()) || (this.cascadeRefresh && sourceQuery.shouldCascadeByMapping())) {
+                // If the target query has already been cloned (we're refreshing) avoid 
+                // re-cloning the query again.
+                if (targetQuery == this.selectionQuery) {
+                    // perf: bug#4751950, first prepare the query before cloning.
+                    if (targetQuery.shouldPrepare()) {
+                        targetQuery.checkPrepare(executionSession, row);
+                    }
+                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery.setIsExecutionClone(true);
                 }
-                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
-                targetQuery.setIsExecutionClone(true);
+
+                ((ObjectLevelReadQuery)targetQuery).setShouldRefreshIdentityMapResult(sourceQuery.shouldRefreshIdentityMapResult());
+                targetQuery.setCascadePolicy(sourceQuery.getCascadePolicy());
+    
+                // For queries that have turned caching off, such as aggregate collection, leave it off.
+                if (targetQuery.shouldMaintainCache()) {
+                    targetQuery.setShouldMaintainCache(sourceQuery.shouldMaintainCache());
+                }
+    
+                // For flashback: Read attributes as of the same time if required.
+                if (((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
+                    targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
+                    ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
+                }
             }
-
-            ((ObjectLevelReadQuery)targetQuery).setShouldRefreshIdentityMapResult(sourceQuery.shouldRefreshIdentityMapResult());
-            targetQuery.setCascadePolicy(sourceQuery.getCascadePolicy());
-
-            // For queries that have turned caching off, such as aggregate collection, leave it off.
-            if (targetQuery.shouldMaintainCache()) {
-                targetQuery.setShouldMaintainCache(sourceQuery.shouldMaintainCache());
-            }
-
-            // For flashback: Read attributes as of the same time if required.
-            if (((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
-                targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
-                ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
+            
+            if(isExtendingPessimisticLockScope(sourceQuery) ) {
+                if(extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
+                    if (targetQuery == this.selectionQuery) {
+                        // perf: bug#4751950, first prepare the query before cloning.
+                        if (targetQuery.shouldPrepare()) {
+                            targetQuery.checkPrepare(executionSession, row);
+                        }
+                        targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                        targetQuery.setIsExecutionClone(true);
+                    }
+                    extendPessimisticLockScopeInTargetQuery((ObjectLevelReadQuery)targetQuery, sourceQuery);
+                } else if(extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
+                    ReadQuery dedicatedQuery = this.getExtendPessimisticLockScopeDedicatedQuery(executionSession, sourceQuery.getLockMode());
+                    executionSession.executeQuery(dedicatedQuery, row);
+                }
             }
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
@@ -1491,6 +1590,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         return this.indirectionPolicy.valueFromQuery(targetQuery, row, sourceQuery.getSession());
     }
     
+    /**
+     * INTERNAL:
+     * Indicates whether the source query's pessimistic lock scope scope should be extended in the target query.
+     */
+    protected boolean isExtendingPessimisticLockScope(ObjectBuildingQuery sourceQuery) {
+        // TODO: What if sourceQuery is NOT ObjectLevelReadQuery? Should we somehow handle this? 
+        // Or alternatively define ObjectBuildingQuery.shouldExtendPessimisticLockScope() to always return false?
+        return sourceQuery.isLockQuery() && sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).shouldExtendPessimisticLockScope();
+    }
+
     /**
      * INTERNAL:
      * Allow for the mapping to perform any historical query additions.
@@ -1599,8 +1708,4 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         return nestedQuery;
     }
-
-
-
-
 }

@@ -23,14 +23,23 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ForUpdateClause;
+import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
 import org.eclipse.persistence.internal.expressions.SQLInsertStatement;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping.ExtendPessimisticLockScope;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DirectReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -61,6 +70,8 @@ public class RelationTableMechanism  implements Cloneable {
     /** Used for insertion. */
     protected DataModifyQuery insertQuery;
     protected boolean hasCustomInsertQuery;
+    
+    protected ReadQuery lockRelationTableQuery;
 
     public RelationTableMechanism() {
         this.insertQuery = new DataModifyQuery();
@@ -113,6 +124,74 @@ public class RelationTableMechanism  implements Cloneable {
 
     /**
      * INTERNAL:
+     * Selection criteria is created to read target records from the table.
+     */
+    Expression buildSelectionCriteria(ForeignReferenceMapping mapping, Expression criteria) {
+        return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, false);
+    }
+    Expression buildSelectionCriteriaAndAddFieldsToQuery(ForeignReferenceMapping mapping, Expression criteria) {
+        return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, true);
+    }
+    protected Expression buildSelectionCriteriaAndAddFieldsToQueryInternal(ForeignReferenceMapping mapping, Expression criteria, boolean shouldAddTargetFields, boolean shouldAddFieldsToQuery) {
+        DatabaseField relationKey;
+        DatabaseField sourceKey;
+        DatabaseField targetKey;
+        Expression exp1;
+        Expression exp2;
+        Expression expression;
+        Expression builder = new ExpressionBuilder();
+        Enumeration relationKeyEnum;
+        Enumeration sourceKeyEnum;
+        Enumeration targetKeyEnum;
+
+        Expression linkTable = builder.getTable(this.relationTable);
+
+        if(shouldAddTargetFields) {
+            targetKeyEnum = getTargetKeyFields().elements();
+            relationKeyEnum = getTargetRelationKeyFields().elements();
+            for (; targetKeyEnum.hasMoreElements();) {
+                relationKey = (DatabaseField)relationKeyEnum.nextElement();
+                targetKey = (DatabaseField)targetKeyEnum.nextElement();
+    
+                exp1 = builder.getField(targetKey);
+                exp2 = linkTable.getField(relationKey);
+                expression = exp1.equal(exp2);
+    
+                if (criteria == null) {
+                    criteria = expression;
+                } else {
+                    criteria = expression.and(criteria);
+                }
+            }
+        }
+
+        relationKeyEnum = getSourceRelationKeyFields().elements();
+        sourceKeyEnum = getSourceKeyFields().elements();
+
+        for (; relationKeyEnum.hasMoreElements();) {
+            relationKey = (DatabaseField)relationKeyEnum.nextElement();
+            sourceKey = (DatabaseField)sourceKeyEnum.nextElement();
+
+            exp1 = linkTable.getField(relationKey);
+            exp2 = builder.getParameter(sourceKey);
+            expression = exp1.equal(exp2);
+
+            if (criteria == null) {
+                criteria = expression;
+            } else {
+                criteria = expression.and(criteria);
+            }
+        }
+        
+        if(shouldAddFieldsToQuery && mapping.isCollectionMapping()) {
+            ((CollectionMapping)mapping).getContainerPolicy().addAdditionalFieldsToQuery(mapping.getSelectionQuery(), linkTable);
+        }
+        
+        return criteria;
+    }
+    
+    /**
+     * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
     public Object clone() {
@@ -130,6 +209,9 @@ public class RelationTableMechanism  implements Cloneable {
         
         clone.setInsertQuery((DataModifyQuery) insertQuery.clone());
         clone.setDeleteQuery((DataModifyQuery) deleteQuery.clone());
+        if(lockRelationTableQuery != null) {
+            clone.lockRelationTableQuery = (DirectReadQuery)lockRelationTableQuery.clone();
+        }
 
         return clone;
     }
@@ -151,6 +233,37 @@ public class RelationTableMechanism  implements Cloneable {
         return deleteQuery;
     }
 
+    /**
+     * INTERNAL:
+     * Returns a query that
+     */
+    ReadQuery getLockRelationTableQueryClone(AbstractSession session, short lockMode) {
+        DirectReadQuery lockRelationTableQueryClone = (DirectReadQuery)lockRelationTableQuery.clone(); 
+        SQLSelectStatement statement = new SQLSelectStatement();
+        statement.addTable(this.relationTable);
+        statement.addField((DatabaseField)this.sourceRelationKeyFields.get(0).clone());
+        statement.setWhereClause((Expression)lockRelationTableQuery.getSelectionCriteria().clone());
+        statement.setLockingClause(new ForUpdateClause(lockMode));
+        statement.normalize(session, null);
+        lockRelationTableQueryClone.setSQLStatement(statement);
+        lockRelationTableQueryClone.setIsExecutionClone(true);
+        return lockRelationTableQueryClone;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return relation table locking clause.
+     */
+    public void setRelationTableLockingClause(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
+        ForUpdateOfClause lockingClause = new ForUpdateOfClause();
+        lockingClause.setLockMode(sourceQuery.getLockMode());
+        FieldExpression exp = (FieldExpression)targetQuery.getExpressionBuilder().getTable(this.relationTable).getField(this.sourceRelationKeyFields.get(0));
+        lockingClause.addLockedExpression(exp);
+        targetQuery.setLockingClause(lockingClause);
+        // locking clause is not compatible with DISTINCT 
+        targetQuery.setShouldOuterJoinSubclasses(true);
+    }
+    
     protected DataModifyQuery getInsertQuery() {
         return insertQuery;
     }
@@ -331,6 +444,10 @@ public class RelationTableMechanism  implements Cloneable {
         
         initializeInsertQuery(session, mapping);
         initializeDeleteQuery(session, mapping);
+        
+        if(mapping.extendPessimisticLockScope != ExtendPessimisticLockScope.NONE) {
+            initializeExtendPessipisticLockScope(session, mapping);
+        }
     }
 
     /**
@@ -376,6 +493,34 @@ public class RelationTableMechanism  implements Cloneable {
 
     /**
      * INTERNAL:
+     * Initialize extendPessimisticLockeScope and lockRelationTableQuery (if required).
+     */
+    protected void initializeExtendPessipisticLockScope(AbstractSession session, ForeignReferenceMapping mapping) {
+        if(mapping.usesIndirection()) {
+            if(session.getPlatform().isForUpdateCompatibleWithDistinct() && session.getPlatform().supportsLockingQueriesWithMultipleTables()) {
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.SOURCE_QUERY; 
+            } else {
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;                     
+            }
+        } else {
+            if(session.getPlatform().supportsIndividualTableLocking() && session.getPlatform().supportsLockingQueriesWithMultipleTables()) {
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.TARGET_QUERY; 
+            } else {
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;                     
+            }
+        }
+        
+        if(mapping.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
+            Expression startCriteria = (Expression)mapping.getSelectionQuery().getSelectionCriteria();
+            if(startCriteria != null) {
+                startCriteria = (Expression)startCriteria.clone();
+            }
+            initializeLockRelationTableQuery(session, mapping, startCriteria);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize insert query. This query is used to insert the collection of objects into the
      * relation table.
      */
@@ -410,6 +555,22 @@ public class RelationTableMechanism  implements Cloneable {
         getInsertQuery().setModifyRow(joinRow);
     }
 
+    /**
+     * INTERNAL:
+     * Initialize lockRelationTableQuery.
+     */
+    protected void initializeLockRelationTableQuery(AbstractSession session, ForeignReferenceMapping mapping, Expression startCriteria) {
+        lockRelationTableQuery = new DirectReadQuery();
+        Expression criteria = buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, startCriteria, false, false);
+        SQLSelectStatement statement = new SQLSelectStatement();
+        statement.addTable(this.relationTable);
+        statement.addField((DatabaseField)this.sourceRelationKeyFields.get(0).clone());
+        statement.setWhereClause(criteria);
+        statement.normalize(session, null);
+        lockRelationTableQuery.setSQLStatement(statement);
+        lockRelationTableQuery.setSessionName(session.getName());
+    }
+    
     /**
      * INTERNAL:
      * Set the table qualifier on the relation table if required
@@ -524,6 +685,15 @@ public class RelationTableMechanism  implements Cloneable {
         return getTargetKeyFields().isEmpty();
     }
 
+    /**
+     * INTERNAL:
+     * Adds to the passed expression a single relation table field joined to source field.
+     * Used to extend pessimistic locking clause in source query. 
+     */
+    public Expression joinRelationTableField(Expression expression, Expression baseExpression) {
+        return baseExpression.getField(this.sourceKeyFields.get(0)).equal(baseExpression.getTable(relationTable).getField(this.sourceRelationKeyFields.get(0))).and(expression);
+    }
+            
     /**
      * PUBLIC:
      * The default delete query for mapping can be overridden by specifying the new query.

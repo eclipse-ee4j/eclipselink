@@ -1241,6 +1241,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * INTERNAL:
+     * Indicates whether SELECT DISTINCT ... FOR UPDATE is allowed by the platform (Oracle doesn't allow this).
+     */
+    public boolean isForUpdateCompatibleWithDistinct() {
+        return true;
+    }
+    
+    /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
@@ -2669,6 +2677,27 @@ public class DatabasePlatform extends DatasourcePlatform {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether locking clause could be selectively applied only to some tables in a ReadQuery.
+     * Example: the following locks the rows in SALARY table, doesn't lock the rows in EMPLOYEE table: 
+     *   on Oracle platform (method returns true):
+     *     SELECT t0.EMP_ID..., t1.SALARY FROM EMPLOYEE t0, SALARY t1 WHERE ... FOR UPDATE t1.SALARY
+     *   on SQLServer platform (method returns true):
+     *     SELECT t0.EMP_ID..., t1.SALARY FROM EMPLOYEE t0, SALARY t1 WITH (UPDLOCK) WHERE ...
+     */
+    public boolean supportsIndividualTableLocking() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether locking clause could be applied to the query that has more than one table
+     */
+    public boolean supportsLockingQueriesWithMultipleTables() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * Indicates whether locking OF clause should print alias for field.

@@ -132,6 +132,30 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     
     /**
      * INTERNAL:
+     * Adds locking clause to the target query to extend pessimistic lock scope.
+     */
+    protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
+        this.mechanism.setRelationTableLockingClause(targetQuery, sourceQuery);
+    }
+    
+    /**
+     * INTERNAL:
+     * Called only if both 
+     * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
+     * Adds fields to be locked to the where clause of the source query.
+     * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
+     * 
+     * This method must be implemented in subclasses that allow
+     * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
+     */
+    public void extendPessimisticLockScopeInSourceQuery(ObjectLevelReadQuery sourceQuery) {
+        Expression exp = sourceQuery.getSelectionCriteria();
+        exp = this.mechanism.joinRelationTableField(exp, sourceQuery.getExpressionBuilder());
+        sourceQuery.setSelectionCriteria(exp);
+    }
+
+    /**
+     * INTERNAL:
      * Extract the source primary key value from the relation row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
@@ -209,6 +233,19 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         return this.mechanism.getDeleteQuery();
     }
 
+    /**
+     * INTERNAL:
+     * Should be overridden by subclass that allows setting
+     * extendPessimisticLockScope to DEDICATED_QUERY. 
+     */
+    protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
+        if(this.mechanism != null) {
+            return this.mechanism.getLockRelationTableQueryClone(session, lockMode);            
+        } else {
+            return super.getExtendPessimisticLockScopeDedicatedQuery(session, lockMode);
+        }
+    }
+    
     protected DataModifyQuery getInsertQuery() {
         return this.mechanism.getInsertQuery();
     }
@@ -398,9 +435,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         if (shouldInitializeSelectionCriteria()) {
             if (shouldForceInitializationOfSelectionCriteria()) {
-                initializeSelectionCriteriaAndAddFieldsToQuery(session, null);
+                initializeSelectionCriteriaAndAddFieldsToQuery(null);
             } else {
-                initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
+                initializeSelectionCriteriaAndAddFieldsToQuery(getSelectionCriteria());
             }
         }
         if (!getSelectionQuery().hasSessionName()) {
@@ -538,71 +575,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Selection criteria is created to read target records from the table.
      */
-    protected void initializeSelectionCriteria(AbstractSession session) {
-        initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
-    }
-    
-    /**
-     * INTERNAL:
-     * Selection criteria is created to read target records from the table.
-     */
-    protected void initializeSelectionCriteriaAndAddFieldsToQuery(AbstractSession session, Expression startCriteria) {
-        DatabaseField relationKey;
-        DatabaseField sourceKey;
-        DatabaseField targetKey;
-        Expression exp1;
-        Expression exp2;
-        Expression expression;
-        Expression criteria = startCriteria;
-        Expression builder = new ExpressionBuilder();
-        Enumeration relationKeyEnum;
-        Enumeration sourceKeyEnum;
-        Enumeration targetKeyEnum;
-
-        Expression linkTable = null;
-
-        targetKeyEnum = getTargetKeyFields().elements();
-        relationKeyEnum = getTargetRelationKeyFields().elements();
-        for (; targetKeyEnum.hasMoreElements();) {
-            relationKey = (DatabaseField)relationKeyEnum.nextElement();
-            targetKey = (DatabaseField)targetKeyEnum.nextElement();
-            if (linkTable == null) {// We could just call getTable repeatedly, but it's a waste
-                linkTable = builder.getTable(relationKey.getTable());
-            }
-
-            exp1 = builder.getField(targetKey);
-            exp2 = linkTable.getField(relationKey);
-            expression = exp1.equal(exp2);
-
-            if (criteria == null) {
-                criteria = expression;
-            } else {
-                criteria = expression.and(criteria);
-            }
-
-            setSelectionCriteria(criteria);
-        }
-
-        relationKeyEnum = getSourceRelationKeyFields().elements();
-        sourceKeyEnum = getSourceKeyFields().elements();
-
-        for (; relationKeyEnum.hasMoreElements();) {
-            relationKey = (DatabaseField)relationKeyEnum.nextElement();
-            sourceKey = (DatabaseField)sourceKeyEnum.nextElement();
-
-            exp1 = linkTable.getField(relationKey);
-            exp2 = builder.getParameter(sourceKey);
-            expression = exp1.equal(exp2);
-
-            if (criteria == null) {
-                criteria = expression;
-            } else {
-                criteria = expression.and(criteria);
-            }
-            getContainerPolicy().addAdditionalFieldsToQuery(getSelectionQuery(), linkTable);
-
-            setSelectionCriteria(criteria);
-        }
+    protected void initializeSelectionCriteriaAndAddFieldsToQuery(Expression startCriteria) {
+        setSelectionCriteria(this.mechanism.buildSelectionCriteriaAndAddFieldsToQuery(this, startCriteria));
     }    
 
     /**

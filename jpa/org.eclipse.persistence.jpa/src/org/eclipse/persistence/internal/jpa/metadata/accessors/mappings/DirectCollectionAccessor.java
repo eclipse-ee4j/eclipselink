@@ -263,6 +263,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
+
+        // The spec. requires pessimistic lock to be extend-able to CollectionTable
+        mapping.setShouldExtendPessimisticLockScope(true);
     }
     
     /**

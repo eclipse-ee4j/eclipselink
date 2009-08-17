@@ -37,6 +37,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
+import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.LockModeType;
@@ -98,7 +99,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -109,6 +109,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 
@@ -248,6 +249,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITELockWithNoChanges"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READ_TIMEOUTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITE_TIMEOUTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_ExtendedScope"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTIC_READLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTIC_WRITELock"));
@@ -1824,6 +1826,286 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+        }
+    }
+    
+    /*
+     * Helper class for testPESSIMISTIC_ExtendedScope.
+     * Kills transaction that is holding the test for too long.
+     */
+    class TransactionKiller extends Thread {
+        EntityManager em;
+        long timeToWait;
+        boolean shouldKillTransaction = true;
+        boolean isWaiting;
+        boolean hasKilledTransaction;
+        TransactionKiller(EntityManager em, long timeToWait) {
+            this.em = em;
+            this.timeToWait = timeToWait;
+        }
+        public void run() {
+            try {
+                isWaiting = true;
+                Thread.sleep(timeToWait);
+            } catch (InterruptedException ex) {
+                throw new TestProblemException("TestProblem: TransactionKiller.run: wait failed: " + ex);
+            } finally {
+                isWaiting = false;
+            }
+            if (shouldKillTransaction && isTransactionActive(em)) {
+                hasKilledTransaction = true;
+                rollbackTransaction(em);
+            }
+        }
+    }
+    public void testPESSIMISTIC_ExtendedScope() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        // Cannot create parallel entity managers in the server. Uses FOR UPDATE clause which SQLServer doesn't support.
+        if (isOnServer() || !isSelectForUpateSupported()) {
+            return;
+        }
+            
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        
+        // If FOR UPDATE NOWAIT is not supported then FOR UPDATE is used - and that could lock the test (em2) for a long time (depending on db setting). 
+        boolean shouldSpawnThread = !isSelectForUpateNoWaitSupported();
+        // To avoid that a separate thread is spawned that - after waiting the specified time -
+        // completes the locking transaction (em1) and therefore clears the way to em2 go ahead.
+        long timeToWait = 1000;
+        
+        String errorMsg = "";
+        LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
+        
+        // create Employee with Projects and Responsibilities
+        Employee emp = new Employee();
+        emp.setFirstName("PESSIMISTIC");
+        emp.setLastName("ExtendedScope");
+        emp.addResponsibility("0");
+        emp.addResponsibility("1");
+        SmallProject smallProject = new SmallProject();
+        smallProject.setName("SmallExtendedScope");
+        emp.addProject(smallProject);
+        LargeProject largeProject = new LargeProject();
+        largeProject.setName("LargeExtendedScope");
+        largeProject.setBudget(5000);
+        emp.addProject(largeProject);            
+        // persist
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(emp);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }                
+            closeEntityManager(em);
+        }
+        // cache ids
+        int id = emp.getId();
+        int smallProjId = smallProject.getId();
+        int largeProjId = largeProject.getId();
+        
+        clearCache();
+
+        
+        // properties to be passed to find, lock, refresh methods
+        Map<String, Object> properties = new HashMap();
+        properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+        String forUpdateClause = session.getPlatform().getSelectForUpdateString();
+        if(isSelectForUpateNoWaitSupported()) {
+            properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+            forUpdateClause = session.getPlatform().getSelectForUpdateNoWaitString();
+        }
+        String lockingClauseAfterWhereClause = "";
+        String lockingClauseBeforeWhereClause = "";
+        if(session.getPlatform().shouldPrintLockingClauseAfterWhereClause()) {
+            lockingClauseAfterWhereClause = forUpdateClause;
+        } else {
+            lockingClauseBeforeWhereClause = forUpdateClause;
+        }
+                    
+        // indicates whether the object to be locked is already in cache.
+        boolean[] isObjectCached = {false, true};
+        // indicates which method on the first entity manager is used to lock the object.
+        String[] testModeArray1 = {"query", "find", "lock", "refresh"};
+        // indicates which method on the second entity manager is used to test the lock. 
+        String[] testModeArray2 = {"query", "find", "update_name", "update_salary", "remove_project", "remove_respons", "update_project", "update_respons", "lock", "refresh"};
+/* test runs all combinations of elements of the above three arrays. To limit the number of configuration for debugging override these array, for instance:
+        boolean[] isObjectCached = {false};
+        String[] testModeArray1 = {"lock"};
+        String[] testModeArray2 = {"find"};
+*/
+        // testMode1 loop
+        for(int i=0; i < testModeArray1.length; i++) {
+            String testMode1 = testModeArray1[i];            
+            // isObjectCached loop
+            for(int k=0; k < isObjectCached.length; k++) {
+                boolean isObjCached = isObjectCached[k];
+                // testMode2 loop
+                for(int j=0; j < testModeArray2.length; j++) {
+                    String testMode2 = testModeArray2[j];
+                    boolean isExceptionExpected = !testMode2.equals("update_project");
+                    
+                    // lock emp using em1
+                    EntityManager em1= createEntityManager();       
+                    // bring object into cache if required
+                    if(isObjCached) {
+                        ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: bring object into cache", (Object[])null, null, false);
+                        em1.find(Employee.class, id);
+                    }                    
+                    Employee emp1;
+                    try {
+                        beginTransaction(em1);
+
+                        ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode1 = " + testMode1, (Object[])null, null, false);
+                        
+                        if(testMode1.equals("query")) {
+                            Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
+                                    setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+                            if(isSelectForUpateNoWaitSupported()) {                
+                                query1.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                            }
+                            emp1 = (Employee)query1.getSingleResult();
+                        } else if(testMode1.equals("find")) {
+                            emp1 = em1.find(Employee.class, id, lockMode, properties);
+                        } else {
+                            emp1 = em1.find(Employee.class, id);
+                            if(testMode1.equals("lock")) {
+                                em1.lock(emp1, lockMode, properties);
+                            } else if(testMode1.equals("refresh")) {
+                                em1.refresh(emp1, lockMode, properties);
+                            } else {
+                                fail("Unknown testMode1 = " + testMode1);
+                            }
+                        }
+                    
+                        TransactionKiller transactionKiller = null;
+                        // try to update emp using em2
+                        EntityManager em2 = createEntityManager();
+                        Employee emp2;
+                        try {
+                            beginTransaction(em2);
+                            
+                            ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode2 = " + testMode2, (Object[])null, null, false);
+                            
+                            if(shouldSpawnThread) {
+                                // after waiting TransactionKiller rollback em1 transaction unlocking way for em2 to proceed.
+                                // the test assumes that em2 waiting for timeToWait means em2 waiting on the lock acquired by em1.
+                                transactionKiller = new TransactionKiller(em1, timeToWait);
+                                transactionKiller.start();
+                            }
+            
+                            if(testMode2.equals("query")) {
+                                Query query2 = em2.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
+                                setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+                                if(isSelectForUpateNoWaitSupported()) {                
+                                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                                }
+                                emp2 = (Employee)query2.getSingleResult();
+                            } else if(testMode2.equals("find")) {
+                                emp2 = em2.find(Employee.class, id, lockMode, properties);
+                            } else if(testMode2.equals("update_name")) {
+                                em2.createNativeQuery("SELECT L_NAME FROM CMP3_EMPLOYEE"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getSingleResult();
+//                                em2.createNativeQuery("UPDATE CMP3_EMPLOYEE SET L_NAME = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
+                            } else if(testMode2.equals("update_salary")) {
+                                em2.createNativeQuery("SELECT SALARY FROM CMP3_SALARY"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getSingleResult();
+//                                em2.createNativeQuery("UPDATE CMP3_SALARY SET SALARY = 1000 WHERE EMP_ID = "+id).executeUpdate();
+                            } else if(testMode2.equals("remove_project")) {
+                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM CMP3_EMP_PROJ"+lockingClauseBeforeWhereClause+" WHERE EMPLOYEES_EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+//                                em2.createNativeQuery("DELETE FROM CMP3_EMP_PROJ WHERE EMPLOYEES_EMP_ID = "+id).executeUpdate();
+                            } else if(testMode2.equals("remove_respons")) {
+                                em2.createNativeQuery("SELECT EMP_ID FROM CMP3_RESPONS"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+//                                em2.createNativeQuery("DELETE FROM CMP3_RESPONS WHERE EMP_ID = "+id).executeUpdate();
+                            } else if(testMode2.equals("update_project")) {
+                                em2.createNativeQuery("SELECT PROJ_NAME FROM CMP3_PROJECT"+lockingClauseBeforeWhereClause+" WHERE PROJ_ID = "+smallProjId+lockingClauseAfterWhereClause).getSingleResult();
+//                                em2.createNativeQuery("UPDATE CMP3_PROJECT SET PROJ_NAME = 'NEW' WHERE PROJ_ID = "+smallProjId).executeUpdate();
+                            } else if(testMode2.equals("update_respons")) {
+                                em2.createNativeQuery("SELECT DESCRIPTION FROM CMP3_RESPONS"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+//                                em2.createNativeQuery("UPDATE CMP3_RESPONS SET DESCRIPTION = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
+                            } else {
+                                emp2 = em2.find(Employee.class, id);
+                                if(testMode2.equals("lock")) {
+                                    em2.lock(emp2, lockMode, properties);
+                                } else if(testMode2.equals("refresh")) {
+                                    em2.refresh(emp2, lockMode, properties);
+                                } else {
+                                    fail("Unknown testMode2 = " + testMode2);
+                                }
+                            }
+                            
+            //                commitTransaction(em2);
+                            boolean hasKilledTransaction = false;
+                            if(transactionKiller != null) {
+                                transactionKiller.shouldKillTransaction = false;
+                                try {
+                                    transactionKiller.join();
+                                } catch(InterruptedException intEx) {
+                                    // Ignore
+                                }
+                                hasKilledTransaction = transactionKiller.hasKilledTransaction;
+                            }
+                            // transaction killed by TransactionKiller is treated as PessimisticLockException 
+                            if(isExceptionExpected && !hasKilledTransaction) {
+                                String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Exception was expected."; 
+                                ss.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, (Object[])null, null, false);
+                                errorMsg += '\n' + localErrorMsg; 
+                            }
+                        } catch (Exception ex) {
+                            if(transactionKiller != null) {
+                                transactionKiller.shouldKillTransaction = false;
+                                try {
+                                    transactionKiller.join();
+                                } catch(InterruptedException intEx) {
+                                    // Ignore
+                                }
+                            }
+                            if(!isExceptionExpected) {
+                                String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Unexpected exception: " + ex.getMessage();
+                                ss.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, (Object[])null, null, false);
+                                errorMsg += '\n' + localErrorMsg;
+                            }
+                        } finally {
+                            if (isTransactionActive(em2)) {
+                                rollbackTransaction(em2);
+                            }
+                            closeEntityManager(em2);
+                        }
+                        
+            //            commitTransaction(em1);
+                    } finally {
+                        if (isTransactionActive(em1)) {
+                            rollbackTransaction(em1);
+                        }
+                        closeEntityManager(em1);
+                    }
+                    clearCache();
+                }  // testModel2 loop
+            }  // isObjectCached loop
+        }  // testMode1 loop
+        
+        // clean up
+        em = createEntityManager();
+        emp = em.find(Employee.class, id);
+        try {
+            beginTransaction(em);
+            Iterator<Project> it = emp.getProjects().iterator(); 
+            while(it.hasNext()) {
+                Project project = it.next();
+                it.remove();
+                em.remove(project);
+            }
+            em.remove(emp);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }                
+            closeEntityManager(em);
+        }
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
         }
     }
     

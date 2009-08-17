@@ -501,6 +501,41 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     /**
      * INTERNAL:
+     * Adds locking clause to the target query to extend pessimistic lock scope.
+     */
+    protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
+        if(this.mechanism == null) {
+            super.extendPessimisticLockScopeInTargetQuery(targetQuery, sourceQuery);
+        } else {
+            this.mechanism.setRelationTableLockingClause(targetQuery, sourceQuery);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Called only if both 
+     * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
+     * Adds fields to be locked to the where clause of the source query.
+     * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
+     * 
+     * This method must be implemented in subclasses that allow
+     * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
+     */
+    public void extendPessimisticLockScopeInSourceQuery(ObjectLevelReadQuery sourceQuery) {
+        Expression exp = sourceQuery.getSelectionCriteria();
+        if(this.mechanism == null) {
+            ExpressionBuilder builder = sourceQuery.getExpressionBuilder();
+            Iterator<Map.Entry<DatabaseField, DatabaseField>> it = this.getSourceToTargetKeyFields().entrySet().iterator();
+            Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+            exp = builder.getField(entry.getKey()).equal(builder.get(this.getAttributeName()).getField(entry.getValue())).and(exp);
+        } else {
+            exp = this.mechanism.joinRelationTableField(exp, sourceQuery.getExpressionBuilder());
+        }
+        sourceQuery.setSelectionCriteria(exp);
+    }
+
+    /**
+     * INTERNAL:
      * Extract the foreign key value from the source row.
      */
     protected Vector extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
@@ -703,6 +738,19 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             tables.add(keyTableForMapKey);
         }
         return tables;
+    }
+    
+    /**
+     * INTERNAL:
+     * Should be overridden by subclass that allows setting
+     * extendPessimisticLockScope to DEDICATED_QUERY. 
+     */
+    protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
+        if(this.mechanism != null) {
+            return this.mechanism.getLockRelationTableQueryClone(session, lockMode);            
+        } else {
+            return super.getExtendPessimisticLockScopeDedicatedQuery(session, lockMode);
+        }
     }
     
     /**
@@ -1098,9 +1146,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (usePreviousSelectionCriteria){
             criteria = getSelectionCriteria();
         }
-        Expression builder = new ExpressionBuilder();
 
         if(this.mechanism == null) {
+            Expression builder = new ExpressionBuilder();
             // CR3922
             if (getSourceToTargetKeyFields().isEmpty()) {
                 throw DescriptorException.noForeignKeysAreSpecified(this);
@@ -1124,59 +1172,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 }
             }
         } else {
-            DatabaseField relationKey;
-            DatabaseField sourceKey;
-            DatabaseField targetKey;
-            Expression exp1;
-            Expression exp2;
-            Expression expression;
-            Enumeration relationKeyEnum;
-            Enumeration sourceKeyEnum;
-            Enumeration targetKeyEnum;
-
-            Expression linkTable = null;
-
-            targetKeyEnum = this.mechanism.getTargetKeyFields().elements();
-            relationKeyEnum = this.mechanism.getTargetRelationKeyFields().elements();
-            for (; targetKeyEnum.hasMoreElements();) {
-                relationKey = (DatabaseField)relationKeyEnum.nextElement();
-                targetKey = (DatabaseField)targetKeyEnum.nextElement();
-                if (linkTable == null) {// We could just call getTable repeatedly, but it's a waste
-                    linkTable = builder.getTable(relationKey.getTable());
-                }
-
-                exp1 = builder.getField(targetKey);
-                exp2 = linkTable.getField(relationKey);
-                expression = exp1.equal(exp2);
-
-                if (criteria == null) {
-                    criteria = expression;
-                } else {
-                    criteria = expression.and(criteria);
-                }
-            }
-
-            relationKeyEnum = this.mechanism.getSourceRelationKeyFields().elements();
-            sourceKeyEnum = this.mechanism.getSourceKeyFields().elements();
-
-            for (; relationKeyEnum.hasMoreElements();) {
-                relationKey = (DatabaseField)relationKeyEnum.nextElement();
-                sourceKey = (DatabaseField)sourceKeyEnum.nextElement();
-
-                exp1 = linkTable.getField(relationKey);
-                if (useParameter){
-                    exp2 = builder.getParameter(sourceKey);
-                } else {
-                    exp2 = builder.getField(sourceKey);
-                }
-                expression = exp1.equal(exp2);
-
-                if (criteria == null) {
-                    criteria = expression;
-                } else {
-                    criteria = expression.and(criteria);
-                }
-            }
+            criteria = this.mechanism.buildSelectionCriteria(this, criteria);
         }
         return criteria;
     }

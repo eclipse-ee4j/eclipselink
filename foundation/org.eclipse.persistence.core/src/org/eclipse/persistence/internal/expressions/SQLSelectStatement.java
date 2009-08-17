@@ -243,7 +243,7 @@ public class SQLSelectStatement extends SQLStatement {
      * other platforms(Oracle,Sybase) that print the outer join in the WHERE clause.
      * OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given
      */
-    public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, Vector outerJoinedAliases) throws IOException {
+    public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, Vector outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables) throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
 
@@ -307,10 +307,13 @@ public class SQLSelectStatement extends SQLStatement {
                     outerJoinedAliases.addElement(sourceAlias);
                     writer.write(" ");
                     writer.write(sourceAlias.getQualifiedNameDelimited());
+                    if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(sourceAlias))) {
+                        getForUpdateClause().printSQL(printer, this);
+                    }
                 }
 
                 if(outerExpression == null) {
-                    printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index));
+                    printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index), aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                 } else {
                     DatabaseTable relationTable = outerExpression.getRelationTable();
                     if(relationTable == null) {
@@ -325,6 +328,9 @@ public class SQLSelectStatement extends SQLStatement {
                             writer.write(" ");
                             outerJoinedAliases.addElement(newAlias);
                             writer.write(newAlias.getQualifiedNameDelimited());
+                            if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(newAlias))) {
+                                getForUpdateClause().printSQL(printer, this);
+                            }
                             writer.write(" ON ");
         
                             if (session.getPlatform() instanceof DB2MainframePlatform) {
@@ -346,8 +352,11 @@ public class SQLSelectStatement extends SQLStatement {
                             writer.write(" ");
                             outerJoinedAliases.addElement(targetAlias);
                             writer.write(targetAlias.getQualifiedNameDelimited());
+                            if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
+                                getForUpdateClause().printSQL(printer, this);
+                            }
                             if(hasAdditionalJoinExpressions) {
-                                printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
+                                printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                                 writer.write(")");
                             }
                             writer.write(" ON ");
@@ -370,6 +379,9 @@ public class SQLSelectStatement extends SQLStatement {
                         writer.write(relationTable.getQualifiedNameDelimited());
                         writer.write(" ");
                         outerJoinedAliases.addElement(relationAlias);
+                        if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(relationAlias))) {
+                            getForUpdateClause().printSQL(printer, this);
+                        }
                         writer.write(relationAlias.getQualifiedNameDelimited());
                         
                         Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
@@ -389,6 +401,9 @@ public class SQLSelectStatement extends SQLStatement {
                         writer.write(" ");
                         outerJoinedAliases.addElement(targetAlias);
                         writer.write(targetAlias.getQualifiedNameDelimited());
+                        if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
+                            getForUpdateClause().printSQL(printer, this);
+                        }
                         writer.write(" ON ");
                         if (session.getPlatform() instanceof DB2MainframePlatform) {
                             ((RelationExpression)relationToTargetJoin).printSQLNoParens(printer);
@@ -398,7 +413,7 @@ public class SQLSelectStatement extends SQLStatement {
                         
                         Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
                         if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
-                            printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
+                            printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                         }
                         writer.write(") ON ");
                         if (session.getPlatform() instanceof DB2MainframePlatform) {
@@ -416,7 +431,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
     }
 
-    protected void printAdditionalJoins(ExpressionSQLPrinter printer, Vector outerJoinedAliases, ClassDescriptor desc, Map tablesJoinExpressions)  throws IOException {
+    protected void printAdditionalJoins(ExpressionSQLPrinter printer, Vector outerJoinedAliases, ClassDescriptor desc, Map tablesJoinExpressions, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
         Vector descriptorTables = desc.getTables();
@@ -446,6 +461,9 @@ public class SQLSelectStatement extends SQLStatement {
                 DatabaseTable alias = onExpression.aliasForTable(table);
                 outerJoinedAliases.addElement(alias);
                 writer.write(alias.getQualifiedName());
+                if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(alias))) {
+                    getForUpdateClause().printSQL(printer, this);
+                }
                 writer.write(" ON ");
                 if (session.getPlatform() instanceof DB2MainframePlatform) {
                     ((RelationExpression)onExpression).printSQLNoParens(printer);
@@ -470,11 +488,20 @@ public class SQLSelectStatement extends SQLStatement {
         boolean firstTable = true;
         Vector outerJoinedAliases = new Vector(1);// Must keep track of tables used for outer join so no normal join is given
 
+        // prepare to lock tables if required
+        boolean shouldPrintUpdateClause = !printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && (getForUpdateClause() != null);
+        Collection aliasesOfTablesToBeLocked = null;
+        boolean shouldPrintUpdateClauseForAllTables = false;
+        if(shouldPrintUpdateClause) {
+            aliasesOfTablesToBeLocked = getForUpdateClause().getAliasesOfTablesToBeLocked(this);
+            shouldPrintUpdateClauseForAllTables = aliasesOfTablesToBeLocked.size() == getTableAliases().size();
+        }
+
         if (hasOuterJoinExpressions()) {
             if (session.getPlatform().isInformixOuterJoin()) {
                 appendFromClauseForInformixOuterJoin(printer, outerJoinedAliases);
             } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause()) {
-                appendFromClauseForOuterJoin(printer, outerJoinedAliases);
+                appendFromClauseForOuterJoin(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
             }
 
             firstTable = false;
@@ -486,14 +513,6 @@ public class SQLSelectStatement extends SQLStatement {
             throw QueryException.invalidBuilderInQuery(null);// Query is set in execute.
         }
 
-        // prepare to lock tables if required
-        boolean shouldPrintUpdateClause = !printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && (getForUpdateClause() != null);
-        Collection aliasesOfTablesToBeLocked = null;
-        boolean shouldPrintUpdateClauseForAllTables = false;
-        if(shouldPrintUpdateClause) {
-            aliasesOfTablesToBeLocked = getForUpdateClause().getAliasesOfTablesToBeLocked(this);
-            shouldPrintUpdateClauseForAllTables = aliasesOfTablesToBeLocked.size() == getTableAliases().size();
-        }
         // Print tables for normal join
         for (Enumeration aliasesEnum = getTableAliases().keys(); aliasesEnum.hasMoreElements();) {
             DatabaseTable alias = (DatabaseTable)aliasesEnum.nextElement();

@@ -212,6 +212,7 @@ public class QueryHintsHandler {
             addHint(new CacheStoreModeHint());
             addHint(new QueryTypeHint());
             addHint(new PessimisticLockHint());
+            addHint(new PessimisticLockScope());
             addHint(new PessimisticLockTimeoutHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
@@ -577,6 +578,30 @@ public class QueryHintsHandler {
         }
     }
 
+    protected static class PessimisticLockScope extends Hint {
+        PessimisticLockScope() {
+            super(QueryHints.PESSIMISTIC_LOCK_SCOPE, javax.persistence.PessimisticLockScope.NORMAL.name());
+            valueArray = new Object[] { 
+                javax.persistence.PessimisticLockScope.NORMAL.name(),
+                javax.persistence.PessimisticLockScope.EXTENDED.name()
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isObjectLevelReadQuery()) {
+                boolean shouldExtend = valueToApply.equals(javax.persistence.PessimisticLockScope.EXTENDED.name());  
+                ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)query;
+                olrQuery.setShouldExtendPessimisticLockScope(shouldExtend);
+                if(shouldExtend) {
+                    olrQuery.extendPessimisticLockScope();
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
     protected static class PessimisticLockTimeoutHint extends Hint {
         PessimisticLockTimeoutHint() {
             super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, "");

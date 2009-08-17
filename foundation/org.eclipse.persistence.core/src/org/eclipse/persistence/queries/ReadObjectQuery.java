@@ -610,6 +610,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if ((getSelectionKey() != null) || (getSelectionObject() != null)) {
             // The expression is set in the prepare as params.
             setSelectionCriteria(getDescriptor().getObjectBuilder().getPrimaryKeyExpression());
+            setExpressionBuilder(getSelectionCriteria().getBuilder());
+            extendPessimisticLockScope();
             // For bug 2989998 the translation row is required to be set at this point.
             if (!shouldPrepare()) {
                 if (getSelectionKey() != null) {

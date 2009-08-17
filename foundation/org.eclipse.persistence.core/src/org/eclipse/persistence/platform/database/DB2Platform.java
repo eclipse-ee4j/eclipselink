@@ -307,8 +307,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return "CALL ";
     }
 
-    public String getSelectForUpdateString() {
+/*    public String getSelectForUpdateString() {
         return " FOR UPDATE";
+    }*/
+    public String getSelectForUpdateString() {
+        return " FOR UPDATE WITH RS";
     }
     
     /**
@@ -573,4 +576,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether locking clause could be applied to the query that has more than one table
+     */
+    public boolean supportsLockingQueriesWithMultipleTables() {
+        return false;
+    }        
 }

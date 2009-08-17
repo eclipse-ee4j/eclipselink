@@ -160,6 +160,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /** Used for ordering support. */
     protected List<Expression> orderByExpressions;
+    
+    /** Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
+     *  reference tables (DirectCollection and AggregateCollection mapping). 
+     */
+    protected boolean shouldExtendPessimisticLockScope;
 
     /**
      * INTERNAL:
@@ -1698,6 +1703,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         return false;
     }
     
+    /** 
+     * INTERNAL:
+     * Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
+     * reference tables (DirectCollection and AggregateCollection mapping). 
+     */
+    public boolean shouldExtendPessimisticLockScope() {
+        return shouldExtendPessimisticLockScope;
+    }
+    
     /**
      * PUBLIC:
      * Queries prepare common stated in themselves.
@@ -1735,6 +1749,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         this.isPrePrepared = isPrePrepared;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
+     * reference tables (DirectCollection and AggregateCollection mapping). 
+     */
+    public void setShouldExtendPessimisticLockScope(boolean isExtended) {
+        shouldExtendPessimisticLockScope = isExtended;
     }
     
     /**
@@ -2256,6 +2279,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else {
             setLockMode(clause.getLockMode());
         }
+        setWasDefaultLockMode(false);
     }
 
     /**
@@ -2752,5 +2776,38 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public boolean isPrimaryKeyQuery() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Extends pessimistic lock scope.
+     */
+    public void extendPessimisticLockScope() {
+        if(!shouldExtendPessimisticLockScope || getDescriptor() == null) {
+            return;
+        }
+        int size = getDescriptor().getMappings().size();
+        boolean isExtended = false;
+        boolean isFurtherExtensionRequired = false;
+        for(int i=0; i < size; i++) {
+            DatabaseMapping mapping = getDescriptor().getMappings().get(i);
+            if(mapping.isForeignReferenceMapping()) {
+                ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
+                if(frMapping.shouldExtendPessimisticLockScope()) {
+                    if(frMapping.shouldExtendPessimisticLockScopeInSourceQuery()) {
+                        frMapping.extendPessimisticLockScopeInSourceQuery(this);
+                        isExtended = true;
+                    } else {
+                        isFurtherExtensionRequired = true;
+                    }
+                }
+            }
+        }
+        if(isExtended) {
+            useDistinct();
+        }
+        if(!isFurtherExtensionRequired) {
+            shouldExtendPessimisticLockScope = false;
+        }
     }
 }
