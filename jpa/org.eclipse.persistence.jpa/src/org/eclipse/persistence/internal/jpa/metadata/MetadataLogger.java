@@ -80,6 +80,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING = "metadata_warning_ignore_mapped_superclass_existence_checking";
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
+    public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -197,6 +198,8 @@ public class MetadataLogger {
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         
+        m_ctxStrings.put(IGNORE_MAPPING_METADATA, IGNORE_MAPPING_METADATA);
+
         // Generic default messages that could apply to XML and annotation
         // configurations.
         m_ctxStrings.put(ACCESS_TYPE, ACCESS_TYPE);

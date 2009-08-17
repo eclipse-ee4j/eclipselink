@@ -245,8 +245,7 @@ public class ValidationException extends EclipseLinkException {
     // 7204-7206 deleted
     public static final int INVALID_CLASS_TYPE_FOR_BLOB_ATTRIBUTE = 7207;
     public static final int INVALID_CLASS_TYPE_FOR_CLOB_ATTRIBUTE = 7208;
-    // 7209-7210 deleted
-    public static final int MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE = 7211;
+    // 7209-7211 deleted
     public static final int NO_TEMPORAL_TYPE_SPECIFIED = 7212;
     public static final int CIRCULAR_MAPPED_BY_REFERENCES = 7213;
     public static final int UNABLE_TO_DETERMINE_TARGET_ENTITY = 7214;
@@ -2228,13 +2227,6 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {puName, mf};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAPPING_FILE_NOT_FOUND, args));
         validationException.setErrorCode(MAPPING_FILE_NOT_FOUND);
-        return validationException;
-    }
-    
-    public static ValidationException mappingMetadataAppliedToInvalidAttribute(Object element, Class cls) {
-        Object[] args = { element, cls };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE, args));
-        validationException.setErrorCode(MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE);
         return validationException;
     }
     

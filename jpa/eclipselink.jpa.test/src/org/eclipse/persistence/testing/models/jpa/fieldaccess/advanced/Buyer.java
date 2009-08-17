@@ -53,6 +53,11 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 public class Buyer implements Serializable {
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
     
+    // Testing for bug 264962 (should be ignored since it is transient 
+    // and not cause an exception)
+    @OneToOne
+    transient Buyer coBuyer;
+    
 	@Transient
     public int pre_update_count = 0;
 	@Transient
