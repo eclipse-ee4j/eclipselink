@@ -446,11 +446,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 m_referenceClass = getReferenceClassFromGeneric();
         
                 if (m_referenceClass == null) {
-                    // 266912: We do not currently handle resolution of parameterized generic types when the accessor is a MappedSuperclasses
-                    // the validation exception is relaxed in this case.
-                   if(this.getClassAccessor().isMappedSuperclass()) {
+                    // 266912: We do not currently handle resolution of parameterized generic types when 
+                    // the accessor is a MappedSuperclasses the validation exception is relaxed in this case.
+                   if (getClassAccessor().isMappedSuperclass()) {
                         // default to Void
-                        return new MetadataClass(this.getMetadataFactory(), Void.class);
+                        return new MetadataClass(getMetadataFactory(), Void.class);
                     }
                     
                     // Throw an exception. An element collection accessor must 

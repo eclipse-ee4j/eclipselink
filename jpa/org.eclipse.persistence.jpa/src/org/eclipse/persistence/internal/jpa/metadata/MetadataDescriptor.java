@@ -220,10 +220,21 @@ public class MetadataDescriptor {
      * during MappedSuperclass processing.
      */
     public void addAccessor(MappingAccessor accessor) {
+        // Don't bother adding a relationship accessor with a type of
+        // ValueHolderInterface. This may be very legacy and no longer needed
+        // but for the canonical model processing it's much cleaner if this
+        // accessor does not show up in the accessors list. NOTE: processing
+        // avoidance of this accessor was previously in in 
+        // RelationshipAccessor.processRelationship().
+        if (accessor.isRelationship() && ((RelationshipAccessor) accessor).isValueHolderInterface()) {
+            return;
+        }
+        
         m_accessors.put(accessor.getAttributeName(), accessor);
+        
         // Store IdAccessors in a separate map for use by hasIdAccessor()
-        if(accessor.isId()) {
-            m_idAccessors.put(accessor.getAttributeName(), (IdAccessor)accessor);
+        if (accessor.isId()) {
+            m_idAccessors.put(accessor.getAttributeName(), (IdAccessor) accessor);
         }
     }
     
@@ -585,6 +596,13 @@ public class MetadataDescriptor {
      */
     public String getGenericType(String genericName) {
        return m_genericTypes.get(genericName); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, IdAccessor> getIdAccessors() {
+        return m_idAccessors;
     }
     
     /**

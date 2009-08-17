@@ -555,8 +555,6 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Method to return whether a class is a supported direct collection class.
-     * Changed in 221577 to allow types assignable to Collection, Set, List and 
-     * Map rather than strict equality.
      */
     public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
         return getRawClass(descriptor).isCollection();

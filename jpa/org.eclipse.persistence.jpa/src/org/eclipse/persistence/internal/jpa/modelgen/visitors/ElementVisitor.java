@@ -142,7 +142,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         method.setModifiers(getModifiers(executableElement.getModifiers()));
 
         // Visit executable element for the parameters, return type and generic type.
-        TypeVisitor<MetadataMethod, MetadataMethod> visitor = new TypeVisitor<MetadataMethod, MetadataMethod>(m_processingEnv);
+        TypeVisitor<MetadataMethod, MetadataMethod> visitor = new TypeVisitor<MetadataMethod, MetadataMethod>();
         executableElement.asType().accept(visitor, method);
         
         // Set the annotations.
@@ -207,7 +207,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         }
         
         // Visit the type element for type and generic type.
-        TypeVisitor<MetadataClass, MetadataClass> visitor = new TypeVisitor<MetadataClass, MetadataClass>(m_processingEnv);
+        TypeVisitor<MetadataClass, MetadataClass> visitor = new TypeVisitor<MetadataClass, MetadataClass>();
         typeElement.asType().accept(visitor, metadataClass);
         
         // Set the annotations.
@@ -240,7 +240,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         field.setAttributeName(field.getName());
         
         // Visit the variable element for type and generic type.
-        TypeVisitor<MetadataField, MetadataField> visitor = new TypeVisitor<MetadataField, MetadataField>(m_processingEnv);
+        TypeVisitor<MetadataField, MetadataField> visitor = new TypeVisitor<MetadataField, MetadataField>();
         variableElement.asType().accept(visitor, field);
         
         // Set the modifiers.

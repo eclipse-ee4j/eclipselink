@@ -179,32 +179,43 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Add mapped superclass accessors to inheriting entities.
      * Add new descriptors for these mapped superclasses to the core project.
      */
-    
-    protected void addPotentialMappedSuperclass(MetadataClass metadataClass) {
+    protected void addPotentialMappedSuperclass(MetadataClass metadataClass, boolean addMappedSuperclassAccessors) {
         // Get the mappedSuperclass that was stored previously on the project
         MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(metadataClass);
 
-        // If the mapped superclass was not defined in XML then check 
-        // for a MappedSuperclass annotation.
         if (accessor == null) {
-            if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                m_mappedSuperclasses.add(new MappedSuperclassAccessor(
-                        metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
-                // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
-                MappedSuperclassAccessor msAccessor = new MappedSuperclassAccessor(
-                        metadataClass.getAnnotation(MappedSuperclass.class), 
-                        metadataClass,
-                        getProject());
-                // process what type of access is on the superclass (in case inheriting members differ in their access type)
-                getProject().addMetamodelMappedSuperclass(metadataClass, msAccessor);
+            // If the mapped superclass was not defined in XML then check 
+            // for a MappedSuperclass annotation unless the 
+            // addMappedSuperclassAccessors flag is false, meaning we are
+            // pre-processing for the canonical model and any and all 
+            // mapped superclasses should have been discovered and we need
+            // not investigate this class further.
+            if (addMappedSuperclassAccessors) {
+                if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
+                    m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
+                    // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
+                    MappedSuperclassAccessor msAccessor = new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject());
+                    // process what type of access is on the superclass (in case inheriting members differ in their access type)
+                    getProject().addMetamodelMappedSuperclass(metadataClass, msAccessor);
+                }
             }
         } else {
-            // Reload the accessor from XML to get our own instance not already on the project
-            MappedSuperclassAccessor msAccessor = reloadMappedSuperclass(accessor, getDescriptor());
-            m_mappedSuperclasses.add(msAccessor);
-            // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
-            // Note: we must again reload our accessor from XML or we will be sharing instances of the descriptor
-            getProject().addMetamodelMappedSuperclass(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
+            // For the canonical model pre-processing we do not need to do any
+            // of the reloading (cloning) that we require for the regular
+            // metadata processing. Therefore, just add the mapped superclass
+            // directly leaving its current descriptor as is. When a mapped
+            // superclass accessor is reloaded for a sub entity, its descriptor 
+            // is set to that entity's descriptor.
+            if (addMappedSuperclassAccessors) {
+                // Reload the accessor from XML to get our own instance not already on the project
+                MappedSuperclassAccessor msAccessor = reloadMappedSuperclass(accessor, getDescriptor());
+                m_mappedSuperclasses.add(msAccessor);
+                // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
+                // Note: we must again reload our accessor from XML or we will be sharing instances of the descriptor
+                getProject().addMetamodelMappedSuperclass(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
+            } else {
+                m_mappedSuperclasses.add(accessor);
+            }
         }
     }
     
@@ -242,7 +253,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
      */
-    protected void discoverMappedSuperclassesAndInheritanceParents(boolean discoverMappedSuperclasses) {
+    protected void discoverMappedSuperclassesAndInheritanceParents(boolean addMappedSuperclassAccessors) {
         // Clear out any previous mapped superclasses and inheritance parents
         // that were discovered.
         clearMappedSuperclassesAndInheritanceParents();
@@ -293,10 +304,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     // current descriptor.
                     currentAccessor.resolveGenericTypes(genericTypes, parent);                
                 } else {
-                    if (discoverMappedSuperclasses) {
-                        // Might be a mapped superclass, check and add as needed.
-                        currentAccessor.addPotentialMappedSuperclass(parent);
-                    }
+                    // Might be a mapped superclass, check and add as needed.
+                    currentAccessor.addPotentialMappedSuperclass(parent, addMappedSuperclassAccessors);
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
@@ -585,7 +594,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Pre-process the items of interest on an entity class. The order of 
      * processing is important, care must be taken if changes must be made.
      */
-    public void preProcess(boolean discoverMappedSuperclasses) {
+    public void preProcess(boolean addMappedSuperclassAccessors) {
         setIsPreProcessed();
         
         // If we are not already an inheritance subclass (meaning we were not
@@ -594,7 +603,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // the chain upwards and we can not guarantee which entity will be
         // processed first in an inheritance hierarchy.
         if (! getDescriptor().isInheritanceSubclass()) {
-            discoverMappedSuperclassesAndInheritanceParents(discoverMappedSuperclasses);
+            discoverMappedSuperclassesAndInheritanceParents(addMappedSuperclassAccessors);
         }
         
         // If we are an inheritance subclass process out root first.
@@ -608,7 +617,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // the default access type.
             EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isPreProcessed()) {
-                parentAccessor.preProcess(discoverMappedSuperclasses);
+                parentAccessor.preProcess(addMappedSuperclassAccessors);
             }
         }
         
@@ -626,10 +635,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process a cacheable setting.
         processCacheable();
         
-        // Pre-process our mapped superclass accessors, this will add their
-        // accessors and converters and further look for a cacheable setting.
-        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-            mappedSuperclass.preProcess();
+        // For the canonical model generation we do not want to gather the
+        // accessors from the mapped superclasses nor pre-process them. They
+        // will be pre-processed on their own.
+        if (addMappedSuperclassAccessors) {
+            // Pre-process our mapped superclass accessors, this will add their
+            // accessors and converters and further look for a cacheable setting.
+            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+                mappedSuperclass.preProcess();
+            }
         }
         
         // Finally, add our immediate accessors and converters.

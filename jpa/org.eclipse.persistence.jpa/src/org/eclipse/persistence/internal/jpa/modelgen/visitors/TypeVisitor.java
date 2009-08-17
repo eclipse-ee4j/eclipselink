@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -25,7 +24,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -37,13 +35,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
  * @since Eclipselink 2.0
  */
 public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedElement, MetadataAnnotatedElement> {
-    private ProcessingEnvironment m_processingEnv;
+    public static String GENERIC_TYPE = "? extends Object";
+    private StringTypeVisitor<String, Object> stringTypeVisitor;
     
     /**
      * INTERNAL:
      */
-    public TypeVisitor(ProcessingEnvironment processingEnv) {
-        m_processingEnv = processingEnv;
+    public TypeVisitor() {
+        stringTypeVisitor = new StringTypeVisitor<String, Object>();
     }
     
     /**
@@ -65,7 +64,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitArray(ArrayType arrayType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(arrayType.toString());
+        annotatedElement.setType(arrayType.accept(stringTypeVisitor, null));
         return annotatedElement;
     }
     
@@ -76,12 +75,12 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
     @Override
     public MetadataAnnotatedElement visitDeclared(DeclaredType declaredType, MetadataAnnotatedElement annotatedElement) {
         // Set the type, which is the raw class.
-        annotatedElement.setType(getRawClass(declaredType.toString()));
+        annotatedElement.setType(getRawClass(declaredType.accept(stringTypeVisitor, null)));
         // Internally, Eclipselink also wants this (raw class in the 0 position of the generic list).
         annotatedElement.addGenericType(annotatedElement.getType());
         
         for (TypeMirror typeArgument : declaredType.getTypeArguments()) {
-            annotatedElement.addGenericType(typeArgument.toString());
+            annotatedElement.addGenericType(typeArgument.accept(stringTypeVisitor, null));
         }
         
         return annotatedElement;
@@ -97,8 +96,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         // therefore want to ensure our annotatedElement still has a type set
         // on it and not null. This will avoid exceptions when we go through 
         // the pre-processing of our metadata classes.
-        annotatedElement.setType(String.class.toString());
-        
+        annotatedElement.setType(errorType.accept(stringTypeVisitor, null));
         return annotatedElement;
     }
 
@@ -112,7 +110,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         
         // Set the parameters.
         for (TypeMirror parameter : executableType.getParameterTypes()) {
-            method.addParameter(getRawClass(parameter.toString()));
+            method.addParameter(getRawClass(parameter.accept(stringTypeVisitor, null)));
         }
         
         // Visit the return type (will set the type and generic types).
@@ -128,7 +126,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitNoType(NoType noType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(void.class.toString());
+        annotatedElement.setType(noType.accept(stringTypeVisitor, null));
         return annotatedElement;
     }
 
@@ -142,7 +140,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         // therefore want to ensure our annotatedElement still has a type set
         // on it and not null. This will avoid exceptions when we go through 
         // the pre-processing of our metadata classes.
-        annotatedElement.setType(String.class.toString());
+        annotatedElement.setType(nullType.accept(stringTypeVisitor, null));
         return annotatedElement;
     }
 
@@ -166,9 +164,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitTypeVariable(TypeVariable typeVariable, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(typeVariable.toString());
-        //m_processingEnv.getMessager().printMessage(Kind.NOTE, "upper bound: " + typeVariable.getLowerBound() + " lower bound: " + typeVariable.getLowerBound());
-        //m_processingEnv.getMessager().printMessage(Kind.NOTE, "TypeVariable visit NOT IMPLEMENTED : " + typeVariable + " - " + annotatedElement);
+        annotatedElement.setType(typeVariable.accept(stringTypeVisitor, null));
         return annotatedElement;
     }
 
@@ -177,7 +173,92 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitWildcard(WildcardType wildcardType, MetadataAnnotatedElement annotatedElement) {
-        m_processingEnv.getMessager().printMessage(Kind.NOTE, "WildcardType visit NOT IMPLEMENTED : " + wildcardType);
-        return null;
+        annotatedElement.setType(wildcardType.accept(stringTypeVisitor, null));
+        return annotatedElement;
+    }
+    
+    /**
+     * A generic type visitor. The main purpose of this visitor is to allow 
+     * finer grain settings to be handled. For example, A generic type T. For 
+     * all generic types we return/set the type of "? extends Object". 
+     */
+    class StringTypeVisitor<E, A> extends SimpleTypeVisitor6<String, Object> {
+        /**
+         * INTERNAL:
+         */
+        public StringTypeVisitor() {}
+        
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitArray(ArrayType arrayType, Object obj) {
+            return arrayType.toString();
+        }
+        
+        /**
+         * INTERNAL:
+         * Visit a declared field.
+         */
+        @Override
+        public String visitDeclared(DeclaredType declaredType, Object obj) {
+            return declaredType.toString();
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitError(ErrorType errorType, Object obj) {
+            return GENERIC_TYPE;
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitExecutable(ExecutableType executableType, Object obj) {
+            return executableType.toString();
+        }
+        
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitNoType(NoType noType, Object obj) {
+            return GENERIC_TYPE;
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitNull(NullType nullType, Object obj) {
+            return GENERIC_TYPE;
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitPrimitive(PrimitiveType primitiveType, Object obj) {
+            return primitiveType.toString();
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitTypeVariable(TypeVariable typeVariable, Object obj) {
+            return GENERIC_TYPE;
+        }
+
+        /**
+         * INTERNAL:
+         */
+        @Override
+        public String visitWildcard(WildcardType wildcardType, Object obj) {
+            return wildcardType.toString();
+        }
     }
 }

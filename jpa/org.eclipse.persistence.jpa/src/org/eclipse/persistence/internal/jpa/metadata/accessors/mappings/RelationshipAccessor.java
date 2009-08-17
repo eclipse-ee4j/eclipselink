@@ -394,6 +394,15 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * If somehow we are processing a class that was weaved to have value 
+     * holders, we should ignore the processing of this mapping. 
+     */
+    public boolean isValueHolderInterface() {
+        return getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().getName().equals(void.class.getName()) && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()));
+    }
+    
+    /**
+     * INTERNAL:
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
         if (m_cascadeTypes != null) {
@@ -451,13 +460,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
             }
                         
-            // Process the relationship accessor only if the target entity
-            // is not a ValueHolderInterface.
-            if (getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().getName().equals(void.class.getName()) && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()))) {
-                // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
-            } else { 
-                process();
-            }
+            process();
         }
     }
     

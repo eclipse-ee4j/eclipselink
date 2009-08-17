@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.Constants;
@@ -404,6 +405,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
         return extendsInterface(Serializable.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this extends Set.
+     */
+    public boolean isSet() {
+        return extendsInterface(Set.class);
     }
     
     /**
