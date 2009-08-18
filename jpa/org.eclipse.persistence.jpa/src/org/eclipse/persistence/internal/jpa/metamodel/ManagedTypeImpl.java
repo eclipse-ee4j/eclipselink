@@ -232,7 +232,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             return anAttribute;
         } else {
             // keep checking the hierarchy but skip this level
-            if(aManagedSuperType.hasNoDeclaredAttributeInSuperType(name)) {
+            if(aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name)) {
                 // Handles UC4 and UC5 - throw an IAE if the class is declared above
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
@@ -285,7 +285,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         Set<Attribute<X, ?>> declaredAttributes = new HashSet<Attribute<X, ?>>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             // Check the inheritance hierarchy for higher declarations
-            if(this.hasNoDeclaredAttributeInSuperType(anAttribute.getName())) {
+            if(this.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
                 declaredAttributes.add((Attribute<X, ?>)anAttribute);
             }
         }
@@ -357,7 +357,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     declaredAttributes.add((PluralAttribute<X, ?, ?>)anAttribute);
                 } else {
                     // add only if we reach the root without finding another declaration
-                    if(!potentialSuperType.hasNoDeclaredAttributeInSuperType(anAttribute.getName())) {
+                    if(!potentialSuperType.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
                         declaredAttributes.add((PluralAttribute<X, ?, ?>)anAttribute);
                     }
                 }
@@ -885,8 +885,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *             false if no attribute is found in the superTree, or
      *             false if the attribute is found declared higher up in the inheritance superTree
      */
-    private boolean hasNoDeclaredAttributeInSuperType(String attributeName) {
-        return hasNoDeclaredAttributeInSuperType(attributeName, this.getMembers().get(attributeName));
+    private boolean isAttributeDeclaredOnlyInLeafType(String attributeName) {
+        return isAttributeDeclaredOnlyInLeafType(attributeName, this.getMembers().get(attributeName));
     }
     
     /**
@@ -900,7 +900,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *             false if no attribute is found in the superTree, or
      *             false if the attribute is found declared higher up in the inheritance superTree
      */
-    private boolean hasNoDeclaredAttributeInSuperType(String attributeName, Attribute firstLevelAttribute) {
+    private boolean isAttributeDeclaredOnlyInLeafType(String attributeName, Attribute firstLevelAttribute) {
         /*
          * Issues: We need to take into account whether the superType is an Entity or MappedSuperclass
          * - If superType is entity then inheriting entities will not have copies of the inherited mappings
@@ -965,7 +965,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                    // UC1.4 (when caller is firstLevel.supertype) - the immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
                    if(null == aSuperTypeAttribute) {
                        // UC 1.5: keep searching a possible chain of mappedSuperclasses
-                       return aSuperType.hasNoDeclaredAttributeInSuperType(attributeName, firstLevelAttribute);
+                       return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
                    } else {
                        // superType does not contain the attribute - check that the current attribute and the first differ
                        if(anAttribute != firstLevelAttribute) {
