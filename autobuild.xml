@@ -404,6 +404,10 @@
         <delete failonerror="false">
             <fileset dir="${signing.dir}" includes="**/*.zip"/>
         </delete>
+        <!-- Since we've checked in some files, the svn revision has incremented. To create a valid "latest.svnrev" file -->
+        <!-- it needs to be recreated now that the build has completed.      --> 
+        <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
     </target>
 
     <target name="publish-maven" depends="init">
