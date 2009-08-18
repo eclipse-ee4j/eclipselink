@@ -99,6 +99,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 
 	/** Default to determine if does-exist should be performed on persist. */
 	protected boolean shouldValidateExistence;
+        protected boolean commitWithoutPersistRules;
 
 	/**
 	 * Will return an instance of the Factory. Should only be called by
@@ -250,6 +251,10 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 		if (persistOnCommit != null) {
 			this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
 		}
+        String commitWithoutPersist = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, properties, this.serverSession, true);
+        if (commitWithoutPersist != null) {
+            this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
+        }
 		String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.serverSession, true);
 		if (shouldValidateExistence != null) {
 			this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
@@ -336,10 +341,22 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 		this.persistOnCommit = persistOnCommit;
 	}
 
-	/**
-	 * Return the default FlashClearCache mode to be used. Relevant only in case
-	 * call to flush method followed by call to clear method.
-	 * 
+    /**
+     * Return default property to avoid discover new objects in unit of work if application always uses persist.
+     */
+    public boolean getCommitWithoutPersistRules() {
+        return commitWithoutPersistRules;
+    }
+    
+    /**
+     * Set default property to avoid discover new objects in unit of work if application always uses persist.
+     */
+    public void setCommitWithoutPersistRules(boolean commitWithoutPersistRules) {
+        this.commitWithoutPersistRules = commitWithoutPersistRules;
+    }
+    /**
+     * Return the default FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
 	 * @see org.eclipse.persistence.config.FlushClearCache
 	 */
 	public String getFlushClearCache() {
