@@ -132,7 +132,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
         
-/*        suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjects"));
@@ -194,7 +194,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
 */
 
-/*GY        suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFetchQueryHint"));
@@ -212,7 +212,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
 */
-/*GY        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll"));
@@ -252,7 +252,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
 */
-/*GY        suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDatabaseSyncNewObject"));
@@ -307,7 +307,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
-*/        suite.addTest(new EntityManagerJUnitTestSuite("testUOWReferenceInExpressionCache"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUOWReferenceInExpressionCache"));
         return suite;
     }
 
