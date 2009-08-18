@@ -13,16 +13,11 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo_2.1.1.jar
+set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo_2.1.1.v200905221342.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.xml.stream_1.0.1.v200903100845.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.xml.bind_2.1.9.v200903100845.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.activation_1.1.0.v200806101325.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-impl.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc.jar
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% com.sun.tools.xjc.XJCFacade %JAVA_ARGS%
+call "%~dp0jaxb-compiler.cmd"
 %JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% org.eclipse.persistence.sdo.helper.jaxb.JAXBClassGenerator %JAVA_ARGS%
 
 @endlocal

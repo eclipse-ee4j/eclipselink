@@ -29,6 +29,10 @@ import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 public class JAXBClassGenerator {
 
     public static void main(String[] args) {
+        if(args.length == 0) {
+            return;
+        }
+
         AbstractSessionLog.getLog().setLevel(AbstractSessionLog.FINER);
         SDOClassGenerator generator = new SDOClassGenerator(new SDOHelperContext());
         generator.setImplGenerator(false);

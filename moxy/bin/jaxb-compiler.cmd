@@ -18,9 +18,10 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.xml.bind_2.1.12.v20090708-150
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.activation_1.1.0.v200806101325.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-impl.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% com.sun.tools.xjc.XJCFacade %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe -Djava.endorsed.dirs=\..\jlib\moxy -cp %CLASSPATH% %JVM_ARGS% com.sun.tools.xjc.XJCFacade -eclipselink %JAVA_ARGS%
 
 @endlocal
 goto :EOF
