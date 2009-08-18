@@ -321,6 +321,7 @@
                     javax/persistence/LockModeType.class,
                     javax/persistence/LockTimeoutException.class,
                     javax/persistence/PessimisticLockException.class,
+					javax/persistence/PessimisticLockScope.class,
                     javax/persistence/NamedQuery.class,
                     javax/persistence/ElementCollection.class,
                     javax/persistence/CollectionTable.class,
