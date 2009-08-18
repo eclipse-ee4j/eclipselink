@@ -2111,40 +2111,41 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Map properties = new HashMap();
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        Project project = new SmallProject();
-        project.setName("SomeProject");
+        Employee employee = new Employee();
+        employee.setLastName("SomeName");
+        Address addr = new Address();
+        addr.setCity("Douglas");
         try {
-            em.persist(project);
+            em.persist(employee);
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager();
             beginTransaction(em);
             ((RepeatableWriteUnitOfWork)JpaHelper.getEntityManager(em).getUnitOfWork()).setDiscoverUnregisteredNewObjectsWithoutPersist(true);
-            Employee emp = new Employee();
-            emp.setFirstName("Douglas");
-            emp.setLastName("McRae");
-            project = em.find(Project.class, project.getId());
-            project.setTeamLeader(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.setAddress(addr);
+            addr.getEmployees().add(employee);
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager();
             clearCache();
             beginTransaction(em);
             ((RepeatableWriteUnitOfWork)JpaHelper.getEntityManager(em).getUnitOfWork()).setDiscoverUnregisteredNewObjectsWithoutPersist(true);
-            project = em.find(Project.class, project.getId());
-            emp = project.getTeamLeader();
-            em.remove(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.getAddress().setCountry("country");
+            employee.getAddress().getEmployees().size();
+            employee.setAddress((Address)null);
+            em.remove(employee);
             commitTransaction(em);
 
             em = createEntityManager();
             beginTransaction(em);
-            boolean exceptionThrown = false;
-            emp = em.find(Employee.class, emp.getId());
-            assertNull("Employee Not Deleted", emp);
+            employee = em.find(Employee.class, employee.getId());
+            assertNull("Employee Not Deleted", employee);
             commitTransaction(em);
             closeEntityManager(em);
         } catch (RuntimeException exception) {
@@ -2158,7 +2159,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Project.class, project.getId()));
+                em.remove(em.find(Address.class, addr.getId()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
@@ -2179,38 +2180,39 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         EntityManager em = createEntityManager(properties);
         beginTransaction(em);
-        Project project = new SmallProject();
-        project.setName("SomeProject");
+        Employee employee = new Employee();
+        employee.setLastName("SomeName");
+        Address addr = new Address();
+        addr.setCity("Douglas");
         try {
-            em.persist(project);
+            em.persist(employee);
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager(properties);
             beginTransaction(em);
-            Employee emp = new Employee();
-            emp.setFirstName("Douglas");
-            emp.setLastName("McRae");
-            project = em.find(Project.class, project.getId());
-            project.setTeamLeader(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.setAddress(addr);
+            addr.getEmployees().add(employee);
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager(properties);
             clearCache();
             beginTransaction(em);
-            project = em.find(Project.class, project.getId());
-            emp = project.getTeamLeader();
-            em.remove(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.getAddress().setCountry("country");
+            employee.getAddress().getEmployees().size();
+            employee.setAddress((Address)null);
+            em.remove(employee);
             commitTransaction(em);
 
             em = createEntityManager(properties);
             beginTransaction(em);
-            boolean exceptionThrown = false;
-            emp = em.find(Employee.class, emp.getId());
-            assertNull("Employee Not Deleted", emp);
+            employee = em.find(Employee.class, employee.getId());
+            assertNull("Employee Not Deleted", employee);
             commitTransaction(em);
             closeEntityManager(em);
         } catch (RuntimeException exception) {
@@ -2224,7 +2226,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Project.class, project.getId()));
+                em.remove(em.find(Address.class, addr.getId()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
@@ -2245,39 +2247,41 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         EntityManager em = createEntityManager(properties);
         beginTransaction(em);
-        Project project = new SmallProject();
-        project.setName("SomeProject");
+        Employee employee = new Employee();
+        employee.setLastName("SomeName");
+        Address addr = new Address();
+        addr.setCity("Douglas");
         try {
-            em.persist(project);
+            em.persist(employee);
+            em.flush();
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager(properties);
             beginTransaction(em);
-            Employee emp = new Employee();
-            emp.setFirstName("Douglas");
-            emp.setLastName("McRae");
-            project = em.find(Project.class, project.getId());
-            project.setTeamLeader(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.setAddress(addr);
+            addr.getEmployees().add(employee);
             em.flush();
             commitTransaction(em);
-            verifyObjectInCacheAndDatabase(project);
+            verifyObjectInCacheAndDatabase(employee);
             closeEntityManager(em);
 
             em = createEntityManager(properties);
             clearCache();
             beginTransaction(em);
-            project = em.find(Project.class, project.getId());
-            emp = project.getTeamLeader();
-            em.remove(emp);
+            employee = em.find(Employee.class, employee.getId());
+            employee.getAddress().setCountry("country");
+            employee.getAddress().getEmployees().size();
+            employee.setAddress((Address)null);
+            em.remove(employee);
             commitTransaction(em);
 
             em = createEntityManager(properties);
             beginTransaction(em);
-            boolean exceptionThrown = false;
-            emp = em.find(Employee.class, emp.getId());
-            assertNull("Employee Not Deleted", emp);
+            employee = em.find(Employee.class, employee.getId());
+            assertNull("Employee Not Deleted", employee);
             commitTransaction(em);
             closeEntityManager(em);
         } catch (RuntimeException exception) {
@@ -2291,7 +2295,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Project.class, project.getId()));
+                em.remove(em.find(Address.class, addr.getId()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
