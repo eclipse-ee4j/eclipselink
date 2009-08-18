@@ -74,7 +74,7 @@
                       javax.persistence_2.0_preview.jar
             "/>
         <fileset
-            dir="${equinox.2.jpa.plugins.dir}"
+            dir="${extensions.depend.dir}"
             includes="org.eclipse.osgi_*.jar"/>
     </path>
     <available file="${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>

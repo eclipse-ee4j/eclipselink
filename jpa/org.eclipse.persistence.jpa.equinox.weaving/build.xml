@@ -74,7 +74,7 @@
                       javax.persistence_2.0_preview.jar
             "/>
         <fileset
-            dir="${weaving.2.jpa.plugins.dir}"
+            dir="${extensions.depend.dir}"
             includes="org.eclipse.osgi_*.jar"/>
     </path>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
@@ -95,7 +95,7 @@
 
     <!-- compile -->
     <target name="no-compile-warning" unless="osgi.bundle.exist">
-        <echo message="Compile will be skipped - EclipseLink Weaving bundle not found. Verify it compiled correctly."/>
+        <echo message="Compile will be skipped - Equinox OSGi bundle wasn't found (org.eclipse.osgi_*.jar in jpa/plugins or ${extensions.depend.dir})."/>
     </target>
     <target name="compile" if="osgi.bundle.exist" depends="no-compile-warning" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
