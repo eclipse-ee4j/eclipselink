@@ -986,6 +986,8 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 }
 
                 query.setProperty("batched objects", referenceDataByKey);
+                query.setSession(null);
+                
             }
         }
         Object result = referenceDataByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));

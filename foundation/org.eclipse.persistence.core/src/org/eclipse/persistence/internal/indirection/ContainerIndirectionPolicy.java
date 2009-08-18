@@ -177,6 +177,20 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
 
     /**
      * INTERNAL:
+     *    Return the original indirection object for a unit of work indirection object.
+     */
+    public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        IndirectContainer container = (IndirectContainer) getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
+        DatabaseValueHolder holder = (DatabaseValueHolder)container.getValueHolder();
+        if (holder != null && holder.getSession()!= null){
+            holder.setSession(session);
+        }
+        return container;
+    }
+
+
+    /**
+     * INTERNAL:
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.
      */

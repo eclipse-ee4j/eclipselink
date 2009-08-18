@@ -918,6 +918,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 }
                     
                 setBatchReadObjects(referenceDataByKey, query, session);
+                query.setSession(null);
             }
         }
         Object result = referenceDataByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));

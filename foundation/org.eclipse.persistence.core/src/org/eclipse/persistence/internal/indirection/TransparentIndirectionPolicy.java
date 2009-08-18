@@ -310,6 +310,19 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     }
 
     /**
+     * INTERNAL:
+     *    Return the original indirection object for a unit of work indirection object.
+     */
+    public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        IndirectContainer container = (IndirectContainer) getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
+        DatabaseValueHolder holder = (DatabaseValueHolder)container.getValueHolder();
+        if (holder != null && holder.getSession()!= null){
+            holder.setSession(session);
+        }
+        return container;
+    }
+
+    /**
      * INTERNAL: Return the original valueHolder object. Access to the
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.

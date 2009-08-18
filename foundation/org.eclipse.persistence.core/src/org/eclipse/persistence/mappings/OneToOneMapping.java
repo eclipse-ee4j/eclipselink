@@ -709,6 +709,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     }
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+                query.setSession(null);
             }
         }
 

@@ -191,6 +191,18 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     }
 
     /**
+     * INTERNAL:
+     *    Return the original indirection object for a unit of work indirection object.
+     */
+    public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        DatabaseValueHolder holder = (DatabaseValueHolder)getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
+        if (holder != null && holder.getSession()!= null){
+            holder.setSession(session);
+        }
+        return holder;
+    }
+
+    /**
      * INTERNAL: Return the original valueHolder object. Access to the
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.

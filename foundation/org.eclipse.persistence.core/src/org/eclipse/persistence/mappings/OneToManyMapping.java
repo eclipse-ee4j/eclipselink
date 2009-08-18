@@ -417,6 +417,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             if (batchedObjects == null) {
                 batchedObjects = executeBatchQuery(query, session, argumentRow);
                 setBatchReadObjects(batchedObjects, query, session);
+                query.setSession(null);
             }
         }
         Object result = batchedObjects.get(new CacheKey(extractPrimaryKeyFromRow(row, session)));

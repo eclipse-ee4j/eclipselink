@@ -846,6 +846,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
+                query.setSession(null);
             }
         }
         Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
