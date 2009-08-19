@@ -59,19 +59,19 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     fieldBRANCHBS_ID.setShouldAllowNull(true);
     table.addField(fieldBRANCHBS_ID);
     
-    ForeignKeyConstraint foreignKeyMACHINESTATE_THREADINFO_THREADINFO = new ForeignKeyConstraint();
-    foreignKeyMACHINESTATE_THREADINFO_THREADINFO.setName("MACHINESTATE_THREADINFO_THREADINFO");
-    foreignKeyMACHINESTATE_THREADINFO_THREADINFO.setTargetTable("THREADINFO");
-    foreignKeyMACHINESTATE_THREADINFO_THREADINFO.addSourceField("threads_ID");
-    foreignKeyMACHINESTATE_THREADINFO_THREADINFO.addTargetField("ID");
-    table.addForeignKeyConstraint(foreignKeyMACHINESTATE_THREADINFO_THREADINFO);
+    ForeignKeyConstraint foreignKeyM_THREADINFO_THREADINFO = new ForeignKeyConstraint();
+    foreignKeyM_THREADINFO_THREADINFO.setName("M_THREADINFO_THREADINFO");
+    foreignKeyM_THREADINFO_THREADINFO.setTargetTable("THREADINFO");
+    foreignKeyM_THREADINFO_THREADINFO.addSourceField("threads_ID");
+    foreignKeyM_THREADINFO_THREADINFO.addTargetField("ID");
+    table.addForeignKeyConstraint(foreignKeyM_THREADINFO_THREADINFO);
     
-    ForeignKeyConstraint foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE = new ForeignKeyConstraint();
-    foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE.setName("MACHINESTATE_THREADINFO_MACHINESTATE");
-    foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE.setTargetTable("MACHINESTATE");
-    foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE.addSourceField("MachineState_ID");
-    foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE.addTargetField("ID");
-    table.addForeignKeyConstraint(foreignKeyMACHINESTATE_THREADINFO_MACHINESTATE);
+    ForeignKeyConstraint foreignKeyM_THREADINFO_MACHINESTATE = new ForeignKeyConstraint();
+    foreignKeyM_THREADINFO_MACHINESTATE.setName("M_THREADINFO_MACHINESTATE");
+    foreignKeyM_THREADINFO_MACHINESTATE.setTargetTable("MACHINESTATE");
+    foreignKeyM_THREADINFO_MACHINESTATE.addSourceField("MachineState_ID");
+    foreignKeyM_THREADINFO_MACHINESTATE.addTargetField("ID");
+    table.addForeignKeyConstraint(foreignKeyM_THREADINFO_MACHINESTATE);
     return table;
 }
 
