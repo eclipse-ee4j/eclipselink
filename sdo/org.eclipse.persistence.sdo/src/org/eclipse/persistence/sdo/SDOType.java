@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.InheritanceNodeValue;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -48,6 +49,8 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public class SDOType implements Type, Serializable {
+    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0]; 
+
     private QName qName;
     private boolean open;// if this Type is open
     private boolean isAbstract;// if this is an abstract Type
@@ -148,7 +151,12 @@ public class SDOType implements Type, Serializable {
         if ((javaClass == null) && (javaClassName != null)) {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
-                javaClass = loader.getParent().loadClass(javaClassName);
+                Class clazz = loader.getParent().loadClass(javaClassName);
+                if(isValidInstanceClass(clazz)) {
+                    javaClass = clazz;
+                } else {
+                    javaClass = getClass();
+                }
             } catch (ClassNotFoundException e) {
                 javaClass = getClass();
             } catch (SecurityException e) {
@@ -159,6 +167,31 @@ public class SDOType implements Type, Serializable {
             return null;
         }
         return javaClass;
+    }
+
+    /**
+     * Verify that the class is a valid instance class. 
+     */
+    private boolean isValidInstanceClass(Class clazz) {
+        if(isDataType) {
+            return true;
+        }
+        if(!clazz.isInterface()) {
+            return false;
+        }
+        for(Object object: this.getDeclaredProperties()) {
+            try {
+                SDOProperty sdoProperty = (SDOProperty) object;
+                String javaType = SDOUtil.getJavaTypeForProperty(sdoProperty);
+
+                // Verify get method
+                String getMethodName = SDOUtil.getMethodName(sdoProperty.getName(), javaType);
+                PrivilegedAccessHelper.getMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
+            } catch(NoSuchMethodException e) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isInstance(Object object) {
@@ -758,8 +791,6 @@ public class SDOType implements Type, Serializable {
 
         initializeNamespaces(namespaceResolvers);
         getXmlDescriptor().setJavaClassName(getImplClassName());
-        // load classes by classloader by getting the current instance class
-        getInstanceClass();
 
         // See SDOResolvable enhancement
         String schemaContext = getName();

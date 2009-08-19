@@ -648,11 +648,13 @@ public class SDOUtil {
             return "java.util.List";
         } else {
             SDOType propertyType = property.getType();
-            Class instanceClass = propertyType.getInstanceClass();
-            if (ClassConstants.ABYTE.equals(instanceClass)) {
-                return "Byte[]";
-            } else if (ClassConstants.APBYTE.equals(instanceClass)) {
-                return "byte[]";
+            if(propertyType.isDataType()) {
+                Class instanceClass = propertyType.getInstanceClass();
+                if (ClassConstants.ABYTE.equals(instanceClass)) {
+                    return "Byte[]";
+                } else if (ClassConstants.APBYTE.equals(instanceClass)) {
+                    return "byte[]";
+                }
             }
             return propertyType.getInstanceClassName();
         }
