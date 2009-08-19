@@ -375,7 +375,12 @@
     </target>
 
     <target name="wait-report-timeout" if="signing.time.limit.exceeded">
-        <echo message="Signing aborted, wait time exceeded!"/>
+        <!-- "SigningAborted" is a parsing flag for build prost-processing script. Don't "fix" -->
+        <echo message="SigningAborted, wait time exceeded!"/>
+        <echo message="P2 repository generation will be skipped!"/>
+        <echo message="Unsigned P2 archive will be copied to download site for safekeeping..."/>
+        <mkdir dir="${download.path}"/>
+        <copy file="${build.root.dir}/features/${eclipselink.p2.archive.presigned}"                    tofile="${download.path}/${eclipselink.p2.archive.presigned}" failonerror="false"/>
     </target>
 
     <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site"/>
@@ -585,7 +590,7 @@
         <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
-    <target name="populate-p2-update-site">
+    <target name="populate-p2-update-site" unless="signing.time.limit.exceeded">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
         <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
         <delete dir="${p2.repos.path}" failonerror="false"/>

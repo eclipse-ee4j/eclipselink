@@ -473,15 +473,21 @@ then
         fi
         touch ${TESTDATA_FILE}
 
+        ## postpend notification if signing failed
+        if [ ! "`cat ${DATED_LOG} | grep 'SigningAborted'`" = "" ]
+        then
+            CAVEAT_TXT=" Signing failed. P2 not generated!"
+        fi
+    
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
         if [ $? -eq 0  ]
         then
-            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete.${CAVEAT_TXT}"
             MAILLIST=${SUCC_MAILLIST}
         else
-            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!${CAVEAT_TXT}"
             BUILD_FAILED="true"
             TESTS_FAILED="true"
         fi
