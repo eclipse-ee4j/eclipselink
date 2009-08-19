@@ -99,6 +99,7 @@ import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
@@ -311,10 +312,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
         
- //       suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
-//        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
- //       suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUOWReferenceInExpressionCache"));
         return suite;
     }
 
@@ -2713,7 +2715,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             throw exception;
         }
     }
-/*
+
     // Test Not using the persist operation on commit.
     public void testNoPersistOnCommit() {
         // Properties only works in jse.
@@ -2915,7 +2917,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-*/
+
     // Test using PERSISTENCE_CONTEXT_FLUSH_MODE option.
     public void testFlushMode() {
         // Properties only works in jse.
@@ -4532,6 +4534,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             fail("No exception thrown when entityManager's properties are attempted to change.");
         }
+    }
+
+    public void testUOWReferenceInExpressionCache() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        EntityManager manager = createEntityManager();
+        ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
+        DescriptorQueryManager queryManager = ((JpaEntityManager)manager).getUnitOfWork().getDescriptor(Employee.class).getQueryManager();
+        queryManager.setExpressionQueryCacheMaxSize(queryManager.getExpressionQueryCacheMaxSize());
+        ReadAllQuery query = new ReadAllQuery();
+        query.setIsExecutionClone(true);
+        query.setReferenceClass(Employee.class);
+        ((JpaEntityManager)manager).getUnitOfWork().executeQuery(query);
+        closeEntityManager(manager);
+
+        assertNull("ExpressionCache has query that references a RWUOW", queryManager.getCachedExpressionQuery(query).getSession());
     }
 
     public void testUnWrapClass() {
