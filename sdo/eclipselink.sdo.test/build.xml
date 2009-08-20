@@ -35,15 +35,10 @@
     <dirname  property="sdotest.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
     <echo message="sdotest.build.location = '${sdotest.build.location}'"/>
 
-    <condition property="sdotest.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="sdotest.2.base.dir" value="../.." else="..">
         <contains string="${sdotest.build.location}" substring="sdo"/>
     </condition>
-    <condition property="sdotest.2.moxy.plugins.dir" value="../../moxy/plugins" else="../plugins">
-        <contains string="${sdotest.build.location}" substring="sdo"/>
-    </condition>
-    <condition property="sdotest.2.trunk.dir" value="../.." else="..">
-        <contains string="${sdotest.build.location}" substring="sdo"/>
-    </condition>
+    <property name="sdotest.2.common.plugins.dir" value="${sdotest.2.base.dir}/plugins"/>
     <property name="sdotest.plugins.dir" value="../plugins"/>
 
     <property file="${user.home}/build.properties"/>
@@ -88,7 +83,7 @@
             "/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.lib}"/>
-        <pathelement path="${sdotest.2.moxy.plugins.dir}/${jaxb-api.lib}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${jaxb-api.lib}"/>
     </path>
     <!-- Run path without product components -->
     <path id="sdotest.thirdparty.run.path">
@@ -110,7 +105,7 @@
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="sdotest.compile.against.jar.path">
-        <pathelement path="${sdotest.2.trunk.dir}/${eclipselink.jar.name}"/>
+        <pathelement path="${sdotest.2.base.dir}/${eclipselink.jar.name}"/>
         <path refid="sdotest.thirdparty.compile.path"/>
     </path>
     <path id="sdotest.run.against.jar.path">
@@ -131,7 +126,7 @@
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
-    <available file="${sdotest.2.trunk.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
+    <available file="${sdotest.2.base.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
 
 
     <!-- Clean targets -->
@@ -144,7 +139,7 @@
 
     <!-- Build targets -->
     <target name="compile-sdo-tests-against-jar" depends="clean" description="build sdo test classes against eclipselink.jar">
-        <fail message="Cannot find EclipseLink: '${sdotest.2.trunk.dir}/${eclipselink.jar.name}'." unless="eclipselink.jar.exist"/>
+        <fail message="Cannot find EclipseLink: '${sdotest.2.base.dir}/${eclipselink.jar.name}'." unless="eclipselink.jar.exist"/>
         <compile_sdo_tests compilepathref="sdotest.compile.against.jar.path"/>
     </target>
     <target name="compile-sdo-tests" depends="clean" description="build sdo test classes">

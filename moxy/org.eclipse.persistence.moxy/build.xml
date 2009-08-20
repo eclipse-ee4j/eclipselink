@@ -37,7 +37,7 @@
     </condition>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
     <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
     <property name="bnd.path" value="${moxy.2.buildsys.dir}/${bndtool.jar}"/>
 
     <property file="${user.home}/build.properties"/>
@@ -50,10 +50,6 @@
     <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
         <contains string="${java.version}" substring="1.5"/>
     </condition>
-    <!-- for dependencies found it local plugins dir, add more as needed   -->
-    <!-- NOTE: the jaxb-api.lib variable is set in the build.xml depending -->
-    <!--       which JDK is used                                           -->
-    <property name="moxy.local.depend" value="${jaxb-api.lib}"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -71,9 +67,7 @@
 
     <!-- Set Compile Path-->
     <path id="moxy.compile.path">
-        <fileset
-            dir="${moxy.plugins}"
-            includes="${moxy.local.depend}"/>
+        <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
         <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <fileset

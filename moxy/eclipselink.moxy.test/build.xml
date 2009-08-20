@@ -34,15 +34,14 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
-    <condition property="eclipselink.moxy.depend" value="${jaxb-api.jar}" else="">
+    <!-- Needed because this package is only included in JDK6 and beyond -->
+    <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
         <contains string="${java.version}" substring="1.5"/>
     </condition>
 
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
-        <fileset
-            dir="${eclipselink.moxy.plugins}"
-            includes="${eclipselink.moxy.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
         <fileset
             dir="${eclipselink.plugins}"
@@ -52,9 +51,7 @@
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
     <path id="jaxb.run.path">
-        <fileset
-            dir="${eclipselink.moxy.plugins}"
-            includes="${eclipselink.moxy.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${activation.jar}, ${mail.jar}"/>
@@ -89,18 +86,14 @@
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.path.against.jar">
         <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
-        <fileset
-            dir="${eclipselink.moxy.plugins}"
-            includes="${eclipselink.moxy.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="jaxb.run.path.against.jar">
-        <fileset
-            dir="${eclipselink.moxy.plugins}"
-            includes="${eclipselink.moxy.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${activation.jar}, ${mail.jar}"/>

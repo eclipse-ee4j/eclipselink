@@ -226,7 +226,7 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="bnd-core">
-        <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+        <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
         <ant antfile="build.xml" dir="${jpa.prototype}"       target="bnd"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"     target="bnd"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="bnd"/>
@@ -522,7 +522,7 @@
         <delete dir="${build.dir}/commonj.sdo"/>
         <delete dir="${build.dir}/javax.xml.bind"/>
         <delete dir="${eclipselink.javadocs}"/>
-        <unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
+        <unzip src="${eclipselink.sdo.plugins}/commonj.sdo/commonj.sdo.source_2.1.1.v200905221342.zip" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.moxy.plugins}/javax.xml.bind.source_2.1.12.v20090708-1500.jar" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="384m"
