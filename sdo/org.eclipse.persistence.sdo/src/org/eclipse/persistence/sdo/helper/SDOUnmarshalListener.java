@@ -73,7 +73,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
         
         // if getType is sequenced, then update values to settings map
         if (targetDataObject.getType().isSequenced()) {
-            ((SDOSequence)(targetDataObject.getSequence())).afterUnmarshal();
+            targetDataObject.getSequence().afterUnmarshal();
         }
         
         // if parent is null we are back to the root object 
@@ -95,7 +95,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 for (int j = 0; j < xpaths.size(); j++) {
                     nextXPath = (String)xpaths.get(j);
                     String sdoPath = convertXPathToSDOPath(nextXPath);
-                    nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                    nextCreatedDO = targetDataObject.getDataObject(sdoPath);
 
                     if(nextCreatedDO == null) {
                         int nextSlash = sdoPath.indexOf('/');
@@ -104,7 +104,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         } else {
                             sdoPath = "/";
                         }
-                        nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                        nextCreatedDO = targetDataObject.getDataObject(sdoPath);
                     }
                     
                     if (nextCreatedDO != null) {
@@ -138,7 +138,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         } else {
                             sdoPath = "/";
                         }
-                        nextModifiedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                        nextModifiedDO = targetDataObject.getDataObject(sdoPath);
                     }
                     String unsetValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_UNSET);
                     List unsetValueList = new ArrayList();

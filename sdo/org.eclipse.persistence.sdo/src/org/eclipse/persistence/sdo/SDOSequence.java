@@ -215,9 +215,9 @@ public class SDOSequence implements Sequence {
         settings.add(textSetting);
     }
 
-    public Property getProperty(int index) {
+    public SDOProperty getProperty(int index) {
         try {
-            return getProperty(settings.get(index));
+            return (SDOProperty) getProperty(settings.get(index));
         } catch (IndexOutOfBoundsException iobex) {
             throw SDOException.invalidIndex(iobex, index);
         }

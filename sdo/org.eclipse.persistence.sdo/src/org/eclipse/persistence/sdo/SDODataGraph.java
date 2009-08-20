@@ -45,7 +45,7 @@ public class SDODataGraph implements DataGraph {
      * @return the root data object.
      * @see DataObject#getDataGraph
      */
-    public DataObject getRootObject() {
+    public SDODataObject getRootObject() {
         return this.rootObject;
     }
 
@@ -54,7 +54,7 @@ public class SDODataGraph implements DataGraph {
      * @return the change summary.
      * @see ChangeSummary#getDataGraph
      */
-    public ChangeSummary getChangeSummary() {
+    public SDOChangeSummary getChangeSummary() {
         return this.changeSummary;
     }
 
@@ -66,8 +66,8 @@ public class SDODataGraph implements DataGraph {
      * @param typeName name of a type.
      * @return the type with the corresponding namespace and name.
      */
-    public Type getType(String uri, String typeName) {
-        return helperContext.getTypeHelper().getType(uri, typeName);
+    public SDOType getType(String uri, String typeName) {
+        return (SDOType) helperContext.getTypeHelper().getType(uri, typeName);
     }
 
     /**
@@ -80,7 +80,7 @@ public class SDODataGraph implements DataGraph {
      * @see #createRootObject(Type)
      * @see #getType(String, String)
      */
-    public DataObject createRootObject(String namespaceURI, String typeName) {
+    public SDODataObject createRootObject(String namespaceURI, String typeName) {
         if(null != rootObject) {
             throw new IllegalStateException();
         }
@@ -99,7 +99,7 @@ public class SDODataGraph implements DataGraph {
      * @throws IllegalStateException if the root object already exists.
      * @see #createRootObject(String, String)
      */
-    public DataObject createRootObject(Type type) {
+    public SDODataObject createRootObject(Type type) {
         if(null != rootObject) {
             throw new IllegalStateException();
         }

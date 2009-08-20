@@ -143,7 +143,8 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         if (property == null) {
             return false;
         }
-        Object value = property.get(SDOConstants.XMLELEMENT_PROPERTY);
+        SDOProperty sdoProperty = (SDOProperty) property;
+        Object value = sdoProperty.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
             boolean isElement = ((Boolean)value).booleanValue();
             if (isElement) {
@@ -151,9 +152,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
             }
         }
 
-        if ((property.getOpposite() != null) && (property.getOpposite().isContainment())) {
+        if ((sdoProperty.getOpposite() != null) && (sdoProperty.getOpposite().isContainment())) {
             return false;
-        } else if (property.isMany() || property.isContainment() || property.isNullable()) {
+        } else if (sdoProperty.isMany() || sdoProperty.isContainment() || sdoProperty.isNullable()) {
             return false;
         }
 
@@ -173,14 +174,15 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         if (property == null) {
             return false;
         }
-        Object value = property.get(SDOConstants.XMLELEMENT_PROPERTY);
+        SDOProperty sdoProperty = (SDOProperty) property;
+        Object value = sdoProperty.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
             return ((Boolean)value).booleanValue();
         }
 
-        if ((property.getOpposite() != null) && (property.getOpposite().isContainment())) {
+        if ((sdoProperty.getOpposite() != null) && (sdoProperty.getOpposite().isContainment())) {
             return false;
-        } else if (property.isMany() || property.isContainment() || property.isNullable()) {
+        } else if (sdoProperty.isMany() || sdoProperty.isContainment() || sdoProperty.isNullable()) {
             return true;
         }
 

@@ -272,7 +272,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private void initTypesHashMap() {
         typesHashMap = new HashMap();
 
-        SDOType typeType = (SDOType) this.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOType typeType = this.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
         SDOType xmlHelperLoadOptionsType = new SDOXMLHelperLoadOptionsType(this, typeType);
         typesHashMap.put(xmlHelperLoadOptionsType.getQName(), xmlHelperLoadOptionsType);

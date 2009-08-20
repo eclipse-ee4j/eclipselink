@@ -74,7 +74,7 @@ import org.eclipse.persistence.sdo.helper.metadata.QNameTransformer;
 public class SDOProperty implements Property, Serializable {
     private String propertyName;// unique name for this Type within Type
     private SDOType type;// the Type of this Property
-    private Type containingType;
+    private SDOType containingType;
     private boolean isContainment;// if this Property is containment
     private boolean hasMany;// if this Property is many-valued
     private boolean readOnly;// if this Property is read-only
@@ -83,7 +83,7 @@ public class SDOProperty implements Property, Serializable {
     private boolean isDefaultSet;// flag whether the default was defined in the schema
     private int indexInType = -1;
     private int indexInDeclaredProperties = -1;
-    private Property opposite;// the opposite Property
+    private SDOProperty opposite;// the opposite Property
     private boolean xsd;
     private String xsdLocalName;
     private boolean global;
@@ -184,7 +184,7 @@ public class SDOProperty implements Property, Serializable {
      * @return the Property's containing type.
      * @see Type#getProperties()
      */
-    public Type getContainingType() {
+    public SDOType getContainingType() {
         return containingType;
     }
 
@@ -195,7 +195,7 @@ public class SDOProperty implements Property, Serializable {
     public Object getDefault() {
         if (null == defaultValue) {
             // return an Object wrapper for numeric primitives or null
-            return ((SDOType)type).getPseudoDefault();
+            return type.getPseudoDefault();
         } else {
             return defaultValue;
         }
@@ -215,7 +215,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the opposite Property if the Property is bi-directional or null otherwise.
      * @return the opposite Property if the Property is bi-directional or null
      */
-    public Property getOpposite() {
+    public SDOProperty getOpposite() {
         return opposite;
     }
 
@@ -293,7 +293,7 @@ public class SDOProperty implements Property, Serializable {
      * @param type       a Type which is the containing type of this Property
      */
     public void setContainingType(Type type) {
-        containingType = type;
+        containingType = (SDOType) type;
     }
 
     /**
@@ -312,7 +312,7 @@ public class SDOProperty implements Property, Serializable {
     * @param the opposite Property if the Property is bi-directional, otherwise null
     */
     public void setOpposite(Property property) {
-        opposite = property;
+        opposite = (SDOProperty) property;
     }
 
     /**
@@ -473,7 +473,7 @@ public class SDOProperty implements Property, Serializable {
             boolean sdoMethodAccessor = true;
             if (!getType().isDataType()) {
                 if (getType().isDataObjectType()) {
-                    ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
+                    getType().setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
                     if(getXsdType() != null && !getXsdType().equals(SDOConstants.ANY_TYPE_QNAME)) {
                        if (isMany()) {
                             xmlMapping = buildXMLCompositeCollectionMapping(mappingUri);
@@ -489,9 +489,9 @@ public class SDOProperty implements Property, Serializable {
                       }
                     }
                 } else {
-                    if (!((SDOType)getType()).isFinalized()) {
-                        ((SDOType)getType()).getNonFinalizedReferencingProps().add(this);
-                        ((SDOType)getType()).getNonFinalizedMappingURIs().add(mappingUri);
+                    if (!getType().isFinalized()) {
+                        getType().getNonFinalizedReferencingProps().add(this);
+                        getType().getNonFinalizedMappingURIs().add(mappingUri);
                         return;
                     }
                     if(isSubstitutable()) {
@@ -597,16 +597,16 @@ public class SDOProperty implements Property, Serializable {
             if ((getContainingType() != null) && !getContainingType().isDataType()) {
                 ClassDescriptor containingDescriptor = ((SDOType)getContainingType()).getXmlDescriptor();
                 xmlMapping.setDescriptor(containingDescriptor);
-                XMLMapping mapping = (XMLMapping)((SDOType)getContainingType()).getXmlDescriptor().getMappingForAttributeName(getName());
+                XMLMapping mapping = (XMLMapping)getContainingType().getXmlDescriptor().getMappingForAttributeName(getName());
                 if (mapping != null) {
-                    ((SDOType)getContainingType()).getXmlDescriptor().getMappings().remove(mapping);
+                    getContainingType().getXmlDescriptor().getMappings().remove(mapping);
                 }
                 if(indexToAdd == -1) {
-                    ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(xmlMapping);
+                    getContainingType().getXmlDescriptor().getMappings().add(xmlMapping);
                 } else {
                     //iterate over the mappings and find the correct place to insert this mapping relative to the 
                     //indecies of the others.
-                    SDOType containingType = (SDOType)getContainingType();
+                    SDOType containingType = getContainingType();
                     Vector<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
                     boolean added = false;
                     for(int i = 0; i < mappings.size(); i++) {
@@ -619,7 +619,7 @@ public class SDOProperty implements Property, Serializable {
                         }
                     }
                     if(!added) {
-                        ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(xmlMapping);
+                        getContainingType().getXmlDescriptor().getMappings().add(xmlMapping);
                     }
                 }
             }
@@ -650,7 +650,7 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
         String xpath = getQualifiedXPath(mappingUri, false);
 
-        if (!((SDOType)getType()).getInstanceClassName().equals("javax.activation.DataHandler")) {
+        if (!getType().getInstanceClassName().equals("javax.activation.DataHandler")) {
             mapping.setAttributeElementClass(getType().getInstanceClass());
         }
         mapping.setMimeTypePolicy(mimeTypePolicy);
@@ -756,11 +756,11 @@ public class SDOProperty implements Property, Serializable {
         mapping.setXPath(xpath);
 
         if (!getType().isDataObjectType()) {
-            QName schemaContext = ((SDOType)getType()).getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(((SDOType)getType()).getXmlDescriptor().getNamespaceResolver());
+            QName schemaContext = getType().getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(getType().getXmlDescriptor().getNamespaceResolver());
             ((XMLField)mapping.getField()).setLeafElementType(schemaContext);
 
-            mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
-            mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+            mapping.setReferenceClassName(getType().getImplClassName());
+            mapping.setReferenceClass(getType().getImplClass());
         }else{
             if(getXsdType()!= null){               
                 ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
@@ -783,10 +783,10 @@ public class SDOProperty implements Property, Serializable {
         mapping.setXPath(xpath);
 
         if (!getType().isDataObjectType()) {
-            QName schemaContext = ((SDOType)getType()).getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(((SDOType)getType()).getXmlDescriptor().getNamespaceResolver());
+            QName schemaContext = getType().getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(getType().getXmlDescriptor().getNamespaceResolver());
             ((XMLField)mapping.getField()).setLeafElementType(schemaContext);
-            mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
-            mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+            mapping.setReferenceClassName(getType().getImplClassName());
+            mapping.setReferenceClass(getType().getImplClass());
         }else{
             if(getXsdType()!= null){               
               ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
@@ -808,10 +808,10 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
 
         if (getType().isDataObjectType()) {
-            ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
+            getType().setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
         }
-        mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
-        mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+        mapping.setReferenceClassName(getType().getImplClassName());
+        mapping.setReferenceClass(getType().getImplClass());
 
         String sourcexpath = getQualifiedXPath(getContainingType().getURI(), true);
 
@@ -833,13 +833,13 @@ public class SDOProperty implements Property, Serializable {
 
         //First add XPath for this property
         String xPath = getQualifiedXPath(mappingUri, getType().isDataType());
-        mapping.addChoiceElement(xPath, ((SDOType)getType()).getImplClass());
+        mapping.addChoiceElement(xPath, getType().getImplClass());
         //For each substitutable property, create the xpath and add it.
         Iterator<SDOProperty> properties = this.getSubstitutableElements().iterator();
         while(properties.hasNext()) {
             SDOProperty nextProp = properties.next();
             xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), (SDOType)getContainingType());
-            mapping.addChoiceElement(xPath, ((SDOType)nextProp.getType()).getImplClass());
+            mapping.addChoiceElement(xPath, nextProp.getType().getImplClass());
         }
         return mapping;
     }
@@ -850,13 +850,13 @@ public class SDOProperty implements Property, Serializable {
         mapping.useCollectionClass(ListWrapper.class);
         //First add XPath for this property
         String xPath = getQualifiedXPath(mappingUri, getType().isDataType());
-        mapping.addChoiceElement(xPath, ((SDOType)getType()).getImplClass());
+        mapping.addChoiceElement(xPath, getType().getImplClass());
         //For each substitutable property, create the xpath and add it.
         Iterator<SDOProperty> properties = this.getSubstitutableElements().iterator();
         while(properties.hasNext()) {
             SDOProperty nextProp = properties.next();
-            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), (SDOType)getContainingType());
-            mapping.addChoiceElement(xPath, ((SDOType)nextProp.getType()).getImplClass());
+            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), getContainingType());
+            mapping.addChoiceElement(xPath, nextProp.getType().getImplClass());
         }
         return mapping;
     }
@@ -875,10 +875,10 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
 
         if (getType().isDataObjectType()) {
-            ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
+            getType().setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
         }
-        mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
-        mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+        mapping.setReferenceClassName(getType().getImplClassName());
+        mapping.setReferenceClass(getType().getImplClass());
         mapping.setUsesSingleNode(true);
 
         mapping.useCollectionClass(ArrayList.class);
@@ -896,10 +896,10 @@ public class SDOProperty implements Property, Serializable {
     }
 
     private boolean shouldAddInstanceClassConverter() {
-        Object value = ((SDOType)getType()).get(SDOConstants.JAVA_CLASS_PROPERTY);
+        Object value = getType().get(SDOConstants.JAVA_CLASS_PROPERTY);
         if (getType().isDataType() && (value != null)) {
-            Class instanceClass = ((SDOType)getType()).getInstanceClass();
-            String instanceClassName = ((SDOType)getType()).getInstanceClassName();
+            Class instanceClass = getType().getInstanceClass();
+            String instanceClassName = getType().getInstanceClassName();
             if (((instanceClassName != null) && instanceClassName.equals("javax.activation.DataHandler")) ||//
                     (instanceClass == ClassConstants.ABYTE) ||//
                     (instanceClass == ClassConstants.APBYTE) ||//
@@ -947,7 +947,7 @@ public class SDOProperty implements Property, Serializable {
       * INTERNAL:
       */
     public String getQualifiedXPath(String uri, boolean simple) {
-        SDOType containingType = (SDOType)this.getContainingType();
+        SDOType containingType = this.getContainingType();
         return getQualifiedXPath(uri, simple, containingType);
     }
     
@@ -1231,7 +1231,7 @@ public class SDOProperty implements Property, Serializable {
             if (this.getType() != null) {
                 return false;
             }
-        } else if (this.getType() == null || !((SDOType)this.getType()).equals((SDOType)prop.getType())) {
+        } else if (this.getType() == null || !this.getType().equals(prop.getType())) {
             return false;
         }
         // check name and URI

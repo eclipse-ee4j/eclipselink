@@ -293,7 +293,7 @@ public class SDOChangeSummary implements ChangeSummary {
                     }
                 } else {
                     if ((property.getType() != null) && !(((SDOType)property.getType()).isChangeSummaryType())) {
-                        getModified((SDODataObject) sdoDataObject.getDataObject(property), modifiedList);
+                        getModified(sdoDataObject.getDataObject(property), modifiedList);
                     }
                 }
             }
@@ -565,7 +565,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * When a DataGraph is used, this is the same as getDataGraph().getRootObject().
      * @return the ChangeSummary root DataObject
      */
-    public DataObject getRootObject() {
+    public SDODataObject getRootObject() {
         return rootDataObject;
     }
 
@@ -580,7 +580,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the Setting for the specified property.
      * @see #getChangedDataObjects
      */
-    public ChangeSummary.Setting getOldValue(DataObject dataObject, Property property) {
+    public SDOChangeSummary.Setting getOldValue(DataObject dataObject, Property property) {
         if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
             return null;
         }
@@ -684,8 +684,8 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old container data object.
      */
-    public DataObject getOldContainer(DataObject dataObject) {
-        return (DataObject)oldContainer.get(dataObject);
+    public SDODataObject getOldContainer(DataObject dataObject) {
+        return (SDODataObject) oldContainer.get(dataObject);
     }
 
     /**
@@ -694,8 +694,8 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old containment property.
      */
-    public Property getOldContainmentProperty(DataObject dataObject) {
-        return (Property)oldContainmentProperty.get(dataObject);
+    public SDOProperty getOldContainmentProperty(DataObject dataObject) {
+        return (SDOProperty) oldContainmentProperty.get(dataObject);
     }
 
     /**
@@ -704,14 +704,14 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old containment property.
      */
-    public Sequence getOldSequence(DataObject dataObject) {
+    public SDOSequence getOldSequence(DataObject dataObject) {
         if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
             return null;
         }
         if (!isCreated(dataObject) && dataObject.getType().isSequenced()) {
             // check cache first
             if (getOldSequences().containsKey(dataObject)) {
-                return (Sequence) getOldSequences().get(dataObject);
+                return (SDOSequence) getOldSequences().get(dataObject);
             }
 
             // no sequence - get from the original sequence map
