@@ -13,6 +13,8 @@
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *    08/19/2009-2.0  mobrien - Extend Collection support
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -83,6 +85,16 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
                 }
                 this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
+            } else {
+                // Example: Collection with an instantiated Set
+                Class attributeClass = ((CollectionMapping)mapping).getReferenceClass();
+                // TODO: refactor
+                if(null == attributeClass && validationEnabled) {
+                    attributeClass = Object.class;
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);
+                } else {
+                    this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
+                }
             }
             // TODO: Handle DirectMapContainerPolicy
             if(mapping.isMapKeyMapping()) {
