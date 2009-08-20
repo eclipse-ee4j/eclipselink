@@ -1431,6 +1431,9 @@
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
 
     <target name="server-test-cascadedeletes">
         <antcall target="server-run-all" inheritRefs="true">
@@ -1441,9 +1444,6 @@
             <param name="TEST_NAME" value="eclipselink-cascadedeletes-model"/>
             <param name="EAR_NAME" value="eclipselink-cascadedeletes-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
-    </target>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
