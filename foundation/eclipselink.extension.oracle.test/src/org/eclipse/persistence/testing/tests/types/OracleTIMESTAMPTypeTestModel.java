@@ -79,7 +79,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                         addTest(getTIMESTAMPUsingNativeSQLTestSuite(false));
                         // Known to pass with Oracle jdbc 11.2.0.0.2, fail with 11.1.0.7, 11.1.0.6
                         // Even with ojdbc 11.2.0.0.2 fails on db 9.2.0.1, but passes on 10.2.0.4, 11.1.0.6.0, 11.1.0.7.
-                        if(Helper.compareVersions(driverVersion, "11.2") >= 0) {
+                        if(Helper.compareVersions(driverVersion, "11.2.0.0.2") >= 0) {
                             addTest(getCalToTSTZWithBindingAndNoCalendarPrintingTestSuite());
                         }
                         addTest(getCalendarDaylightSavingsTestSuite());
