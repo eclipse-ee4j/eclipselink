@@ -320,7 +320,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      * This method is called in the pre-processing stage since we want to
-     * gather a list of id classes used trough-out the persistence unit. This
+     * gather a list of id classes used throughout the persistence unit. This
      * will help us build accessors, namely, mappedById accessors that can
      * reference an id class type.
      */

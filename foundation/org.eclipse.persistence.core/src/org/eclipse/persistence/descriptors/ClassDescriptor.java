@@ -3019,6 +3019,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean isDescriptorTypeAggregate(){
         return this.descriptorType == AGGREGATE_COLLECTION || this.descriptorType == AGGREGATE;
     }
+
+    /**
+     * INTERNAL:
+     * return true if this descriptor is an entity.
+     * (The descriptor may be a  mappedSuperclass - only in the internal case during metamodel processing)
+     */
+    public boolean isDescriptorTypeNormal(){
+        return this.descriptorType == NORMAL;
+    }
     
     /**
      * INTERNAL:

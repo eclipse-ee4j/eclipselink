@@ -120,8 +120,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass", "The declared attribute [{0}] from the managed type [{1}] is not present - however, it is declared on a superclass." },
                                            { "metamodel_managed_type_attribute_return_type_incorrect", "Expected attribute return type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute return type [{3}]." },
                                            { "metamodel_incompatible_persistence_config_for_getIdType", "Incompatible persistence configuration getting Metamodel Id Type for the ManagedType [{0}]." },
-                                           { "metamodel_class_incorrect_type_instance", "The type [{2}] is not the expected [{1}] for the key class [{0}]." }                                           
-                                                                                      
+                                           { "metamodel_class_incorrect_type_instance", "The type [{2}] is not the expected [{1}] for the key class [{0}]." },
+                                           { "metamodel_interface_inheritance_not_supported", "The descriptor [{0}] using ({1} inheritance) is not currently supported during metamodel generation, try using Entity or MappedSuperclass (Abstract class) inheritance." }
     };
 
     /**

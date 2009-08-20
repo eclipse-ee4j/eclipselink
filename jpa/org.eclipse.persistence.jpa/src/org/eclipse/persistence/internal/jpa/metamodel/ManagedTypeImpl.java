@@ -36,6 +36,12 @@
  *         when the caller of the function does not do it's own inheritedType check. 
  *       - see design issue #52
  *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
+ *     08/19/2009-2.0  mobrien - 266912: Handle MappedSuperclass in ManagedTypeImpl.create()  
+ *       - see design issue #39 (partial)
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_39:_20090708:_Handle_MappedSuperclass_in_ManagedTypeImpl.create.28.29
+ *     08/19/2009-2.0  mobrien - 266912: ManagedType.getDeclaredX() leaks members into entity-entity hierarchy  
+ *       - see design issue #61
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_61:_20090820:_ManagedType.getDeclaredX.28.29_leaks_members_into_entity-entity_hierarchy
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -45,8 +51,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,6 +113,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param descriptor - the RelationalDescriptor that defines this managedType
      */
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+        // A valid descriptor will always have a javaClass set
         super(descriptor.getJavaClass());
         this.descriptor = descriptor;
         // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel
@@ -139,7 +145,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     public Set<Attribute<? super X, ?>> getAttributes() {
         // We return a new Set instead of directly returning the Collection of values from the members HashMap
-        return new HashSet<Attribute<? super X, ?>>(this.members.values());
+        return new LinkedHashSet<Attribute<? super X, ?>>(this.members.values());
     }
     
 
@@ -201,9 +207,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new HashSet<PluralAttribute<? super X, ?, ?>>();
-        for(Iterator<Attribute<? super X, ?>> anIterator = allAttributes.iterator(); anIterator.hasNext();) {
-            Attribute<? super X, ?> anAttribute = anIterator.next();
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new LinkedHashSet<PluralAttribute<? super X, ?, ?>>();
+        for(Attribute<? super X, ?> anAttribute : allAttributes) {            
             // Add only CollectionType attributes
             if(anAttribute.isCollection()) {
                 pluralAttributes.add((PluralAttribute<? super X, ?, ?>)anAttribute);
@@ -280,9 +285,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
         // return only the set of attributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new HashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<Attribute<X, ?>> declaredAttributes = new HashSet<Attribute<X, ?>>();
+        Set<Attribute<X, ?>> declaredAttributes = new LinkedHashSet<Attribute<X, ?>>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             // Check the inheritance hierarchy for higher declarations
             if(this.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
@@ -345,7 +350,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all collection attribute and filter only on declared ones
         Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getCollections();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new HashSet<PluralAttribute<X, ?, ?>>();
+        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)
         for(PluralAttribute<? super X, ?, ?>  anAttribute :pluralAttributes) {
             if(((TypeImpl)anAttribute.getElementType()).isManagedType()) {
@@ -378,27 +383,46 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get the ManagedType property on the descriptor if it exists
         ManagedTypeImpl<?> managedType = (ManagedTypeImpl<?>) descriptor.getProperty(ManagedTypeImpl.class.getName());
         // Create an Entity, Embeddable or MappedSuperclass
-        if (null == managedType) {
-            // The descriptor can be one of NORMAL, INTERFACE (not supported), AGGREGATE or AGGREGATE_COLLECTION
-            if (descriptor.isAggregateDescriptor()) {
-                // EMBEDDABLE
-                managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
-            //} else if (descriptor.isAggregateCollectionDescriptor()) {
-            //    managedType = new EntityTypeImpl(metamodel, descriptor);
-            } else {
-                // Determine if the descriptor is a mappedSuperclass
-                // 20090817: comment out work for DI 39
-/*                if(metamodel.hasMappedSuperclassDescriptorKeyedByClassName(descriptor.getJavaClassName())) {
-                    // MAPPEDSUPERCLASS
-                    // defer to subclass                    
+        if (null == managedType) {            
+            // The descriptor can be one of NORMAL:0, INTERFACE:1 (not supported), AGGREGATE:2 or AGGREGATE_COLLECTION:3
+            if(descriptor.isDescriptorForInterface()) {                
+                // INTERFACE:1 (not supported)
+/*                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_interface_inheritance_not_supported", 
+                        new Object[] { descriptor, "Interface"}));
+*/
+                // Default to Entity
+                managedType = new EntityTypeImpl(metamodel, descriptor);
+            } else if (descriptor.isDescriptorTypeAggregate()) {
+                
+                // AGGREGATE:2 or AGGREGATE_COLLECTION:3
+                if (descriptor.isAggregateDescriptor()) {                    
+                    // AGGREGATE:2 == EMBEDDABLE
+                    managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
+                } else if (descriptor.isAggregateCollectionDescriptor()) {
+                    // TODO: Embeddable Collection handling is in progress
+                    // AGGREGATE_COLLECTION:3 can be an embeddable or entity type depending on ?
+                    //managedType = new EntityTypeImpl(metamodel, descriptor);
+                    managedType = new EmbeddableTypeImpl(metamodel, descriptor);
+                }
+            } else if(descriptor.isDescriptorTypeNormal()) {
+                
+                // NORMAL:0 = ENTITY | MAPPEDSUPERCLASS                
+                // DI 39: Determine if the descriptor is a mappedSuperclass
+                if(metamodel.hasMappedSuperclass(descriptor.getJavaClassName())) {                    
+                    // MAPPEDSUPERCLASS - defer to subclass                    
                     managedType = MappedSuperclassTypeImpl.create(metamodel, descriptor);
-                } else {*/
+                } else {                    
                     // ENTITY
                     managedType = new EntityTypeImpl(metamodel, descriptor);
-//                }
+                }
+            } else {                
+                // unknown descriptor type (or > 3)
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_interface_inheritance_not_supported", 
+                    new Object[] { descriptor, "Unknown"}));
             }
         }
-
         return managedType;
     }
 
@@ -579,11 +603,10 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         // return the set of SingularAttributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new HashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<SingularAttribute<X, ?>> declaredAttributes = new HashSet<SingularAttribute<X, ?>>();
-        for(Iterator<Attribute<X, ?>> anIterator = allAttributes.iterator(); anIterator.hasNext();) {
-            Attribute<? super X, ?> anAttribute = anIterator.next();
+        Set<SingularAttribute<X, ?>> declaredAttributes = new LinkedHashSet<SingularAttribute<X, ?>>();
+        for(Attribute<X, ?> anAttribute : allAttributes) {            
             if(!anAttribute.isCollection()) {
                 declaredAttributes.add((SingularAttribute<X, ?>)anAttribute);
             }
@@ -865,7 +888,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
         // Iterate the members set for attributes of type SingularAttribute
-        Set singularAttributeSet = new HashSet<SingularAttribute<? super X, ?>>();
+        Set singularAttributeSet = new LinkedHashSet<SingularAttribute<? super X, ?>>();
         for(Attribute<X, ?> anAttribute : this.members.values()) {            
             if(!((AttributeImpl<? super X, ?>)anAttribute).isPlural()) {
                 singularAttributeSet.add(anAttribute);
@@ -954,37 +977,28 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 }
             }
         } else {            
-           // Recursive Case: check hierarchy only if the immediate superclass is a MappedSuperclassType
-           if(aSuperType.isMappedSuperclass()) {  
-               Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
-               // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call 
-               if(null != aSuperTypeAttribute) {
-                   // return false immediately if a superType exists above the first level
-                   return false;
+           // Recursive Case: check hierarchy both if the immediate superclass is a MappedSuperclassType or EntityType
+           Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
+           // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call 
+           if(null != aSuperTypeAttribute) {
+               // return false immediately if a superType exists above the first level
+               return false;
+           } else {
+               // UC1.4 (when caller is firstLevel.supertype) - the immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
+               if(null == aSuperTypeAttribute) {
+                   // UC 1.5: keep searching a possible chain of mappedSuperclasses
+                   return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
                } else {
-                   // UC1.4 (when caller is firstLevel.supertype) - the immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
-                   if(null == aSuperTypeAttribute) {
-                       // UC 1.5: keep searching a possible chain of mappedSuperclasses
-                       return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
+                   // superType does not contain the attribute - check that the current attribute and the first differ
+                   if(anAttribute != firstLevelAttribute) {
+                       return false;
                    } else {
-                       // superType does not contain the attribute - check that the current attribute and the first differ
-                       if(anAttribute != firstLevelAttribute) {
-                           return false;
-                       } else {
-                           return true;
-                       }
+                       return true;
                    }
                }
-           } else {
-               // superType (Entity) may declare the attribute higher up - we do not need to check this
-               // TODO: verify handling of XML mapped non-Entity (plain Java Class) inherited mappings
-               // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_53:_20090729:_Verify_that_inheritied_non-JPA_class_mappings_are_handled_by_the_Metamodel
-               if(null == anAttribute) {
-                   return false;
-               } else {
-                   return true;
-               }
            }
+           // TODO: verify handling of XML mapped non-Entity (plain Java Class) inherited mappings
+           // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_53:_20090729:_Verify_that_inheritied_non-JPA_class_mappings_are_handled_by_the_Metamodel
         }
     }
     
@@ -1172,16 +1186,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                         }
                     }
                 } else {
-                    // Handle Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
+                    // Handle non-lazy Collection or Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
                     if (collectionContainerPolicy.getContainerClass().isAssignableFrom(Set.class) ||
                             collectionContainerPolicy.getContainerClass().isAssignableFrom(IndirectSet.class)) {
                         member = new SetAttributeImpl(this, colMapping, true);
                     } else {
-                        // Check for non-lazy Collection policy
+                        // Check for non-lazy Collection policy possibly instantiated to a Set or List (both of which is ignored)
                         if(collectionContainerPolicy.isCollectionPolicy()) {
                             member = new CollectionAttributeImpl(this, colMapping, true);
                         } else {
-                            // Handle Collection type mappings as a default
+                            // Handle Collection type mappings as a default (we should never get here)
                             // TODO: System.out.println("_Warning: defaulting to non-Set specific Collection type on " + colMapping);
                             member = new CollectionAttributeImpl(this, colMapping, true);
                         }

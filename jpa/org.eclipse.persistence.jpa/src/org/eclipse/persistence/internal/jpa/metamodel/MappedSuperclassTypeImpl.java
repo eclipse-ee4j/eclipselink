@@ -21,7 +21,6 @@
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.persistence.metamodel.MappedSuperclassType;
@@ -45,33 +44,50 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  */ 
 public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
     
-    /** The map of types that inherit from this mappedSuperclass */
-    protected Map<Class, IdentifiableTypeImpl> inheritingTypes;
+    /** 
+     * INTERNAL:
+     * The map of Identifiable types that inherit from this MappedSuperclass.
+     * The scope of this map is outside of the JPA 2.0 specification and is limited to MappedSuperclass types.
+     * The types in this map are keyed on the Java class of the inheriting type.
+     * This map acts as the reverse of all superType fields that point to "this" MappedSuperclass.
+     **/
+    protected Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
     
-    protected MappedSuperclassTypeImpl(Class<?> object, MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
-        this(metamodel, relationalDescriptor);
-    }
-
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {        
         super(metamodel, relationalDescriptor);
-        inheritingTypes = new HashMap<Class, IdentifiableTypeImpl>();
+        inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
     
     /**
      * INTERNAL:
-     * Add an inheriting subclass to the map of types that inherit from this mappedSuperclass.
+     * Add an inheriting subclass to the map of Identifiable types that inherit from this mappedSuperclass.
      * @param identifiableType
      */
     protected void addInheritingType(IdentifiableTypeImpl identifiableType) {
-        if(null == inheritingTypes) {
-            inheritingTypes = new HashMap<Class, IdentifiableTypeImpl>();
+        if(null == inheritingIdentifiableTypes) {
+            inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
         }
-        inheritingTypes.put(identifiableType.getJavaType(), identifiableType);
+        inheritingIdentifiableTypes.put(identifiableType.getJavaType(), identifiableType);
     }
     
-    public static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, Class object, RelationalDescriptor relationalDescriptor) {
-        MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(object, metamodel, relationalDescriptor);
+    /**
+     * INTERNAL:
+     * Return an instance of a MappedSuperclassType based on the RelationalDescriptor.
+     * @param metamodel
+     * @param relationalDescriptor
+     * @return
+     */
+    public static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
+        /**
+         * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
+         * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
+         * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.
+         * getActiveSession will return a possible external transaction controller session when running on an application server container.
+         */ 
+        relationalDescriptor.convertClassNamesToClasses(metamodel.getSession().getActiveSession().getClass().getClassLoader());
+        
+        MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(metamodel, relationalDescriptor);
         return mappedSuperclassTypeImpl;
     }
 
@@ -85,8 +101,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     public AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
         // search the inheriting types map for an attribute matching the attribute name
-        for(Iterator<IdentifiableTypeImpl> anIterator = inheritingTypes.values().iterator(); anIterator.hasNext();) {
-            IdentifiableTypeImpl inheritingType = anIterator.next();
+        for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
             if(inheritingType.members.containsKey(name)) {
                 return (AttributeImpl)inheritingType.getAttribute(name);
             }

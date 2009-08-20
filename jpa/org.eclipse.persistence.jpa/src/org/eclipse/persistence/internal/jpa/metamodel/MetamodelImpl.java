@@ -23,8 +23,6 @@
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,6 +31,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.IdentifiableType;
@@ -42,10 +41,10 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p>
@@ -134,6 +133,19 @@ public class MetamodelImpl implements Metamodel {
     }
     
     /**
+     * INTERNAL:
+     * Return a List of all attributes for all ManagedTypes.
+     * @return
+     */
+    public List<Attribute> getAllManagedTypeAttributes() {
+        List<Attribute> attributeList = new ArrayList<Attribute>();
+        for(ManagedType managedType : this.managedTypes.values()) {
+            attributeList.addAll(managedType.getAttributes());
+        }
+        return attributeList;
+    }
+    
+    /**
      * Return the metamodel embeddable types.
      * @return the metamodel embeddable types
      */
@@ -163,7 +175,7 @@ public class MetamodelImpl implements Metamodel {
      * @return
      */
     public Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
-        return mappedSuperclasses;
+        return new LinkedHashSet<MappedSuperclassTypeImpl<?>>(this.mappedSuperclasses);
     }
     
     /**
@@ -213,25 +225,48 @@ public class MetamodelImpl implements Metamodel {
     public Map<Class, TypeImpl<?>> getTypes() {
         return types;
     }
+
+    /**
+     * INTERNAL:
+     * Return whether there is a descriptor that is keyed by the supplied class name.<p>
+     * Referenced by ManagedTypeImpl.create()
+     * @param qualifiedClassNameKeyString
+     * @return 
+     */
+    public boolean hasMappedSuperclass(String qualifiedClassNameKeyString) {
+        /**
+         * This function is used before the metamodel has populated its Set of mappedSuperclasses -
+         * therefore we go directly to the descriptor source.
+         * Normally this functionality would be placed on the (core) Project class, however
+         * this would create a JPA dependency in Core when we try to use MetadataClass functionality there. 
+         */
+        // Internally we use the JPA MetadataClass as the key - but to avoid JPA dependencies the Map is keyed on Object
+        Set<Object> keySet = this.getSession().getProject().getMappedSuperclassDescriptors().keySet();
+        for(Object key : keySet) {
+            // The key is always a MetadataClass Object
+            if(((MetadataClass)key).getName().equals(qualifiedClassNameKeyString)) {
+                return true;
+            }
+        }
+        return false;
+    }    
     
     /**
      * INTERNAL:
      * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.
      */
     private void initialize() {
-        // Preserve ordering by using LinkedHashMap
+        // Design Note: Use LinkedHashMap and LinkedHashSet to preserve ordering
         this.types = new LinkedHashMap<Class, TypeImpl<?>>();
         this.entities = new LinkedHashMap<Class, EntityTypeImpl<?>>();
         this.embeddables = new LinkedHashMap<Class, EmbeddableTypeImpl<?>>();
         this.managedTypes = new LinkedHashMap<Class, ManagedTypeImpl<?>>();
-        //this.mappedSuperclasses = new LinkedHashMap<Class, MappedSuperclassTypeImpl<?>>();
-        this.mappedSuperclasses = new HashSet<MappedSuperclassTypeImpl<?>>();
-
-        // Process all Entity and Embeddable types
-        for (Iterator<RelationalDescriptor> identifiableTypeIterator = this.getSession().getDescriptors().values().iterator(); identifiableTypeIterator.hasNext();) {
-            RelationalDescriptor descriptor = identifiableTypeIterator.next();
-            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, descriptor);
-
+        this.mappedSuperclasses = new LinkedHashSet<MappedSuperclassTypeImpl<?>>();
+        
+        // Process all Entity and Embeddable types (MappedSuperclasses are handled later)
+        for (Object descriptor : this.getSession().getDescriptors().values()) {
+            // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
+            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (RelationalDescriptor)descriptor);
             this.types.put(managedType.getJavaType(), managedType);
             this.managedTypes.put(managedType.getJavaType(), managedType);
             
@@ -248,53 +283,55 @@ public class MetamodelImpl implements Metamodel {
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_54:_20090803:_Metamodel.type.28Clazz.29_should_differentiate_between_null_and_BasicType
         }
         
-        // TODO: Add all BASIC types
-        
-        
         // TODO: verify that all entities or'd with embeddables matches the number of types
         
         // Handle all MAPPED_SUPERCLASS types
-        // Get mapped superclass types from the native project (not a regular descriptor)
-        Project project = this.getSession().getProject();
-        Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
-        for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
-            RelationalDescriptor descriptor = anIterator.next();
-            // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass)
-            // getActiveSession will return a possible external transaction controller session when running on an application server container 
-            ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
-            descriptor.convertClassNamesToClasses(classLoader);
-            MappedSuperclassTypeImpl<?> mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
+        // Get mapped superclass types (separate from descriptors on the session from the native project (not a regular descriptor)
+        for(RelationalDescriptor descriptor : this.getSession().getProject().getMappedSuperclassDescriptors().values()) {
+            MappedSuperclassTypeImpl<?> mappedSuperclassType = (MappedSuperclassTypeImpl)ManagedTypeImpl.create(this, descriptor);
+            
             // Add the MappedSuperclass to our Set of MappedSuperclasses
             this.mappedSuperclasses.add(mappedSuperclassType);
 
+            // Add this MappedSuperclass to the Collection of Types
+            this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
             // Add the MappedSuperclass to the Map of ManagedTypes
             // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
             this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
-
-            // Add this MappedSuperclass to the Collection of Types
-            this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
         }
 
         
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
-        for(Iterator<ManagedTypeImpl<?>> mtIterator = managedTypes.values().iterator(); mtIterator.hasNext();) {
-            ManagedTypeImpl<?> potentialIdentifiableType = mtIterator.next();
+        for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
             Class aClass = potentialIdentifiableType.getJavaType();
-            // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
+            /**
+             * The superclass for top-level types is Object - however we set [null] as the supertype for root types.
+             * 1) We are constrained by the fact that the spec requires that a superType be an IdentifiableType.
+             *    Since [Object] is not an Entity or MappedSuperclass - it fails this criteria - as it would be a BasicType
+             *    because it has no @Entity or @MappedSuperclass annotation.<p> 
+             * 2) Another object space reasoning issue behind this is to separate the Java and Metamodel object spaces.
+             * In Java all type inherit from Object, however in the JPA Metamodel all types DO NOT inherit from a common type.
+             * Therefore in the metamodel top-level root types have a superType of null.
+             * See design issue discussion:
+             * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
+             */
             Class superclass = aClass.getSuperclass();
-            if(potentialIdentifiableType.isIdentifiableType() && (superclass != ClassConstants.OBJECT)) {
-                // Get the Entity or MappedSuperclass
-                // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
-                IdentifiableType<?> identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
-                // If there is no superclass (besides Object for a top level identifiable type) then keep the supertype set to null
-                // See design issue #42 - we return Object for top-level types (with no superclass) and null if the supertype was not set
-                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
+            // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
+            IdentifiableType<?> identifiableTypeSuperclass = null;
+            if(potentialIdentifiableType.isIdentifiableType() && superclass != ClassConstants.OBJECT) {
+                    // Get the Entity or MappedSuperclass
+                    // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
+                    identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
+                    // If there is no superclass (besides Object for a top level identifiable type) then keep the supertype set to null
+                    // See design issue #42 - we return Object for top-level types (with no superclass) and null if the supertype was not set
+                    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
+                    ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);
+                    // set back pointer if mappedSuperclass
+                    if(null != identifiableTypeSuperclass && ((IdentifiableTypeImpl)identifiableTypeSuperclass).isMappedSuperclass()) {
+                        ((MappedSuperclassTypeImpl)identifiableTypeSuperclass).addInheritingType(((IdentifiableTypeImpl)potentialIdentifiableType));
+                    }
                 ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);
-                // set back pointer if mappedSuperclass
-                if(null != identifiableTypeSuperclass && ((IdentifiableTypeImpl)identifiableTypeSuperclass).isMappedSuperclass()) {
-                    ((MappedSuperclassTypeImpl)identifiableTypeSuperclass).addInheritingType(((IdentifiableTypeImpl)potentialIdentifiableType));
-                }
             }
         }        
         
@@ -307,17 +344,9 @@ public class MetamodelImpl implements Metamodel {
          * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.
          * The following code section may add BasicTypes to the types map.
          */
-        for(Iterator<EntityTypeImpl<?>> managedTypeImplIterator = (new ArrayList<EntityTypeImpl<?>>(entities.values())).iterator(); managedTypeImplIterator.hasNext();) {
-            managedTypeImplIterator.next().initialize();
+        for(ManagedTypeImpl<?> managedType : new ArrayList<ManagedTypeImpl<?>>(managedTypes.values())) {            
+            managedType.initialize();
         }
-        for(Iterator<EmbeddableTypeImpl<?>> managedTypeImplIterator = (new ArrayList<EmbeddableTypeImpl<?>>(embeddables.values())).iterator(); managedTypeImplIterator.hasNext();) {
-            managedTypeImplIterator.next().initialize();
-        }
-        for(Iterator<MappedSuperclassTypeImpl<?>> managedTypeImplIterator = (new ArrayList<MappedSuperclassTypeImpl<?>>(mappedSuperclasses)).iterator(); managedTypeImplIterator.hasNext();) {
-            managedTypeImplIterator.next().initialize();
-        }
-
-    
     }
 
     /**
