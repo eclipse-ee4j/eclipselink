@@ -71,6 +71,11 @@ public class Oracle9Platform extends Oracle8Platform {
     public static final Class NCLOB = NClob.class;
     public static final Class XMLTYPE = XMLTypePlaceholder.class;
     
+    /* NCLOB sql type is defined in OracleTypes starting with version 11.2.
+     * Have to re-define it here to stay backward compatible. 
+     */
+    public final static int OracleTypes_NCLOB = 2011; 
+    
     /* Driver version set to connection.getMetaData.getDriverVersion() */
     protected transient String driverVersion;
     /* Indicates whether printCalendar should be used when creating TIMESTAMPTZ.
@@ -145,7 +150,7 @@ public class Oracle9Platform extends Oracle8Platform {
         //Bug#3381652 10G Drivers return sql.Date instead of timestamp on DATE field
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
             return resultSet.getTimestamp(columnNumber);
-        } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPTZ) {
+        } else if (type == OracleTypes.TIMESTAMPTZ) {
             TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
 
             //Need to call timestampValue once here with the connection to avoid null point 
@@ -157,7 +162,7 @@ public class Oracle9Platform extends Oracle8Platform {
                 return new TIMESTAMPTZWrapper(tsTZ, connection, isTimestampInGmt(connection));
             }
             return null;
-        } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
+        } else if (type == OracleTypes.TIMESTAMPLTZ) {
             //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
             //However the java object is not know here.  The solution is to store Timestamp and the 
             //session timezone in a wrapper class, which will be used later in converObject().
@@ -182,14 +187,18 @@ public class Oracle9Platform extends Oracle8Platform {
                 throw DatabaseException.sqlException(ex, null, session, false);
             }
         } else {
-            return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
+            Object value = super.getObjectFromResultSet(resultSet, columnNumber, type, session);
+            if(type == OracleTypes_NCLOB) {
+                value = convertObject(value, ClassConstants.STRING);
+            }
+            return value;
         }
     }
 
     /**
      * INTERNAL
      * Used by SQLCall.appendModify(..)
-     * If the field should be passed to customModifyInDatabaseCall, retun true,
+     * If the field should be passed to customModifyInDatabaseCall, return true,
      * otherwise false.
      * Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
      * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
