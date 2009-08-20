@@ -79,7 +79,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                         addTest(getTIMESTAMPUsingNativeSQLTestSuite(false));
                         // Known to pass with Oracle jdbc 11.2.0.0.2, fail with 11.1.0.7, 11.1.0.6
                         // Even with ojdbc 11.2.0.0.2 fails on db 9.2.0.1, but passes on 10.2.0.4, 11.1.0.6.0, 11.1.0.7.
-                        if(Helper.compareVersions(driverVersion, "11.2") >= 0) {
+                        if(Helper.compareVersions(driverVersion, "11.2.0.0.2") >= 0) {
                             addTest(getCalToTSTZWithBindingAndNoCalendarPrintingTestSuite());
                         }
                         addTest(getCalendarDaylightSavingsTestSuite());
@@ -148,8 +148,8 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances1().elements();
 
         String timeZone = getTimeZone(useDefaultTimeZone);
-        suite.setName("TIMESTAMP & TIMESTAMPTZ Types with binding Test Suite");
-        suite.setDescription("Tests the use of TIMESTAMP/TIMESTAMPTZ with binding with TopLink" + getTimeZoneInfo(timeZone));
+        suite.setName("TIMESTAMP & TIMESTAMPTZ Types with binding Test Suite" + getTimeZoneInfo(timeZone));
+        suite.setDescription("Tests the use of TIMESTAMP/TIMESTAMPTZ with binding with TopLink");
 
         while (examples.hasMoreElements()) {
             TIMESTAMPTester  tester = (TIMESTAMPTester)examples.nextElement();
@@ -163,9 +163,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
 
     public static TestSuite getTIMESTAMPUsingNativeSQLTestSuite(boolean useDefaultTimeZone) {
         TestSuite suite = new TestSuite();
-        // Use testInstances3 since Oracle appears to have trouble with native SQL when
-        // using TZR TZD with dates 100 years in the future.
-        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances3().elements();
+        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances2().elements();
 
         String timeZone = getTimeZone(useDefaultTimeZone);
         suite.setName("TIMESTAMP & TIMESTAMPTZ Types using native sql Test Suite" + getTimeZoneInfo(timeZone));

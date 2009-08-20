@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
+ *     14/05/2009 ailitchev - Bug 267929: Oracle 11.1.0.7: TIMESTAMP test '100 Years from now -> 2109-03-10 13:22:28.5 EST5EDT EDT' began to fail after Daylight Saving Time started
+ *     Changed the test "100 Years from now" to "Last DST year", see comment in TIMESTAMPTester.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.types;
 
@@ -235,9 +238,9 @@ public class TIMESTAMPTypeConversionTester extends TIMESTAMPTester {
 		Calendar yearsBack100 = Calendar.getInstance();
 		yearsBack100.set(Calendar.YEAR, (yearsBack100.get(Calendar.YEAR) - 100));
 		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years ago", yearsBack100));
-		Calendar yearsAhead100 = Calendar.getInstance();
-		yearsAhead100.set(Calendar.YEAR, (yearsAhead100.get(Calendar.YEAR) + 100));
-		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years from now", yearsAhead100));
+		Calendar lastDSTYearCal = Calendar.getInstance();
+		lastDSTYearCal.set(Calendar.YEAR, lastDSTYear);
+		tests.addElement(new TIMESTAMPDirectToFieldTester("Last DST year", lastDSTYearCal));
 		tests.addElement(new TIMESTAMPTypeConversionTester("GMT Before 1970", 1902, 2, 13, 16, 34, 25, 900000000, "GMT"));
 		//Nanos starting with one zero
 		tests.addElement(new TIMESTAMPTypeConversionTester("Nano with one zero", 465346464057L));
@@ -259,9 +262,9 @@ public class TIMESTAMPTypeConversionTester extends TIMESTAMPTester {
 		Calendar yearsBack100 = Calendar.getInstance();
 		yearsBack100.set(Calendar.YEAR, (yearsBack100.get(Calendar.YEAR) - 100));
 		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years ago 1", yearsBack100));
-		Calendar yearsAhead100 = Calendar.getInstance();
-		yearsAhead100.set(Calendar.YEAR, (yearsAhead100.get(Calendar.YEAR) + 100));
-		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years from now 1", yearsAhead100));
+		Calendar lastDSTYearCal = Calendar.getInstance();
+		lastDSTYearCal.set(Calendar.YEAR, lastDSTYear);
+		tests.addElement(new TIMESTAMPDirectToFieldTester("Last DST year 1", lastDSTYearCal));
 		tests.addElement(new TIMESTAMPTypeConversionTester("GMT Before 1970 1", 1902, 2, 13, 16, 34, 25, 900000000, "GMT"));
 		tests.addElement(new TIMESTAMPTypeConversionTester("Nano with one zero 1", 465346464057L));
 		tests.addElement(new TIMESTAMPTypeConversionTester("Nano with two zeros 1", 465346464007L));
@@ -281,9 +284,9 @@ public class TIMESTAMPTypeConversionTester extends TIMESTAMPTester {
 		Calendar yearsBack100 = Calendar.getInstance();
 		yearsBack100.set(Calendar.YEAR, (yearsBack100.get(Calendar.YEAR) - 100));
 		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years ago 2", yearsBack100));
-		Calendar yearsAhead100 = Calendar.getInstance();
-		yearsAhead100.set(Calendar.YEAR, (yearsAhead100.get(Calendar.YEAR) + 100));
-		tests.addElement(new TIMESTAMPTypeConversionTester("100 Years from now 2", yearsAhead100));
+		Calendar lastDSTYearCal = Calendar.getInstance();
+		lastDSTYearCal.set(Calendar.YEAR, lastDSTYear);
+		tests.addElement(new TIMESTAMPDirectToFieldTester("Last DST year 2", lastDSTYearCal));
 		tests.addElement(new TIMESTAMPTypeConversionTester("GMT Before 1970 2", 1902, 2, 13, 16, 34, 25, 900000000, "GMT"));
 		tests.addElement(new TIMESTAMPTypeConversionTester("Nano with one zero 2", 465346464057L));
 		tests.addElement(new TIMESTAMPTypeConversionTester("Nano with two zeros 2", 465346464007L));
