@@ -91,10 +91,17 @@
     <!-- temporary until all build files reworked -->
     <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
     <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
-    <property name="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"/>
+    <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+    <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+    <condition property="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"
+                                                else="${trunk.build.location}">
+        <available file="${trunk.build.location}/../extension.lib.external" type="dir"/>
+    </condition>
     <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
-    <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
-    <echo message="junit.lib = '${junit.lib}'"/>
+    <condition property="junit.lib" value="${extensions.depend.dir}/junit.jar">
+         <available file="${extensions.depend.dir}/junit.jar"/>
+    </condition>
+    <echo message="junit.lib = '${junit.lib}' (if not set tests may not compile; let alone run)"/>
     <echo message="Loading default properties from: '${trunk.build.location}/build.properties'"/>
     <property file="${trunk.build.location}/build.properties"/>
 
