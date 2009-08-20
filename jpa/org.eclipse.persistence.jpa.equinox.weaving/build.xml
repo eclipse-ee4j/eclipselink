@@ -40,12 +40,23 @@
     <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
     <property name="bnd.path" value="${weaving.2.buildsys.dir}/${bndtool.jar}"/>
     <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
-    <property name="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"/>
-    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="${weaving.build.location}/build.properties"/>
-
+    <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+    <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+    <!-- The classpath uses this variable and the dir MUST exist or the build will fail.             -->
+    <condition property="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"
+                                                else="${weaving.2.base.dir}">
+        <available file="${weaving.2.base.dir}/../extension.lib.external" type="dir"/>
+    </condition>
+    <!-- Test to make certain that no matter what the value is that the dir exists -->
+    <condition property="extension.dir.exist">
+        <available file="${extensions.depend.dir}" type="dir"/>
+    </condition>        
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+    <fail message="extensions.depend.dir is being overridden to a nonexistant location!" unless="extension.dir.exist"/>
+    
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
