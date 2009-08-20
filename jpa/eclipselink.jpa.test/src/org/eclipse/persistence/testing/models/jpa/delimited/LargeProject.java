@@ -33,7 +33,7 @@ import static org.eclipse.persistence.annotations.ExistenceType.ASSUME_NON_EXIST
 ),
 @NamedQuery(
 	name="constructLProject",
-	query="SELECT new org.eclipse.persistence.testing.models.jpa.advanced.LargeProject(project.name) FROM LargeProject project")
+	query="SELECT new org.eclipse.persistence.testing.models.jpa.delimited.LargeProject(project.name) FROM LargeProject project")
 }
 )
 @ExistenceChecking(ASSUME_NON_EXISTENCE)

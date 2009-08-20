@@ -91,7 +91,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         Chassis chassis = vehicleRead.getChassis();
         
         for (Wheel wheel : chassis.getWheels()) {
-        	wheel.setSerialNumber(wheel.getSerialNumber() + 10);
+            wheel.setSerialNumber(wheel.getSerialNumber() + 10);
         }
         
         commitTransaction(em);
@@ -101,17 +101,16 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();
         em = createEntityManager();
+        beginTransaction(em);
         
         Vehicle vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
         assertNotNull("Vehicle should have been inserted", vehicleReadAgain);
         
         for (Wheel wheel : vehicleReadAgain.getChassis().getWheels()) {
-        	assertTrue("All wheels should have a S/N > 10 after modification", wheel.getSerialNumber() > 10);
+            assertTrue("All wheels should have a S/N > 10 after modification", wheel.getSerialNumber() > 10);
         }
         
         // Cleanup
-        beginTransaction(em);
-        
         em.remove(vehicleReadAgain);
         
         commitTransaction(em);
@@ -150,6 +149,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();
         em = createEntityManager();
+        beginTransaction(em);
         
         Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
         assertNotNull("Vehicle should have been inserted", vehicleRead);
@@ -163,8 +163,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertSame("Vehicle should reference Chassis2", vehicleRead.getChassis(), chassis2Read);
         
         // Cleanup
-        beginTransaction(em);
-        
         em.remove(vehicleRead);
         em.remove(chassis2Read);
         
@@ -204,6 +202,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager(); 
+        beginTransaction(em);
         
         Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
         assertNotNull("Vehicle should have been inserted", vehicleRead);
@@ -222,8 +221,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertNull("Wheel 1 should not have been inserted", wheel1Read);
         
         // Cleanup
-        beginTransaction(em);
-        
         em.remove(vehicleRead);
         em.remove(chassis2Read);
         
@@ -282,6 +279,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager();         
+        beginTransaction(em);
         
         WheelNut wheelNut3Read = em.find(WheelNut.class, wheelNut3.getId());
         assertNotNull("WheelNut3 should have been inserted", wheelNut3Read);
@@ -302,8 +300,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertTrue("Wheel2 should reference wheelNut4", wheel2Read.getWheelNuts().contains(wheelNut4Read));
         
         // Cleanup
-        beginTransaction(em);
-        
         em.remove(em.find(Vehicle.class, vehicle.getId()));
         // chassis removed automatically
         // wheels removed automatically
@@ -367,6 +363,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager(); 
+        beginTransaction(em);
         
         Object wheel1Read = em.find(Wheel.class, wheel1.getId());
         Object wheel2Read = em.find(Wheel.class, wheel2.getId());
@@ -396,9 +393,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertNull("Vehicle should not reference Chassis", vehicleRead.getChassis());
 
         // Cleanup
-        
-        beginTransaction(em);
-        
         em.remove(vehicleRead);
         em.remove(wheelRim1Read);
         em.remove(wheelRim2Read);
@@ -447,7 +441,8 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager();
-
+        beginTransaction(em);
+        
         SparkPlug sparkPlug3Read = em.find(SparkPlug.class, plug3.getId());
         assertNull("SparkPlug3 should not be inserted", sparkPlug3Read);
         
@@ -477,9 +472,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertTrue("Engine should contain SparkPlug6", engineRead.getSparkPlugs().contains(sparkPlug6Read));
         
         // Cleanup
-        
-        beginTransaction(em);
-        
         em.remove(em.find(Vehicle.class, vehicle.getId()));
         em.remove(engineRead);
         em.remove(sparkPlug1Read);
@@ -516,6 +508,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager();
+        beginTransaction(em);
         
         Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
         assertNotNull("Vehicle should be inserted", vehicleRead);
@@ -529,9 +522,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertSame("Vehicle should reference Chassis2", chassis2Read, vehicleRead.getChassis());
         
         // Cleanup
-        
-        beginTransaction(em);
-        
         em.remove(vehicleRead);
         em.remove(chassis2Read);
         
@@ -574,7 +564,8 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         clearCache();        
         em = createEntityManager();
-
+        beginTransaction(em);
+        
         Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
         assertNotNull("Vehicle should be inserted", vehicleRead);
         assertNotNull(vehicleRead.getChassis());
@@ -605,9 +596,6 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         assertFalse("Chassis should not reference Wheel5", chassisRead.getWheels().contains(wheel5Read));
         
         // Cleanup
-        
-        beginTransaction(em);
-        
         em.remove(vehicleRead);
         em.remove(chassisRead);
         em.remove(wheel1Read);
@@ -874,7 +862,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         uow.deleteObject(vehicleRead);
         uow.deleteObject(chassis2Read);
         
-        uow.commit();        
+        uow.commit();
     }
     
 
@@ -926,7 +914,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         } finally {            
             // Step 4 - clean up database
             beginTransaction(em);
-             
+            vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
             em.remove(vehicleReadAgain.getChassis());
             em.remove(vehicleReadAgain);
                 
