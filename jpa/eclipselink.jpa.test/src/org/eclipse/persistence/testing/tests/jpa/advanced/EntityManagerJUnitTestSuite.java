@@ -8515,7 +8515,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         commitTransaction(em);
         try {
-            emp = (Employee) JpaHelper.getServerSession(getEntityManagerFactory()).getIdentityMapAccessor().getFromIdentityMap(emp);
+            emp = (Employee) JpaHelper.getEntityManager(em).getServerSession().getIdentityMapAccessor().getFromIdentityMap(emp);
             assertNotNull("Error, phone numbers is empty.  Not Batch Read", emp.getPhoneNumbers());
             assertFalse("PhoneNumbers was empty.  This should not be the case as the test created phone numbers", emp.getPhoneNumbers().isEmpty());
             assertTrue("Phonee numbers was not an indirectList", emp.getPhoneNumbers() instanceof IndirectList);
