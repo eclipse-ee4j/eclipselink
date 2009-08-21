@@ -529,8 +529,8 @@
         <delete dir="${build.dir}/commonj.sdo"/>
         <delete dir="${build.dir}/javax.xml.bind"/>
         <delete dir="${eclipselink.javadocs}"/>
-        <unzip src="${eclipselink.sdo.plugins}/commonj.sdo/commonj.sdo.source_2.1.1.v200905221342.zip" dest="${build.dir}/commonj.sdo/src"/>
-        <unzip src="${eclipselink.moxy.plugins}/javax.xml.bind.source_2.1.12.v20090708-1500.jar" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.lib}" dest="${build.dir}/commonj.sdo/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.lib}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
