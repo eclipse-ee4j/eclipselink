@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
  * <p><b>Purpose</b>: Maintain identity maps for domain classes mapped with EclipseLink.
@@ -504,6 +505,96 @@ public class IdentityMapManager implements Serializable, Cloneable {
             getSession().endOperationProfile(SessionProfiler.CACHE);
         }
         return objects;
+    }
+
+    /**
+     * Invalidate objects meeting selectionCriteria.
+     */
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+        ClassDescriptor descriptor = getSession().getDescriptor(theClass);
+        getSession().startOperationProfile(SessionProfiler.CACHE);
+        try {
+            IdentityMap map = getIdentityMap(descriptor, true);
+            if(map == null) {
+                return;
+            }
+            boolean isChildDescriptor = descriptor.isChildDescriptor();
+            if (selectionCriteria != null) {
+                // PERF: Avoid clone of expression.            
+                ExpressionBuilder builder = selectionCriteria.getBuilder();
+                if (builder.getSession() == null) {
+                    builder.setSession(getSession().getRootSession(null));
+                    builder.setQueryClass(theClass);
+                }
+                CacheInvalidationPolicy cacheInvalidationPolicy = descriptor.getCacheInvalidationPolicy();
+                int inMemoryQueryIndirectionPolicy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
+                if (shouldInvalidateOnException) {
+                    inMemoryQueryIndirectionPolicy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED;
+                }
+
+                // cache the current time to avoid calculating it every time through the loop
+                long currentTimeInMillis = System.currentTimeMillis();
+                //Enumeration doesn't checkReadLocks
+                for (Enumeration cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
+                    CacheKey key = (CacheKey)cacheEnum.nextElement();
+                    Object object = key.getObject();
+                    if (object == null || cacheInvalidationPolicy.isInvalidated(key, currentTimeInMillis)) {
+                        continue;
+                    }
+
+                    // Must check for inheritance.
+                    if (!isChildDescriptor || (object.getClass() == theClass) || (theClass.isInstance(object))) {
+                        try {
+                            if (selectionCriteria.doesConform(object, getSession(), (AbstractRecord)translationRow, inMemoryQueryIndirectionPolicy)) {
+                                key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                            }
+                        } catch (QueryException queryException) {
+                            if(queryException.getErrorCode() == QueryException.CANNOT_CONFORM_EXPRESSION) {
+                                // if the expression can't be confirmed for the object it's likely the same will happen to all other objects -
+                                // invalidate all objects of theClass if required, otherwise leave.
+                                if (shouldInvalidateOnException) {
+                                    invalidateObjects(null, theClass, null, true);
+                                } else {
+                                    return;
+                                }
+                            } else {
+                                if (shouldInvalidateOnException) {
+                                    key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                                }
+                            }
+                        } catch (RuntimeException runtimeException) {
+                            if (shouldInvalidateOnException) {
+                                key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // selectionCriteria == null
+                if(isChildDescriptor) {
+                    // Must check for inheritance.
+                    for (Enumeration cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
+                        CacheKey key = (CacheKey)cacheEnum.nextElement();
+                        Object object = key.getObject();
+                        if (object == null) {
+                            continue;
+                        }
+
+                        if ((object.getClass() == theClass) || (theClass.isInstance(object))) {
+                            key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                        }
+                    }
+                } else {
+                    // if it's either a root class or there is no inheritance just invalidate the whole identity map
+                    for (Enumeration cacheEnum = map.keys(false); cacheEnum.hasMoreElements();) {
+                        CacheKey key = (CacheKey)cacheEnum.nextElement();
+                        key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                    }
+                }
+            }
+        } finally {
+            getSession().endOperationProfile(SessionProfiler.CACHE);
+        }
     }
 
     /**
