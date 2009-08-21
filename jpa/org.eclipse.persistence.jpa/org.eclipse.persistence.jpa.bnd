@@ -22,7 +22,8 @@ Import-Package:                                                         \
  javax.transaction.*;version="1.1.0";resolution:=optional,              \
  javax.xml.*;resolution:=optional,                                      \
  org.apache.tools.ant.*;resolution:=optional,                           \
- org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
+ org.eclipse.persistence.internal.libraries.asm.*,                      \
+ org.eclipse.persistence.internal.libraries.antlr.*,                    \
  org.eclipse.persistence.*;version="${version.string}",                 \
  org.osgi.*;resolution:=optional,                                       \
  org.w3c.*;resolution:=optional,                                        \
