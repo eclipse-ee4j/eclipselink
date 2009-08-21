@@ -25,6 +25,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -42,6 +43,9 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
+
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
 
 /**
  * A representation of a persistence unit definition. 
@@ -139,7 +143,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void addXMLEntityMappings(String mappingFile, boolean validate) throws IOException {
-        FileObject fileObject = PersistenceUnitReader.getFileObject(mappingFile, m_processingEnv);
+        FileObject fileObject = PersistenceUnitReader.getFileObject(mappingFile, StandardLocation.CLASS_OUTPUT, m_processingEnv);
         
         if (fileObject != null) {
             try {
@@ -180,6 +184,34 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
+    protected boolean excludeUnlistedClasses() {
+        return m_puInfo.excludeUnlistedClasses();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getCanonicalName(String name) {
+        return m_puInfo.getCanonicalName(name, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected String getCanonicalQualifierOption() {
+        return m_processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected String getCanonicalQualifierPositionOption() {
+        return m_processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER_POSITION);
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public ClassAccessor getClassAccessor(Element element) {
         String elementString = element.toString();
         
@@ -196,13 +228,6 @@ public class PersistenceUnit {
         }
         
         return null;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean excludeUnlistedClasses() {
-        return m_puInfo.excludeUnlistedClasses();
     }
     
     /**

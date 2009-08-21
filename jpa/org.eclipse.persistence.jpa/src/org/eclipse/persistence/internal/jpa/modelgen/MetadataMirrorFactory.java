@@ -169,39 +169,10 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     @Override
     public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
-        // If we have a generic parent we need to grab our generic types
-        // that may be used (and therefore need to be resolved) to map
-        // accessors correctly.
-        /*
-        if (genericTypes != null) { 
-            
-            List<String> parentGenericTypes = parent.getGenericType();
-            if (parentGenericTypes != null) {
-                List genericParentTemp = new ArrayList(genericTypes);
-                genericParentTemp.removeAll(child.getInterfaces());
-                
-                int size = genericParentTemp.size();
-                int parentIndex = 0;
-                
-                for (int index = genericTypes.indexOf(parent.getName()) + 1; index < size; index++) {
-                    String actualTypeArgument = genericTypes.get(index);
-                    String variable = parentGenericTypes.get(parentIndex);
-                    parentIndex = parentIndex + 3;
-                    
-                    // We are building bottom up and need to link up any 
-                    // TypeVariables with the actual class from the originating 
-                    // entity.
-                    if (actualTypeArgument.length() == 1) {
-                        index++;
-                        actualTypeArgument = genericTypes.get(index);
-                        descriptor.addGenericType(variable, descriptor.getGenericType(actualTypeArgument));
-                    } else {
-                        descriptor.addGenericType(variable, actualTypeArgument);
-                    }
-                }
-            }
-        }
-        */
+        // Our metadata factory does not and can not resolve the types since
+        // we are writing static attributes on our generated class. This 
+        // factory will use types of "? extends Object". So don't need to
+        // resolve anything here. No work is good work!
     }
 }
 

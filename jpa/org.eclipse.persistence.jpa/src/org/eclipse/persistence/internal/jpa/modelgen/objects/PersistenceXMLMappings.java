@@ -14,12 +14,15 @@
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitProperty;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
+
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -34,32 +37,17 @@ public class PersistenceXMLMappings {
     /**
      * INTERNAL:
      */
-    public static XMLContext createXMLContext() {
-        Project project = new Project();
-
-        NamespaceResolver resolver = new NamespaceResolver();
-        resolver.setDefaultNamespaceURI("http://java.sun.com/xml/ns/persistence");
-
-        project.addDescriptor(createPersistenceXMLDescriptor(resolver));
-        project.addDescriptor(createPUInfoDescriptor(resolver));
-
-        return new XMLContext(project);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    private static XMLDescriptor createPersistenceXMLDescriptor(NamespaceResolver resolver) {
+    private static XMLDescriptor buildPersistenceXMLDescriptor(NamespaceResolver resolver) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setNamespaceResolver(resolver);
 
         descriptor.setJavaClass(PersistenceXML.class);
         descriptor.setDefaultRootElement("persistence");
 
-        descriptor.addDirectMapping("m_version", "@version");
+        descriptor.addDirectMapping("version", "@version");
         
         XMLCompositeCollectionMapping puMapping = new XMLCompositeCollectionMapping();
-        puMapping.setAttributeName("m_persistenceUnitInfos");
+        puMapping.setAttributeName("persistenceUnitInfos");
         puMapping.setReferenceClass(SEPersistenceUnitInfo.class);
         puMapping.setXPath("persistence-unit");
         descriptor.addMapping(puMapping);
@@ -70,7 +58,7 @@ public class PersistenceXMLMappings {
     /**
      * INTERNAL:
      */
-    private static XMLDescriptor createPUInfoDescriptor(NamespaceResolver resolver) {
+    private static XMLDescriptor buildPUInfoDescriptor(NamespaceResolver resolver) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setNamespaceResolver(resolver);
 
@@ -89,8 +77,45 @@ public class PersistenceXMLMappings {
         mappingFilesMapping.setAttributeName("mappingFiles");
         mappingFilesMapping.setXPath("mapping-file/text()");
         descriptor.addMapping(mappingFilesMapping);
+        
+        XMLCompositeCollectionMapping persistenceUnitPropertiesMapping = new XMLCompositeCollectionMapping();
+        persistenceUnitPropertiesMapping.setAttributeName("persistenceUnitProperties");
+        persistenceUnitPropertiesMapping.setGetMethodName("getPersistenceUnitProperties");
+        persistenceUnitPropertiesMapping.setSetMethodName("setPersistenceUnitProperties");
+        persistenceUnitPropertiesMapping.setReferenceClass(SEPersistenceUnitProperty.class);
+        persistenceUnitPropertiesMapping.setXPath("properties/property");
+        descriptor.addMapping(persistenceUnitPropertiesMapping);
 
         return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    private static XMLDescriptor buildPUPropertyDescriptor(NamespaceResolver resolver) {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setNamespaceResolver(resolver);
+        descriptor.setJavaClass(SEPersistenceUnitProperty.class);
+        descriptor.addDirectMapping("name", "@name");
+        descriptor.addDirectMapping("value", "@value");
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public static XMLContext createXMLContext() {
+        Project project = new Project();
+
+        NamespaceResolver resolver = new NamespaceResolver();
+        resolver.setDefaultNamespaceURI("http://java.sun.com/xml/ns/persistence");
+
+        project.addDescriptor(buildPersistenceXMLDescriptor(resolver));
+        project.addDescriptor(buildPUInfoDescriptor(resolver));
+        project.addDescriptor(buildPUPropertyDescriptor(resolver));
+
+        return new XMLContext(project);
     }
 }
 

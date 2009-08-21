@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,18 +64,18 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected void generateCanonicalModelClass(Element element, ClassAccessor accessor) throws IOException {
+    protected void generateCanonicalModelClass(Element element, PersistenceUnit persistenceUnit) throws IOException {
         Writer writer = null;
         
-        try {                
+        try {
+            ClassAccessor accessor = persistenceUnit.getClassAccessor(element);
             String qualifiedName = accessor.getAccessibleObjectName();
             
-            JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedName + "_", element);
-                        
             String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
-            String originalClassName = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
-            String underScoreClassName = originalClassName + "_";
-                        
+            String className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+            String canonicalName = persistenceUnit.getCanonicalName(className);
+            
+            JavaFileObject file = processingEnv.getFiler().createSourceFile(packageName + "." + canonicalName, element);
             writer = file.openWriter();
             writer.append("package " + packageName + ";\n\n");
                         
@@ -83,7 +84,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                  
             // Go through the accessor list, ignoring any transient accessors.
             // Those accessors come from an XML specification.
-            HashSet<String> typeImports = new HashSet<String>();
+            HashMap<String, String> typeImports = new HashMap<String, String>();
             for (MappingAccessor mappingAccessor : accessor.getDescriptor().getAccessors()) {
                 if (! mappingAccessor.isTransient()) {
                     MetadataAnnotatedElement annotatedElement = mappingAccessor.getAnnotatedElement();
@@ -93,7 +94,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     String attributeType = AttributeType.SingularAttribute.name();
 
                     // NOTE: order of checking is important.
-                    String types = originalClassName;
+                    String types = className;
                     
                     if (mappingAccessor.isBasic()) {
                         types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement), typeImports);
@@ -124,7 +125,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                                         mapKeyType = mappingAccessor.getReferenceDescriptor().getIdAccessors().get(0).getAnnotatedElement().getType();
                                     } else {
                                         // We don't know at this point so just use the catch all default.
-                                        mapKeyType = "? extends Object";
+                                        mapKeyType = TypeVisitor.GENERIC_TYPE;
                                     }                                    
                                 }
                                 
@@ -144,14 +145,14 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             }
                         
             // Will import the parent as well if needed
-            String parent = writeImportStatements(attributeTypes, typeImports, accessor, writer);
+            String parent = writeImportStatements(attributeTypes, typeImports, accessor, writer, persistenceUnit);
                      
             // Write out the generation annotations.
             writer.append("@Generated(\"EclipseLink JPA 2.0 Canonical Model Generation\")\n");
-            writer.append("@StaticMetamodel(" + originalClassName + ".class)\n");
+            writer.append("@StaticMetamodel(" + className + ".class)\n");
                 
             int modifier = accessor.getAccessibleObject().getModifiers();
-            writer.append(java.lang.reflect.Modifier.toString(modifier) + " class " + underScoreClassName);
+            writer.append(java.lang.reflect.Modifier.toString(modifier) + " class " + canonicalName);
                 
             if (parent == null) {
                 writer.append(" { \n\n");
@@ -177,6 +178,18 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
+    protected void generateCanonicalModelClasses(RoundEnvironment roundEnv, PersistenceUnit persistenceUnit) throws IOException {
+        for (Element element : roundEnv.getRootElements()) {
+            if (persistenceUnit.containsElement(element)) {                
+                //processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + element);
+                generateCanonicalModelClass(element, persistenceUnit);
+            }    
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected String getBoxedType(MetadataAnnotatedElement annotatedElement) {
         PrimitiveType primitiveType = annotatedElement.getPrimitiveType();
         if (primitiveType != null) {
@@ -184,18 +197,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         }
         
         return annotatedElement.getType();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void generateCanonicalModelClasses(RoundEnvironment roundEnv, PersistenceUnit persistenceUnit) throws IOException {
-        for (Element element : roundEnv.getRootElements()) {
-            if (persistenceUnit.containsElement(element)) {                
-                //processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + element);
-                generateCanonicalModelClass(element, persistenceUnit.getClassAccessor(element));
-            }    
-        }
     }
     
     /**
@@ -227,12 +228,15 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      * not need to be imported (java.lang). This method also trims the type
      * from leading and trailing white spaces.
      */
-    protected String getUnqualifiedType(String type, HashSet<String> imports) {
+    protected String getUnqualifiedType(String type, HashMap<String, String> imports) {
+        // Remove any leading and trailing white spaces.
+        type = type.trim();
+        
         if (type.contains("void")) {
             // This case hits when the user defines something like: @BasicCollection public Collection responsibilities;
             return TypeVisitor.GENERIC_TYPE;
         } else if (type.startsWith("java.lang")) {
-            return type.substring(type.lastIndexOf(".") + 1).trim();   
+            return type.substring(type.lastIndexOf(".") + 1);   
         } else {
             if (type.indexOf("<") > -1) {
                 String raw = type.substring(0, type.indexOf("<"));
@@ -246,17 +250,32 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 
                 return getUnqualifiedType(raw, imports) + "<" + getUnqualifiedType(generic, imports) + ">";
             } else if (type.indexOf(".") > -1) {
-                // Add it to the import list. If the type is used in an array
-                // hack off the [].
-                if (type.indexOf("[") > 1) {
-                    imports.add(type.substring(0, type.indexOf("[")).trim());
-                } else {
-                    imports.add(type.trim());
-                }
+                String shortClassName = type.substring(type.lastIndexOf(".") + 1);
                 
-                return type.substring(type.lastIndexOf(".") + 1).trim();
+                // We already have an import for this class, look at it further.
+                if (imports.containsKey(shortClassName)) {
+                    if (imports.get(shortClassName).equals(type)) {
+                        // We're hitting the same class from the same package,
+                        // return the short name for this class.
+                        return type.substring(type.lastIndexOf(".") + 1);
+                    } else {
+                        // Same class name different package. Don't hack off the
+                        // qualification and don't add it to the import list.
+                        return type;
+                    }
+                } else {
+                    // Add it to the import list. If the type is used in an array
+                    // hack off the [].
+                    if (shortClassName.indexOf("[") > 1) {
+                        imports.put(shortClassName, type.substring(0, type.indexOf("[")));
+                    } else {
+                        imports.put(shortClassName, type);
+                    }
+                    
+                    return shortClassName;
+                }
             } else {
-                return type.trim();
+                return type;
             }
         }
     }
@@ -281,7 +300,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 // Step 2 - read the persistence xml classes (gives us extra 
                 // classes and mapping files. From them we get transients and 
                 // access)
-                PersistenceUnitReader puReader = new PersistenceUnitReader(m_factory, processingEnv.getOptions().get("persistence.xml.path"));
+                PersistenceUnitReader puReader = new PersistenceUnitReader(m_factory);
                 
                 // Step 3 - iterate over all the persistence units and generate
                 // their canonical model classes.
@@ -328,11 +347,11 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String writeImportStatements(HashSet<String> attributeTypes, HashSet<String> typeImports, ClassAccessor accessor, Writer writer) throws IOException {
+    protected String writeImportStatements(HashSet<String> attributeTypes, HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit) throws IOException {
         String unqualifiedCanonicalParent = null;
         
         // Write the java imports. Sort them?
-        for (String typeImport : typeImports) {
+        for (String typeImport : typeImports.values()) {
             writer.append("import " + typeImport + ";\n");
         }
         
@@ -367,8 +386,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         MetadataProject project = accessor.getProject();
         
         if (project.hasEntity(parentCls) || project.hasEmbeddable(parentCls) || project.hasMappedSuperclass(parentCls)) {
-            // TODO: Any generics here will need to be taken into consideration.
-            
             String parent = parentCls.getName();
             String unqualifiedParent = parent.substring(parent.lastIndexOf(".") + 1);
             String parentPackage = parent.substring(0, parent.lastIndexOf("."));
@@ -376,10 +393,10 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String childPackage = child.substring(0, child.lastIndexOf("."));
             
             if (! parentPackage.equals(childPackage)) {
-                writer.append("\nimport " + parent + "_;\n");
+                writer.append("\nimport " + persistenceUnit.getCanonicalName(parent) + ";\n");
             }
             
-            unqualifiedCanonicalParent = unqualifiedParent + "_";
+            unqualifiedCanonicalParent = persistenceUnit.getCanonicalName(unqualifiedParent);
         }
         
         writer.append("\n");

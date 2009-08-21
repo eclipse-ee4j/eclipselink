@@ -25,20 +25,20 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
  * @since Eclipselink 2.0
  */
 public class PersistenceXML {
-    private String m_version; 
-    private List<SEPersistenceUnitInfo> m_persistenceUnitInfos = new ArrayList<SEPersistenceUnitInfo>();
+    private String version; 
+    private List<SEPersistenceUnitInfo> persistenceUnitInfos = new ArrayList<SEPersistenceUnitInfo>();
     
     /**
      * INTERNAL:
      */
     public List<SEPersistenceUnitInfo> getPersistenceUnitInfos() {
-        return m_persistenceUnitInfos;
+        return persistenceUnitInfos;
     }
     
     /**
      * INTERNAL:
      */
     public String getVersion() {
-        return m_version;
+        return version;
     }
 }

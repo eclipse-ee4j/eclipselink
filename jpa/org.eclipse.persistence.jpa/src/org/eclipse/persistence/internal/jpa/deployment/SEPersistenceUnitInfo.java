@@ -14,9 +14,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.QUALIFIER_POSITION;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+
 import javax.persistence.*;
 import javax.persistence.spi.*;
 import javax.sql.DataSource;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +55,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     protected List<String> managedClassNames;
     protected URL persistenceUnitRootUrl;
     protected boolean excludeUnlistedClasses = true;
+    
+    // Persistence.xml loaded from the canonical model processor will 
+    // populate the properties into this collection.
+    protected Collection<SEPersistenceUnitProperty> persistenceUnitProperties;
+    // Persistence.xml loaded from the metadata processor will populate the
+    // properties into this properties map.
     protected Properties properties;
+    
     protected ClassLoader tempClassLoader;
     protected ClassLoader realClassLoader;
 
@@ -70,6 +84,20 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     
     public void setPersistenceUnitName(String persistenceUnitName){
         this.persistenceUnitName = persistenceUnitName;
+    }
+    
+    /**
+     * Used with the OX mapping file for the Canonical model processor.
+     */
+    public Collection<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
+       return persistenceUnitProperties; 
+    }
+
+    /**
+     * Used with the OX mapping file for the Canonical model processor.
+     */
+    public void setPersistenceUnitProperties(Collection<SEPersistenceUnitProperty> persistenceUnitProperties) {
+       this.persistenceUnitProperties = persistenceUnitProperties; 
     }
 
     /**
@@ -307,6 +335,63 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      */
     public CachingType getCaching() {
         return caching;
+    }
+    
+    /**
+     * Return the canonical name. This will apply the default qualifier "_" 
+     * in the default position "POST".
+     */
+    public String getCanonicalName(String name) {
+        return getCanonicalName(name, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT);
+    }
+    
+    /**
+     * Return the canonical name. This will apply the default qualifier given 
+     * in the default position given. If the defaults given are null, then the
+     * default qualifer "_" in the default position "POST" will be aplied.
+     */
+    public String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
+        // If we have persistence unit properties but our properties map is 
+        // empty, we have not initialize yet, so do it now.
+        if (! persistenceUnitProperties.isEmpty() && properties.isEmpty()) {
+            // Mapping the properties to a collection allows us to perform extra
+            // validation (multiple settings for the same property etc) if we 
+            // so desire. If we  map the properties directly into a map we lose 
+            // this ability and last one in will win.
+            // TODO: Determine how much validation we want to do. There is 
+            // currently a bug to have the reading of the persistence.xml from
+            // metadata processing changed to use OX. For now, the way this
+            // works from the CanonicalModelProcessor remains the same as if
+            // coming from metadata processing, last one in wins.
+            for (SEPersistenceUnitProperty property : getPersistenceUnitProperties()) {
+                properties.put(property.getName(), property.getValue());
+            }
+        }
+        
+        String qualifier = properties.getProperty(CANONICAL_MODEL_QUALIFIER);
+        String qualifierPosition = properties.getProperty(CANONICAL_MODEL_QUALIFIER_POSITION);
+        
+        if (qualifier == null) {
+            if (defaultQualifier == null) {
+                qualifier = CANONICAL_MODEL_QUALIFIER_DEFAULT;
+            } else {
+                qualifier = defaultQualifier;
+            }
+        }
+        
+        if (qualifierPosition == null) {
+            if (defaultQualifierPosition == null) {
+                qualifierPosition = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+            } else {
+                qualifierPosition = defaultQualifierPosition;
+            }
+        }
+        
+        if (qualifierPosition.equals(QUALIFIER_POSITION.PRE.name())) {
+            return qualifier + name;
+        } else {
+            return name + qualifier;
+        } 
     }
 
     /**

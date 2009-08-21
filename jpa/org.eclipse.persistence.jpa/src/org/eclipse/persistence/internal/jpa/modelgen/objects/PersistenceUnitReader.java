@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
@@ -24,11 +25,19 @@ import javax.tools.StandardLocation;
 import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXMLMappings;
 import org.eclipse.persistence.oxm.XMLContext;
+
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_FILE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_FILE_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_PACKAGE_DEFAULT;
 
 /**
  * Used to read persistence units through the java annotation processing API. 
@@ -42,70 +51,10 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public PersistenceUnitReader(MetadataMirrorFactory factory, String persistenceXMLPath) throws IOException {
+    public PersistenceUnitReader(MetadataMirrorFactory factory) throws IOException {
         m_persistenceUnits = new ArrayList<PersistenceUnit>();
         
-        FileObject fileObject;
-        
-        if (persistenceXMLPath == null) {
-            factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading default META_INF/persistence xml");
-            fileObject = getFileObject("META-INF/persistence.xml", factory.getProcessingEnvironment());
-        } else {
-            String persistenceXMLLocation;
-            persistenceXMLPath = persistenceXMLPath.replace("\\", "/");
-            
-            if (persistenceXMLPath.endsWith("/")) {
-                persistenceXMLLocation = persistenceXMLPath + "persistence.xml";
-            } else {
-                persistenceXMLLocation = persistenceXMLPath + "/persistence.xml";
-            }
-            
-            factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading specified persistence xml off class path: " + persistenceXMLLocation);
-            fileObject = getFileObject(persistenceXMLLocation, StandardLocation.CLASS_PATH, factory.getProcessingEnvironment());
-            
-            if (fileObject == null) {
-                factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading specified persistence xml off src path: " + persistenceXMLLocation);
-                fileObject = getFileObject(persistenceXMLLocation, StandardLocation.SOURCE_PATH, factory.getProcessingEnvironment());
-                
-                if (fileObject == null) {
-                    factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading specified persistence xml off annotation processor path: " + persistenceXMLLocation);
-                    fileObject = getFileObject(persistenceXMLLocation, StandardLocation.ANNOTATION_PROCESSOR_PATH, factory.getProcessingEnvironment());
-                    
-                    if (fileObject == null) {
-                        //factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading specified persistence xml off source output path: " + persistenceXMLLocation);
-                        //fileObject = getFileObject(persistenceXMLLocation, StandardLocation.SOURCE_OUTPUT, factory.getProcessingEnvironment());
-                         
-                        if (fileObject == null) {
-                            factory.getProcessingEnvironment().getMessager().printMessage(Kind.NOTE, "Reading specified persistence xml off platform class path: " + persistenceXMLLocation);
-                            fileObject = getFileObject(persistenceXMLLocation, StandardLocation.PLATFORM_CLASS_PATH, factory.getProcessingEnvironment());
-                        }
-                    }
-                }
-            }
-            
-        }
-        
-        //FileObject fileObject = getFileObject("META-INF/persistence.xml", factory.getProcessingEnvironment());
-
-        if (fileObject != null) {
-            InputStream in = fileObject.openInputStream();
-            XMLContext context = PersistenceXMLMappings.createXMLContext();
-            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(in);
-            in.close();
-    
-            if (! persistenceXML.getVersion().equals("1.0")) {
-                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                    m_persistenceUnits.add(new PersistenceUnit(puInfo, factory));
-                }
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public static FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) {
-        return getFileObject(filename, StandardLocation.CLASS_OUTPUT, processingEnv);
+        initPersistenceUnits(factory);
     }
     
     /**
@@ -126,8 +75,73 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
+    public static FileObject getFileObject(String pkg, String filename, StandardLocation standardLocation, ProcessingEnvironment processingEnv) {
+        FileObject fileObject = null;
+        try {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Package: " + pkg);
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Filename: " + filename);
+            
+            fileObject = processingEnv.getFiler().getResource(standardLocation, pkg, filename);
+        } catch (Exception e) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename);
+            return null;
+        }
+        
+        return fileObject;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public List<PersistenceUnit> getPersistenceUnits() {
         return m_persistenceUnits;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void initPersistenceUnits(MetadataMirrorFactory factory) throws IOException {
+        ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
+        Map<String, String> options = processingEnv.getOptions();
+        String pkg = CanonicalModelProperties.getOption(PERSISTENCE_XML_PACKAGE, PERSISTENCE_XML_PACKAGE_DEFAULT, options);
+        String stdLocation = CanonicalModelProperties.getOption(PERSISTENCE_XML_LOCATION, PERSISTENCE_XML_LOCATION_DEFAULT, options);
+        String filename = CanonicalModelProperties.getOption(PERSISTENCE_XML_FILE, PERSISTENCE_XML_FILE_DEFAULT, options);
+        
+        FileObject fileObject = null;
+        if (stdLocation.equals(CanonicalModelProperties.LOCATION.CP.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class path ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_PATH, processingEnv);
+        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SP.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source path ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_PATH, processingEnv);
+        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.APP.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off annotation processor path ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.ANNOTATION_PROCESSOR_PATH, processingEnv);
+        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SO.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source output ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_OUTPUT, processingEnv);
+        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.PCP.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off platform class path ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.PLATFORM_CLASS_PATH, processingEnv);
+        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.CO.name())) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class output ... ");
+            fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_OUTPUT, processingEnv);
+        }
+        
+        if (fileObject != null) {
+            InputStream inStream = fileObject.openInputStream();
+            XMLContext context = PersistenceXMLMappings.createXMLContext();
+            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
+            inStream.close();
+    
+            if (! persistenceXML.getVersion().equals("1.0")) {
+                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                    m_persistenceUnits.add(new PersistenceUnit(puInfo, factory));
+                }
+            }
+        } else {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
+        }
     }
 }
 
