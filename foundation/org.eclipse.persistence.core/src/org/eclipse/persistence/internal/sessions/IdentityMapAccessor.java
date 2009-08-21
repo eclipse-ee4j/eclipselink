@@ -638,6 +638,19 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
+     * Queries the cache in-memory with the passed in criteria and invalidates matching Objects.
+     * If the expression is too complex either all or none object of theClass invalidated (depending on shouldInvalidateOnException value).
+     * @param selectionCriteria Expression selecting the Objects to be returned
+     * @param theClass Class to be considered
+     * @param translationRow Record
+     * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
+     */
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+        getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
+    }
+    
+    /**
+     * ADVANCED:
      * Set all of the objects in the given collection to be invalid in the TopLink Identity Maps
      * This method will take no action for any objects in the collection that do not exist in the cache.
      */

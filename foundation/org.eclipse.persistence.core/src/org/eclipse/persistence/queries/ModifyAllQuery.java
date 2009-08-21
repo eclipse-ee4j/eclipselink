@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.Vector;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
@@ -201,39 +200,11 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * by the query.
      */
     protected void invalidateCache() {
-        org.eclipse.persistence.sessions.IdentityMapAccessor identityMapAccessor = getSession().getIdentityMapAccessor();
-        if (getSelectionCriteria() == null) {
-            // Invalidate the whole class since the user did not specify a where clause
-            if(getDescriptor().isChildDescriptor()) {
-                Vector collectionToInvalidate = identityMapAccessor.getAllFromIdentityMap(null, getReferenceClass(), getTranslationRow(), null);
-                identityMapAccessor.invalidateObjects(collectionToInvalidate);
-            } else {
-                // if it's either a root class or there is no inheritance just clear the identity map
-                identityMapAccessor.invalidateClass(getReferenceClass());
-            }
-        } else {
-            // Invalidate only those objects in the cache that match the selection criteria
-            //Bug:4293920, expression parameters were not passed in
-            boolean noObjectsModifiedInDb = result != null && result.intValue() == 0;
-            try {
-                int policy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED;
-                if (noObjectsModifiedInDb) {
-                    policy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
-                }
-                Vector collectionToInvalidate = identityMapAccessor.getAllFromIdentityMap(getSelectionCriteria(), getReferenceClass(), getTranslationRow(), policy);
-                identityMapAccessor.invalidateObjects(collectionToInvalidate);
-            } catch (QueryException ex) {
-                if(ex.getErrorCode() == QueryException.CANNOT_CONFORM_EXPRESSION) {
-                    // If no objects changed in the db - don't invalidate, ignore.
-                    if(!noObjectsModifiedInDb) {
-                        // Invalidate the whole class since the expression can't be selected in memory
-                        identityMapAccessor.invalidateClass(getReferenceClass());
-                    }
-                } else {
-                    throw ex;
-                }
-            }
+        if(result != null && result.intValue() == 0) {
+            // no rows modified in the db - nothing to invalidate
+            return;
         }
+        getSession().getIdentityMapAccessor().invalidateObjects(getSelectionCriteria(), getReferenceClass(), getTranslationRow(), true);
     }
 
     /**

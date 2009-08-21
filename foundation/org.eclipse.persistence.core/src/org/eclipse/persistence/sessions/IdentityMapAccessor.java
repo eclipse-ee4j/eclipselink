@@ -360,6 +360,17 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
+     * Queries the cache in-memory with the passed in criteria and invalidates matching Objects.
+     * If the expression is too complex either all or none object of theClass invalidated (depending on shouldInvalidateOnException value).
+     * @param selectionCriteria Expression selecting the Objects to be returned
+     * @param theClass Class to be considered
+     * @param translationRow Record
+     * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
+     */
+    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException);
+    
+    /**
+     * ADVANCED:
      * Sets all of the Objects for all classes to be invalid in TopLink's identity maps. 
      * It will recurse on inheritance.
      */
