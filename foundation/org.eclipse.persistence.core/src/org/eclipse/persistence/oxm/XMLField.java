@@ -438,7 +438,7 @@ public class XMLField extends DatabaseField {
         if (hasPath(xPath)) {
             buildFragments(xPath);
         } else {
-            XPathFragment xPathFragment = new XPathFragment(xPath);
+            XPathFragment xPathFragment = new XPathFragment(xPath.intern());
             setXPathFragment(xPathFragment);
             setLastXPathFragment(xPathFragment);
         }
@@ -466,7 +466,7 @@ public class XMLField extends DatabaseField {
         }
 
         while (st.hasMoreTokens()) {
-            next = st.nextToken();
+            next = st.nextToken().intern();
             if (null != next) {
                 if (next.equals(XPathFragment.TEXT)) {
                     nextXPathFragment = new XPathFragment(XPathFragment.TEXT);

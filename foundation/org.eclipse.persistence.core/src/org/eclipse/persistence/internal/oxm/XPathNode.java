@@ -52,8 +52,8 @@ public class XPathNode {
     private List attributeChildren;
     private List nonAttributeChildren;
     private List selfChildren;
-    private Map attributeChildrenMap;
-    private Map nonAttributeChildrenMap;
+    private Map<XPathFragment, XPathNode> attributeChildrenMap;
+    private Map<XPathFragment, XPathNode> nonAttributeChildrenMap;
     private XMLAnyAttributeMappingNodeValue anyAttributeNodeValue;
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
@@ -120,11 +120,11 @@ public class XPathNode {
         return this.selfChildren;
     }
 
-    public Map getNonAttributeChildrenMap() {
+    public Map<XPathFragment, XPathNode> getNonAttributeChildrenMap() {
         return this.nonAttributeChildrenMap;
     }
 
-    public Map getAttributeChildrenMap() {
+    public Map<XPathFragment, XPathNode> getAttributeChildrenMap() {
         return this.attributeChildrenMap;
     }
 

@@ -13,8 +13,12 @@
 package org.eclipse.persistence.oxm;
 
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
+
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 
@@ -55,7 +59,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
 
     private String defaultNamespaceURI;
-    private Properties namespaces;
+    private Map<String, String> prefixesToNamespaces;
     int prefixCounter;
     private Node dom;
 
@@ -64,7 +68,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public NamespaceResolver() {
         super();
-        namespaces = new Properties();
+        prefixesToNamespaces = new HashMap<String, String>();
     }
 
     public void setDOM(Node dom) {
@@ -81,11 +85,13 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if (null == prefix) {
             return defaultNamespaceURI;
         }
-        String uri = namespaces.getProperty(prefix);
-        if ((uri == null) && prefix.equals(XMLConstants.XML_NAMESPACE_PREFIX)) {
-            uri = XMLConstants.XML_NAMESPACE_URL;
+        String uri = prefixesToNamespaces.get(prefix);
+        if(null != uri) {
+            return uri;
+        } else if (XMLConstants.XML_NAMESPACE_PREFIX.equals(prefix)) {
+            return XMLConstants.XML_NAMESPACE_URL;
         }
-        return uri;
+        return null;
     }
 
     /**
@@ -97,13 +103,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if(null == uri) {
             return null;
         }
-
-        Enumeration keys = namespaces.keys();
-        String prefix;
-        while (keys.hasMoreElements()) {
-            prefix = (String)keys.nextElement();
-            if (namespaces.getProperty(prefix).equals(uri)) {
-                return prefix;
+        for(Entry<String, String> entry : prefixesToNamespaces.entrySet()) {
+            if(uri.equals(entry.getValue())) {
+                return entry.getKey();
             }
         }
         if (uri.equalsIgnoreCase(XMLConstants.XMLNS_URL)) {
@@ -118,12 +120,12 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if(null == node) {
             return null;
         }
-        
+
         // If the element is of the same namespace URI, then return the prefix.
         if(uri.equals(node.getNamespaceURI())) {
             return node.getPrefix();
         } 
-        
+
         // Check the namespace URI declarations.
         NamedNodeMap namedNodeMap = node.getAttributes();
         if(null != namedNodeMap) {
@@ -149,7 +151,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  namespaceURI  The namespace URI associated with the specified prefix
     */
     public void put(String prefix, String namespaceURI) {
-        namespaces.setProperty(prefix, namespaceURI);
+        prefixesToNamespaces.put(prefix, namespaceURI.intern());
     }
 
     /**
@@ -158,7 +160,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return An Enumeration containing the prefixes in the NamespaceResolver
      */
     public Enumeration getPrefixes() {
-        return namespaces.keys();
+        return new IteratorEnumeration(prefixesToNamespaces.keySet().iterator());
     }
 
     /**
@@ -168,11 +170,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return  A Vector containing the namespace URIs in the namespace resolver
      */
     public Vector getNamespaces() {
-        Vector names = new Vector(namespaces.size());
-        for (Enumeration sources = namespaces.keys(); sources.hasMoreElements();) {
-            String prefix = (String)sources.nextElement();
-            String URI = (String)namespaces.get(prefix);
-            Namespace namespace = new Namespace(prefix, URI);
+        Vector names = new Vector(prefixesToNamespaces.size());
+        for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
+            Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
             names.addElement(namespace);
         }
         return names;
@@ -185,18 +185,16 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  names A Vector of namespace URIs
      */
     public void setNamespaces(Vector names) {
-        namespaces = new Properties();
-        for (Enumeration sources = names.elements(); sources.hasMoreElements();) {
-            Namespace namespace = (Namespace)sources.nextElement();
+        prefixesToNamespaces = new HashMap<String, String>(names.size());
+        for(Namespace namespace : (Vector<Namespace>) names) {
             if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
-                namespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());
+                prefixesToNamespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());
             }
         }
     }
 
     public String generatePrefix() {
-        String generatedPrefix = getNextPrefix();
-        return generatePrefix(generatedPrefix);
+        return generatePrefix(getNextPrefix());
     }
 
     private String getNextPrefix() {
@@ -213,14 +211,33 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     public void removeNamespace(String prefix) {
-        namespaces.remove(prefix);
+        prefixesToNamespaces.remove(prefix);
     }
-    
+
     public void setDefaultNamespaceURI(String namespaceUri) {
         defaultNamespaceURI = namespaceUri;
     }
-    
+
     public String getDefaultNamespaceURI() {
         return defaultNamespaceURI;
     }
+
+    private static class IteratorEnumeration implements Enumeration {
+
+        private Iterator iterator;
+
+        public IteratorEnumeration(Iterator iterator) {
+            this.iterator = iterator;
+        }
+
+        public boolean hasMoreElements() {
+            return iterator.hasNext();
+        }
+
+        public Object nextElement() {
+            return iterator.next();
+        }
+
+    }
+
 }
