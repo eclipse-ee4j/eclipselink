@@ -4254,6 +4254,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * works. That is left for the batch reading testing to do.
      */
     public void testForUOWInSharedCacheWithBatchQueryHint(){
+        if (isOnServer()) {
+            // Can not unwrap EM on Server.
+            return;
+        }
+
         int id1 = 0;
         EntityManager em = createEntityManager();
         beginTransaction(em);
