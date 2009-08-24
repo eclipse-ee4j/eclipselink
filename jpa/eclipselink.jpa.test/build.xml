@@ -1394,10 +1394,10 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
-        <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
+        <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-relationships" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
@@ -1406,6 +1406,7 @@
         <antcall target="server-test-jpql" inheritRefs="true"/>
         <antcall target="server-test-lob" inheritRefs="true"/>
         <antcall target="server-test-nativeapitest" inheritRefs="true"/>
+        <antcall target="server-test-orphanremoval" inheritRefs="true"/>
         <antcall target="server-test-privateowned" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
@@ -1588,6 +1589,19 @@
             <param name="TEST_NAME" value="eclipselink-nativeapitest-model"/>
             <param name="EAR_NAME" value="eclipselink-nativeapitest-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.nativeapitest.NativeAPITests"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-orphanremoval">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/orphanremoval"/>
+            <param name="MODEL_NAME" value="eclipselink-orphanremoval-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/orphanremoval"/>
+            <param name="TEST_NAME" value="eclipselink-orphanremoval-model"/>
+            <param name="EAR_NAME" value="eclipselink-orphanremoval-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

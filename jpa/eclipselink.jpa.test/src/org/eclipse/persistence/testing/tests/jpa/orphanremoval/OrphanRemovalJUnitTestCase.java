@@ -92,10 +92,11 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();        
             em = createEntityManager(); 
+            beginTransaction(em);
             
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicle, vehicleRead);
-    
+            
             Chassis chassis2Read = em.find(Chassis.class, chassis2.getId());
             compareObjects(chassis2, chassis2Read);
             
@@ -103,7 +104,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("Wheel 1 should not have been inserted", em.find(Wheel.class, wheel1.getId()));
             
             // Step 3 - Cleanup
-            beginTransaction(em);            
             em.remove(vehicleRead);
             em.remove(chassis2Read);
             commitTransaction(em);
@@ -127,7 +127,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         try {
             // Step 1 - Create the objects
             beginTransaction(em);
-
+            
             Vehicle vehicle = new Vehicle("GT-X");
             Chassis chassis = new Chassis(1);
             vehicle.setChassis(chassis);
@@ -154,6 +154,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - verification
             clearCache();        
             em = createEntityManager();
+            beginTransaction(em);
 
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicle, vehicleRead);
@@ -171,7 +172,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("Wheel5 should not be inserted", em.find(Wheel.class, wheel5.getId()));
         
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(chassisRead);
             em.remove(wheel1Read);
@@ -230,6 +230,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();
             em = createEntityManager();
+            beginTransaction(em);
             
             Vehicle vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
             // This check fails.
@@ -239,7 +240,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("Wheel2 should have been removed", em.find(Wheel.class, wheel2.getId()));
             
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleReadAgain);
             commitTransaction(em);
             closeEntityManager(em);
@@ -290,12 +290,12 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();
             em = createEntityManager();
+            beginTransaction(em);
             
             Vehicle vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicleRead, vehicleReadAgain);
             
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleReadAgain);
             commitTransaction(em);
             closeEntityManager(em);
@@ -349,6 +349,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification     
             clearCache();        
             em = createEntityManager();    
+            beginTransaction(em);
 
             Engine engineRead = em.find(Engine.class, engine.getId());
             compareObjects(engine, engineRead);
@@ -365,7 +366,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("SparkPlug5 should not be inserted", em.find(SparkPlug.class, plug5.getId()));
             
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(em.find(Vehicle.class, vehicle.getId()));
             em.remove(engineRead);
             em.remove(plug1Read);
@@ -393,7 +393,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         try {
             // Step 1 - create the objects
             beginTransaction(em);
-
+            
             Vehicle vehicle = new Vehicle("GT-X");
             Chassis chassis = new Chassis(1l);
             vehicle.setChassis(chassis);
@@ -410,7 +410,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             wheel1.addWheelNut(wheelNut2);
             wheel1.addWheelNut(wheelNut3);
             wheel1.addWheelNut(wheelNut4);
-    
+            
             em.persist(vehicle);
             
             WheelNut wheelNut5 = new WheelNut();
@@ -420,11 +420,11 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             wheel1.removeWheelNut(wheelNut4);
             wheel1.addWheelNut(wheelNut5);
             wheel1.addWheelNut(wheelNut6);
-    
+            
             Wheel wheel2 = new Wheel(2l);
-        
+            
             chassis.addWheel(wheel2);
-    
+            
             em.persist(vehicle);
             
             wheel2.addWheelNut(wheelNut3);
@@ -436,6 +436,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();        
             em = createEntityManager();         
+            beginTransaction(em);
             
             WheelNut wheelNut3Read = em.find(WheelNut.class, wheelNut3.getId());
             compareObjects(wheelNut3, wheelNut3Read);
@@ -445,9 +446,8 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             compareObjects(wheel1, wheel1);
             Wheel wheel2Read = em.find(Wheel.class, wheel2.getId());
             compareObjects(wheel2, wheel2);
-
+            
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(em.find(Vehicle.class, vehicle.getId()));
             // chassis removed automatically
             // wheels removed automatically
@@ -499,13 +499,13 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 3 - verify the orphan has been removed.
             clearCache();
             em = createEntityManager();
+            beginTransaction(em);
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
-            compareObjects(vehicle, vehicleRead);
+            compareObjects(vehicleToModify, vehicleRead);
             
             assertNull("Chassis1 should have been removed", em.find(Chassis.class, chassis1.getId()));
             
             // Step 4 - cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             commitTransaction(em);
             closeEntityManager(em);
@@ -513,7 +513,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+                
             closeEntityManager(em);
             throw e;
         }
@@ -551,16 +551,17 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();
             em = createEntityManager();
-        
+            beginTransaction(em);
+            
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
-            compareObjects(vehicle, vehicleRead);
+            compareObjects(vehicleToModify, vehicleRead);
             Chassis chassis2Read = em.find(Chassis.class, chassis2.getId());
             compareObjects(chassis2, chassis2Read);
             
             assertNull("Chassis1 should have been removed", em.find(Chassis.class, chassis1.getId()));
-        
+            
             // Step 3 - Cleanup
-            beginTransaction(em);
+            
             em.remove(vehicleRead);
             em.remove(chassis2Read);
             commitTransaction(em);
@@ -604,12 +605,13 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 3 - verify the orphan was not removed.
             clearCache();
             em = createEntityManager();
+            beginTransaction(em);
+            
             Chassis chassisRead = em.find(Chassis.class, chassis.getId());
             assertNotNull("Chassis should not have been removed", chassisRead);
             assertNull("Vehicle should have been removed", em.find(Vehicle.class, vehicle.getId()));
             
             // Step 4 - cleanup
-            beginTransaction(em);
             em.remove(chassisRead);
             commitTransaction(em);
             closeEntityManager(em);
@@ -645,6 +647,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();        
             em = createEntityManager();
+            beginTransaction(em);
             
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicle, vehicleRead);
@@ -654,7 +657,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("Chassis1 should not be inserted", em.find(Chassis.class, chassis1.getId()));
             
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(chassis2Read);
             commitTransaction(em);
@@ -683,17 +685,17 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             vehicle.setEngine(engine);
             em.remove(vehicle);
             assertFalse(em.contains(engine));
-        
+            
             commitTransaction(em);
             closeEntityManager(em);
-        
+            
             // Step 2 - Verification     
             clearCache();        
             em = createEntityManager();    
-
+            
             assertNull("Vehicle should not be inserted", em.find(Vehicle.class, vehicle.getId()));
             assertNull("Engine should not be inserted", em.find(Engine.class, engine.getId()));
-        
+            
             // Step 3 - Cleanup
             // nothing to clean up ...
             closeEntityManager(em);
@@ -709,7 +711,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
     
     public void test121WithNoCascadeMerge1() {
         EntityManager em = createEntityManager();
-
+            
         try {
             // Step 1 - Create the objects.
             beginTransaction(em);
@@ -720,14 +722,15 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             vehicle.setEngine(engine);
             vehicle = em.merge(vehicle);
             engine = vehicle.getEngine();
-       
+            
             commitTransaction(em);
             closeEntityManager(em);
             
             // Step 2 - Verification     
             clearCache();        
             em = createEntityManager();    
-    
+            beginTransaction(em);
+            
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicle, vehicleRead);
             
@@ -735,7 +738,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             compareObjects(engine, engineRead);
             
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(engineRead);
             commitTransaction(em);
@@ -779,6 +781,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 3 - Verification
             clearCache();        
             em = createEntityManager();    
+            beginTransaction(em);
             
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             compareObjects(vehicle, vehicleRead);
@@ -787,7 +790,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             compareObjects(engine, engineRead);
             
             // Step 4 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(engineRead);
             commitTransaction(em);
@@ -813,7 +815,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             vehicle.setEngine(engine);
             em.persist(vehicle);
             em.persist(engine);
-
+            
             commitTransaction(em);
             closeEntityManager(em);
             
@@ -833,6 +835,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 3 - Verification
             clearCache();        
             em = createEntityManager();    
+            beginTransaction(em);
             
             Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
             assertTrue("The vehicle had the wrong model number", vehicleRead.getModel().equals("GT-Z"));
@@ -841,7 +844,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertTrue("The engine had the wrong serial number", engine.getSerialNumber() == 123456789l);
                         
             // Step 4 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(engineRead);
             commitTransaction(em);
@@ -862,10 +864,10 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         try {
             // Step 1 - Create the objects.
             beginTransaction(em);
-
+            
             Vehicle vehicle = new Vehicle("GT-X");
             Engine engine = new Engine(123456789l);
-        
+            
             vehicle.setEngine(engine);
             
             // Persist the vehicle without persisting the engine. Should get
@@ -880,10 +882,10 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             } finally {
                 closeEntityManager(em);
             }
-
+            
             // Step 2 - Verification
             assertNotNull("No exception was caught when one was expected", exception);
-        
+            
             // Step 3 - Cleanup
             // no cleanup necessary ...
         } catch (RuntimeException e) {
@@ -943,7 +945,8 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 2 - Verification
             clearCache();        
             em = createEntityManager(); 
-
+            beginTransaction(em);
+            
             Object wheelRim1Read = em.find(WheelRim.class, wheelRim1.getId());
             compareObjects(wheelRim1, wheelRim1Read);        
             Object wheelRim2Read = em.find(WheelRim.class, wheelRim2.getId());
@@ -962,7 +965,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             assertNull("Chassis should not be inserted", em.find(Chassis.class, chassis.getId()));
     
             // Step 3 - Cleanup
-            beginTransaction(em);
             em.remove(vehicleRead);
             em.remove(wheelRim1Read);
             em.remove(wheelRim2Read);
@@ -1021,7 +1023,8 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             // Step 3 - verify results
             clearCache();
             em = createEntityManager();
-                
+            beginTransaction(em);
+            
             Vehicle vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
             try {
                 assertNotNull("Vehicle should have been inserted", vehicleReadAgain);
@@ -1030,7 +1033,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
                 assertEquals("Chassis serial number should have been changed on the DB", newSerialNumber, serialNumberFromDatabase); // fails
             } finally {            
                 // Step 4 - clean up database
-                beginTransaction(em);
                  
                 em.remove(vehicleReadAgain.getChassis());
                 em.remove(vehicleReadAgain);
@@ -1043,7 +1045,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-        
+            
             closeEntityManager(em);
             throw e;
         }
