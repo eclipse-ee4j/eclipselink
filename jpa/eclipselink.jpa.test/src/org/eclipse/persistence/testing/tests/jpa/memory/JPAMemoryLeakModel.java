@@ -201,6 +201,7 @@ public class JPAMemoryLeakModel extends TestModel {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
             public void test() {
                 EntityManager manager = createEntityManager();
+                manager.getTransaction().begin();
                 ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
                 DescriptorQueryManager queryManager = ((JpaEntityManager)manager).getUnitOfWork().getDescriptor(Employee.class).getQueryManager();
                 queryManager.setExpressionQueryCacheMaxSize(queryManager.getExpressionQueryCacheMaxSize());
