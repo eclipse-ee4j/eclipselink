@@ -88,12 +88,8 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class SchemaModelGenerator {
     protected static final String SCHEMA_FILE_NAME = "schema";
-    protected static final String SCHEMA_FILE_EXT = ".xsd";
-    protected static final String COLON = ":";
-    protected static final String EMPTY_STRING = "";
-    protected static final String ATTRIBUTE = "@";
+    protected static final String SCHEMA_FILE_EXT = ".xsd";     
     protected static final String TEXT = "text()";
-    protected static final String SLASH = "/";
     protected static final String ID = "ID";
     protected static final String IDREF = "IDREF";
 
@@ -299,7 +295,7 @@ public class SchemaModelGenerator {
                 String elementTypeUri = qname.getNamespaceURI();
                 String elementTypePrefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(elementTypeUri);
                 if (elementTypePrefix != null) {
-                    elementType = elementTypePrefix + COLON + elementType;
+                    elementType = elementTypePrefix + XMLConstants.COLON + elementType;
                 }
                 
                 topLevelElement.setType(elementType);
@@ -401,7 +397,7 @@ public class SchemaModelGenerator {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix();
                 workingSchema.getNamespaceResolver().put(prefix, qname.getNamespaceURI());
             }
-            baseType = prefix + COLON + baseType;
+            baseType = prefix + XMLConstants.COLON + baseType;
         }
 
         Restriction restriction = new Restriction();
@@ -607,7 +603,7 @@ public class SchemaModelGenerator {
         boolean isPk = isFragPrimaryKey(frag, mapping);
         String schemaTypeString = null;
         if (isPk) {
-            schemaTypeString = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+            schemaTypeString = XMLConstants.SCHEMA_PREFIX + XMLConstants.COLON + ID;
         } else {
             schemaTypeString = getSchemaTypeForDirectMapping(mapping, workingSchema);
         }
@@ -938,7 +934,7 @@ public class SchemaModelGenerator {
         // may need to add a global element
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.equals(""))) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
             if (s.getTopLevelElements().get(frag.getLocalName()) == null) {
                 Element globalElement = new Element();
                 globalElement.setName(frag.getLocalName());
@@ -972,7 +968,7 @@ public class SchemaModelGenerator {
     	Element globalElement = null; 
     	Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.equals(""))) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
         	globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
             if (globalElement == null) {
                 globalElement = new Element();
@@ -1052,7 +1048,7 @@ public class SchemaModelGenerator {
     	if (fragUri != null) {
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.equals(""))) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
                 // must generate a global element are create a reference to it
         		// if the global element exists, use it; otherwise create a new one
             	globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
@@ -1172,9 +1168,9 @@ public class SchemaModelGenerator {
      */
     public boolean areNamespacesEqual(String ns1, String ns2) {
         if (ns1 == null) {
-            return (ns2 == null || ns2.equals(EMPTY_STRING));
+            return (ns2 == null || ns2.equals(XMLConstants.EMPTY_STRING));
         }
-        return ((ns1.equals(ns2)) || (ns1.equals(EMPTY_STRING) && ns2 == null));
+        return ((ns1.equals(ns2)) || (ns1.equals(XMLConstants.EMPTY_STRING) && ns2 == null));
     }
     
     /**
@@ -1200,7 +1196,7 @@ public class SchemaModelGenerator {
             workingSchema.getNamespaceResolver().put(prefix, uri);
         }
         if (prefix != null) {
-            schemaTypeString = prefix + COLON + schemaTypeString;
+            schemaTypeString = prefix + XMLConstants.COLON + schemaTypeString;
         }
         return schemaTypeString;
     }
@@ -1245,7 +1241,7 @@ public class SchemaModelGenerator {
             }
         }
 
-        if (!uri.equals(EMPTY_STRING)) {
+        if (!uri.equals(XMLConstants.EMPTY_STRING)) {
             schema.setTargetNamespace(uri);
             String prefix = null;
             if (nr != null) {
@@ -1301,7 +1297,7 @@ public class SchemaModelGenerator {
      */
     protected QName getDefaultRootElementAsQName(XMLDescriptor desc, String qualifiedTableName) {
         QName qName = null;
-        int idx = qualifiedTableName.indexOf(COLON);
+        int idx = qualifiedTableName.indexOf(XMLConstants.COLON);
         String localName = qualifiedTableName.substring(idx + 1);
         NamespaceResolver nsResolver = desc.getNamespaceResolver();
         if (nsResolver == null) {
@@ -1347,7 +1343,7 @@ public class SchemaModelGenerator {
             // may need to add a global element
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.equals(""))) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
                 if (s.getTopLevelElements().get(frag.getShortName()) == null) {
                     Element globalElement = new Element();
                     globalElement.setName(frag.getLocalName());
@@ -1488,9 +1484,9 @@ public class SchemaModelGenerator {
         Vector<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
         if (pkFieldNames != null) {
             if (frag.isAttribute()) {
-                return pkFieldNames.contains(ATTRIBUTE + frag.getLocalName());
+                return pkFieldNames.contains(XMLConstants.ATTRIBUTE + frag.getLocalName());
             }
-            return pkFieldNames.contains(frag.getLocalName() + SLASH + TEXT);
+            return pkFieldNames.contains(frag.getLocalName() + '/' + TEXT);
         }
         return false;
     }

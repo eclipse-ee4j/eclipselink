@@ -70,14 +70,14 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                 String qualifiedName = name.getLocalPart();
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(name.getNamespaceURI());
-                    if ((prefix != null) && !prefix.equals("")) {
-                        qualifiedName = prefix + ":" + qualifiedName;
-                    } else if (name.getNamespaceURI() != null && !name.getNamespaceURI().equals("")) {
+                    if ((prefix != null) && prefix.length() > 0) {
+                        qualifiedName = prefix + XMLConstants.COLON+ qualifiedName;
+                    } else if (name.getNamespaceURI() != null && name.getNamespaceURI().length() > 0) {
                         String generatedPrefix = nr.generatePrefix();
-                        qualifiedName = generatedPrefix + ":" + qualifiedName;
+                        qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, name.getNamespaceURI());
                         extraNamespaces.add(generatedPrefix);
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedPrefix, XMLConstants.XMLNS + ":" + generatedPrefix, name.getNamespaceURI());
+                        marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedPrefix, XMLConstants.XMLNS + XMLConstants.COLON + generatedPrefix, name.getNamespaceURI());
                     }
                 }
                 marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);

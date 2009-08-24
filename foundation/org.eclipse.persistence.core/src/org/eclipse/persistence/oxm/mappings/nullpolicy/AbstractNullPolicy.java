@@ -83,9 +83,8 @@ import org.xml.sax.Attributes;
  * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1) 
  */
 public abstract class AbstractNullPolicy {
-    protected static final String EMPTY_STRING = "";
     protected static final String TRUE = "true";
-    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = ':' + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
+    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String XSI_NIL_ATTRIBUTE = XMLConstants.SCHEMA_INSTANCE_PREFIX + COLON_W_SCHEMA_NIL_ATTRIBUTE;
 
     /**
@@ -153,7 +152,7 @@ public abstract class AbstractNullPolicy {
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 // We mutate the null into an empty string 
-                marshalRecord.attribute(xPathFragment, namespaceResolver, EMPTY_STRING);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, XMLConstants.EMPTY_STRING);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
             } else {
@@ -165,7 +164,7 @@ public abstract class AbstractNullPolicy {
             // Nillable: write out xsi:nil="true" attribute in empty element    	
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
                 String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
-                StringBuilder qName = new StringBuilder('@'); // Unsynchronized
+                StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
                 qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
                 XPathFragment nilFragment = new XPathFragment(qName.toString());
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
@@ -205,7 +204,7 @@ public abstract class AbstractNullPolicy {
             marshalRecord.closeStartGroupingElements(groupingFragment);
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
-            XPathFragment nilFragment = new XPathFragment('@' + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
+            XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
             marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
             marshalRecord.closeStartElement();
             marshalRecord.endElement(xPathFragment, namespaceResolver);

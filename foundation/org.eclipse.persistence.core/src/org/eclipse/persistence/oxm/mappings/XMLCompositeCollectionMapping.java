@@ -525,12 +525,12 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 objectToAdd = stringValue; 
             }
         }
-        if ((stringValue == null) || stringValue.equals("")) {
+        if ((stringValue == null) || stringValue.length() == 0 ) {
             return objectToAdd;
         }
         
         String type = theElement.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-        if ((null != type) && !type.equals("")) {
+        if ((null != type) && type.length() > 0) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
             typeFragment.setNamespaceURI(namespaceURI);                         
@@ -550,7 +550,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             // Try to find a descriptor based on the schema type
             String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && !type.equals("")) {
+            if ((null != type) && type.length() >0 ) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -564,11 +564,11 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && !uri.equals("")) {
+                    if ((uri != null) && uri.length() > 0) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && !prefix.equals("")) {
-                            xpath = prefix + ":" + xpath;
+                        if ((prefix != null) && prefix.length() > 0) {
+                            xpath = prefix + XMLConstants.COLON + xpath;
                         }
                     }
                     frag.setXPath(xpath);

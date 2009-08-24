@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
-import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -84,7 +83,6 @@ import org.xml.sax.ext.Locator2;
  *
  */
 public class UnmarshalRecord extends XMLRecord implements ContentHandler, LexicalHandler {
-    protected static final String EMPTY_STRING = "";
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
     private XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
@@ -322,11 +320,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         XMLField xmlField = this.convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
-        String namespaceURI = "";
+        String namespaceURI = XMLConstants.EMPTY_STRING;
         if (null != namespaceResolver) {
             namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
             if (null == namespaceURI) {
-                namespaceURI = EMPTY_STRING;
+                namespaceURI = XMLConstants.EMPTY_STRING;
             }
         }
         return attributes.getValue(namespaceURI, lastFragment.getLocalName());
@@ -391,7 +389,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     if(null == containerInstance) {
                         containerInstance = containerValue.getContainerInstance();
                     }
-                    containersMap.put(containerValue, containerInstance);
+                    containersMap.put(containerValue, containerInstance);    
                 }
             }
 
@@ -438,6 +436,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
         try {
             // PROCESS COLLECTION MAPPINGS
+        	
             if (null != containersMap) {
                 for(Entry<ContainerValue, Object> entry : containersMap.entrySet()) {
                     entry.getKey().setContainerInstance(object, entry.getValue());
@@ -501,6 +500,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 key.releaseDeferredLock();
             }
         }
+       
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -547,7 +547,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
                     XPathFragment parentFragment = new XPathFragment();
-                    if (EMPTY_STRING.equals(namespaceURI)) {
+                    if(namespaceURI != null && namespaceURI.length() == 0){
                         parentFragment.setLocalName(qName);
                         parentFragment.setNamespaceURI(null);
                     } else {
@@ -594,12 +594,18 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     if ((attLocalName == null) || (attLocalName.length() == 0)) {
                         String qname = atts.getQName(i);
                         if ((qname != null) && (qname.length() > 0)) {
-                            int idx = qname.indexOf(":");
-                            attLocalName = qname.substring((idx <= 0) ? 0 : (idx + 1), qname.length());
-
-                            String attPrefix = (idx == -1) ? null : qname.substring(0, idx);
-                            if (((attPrefix != null) && attPrefix.equalsIgnoreCase("xmlns")) || ((attPrefix == null) && attLocalName.equalsIgnoreCase("xmlns"))) {
-                                attNamespace = XMLConstants.XMLNS_URL;
+                            int idx = qname.indexOf(XMLConstants.COLON);
+                            if(idx > 0){
+                            	attLocalName = qname.substring(idx + 1, qname.length());
+                            	String attPrefix = qname.substring(0, idx);
+                            	if (attPrefix.equals(XMLConstants.XMLNS)){
+                                    attNamespace = XMLConstants.XMLNS_URL;
+                                }                            	
+                            }else{
+                            	attLocalName = qname;
+                            	if(attLocalName.equals(XMLConstants.XMLNS)){
+                            		attNamespace = XMLConstants.XMLNS_URL;
+                            	}
                             }
                         }
                     }
@@ -664,6 +670,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+    	
         try {
             if (null != selfRecords) {
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
@@ -675,39 +682,35 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     }
                 }
             }
-
             if (null != xPathNode.getUnmarshalNodeValue()) {
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                 if (xPathNode.getParent() != null) {
                     xPathNode = xPathNode.getParent();
                 }
             } else {
+            	
                 XPathNode textNode = (XPathNode) xPathNode.getTextNode();
 
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
                     if (!isXsiNil) {
                         if (textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
-                            MappingNodeValue mappingNodeValue = (MappingNodeValue) textNode.getUnmarshalNodeValue();
-                            mappingNodeValue.endElement(xPathFragment, this);
+                            textNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                         }
                     } else {
                         isXsiNil = false;
                     }
                 }
             }
-
             if (null != xPathNode.getParent()) {
-                if (EMPTY_STRING.equals(namespaceURI)) {
+            	if (namespaceURI != null && namespaceURI.length() == 0){
                     xPathFragment.setLocalName(qName);
                     xPathFragment.setNamespaceURI(null);
                 } else {
                     xPathFragment.setLocalName(localName);
                     xPathFragment.setNamespaceURI(namespaceURI);
                 }
-                if (xPathFragment.qNameEquals(xPathNode.getXPathFragment())) {
-                    if (xPathNode.getParent() != null) {
-                        xPathNode = xPathNode.getParent();
-                    }
+                if (xPathFragment.qNameEquals(xPathNode.getXPathFragment())) { 
+                    xPathNode = xPathNode.getParent(); 
                 }
             }
 
@@ -725,7 +728,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 pRec.endElement(namespaceURI, localName, qName);
                 xmlReader.setContentHandler(pRec);
             }
-        } catch (EclipseLinkException e) {
+       } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
             } else {
@@ -755,8 +758,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     if (0 == length) {
                         return;
                     }
-                    String tmpString = new String(ch, start, length);
-                    if (EMPTY_STRING.equals(tmpString.trim()) && !textNode.isWhitespaceAware()) {
+                    String tmpString = new String(ch, start, length);                    
+                    if (tmpString.trim().length() == 0 && !textNode.isWhitespaceAware()) {
                         return;
                     }
                 }
@@ -792,7 +795,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         if (0 == levelIndex) {
             return xPathNode;
         }
-        if (EMPTY_STRING.equals(namespaceURI)) {
+        if(namespaceURI !=null && namespaceURI.length() == 0){
             xPathFragment.setLocalName(qName);
             xPathFragment.setNamespaceURI(null);
         } else {
@@ -878,7 +881,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         Map attributeChildrenMap = xPathNode.getAttributeChildrenMap();
         if (attributeChildrenMap != null) {
             xPathFragment.setLocalName(localName);
-            if (EMPTY_STRING.equals(namespace)) {
+            if(namespace != null && namespace.length() == 0){
                 xPathFragment.setNamespaceURI(null);
             } else {
                 xPathFragment.setNamespaceURI(namespace);

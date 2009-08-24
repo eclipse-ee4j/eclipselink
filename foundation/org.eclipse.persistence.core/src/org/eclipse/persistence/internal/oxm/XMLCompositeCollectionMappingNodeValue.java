@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -95,11 +96,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                             XPathFragment frag = new XPathFragment();
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if ((uri != null) && !uri.equals("")) {
+                            if (uri != null && uri.length() > 0) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((XMLDescriptor)xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if ((prefix != null) && !prefix.equals("")) {
-                                    xpath = prefix + ":" + xpath;
+                                if (prefix != null && prefix.length() > 0) {
+                                    xpath = prefix + XMLConstants.COLON + xpath;
                                 }
                             }
                             frag.setXPath(xpath);     

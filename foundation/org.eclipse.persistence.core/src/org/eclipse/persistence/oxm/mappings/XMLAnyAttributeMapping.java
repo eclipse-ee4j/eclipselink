@@ -337,11 +337,11 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
 
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(attributeName.getNamespaceURI());
-                    if ((prefix != null) && !prefix.equals("")) {
-                        qualifiedName = prefix + ":" + qualifiedName;
-                    } else if (attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().equals("")) {
+                    if ((prefix != null) && prefix.length() > 0) {
+                        qualifiedName = prefix + XMLConstants.COLON + qualifiedName;
+                    } else if (attributeName.getNamespaceURI() != null && attributeName.getNamespaceURI().length() > 0) {
                         String generatedPrefix = nr.generatePrefix();
-                        qualifiedName = generatedPrefix + ":" + qualifiedName;
+                        qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, attributeName.getNamespaceURI());
                         extraNamespaces.add(new Namespace(generatedPrefix, attributeName.getNamespaceURI()));
                         recordToModify.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());

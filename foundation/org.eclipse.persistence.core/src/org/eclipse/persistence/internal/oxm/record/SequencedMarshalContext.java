@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -68,7 +69,7 @@ public class SequencedMarshalContext implements MarshalContext {
         if(null == setting.getName()) {
             return xPathNode.getNonAttributeChildrenMap().get(null);
         } else {
-            if (setting.getName().equals("text()")) {
+            if (setting.getName().equals(XMLConstants.TEXT)) {
                 return xPathNode.getTextNode();
             } else {
                 indexFragment.setLocalName(null);

@@ -25,7 +25,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
  *  This class is used to indicate that SAX parsing should be used to create an XML
  *  Record when appropriate.
  */
-public class SAXPlatform extends XMLPlatform {
+public class SAXPlatform extends XMLPlatform {    
 
     /**
      * INTERNAL:

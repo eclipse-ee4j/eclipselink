@@ -5,13 +5,12 @@ import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
 public class SequencedUnmarshalContext implements UnmarshalContext {
-    
-    private static final String TEXT_XPATH = "text()";
     
     private Setting currentSetting;
         
@@ -19,7 +18,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         Setting parentSetting;
         if(null == currentSetting) {
             parentSetting = null;
-        } else if(TEXT_XPATH.equals(currentSetting.getName())) {
+        } else if(XMLConstants.TEXT.equals(currentSetting.getName())) {
             parentSetting = null;
         } else {
             parentSetting = currentSetting;
@@ -41,11 +40,11 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
 
     public void characters(UnmarshalRecord unmarshalRecord) {
         if(null == currentSetting || null == currentSetting.getName()) {
-            currentSetting = new Setting(null, TEXT_XPATH);
+            currentSetting = new Setting(null, XMLConstants.TEXT);
             ((SequencedObject) unmarshalRecord.getCurrentObject()).getSettings().add(currentSetting);
-        }else if(!TEXT_XPATH.equals(currentSetting.getName())) {
+        }else if(!XMLConstants.TEXT.equals(currentSetting.getName())) {
             Setting parentSetting = currentSetting;
-            currentSetting = new Setting(null, TEXT_XPATH);
+            currentSetting = new Setting(null, XMLConstants.TEXT);
             if(null != parentSetting) {
                 parentSetting.addChild(currentSetting);
             }
@@ -56,7 +55,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         if(null == currentSetting) {
             return;
         }
-        if(TEXT_XPATH.equals(currentSetting.getName())) {
+        if(XMLConstants.TEXT.equals(currentSetting.getName())) {
             if(null == currentSetting.getParent()) {
                 currentSetting = null;
             } else {

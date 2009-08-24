@@ -209,7 +209,7 @@ public class JAXPPlatform implements XMLPlatform {
                 namespaceDeclaration = contextElement.getAttributeNode("xmlns:" + namespacePrefix);
             } else {
                 //look for default namespace declaration for null prefix
-                namespaceDeclaration = contextElement.getAttributeNode("xmlns");
+                namespaceDeclaration = contextElement.getAttributeNode(XMLConstants.XMLNS);
             }
             if (null != namespaceDeclaration) {
                 return namespaceDeclaration.getValue();

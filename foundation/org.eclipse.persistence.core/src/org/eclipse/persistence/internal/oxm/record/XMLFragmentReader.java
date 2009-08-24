@@ -176,7 +176,7 @@ public class XMLFragmentReader extends DOMReader {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.resolveNamespacePrefix(prefix);
-                if ((uri != null) && !uri.equals("")) {
+                if ((uri != null) && uri.length() > 0) {
                     break;
                 }
             }

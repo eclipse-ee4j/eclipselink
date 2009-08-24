@@ -27,7 +27,12 @@ import javax.xml.namespace.QName;
  * unionField.addSchemaType()
  *</code>
  */
-public class XMLConstants {
+public class XMLConstants {	
+    public static final char COLON = ':';	    
+    public static final Character ATTRIBUTE = '@';
+    public static final String TEXT = "text()";
+    public static final String EMPTY_STRING = "";	
+    public static final String CDATA= "CDATA";
     public static final String SCHEMA_PREFIX = "xsd";
     public static final String SCHEMA_URL = "http://www.w3.org/2001/XMLSchema";
     public static final String SCHEMA_INSTANCE_PREFIX = "xsi";
@@ -115,7 +120,7 @@ public class XMLConstants {
     public static final QName UNSIGNED_SHORT_QNAME = new QName(SCHEMA_URL, UNSIGNED_SHORT);
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final String JAXB_FRAGMENT = "jaxb.fragment";
-    
+          
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
     
     // Schema Special values for Double and Float

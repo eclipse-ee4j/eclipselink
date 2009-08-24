@@ -429,9 +429,9 @@ public class DOMRecord extends XMLRecord {
         XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
             String schemaType = node.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-            if ((null != schemaType) && (!schemaType.equals(""))) {
+            if ((null != schemaType) && (schemaType.length() > 0)) {
                 QName qname = null;
-                int index = schemaType.indexOf(':');
+                int index = schemaType.indexOf(XMLConstants.COLON);
                 if (index == -1) {
                     qname = new QName(schemaType);
                     Class convertClass = key.getJavaClass(qname);
@@ -670,7 +670,7 @@ public class DOMRecord extends XMLRecord {
         if(localName == null) {
             return null;
         }
-        int colonIndex = localName.indexOf(':');
+        int colonIndex = localName.indexOf(XMLConstants.COLON);
         if (colonIndex < 0) {
             // handle target/default namespace
             if (namespaceResolver != null) {

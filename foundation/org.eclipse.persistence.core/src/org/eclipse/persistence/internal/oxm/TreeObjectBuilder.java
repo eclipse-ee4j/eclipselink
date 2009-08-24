@@ -250,16 +250,16 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                 }
                 if (xmlMapping.isAbstractDirectMapping() && xmlField.isTypedTextField()) {
                     XPathFragment nextFragment = xmlField.getXPathFragment();
-                    String typeXPath = "";
+                    String typeXPath = XMLConstants.EMPTY_STRING;
                     while (nextFragment.getNextFragment() != null) {
                         typeXPath += nextFragment.getXPath();
                         nextFragment = nextFragment.getNextFragment();
                     }
-                    XMLField typeField = new XMLField();
-                    if (!"".equals(typeXPath)) {
+                    XMLField typeField = new XMLField();                    
+                    if(typeXPath.length() > 0) {
                         typeXPath += "/";
                     }
-                    typeField.setXPath(typeXPath + "@" + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type");
+                    typeField.setXPath(typeXPath + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                     typeNodeValue = new TypeNodeValue();
                     typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
                     addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());

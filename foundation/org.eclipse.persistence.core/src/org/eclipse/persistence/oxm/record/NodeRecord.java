@@ -13,8 +13,11 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Map.Entry;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.MarshalRecordContentHandler;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -198,12 +201,12 @@ public class NodeRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), "", resolverPfx+":"+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+ XMLConstants.COLON +attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), "", attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(XMLConstants.XMLNS_URL, "",XMLConstants.XMLNS + ":" + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
@@ -301,7 +304,7 @@ public class NodeRecord extends MarshalRecord {
         if (colonIndex < 0) {
             // handle target/default namespace
             if (namespaceResolver != null) {
-                return namespaceResolver.resolveNamespacePrefix("");
+                return namespaceResolver.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
             }
             return null;
         } else {
@@ -357,9 +360,9 @@ public class NodeRecord extends MarshalRecord {
             }
             // Handle prefix mappings
             if (!prefixMappings.isEmpty()) {
-                for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
-                    String prefix = keys.next();
-                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, prefixMappings.get(prefix));
+            	for (Iterator<Map.Entry<String, String>> entries = prefixMappings.entrySet().iterator(); entries.hasNext();) {
+                    Map.Entry<String, String> entry = entries.next();
+                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + entry.getKey(), entry.getValue());
                 }
                 prefixMappings.clear();
             }

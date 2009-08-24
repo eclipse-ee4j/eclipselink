@@ -99,7 +99,7 @@ public abstract class MappingNodeValue extends NodeValue {
             if(null == prefix) {
                 return qName.getLocalPart();
             } else {
-                return prefix + COLON + qName.getLocalPart();
+                return prefix + XMLConstants.COLON + qName.getLocalPart();
             }
         }
 
@@ -124,17 +124,17 @@ public abstract class MappingNodeValue extends NodeValue {
             }
                
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
-            if ((prefix == null) || prefix.equals("")) {
+            if ((prefix == null) || prefix.length() == 0) {
             	
             	if(XMLConstants.SCHEMA_URL.equals(qname.getNamespaceURI())){
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);	
                 }else{            	
-                    prefix = marshalRecord.getNamespaceResolver().generatePrefix();
+                    prefix = marshalRecord.getNamespaceResolver().generatePrefix();              
                 }
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, qname.getNamespaceURI());
             }
-            String typeValue = prefix + ":" + qname.getLocalPart();
-    
+            String typeValue = prefix + XMLConstants.COLON + qname.getLocalPart();
+
             addTypeAttribute(marshalRecord, typeValue);
         }
     }
@@ -145,13 +145,13 @@ public abstract class MappingNodeValue extends NodeValue {
             xsiPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         if (xsiPrefix == null) {
             xsiPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
     
 }

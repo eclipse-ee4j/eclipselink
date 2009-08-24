@@ -35,8 +35,6 @@ import org.xml.sax.Attributes;
  */
 
 public abstract class NodeValue {
-    protected static final char COLON = ':';
-    protected static final String EMPTY_STRING = "";
     private XPathNode xPathNode;
 
     public XPathNode getXPathNode() {

@@ -355,7 +355,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                         String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         QName schemaTypeQName = null;
                         XPathFragment frag = new XPathFragment();
-                        if ((null != schemaType) && (!schemaType.equals(""))) {
+                        if ((null != schemaType) && (schemaType.length() > 0)) {
                             frag.setXPath(schemaType);
                             if (frag.hasNamespace()) {
                                 String prefix = frag.getPrefix();
@@ -385,29 +385,31 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                         } else if ((referenceDescriptor == null) && (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
                             buildObjectNoReferenceDescriptor(record, session, next, container, cp);
                         } else {
-                            Object value = null;
                             Node textchild = ((Element) next).getFirstChild();
                             if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                                value = ((Text) textchild).getNodeValue();
-                            }
-                            if ((value != null) && !value.equals("")) {
-                                if (schemaTypeQName != null) {
-                                    Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                                    if (theClass != null) {
-                                        value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaTypeQName);
-                                    }
-                                }
-                                if(getConverter() != null) {
-                                    value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
-                                }                       
+                            	String stringValue = ((Text) textchild).getNodeValue();
+                            	
+                            	 if ((stringValue != null) && stringValue.length() > 0) {
+                                 	Object convertedValue = stringValue;
+                                     if (schemaTypeQName != null) {
+                                         Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                                         if (theClass != null) {
+                                        	 convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
+                                         }
+                                     }
+                                     if(getConverter() != null) {
+                                    	 convertedValue = getConverter().convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
+                                     }                       
 
-                                XMLRoot rootValue = new XMLRoot();
-                                rootValue.setLocalName(next.getLocalName());
-                                rootValue.setSchemaType(schemaTypeQName);
-                                rootValue.setNamespaceURI(next.getNamespaceURI());
-                                rootValue.setObject(value);
-                                cp.addInto(rootValue, container, session);
-                            }
+                                     XMLRoot rootValue = new XMLRoot();
+                                     rootValue.setLocalName(next.getLocalName());
+                                     rootValue.setSchemaType(schemaTypeQName);
+                                     rootValue.setNamespaceURI(next.getNamespaceURI());
+                                     rootValue.setObject(convertedValue);
+                                     cp.addInto(rootValue, container, session);
+                                 }
+                            	
+                            }                           
                         }
                     }
                 }
@@ -482,11 +484,11 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 if (wasXMLRoot) {
                     if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
                         String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
-                        if ((prefix == null) || prefix.equals("")) {
+                        if ((prefix == null) || prefix.length() == 0) {
                             xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                             prefix = record.getNamespaceResolver().generatePrefix();
                         }
-                        xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot) originalObject).getLocalName());
+                        xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                     }
                 }
 
@@ -505,14 +507,14 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 if (wasXMLRoot) {
                     if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
                         String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                        if ((prefix == null) || prefix.equals("")) {
+                        if ((prefix == null) || prefix.length() == 0) {
                             prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
                         }
-                        if ((prefix == null) || prefix.equals("")) {
+                        if ((prefix == null) || prefix.length() == 0) {
                             xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                             prefix = record.getNamespaceResolver().generatePrefix();
                         }
-                        xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot) originalObject).getLocalName());
+                        xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                     }
                 }
 
@@ -578,14 +580,14 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             if (wasXMLRoot) {
                 if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                    if ((prefix == null) || prefix.equals("")) {
+                    if ((prefix == null) || prefix.length() == 0) {
                         prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
                     }
-                    if ((prefix == null) || prefix.equals("")) {
+                    if ((prefix == null) || prefix.length() == 0) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                         prefix = record.getNamespaceResolver().generatePrefix();
                     }
-                    xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot) originalObject).getLocalName());
+                    xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                 }
             }
 
@@ -600,11 +602,11 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         if (wasXMLRoot) {
             if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
                 String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
-                if ((prefix == null) || prefix.equals("")) {
+                if ((prefix == null) || prefix.length() == 0) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = record.getNamespaceResolver().generatePrefix();
                 }
-                xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot) originalObject).getLocalName());
+                xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
             }
         }
         if (xmlRootField != null) {

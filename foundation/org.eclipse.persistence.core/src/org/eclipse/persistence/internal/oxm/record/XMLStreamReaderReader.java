@@ -35,8 +35,6 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public class XMLStreamReaderReader extends XMLReader {
 
-    private static final String EMPTY_STRING = "";
-
     private ContentHandler contentHandler;
     private LexicalHandler lexicalHandler;
     private ErrorHandler errorHandler;
@@ -131,10 +129,10 @@ public class XMLStreamReaderReader extends XMLReader {
             case XMLStreamReader.END_ELEMENT: {
                 depth--;
                 String prefix = xmlStreamReader.getPrefix();
-                if(null == prefix || EMPTY_STRING.equals(prefix)) {
+                if(null == prefix || prefix.length() == 0) {
                     getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName());                    
                 } else {
-                    getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + ':' + xmlStreamReader.getLocalName());                    
+                    getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + XMLConstants.COLON + xmlStreamReader.getLocalName());                    
                 }
                 break;
             }
@@ -167,10 +165,10 @@ public class XMLStreamReaderReader extends XMLReader {
             case XMLStreamReader.START_ELEMENT: {
                 depth++;
                 String prefix = xmlStreamReader.getPrefix();
-                if(null == prefix || EMPTY_STRING.equals(prefix)) {
+                if(null == prefix || prefix.length() == 0) {
                     getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
                 } else {
-                    getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + ':' + xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
+                    getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + XMLConstants.COLON + xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
                 }
                 break;
             }
@@ -187,8 +185,6 @@ public class XMLStreamReaderReader extends XMLReader {
 
     private static class IndexedAttributeList implements Attributes {
 
-        private static final String CDATA = "CDATA";
-
         private List<Attribute> attributes;
 
         public IndexedAttributeList(XMLStreamReader xmlStreamReader) {
@@ -201,11 +197,11 @@ public class XMLStreamReaderReader extends XMLReader {
                 String uri = XMLConstants.XMLNS_URL; 
                 String localName = xmlStreamReader.getNamespacePrefix(x); 
                 String qName; 
-                if(null == localName || EMPTY_STRING.equals(localName)) { 
+                if(null == localName || localName.length() == 0) { 
                     localName = XMLConstants.XMLNS; 
                     qName = XMLConstants.XMLNS; 
                 } else { 
-                    qName = XMLConstants.XMLNS + ':' + localName; 
+                    qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
                 } 
                 String value = xmlStreamReader.getNamespaceURI(x); 
                 attributes.add(new Attribute(uri, localName, qName, value)); 
@@ -216,10 +212,10 @@ public class XMLStreamReaderReader extends XMLReader {
                 String localName = xmlStreamReader.getAttributeLocalName(x);
                 String prefix = xmlStreamReader.getAttributePrefix(x);
                 String qName;
-                if(null == prefix || "".equals(prefix)) {
+                if(null == prefix || prefix.length() == 0) {
                     qName = localName;
                 } else {
-                    qName = prefix + ':' + localName;
+                    qName = prefix + XMLConstants.COLON + localName;
                 }
                 String value = xmlStreamReader.getAttributeValue(x);
                 attributes.add(new Attribute(uri, localName, qName, value));
@@ -268,15 +264,15 @@ public class XMLStreamReaderReader extends XMLReader {
         }
 
         public String getType(int index) {
-            return CDATA;
+            return XMLConstants.CDATA;
         }
 
         public String getType(String name) {
-            return CDATA;
+            return XMLConstants.CDATA;
         }
 
         public String getType(String uri, String localName) {
-            return CDATA;
+            return XMLConstants.CDATA;
         }
 
         public String getURI(int index) {

@@ -44,6 +44,7 @@ import org.xml.sax.InputSource;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
@@ -107,8 +108,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            Object value = xmlUnmarshaller.unmarshal(inputStream);
-            return createJAXBElementIfRequired(value);
+        	return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));            
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }

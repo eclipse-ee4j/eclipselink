@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -261,8 +262,8 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * @param xpathString String
      */
     public void setXPath(String xpathString) {
-        if ((xpathString.indexOf("@") == -1) && (!xpathString.endsWith("text()"))) {
-            xpathString += "/text()";
+        if ((xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {
+            xpathString += '/' + XMLConstants.TEXT;
         }
         setField(new XMLField(xpathString));
     }

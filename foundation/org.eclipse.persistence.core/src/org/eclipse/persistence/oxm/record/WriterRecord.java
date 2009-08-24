@@ -256,12 +256,12 @@ public class WriterRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), "", resolverPfx+":"+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), "", attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(XMLConstants.XMLNS_URL, "",XMLConstants.XMLNS + ":" + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
@@ -383,8 +383,8 @@ public class WriterRecord extends MarshalRecord {
                         String prefix = keys.next();
                         getWriter().write(' ');
                         getWriter().write(XMLConstants.XMLNS);
-                        if(!prefix.equals("")) {
-                            getWriter().write(":");
+                        if(prefix.length() > 0) {
+                            getWriter().write(XMLConstants.COLON);
                             getWriter().write(prefix);
                         }
                         getWriter().write('=');
@@ -401,7 +401,7 @@ public class WriterRecord extends MarshalRecord {
         
         protected void handleAttributes(Attributes atts) {
             for (int i=0; i<atts.getLength(); i++) {
-                if((atts.getQName(i) != null && (atts.getQName(i).startsWith(XMLConstants.XMLNS + ":") || atts.getQName(i).equals(XMLConstants.XMLNS)))) {
+                if((atts.getQName(i) != null && (atts.getQName(i).startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || atts.getQName(i).equals(XMLConstants.XMLNS)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));

@@ -317,11 +317,11 @@ public class UnmarshalXPathEngine {
             return true;
         }
 
-        if ((nodeNamespaceURI == null) && namespaceURI.equals("")) {
+        if ((nodeNamespaceURI == null) && namespaceURI.length() == 0) {
             return true;
         }
 
-        if ((namespaceURI == null) && nodeNamespaceURI.equals("")) {
+        if ((namespaceURI == null) && nodeNamespaceURI.length() == 0) {
             return true;
         }
 

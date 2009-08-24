@@ -310,7 +310,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @param sourceObject
      */
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
-        if (sourceObject == null || sourceObject.equals("")) {
+        if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
             return (char) 0;
         }
 
@@ -361,7 +361,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             if (sourceString.lastIndexOf('T') != -1) {
                 return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_TIME_QNAME);
             } else {
-                if (sourceString.lastIndexOf(':') != -1) {
+                if (sourceString.lastIndexOf(XMLConstants.COLON) != -1) {
                     return convertStringToCalendar((String) sourceObject, XMLConstants.TIME_QNAME);
                 } else {
                     return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_QNAME);
@@ -380,7 +380,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromCalendar((Calendar) sourceObject);
         }
         if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return "";
+            return XMLConstants.EMPTY_STRING;
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -430,7 +430,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return "";
+            return XMLConstants.EMPTY_STRING;
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -878,11 +878,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 // We always want to return the 1.6 syntax ("--MM").
                 String xmlFormat = xgc.toXMLFormat();
                 String pre  = xmlFormat.substring(0, 4); // will always be --MM
-                String post = "";
+                String post = XMLConstants.EMPTY_STRING;
                 
                 // --MM or --MM--
                 if (xmlFormat.length() == 4 && xmlFormat.length() == 6) {
-                    post = "";
+                    post = XMLConstants.EMPTY_STRING;
                 }
 
                 // --MMZ or --MM+03:00
@@ -972,7 +972,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         int dotIdx = xmlFormat.indexOf('.');
         if (dotIdx > 0) {
             String pre = xmlFormat.substring(0, dotIdx);
-            String post = "";
+            String post = XMLConstants.EMPTY_STRING;
             if (xmlFormat.length() > (dotIdx + 4)) {
                 post = xmlFormat.substring(dotIdx + 4, xmlFormat.length());
             }
@@ -1794,7 +1794,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         javaTypes.put(ClassConstants.BIGINTEGER, XMLConstants.INTEGER_QNAME);
         javaTypes.put(ClassConstants.PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
         javaTypes.put(ClassConstants.PBYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(ClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(ClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);        
         javaTypes.put(ClassConstants.PDOUBLE, XMLConstants.DOUBLE_QNAME);
         javaTypes.put(ClassConstants.PFLOAT, XMLConstants.FLOAT_QNAME);
         javaTypes.put(ClassConstants.PINT, XMLConstants.INT_QNAME);
@@ -1850,7 +1850,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             stringBuilder.append('0');
         }
         stringBuilder.append(hourOffset);
-        stringBuilder.append(':');
+        stringBuilder.append(XMLConstants.COLON);
         int minuteOffset = rawMinuteOffset % 60;
         if (minuteOffset < 10) {
             stringBuilder.append('0');

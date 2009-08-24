@@ -391,7 +391,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         while (prefixes.hasMoreElements()) {
             prefix = (String)prefixes.nextElement();
             namespace = namespaceResolver.resolveNamespacePrefix(prefix);
-            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, namespace);
+            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespace);
         }
     }
     
@@ -543,7 +543,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             generated = true;
             writeXsiNamespace(row, xsiPrefix);
         }
-        XMLField xmlField = (XMLField)xmlDescriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        XMLField xmlField = (XMLField)xmlDescriptor.buildField(XMLConstants.ATTRIBUTE + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         if (generated) {
             xmlField.getLastXPathFragment().setGeneratedPrefix(true);
         }
@@ -553,7 +553,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
     private void writeXsiNamespace(DOMRecord nestedRecord, String xsiPrefix) {
         if(nestedRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
-            ((Element)nestedRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            ((Element)nestedRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
     }
 
@@ -600,19 +600,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
             Namespace next = (Namespace)namespaces.get(i);
 
             //if isn't already on a parentadd namespace to this element
-            // marshalRecord.resolveNamespacePrefix(next.getNamespaceURI());
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(next.getNamespaceURI());
 
-            if ((prefix == null) || prefix.equals("")) {
-                //if there is no prefix already declared for this uri in the nr add this one
-                //marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());
+            if (prefix == null || prefix.length() == 0) {
+                //if there is no prefix already declared for this uri in the nr add this one                //
                 marshalRecord.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
                 returnList.add(next);
             } else {
                 //if prefix is the same do nothing 
                 if (!prefix.equals(next.getPrefix())) {
                     //if prefix exists for uri but is different then add this
-                    //marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());
                     marshalRecord.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
                     returnList.add(next);
                 }
@@ -632,7 +629,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         for (int i = 0; i < extraNamespaces.size(); i++) {
             Namespace next = (Namespace)extraNamespaces.get(i);
-            ((Element)xmlRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());
+            ((Element)xmlRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
         }
     }
 

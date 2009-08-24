@@ -111,7 +111,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyCollectionMapping.usesXMLRoot());
                 String qnameString = xPathFragment.getLocalName();
                 if (xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix() + ":" + qnameString;
+                    qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
                 }
                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
                 unmarshalRecord.getXMLReader().setContentHandler(handler);
@@ -169,9 +169,10 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     private void startElementProcessText(UnmarshalRecord unmarshalRecord, Object collection) {
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        String value = unmarshalRecord.getStringBuffer().toString();
         unmarshalRecord.resetStringBuffer();
-        if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
+        //if (!XMLConstants.EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
+        if (value.length() > 0 && xmlAnyCollectionMapping.isMixedContent()) {
             unmarshalRecord.addAttributeValue(this, value);
         }
     }
@@ -211,11 +212,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (originalValue.getNamespaceURI() != null) {
             xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
-            if ((prefix == null) || prefix.equals("")) {
+            if (prefix == null || prefix.length() == 0) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix();
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
             }
-            xpath = prefix + ":" + xpath;
+            xpath = prefix + XMLConstants.COLON + xpath;
         }
         xmlRootFragment.setXPath(xpath);
         return generatedNamespace;
@@ -329,7 +330,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             Namespace generatedNamespace = setupFragment((XMLRoot) originalValue, xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
             if (generatedNamespace != null) {
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedNamespace.getPrefix(), XMLConstants.XMLNS + ":" + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedNamespace.getPrefix(), XMLConstants.XMLNS + XMLConstants.COLON + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
             }
             updateNamespaces(qname, marshalRecord, null);                        
         }

@@ -110,7 +110,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                  BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataCollectionMapping);
                  String qnameString = xPathFragment.getLocalName();
                  if (xPathFragment.getPrefix() != null) {
-                     qnameString = xPathFragment.getPrefix() + ":" + qnameString;
+                     qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
                  }
                  handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
                  unmarshalRecord.getXMLReader().setContentHandler(handler);
@@ -220,7 +220,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
                 XPathFragment lastFrag = ((XMLField) xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
-                String c_id = "";
+                String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
                 if (objectValue.getClass() == ClassConstants.APBYTE) {
                     bytes = (byte[]) objectValue;
@@ -247,7 +247,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
                     marshalRecord.attribute("", "href", "href", c_id);
                     if (addDeclaration) {
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + ":" + xopPrefix, XMLConstants.XOP_URL);
+                        marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xopPrefix, XMLConstants.XOP_URL);
                         //marshalRecord.attribute(new XPathFragment("@xmlns:" + xopPrefix), namespaceResolver, XMLConstants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();
@@ -255,7 +255,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     //marshal as an attachment.
                 }
             } else {
-                String value = "";
+                String value = XMLConstants.EMPTY_STRING;
                 if (objectValue.getClass() == ClassConstants.ABYTE || objectValue.getClass() == ClassConstants.APBYTE) {
                     value = getValueToWrite(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, session);
                 } else {

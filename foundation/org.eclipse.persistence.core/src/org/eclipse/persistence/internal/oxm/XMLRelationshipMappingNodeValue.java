@@ -46,7 +46,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             DescriptorNotFoundContentHandler handler = new DescriptorNotFoundContentHandler(unmarshalRecord, mapping);
             String qnameString = xPathFragment.getLocalName();
             if(xPathFragment.getPrefix() != null) {
-                qnameString = xPathFragment.getPrefix()  +":" + qnameString;
+                qnameString = xPathFragment.getPrefix()  +XMLConstants.COLON + qnameString;
             }
             handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);                          
             unmarshalRecord.getXMLReader().setContentHandler(handler);
@@ -107,7 +107,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             String schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             if(schemaType != null){
             	schemaType = schemaType.trim();
-                if(!schemaType.equals("")) {  
+                if(schemaType.length() > 0) {  
                     XPathFragment frag = new XPathFragment();
                 frag.setXPath(schemaType);
     
@@ -143,13 +143,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             xsiPrefix = descriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         if (xsiPrefix == null) {
             xsiPrefix = descriptor.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
 
     protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
@@ -158,7 +158,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         for (int i = 0; i < extraNamespaces.size(); i++) {
             Namespace next = (Namespace)extraNamespaces.get(i);            
-            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, next.getPrefix(), XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());            
+            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, next.getPrefix(), XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());            
         }
   
     }
@@ -167,13 +167,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
         try {
-            String namespaceURI = "";
+            String namespaceURI = XMLConstants.EMPTY_STRING;
             if (xPathFragment.getNamespaceURI() != null) {
                 namespaceURI = xPathFragment.getNamespaceURI();
             }
             String qName = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
-                qName = xPathFragment.getPrefix() + ":" + qName;
+                qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
 
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
@@ -210,7 +210,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
         }
         unmarshalRecord.resetStringBuffer();
-        if (!EMPTY_STRING.equals(value)) {
+        if (!XMLConstants.EMPTY_STRING.equals(value)) {
             QName qname = unmarshalRecord.getTypeQName();
             if (qname != null) {
                 Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);

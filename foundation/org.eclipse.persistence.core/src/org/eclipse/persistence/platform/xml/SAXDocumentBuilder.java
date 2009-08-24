@@ -81,7 +81,7 @@ public class SAXDocumentBuilder implements ContentHandler {
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         // avoid adding an empty prefix and uri pair to the map
-        if (prefix.equals("") && uri.equals("")) {
+        if (prefix.length() == 0 && uri.length() == 0) {
             return;
         }
         
@@ -95,7 +95,7 @@ public class SAXDocumentBuilder implements ContentHandler {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if ((null != namespaceURI) && ("".equals(namespaceURI))) {
+    	if (null != namespaceURI && namespaceURI.length() == 0) {
             namespaceURI = null;
         }
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
@@ -125,7 +125,7 @@ public class SAXDocumentBuilder implements ContentHandler {
         String attributeNamespaceURI;
         for (int x = 0; x < numberOfAttributes; x++) {
             attributeNamespaceURI = atts.getURI(x); 
-            if ((null != attributeNamespaceURI) && ("".equals(attributeNamespaceURI))) {
+            if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
                 attributeNamespaceURI = null;
             }
             element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), atts.getValue(x));
@@ -158,11 +158,11 @@ public class SAXDocumentBuilder implements ContentHandler {
     }
 
     protected void addNamespaceDeclaration(Element parentElement, String prefix, String uri) {
-        if (prefix.equals("")) {
+        if (prefix.length() == 0) {
             //handle default/target namespaces
             parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, uri);
         } else {
-            parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
+            parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, uri);
         }
     }
     

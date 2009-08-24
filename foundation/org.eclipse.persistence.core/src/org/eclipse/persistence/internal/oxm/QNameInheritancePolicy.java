@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.namespace.QName;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
@@ -88,14 +90,14 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         // for prefixed type names and resolve the namespaces.
         if (!this.shouldUseClassNameAsIndicator() && (namespaceResolver != null)) {
             // Must first clone the map to avoid concurrent modification.
-            Iterator keys = new HashMap(getClassIndicatorMapping()).keySet().iterator();
-            while (keys.hasNext()) {
-                Object key = keys.next();
-                Object value = getClassIndicatorMapping().get(key);
+            Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry entry = entries.next();
+                Object key = entry.getKey();
                 if (key instanceof String) {
                     QName qname;
                     String indicatorValue = (String)key;
-                    int index = indicatorValue.indexOf(":");
+                    int index = indicatorValue.indexOf(XMLConstants.COLON);
                     if (index != -1) {
                         //if it's a prefixed string, key it on QName and 
                         //local name, in case the namespace can't be resolved
@@ -113,7 +115,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                             qname = new QName(indicatorValue);
                         }
                     }
-                    getClassIndicatorMapping().put(qname, value);
+                    getClassIndicatorMapping().put(qname, entry.getValue());
                 }
             }
         }
@@ -159,7 +161,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         Class concreteClass;
         if (classFieldValue instanceof String) {
             String indicatorValue = (String)classFieldValue;
-            int index = indicatorValue.indexOf(":");
+            int index = indicatorValue.indexOf(XMLConstants.COLON);
             if (index == -1) {
                 String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
                 if(uri == null) {

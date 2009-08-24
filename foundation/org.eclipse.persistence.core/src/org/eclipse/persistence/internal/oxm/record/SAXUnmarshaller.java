@@ -90,9 +90,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             saxParserFactory.setNamespaceAware(true);
             saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             if(null != parserFeatures) {
-                for(String parserFeature : parserFeatures.keySet()) {
+            	for(Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
                     try {
-                        saxParserFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                        saxParserFactory.setFeature(parserFeature.getKey(), parserFeature.getValue());
                     } catch(org.xml.sax.SAXNotRecognizedException ex) {
                         //ignore if the parser doesn't recognize or support this feature
                     } catch(org.xml.sax.SAXNotSupportedException ex) {
@@ -573,7 +573,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             if (xmlContext.hasDocumentPreservation()) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
-                xmlReader.parse(inputSource);
+                xmlReader.parse(inputSource);                
                 return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement());
             }
             XMLReader extendedXMLReader;

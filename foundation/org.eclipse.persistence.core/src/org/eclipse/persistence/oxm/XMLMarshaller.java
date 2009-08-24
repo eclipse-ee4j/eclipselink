@@ -439,7 +439,7 @@ public class XMLMarshaller {
 
         //if this is a simple xml root, the session and descriptor will be null
         if (session == null || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
-            marshal(object, writerRecord, xmlDescriptor, isXMLRoot);
+            marshal(object, writerRecord, xmlDescriptor, isXMLRoot);    
         } else {
             try {
                 Node xmlDocument = objectToXMLNode(object, xmlDescriptor, isXMLRoot);
@@ -561,8 +561,8 @@ public class XMLMarshaller {
 
                             String value = xmlDescriptor.getSchemaReference().getSchemaContext();
 
-                            ((Element) node).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-                            ((Element) node).setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, value);
+                            ((Element) node).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                            ((Element) node).setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, value);
 
                         } else {
                             String value = xmlDescriptor.getSchemaReference().getSchemaContext();
@@ -693,10 +693,10 @@ public class XMLMarshaller {
             }
             marshalRecord.openStartElement(rootFragment, nr);
             if (null != schemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix + ":" + XMLConstants.SCHEMA_LOCATION, schemaLocation);
+                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_LOCATION, schemaLocation);
             }
             if (null != noNsSchemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + ":" + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
+                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
             }
 
             if (descriptor != null) {
@@ -713,8 +713,8 @@ public class XMLMarshaller {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
             if(null == object) {
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + ':' + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + ':' + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
             } else {
                 String value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
                 marshalRecord.characters(value);
@@ -749,12 +749,12 @@ public class XMLMarshaller {
                     if(xmlRootPrefix == null) {
                         rootFragment.setXPath(xmlRootLocalName);
                     } else {
-                        rootFragment.setXPath(xmlRootPrefix + ":" + xmlRootLocalName);
+                        rootFragment.setXPath(xmlRootPrefix + XMLConstants.COLON + xmlRootLocalName);
                     }
                 } else {
                     String xmlRootPrefix = "ns0";
                     marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
-                    rootFragment.setXPath(xmlRootPrefix + ":" + xmlRootLocalName);
+                    rootFragment.setXPath(xmlRootPrefix + XMLConstants.COLON + xmlRootLocalName);
                 }
             }
         } else {
@@ -802,17 +802,17 @@ public class XMLMarshaller {
                     typeValue = localPart;
                 } else {
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix();
-                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, uri);
-                    typeValue = prefix + ":" + localPart;
+                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, uri);
+                    typeValue = prefix + XMLConstants.COLON + localPart;
                 }
             } else {
-                typeValue = prefix + ":" + localPart;
+                typeValue = prefix + XMLConstants.COLON + localPart;
             }
         } else {
             typeValue = typeValue.substring(1);
         }
 
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
 
     private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
@@ -1001,7 +1001,7 @@ public class XMLMarshaller {
                         shouldCallSetAttributeNS = true;
                     }
                     if(xmlRootPrefix != null) {
-                        recordName = xmlRootPrefix + ":" + recordName;
+                        recordName = xmlRootPrefix + XMLConstants.COLON + recordName;
                     }
                 }
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), docPresPolicy, recordName, xmlRootUri);
@@ -1012,7 +1012,7 @@ public class XMLMarshaller {
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
                         if (xmlRootPrefix != null) {
-                            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xmlRootPrefix, xmlRootUri);
+                            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xmlRootPrefix, xmlRootUri);
                         }
                         shouldCallSetAttributeNS = false;
                     }
@@ -1026,7 +1026,7 @@ public class XMLMarshaller {
 
             boolean writeTypeAttribute = shouldWriteTypeAttribute(object, descriptor, isXMLRoot);
             if (writeTypeAttribute && (descriptor.getSchemaReference() != null) && (descriptor.getSchemaReference().getSchemaContext() != null)) {
-                ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
                 String typeValue = descriptor.getSchemaReference().getSchemaContext();
                 typeValue = typeValue.substring(1);
 
@@ -1043,7 +1043,7 @@ public class XMLMarshaller {
         xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object, (AbstractSession) xmlContext.getSession(object), isXMLRoot);
         xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
-            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         document = xmlRow.getDocument();
 
@@ -1121,7 +1121,7 @@ public class XMLMarshaller {
                     String defaultRootLocalName = null;
                     String defaultRootUri = null;
 
-                    int colonIndex = defaultRootQualifiedName.indexOf(':');
+                    int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
                     if (colonIndex > 0) {
                         String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
                         defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);

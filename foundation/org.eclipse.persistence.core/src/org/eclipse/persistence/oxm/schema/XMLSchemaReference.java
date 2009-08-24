@@ -17,6 +17,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -142,7 +143,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
                 idx = 0;
             }
             String type = schemaContext.substring(idx + 1);
-            idx = type.indexOf(":");
+            idx = type.indexOf(XMLConstants.COLON);
             if (idx != -1) {
                 String prefix = type.substring(0, idx);
                 String localPart = type.substring(idx + 1);

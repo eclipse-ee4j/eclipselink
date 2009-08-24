@@ -810,7 +810,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);
+        schemaLocationMapping.setXPath(XMLConstants.ATTRIBUTE+XMLConstants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -833,7 +833,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);
+        schemaLocationMapping.setXPath(XMLConstants.ATTRIBUTE+XMLConstants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();

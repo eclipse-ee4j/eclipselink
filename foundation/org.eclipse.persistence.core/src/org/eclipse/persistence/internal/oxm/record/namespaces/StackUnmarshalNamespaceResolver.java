@@ -18,18 +18,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.eclipse.persistence.oxm.XMLConstants;
+
 /**
  *  This is a complete UnmarshalNamespaceResolver implementation.  This is 
  *  useful when using XML input from sources such as SAX. 
  */
 public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolver {
-
+	
     private Map<String, Stack<String>> namespaceMap;
     private Map<String, Stack<String>> uriToPrefixMap;
+    
+	public StackUnmarshalNamespaceResolver(){
+		namespaceMap = new HashMap<String, Stack<String>>();
+		uriToPrefixMap = new HashMap<String, Stack<String>>();
+	}
 
     public String getPrefix(String namespaceURI) {
         String prefix = null;
-        if(null == prefix && null != uriToPrefixMap) {
+        if(null == prefix) {
             Stack<String> prefixStack = uriToPrefixMap.get(namespaceURI);
             if(prefixStack != null && prefixStack.size() > 0) {
                 prefix = prefixStack.peek();
@@ -41,41 +48,30 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
     public String getNamespaceURI(String prefix) {
         String namespaceURI = null;
         if(prefix == null) {
-            prefix = "";
+            prefix = XMLConstants.EMPTY_STRING;
         } 
-        if(null != namespaceMap) {
-            Stack<String> uriStack = namespaceMap.get(prefix);
-            if(uriStack != null && uriStack.size() > 0) {
-                namespaceURI = uriStack.peek();
-            }
-        }
+        
+        Stack<String> uriStack = namespaceMap.get(prefix);
+        if(uriStack != null && uriStack.size() > 0) {
+            namespaceURI = uriStack.peek();
+        }        
         return namespaceURI;
     }
 
-    public void pop(String prefix) {
-        if (null == namespaceMap) {
-            return;
-        }
-        Stack<String> uriStack = namespaceMap.get(prefix);
-        String uri = null;
+    public void pop(String prefix) {        
+        Stack<String> uriStack = namespaceMap.get(prefix);        
         if(uriStack != null && uriStack.size() > 0) {
-            uri = uriStack.pop();
-        }
-        if(uri != null && uriToPrefixMap != null) {
-            Stack<String> prefixStack = uriToPrefixMap.get(uri);
-            if(prefixStack != null && prefixStack.size() > 0) {
-                prefixStack.pop();
+            String uri = uriStack.pop();
+            if(uri != null) {
+                Stack<String> prefixStack = uriToPrefixMap.get(uri);
+                if(prefixStack != null && prefixStack.size() > 0) {
+                    prefixStack.pop();
+                }
             }
-        }
+        }        
     }
 
-    public void push(String prefix, String namespaceURI) {
-        if (null == namespaceMap) {
-            namespaceMap = new HashMap<String, Stack<String>>();
-        }
-        if (uriToPrefixMap == null) {
-            uriToPrefixMap = new HashMap<String, Stack<String>>();
-        }
+    public void push(String prefix, String namespaceURI) {                
         Stack uriStack = namespaceMap.get(prefix);
         if(uriStack == null) {
             uriStack = new Stack<String>();
@@ -90,10 +86,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         prefixStack.push(prefix);
     }
 
-    public Set<String> getPrefixes() {
-        if(null == namespaceMap) {
-            return Collections.EMPTY_SET;
-        }
+    public Set<String> getPrefixes() {        
         return namespaceMap.keySet();
     }
 

@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.ArrayList;
+import java.util.Map.Entry;
+
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -317,10 +319,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }
 
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        Iterator<XMLField> xpaths = fieldToClassNameMappings.keySet().iterator();
-        while (xpaths.hasNext()) {
-            XMLField xpath = xpaths.next();
-            String className = fieldToClassNameMappings.get(xpath);
+    	Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
+    	while (entries.hasNext()) {
+            Map.Entry<XMLField, String> entry = entries.next();
+            String className = entry.getValue();
             Class elementType = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -336,7 +338,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
             if (classToFieldMappings.get(elementType) == null) {
-                classToFieldMappings.put(elementType, xpath);
+                classToFieldMappings.put(elementType, entry.getKey());
             }
         }        
     }

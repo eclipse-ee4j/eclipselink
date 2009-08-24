@@ -17,6 +17,8 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamReader;
 
+import org.eclipse.persistence.oxm.XMLConstants;
+
 /**
  *  An UnmarshalNamespaceResolver that delegates all work to a NamespaceContext.
  *  This is useful when using XML input from sources such as StAX.
@@ -33,7 +35,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
 
     public String getNamespaceURI(String prefix) {
         if(null == prefix) {
-            prefix = "";
+            prefix = XMLConstants.EMPTY_STRING;
         }
         return xmlStreamReader.getNamespaceURI(prefix);
     }

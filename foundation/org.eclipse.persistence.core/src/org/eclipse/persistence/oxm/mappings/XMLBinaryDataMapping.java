@@ -192,7 +192,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
         }
         if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
             //write as attachment
-            String c_id = "";
+            String c_id = XMLConstants.EMPTY_STRING;
             byte[] bytes = null;
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                 if (getAttributeClassification() == ClassConstants.ABYTE) {
@@ -227,9 +227,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             if(c_id == null) {
             	XMLField textField = null;
             	if(field.isSelfField()){
-                    textField = new XMLField("/text()");
+                    textField = new XMLField(XMLConstants.TEXT);
             	}else{
-                    textField = new XMLField(field.getXPath() + "/text()");
+                    textField = new XMLField(field.getXPath() + '/' + XMLConstants.TEXT);
             	}
                 textField.setNamespaceResolver(field.getNamespaceResolver());
                 textField.setSchemaType(field.getSchemaType());
@@ -263,8 +263,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 	incxpath = prefix + ":Include";
                 	xpath = (prefix + include);
                 }else{
-                    incxpath = xpath + "/" + prefix + ":Include";
-                    xpath += ("/" + prefix + include);
+                    incxpath = xpath + '/' + prefix + ":Include";
+                    xpath += ('/' + prefix + include);
                 }
                 
                 XMLField xpathField = new XMLField(xpath);
@@ -294,7 +294,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     byte[] bytes = data.getData();
                     c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
                 }
-                XMLField textField = new XMLField(field.getXPath() + "/text()");
+                XMLField textField = new XMLField(field.getXPath() + '/' + XMLConstants.TEXT);
                 textField.setNamespaceResolver(field.getNamespaceResolver());
                 textField.setSchemaType(field.getSchemaType());
                 record.put(textField, c_id);
@@ -304,9 +304,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             //inline
             XMLField textField = null;
             if(field.isSelfField()){
-                textField = new XMLField("text()");
+                textField = new XMLField(XMLConstants.TEXT);
             }else{
-                textField = new XMLField(field.getXPath() + "/text()");
+                textField = new XMLField(field.getXPath() + '/' + XMLConstants.TEXT);
             }
             textField.setNamespaceResolver(field.getNamespaceResolver());
             textField.setSchemaType(field.getSchemaType());
@@ -347,7 +347,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
 
             if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                 //look for the include element:
-                String xpath = "";
+                String xpath = XMLConstants.EMPTY_STRING;
                 //  need a prefix for XOP
                 String prefix = null;
                 NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
@@ -372,17 +372,17 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     }
                 } else {
                     //If we didn't find the Include element, check for inline
-                    fieldValue = record.get("text()");
+                    fieldValue = record.get(XMLConstants.TEXT);
                     //should be a base64 string
                     fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                 }
             } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
-                String refValue = (String) record.get("text()");
+                String refValue = (String) record.get(XMLConstants.TEXT);
                 if (refValue != null) {
                     fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                 }
             } else {
-                fieldValue = record.get("text()");
+                fieldValue = record.get(XMLConstants.TEXT);
                 //should be a base64 string
                 if (fieldValue != null) {
                     fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);

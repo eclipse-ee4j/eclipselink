@@ -605,7 +605,7 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
         String elementName = unmarshalRecord.getRootElementName();
-        int colonIndex = elementName.indexOf(":");
+        int colonIndex = elementName.indexOf(XMLConstants.COLON);
         String elementLocalName = elementName;
         String elementPrefix = null;
         if (colonIndex != -1) {
@@ -685,7 +685,7 @@ public class XMLDescriptor extends ClassDescriptor {
         if (defaultRootName != null) {
             // resolve namespace prefix if one exists                 
             String defaultRootNamespaceUri = null;
-            int idx = defaultRootName.indexOf(":");
+            int idx = defaultRootName.indexOf(XMLConstants.COLON);
             if (idx != -1) {
                 defaultRootNamespaceUri = getNamespaceResolver().resolveNamespacePrefix(defaultRootName.substring(0, idx));
                 defaultRootName = defaultRootName.substring(idx + 1);
@@ -695,7 +695,7 @@ public class XMLDescriptor extends ClassDescriptor {
 
             // if the DOMRecord element == descriptor's default 
             // root element, return the object as per usual
-            if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.equals(""))) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.equals(""))) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+            if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
                     .equals(elementNamespaceUri))))
                     && (defaultRootName.equals(elementLocalName))) {
                 return false;

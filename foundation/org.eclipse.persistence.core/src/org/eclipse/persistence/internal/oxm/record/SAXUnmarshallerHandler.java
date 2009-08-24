@@ -54,7 +54,6 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespace
  *
  */
 public class SAXUnmarshallerHandler implements ContentHandler {
-    private static final String EMPTY_STRING = "";
     private XMLReader xmlReader;
     private XMLContext xmlContext;
     private Object object;
@@ -125,14 +124,14 @@ public class SAXUnmarshallerHandler implements ContentHandler {
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {
             String name;
-            if (EMPTY_STRING.equals(localName) || (localName == null)) {
+            if (localName == null || localName.length() == 0) {
                 name = qName;
             } else {
                 name = localName;
             }
 
             QName rootQName;
-            if (EMPTY_STRING.equals(namespaceURI) || (namespaceURI == null)) {
+            if (namespaceURI == null || namespaceURI.length() == 0) {
                 rootQName = new QName(name);
             } else {
                 rootQName = new QName(namespaceURI, name);

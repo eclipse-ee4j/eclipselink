@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +39,7 @@ public class DomToXMLStreamWriter {
             writeElement((Element)currentNode, xsw);
         } else if(currentNode.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr)currentNode;
-            if(attribute.getPrefix() != null && attribute.getPrefix().equals("xmlns")) {
+            if(attribute.getPrefix() != null && attribute.getPrefix().equals(XMLConstants.XMLNS)) {
                 xsw.writeNamespace(attribute.getLocalName(), attribute.getValue());
             } else {
                 if(attribute.getPrefix() == null) {
@@ -57,7 +58,7 @@ public class DomToXMLStreamWriter {
     }
 
     private void writeElement(Element elem, XMLStreamWriter xsw) throws XMLStreamException {
-        if(elem.getPrefix() != null && !elem.getPrefix().equals("")) {
+        if(elem.getPrefix() != null && elem.getPrefix().length() > 0) {
             String namespaceURI = xsw.getNamespaceContext().getNamespaceURI(elem.getPrefix());
             xsw.writeStartElement(elem.getPrefix(), elem.getLocalName(), elem.getNamespaceURI());
             if(!(elem.getNamespaceURI().equals(namespaceURI))) {
@@ -66,15 +67,15 @@ public class DomToXMLStreamWriter {
         } else {
             String localName = elem.getLocalName();
             String name = elem.getNodeName();
-            if(elem.getNamespaceURI() == null || elem.getNamespaceURI().equals("")) {
+            if(elem.getNamespaceURI() == null || elem.getNamespaceURI().length() == 0) {
                 xsw.writeStartElement(elem.getNodeName());
-                String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI("");
-                if(defaultNamespace != null && !("".equals(defaultNamespace))) {
+                String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
-                    xsw.writeDefaultNamespace("");
+                    xsw.writeDefaultNamespace(XMLConstants.EMPTY_STRING);
                 }
             } else {
-                xsw.writeStartElement("", elem.getLocalName(), elem.getNamespaceURI());
+                xsw.writeStartElement(XMLConstants.EMPTY_STRING, elem.getLocalName(), elem.getNamespaceURI());
             }
         }
         NodeList childNodes = elem.getChildNodes();
@@ -86,7 +87,7 @@ public class DomToXMLStreamWriter {
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr attribute = (Attr)next;
-                if(next.getPrefix() != null && next.getPrefix().equals("xmlns")) {
+                if(next.getPrefix() != null && next.getPrefix().equals(XMLConstants.XMLNS)) {
                     String currentUri = xsw.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
                         xsw.writeNamespace(next.getLocalName(), next.getValue());

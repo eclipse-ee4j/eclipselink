@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -39,7 +40,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if ((null != namespaceURI) && ("".equals(namespaceURI))) {
+        if (null != namespaceURI && namespaceURI.length() == 0) {
             namespaceURI = null;
         }
         if(qName == null){        	
@@ -47,18 +48,18 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if(namespaceURI != null){
                 if(owningRecord != null){
                     String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
-                    if(prefix != null && !prefix.equals("")){
-                        qName = prefix +":" + qName;
+                    if(prefix != null && prefix.length() > 0){
+                        qName = prefix +XMLConstants.COLON+ qName;
                     }
                 }
              }
         }
-        int qNameColonIndex = qName.indexOf(":");
+        int qNameColonIndex = qName.indexOf(XMLConstants.COLON);
         if ((namespaceURI != null) && (qNameColonIndex == -1)) {
             //check for a prefix from the unmarshal record:
             String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
-            if ((prefix != null) && (!(prefix.equals("")))) {
-                qName = prefix + ":" + qName;
+            if (prefix != null && prefix.length() >0){
+                qName = prefix + XMLConstants.COLON + qName;
             }
         }
 
@@ -72,26 +73,23 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         appendChildNode(parentNode, element);
         nodes.push(element);
 
-        qNameColonIndex = qName.indexOf(":");
+        qNameColonIndex = qName.indexOf(XMLConstants.COLON);
         if (qNameColonIndex > -1) {
             String prefix = qName.substring(0, qNameColonIndex);
             String parentUri = null;
             if (element.getParentNode() != null) {
                 parentUri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element.getParentNode(), prefix);
             }
-            if ((parentUri == null) || parentUri.equals("")) {
+            if ((parentUri == null) || parentUri.length() == 0) {
                 startPrefixMapping(prefix, namespaceURI);
             }
         }
 
         if (null != namespaceDeclarations) {
-            Iterator namespacePrefixes = namespaceDeclarations.keySet().iterator();
-            String prefix;
-            String uri;
-            while (namespacePrefixes.hasNext()) {
-                prefix = (String)namespacePrefixes.next();
-                uri = (String)namespaceDeclarations.get(prefix);
-                addNamespaceDeclaration(element, prefix, uri);
+            Iterator namespaces = namespaceDeclarations.entrySet().iterator();
+            while (namespaces.hasNext()) {
+            	Map.Entry entry = (Map.Entry)namespaces.next();
+                addNamespaceDeclaration(element, (String)entry.getKey(), (String)entry.getValue());
             }
             namespaceDeclarations = null;
         }
@@ -101,11 +99,11 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         for (int x = 0; x < numberOfAttributes; x++) {
             attributeNamespaceURI = atts.getURI(x);
             // Empty string will be treated as a null URI
-            if ((null != attributeNamespaceURI) && ("".equals(attributeNamespaceURI))) {
+            if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
             	attributeNamespaceURI = null;
             }
             // Handle case where prefix/uri are not set on an xmlns prefixed attribute
-            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + ":")) {
+            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + XMLConstants.COLON)) {
         		attributeNamespaceURI = XMLConstants.XMLNS_URL;
             }
             
@@ -116,15 +114,15 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value);
 
                 if (XMLConstants.SCHEMA_INSTANCE_URL.equals(attributeNamespaceURI) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(atts.getLocalName(x))) {
-                    int colonIndex = value.indexOf(':');
+                    int colonIndex = value.indexOf(XMLConstants.COLON);
                     if (colonIndex > -1) {
                         String prefix = value.substring(0, colonIndex);
                         String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element, prefix);
-                        if ((uri == null) || (uri.equals(""))) {                            
+                        if (uri == null || uri.length() == 0) {                            
                             //walk up unmarshalRecords to find prefix
                             String theUri = owningRecord.resolveNamespacePrefix(prefix);
-                            if ((theUri != null) && !(theUri.equals(""))) {
-                                element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, theUri);
+                            if (theUri != null && theUri.length() > 0) {
+                                element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, theUri);
                             }
                         }
                     }

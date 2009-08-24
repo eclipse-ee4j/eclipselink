@@ -211,8 +211,8 @@ public class DOMReader extends XMLReader {
                 if(name == null) {
                     name = next.getNodeName();
                 }
-                if(name != null && name.equals("xmlns")) {
-                    getContentHandler().startPrefixMapping("", next.getValue());
+                if(name != null && name.equals(XMLConstants.XMLNS)) {
+                    getContentHandler().startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
                 }
             }
             attributes.addAttribute(next);
@@ -234,7 +234,7 @@ public class DOMReader extends XMLReader {
                     name = next.getNodeName();
                 }
                 if(name != null) {
-                    getContentHandler().endPrefixMapping("");
+                    getContentHandler().endPrefixMapping(XMLConstants.EMPTY_STRING);
                 }
             }
         }
@@ -244,15 +244,15 @@ public class DOMReader extends XMLReader {
         if (elem.getLocalName() == null) {
             return elem.getNodeName();
         }
-        String qname = "";
+        
         String prefix = elem.getPrefix();
-        if (prefix != null && !(prefix.equals(""))) {
-            qname = prefix + ":" + elem.getLocalName();
+        if (prefix != null && prefix.length() > 0) {
+            String qname = prefix + XMLConstants.COLON + elem.getLocalName();
             handlePrefixedAttribute(elem);
+            return qname;
         } else {
-            qname = elem.getLocalName();
+            return elem.getLocalName();
         }
-        return qname;
     }
     
     /**
@@ -386,22 +386,22 @@ public class DOMReader extends XMLReader {
                 if (item.getName() != null) {
                     return item.getName();
                 }
-                return "";
+                return XMLConstants.EMPTY_STRING;
             } catch (IndexOutOfBoundsException iobe) {
                 return null;
             }
         }
         
         public String getType(String namespaceUri, String localName) {
-            return "CDATA";
+            return XMLConstants.CDATA;
         }
         
         public String getType(int index) {
-            return "CDATA";
+            return XMLConstants.CDATA;
         }
         
         public String getType(String qname) {
-            return "CDATA";
+            return XMLConstants.CDATA;
         }
         
         public int getIndex(String qname) {
@@ -440,7 +440,7 @@ public class DOMReader extends XMLReader {
                 if (item.getLocalName() != null) {
                     return item.getLocalName();
                 }
-                return "";
+                return XMLConstants.EMPTY_STRING;
             } catch (IndexOutOfBoundsException iobe) {
                 return null;
             }
@@ -475,7 +475,7 @@ public class DOMReader extends XMLReader {
                     String itemNS = item.getNamespaceURI();  
                     // Need to handle null/empty URI
                     if (item.getNamespaceURI() == null) {
-                        itemNS = "";
+                        itemNS = XMLConstants.EMPTY_STRING;
                     }
                     if ((itemNS.equals(uri)) && (item.getLocalName() != null && item.getLocalName().equals(localName))) {
                         return item.getValue();
@@ -504,11 +504,11 @@ public class DOMReader extends XMLReader {
         }
         
         public String getSystemId() {
-            return "";
+            return XMLConstants.EMPTY_STRING;
         }
         
         public String getPublicId() {
-            return "";
+            return XMLConstants.EMPTY_STRING;
         }
         
         public String getXMLVersion() {

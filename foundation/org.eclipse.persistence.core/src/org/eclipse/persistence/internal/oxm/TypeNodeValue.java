@@ -63,7 +63,7 @@ public class TypeNodeValue extends NodeValue {
         }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type";
+        String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE;
         String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());
         if(schemaTypePrefix == null){
             if(XMLConstants.SCHEMA_URL.equals(schemaType.getNamespaceURI())){
@@ -71,9 +71,9 @@ public class TypeNodeValue extends NodeValue {
             }else{
                 schemaTypePrefix = namespaceResolver.generatePrefix();
             }
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, schemaTypePrefix, XMLConstants.XMLNS + ":" + schemaTypePrefix, schemaType.getNamespaceURI());        	
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, schemaTypePrefix, XMLConstants.XMLNS + XMLConstants.COLON + schemaTypePrefix, schemaType.getNamespaceURI());        	
         }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, "type", typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeQName, schemaTypePrefix + XMLConstants.COLON + schemaType.getLocalPart());
         marshalRecord.closeStartGroupingElements(groupingFragment);
         return true;
     }
@@ -125,7 +125,7 @@ public class TypeNodeValue extends NodeValue {
         //assume this is being called for xsi:type field
         if (value != null) {
             String namespace = null;
-            int colonIndex = value.indexOf(COLON);
+            int colonIndex = value.indexOf(XMLConstants.COLON);
             if (colonIndex > -1) {
                 String prefix = value.substring(0, colonIndex);
                 namespace = unmarshalRecord.resolveNamespacePrefix(prefix);

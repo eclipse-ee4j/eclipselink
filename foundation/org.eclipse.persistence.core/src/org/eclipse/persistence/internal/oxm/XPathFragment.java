@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.oxm.XMLConstants;
+
 /**
  * INTERNAL:
  * <p><b>Purpose</b>:  Represents a token from an XPath statement.</p>
@@ -28,8 +30,7 @@ import javax.xml.namespace.QName;
  * </ul>
  */
 public class XPathFragment {
-    public static final String TEXT = "text()";
-    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(TEXT);
+    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(XMLConstants.TEXT);
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(".");
     public static final XPathFragment ANY_FRAGMENT = null;
     private XPathFragment nextFragment;
@@ -68,9 +69,9 @@ public class XPathFragment {
 
     public void setXPath(String xpathString) {
         xpath = xpathString;
-
+        
         // handle case:  company[name/text()="Oracle"]
-        if ((xpath.indexOf("[") != -1) && (xpath.indexOf("]") == -1)) {
+        if ((xpath.indexOf('[') != -1) && (xpath.indexOf(']') == -1)) {
             setShouldExecuteSelectNodes(true);
             return;
         }
@@ -82,7 +83,7 @@ public class XPathFragment {
         }
 
         shortName = xpathString;
-        int attrindex = xpathString.indexOf('@');
+        int attrindex = xpathString.indexOf(XMLConstants.ATTRIBUTE);
         if (attrindex == 0) {
             hasAttribute = true;
             shortName = xpathString.substring(attrindex + 1);
@@ -90,14 +91,14 @@ public class XPathFragment {
             setupNamespaceInformation(shortName);
             return;
         }
-        if (xpathString.startsWith("/")) {
+       if (xpathString.startsWith("/")) {
             setShouldExecuteSelectNodes(true);
             shortName = xpathString;
             indexValue = hasIndex(xpathString);
             setupNamespaceInformation(shortName);
             return;
         }
-        if (xpathString.equals("text()")) {
+        if (xpathString.equals(XMLConstants.TEXT)) {
             nameIsText = true;
             shortName = xpathString;
             return;
@@ -108,7 +109,7 @@ public class XPathFragment {
         // handle "self" xpath
         if (xpathString.equals(".")) {
             isSelfFragment = true;
-            shortName = xpathString;
+            shortName = xpathString;            
             return;
         }
 
@@ -117,13 +118,13 @@ public class XPathFragment {
     }
 
     private void setupNamespaceInformation(String xpathString) {
-        int nsindex = xpathString.indexOf(':');
+        int nsindex = xpathString.indexOf(XMLConstants.COLON);
         if (nsindex != -1) {
             hasNamespace = true;
             localName = xpathString.substring(nsindex + 1);
             prefix = xpathString.substring(0, nsindex);
         } else {
-            localName = xpathString;
+        	localName = xpathString;
         }
     }
 
@@ -148,7 +149,7 @@ public class XPathFragment {
     }
 
     public void setLocalName(String localName) {
-        this.localName = localName;
+    	this.localName = localName;
     }
 
     public String getNamespaceURI() {
@@ -156,10 +157,10 @@ public class XPathFragment {
     }
 
     public void setNamespaceURI(String namespaceURI) {
-        if (isSelfFragment || "".equals(namespaceURI)) {
+    	if (isSelfFragment || namespaceURI !=null && namespaceURI.length() == 0) {
             this.namespaceURI = null;
         } else {
-            this.namespaceURI = namespaceURI;
+        	this.namespaceURI = namespaceURI;
         }
     }
 
@@ -271,11 +272,14 @@ public class XPathFragment {
             return false;
         }
     }
-
     public int hashCode() {
-        int hash = 7;
-        hash = (31 * hash) + ((null == localName) ? 0 : localName.hashCode());
-        hash = (31 * hash) + ((null == namespaceURI) ? 0 : namespaceURI.hashCode());
+    	 int hash = 217;
+    	 if(localName != null){
+            hash += localName.hashCode();
+    	 }
+    	 if(namespaceURI != null){
+            hash += namespaceURI.hashCode();
+    	 }
         return hash;
     }
 

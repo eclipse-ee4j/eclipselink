@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
@@ -180,9 +181,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, XMLNillableMapping {
-
-    /** Empty String identifier */
-    protected static final String EMPTY_STRING = "";
+   
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     private boolean isWriteOnly;
@@ -228,8 +227,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * @param xpathString String
      */
     public void setXPath(String xpathString) {
-        if ((xpathString.indexOf("@") == -1) && (!xpathString.endsWith("text()"))) {
-            xpathString += "/text()";
+        if ((xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {        	
+            xpathString += '/' + XMLConstants.TEXT;
         }
         setField(new XMLField(xpathString));
     }
@@ -246,10 +245,10 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     	// Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
         boolean isNullRepresentedByEmptyNode = getNullPolicy().isNullRepresentedByEmptyNode();
-        if (EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
+        if (XMLConstants.EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
            fieldValue = null;
         } else if (null == fieldValue && !isNullRepresentedByEmptyNode) {
-            fieldValue = EMPTY_STRING;
+            fieldValue = XMLConstants.EMPTY_STRING;
         }
         
         // PERF: Direct variable access.

@@ -74,7 +74,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return false;
         }
         Object objectValue;
-        String stringValue = "";
+        String stringValue = XMLConstants.EMPTY_STRING;
         String newValue;
         QName schemaType;
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
@@ -136,7 +136,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             if (null != type) {
                 String namespaceURI = null;
-                int colonIndex = type.indexOf(COLON);
+                int colonIndex = type.indexOf(XMLConstants.COLON);
                 if (colonIndex > -1) {
                     String prefix = type.substring(0, colonIndex);
                     namespaceURI = unmarshalRecord.resolveNamespacePrefix(prefix);
@@ -153,7 +153,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             if (!this.xmlCompositeDirectCollectionMapping.usesSingleNode()) {
                 String namespaceURI = xmlField.getLastXPathFragment().getNamespaceURI();
                 if (namespaceURI == null) {
-                    namespaceURI = EMPTY_STRING;
+                    namespaceURI = XMLConstants.EMPTY_STRING;
                 }
                 String value = atts.getValue(namespaceURI, xmlField.getLastXPathFragment().getLocalName());
                 Object collection = unmarshalRecord.getContainerInstance(this);
@@ -179,7 +179,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
         } else {
-            if (value.equals(EMPTY_STRING)) {
+            if (value.equals(XMLConstants.EMPTY_STRING)) {
                 if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode() ||
                         xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
                     return;
@@ -190,7 +190,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
-        Object value = unmarshalRecord.getStringBuffer().toString();
+       Object value = unmarshalRecord.getStringBuffer().toString();
         unmarshalRecord.resetStringBuffer();
 
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
@@ -212,7 +212,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return;
         }
 
-        if ((!isWhitespaceAware() && EMPTY_STRING.equals(value))) {
+        if ((!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value))) {
             return;
         }
 

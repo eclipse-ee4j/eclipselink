@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -449,7 +450,7 @@ public class XMLField extends DatabaseField {
     }
 
     private void buildFragments(String xpathString) {
-        StringTokenizer st = new StringTokenizer(xpathString, "/");
+        StringTokenizer st = new StringTokenizer(xpathString, "/");        
         String next;
         int i = 0;
         XPathFragment currentXPathFragment = null;
@@ -457,9 +458,9 @@ public class XMLField extends DatabaseField {
 
         //If the first character is a / we do not want the string tokenizer to get
         //rid of it because it indicates that we doing something at the root.
-        if (xpathString.startsWith("/")) {
+        if (xpathString.charAt(0) == '/') {
             next = st.nextToken();
-            next = "/" + next;
+            next = '/' + next;
             currentXPathFragment = new XPathFragment(next);
             setXPathFragment(currentXPathFragment);
             i++;
@@ -468,8 +469,8 @@ public class XMLField extends DatabaseField {
         while (st.hasMoreTokens()) {
             next = st.nextToken().intern();
             if (null != next) {
-                if (next.equals(XPathFragment.TEXT)) {
-                    nextXPathFragment = new XPathFragment(XPathFragment.TEXT);
+                if (next.equals(XMLConstants.TEXT)) {
+                    nextXPathFragment = new XPathFragment(XMLConstants.TEXT);
                 } else {
                     nextXPathFragment = new XPathFragment(next);
                 }
@@ -581,11 +582,10 @@ public class XMLField extends DatabaseField {
     public ArrayList getUserXMLTypesForDeploymentXML() {
         if (userXMLTypes != null) {
             ArrayList types = new ArrayList(userXMLTypes.size());
-            Iterator iter = userXMLTypes.keySet().iterator();
+            Iterator iter = userXMLTypes.entrySet().iterator();
             while (iter.hasNext()) {
-                QName xmlType = (QName)iter.next();
-                Class javaType = (Class)userXMLTypes.get(xmlType);
-                XMLConversionPair pair = new XMLConversionPair(xmlType, javaType.getName());
+            	Map.Entry entry = (Map.Entry)iter.next();                
+                XMLConversionPair pair = new XMLConversionPair((QName)entry.getKey(),((Class)entry.getValue()).getName());
                 types.add(pair);
             }
             return types;
@@ -615,11 +615,10 @@ public class XMLField extends DatabaseField {
     public ArrayList getUserJavaTypesForDeploymentXML() {
         if (userJavaTypes != null) {
             ArrayList types = new ArrayList(userJavaTypes.size());
-            Iterator iter = userJavaTypes.keySet().iterator();
+            Iterator iter = userJavaTypes.entrySet().iterator();
             while (iter.hasNext()) {
-                Class javaType = (Class)iter.next();
-                QName xmlType = (QName)userJavaTypes.get(javaType);
-                XMLConversionPair pair = new XMLConversionPair(xmlType, javaType.getName());
+            	Map.Entry entry = (Map.Entry)iter.next();                
+                XMLConversionPair pair = new XMLConversionPair((QName)entry.getValue(), ((Class)entry.getKey()).getName());
                 types.add(pair);
             }
             return types;
@@ -662,7 +661,7 @@ public class XMLField extends DatabaseField {
     }
 
     protected QName buildQNameFromString(String stringValue, XMLRecord record){	    
-		int index = stringValue.lastIndexOf(":");
+		int index = stringValue.lastIndexOf(XMLConstants.COLON);
 		if(index > -1) {
 			String prefix =  stringValue.substring(0, index);
 			String localName = stringValue.substring(index + 1);
@@ -670,7 +669,7 @@ public class XMLField extends DatabaseField {
 			String namespaceURI = record.resolveNamespacePrefix(prefix);			
 			return new QName(namespaceURI, localName, prefix);
 		} else {
-			String namespaceURI = record.resolveNamespacePrefix("");
+			String namespaceURI = record.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
 			if(namespaceURI == null){
 				namespaceURI = record.resolveNamespacePrefix(null);
 			}

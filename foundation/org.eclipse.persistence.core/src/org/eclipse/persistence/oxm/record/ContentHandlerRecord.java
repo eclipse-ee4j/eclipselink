@@ -49,7 +49,6 @@ public class ContentHandlerRecord extends MarshalRecord {
     private String namespaceURI;
     private XPathFragment xPathFragment;
     private AttributesImpl attributes;
-    private static final String CDATA = "CDATA";
 
     // bug#5035551 - content handler record will act more like writer 
     // record in that startElement is called with any attributes that
@@ -180,14 +179,14 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
-        attributes.addAttribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), CDATA, value);
+        attributes.addAttribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), XMLConstants.CDATA, value);
     }
 
     /**
      * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
-        attributes.addAttribute(namespaceURI, localName, qName, CDATA, value);
+        attributes.addAttribute(namespaceURI, localName, qName, XMLConstants.CDATA, value);
     }
     
     /**
@@ -269,12 +268,12 @@ public class ContentHandlerRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), "", resolverPfx+":"+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), "", attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(XMLConstants.XMLNS_URL, "",XMLConstants.XMLNS + ":" + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else {

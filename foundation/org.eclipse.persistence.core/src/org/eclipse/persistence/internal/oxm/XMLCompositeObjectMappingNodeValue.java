@@ -196,11 +196,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             XPathFragment frag = new XPathFragment();
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if ((uri != null) && !uri.equals("")) {
+                            if (uri != null && uri.length() > 0) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((XMLDescriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if ((prefix != null) && !prefix.equals("")) {
-                                    xpath = prefix + ":" + xpath;
+                                if (prefix != null && prefix.length() > 0) {
+                                    xpath = prefix + XMLConstants.COLON + xpath;
                                 }
                             }
                             frag.setXPath(xpath);     
@@ -240,7 +240,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByEmptyNode() || xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix()  +":" + qnameString;
+                    qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
                 }
                 if(null != xmlDescriptor) {
                     // Process null capable value                 
@@ -343,7 +343,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xsiType = xsiType.trim();
                     Object value = element;
                     String namespace = null;
-                    int colonIndex = xsiType.indexOf(COLON);
+                    int colonIndex = xsiType.indexOf(XMLConstants.COLON);
                     if (colonIndex > -1) {
                         String prefix = xsiType.substring(0, colonIndex);
                         namespace = unmarshalRecord.resolveNamespacePrefix(prefix);

@@ -39,7 +39,6 @@ import org.w3c.dom.Node;
  */
 public class XMLStreamWriterRecord extends MarshalRecord {
     private static int COUNTER = 0;
-    private static String EMPTY_STRING = "";
     private DomToXMLStreamWriter domToStreamWriter;
     private Map<String, String> prefixMapping;
 
@@ -86,7 +85,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 }
             } else {
                 NamespaceContext ctx = xmlStreamWriter.getNamespaceContext();
-                if(namespaceURI == null || namespaceURI.equals("")) {
+                if(namespaceURI == null || namespaceURI.length() == 0) {
                     xmlStreamWriter.writeAttribute(localName, value);
                 } else {
                     xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
@@ -122,15 +121,15 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
             if(namespaceURI == null) {
                 xmlStreamWriter.writeStartElement("", xPathFragment.getLocalName(), "");
-                String defaultNamespace = xmlStreamWriter.getNamespaceContext().getNamespaceURI("");
-                if(defaultNamespace != null && !defaultNamespace.equals("")) {
-                    xmlStreamWriter.writeDefaultNamespace("");
+                String defaultNamespace = xmlStreamWriter.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
+                    xmlStreamWriter.writeDefaultNamespace(XMLConstants.EMPTY_STRING);
                 }
 
             } else {
                 String prefix = xPathFragment.getPrefix();
                 if(prefix == null) {
-                    prefix = "";
+                    prefix = XMLConstants.EMPTY_STRING;
                 }
                 xmlStreamWriter.writeStartElement(prefix, xPathFragment.getLocalName(), namespaceURI);
             }
@@ -187,7 +186,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
 
     private String getString(String string) {
         if(null == string) {
-            return EMPTY_STRING;
+            return XMLConstants.EMPTY_STRING;
         } else {
             return string;
         }
@@ -198,9 +197,9 @@ public class XMLStreamWriterRecord extends MarshalRecord {
     }
 
     private void writePrefixMappings() {
-        for(String prefix:this.prefixMapping.keySet()) {
+    	for(Map.Entry<String, String> entry:this.prefixMapping.entrySet()) {
             try {
-                xmlStreamWriter.writeNamespace(prefix, prefixMapping.get(prefix));
+                xmlStreamWriter.writeNamespace(entry.getKey(), entry.getValue());
             } catch(XMLStreamException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -214,7 +213,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
         if (namespaceResolver != null) {
             if(namespaceResolver.getDefaultNamespaceURI() != null) {
-                startPrefixMapping("", namespaceResolver.getDefaultNamespaceURI());
+                startPrefixMapping(XMLConstants.EMPTY_STRING, namespaceResolver.getDefaultNamespaceURI());
             }
             Enumeration prefixes = namespaceResolver.getPrefixes();
             String prefix;

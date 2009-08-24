@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -297,7 +298,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
             Object fieldValue;
             Object objectValue;
-            String stringValue = "";
+            String stringValue = XMLConstants.EMPTY_STRING;
             QName schemaType;
             Object iterator = cp.iteratorFor(collection);
             if (usesSingleNode()) {
@@ -315,7 +316,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                         }
                     }
                 }
-                if (!(stringValue.equals(""))) {
+                if (stringValue.length() > 0) {
                     row.put(xmlField, stringValue);
                 }
             } else {

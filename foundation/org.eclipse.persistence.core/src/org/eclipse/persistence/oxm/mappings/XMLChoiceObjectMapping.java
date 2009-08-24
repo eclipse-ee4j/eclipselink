@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -321,10 +322,10 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     }
 
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        Iterator<XMLField> fields = fieldToClassNameMappings.keySet().iterator();
-        while (fields.hasNext()) {
-            XMLField next = fields.next();
-            String className = fieldToClassNameMappings.get(next);
+    	Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<XMLField, String> entry = entries.next();
+            String className = entry.getValue();
             Class elementType = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -341,7 +342,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             }
 
             if (classToFieldMappings.get(elementType) == null) {
-                classToFieldMappings.put(elementType, next);
+                classToFieldMappings.put(elementType, entry.getKey());
             }
 
         }
@@ -377,7 +378,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
 
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
-        if(this.fieldToClassNameMappings.size() > 0) {
+        if(this.fieldToClassNameMappings.size() > 0) {        	
             for(XMLField xmlField:this.fieldToClassNameMappings.keySet()) {
                 String className = this.fieldToClassNameMappings.get(xmlField);
                 XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);

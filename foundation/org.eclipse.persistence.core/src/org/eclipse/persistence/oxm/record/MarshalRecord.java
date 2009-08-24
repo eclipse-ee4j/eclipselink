@@ -156,7 +156,7 @@ public abstract class MarshalRecord extends XMLRecord {
             namespacePrefix = (String)prefixes.nextElement();
             namespaceURI = namespaceResolver.resolveNamespacePrefix(namespacePrefix);
 
-            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + ":" + namespacePrefix, namespaceURI);
+            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, namespaceURI);
         }
     }
 

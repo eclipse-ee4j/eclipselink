@@ -184,11 +184,11 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     resolver = new NamespaceResolver();
                     resolver.put(prefix, XMLConstants.XOP_URL);
                 }
-                includeField = new XMLField(prefix + ":" + INCLUDE + "/@href");
+                includeField = new XMLField(prefix + XMLConstants.COLON + INCLUDE + "/@href");
                 includeField.setNamespaceResolver(resolver);
             }
         }
-        XMLField textField = new XMLField(field.getXPath() + "/text()");
+        XMLField textField = new XMLField(field.getXPath() + '/' + XMLConstants.TEXT);
         textField.setNamespaceResolver(field.getNamespaceResolver());
         textField.setSchemaType(field.getSchemaType());
         //field = textField;
@@ -246,7 +246,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         } else {
             if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 //write as attachment
-                String c_id = "";
+                String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
                 if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
                     if (getCollectionContentType() == ClassConstants.ABYTE) {
@@ -281,13 +281,13 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     if (resolver == null || resolver.resolveNamespaceURI(XMLConstants.XOP_URL) == null) {
                         resolver = new NamespaceResolver();
                         resolver.put(XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
-                        String xpath = XMLConstants.XOP_PREFIX + ":" + INCLUDE;
+                        String xpath = XMLConstants.XOP_PREFIX + XMLConstants.COLON + INCLUDE;
                         XMLField incField = new XMLField(xpath);
                         incField.setNamespaceResolver(resolver);
                         Object obj = include.getIndicatingNoEntry(incField);
                         if (obj != null && obj instanceof DOMRecord) {
                             if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                                ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
+                                ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
                             }
                         }
                     }
@@ -335,11 +335,11 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     resolver.put(prefix, XMLConstants.XOP_URL);
                 }
 
-                includeField = new XMLField(prefix + ":" + INCLUDE + "/@href");
+                includeField = new XMLField(prefix + XMLConstants.COLON + INCLUDE + "/@href");
                 includeField.setNamespaceResolver(resolver);
             }
         }
-        XMLField textField = new XMLField(field.getXPath() + "/text()");
+        XMLField textField = new XMLField(field.getXPath() + '/' +XMLConstants.TEXT);
         textField.setNamespaceResolver(field.getNamespaceResolver());
         textField.setSchemaType(field.getSchemaType());
         
@@ -387,7 +387,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
 
                 if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                     //look for the include element:
-                    String xpath = "";
+                    String xpath = XMLConstants.EMPTY_STRING;
 
                     //  need a prefix for XOP
                     String prefix = null;
@@ -400,7 +400,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     }
                     NamespaceResolver tempResolver = new NamespaceResolver();
                     tempResolver.put(prefix, XMLConstants.XOP_URL);
-                    xpath = prefix + ":" + INCLUDE + "/@href";
+                    xpath = prefix + XMLConstants.COLON + INCLUDE + "/@href";
                     XMLField field = new XMLField(xpath);
                     field.setNamespaceResolver(tempResolver);
                     String includeValue = (String) record.get(field);
@@ -412,17 +412,17 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         }
                     } else {
                         //If we didn't find the Include element, check for inline
-                        fieldValue = record.get("text()");
+                        fieldValue = record.get(XMLConstants.TEXT);
                         //should be a base64 string
                         fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                     }
                 } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
-                    String refValue = (String) record.get("text()");
+                    String refValue = (String) record.get(XMLConstants.TEXT);
                     if (refValue != null) {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                     }
                 } else {
-                    fieldValue = record.get("text()");
+                    fieldValue = record.get(XMLConstants.TEXT);
                     //should be a base64 string
                     fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                 }

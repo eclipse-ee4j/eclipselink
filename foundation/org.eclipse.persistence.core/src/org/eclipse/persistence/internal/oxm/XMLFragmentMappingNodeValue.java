@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -79,13 +80,13 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
         try {
-            String namespaceURI = "";
+            String namespaceURI = XMLConstants.EMPTY_STRING;
             if (xPathFragment.getNamespaceURI() != null) {
                 namespaceURI = xPathFragment.getNamespaceURI();
             }
             String qName = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
-                qName = xPathFragment.getPrefix() + ":" + qName;
+                qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             unmarshalRecord.getXMLReader().setContentHandler(builder);
@@ -112,7 +113,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         if(namespaceURI == null) {
-            namespaceURI = "";
+            namespaceURI = XMLConstants.EMPTY_STRING;
         }
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object attributeValue = builder.buildAttributeNode(namespaceURI, localName, value);

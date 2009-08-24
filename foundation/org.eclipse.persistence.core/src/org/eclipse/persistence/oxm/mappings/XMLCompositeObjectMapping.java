@@ -196,8 +196,6 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping {
-    private static final String EMPTY_STRING = "";
-
     AbstractNullPolicy nullPolicy;
     private AttributeAccessor containerAccessor;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
@@ -559,13 +557,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 toReturn = stringValue; 
             }
     	 }
-        if ((stringValue == null) || stringValue.equals("")) {
+        if ((stringValue == null) || stringValue.length() == 0) {
             return toReturn;
     	}
     	 
         String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
     
-        if ((null != type) && !type.equals(EMPTY_STRING)) {
+        if ((null != type) && type.length() > 0) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
             
@@ -657,7 +655,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             // Try to find a descriptor based on the schema type
             String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && !type.equals(EMPTY_STRING)) {
+            if ((null != type) && type.length() > 0) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -671,11 +669,11 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && !uri.equals(EMPTY_STRING)) {
+                    if ((uri != null) && uri.length() > 0) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && !prefix.equals(EMPTY_STRING)) {
-                            xpath = prefix + ":" + xpath;
+                        if ((prefix != null) && prefix.length() > 0) {
+                            xpath = prefix + XMLConstants.COLON + xpath;
                         }
                     }
                     frag.setXPath(xpath);
