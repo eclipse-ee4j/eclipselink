@@ -1398,6 +1398,7 @@
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
         <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
+        <antcall target="server-test-delimited" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-relationships" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
@@ -1485,6 +1486,20 @@
             <param name="TEST_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="EAR_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-delimited">
+        <copy file="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/orm.xml" todir="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/server" filtering="true"/>
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="delimited"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/delimited"/>
+            <param name="MODEL_NAME" value="eclipselink-delimited-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/delimited"/>
+            <param name="TEST_NAME" value="eclipselink-delimited-model"/>
+            <param name="EAR_NAME" value="eclipselink-delimited-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
