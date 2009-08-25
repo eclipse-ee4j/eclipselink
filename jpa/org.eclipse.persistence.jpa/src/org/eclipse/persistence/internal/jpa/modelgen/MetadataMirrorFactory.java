@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
  * used with the canonical model processor.
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class MetadataMirrorFactory extends MetadataFactory {
     private ProcessingEnvironment m_processingEnv;

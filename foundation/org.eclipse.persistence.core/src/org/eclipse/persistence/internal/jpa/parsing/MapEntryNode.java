@@ -24,7 +24,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <li> Generate the correct expression for an ENTRY in EJBQL
  * </ul>
  *    @author tware
- *    @since EclipseLink 2.0
+ *    @since EclipseLink 1.2
  */
 public class MapEntryNode extends Node {
     

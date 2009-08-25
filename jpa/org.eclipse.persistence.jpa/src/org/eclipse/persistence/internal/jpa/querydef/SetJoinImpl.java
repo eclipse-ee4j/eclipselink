@@ -32,7 +32,7 @@ import javax.persistence.metamodel.Metamodel;
  * @see javax.persistence.criteria ListJoin
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 
 public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X> {

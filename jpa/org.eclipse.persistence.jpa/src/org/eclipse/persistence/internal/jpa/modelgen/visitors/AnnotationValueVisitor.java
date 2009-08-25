@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * An annotation element visitor. 
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor6<Object, Object> {
     /**

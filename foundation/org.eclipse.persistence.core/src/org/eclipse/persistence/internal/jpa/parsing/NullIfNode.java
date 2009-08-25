@@ -23,7 +23,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <li> Generate the correct expression for an NULLIF in EJBQL
  * </ul>
  *    @author tware
- *    @since EclipseLink 2.0
+ *    @since EclipseLink 1.2
  */
 public class NullIfNode extends Node {
 

@@ -1191,7 +1191,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      * Return whether the ClassAccessor on this MetadataDescriptor is a MappedSuperclassAccessor.
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public boolean isMappedSuperclass() {
         return getClassAccessor().isMappedSuperclass();

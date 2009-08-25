@@ -59,7 +59,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see javax.persistence.criteria From
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 
 public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.criteria.From<Z, X> {

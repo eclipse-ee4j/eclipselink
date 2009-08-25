@@ -41,7 +41,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * 
  * @see javax.persistence.metamodel.Entity
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented entity or mapped superclass type. 
  *  
  */ 

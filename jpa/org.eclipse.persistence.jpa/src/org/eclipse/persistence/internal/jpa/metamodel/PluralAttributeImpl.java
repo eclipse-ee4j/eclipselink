@@ -40,7 +40,7 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
  * 
  * @see javax.persistence.metamodel.PluralAttribute
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  * 
  * @param <X> The type the represented collection belongs to
  * @param <C> The type of the represented collection

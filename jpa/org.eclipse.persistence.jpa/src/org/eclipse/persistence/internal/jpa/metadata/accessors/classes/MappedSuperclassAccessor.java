@@ -454,7 +454,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process the accessType for a MappedSuperclass.
      * This function is referenced by MetadataProject.addMetamodelMappedSuperclass().
      * The overridden function on the subclass must be used in all other cases.
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public void processAccessType() {
         // 266912: Note: this function is a port of the subclass protected EntityAccessor.processAccessType() minus step 1 and 2
@@ -876,7 +876,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Used to process mapped superclasses when creating descriptors for a 
      * metamodel. The MappedSuperclass Descriptors here are separate from 
      * non-MappedSuperclass Descriptors.
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public void processMetamodelDescriptor() {        
         for (MappedSuperclassAccessor mappedSuperclass : getProject().getMetamodelMappedSuperclasses()) {

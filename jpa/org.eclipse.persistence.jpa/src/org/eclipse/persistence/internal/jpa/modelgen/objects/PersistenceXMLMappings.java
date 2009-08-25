@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.Project;
  * persistence units) through OX mappings. 
  * 
  * @author Guy Pelletier, Doug Clarke
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class PersistenceXMLMappings {
 

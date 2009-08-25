@@ -57,7 +57,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * 
  * @see javax.persistence.metamodel.Metamodel
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  *  
  */ 
 public class MetamodelImpl implements Metamodel {

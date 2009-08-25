@@ -51,7 +51,7 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * A representation of a persistence unit definition. 
  * 
  * @author Guy Pelletier, Doug Clarke
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class PersistenceUnit {    
     protected List<XMLEntityMappings> m_xmlEntityMappings;

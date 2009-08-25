@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * @see javax.persistence.criteria ListJoin
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 
 public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X> {

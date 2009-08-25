@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Object to process JPA relational type colummns into EclipseLink database fields.
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public abstract class RelationalColumnMetadata extends MetadataColumn {
     private String m_referencedColumnName;

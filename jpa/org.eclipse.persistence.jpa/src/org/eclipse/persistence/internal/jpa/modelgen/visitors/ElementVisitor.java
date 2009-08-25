@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
  * An element visitor. 
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnotatedElement, MetadataClass> {
     private ProcessingEnvironment m_processingEnv;

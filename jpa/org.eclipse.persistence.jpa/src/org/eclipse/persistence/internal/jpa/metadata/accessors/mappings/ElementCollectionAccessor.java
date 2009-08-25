@@ -83,7 +83,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * Used to support DirectCollection, DirectMap, AggregateCollection.
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
     private MetadataClass m_targetClass;

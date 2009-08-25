@@ -43,7 +43,7 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * Used to read persistence units through the java annotation processing API. 
  * 
  * @author Guy Pelletier, Peter Krogh
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class PersistenceUnitReader {
     protected List<PersistenceUnit> m_persistenceUnits;

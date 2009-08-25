@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see javax.persistence.criteria SetJoin
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 @SuppressWarnings("hiding")
 

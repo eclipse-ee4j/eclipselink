@@ -32,7 +32,7 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * @see javax.persistence.criteria Join
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
     

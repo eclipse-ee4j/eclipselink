@@ -45,7 +45,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  * the ElementCollection, BasicCollection and BasicMap metadata.
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
     private String m_joinFetch;

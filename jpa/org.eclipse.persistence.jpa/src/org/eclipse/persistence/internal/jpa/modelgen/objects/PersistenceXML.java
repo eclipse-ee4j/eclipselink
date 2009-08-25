@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
  * A representation of a persistence xml file. 
  * 
  * @author Guy Pelletier, Doug Clarke
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class PersistenceXML {
     private String version; 

@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * database field.
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class DirectColumnMetadata extends MetadataColumn {
     private Boolean m_nullable;

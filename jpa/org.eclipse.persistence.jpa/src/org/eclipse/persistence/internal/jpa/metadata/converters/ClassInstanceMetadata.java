@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * converters.
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class ClassInstanceMetadata extends MetadataConverter {
     

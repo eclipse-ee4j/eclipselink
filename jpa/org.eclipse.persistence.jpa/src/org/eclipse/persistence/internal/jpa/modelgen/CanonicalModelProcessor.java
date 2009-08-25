@@ -53,7 +53,7 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
  * The main APT processor to generate the JPA 2.0 Canonical model. 
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 @SupportedAnnotationTypes("*")  // Process all annotations
 @SupportedSourceVersion(RELEASE_6)

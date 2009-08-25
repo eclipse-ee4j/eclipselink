@@ -38,7 +38,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
  * 
  * @see javax.persistence.metamodel.MapAttribute
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  *  
  * @param <X> The type the represented Map belongs to
  * @param <K> The type of the key of the represented Map

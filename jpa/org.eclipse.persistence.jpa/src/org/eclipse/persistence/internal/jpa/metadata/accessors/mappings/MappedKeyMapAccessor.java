@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
  * @see ElementCollectionAccessor
  *  
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public interface MappedKeyMapAccessor {
     /**

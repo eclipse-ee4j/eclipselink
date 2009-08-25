@@ -31,7 +31,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * 
  * @see javax.persistence.metamodel.CollectionAttribute
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The type the represented Collection belongs to
  * @param <V> The element type of the represented Collection
  *  

@@ -35,7 +35,7 @@ import javax.persistence.metamodel.Metamodel;
  * @see javax.persistence.criteria Join
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 
 public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<Z, X> {

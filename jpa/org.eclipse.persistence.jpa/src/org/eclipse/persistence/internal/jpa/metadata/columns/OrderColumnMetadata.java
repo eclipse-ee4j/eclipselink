@@ -28,7 +28,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * Object to process a JPA order column into an EclipseLink database field.
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class OrderColumnMetadata extends DirectColumnMetadata {
     private static final String _ORDER = "_ORDER";

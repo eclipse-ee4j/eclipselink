@@ -22,7 +22,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
  * via the old xml parser.
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class SEPersistenceUnitProperty {
     protected String name;

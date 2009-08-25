@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see javax.persistence.criteria Expression
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
     protected Metamodel metamodel;

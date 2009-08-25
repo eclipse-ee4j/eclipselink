@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * @see javax.persistence.criteria Predicate
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     

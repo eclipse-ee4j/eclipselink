@@ -19,7 +19,7 @@ import org.eclipse.persistence.queries.ReportQueryResult;
  * @see javax.persistence.criteria CriteriaQuery
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class TupleQuery extends ReportQuery {
     

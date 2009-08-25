@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * by sub-classing this one and supply it at processing time.
  * 
  * @author James Sutherland
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public abstract class MetadataFactory {
     /** Stores all metadata for classes. */

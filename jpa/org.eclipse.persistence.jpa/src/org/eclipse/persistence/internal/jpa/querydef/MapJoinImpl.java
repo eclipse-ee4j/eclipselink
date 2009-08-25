@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see javax.persistence.criteria MapJoin
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 
 public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, K, V> {

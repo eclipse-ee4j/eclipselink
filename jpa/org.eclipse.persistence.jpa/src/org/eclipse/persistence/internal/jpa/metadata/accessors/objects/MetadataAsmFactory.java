@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
  * to process the metadata model.
  * 
  * @author James Sutherland
- * @since EclipseLink 2.0 
+ * @since EclipseLink 1.2 
  */
 public class MetadataAsmFactory extends MetadataFactory {
     /** Set of primitive type codes. */

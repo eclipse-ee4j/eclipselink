@@ -48,7 +48,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see org.eclipse.persistence.mappings.converters.ClassInstanceConverter
  * 
  * @author Guy Pelletier
- * @since EclipseLink 2.0 
+ * @since EclipseLink 1.2 
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
  * A type visitor. 
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";

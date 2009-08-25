@@ -30,7 +30,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * attributes.
  *
  * @see javax.persistence.metamodel.SetAttribute 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  *
  * @param <X> The type the represented Set belongs to
  * @param <V> The element type of the represented Set

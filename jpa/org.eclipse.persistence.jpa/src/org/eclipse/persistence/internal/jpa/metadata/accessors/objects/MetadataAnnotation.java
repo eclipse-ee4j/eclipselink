@@ -19,7 +19,7 @@ import java.util.Map;
  * Metadata representation of an annotation.
  * 
  * @author James Sutherland
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class MetadataAnnotation {
     /** The name of the annotation. */

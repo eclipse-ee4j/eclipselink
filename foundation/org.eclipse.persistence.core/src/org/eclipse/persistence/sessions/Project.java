@@ -97,7 +97,7 @@ public class Project implements Serializable, Cloneable {
      * without creating a compile time dependency on JPA.
      * The descriptor values of this map must not be replaced by a put() so that the 
      * mappings on the initial descriptor are not overwritten.<p>
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     protected Map<Object, RelationalDescriptor> mappedSuperclassDescriptors;
     

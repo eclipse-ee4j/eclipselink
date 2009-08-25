@@ -22,7 +22,7 @@ import org.eclipse.persistence.expressions.Expression;
  * <li> Generate the correct expression for an WHEN THEN in EJBQL
  * </ul>
  *    @author tware
- *    @since EclipseLink 2.0
+ *    @since EclipseLink 1.2
  */
 public class WhenThenNode extends Node {
 

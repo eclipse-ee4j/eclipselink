@@ -45,7 +45,7 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
  *
  * @author Michael O'Brien
  * @see javax.persistence.metamodel.SingularAttribute
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  *
  * @param <X> The type containing the represented attribute
  * @param <T> The type of the represented attribute

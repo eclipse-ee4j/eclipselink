@@ -54,7 +54,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @see javax.persistence.criteria CriteriaQuery
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     

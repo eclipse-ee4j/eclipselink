@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see javax.persistence.criteria CriteriaQuery
  * 
  * @author gyorke
- * @since EclipseLink 2.0
+ * @since EclipseLink 1.2
  */
 public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     

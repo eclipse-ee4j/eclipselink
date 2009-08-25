@@ -38,7 +38,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  * 
  * @see javax.persistence.metamodel.MappedSuperclassType
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  *  
  * @param <X> The represented entity type  
  */ 

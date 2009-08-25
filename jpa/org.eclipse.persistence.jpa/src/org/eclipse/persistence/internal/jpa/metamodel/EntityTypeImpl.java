@@ -39,7 +39,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  *   
  * @see javax.persistence.metamodel.EntityType
  * 
- * @since EclipseLink 2.0 - JPA 2.0
+ * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented entity type.  
  */ 
 public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X> {    

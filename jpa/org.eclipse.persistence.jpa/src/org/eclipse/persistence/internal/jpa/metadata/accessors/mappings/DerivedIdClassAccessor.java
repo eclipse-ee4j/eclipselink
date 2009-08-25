@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * and is a reference back to a parents id class.
  * 
  * @author Guy Pelletier
- * @since Eclipselink 2.0
+ * @since EclipseLink 1.2
  */
 public class DerivedIdClassAccessor extends EmbeddedAccessor {
     /**

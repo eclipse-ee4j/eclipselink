@@ -201,7 +201,7 @@ public class MetadataProject {
     
     /**
      * All mappedSuperclass accessors, identity is handled by keying on className.
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
@@ -438,7 +438,7 @@ public class MetadataProject {
      *  </p>
      * @param metadataClass - the wrapped java class that the MappedSuperclass represents
      * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */    
     public void addMetamodelMappedSuperclass(MetadataClass metadataClass, MappedSuperclassAccessor accessor) {
         // If metadataClass is null, then get it from the location on the accessor
@@ -799,7 +799,7 @@ public class MetadataProject {
      * @see getMappedSuperclass(MetadataClass)
      * @see getMappedSuperclass(String)
      * @see getMappedSuperclasses()
-     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public Collection<MappedSuperclassAccessor> getMetamodelMappedSuperclasses() {
         return m_metamodelMappedSuperclasses.values();
