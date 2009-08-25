@@ -70,6 +70,13 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         createEmployee2();
         createLargeProject();
         createSmallProject();
+
+        em.persist(emp);
+        em.persist(addr);
+        em.persist(pn);
+        em.persist(emp2);
+        em.persist(lproj);
+        em.persist(sproj);
         
         addr.getEmployees().add(emp);
         emp.setAddress(addr);
@@ -88,20 +95,8 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         sproj.setTeamLeader(emp2);
         emp2.addProject(sproj);
 
-        em.persist(emp);
-        em.persist(addr);
-        em.persist(pn);
-        em.persist(emp2);
-        em.persist(lproj);
-        em.persist(sproj);
-
         commitTransaction(em);
-        
-        // refresh phone number 
-        beginTransaction(em);
-        em.refresh(pn);
-        commitTransaction(em);
-
+     
         clearCache("delimited");
         closeEntityManager(em);
     }

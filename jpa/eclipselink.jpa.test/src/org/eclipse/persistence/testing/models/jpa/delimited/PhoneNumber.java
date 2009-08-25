@@ -75,6 +75,7 @@ public class PhoneNumber implements Serializable {
     
     public void setOwner(Employee owner) {
         this.owner = owner;
+        id = owner.getId();
     }
 
     
