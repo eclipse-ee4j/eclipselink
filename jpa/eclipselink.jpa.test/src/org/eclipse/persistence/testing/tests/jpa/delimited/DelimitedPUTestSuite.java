@@ -96,8 +96,12 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         em.persist(sproj);
 
         commitTransaction(em);
-        //em.refresh(pn);
         
+        // refresh phone number 
+        beginTransaction(em);
+        em.refresh(pn);
+        commitTransaction(em);
+
         clearCache("delimited");
         closeEntityManager(em);
     }
