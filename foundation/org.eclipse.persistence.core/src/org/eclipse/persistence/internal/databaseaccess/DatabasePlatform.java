@@ -181,6 +181,12 @@ public class DatabasePlatform extends DatasourcePlatform {
      */ 
     protected boolean useRownumFiltering = true;
 
+    /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
+     * Redefined here for backward compatibility:
+     * Types.NCLOB won't compile with jdk 1.5.
+     */
+    public final static int Types_NCLOB = 2011;
+    
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;

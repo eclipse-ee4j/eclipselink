@@ -1573,7 +1573,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Return if the JDBC type is a large character type such as clob.
      */
     private boolean isClob(int type) {
-        return (type == Types.CLOB) || (type == Types.LONGVARCHAR);
+        return (type == Types.CLOB) || (type == Types.LONGVARCHAR) || (type == DatabasePlatform.Types_NCLOB);
     }
 
     /**
