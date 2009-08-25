@@ -231,13 +231,14 @@ public class DOMRecord extends XMLRecord {
     public Node createNewDocument(String defaultRootElementName, String namespaceURI) {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         Document document = xmlPlatform.createDocument();
-        if(defaultRootElementName != null) {
+        
+        if (defaultRootElementName == null || defaultRootElementName.length() == 0) {
+            DocumentFragment fragment = document.createDocumentFragment();
+            return fragment;
+        } else {
             Node rootNode = document.createElementNS(namespaceURI, defaultRootElementName);
             document.appendChild(rootNode);
             return document.getDocumentElement();
-        } else {
-            DocumentFragment fragment = document.createDocumentFragment();
-            return fragment;
         }
     }
 

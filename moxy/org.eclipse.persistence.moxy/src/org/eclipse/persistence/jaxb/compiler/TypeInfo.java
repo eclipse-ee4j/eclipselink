@@ -138,10 +138,20 @@ public class TypeInfo {
         // primary key field names to the descriptor
         if (isIDSet()) {
             String pkFieldName;
+            
+            String uri = getIDProperty().getSchemaName().getNamespaceURI();
+            String local = getIDProperty().getSchemaName().getLocalPart();
+            String resolvedUri = desc.getNamespaceResolver().resolveNamespaceURI(uri);
+            if (resolvedUri == null) {
+                resolvedUri = "";
+            } else {
+                resolvedUri += ":";
+            }
+            
             if (helper.isAnnotationPresent(getIDProperty().getElement(), XmlAttribute.class)) {
-                pkFieldName = ATT + getIDProperty().getSchemaName();
+                pkFieldName = ATT + resolvedUri + local;
             } else { // assume element
-                pkFieldName = getIDProperty().getSchemaName() + TXT;
+                pkFieldName = resolvedUri + local + TXT;
             }
             desc.addPrimaryKeyFieldName(pkFieldName);
         }

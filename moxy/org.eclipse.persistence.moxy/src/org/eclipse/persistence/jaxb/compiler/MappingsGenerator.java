@@ -94,7 +94,6 @@ public class MappingsGenerator {
     private static int wrapperCounter = 0;
 
     String outputDir = ".";
-    private int nextNamespaceNumber = 0;
     private HashMap userDefinedSchemaTypes;
     private Helper helper;
     private JavaClass jotArrayList;
@@ -207,11 +206,17 @@ public class MappingsGenerator {
         if (namespace.equals("##default")) {
             namespace = namespaceInfo.getNamespace();
         }
-        if (namespace.equals("")) {
-            descriptor.setDefaultRootElement(elementName);
+        
+        if (rootElem == null) {
+            descriptor.setDefaultRootElement("");
         } else {
-            descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver()) + ":" + elementName);
+            if (namespace.length() == 0) {
+                descriptor.setDefaultRootElement(elementName);
+            } else {
+                descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver()) + ":" + elementName);
+            }
         }
+        
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolver());
         project.addDescriptor(descriptor);
         info.setDescriptor(descriptor);
@@ -1227,8 +1232,7 @@ public class MappingsGenerator {
                 return next;
             }
         }
-        String prefix = "ns" + nextNamespaceNumber;
-        nextNamespaceNumber++;
+        String prefix = namespaceResolver.generatePrefix();
         namespaceResolver.put(prefix, URI);
         return prefix;
     }
