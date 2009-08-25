@@ -15,9 +15,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 import static javax.persistence.InheritanceType.JOINED;
+
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -27,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -39,7 +43,7 @@ import javax.persistence.Version;
 @Entity(name="GalacticMetamodel")
 @Table(name="CMP3_MM_GALACTIC")
 public class GalacticPosition implements java.io.Serializable {
-    @Id
+/*    @Id
     @GeneratedValue(strategy=TABLE, generator="GALACTIC_MM_TABLE_GENERATOR")
     @TableGenerator(
         name="GALACTIC_MM_TABLE_GENERATOR", 
@@ -50,11 +54,11 @@ public class GalacticPosition implements java.io.Serializable {
     )
     @Column(name="GALACTIC_ID")    
     private Integer primaryKey;
-    
+*/    
     // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
-/*    @EmbeddedId
+    @EmbeddedId
     @Column(name="GALACTIC_ID")    
-    protected EmbeddedPK primaryKey;*/
+    protected EmbeddedPK primaryKey;
     
     @Version
     @Column(name="GALACTIC_VERSION")
@@ -72,15 +76,22 @@ public class GalacticPosition implements java.io.Serializable {
 //        inverseJoinColumns=@JoinColumn(name="A_ID", referencedColumnName="ACCTNUM")    
 //    public GalacticPosition futurePosition;
     
+    
+    //@OneToMany(cascade=ALL)//, mappedBy="position")
+    // A Collection where the Collection type (Map, Set, List) is not defined at design time
+    // see design issue #58
+    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
+    //private Collection<Observation> observations;
+    
     public GalacticPosition() {}
 
-/*    public EmbeddedPK getPrimaryKey() {
+    public EmbeddedPK getPrimaryKey() {
         return primaryKey;
     }
 
     public void setPrimaryKey(EmbeddedPK primaryKey) {
         this.primaryKey = primaryKey;
-    }*/
+    }
     
     public int getVersion() { 
         return version; 
@@ -90,12 +101,12 @@ public class GalacticPosition implements java.io.Serializable {
         this.version = version;
     }
 
-    public Integer getId() {
+/*    public Integer getId() {
         return primaryKey;
     }
 
     public void setId(Integer id) {
         this.primaryKey = id;
-    }
+    }*/
     
 }

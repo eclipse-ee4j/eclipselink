@@ -21,7 +21,7 @@ import static javax.persistence.GenerationType.TABLE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,7 +60,7 @@ public class Board implements java.io.Serializable{
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")
-    private Collection<Memory> memories = new HashSet<Memory>();
+    private Collection<Memory> memories = new LinkedHashSet<Memory>();
 
     // The M:1 side is the owning side for "circuitBoards"
     @ManyToOne(fetch=EAGER)

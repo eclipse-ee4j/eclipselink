@@ -76,59 +76,34 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         super(managedType, mapping);
         Class attributeClass = mapping.getAttributeClassification();
 
-        // The attribute classification is null for non-collection mappings
+        // If attribute is a primitive type (non-null) - we will wrap it in a BasicType automatically in getType below
+        // The attribute classification is null for non-collection mappings such as embeddable keys
         if (null == attributeClass) { // BasicType will != null --> else clause
             // EntityType
             // We support @OneToOne but not EIS, Reference or VariableOneToOne
-            if(mapping.isOneToOneMapping()) {
+            // Note: OneToMany, ManyToMany are handled by PluralAttributeImpl
+            if(mapping.isOneToOneMapping()) { // handles @ManyToOne
                 attributeClass = ((OneToOneMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
-            } else if (mapping.isOneToManyMapping()) {
-                // TODO: verify
-                attributeClass = ((OneToManyMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
-            } else if (mapping.isManyToManyMapping()) {
-                // TODO: verify
-                attributeClass = ((ManyToManyMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
             } else if (mapping.isAggregateObjectMapping()) { // IE: EmbeddedId
                 attributeClass = ((AggregateMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);            
-                }                
             } else if (mapping.isVariableOneToOneMapping()) { // interfaces are unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
                 // see JUnitCriteriaUnitTestSuite.testSelectPhoneNumberAreaCode() line: 246
-                // VariableOneToOne mappings are unsupported - default to referenceClass  (Interface) anyway
+                // VariableOneToOne mappings are unsupported - default to referenceClass (Interface) anyway
                 attributeClass = ((VariableOneToOneMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);            
-                }                
-                
             } else if (mapping.isEISMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
-                // TODO: refactor
-                // VariableOneToOne mappings are unsupported - default to Object:
-                attributeClass = Object.class;
+                // EIS mappings are unsupported - default to Object:
             } else if ( mapping.isReferenceMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
-                // VariableOneToOne mappings are unsupported - default to referenceClass anyway
+                // Reference mappings are unsupported - default to referenceClass anyway
                 attributeClass = ((ReferenceMapping)mapping).getReferenceClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);            
-                }                
             } else if (mapping.isDirectToFieldMapping()) { // Also handles the keys of an EmbeddedId
                 attributeClass = mapping.getField().getType();
                 if(null == attributeClass) {
@@ -143,21 +118,15 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                         //nsfe.printStackTrace();
                     }                    
                 }
-                // all Direct mappings that don't have a type on their field
-                if(null == attributeClass && validationEnabled) {
-                    // TODO: refactor
-                    attributeClass = Object.class;
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
-            } else {
-                // All unsupported mappings
-                if(null == attributeClass && validationEnabled) {
-                    // TODO: refactor
-                    attributeClass = Object.class;
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
             }
         }
+        // All unsupported mappings
+        if(null == attributeClass && validationEnabled) {
+            // TODO: refactor
+            attributeClass = Object.class;
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
+        }
+        
         elementType = (Type<T>)getMetamodel().getType(attributeClass);        
     }
 

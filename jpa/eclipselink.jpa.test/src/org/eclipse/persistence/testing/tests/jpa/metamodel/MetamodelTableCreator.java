@@ -631,7 +631,8 @@ DROP TABLE CMP3_MM_MANUF
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_GALACTIC");
 
-/*        FieldDefinition field = new FieldDefinition();
+        // Using EmbeddedId
+        FieldDefinition field = new FieldDefinition();
         field.setName("GALACTIC_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -640,9 +641,9 @@ DROP TABLE CMP3_MM_MANUF
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-*/    
-
-        FieldDefinition fieldID = new FieldDefinition();
+    
+        // Using single Id
+/*        FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GALACTIC_ID");
         fieldID.setTypeName("NUMBER");
         fieldID.setSize(19);
@@ -652,7 +653,7 @@ DROP TABLE CMP3_MM_MANUF
         fieldID.setUnique(false);//true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+*/        
         /*FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("PK_PART1");
         fieldID.setTypeName("NUMBER");

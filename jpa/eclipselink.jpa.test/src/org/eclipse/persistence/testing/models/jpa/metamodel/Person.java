@@ -19,8 +19,8 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -55,7 +55,8 @@ public abstract class Person {
     @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
                 joinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"),
                 inverseJoinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"))   
-    private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();    
+    //private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();
+    private Collection<Manufacturer> historicalEmployers = new ArrayList<Manufacturer>();
     
     private String name;
 

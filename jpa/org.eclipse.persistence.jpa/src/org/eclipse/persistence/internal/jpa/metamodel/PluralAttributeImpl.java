@@ -72,39 +72,28 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         } else {
             // TODO: BasicCollection (DirectCollectionMapping)
             // See CollectionContainerPolicy
+            Class attributeClass = null;
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
                 //CollectionContainerPolicy policy = (CollectionContainerPolicy) mapping.getContainerPolicy();
                 //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());                
-                Class attributeClass = null;
                 if(mapping.isDirectCollectionMapping()) {
                     attributeClass = ((DirectCollectionMapping)mapping).getDirectField().getType();                    
                 }
-                if(null == attributeClass && validationEnabled) {
-                    // TODO: refactor
-                    attributeClass = Object.class;
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
-                this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
-            } else {
-                // Example: Collection with an instantiated Set
-                Class attributeClass = ((CollectionMapping)mapping).getReferenceClass();
-                // TODO: refactor
-                if(null == attributeClass && validationEnabled) {
-                    attributeClass = Object.class;
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);
-                } else {
-                    this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
-                }
+            } else if(mapping.isMapKeyMapping()) {
+                    // TODO: Handle DirectMapContainerPolicy                    
+                    MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
+                    attributeClass = policy.getElementClass();
+            } else if(mapping.isManyToManyMapping() || mapping.isOneToManyMapping()) {
+                // Example: Collection with an instantiated Set/List
+                attributeClass = ((CollectionMapping)mapping).getReferenceClass();
             }
-            // TODO: Handle DirectMapContainerPolicy
-            if(mapping.isMapKeyMapping()) {
-                MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-                Class attributeClass = policy.getElementClass();
-                if(null == attributeClass && validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-                }
-                this.elementType = (Type<V>)getMetamodel().getType(policy.getElementClass());
+
+            // TODO: refactor exception handling
+            if(null == attributeClass && validationEnabled) {
+                attributeClass = Object.class;
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
             }
+            this.elementType = (Type<V>)getMetamodel().getType(attributeClass);            
         }
     }
 

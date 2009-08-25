@@ -15,17 +15,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
-import java.util.Collection;
-import java.util.HashSet;
 
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @MappedSuperclass

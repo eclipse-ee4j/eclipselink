@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +49,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
 
     /** 
      * The supertype may be an entity or mappedSuperclass.<p>
-     * For top-level identifiable types with no superclass - return null (not Object) 
+     * For top-level inheritance root identifiable types with no superclass - return null (not Object) 
      */
     protected IdentifiableType<? super X> superType;
     
@@ -137,9 +136,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             // Check the primaryKeyFields on the descriptor - for MappedSuperclass pseudo-Descriptors
             if(pkMappings.size() == 0) {
                 // Search the mappings for Id mappings
-                DatabaseMapping aMapping = null;
-                for(Iterator<DatabaseMapping> mappingsIterator = getDescriptor().getMappings().iterator(); mappingsIterator.hasNext();) {
-                    aMapping = mappingsIterator.next();
+                for(DatabaseMapping aMapping : getDescriptor().getMappings()) {                    
                     if(aMapping.isDerivedIdMapping()) {
                         String attributeName = aMapping.getAttributeName();
                         // get the attribute Id (declared or not)
@@ -154,6 +151,10 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             
             if (pkMappings.size() == 1) {
                 Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
+                if(null == aClass) {
+                    aClass = Object.class;
+                    // TODO: expand on variant use case
+                }
                 // lookup class in our types map
                 Type<?> aType = this.metamodel.getType(aClass);
                 return aType;
@@ -210,6 +211,16 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *           type has a single id attribute
      */
     public boolean hasSingleIdAttribute() {
+        // Note: this function will return false both if an IdClass is present and if no type of Id is present
+/*        List<DatabaseField> pkFields = this.getDescriptor().getPrimaryKeyFields();
+        // return false for no Id field types
+        if(pkFields.isEmpty()) {
+            return false;
+        } else {
+            // Optional: Verify the mapping on the first field
+            ((CMP3Policy)this.getDescriptor().getCMPPolicy()).getPKClass();
+        }
+        return true;*/
         throw new PersistenceException("Not Yet Implemented");
     }
     

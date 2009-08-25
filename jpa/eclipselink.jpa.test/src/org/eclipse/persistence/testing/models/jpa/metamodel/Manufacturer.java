@@ -52,7 +52,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="mappedEmployer")
-    private Map<String, HardwareDesigner> hardwareDesignersMap = new HashMap<String, HardwareDesigner>();
+    private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
 
     public Manufacturer() {}
 

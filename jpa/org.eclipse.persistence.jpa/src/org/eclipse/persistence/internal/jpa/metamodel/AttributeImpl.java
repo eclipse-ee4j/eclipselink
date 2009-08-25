@@ -56,6 +56,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
      */
     protected AttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this.mapping = mapping;
+        // Cache this Attribute on the mapping
         this.mapping.setProperty(getClass().getName(), this);
         this.managedType = managedType;
     }

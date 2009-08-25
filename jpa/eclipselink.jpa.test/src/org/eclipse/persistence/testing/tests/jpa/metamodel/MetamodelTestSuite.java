@@ -18,13 +18,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * The following functions from Ch 5 of the 17 Mar 2009 JSR-317 JPA 2.0 API PFD are tested here. 
+ * The following functions from Chapter 5 of the JSR-317 JPA 2.0 API PFD are tested here. 
  *
  */
 public class MetamodelTestSuite extends TestSuite {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("MetamodelTestSuite");
+        TestSuite suite = new TestSuite("Metamodel");
         suite.addTest(EntityManagerFactoryImplTest.suite());
         suite.addTest(EntityManagerImplTest.suite());
 /*        suite.addTest(MetamodelAbstractCollectionTest.suite());

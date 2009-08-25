@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -60,6 +62,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.PluralAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -120,6 +123,9 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 66;
+    public static final int METAMODEL_ALL_TYPES = 22;
+    
     public MetamodelMetamodelTest() {
         super();
     }
@@ -180,8 +186,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         EntityManager em = null;
         Collection<Board> boardCollection = new HashSet<Board>();        
         Set<Computer> computersList = new HashSet<Computer>();
-        Collection<Memory> vectorMemories = new HashSet<Memory>();
-        Collection<Memory> arrayMemories = new HashSet<Memory>();
+        Collection<Memory> vectorMemories = new LinkedHashSet<Memory>();
+        Collection<Memory> arrayMemories = new LinkedHashSet<Memory>();
         Collection<Processor> vectorProcessors = new HashSet<Processor>();
         Collection<Processor> arrayProcessors = new HashSet<Processor>();
         List<HardwareDesigner> hardwareDesigners = new ArrayList<HardwareDesigner>();
@@ -286,8 +292,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             vectorComputer2.setName("CDC-6600");
             
             // setup embedded objects
-//            location1.setPrimaryKey(embeddedPKforLocation1);
-//            location2.setPrimaryKey(embeddedPKforLocation2);
+            location1.setPrimaryKey(embeddedPKforLocation1);
+            location2.setPrimaryKey(embeddedPKforLocation2);
                 
             // persist all entities to the database in a single transaction
             em.persist(arrayComputer1);
@@ -306,10 +312,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             em.persist(location2);        
             
             em.getTransaction().commit();            
-            
-            // Post-Persist: get Metamodel representation of the entity schema
-            //metamodel = em.getMetamodel();
-            //assertNotNull(metamodel);
             
             // Verify EntityType access to entities in the metamodel
             // These entities are metamodel entities (1 per type) not JPA entity instances (IdentifiableType)
@@ -338,6 +340,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             EntityTypeImpl<GalacticPosition> entityLocation =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
             assertNotNull(entityLocation);
             //System.out.println("_Entity: " + entityLocation + " @" + entityLocation.hashCode());
+            EntityTypeImpl<Processor> entityProcessor =(EntityTypeImpl) metamodel.entity(Processor.class);
+            assertNotNull(entityProcessor);
+            EntityTypeImpl<VectorProcessor> entityVectorProcessor =(EntityTypeImpl) metamodel.entity(VectorProcessor.class);
+            assertNotNull(entityVectorProcessor);
             
             // Criteria queries (use the Metamodel)
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -356,7 +362,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 criteriaQuery.where(qb.equal(path, "CM-5"));  
                 Query query = em.createQuery(criteriaQuery);
                 results = query.getResultList();
-                if(results.size() > 0) {
+                if(!results.isEmpty()) {
                     Computer computer = (Computer)results.get(0);
                     assertNotNull(computer);
                 } else {
@@ -396,6 +402,67 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(GalacticPosition.class, locationJavaType);
             
             
+            /**
+             * Test non-specification INTERNAL API functions
+             */
+            
+            // verify all Types have their javaClass set
+            Collection<TypeImpl<?>> types = ((MetamodelImpl)metamodel).getTypes().values();
+            assertNotNull(types);
+            for(TypeImpl type : types) {
+                assertNotNull(type);
+                assertNotNull(type.getJavaType());
+            }            
+            
+            // verify all embeddables are only embeddables
+            Set<EmbeddableType<?>> embeddables = metamodel.getEmbeddables();
+            assertNotNull(embeddables);
+            for(EmbeddableType embeddable : embeddables) {
+                // This method works only on EntityType
+                assertNotNull(embeddable);
+                assertTrue(embeddable instanceof EmbeddableTypeImpl);
+            }
+            
+            // verify all entities are only entities
+            Set<EntityType<?>> entities = metamodel.getEntities();
+            assertNotNull(entities);
+            for(EntityType entity : entities) {
+                // This method works only on EntityType
+                assertNotNull(entity.getName());
+                assertTrue(entity instanceof EntityTypeImpl);
+            }
+            
+            // Verify all Attributes and their element and declaring/managed types
+            List<Attribute> allAttributes = ((MetamodelImpl)metamodel).getAllManagedTypeAttributes();
+            assertNotNull(allAttributes);
+            assertEquals(METAMODEL_ALL_ATTRIBUTES_SIZE, allAttributes.size());
+            // Why do we have this function? So we can verify attribute integrity
+            for(Attribute anAttribute : allAttributes) {
+                ManagedType declaringType = anAttribute.getDeclaringType();
+                assertNotNull(declaringType);
+                Type elementType = null;
+                if(((AttributeImpl)anAttribute).isPlural()) {
+                    elementType = ((PluralAttributeImpl)anAttribute).getElementType();
+                } else {
+                    elementType = ((SingularAttributeImpl)anAttribute).getType();
+                }
+                if(elementType == null) {
+                    System.out.println(anAttribute);
+                }
+                assertNotNull(elementType);
+                // Since the javaType may be computed off the elementType - it must not be null or we will get a NPE below
+                Class javaType = anAttribute.getJavaType();
+            }
+            
+            
+            // Check entity-->entity hierarchy
+            // Processor:entity (Board boards)
+            //  +--VectorProcessor
+            
+            Set<Attribute<VectorProcessor, ?>> entityVectorProcessorDeclaredAttributes = entityVectorProcessor.getDeclaredAttributes();
+            assertEquals(0, entityVectorProcessorDeclaredAttributes.size());
+            Set<Attribute<Processor, ?>> entityProcessorDeclaredAttributes = entityProcessor.getDeclaredAttributes();
+            assertEquals(3, entityProcessorDeclaredAttributes.size());
             
             /**
              * TODO: all test code below requires assert*() calls - and is in mid implementation
@@ -531,7 +598,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //Type<?> getIdType();       
             
             // Test EntityType
-/*            
+            
             // Test normal path for an [Embeddable] type via @EmbeddedId
             expectedIAExceptionThrown = false;
             Type<?> locationIdType = null;
@@ -566,7 +633,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(embeddableType);
             assertNotSame(embeddableType, locationIdAttributeManagedType);
             
-*/
+
 
             // Test normal path for a [Basic] type
             expectedIAExceptionThrown = false;
@@ -611,7 +678,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 System.out.println("_MetamodelMetamodelTest: all Types: " + typesMap);
                 // verify each one
                 assertNotNull(typesMap);
-                assertEquals(21, typesMap.size());
+                assertEquals(METAMODEL_ALL_TYPES, typesMap.size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -999,6 +1066,27 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not present in the managed type
              */
             //<K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType);
+            expectedIAExceptionThrown = false;            
+            try {
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer.getMap("hardwareDesignersMap");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // See UC 1a in DI 63
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
+                // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+                
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
 
             /**
              *  Return the Collection-valued attribute declared by the 
@@ -1881,7 +1969,19 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              */
             //public String toString() {
             
-            
+            // Test MapAttribute Interface
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /**
+             * Return the Java type of the map key.
+             * @return Java key type
+             */
+            //Class<K> getKeyJavaType();
+
+            /**
+             * Return the type representing the key type of the map.
+             * @return type representing key type
+             */
+            //Type<K> getKeyType();
             
 
             // Variant use cases
