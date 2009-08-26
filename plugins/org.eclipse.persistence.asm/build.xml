@@ -44,7 +44,7 @@
        <format property="build.date" pattern="yyyyMMdd"/>
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
-    <property name="release.version"       value="2.0.0"/>
+    <property name="release.version"       value="1.2.0"/>
     <property name="build.type"            value="SNAPSHOT"/>
     <property name="svn.revision"          value="NA"/>
     <property name="version.qualifier"     value="qualifier"/>
