@@ -55,11 +55,12 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-@SupportedAnnotationTypes("*")  // Process all annotations
+//@SupportedAnnotationTypes("javax.persistence.*, org.eclipse.persistence.annotations.*")
+@SupportedAnnotationTypes("*")
 @SupportedSourceVersion(RELEASE_6)
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
-    protected static MetadataMirrorFactory m_factory;
+    protected static MetadataMirrorFactory factory;
     
     /**
      * INTERNAL:
@@ -71,14 +72,30 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             ClassAccessor accessor = persistenceUnit.getClassAccessor(element);
             String qualifiedName = accessor.getAccessibleObjectName();
             
-            String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
-            String className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
-            String canonicalName = persistenceUnit.getCanonicalName(className);
+            String className;
+            String packageName = null;
+            String canonicalName;
+            String generatedFileName;
             
-            JavaFileObject file = processingEnv.getFiler().createSourceFile(packageName + "." + canonicalName, element);
+            if (qualifiedName.indexOf(".") > -1) {
+                className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+                canonicalName = persistenceUnit.getCanonicalName(className);
+                packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+                generatedFileName = packageName + "." + canonicalName;
+            } else {
+                className = qualifiedName;
+                canonicalName = persistenceUnit.getCanonicalName(className);
+                generatedFileName = canonicalName;
+            }
+            
+            JavaFileObject file = processingEnv.getFiler().createSourceFile(generatedFileName, element);
             writer = file.openWriter();
-            writer.append("package " + packageName + ";\n\n");
-                        
+            
+            // Print the package if we have one.
+            if (packageName != null) {
+                writer.append("package " + packageName + ";\n\n");
+            }
+            
             HashSet<String> attributeTypes = new HashSet<String>();
             ArrayList<String> attributes = new ArrayList<String>();
                  
@@ -285,22 +302,34 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      */
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (! roundEnv.processingOver()) {
+        if (! roundEnv.processingOver() && ! roundEnv.errorRaised()) {
             try {
-                if (m_factory == null) {
+                if (factory == null) {
+                    // We must remember some state from one round to another.
+                    // In some rounds, the user may only change one class
+                    // meaning we only have one root element from the round.
+                    // If it is a child class to an existing already generated
+                    // parent class we need to know about this class, so the
+                    // factory will also hang onto static projects for each
+                    // persistence unit. Doing this is going to need careful
+                    // cleanup thoughts though. Adding classes ok, but what
+                    // about removing some? 
                     MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                    m_factory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
+                    factory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
                 }
                 
                 // Step 1 - The factory is passed around so those who want the 
                 // processing or round env can get it off the factory. This 
                 // saves us from having to pass around multiple objects.
-                m_factory.setEnvironments(processingEnv, roundEnv);
+                factory.setEnvironments(processingEnv, roundEnv);
                 
                 // Step 2 - read the persistence xml classes (gives us extra 
                 // classes and mapping files. From them we get transients and 
-                // access)
-                PersistenceUnitReader puReader = new PersistenceUnitReader(m_factory);
+                // access). Metadata read from XML causes new accessors to be
+                // created and override existing ones (causing them to be un-
+                // pre-processed. We can never tell what changes in XML so we
+                // have to do this.
+                PersistenceUnitReader puReader = new PersistenceUnitReader(factory);
                 
                 // Step 3 - iterate over all the persistence units and generate
                 // their canonical model classes.

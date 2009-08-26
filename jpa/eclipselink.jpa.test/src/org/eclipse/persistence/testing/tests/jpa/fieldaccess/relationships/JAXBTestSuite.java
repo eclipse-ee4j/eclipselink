@@ -69,8 +69,8 @@ public class JAXBTestSuite extends JUnitTestCase {
         StringReader reader = new StringReader(writer.toString());
 
         //order = (Order)JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
-        JAXBElement elem = (JAXBElement) JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
-        order = (Order) elem.getValue();
+        //JAXBElement elem = (JAXBElement) JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
+        order = (Order) JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
         
         em = createEntityManager();
         beginTransaction(em);

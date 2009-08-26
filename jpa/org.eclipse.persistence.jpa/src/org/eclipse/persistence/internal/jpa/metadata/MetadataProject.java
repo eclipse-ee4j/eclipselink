@@ -734,7 +734,15 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Return the entity accessor for the given class.
+     * Return the entity accessor for the given class name.
+     */
+    public EntityAccessor getEntityAccessor(MetadataClass cls) {
+        return getEntityAccessor(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the entity accessor for the given class name.
      */
     public EntityAccessor getEntityAccessor(String className) {
         return m_entityAccessors.get(className);
@@ -1393,9 +1401,12 @@ public class MetadataProject {
         m_weavingEnabled = weavingEnabled;
     }
     
+    /**
+     * INTERNAL:
+     */
     public boolean useDelimitedIdentifier() {
         return m_persistenceUnitMetadata != null && m_persistenceUnitMetadata.isDelimitedIdentifiers();
-      }
+    }
     
     /**
      * Return if the project should use indirection for eager relationships.

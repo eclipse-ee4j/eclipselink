@@ -17,7 +17,6 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -279,8 +278,8 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Note: That annotations can default so the annotation may be null.
      */
-    protected boolean loadedFromAnnotation() {
-        return m_annotation != null || !(getLocation() instanceof URL);
+    public boolean loadedFromAnnotation() {
+        return m_annotation != null || ! loadedFromXML();
     }
     
     /**
@@ -297,10 +296,9 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected boolean loadedFromXML() {
+    public boolean loadedFromXML() {
         // This is a better check
         return m_entityMappings != null;
-        //return m_xmlElement != null; 
     }
     
     /**

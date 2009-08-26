@@ -624,10 +624,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the correct access type before any other processing.
         processAccessType();
         
-        // Process the entity specifics now, metadata complete, exclude default
-        // mappings etc. which we need before proceed further and start looking
+        // Process the metadata complete flag now before we start looking
         // for annotations.
-        processEntity();
+        processMetadataComplete();
+        
+        // Process the exclude default mappings flag now before we start
+        // looking for annotations.
+        processExcludeDefaultMappings();
         
         // Add any id class definition to the project.
         initIdClass();
@@ -667,6 +670,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     @Override
     public void process() {
         setIsProcessed();
+        
+        // Process the entity annotation.
+        processEntity();
         
         // If we are an inheritance subclass process out root first.
         if (getDescriptor().isInheritanceSubclass()) {
@@ -946,20 +952,25 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process the entity metadata.
      */
-    protected void processEntity() {
-        // Set a metadata complete flag if specified on the entity class or a 
-        // mapped superclass.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } else {
-            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-                if (mappedSuperclass.getMetadataComplete() != null) {
-                    getDescriptor().setIgnoreAnnotations(mappedSuperclass.isMetadataComplete());
-                    break; // stop searching.
-                }
-            }
+    protected void processEntity() {        
+        // Process the entity name (alias) and default if necessary.
+        if (m_entityName == null) {
+            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) getAnnotation(Entity.class).getAttributeString("name");
         }
-        
+            
+        if (m_entityName.equals("")) {
+            m_entityName = Helper.getShortClassName(getJavaClassName());
+            getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), m_entityName);
+        }
+
+        getProject().addAlias(m_entityName, getDescriptor());
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the entity metadata.
+     */
+    protected void processExcludeDefaultMappings() {
         // Set an exclude default mappings flag if specified on the entity class
         // or a mapped superclass.
         if (getExcludeDefaultMappings() != null) {
@@ -972,18 +983,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 }
             }
         }
-        
-        // Process the entity name (alias) and default if necessary.
-        if (m_entityName == null) {
-            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) getAnnotation(Entity.class).getAttributeString("name");
-        }
-            
-        if (m_entityName.equals("")) {
-            m_entityName = Helper.getShortClassName(getJavaClassName());
-            getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), m_entityName);
-        }
-
-        getProject().addAlias(m_entityName, getDescriptor());
     }
     
     /**
@@ -1063,6 +1062,25 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
         new EntityClassListenerMetadata(this).process(m_mappedSuperclasses, loader);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the entity metadata.
+     */
+    protected void processMetadataComplete() {
+        // Set a metadata complete flag if specified on the entity class or a 
+        // mapped superclass.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } else {
+            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+                if (mappedSuperclass.getMetadataComplete() != null) {
+                    getDescriptor().setIgnoreAnnotations(mappedSuperclass.isMetadataComplete());
+                    break; // stop searching.
+                }
+            }
+        }
     }
     
     /**

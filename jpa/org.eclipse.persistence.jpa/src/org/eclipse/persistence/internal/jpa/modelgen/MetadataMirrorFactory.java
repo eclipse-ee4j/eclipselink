@@ -22,13 +22,19 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic.Kind;
 
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * This metadata factory employs java mirrors to create MetadataClass and is
@@ -38,10 +44,13 @@ import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
  * @since EclipseLink 1.2
  */
 public class MetadataMirrorFactory extends MetadataFactory {
-    private ProcessingEnvironment m_processingEnv;
-    private HashSet<String> m_roundElements;
+    private ProcessingEnvironment processingEnv;
+    private HashSet<String> roundElements;
     
-    private Map<String, MetadataClass> m_metadataClassesFromElements;
+    // Per persistence unit.
+    private Map<String, MetadataProject> metadataProjects;
+    
+    private Map<String, MetadataClass> metadataClassesFromElements;
 
     /**
      * INTERNAL:
@@ -54,8 +63,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     protected MetadataMirrorFactory(MetadataLogger logger, ClassLoader loader) {
         super(logger, loader);
-        m_roundElements = new HashSet<String>();
-        m_metadataClassesFromElements = new HashMap<String, MetadataClass>();
+        roundElements = new HashSet<String>();
+        metadataProjects = new HashMap<String, MetadataProject>();
+        metadataClassesFromElements = new HashMap<String, MetadataClass>();
     }
     
     /**
@@ -65,7 +75,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         MetadataClass metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
                 
         // Kick off the visiting of elements.
-        ElementVisitor<MetadataClass, MetadataClass> visitor = new ElementVisitor<MetadataClass, MetadataClass>(m_processingEnv);
+        ElementVisitor<MetadataClass, MetadataClass> visitor = new ElementVisitor<MetadataClass, MetadataClass>(processingEnv);
         element.accept(visitor, metadataClass);
             
         // The name off the metadata class is a qualified name from a type
@@ -75,8 +85,8 @@ public class MetadataMirrorFactory extends MetadataFactory {
         // For our own safety we cache another map of metadata class keyed on 
         // the toString value the Element we built it for. This ensures we are 
         // always dealing with the correct related metadata class.
-        m_metadataClassesFromElements.put(element.toString(), metadataClass);
-            
+        metadataClassesFromElements.put(element.toString(), metadataClass);
+        
         return metadataClass;
     }
     
@@ -86,8 +96,8 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * MetadataClasses.
      */
     public MetadataClass getMetadataClass(Element element) {
-        if (m_metadataClassesFromElements.containsKey(element.toString())) {
-            return m_metadataClassesFromElements.get(element.toString());
+        if (metadataClassesFromElements.containsKey(element.toString())) {
+            return metadataClassesFromElements.get(element.toString());
         } else {
             return buildMetadataClass(element);
         }
@@ -121,7 +131,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * MetadataClasses.
      */
     public MetadataClass getMetadataClass(TypeMirror typeMirror) {
-        Element element = m_processingEnv.getTypeUtils().asElement(typeMirror);
+        Element element = processingEnv.getTypeUtils().asElement(typeMirror);
         
         if (element == null) {
             return getMetadataClass(typeMirror.toString());
@@ -132,34 +142,50 @@ public class MetadataMirrorFactory extends MetadataFactory {
     
     /**
      * INTERNAL:
+     * We preserve state from each processor run by holding static references
+     * to projects. 
+     */
+    public MetadataProject getMetadataProject(SEPersistenceUnitInfo puInfo) {
+        if (! metadataProjects.containsKey(puInfo.getPersistenceUnitName())) {
+            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false);
+            metadataProjects.put(puInfo.getPersistenceUnitName(), project);
+            return project;
+        } else {
+            return metadataProjects.get(puInfo.getPersistenceUnitName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     public ProcessingEnvironment getProcessingEnvironment() {
-        return m_processingEnv;
+        return processingEnv;
     }
 
     /**
      * INTENAL:
      */
     public boolean isRoundElement(MetadataClass cls) {
-        return m_roundElements.contains(cls.getName());
+        return roundElements.contains(cls.getName());
     }
     
     /**
      * INTERNAL:
+     * Our processor will not visit generated elements, there is no need for
+     * us to do this.
      */
     public void setEnvironments(ProcessingEnvironment processingEnvironment, RoundEnvironment roundEnvironment) {
-        m_processingEnv = processingEnvironment;
-        m_roundElements.clear();
+        processingEnv = processingEnvironment;
+        roundElements.clear();
         
         // Visit all the root elements now. These may be new elements or 
         // existing elements that were changed. We must build or re-build the 
-        // class metadata for that element. Also we will only pre-process
-        // the root elements MetadataClasses
+        // class metadata for that element to be re-used with new accessors
+        // needing to pre-processed.
         for (Element element : roundEnvironment.getRootElements()) {
-            // Ignore generated classes, we are not going to visit them
-            // or do anything with them at this point.
-            if (! element.getSimpleName().toString().endsWith("_")) {
-                m_roundElements.add(buildMetadataClass(element).getName());
+            if (element.getAnnotation(javax.annotation.Generated.class) == null) { 
+                processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
+                roundElements.add(buildMetadataClass(element).getName());
             }
         }
     }

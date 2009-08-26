@@ -46,13 +46,13 @@ import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
  * @since EclipseLink 1.2
  */
 public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnotatedElement, MetadataClass> {
-    private ProcessingEnvironment m_processingEnv;
+    private ProcessingEnvironment processingEnv;
     
     /**
      * INTERNAL:
      */
     public ElementVisitor(ProcessingEnvironment processingEnv) {
-        m_processingEnv = processingEnv;
+        this.processingEnv = processingEnv;
     }
     
     /**
@@ -167,7 +167,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataClass visitPackage(PackageElement arg0, MetadataClass metadataClass) {
-        m_processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + arg0);
+        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + arg0);
         return null;
     }
 
@@ -221,7 +221,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataClass visitTypeParameter(TypeParameterElement arg0, MetadataClass metadataClass) {
-        m_processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor TypeParameter NOT IMPLEMENTED : " + arg0);
+        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor TypeParameter NOT IMPLEMENTED : " + arg0);
         return null;
     }
 

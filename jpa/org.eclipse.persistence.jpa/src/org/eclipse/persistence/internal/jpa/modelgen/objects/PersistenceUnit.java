@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +41,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
@@ -54,70 +52,112 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * @since EclipseLink 1.2
  */
 public class PersistenceUnit {    
-    protected List<XMLEntityMappings> m_xmlEntityMappings;
+    protected List<XMLEntityMappings> xmlEntityMappings;
     
-    protected MetadataProject m_project;
-    protected MetadataMirrorFactory m_factory; 
+    protected MetadataProject project;
+    protected MetadataMirrorFactory factory; 
     
-    protected ProcessingEnvironment m_processingEnv;
-    protected SEPersistenceUnitInfo m_puInfo;
+    protected ProcessingEnvironment processingEnv;
+    protected SEPersistenceUnitInfo persistenceUnitInfo;
     
     /**
      * INTERNAL:
      */
-    public PersistenceUnit(SEPersistenceUnitInfo puInfo, MetadataMirrorFactory factory) throws IOException {
-        m_puInfo = puInfo;
-        m_processingEnv = factory.getProcessingEnvironment();
-        m_xmlEntityMappings = new ArrayList<XMLEntityMappings>();
+    public PersistenceUnit(SEPersistenceUnitInfo puInfo, MetadataMirrorFactory mirrorFactory) throws IOException {
+        factory = mirrorFactory;
+        persistenceUnitInfo = puInfo;
         
-        m_factory = factory;
-        m_project = new MetadataProject(m_puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false);
-        
+        // Ask the factory for the project and processing environment
+        processingEnv = factory.getProcessingEnvironment();
+        project = factory.getMetadataProject(persistenceUnitInfo);
+
         initXMLEntityMappings();
     }
     
     /**
      * INTERNAL:
+     * The possibilities here:
+     * 1 - New element and not exclude unlisted classes - add it
+     * 2 - New element but exclude unlisted classes - ignore it.
+     * 3 - Existing element, but accessor loaded from XML (it's a new accessor then) - don't touch it
+     * 4 - Existing element, but accessor loaded from Annotations - add new accessor overridding the old.
      */
-    public void addEntityAccessor(Element element) {
-        String elementString = element.toString();
-        // If it does contain the entity accessor already and we are not
-        // excluding unlisted classes then add a new EntityAccessor.
+    public void addEmbeddableAccessor(Element element) {
+        MetadataClass cls = factory.getMetadataClass(element);
         
-        if (! m_project.hasEntity(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass entityClass = m_factory.getMetadataClass(element);
-            EntityAccessor entityAccessor = new EntityAccessor(entityClass.getAnnotation(Entity.class), entityClass, m_project);
-            m_project.addEntityAccessor(entityAccessor);
-        } 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addMappedSuperclassAccessor(Element element) {
-        String elementString = element.toString();
-        
-        // If it does contain the mapped superclass accessor already and we are 
-        // not excluding unlisted classes then add a new MappedSuperclassAccessor.
-        if (! m_project.hasMappedSuperclass(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass mappedSuperclassClass = m_factory.getMetadataClass(element);
-            MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclassClass.getAnnotation(MappedSuperclass.class), mappedSuperclassClass, m_project);
-            m_project.addMappedSuperclass(element.toString(), mappedSuperclassAccessor);
+        if (project.hasEmbeddable(cls)) {
+            EmbeddableAccessor embeddableAccessor = project.getEmbeddableAccessor(cls);
+            
+            // Don't touch it if it was loaded from XML.
+            if (! embeddableAccessor.loadedFromXML()) {
+                if (excludeUnlistedClasses(cls)) {
+                    // remove it!
+                } else {
+                    // override it!
+                    project.addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
+                }
+            }
+        } else if (! excludeUnlistedClasses(cls)) {
+            // add it!
+            project.addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
         }
     }
     
     /**
      * INTERNAL:
+     * The possibilities here:
+     * 1 - New element and not exclude unlisted classes - add it
+     * 2 - New element but exclude unlisted classes - ignore it.
+     * 3 - Existing element, loaded from XML - don't touch it (it's already a new un-processed accessor)
+     * 4 - Existing element, loaded from Annotations - add new accessor overridding the old.
      */
-    public void addEmbeddableAccessor(Element element) {
-        String elementString = element.toString();
+    public void addEntityAccessor(Element element) {
+        MetadataClass cls = factory.getMetadataClass(element);
         
-        // If it does contain the mapped superclass accessor already and we are 
-        // not excluding unlisted classes then add a new MappedSuperclassAccessor.
-        if (! m_project.hasEmbeddable(elementString) && ! excludeUnlistedClasses()) {
-            MetadataClass embeddableClass = m_factory.getMetadataClass(element);
-            EmbeddableAccessor embeddableAccessor = new EmbeddableAccessor(embeddableClass.getAnnotation(Embeddable.class), embeddableClass, m_project); 
-            m_project.addEmbeddableAccessor(embeddableAccessor);
+        if (project.hasEntity(cls)) {
+            EntityAccessor entityAccessor = project.getEntityAccessor(cls);
+            
+            // Don't touch it if it was loaded from XML.
+            if (! entityAccessor.loadedFromXML()) {
+                if (excludeUnlistedClasses(cls)) {
+                    // remove it!
+                } else {
+                    // override it!
+                    project.addEntityAccessor(new EntityAccessor(cls.getAnnotation(Entity.class), cls, project));
+                }
+            }
+        } else if (! excludeUnlistedClasses(cls)) {
+            // add it!
+            project.addEntityAccessor(new EntityAccessor(cls.getAnnotation(Entity.class), cls, project));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * The possibilities here:
+     * 1 - New element and not exclude unlisted classes - add it
+     * 2 - New element but exclude unlisted classes - ignore it.
+     * 3 - Existing element, but accessor loaded from XML (it's a new accessor then) - don't touch it
+     * 4 - Existing element, but accessor loaded from Annotations - add new accessor overridding the old.
+     */
+    public void addMappedSuperclassAccessor(Element element) {
+        MetadataClass cls = factory.getMetadataClass(element);
+        
+        if (project.hasMappedSuperclass(cls)) {
+            MappedSuperclassAccessor mappedSuperclassAccessor = project.getMappedSuperclass(cls);
+            
+            // Don't touch it if it was loaded from XML.
+            if (! mappedSuperclassAccessor.loadedFromXML()) {
+                if (excludeUnlistedClasses(cls)) {
+                    // remove it!
+                } else {
+                    // override it!
+                    project.addMappedSuperclass(element.toString(), new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
+                }
+            }
+        } else if (! excludeUnlistedClasses(cls)) {
+            // add it!
+            project.addMappedSuperclass(element.toString(), new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
         }
     }
     
@@ -128,8 +168,7 @@ public class PersistenceUnit {
         InputStream in = null;
         try {
             in = fileObject.openInputStream();
-            XMLEntityMappings xmlEntityMappings = (XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in);
-            m_xmlEntityMappings.add(xmlEntityMappings);
+            xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
         } catch (XMLMarshalException e) {
             throw e;
         } finally {
@@ -143,7 +182,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void addXMLEntityMappings(String mappingFile, boolean validate) throws IOException {
-        FileObject fileObject = PersistenceUnitReader.getFileObject(mappingFile, StandardLocation.CLASS_OUTPUT, m_processingEnv);
+        FileObject fileObject = PersistenceUnitReader.getFileObject(mappingFile, StandardLocation.CLASS_OUTPUT, processingEnv);
         
         if (fileObject != null) {
             try {
@@ -166,47 +205,55 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
+     * TODO: If the accessor is no longer valid it should be removed from the
+     * project (could cause a memory leak)
      */
     public boolean containsElement(Element element) {
-        String elementString = element.toString();
+        MetadataClass cls = factory.getMetadataClass(element);
         
-        if (m_project.hasEntity(elementString)) {
-            return true;
+        if (project.hasEntity(cls)) {
+            return isValidAccessor(project.getEntityAccessor(cls), element.getAnnotation(javax.persistence.Entity.class));
         }
         
-        if (m_project.hasEmbeddable(elementString)) {
-            return true;
+        if (project.hasEmbeddable(cls)) {
+            return isValidAccessor(project.getEmbeddableAccessor(cls), element.getAnnotation(javax.persistence.Embeddable.class));
         }
         
-        return m_project.hasMappedSuperclass(elementString);
+        if (project.hasMappedSuperclass(cls)) {
+            return isValidAccessor(project.getMappedSuperclass(cls), element.getAnnotation(javax.persistence.MappedSuperclass.class));
+        }
+        
+        return false;
     }
     
     /**
      * INTERNAL:
+     * Return true if the metadata class given is not a managed class and 
+     * exclude-unlisted-classes is set to true for this PU.
      */
-    protected boolean excludeUnlistedClasses() {
-        return m_puInfo.excludeUnlistedClasses();
+    protected boolean excludeUnlistedClasses(MetadataClass cls) {
+        return (! persistenceUnitInfo.getManagedClassNames().contains(cls.getName())) && persistenceUnitInfo.excludeUnlistedClasses();
     }
     
     /**
      * INTERNAL:
      */
     public String getCanonicalName(String name) {
-        return m_puInfo.getCanonicalName(name, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption());
+        return persistenceUnitInfo.getCanonicalName(name, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption());
     }
     
     /**
      * INTERNAL:
      */
     protected String getCanonicalQualifierOption() {
-        return m_processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
+        return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
     }
     
     /**
      * INTERNAL:
      */
     protected String getCanonicalQualifierPositionOption() {
-        return m_processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER_POSITION);
+        return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER_POSITION);
     }
     
     /**
@@ -215,16 +262,16 @@ public class PersistenceUnit {
     public ClassAccessor getClassAccessor(Element element) {
         String elementString = element.toString();
         
-        if (m_project.hasEntity(elementString)) {
-            return m_project.getEntityAccessor(elementString);
+        if (project.hasEntity(elementString)) {
+            return project.getEntityAccessor(elementString);
         }
         
-        if (m_project.hasEmbeddable(elementString)) {
-            return m_project.getEmbeddableAccessor(elementString);
+        if (project.hasEmbeddable(elementString)) {
+            return project.getEmbeddableAccessor(elementString);
         }
         
-        if (m_project.hasMappedSuperclass(elementString)) {
-            return m_project.getMappedSuperclass(elementString);
+        if (project.hasMappedSuperclass(elementString)) {
+            return project.getMappedSuperclass(elementString);
         }
         
         return null;
@@ -234,11 +281,13 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void initXMLEntityMappings() throws IOException {
+        xmlEntityMappings = new ArrayList<XMLEntityMappings>();
+        
         // Load the orm.xml if it exists.
         addXMLEntityMappings("META-INF/orm.xml", false);
         
         // Load the listed mapping files.
-        for (String mappingFile : m_puInfo.getMappingFileNames()) {
+        for (String mappingFile : persistenceUnitInfo.getMappingFileNames()) {
             if (! mappingFile.equals("META-INF/orm.xml")) {
                 addXMLEntityMappings(mappingFile, true);
             }
@@ -247,10 +296,10 @@ public class PersistenceUnit {
         // 1 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
-        for (XMLEntityMappings entityMappings : m_xmlEntityMappings) {
-            entityMappings.setLoader(m_factory.getLoader());
-            entityMappings.setProject(m_project);
-            entityMappings.setMetadataFactory(m_factory);
+        for (XMLEntityMappings entityMappings : xmlEntityMappings) {
+            entityMappings.setLoader(factory.getLoader());
+            entityMappings.setProject(project);
+            entityMappings.setMetadataFactory(factory);
         
             // Process the persistence unit metadata if defined.
             entityMappings.processPersistenceUnitMetadata();
@@ -262,7 +311,7 @@ public class PersistenceUnit {
         HashMap<String, EntityAccessor> entities = new HashMap<String, EntityAccessor>();
         HashMap<String, EmbeddableAccessor> embeddables = new HashMap<String, EmbeddableAccessor>();
         
-        for (XMLEntityMappings entityMappings : m_xmlEntityMappings) {
+        for (XMLEntityMappings entityMappings : xmlEntityMappings) {
             entityMappings.initPersistenceUnitClasses(entities, embeddables);
         }
         
@@ -270,7 +319,7 @@ public class PersistenceUnit {
         // and apply any persistence unit defaults.
         for (EntityAccessor entity : entities.values()) {
             // This will apply global persistence unit defaults.
-            m_project.addEntityAccessor(entity);
+            project.addEntityAccessor(entity);
             
             // This will override any global settings.
             entity.getEntityMappings().processEntityMappingsDefaults(entity);
@@ -280,11 +329,25 @@ public class PersistenceUnit {
         // project and apply any persistence unit defaults.
         for (EmbeddableAccessor embeddable : embeddables.values()) {
             // This will apply global persistence unit defaults.
-            m_project.addEmbeddableAccessor(embeddable);
+            project.addEmbeddableAccessor(embeddable);
             
             // This will override any global settings.
             embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean isValidAccessor(ClassAccessor accessor, Annotation annotation) {
+        if (! accessor.loadedFromXML()) {
+            // If it wasn't loaded from XML, we need to look at it further. It
+            // could have been deleted and brought back (without an annotation)
+            // or simply have had its annotation removed. Check for an annotation.
+            return annotation != null;
+        }
+        
+        return true;
     }
     
     /**
@@ -294,7 +357,7 @@ public class PersistenceUnit {
     public void preProcessForCanonicalModel() {
         // 1 - Pre-Process the list of entities first. This will discover/build 
         // the list of embeddable accessors.
-        for (EntityAccessor entityAccessor : m_project.getEntityAccessors()) {
+        for (EntityAccessor entityAccessor : project.getEntityAccessors()) {
             // Some entity accessors can be fast tracked for pre-processing.
             // That is, an inheritance subclass will tell its parents to 
             // pre-process. So don't pre-process it again.
@@ -305,7 +368,7 @@ public class PersistenceUnit {
         }
         
         // 2 - Pre-Process the list of mapped superclasses.
-        for (MappedSuperclassAccessor mappedSuperclassAccessor : m_project.getMappedSuperclasses()) {
+        for (MappedSuperclassAccessor mappedSuperclassAccessor : project.getMappedSuperclasses()) {
             if (shouldPreProcess(mappedSuperclassAccessor)) {
                 //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing mapped-superclass: " + mappedSuperclassAccessor.getJavaClassName());
                 mappedSuperclassAccessor.preProcessForCanonicalModel();
@@ -315,7 +378,7 @@ public class PersistenceUnit {
         // 3 - Pre-process the list of root embeddable accessors. This list will
         // have been build from step 1. Root embeddable accessors will have
         // an owning descriptor (used to determine access type).
-        for (EmbeddableAccessor embeddableAccessor : m_project.getRootEmbeddableAccessors()) {
+        for (EmbeddableAccessor embeddableAccessor : project.getRootEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
                 //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
                 embeddableAccessor.preProcessForCanonicalModel();
@@ -326,7 +389,7 @@ public class PersistenceUnit {
         // were not pre-processed. Only way this is true is if the embeddable
         // was not referenced from an entity (be it root or nested in a root
         // embeddable)
-        for (EmbeddableAccessor embeddableAccessor : m_project.getEmbeddableAccessors()) {
+        for (EmbeddableAccessor embeddableAccessor : project.getEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
                 //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
                 // Must set the owning descriptor to be itself at this point
@@ -341,7 +404,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected boolean shouldPreProcess(ClassAccessor accessor) {
-        return ! accessor.isPreProcessed() && m_factory.isRoundElement((MetadataClass) accessor.getAccessibleObject());
+        return ! accessor.isPreProcessed() && factory.isRoundElement((MetadataClass) accessor.getAccessibleObject());
     }
     
     /**
@@ -349,7 +412,7 @@ public class PersistenceUnit {
      */
     @Override
     public String toString() {
-        return m_puInfo.getPersistenceUnitName();
+        return persistenceUnitInfo.getPersistenceUnitName();
     }
 }
 

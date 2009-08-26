@@ -28,6 +28,7 @@ import static javax.persistence.FetchType.*;
         query="SELECT OBJECT(theorder) FROM FieldAccessOrderBean theorder WHERE theorder.item.itemId = :id"
 )
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @Cache(shared=false)
 public class Order implements java.io.Serializable {
     @Id

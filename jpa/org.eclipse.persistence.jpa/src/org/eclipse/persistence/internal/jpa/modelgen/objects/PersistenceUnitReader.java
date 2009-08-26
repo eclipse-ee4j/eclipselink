@@ -15,7 +15,9 @@ package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -46,13 +48,13 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * @since EclipseLink 1.2
  */
 public class PersistenceUnitReader {
-    protected List<PersistenceUnit> m_persistenceUnits;
+    protected List<PersistenceUnit> persistenceUnits;
     
     /**
      * INTERNAL:
      */
     public PersistenceUnitReader(MetadataMirrorFactory factory) throws IOException {
-        m_persistenceUnits = new ArrayList<PersistenceUnit>();
+        persistenceUnits = new ArrayList<PersistenceUnit>();
         
         initPersistenceUnits(factory);
     }
@@ -78,8 +80,8 @@ public class PersistenceUnitReader {
     public static FileObject getFileObject(String pkg, String filename, StandardLocation standardLocation, ProcessingEnvironment processingEnv) {
         FileObject fileObject = null;
         try {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Package: " + pkg);
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Filename: " + filename);
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Package: " + pkg);
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Filename: " + filename);
             
             fileObject = processingEnv.getFiler().getResource(standardLocation, pkg, filename);
         } catch (Exception e) {
@@ -94,7 +96,7 @@ public class PersistenceUnitReader {
      * INTERNAL:
      */
     public List<PersistenceUnit> getPersistenceUnits() {
-        return m_persistenceUnits;
+        return persistenceUnits;
     }
     
     /**
@@ -109,22 +111,22 @@ public class PersistenceUnitReader {
         
         FileObject fileObject = null;
         if (stdLocation.equals(CanonicalModelProperties.LOCATION.CP.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class path ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class path ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_PATH, processingEnv);
         } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SP.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source path ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source path ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_PATH, processingEnv);
         } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.APP.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off annotation processor path ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off annotation processor path ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.ANNOTATION_PROCESSOR_PATH, processingEnv);
         } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SO.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source output ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source output ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_OUTPUT, processingEnv);
         } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.PCP.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off platform class path ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off platform class path ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.PLATFORM_CLASS_PATH, processingEnv);
         } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.CO.name())) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class output ... ");
+            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class output ... ");
             fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_OUTPUT, processingEnv);
         }
         
@@ -136,7 +138,41 @@ public class PersistenceUnitReader {
     
             if (! persistenceXML.getVersion().equals("1.0")) {
                 for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                    m_persistenceUnits.add(new PersistenceUnit(puInfo, factory));
+                    persistenceUnits.add(new PersistenceUnit(puInfo, factory));
+                }
+            }
+        } else {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void initPersistenceUnits2(MetadataMirrorFactory factory) throws IOException {
+        ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
+        ClassLoader loader = processingEnv.getClass().getClassLoader();
+        
+        Enumeration<URL> resources = loader.getResources("persistence.xml");
+        
+        URL url = null;
+        
+        while (resources.hasMoreElements()) {
+            url = resources.nextElement();
+            processingEnv.getMessager().printMessage(Kind.NOTE, "We found a URL ... " + url);
+        }
+        
+        if (url != null) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Loading content from URL ... " + url);
+            
+            InputStream inStream = url.openStream();
+            XMLContext context = PersistenceXMLMappings.createXMLContext();
+            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
+            inStream.close();
+    
+            if (! persistenceXML.getVersion().equals("1.0")) {
+                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                    persistenceUnits.add(new PersistenceUnit(puInfo, factory));
                 }
             }
         } else {
