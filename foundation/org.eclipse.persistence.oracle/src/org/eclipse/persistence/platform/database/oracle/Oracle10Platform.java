@@ -27,6 +27,17 @@ public class Oracle10Platform extends Oracle9Platform  {
     
     /**
      * INTERNAL:
+     * Indicate whether app. server should unwrap connection
+     * to use lob locator.
+     * No need to unwrap connection because 
+     * writeLob method doesn't use oracle proprietary classes.
+     */
+    public boolean isNativeConnectionRequiredForLobLocator() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Write LOB value - Oracle 10 deprecates some methods used in the superclass
      */
     @Override

@@ -192,6 +192,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
+     * Set the platform.
+     * This should be set to the session's platform, not the connections
+     * which may not be configured correctly.
+     */
+    public void setDatasourcePlatform(DatasourcePlatform platform) {
+        super.setDatasourcePlatform(platform);
+        // lobWriter may have been left from a different platform type.
+        this.lobWriter = null;
+    }
+
+    /**
      * Set if the cached statement for dynamic SQL execution is in use.
      * Used to handle concurrency for the dynamic statement.
      */

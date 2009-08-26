@@ -17,10 +17,13 @@ import java.util.*;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 
 /**
  * INTERNAL:
@@ -43,6 +46,7 @@ public class LOBValueWriter {
     //DatabaseCalls still to be processed
     private Collection calls = null;
     private Accessor accessor;
+    private boolean isNativeConnectionRequired;
 
     /**
      * This is the default constructor for the class.
@@ -52,6 +56,8 @@ public class LOBValueWriter {
      */
     public LOBValueWriter(Accessor accessor) {
         this.accessor = accessor;
+        DatabasePlatform platform = ((DatabaseAccessor)accessor).getPlatform();
+        this.isNativeConnectionRequired = platform.isOracle() && ((OraclePlatform)platform).isNativeConnectionRequiredForLobLocator(); 
     }
 
     protected void buildAndExecuteCall(DatabaseCall dbCall, AbstractSession session) {
@@ -126,7 +132,7 @@ public class LOBValueWriter {
     private DatabaseCall buildCallFromSelectStatementForLocator(SQLSelectStatement selectStatement, WriteObjectQuery writeQuery, DatabaseCall dbCall, AbstractSession session) {
         DatabaseCall call = selectStatement.buildCall(session);
         // Locator LOB must not be wrapped (WLS wraps LOBs).
-        call.setIsNativeConnectionRequired(true);
+        call.setIsNativeConnectionRequired(this.isNativeConnectionRequired);
         
         //the LOB context must be passed into the new call object
         call.setContexts(dbCall.getContexts());
