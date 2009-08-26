@@ -2075,7 +2075,7 @@ public class AnnotationsProcessor {
                 buildNewTypeInfo(jClasses);
                 refInfo = typeInfo.get(ptype.getQualifiedName());
             }
-            if (refInfo != null && refInfo.getXmlValueProperty() == null) {
+            if (refInfo != null && !refInfo.isEnumerationType() && refInfo.getXmlValueProperty() == null) {
                 throw JAXBException.invalidTypeForXmlValueField(propName);
             }
         }
