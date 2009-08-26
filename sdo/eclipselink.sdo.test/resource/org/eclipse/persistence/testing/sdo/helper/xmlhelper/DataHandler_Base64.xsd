@@ -1,0 +1,16 @@
+<schema targetNamespace="myns" xmlns:ns0="myns" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+  <element name="testDataElem">
+    <complexType>
+     <sequence>
+       <element name="simpleStr" type="string" minOccurs="0"/>
+       <element name="simpleInteger" type="integer" minOccurs="0"/>
+       <element name="simpleDecimal" type="decimal" minOccurs="0"/>
+       <element name="simpleBinary" type="base64Binary" minOccurs="0"/>
+       <element name="simpleDHBinary" type="ns0:base64Binary-DataHandler" minOccurs="0"/>
+     </sequence>
+    </complexType>
+  </element>
+  <simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="javax.activation.DataHandler">
+    <restriction base="base64Binary"/>
+  </simpleType> 
+</schema> 

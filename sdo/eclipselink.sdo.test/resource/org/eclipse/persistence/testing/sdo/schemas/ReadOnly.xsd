@@ -1,0 +1,8 @@
+<xsd:schema targetNamespace="myns" xmlns="myns" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:sdo="commonj.sdo" xmlns:sdoXML="commonj.sdo/xml">
+     <xsd:complexType name="employee-type">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" sdoXML:readOnly="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+  <xsd:element name="employee" type="employee-type"/>
+</xsd:schema>

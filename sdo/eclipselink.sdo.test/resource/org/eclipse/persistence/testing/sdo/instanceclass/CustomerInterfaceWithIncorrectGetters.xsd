@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+    targetNamespace="urn:customer"
+    xmlns="urn:customer"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:sdoj="commonj.sdo/java"
+    elementFormDefault="qualified" 
+    attributeFormDefault="unqualified"
+    sdoj:package="org.eclipse.persistence.testing.sdo.instanceclass">
+    <xs:complexType name="CustomerInterfaceWithIncorrectGetters">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="address" type="Address"/>
+            <xs:element name="phone-number" type="xs:string" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Address">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

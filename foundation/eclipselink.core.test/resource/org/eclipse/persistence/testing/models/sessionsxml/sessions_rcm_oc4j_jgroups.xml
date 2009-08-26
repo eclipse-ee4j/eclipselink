@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="11.1.1.0.0">
+   <session xsi:type="server-session">
+      <name>rcm_test_session</name>
+      <remote-command>
+         <channel>new_channel</channel>
+         <commands>
+            <cache-sync>true</cache-sync>
+         </commands>
+         <transport xsi:type="oc4j-jgroups-transport">
+            <on-connection-error>KeepConnection</on-connection-error>
+			<use-single-threaded-notification>true</use-single-threaded-notification>
+			<topic-name>new_topic</topic-name>
+         </transport>
+      </remote-command>
+      <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+      <login xsi:type="database-login">
+         <user-name>@dbUser@</user-name>
+         <driver-class>@driverClass@</driver-class>
+         <connection-url>@dbURL@</connection-url>
+         <byte-array-binding>false</byte-array-binding>
+         <optimize-data-conversion>false</optimize-data-conversion>
+         <trim-strings>false</trim-strings>
+         <jdbc-batch-writing>false</jdbc-batch-writing>
+      </login>
+   </session>
+</sessions>

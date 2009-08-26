@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE toplink-configuration PUBLIC "-//Oracle Corp.//DTD TopLink Sessions 9.0.4//EN" "sessions_9_0_4.dtd">
+<toplink-configuration>
+   <session>
+      <name>DatabaseSession</name>
+      <project-xml>C:/toplink-deployment-descriptor.xml</project-xml>
+      <session-type>
+         <database-session/>
+      </session-type>
+      <login>
+         <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+         <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+         <user-name>tle</user-name>
+         <password>password</password>
+      </login>
+   </session>
+</toplink-configuration>

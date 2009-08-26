@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:address xmlns:ns0="http://www.eclipse.org/eclipselink/xsds/persistence/oxm/invalid">
+  <state>Texas</state>
+  <street>Boulder Lane</street>
+  <city>Austin</city>
+  <zip>78726</zip>
+</ns0:address>

@@ -1,0 +1,11 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.example.org/root" elementFormDefault="qualified" targetNamespace="http://www.example.org/root" xmlns:ns0="http://www.example.org/data">
+   <import namespace="http://www.example.org/data" schemaLocation="data.xsd"/>
+   <import namespace="http://www.example.org/emp" schemaLocation="emp.xsd"/>
+   <element name="root">
+      <complexType>
+         <sequence>
+            <element name="data" type="ns0:Data"/>            
+         </sequence>
+      </complexType>
+   </element>
+</schema>

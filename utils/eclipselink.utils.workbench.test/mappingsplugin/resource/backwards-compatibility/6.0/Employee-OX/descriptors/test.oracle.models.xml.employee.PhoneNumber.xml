@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="o-x">
+   <name>test.oracle.models.xml.employee.PhoneNumber</name>
+   <class-handle>
+      <type-name>test.oracle.models.xml.employee.PhoneNumber</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="xml-direct">
+         <name>areaCode</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.PhoneNumber</attribute-declaring-type-name>
+            <attribute-name>areaCode</attribute-name>
+         </attribute-handle>
+         <xml-field typed="true">area-code/text()</xml-field>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>number</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.PhoneNumber</attribute-declaring-type-name>
+            <attribute-name>number</attribute-name>
+         </attribute-handle>
+         <xml-field typed="true">number/text()</xml-field>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>type</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.PhoneNumber</attribute-declaring-type-name>
+            <attribute-name>type</attribute-name>
+         </attribute-handle>
+         <xml-field>@type</xml-field>
+      </mapping>
+   </mappings>
+   <schema-context-handle>
+      <schema>employee.xsd</schema>
+      <qname-path>
+         <qname component-type="complex-type" namespace-uri="" local-name="phone-type"/>
+      </qname-path>
+   </schema-context-handle>
+   <root-descriptor>false</root-descriptor>
+</descriptor>

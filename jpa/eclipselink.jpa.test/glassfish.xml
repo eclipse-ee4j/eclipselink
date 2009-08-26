@@ -1,0 +1,143 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     edtang - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - glassfish-install : recreates server and adds jars
+        - glassfish-setup : creates connection pool
+        - glassfish-reset : removes connection pool
+        - glassfish-start : starts server
+        - glassfish-stop : stops server
+        - glassfish-deploy : deploys ear
+        - glassfish-undeploy : undeploys ear
+
+        It requires some configuration of the glassfish.properties, it should be run through build.xml, not directly.
+        To connect to the admin console use http://localhost:4848/console, this may be useful for debugging deployment failures.
+
+-->
+
+<project name="Eclipse Persistence Services JPA SunAS9 Testing" basedir=".">
+    
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/glassfish.properties"/>
+    <property file="./test.properties"/>
+    <property file="./glassfish.properties"/>
+    
+    <!-- 
+        This copies libraries to domain1. 
+        Installing GlassFish and setting up domain1 should have been done beforehand.
+    -->
+    <target name="glassfish-install">
+        <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${eclipselink.jar.name}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+    </target>
+    
+    <!-- Start the server. -->
+    <target name="glassfish-start">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="start-domain"/>
+            <arg value="domain1"/>
+        </exec>
+    </target>
+    
+    <!--
+        This target is to create connection pool and managed datasource required for running JPA tests on the SunAS9 server, and start Derby database
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-setup">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="start-database"/>
+        </exec>
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="create-jdbc-connection-pool"/>
+            <arg value="--datasourceclassname"/>
+            <arg value="org.apache.derby.jdbc.ClientDataSource"/>
+
+            <arg value="--property"/>
+            <arg value="user=anyUser:password=anyPassword:portNumber=1527:dataBaseName=anyDatabase:serverName=localhost:connectionAttributes=\;create\=true"/>
+            <arg value="jdbc-derby-pool"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="create-jdbc-resource"/>
+            <arg value="--connectionpoolid"/>
+            <arg value="jdbc-derby-pool"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+        </exec> 
+    </target>
+    
+    <!--
+        This target is to remove the connection pool and managed datasource created by target <glassfish-setup>, and stop Derby database
+        Note: SunAS9 server must be running.
+    -->
+    
+    <target name="glassfish-reset">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="delete-jdbc-resource"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="delete-jdbc-connection-pool"/>
+            <arg value="jdbc-derby-pool"/>
+        </exec>  
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="stop-database"/>
+        </exec>
+    </target>
+             
+    <!-- Stop the server. -->
+    <target name="glassfish-stop">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="stop-domain"/>
+            <arg value="domain1"/>
+        </exec>
+    </target>
+    
+    <!--
+        Deploy the application ear to the server.
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-deploy">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="deploy"/>
+            <arg value="--name"/>
+            <arg value="${application.name}"/>
+            <arg value="${ear.name}"/>
+        </exec>
+    </target>
+    
+    <!--
+        Undeploy the application ear to the server.
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-undeploy">
+        <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="undeploy"/>
+            <arg value="${application.name}"/> 
+        </exec>
+    </target>
+</project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="testObject">
+      <xsd:sequence>
+         <xsd:element name="byteArrayListTest" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="byteArrayTest" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="booleanTest" type="xsd:boolean" minOccurs="0"/>
+         <xsd:element name="booleanListTest" type="xsd:boolean" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="fld1" type="xsd:int" default="1"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

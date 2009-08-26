@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="Items">
+      <xsd:sequence>
+         <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="USAddress">
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="street" type="xsd:string"/>
+      <xsd:attribute name="city" type="xsd:string"/>
+      <xsd:attribute name="state" type="xsd:string"/>
+      <xsd:attribute name="zip" type="xsd:decimal"/>
+      <xsd:attribute name="country" type="xsd:string" default="US"/>
+   </xsd:complexType>
+   <xsd:complexType name="Item">
+      <xsd:attribute name="productName" type="xsd:string"/>
+      <xsd:attribute name="quantity" type="quantityType"/>
+      <xsd:attribute name="partNum" type="SKU"/>
+      <xsd:attribute name="USPrice" type="xsd:decimal"/>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="shipDate" type="xsd:date"/>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="shipTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="billTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="items" type="Items" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="orderDate" type="xsd:date"/>
+   </xsd:complexType>
+   <xsd:element name="item" type="Item"/>
+   <xsd:element name="items" type="Items"/>
+   <xsd:element name="uSAddress" type="USAddress"/>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+   <xsd:simpleType name="SKU">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="quantityType">
+      <xsd:restriction base="xsd:int"/>
+   </xsd:simpleType>
+</xsd:schema>

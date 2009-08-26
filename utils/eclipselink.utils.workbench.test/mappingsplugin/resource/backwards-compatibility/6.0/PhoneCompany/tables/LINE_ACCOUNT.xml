@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>LINE_ACCOUNT</short-name>
+   <columns>
+      <column>
+         <name>COMPANY_ID</name>
+         <type>NUMBER</type>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+      <column>
+         <name>LINE_ACCOUNT</name>
+         <type>VARCHAR2</type>
+         <size>50</size>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+   </columns>
+   <references>
+      <table-association>
+         <name>LINE_ACCOUNT_COMPANY</name>
+         <target-table-handle>
+            <table-name>COMPANY</table-name>
+         </target-table-handle>
+         <column-pairs>
+            <column-pair>
+               <source-column-handle>
+                  <column-table-name>LINE_ACCOUNT</column-table-name>
+                  <column-name>COMPANY_ID</column-name>
+               </source-column-handle>
+               <target-column-handle>
+                  <column-table-name>COMPANY</column-table-name>
+                  <column-name>ID</column-name>
+               </target-column-handle>
+            </column-pair>
+         </column-pairs>
+      </table-association>
+   </references>
+</table>

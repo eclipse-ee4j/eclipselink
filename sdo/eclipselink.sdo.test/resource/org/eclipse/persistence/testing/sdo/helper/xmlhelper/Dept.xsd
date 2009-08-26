@@ -1,0 +1,17 @@
+<xsd:schema elementFormDefault="qualified"
+            targetNamespace="http://sdo.sample.service.types/Dept/"
+            xmlns="http://sdo.sample.service.types/Dept/"
+            xmlns:ns1="http://sdo.sample.service.types/Emp/"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:sdoJava="commonj.sdo/java"
+            sdoJava:package="sdo.sample.service.types.dept">
+   <xsd:import namespace="http://sdo.sample.service.types/Emp/" schemaLocation="Emp.xsd"/>
+   <xsd:element name="dept" type="Dept" />
+   <xsd:complexType name="Dept" sdoJava:instanceClass="sdo.sample.service.types.dept.Dept">
+      <xsd:sequence>
+         <xsd:element name="Deptno" type="xsd:integer" minOccurs="0" />
+         <xsd:element name="Dname" type="xsd:string" minOccurs="0" nillable="true" />
+         <xsd:element name="Emp" type="ns1:Emp" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

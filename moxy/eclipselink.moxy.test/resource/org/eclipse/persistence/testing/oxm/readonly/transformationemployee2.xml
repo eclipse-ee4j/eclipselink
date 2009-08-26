@@ -1,0 +1,6 @@
+<employee>
+  <normal-hours>
+    <start-time>12:00PM</start-time>
+    <end-time>7:00PM</end-time>
+  </normal-hours>
+</employee>

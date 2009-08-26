@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:ns1="my3.uri">
+   <xsd:element name="t3" type="ns1:T3"/>
+   <xsd:complexType name="USAddress3">
+      <xsd:attribute name="citystreet" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="uSAddress3" type="USAddress3"/>
+   <!--xsd:attribute name="attributeInt">
+   <xsd:simpleType>
+	<xsd:restriction base="xsd:integer"/>
+   </xsd:simpleType>
+   </xsd:attribute-->
+</xsd:schema>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" sdoJava:package="uri.my" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="jobType" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="title" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="phoneType" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="areaCode" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+         <xsd:element name="number" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="contactType" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="street" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="addressType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="contactType">
+            <xsd:choice maxOccurs="unbounded">
+               <xsd:element name="city" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+            </xsd:choice>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="personType" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="age" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+         <xsd:element name="name" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="cdnAddressType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="addressType">
+            <xsd:choice maxOccurs="unbounded">
+               <xsd:element name="postalCode" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+            </xsd:choice>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="jobType" type="jobType"/>
+   <xsd:element name="phoneType" type="phoneType"/>
+   <xsd:element name="contactType" type="contactType"/>
+   <xsd:element name="addressType" type="addressType"/>
+   <xsd:element name="personType" type="personType"/>
+   <xsd:element name="cdnAddressType" type="cdnAddressType"/>
+</xsd:schema>

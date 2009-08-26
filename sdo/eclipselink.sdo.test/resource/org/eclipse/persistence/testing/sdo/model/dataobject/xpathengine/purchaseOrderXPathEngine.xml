@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <shipTo country="US" zip="90952" xsi:type="ns0:usAddressType">
+      <name>Alice Smith</name>
+      <street>123 Maple Street</street>
+      <city>Mill Valley</city>
+      <state>CA</state>
+   </shipTo>
+   <billTo country="Canada" xsi:type="ns0:cdnAddressType">
+      <name>Robert Smith</name>
+      <street>8 Oak Avenue</street>
+      <city>Mill Valley</city>
+      <province>Ontario</province>
+      <postalcode>B3L 4J3</postalcode>
+   </billTo>
+   <comment>Hurry, my lawn is going wild!</comment>
+   <comment>I love growing grass</comment>
+   <items>
+      <item partNum=" 872-AA" quantity="1">
+         <productName>Lawnmower</productName>
+         <USPrice>148.95</USPrice>
+         <comment>Confirm this is electric</comment>
+	     <specialOrder>true</specialOrder>
+		 <partsList>
+		     <partNumber>1</partNumber>
+		     <partNumber>2</partNumber>
+		     <partNumber>3</partNumber>
+		     <partNumber>4</partNumber>
+		     <partNumber>5</partNumber>
+		     <partNumber>6</partNumber>
+		 </partsList>
+      </item>
+      <item partNum="926-AA" quantity="1">
+         <productName>Baby Monitor</productName>
+         <CDNPrice>39.98</CDNPrice>
+         <exchangeRate>1.3</exchangeRate>
+         <shipDate>1999-05-21</shipDate>
+         <comment>This item requires batteries</comment>
+         <comment>Also runs on AC</comment>
+	     <specialOrder>false</specialOrder>
+		 <partsList>
+		     <partNumber>1</partNumber>
+		     <partNumber>8</partNumber>
+		     <partNumber>9</partNumber>
+		     <partNumber>23</partNumber>
+		 </partsList>
+      </item>
+      <item partNum="32-AQ" quantity="5">
+         <productName>Battery</productName>
+         <CDNPrice>2.98</CDNPrice>
+         <exchangeRate>1.3</exchangeRate>
+         <shipDate>2007-06-01</shipDate>
+	     <specialOrder>false</specialOrder>
+      </item>
+      <item partNum="555" quantity="3">
+         <productName>Rake</productName>
+         <CDNPrice>12.98</CDNPrice>
+         <exchangeRate>1.3</exchangeRate>
+         <shipDate>2007-01-31</shipDate>
+	     <specialOrder>true</specialOrder>
+      </item>
+   </items>
+   <customer namePrefix="Dr.">
+      <name>Sally</name>
+      <gender>female</gender>
+      <phoneNumber>6131231234</phoneNumber>
+   </customer>
+</ns0:purchaseOrder>

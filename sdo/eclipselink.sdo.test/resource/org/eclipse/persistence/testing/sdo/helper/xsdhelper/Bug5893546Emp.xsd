@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://example.com/emp/" xmlns="http://example.com/emp/" elementFormDefault="qualified" sdoJava:package="com.example.hr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="Emp">
+      <xsd:attribute name="ename" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="emp" type="Emp"/>
+</xsd:schema>

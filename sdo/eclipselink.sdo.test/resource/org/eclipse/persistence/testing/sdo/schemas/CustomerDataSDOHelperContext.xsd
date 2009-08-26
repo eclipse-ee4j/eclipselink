@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.com/" xmlns="http://www.example.com/" elementFormDefault="qualified" sdoJava:package="myPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="commonj.sdo/XML">
+   <xsd:complexType name="CustomerDataSDO">
+      <xsd:sequence>
+         <xsd:element name="PersonId" type="xsd:decimal" minOccurs="0" sdo:propertyType="sdo:Decimal"/>
+         <xsd:element name="FirstName" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
+         <xsd:element name="LastName" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
+         <xsd:element name="Email" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
+         <xsd:element name="MobilePhoneNumber" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
+         <xsd:element name="MembershipTypeCode" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
+	 <xsd:any/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="customerDataSDO" type="CustomerDataSDO"/>
+</xsd:schema>

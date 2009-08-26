@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myShort-NS" targetNamespace="myShort-NS">
+
+	<element name="myShort" type="nist:myShort-Type"/>
+
+	<simpleType name="myShort-Type">
+		<restriction base="short"/>
+	</simpleType>
+
+</schema>

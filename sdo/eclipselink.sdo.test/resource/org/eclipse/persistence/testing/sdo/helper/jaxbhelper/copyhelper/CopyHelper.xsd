@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="urn:copy" xmlns:tns="urn:copy" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sdox="commonj.sdo/xml">
+        <xs:import namespace="commonj.sdo/xml" />
+        <xs:complexType name="root">
+                <xs:sequence>
+                        <xs:element name="child1" type="tns:child1"/>
+                        <xs:element ref="tns:child2"/>
+                </xs:sequence>
+        </xs:complexType>
+        <xs:complexType name="child1">
+                <xs:sequence>
+                        <xs:element name="child2" type="xs:IDREF" minOccurs="0" sdox:propertyType="tns:child2" sdox:oppositeProperty="child1"/>
+                        <xs:element name="child2collection" type="xs:IDREF" minOccurs="0" maxOccurs="unbounded" sdox:propertyType="tns:child2" sdox:oppositeProperty="child1"/>
+                </xs:sequence>
+                <xs:attribute name="id" type="xs:ID"/>
+        </xs:complexType>
+        <xs:element name="child2">
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:element name="child1" type="xs:IDREF" minOccurs="0" sdox:propertyType="tns:child1" sdox:oppositeProperty="child2"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:ID"/>
+                </xs:complexType>
+        </xs:element>
+</xs:schema>

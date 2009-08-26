@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.FueledVehicle</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.FueledVehicle</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>FueledVehicle</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>FUEL_VEH</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>fuelCapacity</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.FueledVehicle</attribute-declaring-type-name>
+            <attribute-name>fuelCapacity</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>FUEL_VEH</column-table-name>
+            <column-name>FUEL_CAP</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexinheritance.Vehicle</descriptor-name>
+      </parent-descriptor-handle>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>FUEL_VEH</table-name>
+   </primary-table-handle>
+</descriptor>

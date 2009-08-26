@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:manager>
+      <ns0:name>New Name</ns0:name>
+   </ns0:manager>
+   <ns0:myChangeSummary sdo:ref="#/ns0:root/ns0:manager" xmlns:sdo="commonj.sdo">
+      <ns0:manager>
+         <ns0:name>Old Name</ns0:name>
+      </ns0:manager>
+   </ns0:myChangeSummary>
+</ns0:root>

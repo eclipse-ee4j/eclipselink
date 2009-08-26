@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions version="10g Developer (10.1.3.0)" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="server-session">
+      <name>org.eclipse.persistence.testing.models.performance.pojo</name>
+      <primary-project xsi:type="xml">org/eclipse/persistence/testing/models/performance/pojo/employee.xml</primary-project>
+   </session>
+</sessions>

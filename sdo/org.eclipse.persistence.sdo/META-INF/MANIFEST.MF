@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Specification-Version: 2.0.0
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Implementation-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink SDO
+Bundle-SymbolicName: org.eclipse.persistence.sdo
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.0.0.qualifier";visibility:=reexport,
+ org.eclipse.persistence.asm;bundle-version="2.0.0.qualifier",
+ org.eclipse.persistence.moxy;bundle-version="2.0.0.qualifier";resolution:=optional
+Export-Package: org.eclipse.persistence.sdo;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.helper;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.helper.delegates;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.helper.extension;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.types;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.dataobjects;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.helper.jaxb;version="2.0.0.qualifier",
+ org.eclipse.persistence.sdo.helper.metadata;version="2.0.0.qualifier"
+Bundle-ClassPath: .
+Import-Package: commonj.sdo;version="2.1.1",
+ commonj.sdo.helper;version="2.1.1",
+ commonj.sdo.impl;version="2.1.1",
+ javax.xml.bind;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation.adapters;version="2.0.0";resolution:=optional,
+ javax.xml.bind.attachment;version="2.0.0";resolution:=optional,
+ javax.xml.bind.helpers;version="2.0.0";resolution:=optional,
+ javax.xml.bind.util;version="2.0.0";resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo

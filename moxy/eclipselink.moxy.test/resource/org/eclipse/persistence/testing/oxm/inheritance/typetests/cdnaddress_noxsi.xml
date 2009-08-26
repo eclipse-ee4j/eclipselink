@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<canadian-address>
+  <id>123</id>
+  <street>1 A Street</street>
+  <postal-code>A1B 2C3</postal-code>
+</canadian-address>

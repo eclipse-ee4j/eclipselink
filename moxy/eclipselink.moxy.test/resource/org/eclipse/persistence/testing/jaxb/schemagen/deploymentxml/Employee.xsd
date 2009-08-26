@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="employee" type="employee-type"/>
+    <xs:complexType name="employee-type">
+        <xs:sequence>
+            <xs:element name="first-name" type="xs:string"/>
+            <xs:element name="last-name" type="xs:string"/>
+        </xs:complexType>
+</xs:schema>

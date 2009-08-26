@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema sdoJava:package="com.example.myPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:sdo="commonj.sdo" xmlns:sdoXML="commonj.sdo/xml" xmlns:ns0="org.eclipse.persistence.sdo">
+   <xsd:complexType name="Items">
+      <xsd:sequence>
+         <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="Item" sdoXML:name="ItemSDO">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="porder" type="xsd:decimal" sdoXML:string="true" sdoXML:many="false" minOccurs="0"/>	 
+         <xsd:element name="skusTest" type="SKU"  minOccurs="0"/>	 
+         <xsd:element name="binaryData" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false"/>	 
+         <xsd:element name="binaryDataHandler" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false" minOccurs="0"/>	 
+	 <xsd:element name="binaryDataMany" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType"/>	 
+         <xsd:element name="binaryDataHandlerMany" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" minOccurs="0"/>	 
+         <xsd:element name="binaryDataHandlerNoMime" type="myBinaryHandlerType" sdoXML:many="false" minOccurs="0"/>	 
+         <xsd:element name="binaryDataHandlerManyNoMime" type="myBinaryHandlerType" minOccurs="0"/>	 
+      </xsd:sequence>
+      <xsd:attribute name="theMimeType" type="xsd:string"/>
+      <xsd:attribute name="productName" type="xsd:ID"/>
+      <xsd:attribute name="quantity" sdoXML:dataType="sdo:Integer"/>
+      <xsd:attribute name="partNum" type="SKU" sdoXML:name="partNumSDO"/>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrder" sdoXML:aliasName="Purchase">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="items" sdoXML:dataType="Items" minOccurs="0" sdoXML:many="false"/>
+	 <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
+      </xsd:sequence>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="orderDate" type="xsd:dateTime" sdoXML:dataType="MyTimeStamp"/>
+   </xsd:complexType>
+   <xsd:element name="item" type="Item"/>
+   <xsd:element name="items" type="Items"/>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+   <xsd:simpleType name="SKU" sdoJava:instanceClass="org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.MySKU" sdoXML:name="SKUSDO">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="myBinaryHandlerType" sdoJava:instanceClass="javax.activation.DataHandler">
+      <xsd:restriction base="xsd:base64Binary"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="MyTimeStamp" sdoJava:instanceClass="java.sql.Timestamp"/>
+</xsd:schema>

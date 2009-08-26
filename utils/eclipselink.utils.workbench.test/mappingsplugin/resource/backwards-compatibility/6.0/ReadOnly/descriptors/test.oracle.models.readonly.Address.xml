@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.readonly.Address</name>
+   <class-handle>
+      <type-name>test.oracle.models.readonly.Address</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Address</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>RO_ADDR</column-table-name>
+               <column-name>ADD_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>city</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Address</attribute-declaring-type-name>
+            <attribute-name>city</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ADDR</column-table-name>
+            <column-name>CITY</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>country</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Address</attribute-declaring-type-name>
+            <attribute-name>country</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.readonly.Country</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>RO_ADDR</reference-table-name>
+            <reference-name>RO_ADDR_COUNTRY</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Address</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ADDR</column-table-name>
+            <column-name>ADD_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>streetAddress</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Address</attribute-declaring-type-name>
+            <attribute-name>streetAddress</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ADDR</column-table-name>
+            <column-name>STREET</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>zipCode</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Address</attribute-declaring-type-name>
+            <attribute-name>zipCode</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ADDR</column-table-name>
+            <column-name>ZIP</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>RO_ADDR</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>ADD_SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>RO_ADDR</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>RO_ADDR</column-table-name>
+      <column-name>ADD_ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

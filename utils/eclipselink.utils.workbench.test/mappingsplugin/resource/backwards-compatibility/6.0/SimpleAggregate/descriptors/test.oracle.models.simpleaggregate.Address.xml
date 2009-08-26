@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="aggregate">
+   <name>test.oracle.models.simpleaggregate.Address</name>
+   <class-handle>
+      <type-name>test.oracle.models.simpleaggregate.Address</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>city</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.simpleaggregate.Address</attribute-declaring-type-name>
+            <attribute-name>city</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>getCity()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>setCity(java.lang.String)</method-signature>
+         </set-method-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>state</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.simpleaggregate.Address</attribute-declaring-type-name>
+            <attribute-name>state</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>getState()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>setState(java.lang.String)</method-signature>
+         </set-method-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>street</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.simpleaggregate.Address</attribute-declaring-type-name>
+            <attribute-name>street</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>getStreet()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>setStreet(java.lang.String)</method-signature>
+         </set-method-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>zip</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.simpleaggregate.Address</attribute-declaring-type-name>
+            <attribute-name>zip</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>getZip()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.Address</method-declaring-type-name>
+            <method-signature>setZip(java.lang.String)</method-signature>
+         </set-method-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <class-indicator-policy type="relational-field">
+         <class-name-is-indicator>true</class-name-is-indicator>
+      </class-indicator-policy>
+   </inheritance-policy>
+</descriptor>

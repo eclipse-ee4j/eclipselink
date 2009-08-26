@@ -1,0 +1,13 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.example.org" targetNamespace="http://www.example.org"
+	xmlns:sdoJava="commonj.sdo/java" sdoJava:package="org.example"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:element name="employee" type="EmployeeType"/>
+	<xsd:complexType name="EmployeeType" mixed="true">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:string" />
+			<xsd:element name="name" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,8 @@
+<employee-collection xmlns:ns0="myns">
+  <ns0:integer-root>21</ns0:integer-root>
+  <root>Value1</root>
+  <employee-collection>
+    <ns0:integer-root>29</ns0:integer-root>
+  </employee-collection>
+  <root>Value2</root>
+</employee-collection>

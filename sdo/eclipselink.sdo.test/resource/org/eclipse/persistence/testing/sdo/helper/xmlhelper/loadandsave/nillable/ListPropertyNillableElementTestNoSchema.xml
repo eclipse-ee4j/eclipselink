@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:ListPropertyTest xmlns:ns0="http://www.example.org">
+   <childContain>
+      <child xmlns:ns1="http://www.w3.org/2001/XMLSchema-instance" ns1:nil="true"/>
+      <child name="iName"/>
+   </childContain>
+</ns0:ListPropertyTest>

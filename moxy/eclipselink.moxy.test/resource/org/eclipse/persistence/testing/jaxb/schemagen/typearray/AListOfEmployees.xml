@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:AListOfEmployees xmlns:x="example.com">
+	<item>
+		<first-name>Jane</first-name>
+		<last-name>Doe</last-name>
+	</item>
+	<item>
+		<first-name>Dane</first-name>
+		<last-name>Joe</last-name>
+	</item>
+</x:AListOfEmployees>

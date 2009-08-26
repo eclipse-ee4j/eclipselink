@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+          http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd"
+          version="3.0">
+    <enterprise-beans>
+        <session>
+            <ejb-name>TestRunner</ejb-name>
+            <ejb-ref>
+                <ejb-ref-name>ejb/EmployeeService</ejb-ref-name>
+                <ejb-ref-type>Session</ejb-ref-type>
+                <remote>org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService</remote>
+            </ejb-ref>
+            <persistence-context-ref>
+                <persistence-context-ref-name>persistence/sessionbean/entity-manager</persistence-context-ref-name>
+                <persistence-unit-name>sessionbean</persistence-unit-name>
+            </persistence-context-ref>
+            <persistence-unit-ref>
+                <persistence-unit-ref-name>persistence/sessionbean/factory</persistence-unit-ref-name>
+                <persistence-unit-name>sessionbean</persistence-unit-name>
+            </persistence-unit-ref>
+        </session>
+    </enterprise-beans>
+</ejb-jar>

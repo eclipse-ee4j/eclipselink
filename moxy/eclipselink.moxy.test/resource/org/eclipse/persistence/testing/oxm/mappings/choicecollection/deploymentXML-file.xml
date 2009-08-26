@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - 1.1.0 (Build 20081229)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name></name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.mappings.choicecollection.Employee</class>
+         <alias>Employee</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field name="name/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-choice-collection-mapping">
+               <attribute-name>choice</attribute-name>
+               <container-policy xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container-policy>
+               <field-to-class-association>
+                  <xml-field name="address" xsi:type="node"/>
+                  <class-name>org.eclipse.persistence.testing.oxm.mappings.choicecollection.Address</class-name>
+               </field-to-class-association>
+               <field-to-class-association>
+                  <xml-field name="street/text()" xsi:type="node"/>
+                  <class-name>java.lang.String</class-name>
+               </field-to-class-association>
+               <field-to-class-association>
+                  <xml-field name="integer/text()" xsi:type="node"/>
+                  <class-name>java.lang.Integer</class-name>
+               </field-to-class-association>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>phone</attribute-name>
+               <field name="phone/text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <default-root-element>employee</default-root-element>
+         <default-root-element-field name="employee" xsi:type="node"/>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.mappings.choicecollection.Address</class>
+         <alias>Address</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field name="street/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>city</attribute-name>
+               <field name="city/text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+</object-persistence>

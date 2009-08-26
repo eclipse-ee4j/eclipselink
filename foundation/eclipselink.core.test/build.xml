@@ -1,0 +1,361 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all tests, translates resources
+        - compile : compiles all tests
+        - process.resource : translates login info in resources into run directory
+        - test : runs LRG
+        - test-lrg : runs LRG
+        - test-srg : runs SRG
+
+        It requires some configuration of the build.properties and test.properties to run.
+    -->
+<project name="Eclipse Persistence Services Testing" default="all" basedir=".">
+
+    <!-- Allows tools.jar to be relative to JAVA_HOME. -->
+    <property environment="env"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property name="eclipselink.core.test" value="."/>
+    <property file="${eclipselink.core.test}/build.properties"/>
+    <property file="${eclipselink.core.test}/${test.properties}"/>
+    <property file="${eclipselink.core.test}/test.properties"/>
+
+    <!-- Classpath used for compiling tests, also used in running tests. -->
+    <path id="compile.path">
+        <pathelement path="${eclipselink.plugins}/${antlr}"/>
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
+    </path>
+
+    <!-- Default ant target, compiles and translates resources, does not run tests. -->
+    <target name="all" depends="clean, package" description="build EclipseLink jar"/>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="" description="compile EclipseLink core tests">
+        <mkdir dir="${eclipselink.core.test}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.core.test}/${src.dir}"
+               destdir="${eclipselink.core.test}/${classes.dir}"
+               includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Translates the login information in the resources into the run directory. -->
+    <target name="process-resource">
+        <filter token="dbUser" value="${db.user}"/>
+        <filter token="dbPassword" value="${db.pwd}"/>
+        <filter token="driverClass" value="${db.driver}"/>
+        <filter token="dbURL" value="${db.url}"/>
+        <filter token="loglevel" value="${logging.level}"/>
+        <filter token="boolvalue" value="${logging.boolvalue}"/>
+        <filter token="dbPlatform" value="${db.platform}"/>
+        <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true">
+            <fileset dir="${eclipselink.core.test}/${resource.dir}"
+                excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
+         </copy>
+         <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
+            <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/Employee_utf16.xml"/>
+         </copy>
+          <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
+            <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
+         </copy>
+    </target>
+
+
+    <!-- Packages tests jar. -->
+    <target name="package" depends="compile, process-resource" description="jat tests">
+        <jar jarfile="${eclipselink.core.test}/${eclipselink.tests.jar}">
+           <fileset dir="${eclipselink.core.test}/${classes.dir}"/>
+           <fileset dir="${eclipselink.core.test}/${run.dir}"/>
+        </jar>
+    </target>
+
+    <!-- Clean all build generated content. -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.core.test}/${classes.dir}"/>
+            <fileset dir="${eclipselink.core.test}/${report.dir}"/>
+            <fileset dir="${eclipselink.core.test}/${run.dir}"/>
+        </delete>
+    </target>
+
+    <!-- Testing -->
+
+    <!-- Classpath used for running tests. -->
+    <path id="run.classpath">
+        <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.test}/${run.dir}"/>
+        <path refid="compile.path"/>
+        <pathelement path="${eclipselink.core}/${resource.dir}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
+        <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
+        <pathelement path="${jdbc.driver.jar}"/>
+        <pathelement path="${tools.lib}"/>
+    </path>
+
+    <!-- Default test target, runs test.class from test.properties (default is LRG). -->
+    <target name="test">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs SRG (SRGTestModel). -->
+    <target name="test-srg">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
+        </antcall>
+    </target>
+
+    <!-- Runs non-LRG tests -->
+    <target name="test-non-lrg">
+        <!-- Requires remote config.
+        The following JVM arguments must be set.
+            -Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory
+            -Djava.naming.provider.url=iiop://localhost:900
+            -Djava.security.policy=./java.policy.allpermissions
+        The follwing corba naming server must also be started on the computer.
+            <java_home>/bin/tnameserv.exe
+        -->
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
+        </antcall>
+        <!-- Requires user "scott" unlocked and granted special privileges on oracle database -->
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel"/>
+        </antcall>
+        <!-- Requires usage of Japanese machine and database. -->
+        <!--antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel"/>
+        </antcall-->
+        <!-- Requires specific LAB databases. -->
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel"/>
+        </antcall>
+        <!-- Can take a long time, can deadlock. -->
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel"/>
+        </antcall>
+        <!-- Requires EIS datasources config. -->
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
+        </antcall>
+    </target>
+
+    <!-- Runs LRG (TestRunModel). -->
+    <target name="test-lrg">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
+        </antcall>
+    </target>
+
+    <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
+    <target name="test-prompt">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests. -->
+    <target name="test-performance">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.PerformanceTestModel"/>
+        </antcall>
+    </target>
+
+    <!-- Runs concurrency tests. -->
+    <target name="test-concurrency">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel"/>
+        </antcall>
+    </target>
+
+    <!-- Launches the testing browser -->
+    <target name="test-browser" depends="process-resource">
+        <echo>Running test browser</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
+             fork="true"
+             maxmemory="512m"
+             failonerror="false"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Generic target for running tests. -->
+    <target name="run-test" depends="process-resource">
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="1024m" dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+            <formatter type="xml"/>
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.core.test}/${report.dir}/test-results">
+            </test>
+        </junit>
+        <junitreport todir="${eclipselink.core.test}/${report.dir}">
+            <fileset dir="${eclipselink.core.test}/${report.dir}">
+                <include name="test-results.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.core.test}/${report.dir}"/>
+        </junitreport>
+        <!-- fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/ -->
+    </target>
+
+    <!-- Runs the test using the PromptTestRunner -->
+    <target name="run-test-prompt" depends="process-resource">
+        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
+            <isset property="performance.baseline.version"/>
+        </condition>
+        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
+            <not>
+                <isset property="performance.baseline.version"/>
+            </not>
+        </condition>
+
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="false"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="${jvmarg.performance.baseline.version}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+            <arg value="testmodel=${TEST_CLASS}" />
+            <arg value="regressionlog=../${report.dir}/test.log" />
+            <arg value="saveresults=${should.save.results}" />
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
+    <target name="test-ClassPathTestModel">
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="false"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value=""/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <arg value="testmodel=org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel" />
+            <arg value="regressionlog=../${report.dir}/test.log" />
+            <arg value="createdbconnection=false" />
+            <arg value="saveresults=true" />
+            <classpath>
+                <fileset dir="${eclipselink.plugins}" includes="${eclipselink.core.depend.without.connector.jar}"/>
+                <pathelement path="${eclipselink.jar.name}"/>
+                <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
+                <pathelement path="${junit.lib}"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+            </classpath>
+        </java>
+    </target>
+</project>

@@ -1,0 +1,43 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="JPAADVProperties" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.sessions-xml" value="org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/sessions.xml"/>
+             <property name="eclipselink.session-name" value="JPASessionXML"/>
+             <property name="eclipselink.exception-handler" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedExceptionHandler"/>
+             <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedSessionEventListener"/>
+             <property name="eclipselink.jdbc.batch-writing" value="BUFFERED"/>
+             <property name="eclipselink.jdbc.native-sql" value="true"/>
+             <property name="eclipselink.jdbc.cache-statements.size" value="100"/>
+             <property name="eclipselink.jdbc.cache-statements" value="true"/>
+             <property name="eclipselink.logging.logger" value="JavaLogger"/>
+             <property name="eclipselink.logging.file" value="JPAAdvancedProperties.log"/>
+             <property name="eclipselink.session.include.descriptor.queries" value="true"/>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+             <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="JPAADVProperties2" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="PerformanceProfiler"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="JPAADVProperties3" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
+    <!-- Bug 210280 testing for URL encoded char hex(20)-space and hex(C3A1)-multibyte handling in the PU name -->
+    <persistence-unit name="A JPAADVProperties pu with spaces in the name" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
+</persistence>

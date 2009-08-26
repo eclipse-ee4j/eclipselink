@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:dept xmlns:ns1="http://sdo.sample.service.types/Emp/" xmlns:ns0="http://sdo.sample.service.types/Dept/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:Deptno>1</ns0:Deptno>
+   <ns0:Dname>theDepartment1</ns0:Dname>
+   <ns0:Emp>
+      <ns1:Empno>1</ns1:Empno>
+      <ns1:Ename>theEmployee1</ns1:Ename>
+   </ns0:Emp>
+   <ns0:Emp>
+      <ns1:Empno>2</ns1:Empno>
+      <ns1:Ename>theEmployee2</ns1:Ename>
+   </ns0:Emp>
+</ns0:dept>

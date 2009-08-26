@@ -1,0 +1,4 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee xsi:schemaLocation="http://www.example.com/Employee.xsd" xsi:noNamespaceSchemaLocation="file:////ade/mmacivor_toplink10i/tltest/resource/ox/Employee.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <id>456</id>
+</employee>

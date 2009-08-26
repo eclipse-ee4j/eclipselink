@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myTime-NS" targetNamespace="myTime-NS">
+
+	<element name="myTime" type="nist:myTime-Type"/>
+
+	<simpleType name="myTime-Type">
+		<restriction base="time"/>
+	</simpleType>
+
+</schema>

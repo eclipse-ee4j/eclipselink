@@ -1,0 +1,23 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions-xml-list
+   product-version="10.0.3"
+   schema-version="1.0">
+
+   <sessions-xml path="C:/My Documents/XMLSchemaSessions.xml">
+      <class-repository>
+         <classpath-entries>
+            <entry>C:/Development/Mapping Workbench/SC/classes</entry>
+            <entry>C:/Development/Mapping Workbench/SC Test/classes</entry>
+         </classpath-entries>
+      </class-repository>
+   </sessions-xml>
+
+   <sessions-xml path="C:/My Documents/XMLSchemaSessions_2.xml">
+      <class-repository>
+         <classpath-entries>
+            <entry>C:/Development/Mapping Workbench/Framework/classes</entry>
+         </classpath-entries>
+      </class-repository>
+   </sessions-xml>
+
+</sessions-xml-list>

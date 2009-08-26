@@ -1,0 +1,13 @@
+<employee>
+  <name>Jane Doe</name>
+  <choice>
+    <street>123 Fake Street</street>
+    <integer>12</integer>
+    <address>
+      <street>45 O'Connor</street>
+      <city>Ottawa</city>
+    </address>
+    <integer>14</integer>
+  </choice>
+  <phone>123-4567</phone>
+</employee>

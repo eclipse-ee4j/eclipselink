@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:complexType name="simple-xml-format-type">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="simple-xml-format-tag" type="xsd:string" />
+      <xsd:element minOccurs="0" name="simple-xml-tag" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="procedure-argument-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element name="parameterName" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="out-procedure-argument-type">
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="procedure-argument-type">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="type" type="xsd:QName" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="xql-query-type">
+    <xsd:sequence>
+      <xsd:element name="text" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="named-query-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element name="descriptor" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="stored-procedure-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="in-argument" type="procedure-argument-type" />
+      </xsd:sequence>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="inout-argument" type="out-procedure-argument-type" />
+      </xsd:sequence>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="out-argument" type="out-procedure-argument-type" />
+      </xsd:sequence>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="attachment-type">
+    <xsd:sequence>
+      <xsd:element name="mime-type" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="result-type">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="type" type="xsd:QName" />
+      <xsd:element minOccurs="0" name="attachment" type="attachment-type" />
+      <xsd:element minOccurs="0" name="simple-xml-format" type="simple-xml-format-type" />
+    </xsd:sequence>
+    <xsd:attribute name="isCollection" type="xsd:boolean" use="optional" />
+  </xsd:complexType>
+  <xsd:complexType name="parameter-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element name="type" type="xsd:QName" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="query-operation">
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="operation-with-parameters-type">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="result" type="result-type" />
+          <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:choice>
+              <xsd:element name="jpql" type="xql-query-type" />
+              <xsd:element name="named-query" type="named-query-type" />
+              <xsd:element name="sql" type="xql-query-type" />
+              <xsd:element name="stored-procedure" type="stored-procedure-type" />
+              <xsd:element name="stored-function" type="stored-procedure-type" />
+            </xsd:choice>
+          </xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="operation-with-parameters-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="parameter" type="parameter-type" />
+      </xsd:sequence>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="dbws-type">
+    <xsd:annotation>
+      <xsd:documentation><![CDATA[
+         This is the XML Schema for EclipseLink Database WebService (DBWS) model.
+       ]]></xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element minOccurs="0" name="sessions-file" type="xsd:string" />
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:choice>
+          <xsd:element name="insert" type="operation-with-parameters-type" />
+          <xsd:element name="query" type="query-operation" />
+          <xsd:element name="update" type="operation-with-parameters-type" />
+          <xsd:element name="delete" type="operation-with-parameters-type" />
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="dbws" type="dbws-type" />
+</xsd:schema>

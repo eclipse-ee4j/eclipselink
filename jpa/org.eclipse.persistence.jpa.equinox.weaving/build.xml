@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+*     egwin - update to adopt calling standards
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.jpa.equinox.weaving" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="weaving.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="weaving.is.local"/>
+
+    <dirname property="weaving.build.location" file="${ant.file.org.eclipse.persistence.jpa.equinox.weaving}"/>
+    <condition property="weaving.2.base.dir" value="../.." else="..">
+        <contains string="${weaving.build.location}" substring="jpa"/>
+    </condition>
+    <property name="weaving.2.common.plugins.dir" value="${weaving.2.base.dir}/plugins"/>
+    <property name="weaving.2.buildsys.dir" value="${weaving.2.base.dir}/buildsystem"/>
+    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
+    <property name="bnd.path" value="${weaving.2.buildsys.dir}/${bndtool.jar}"/>
+    <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
+
+    <property file="${user.home}/build.properties"/>
+    <property file="${weaving.build.location}/build.properties"/>
+    <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+    <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+    <!-- The classpath uses this variable and the dir MUST exist or the build will fail.             -->
+    <condition property="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"
+                                                else="${weaving.2.base.dir}">
+        <available file="${weaving.2.base.dir}/../extension.lib.external" type="dir"/>
+    </condition>
+    <!-- Test to make certain that no matter what the value is that the dir exists -->
+    <condition property="extension.dir.exist">
+        <available file="${extensions.depend.dir}" type="dir"/>
+    </condition>        
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+    <fail message="extensions.depend.dir is being overridden to a nonexistant location!" unless="extension.dir.exist"/>
+    
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
+    </tstamp>
+    <property name="build.type"            value="SNAPSHOT"/>
+    <property name="svn.revision"          value="NA"/>
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor" value="${specification.vendor}"/>
+
+    <!-- Set Compile Path-->
+    <path id="weaving.compile.path">
+        <fileset
+            dir="${weaving.2.common.plugins.dir}"
+            includes="org.eclipse.persistence.core_${version.string}.jar,
+                      org.eclipse.persistence.jpa_${version.string}.jar,
+                      osgi.core.zip
+            "/>
+        <fileset
+            dir="${weaving.2.jpa.plugins.dir}"
+            includes="org.eclipse.osgi_*.jar,
+                      javax.persistence_2.0_preview.jar
+            "/>
+        <fileset
+            dir="${extensions.depend.dir}"
+            includes="org.eclipse.osgi_*.jar"/>
+    </path>
+    <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
+    <available classname="org.eclipse.osgi.baseadaptor.BaseData" classpathref="weaving.compile.path" property="osgi.bundle.exist"/>
+
+    <!-- all -->
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA Equinox weaving component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build JPA Equinox Weaving component using bnd"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${weaving.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+        </delete>
+    </target>
+
+    <!-- compile -->
+    <target name="no-compile-warning" unless="osgi.bundle.exist">
+        <echo message="Compile will be skipped - Equinox OSGi bundle wasn't found (org.eclipse.osgi_*.jar in jpa/plugins or ${extensions.depend.dir})."/>
+    </target>
+    <target name="compile" if="osgi.bundle.exist" depends="no-compile-warning" description="Compile EclipseLink JPA">
+        <fail message="Cannot find Core: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find JPA: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="weaving.compile.path"
+        />
+    </target>
+
+    <!-- package -->
+    <target name="package" if="osgi.bundle.exist" description="jar OSGI bundle">
+        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+            <fileset dir="${weaving.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+             <fileset dir="${weaving.build.location}">
+                <include name="hookconfigurators.properties"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Dynamic Weaving 2 Fragment for Equinox Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${weaving.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="generate-manifest" if="osgi.bundle.exist" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${release.version}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: Dynamic Weaving Fragment for Equinox${line.separator}"                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Fragment-Host: org.eclipse.osgi;extension:=framework;bundle-version=&quot;3.4.0&quot;${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.jpa.equinox.weaving;x-internal:=true${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+    </target>
+
+    <target name="bnd-package" if="osgi.bundle.exist">
+        <echo message="bnd.path = ${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.jpa.equinox.weaving.bnd"
+            output="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="Dynamic Weaving Fragment for Equinox Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${weaving.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>

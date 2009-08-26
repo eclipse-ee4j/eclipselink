@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Specification-Vendor: 
+Specification-Version: 
+Implementation-Vendor: ${implementation.vendor}
+Implementation-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink ASM
+Bundle-SymbolicName: org.eclipse.persistence.asm
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.persistence.internal.libraries.asm;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.attrs;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.tree;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.util;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.util.attrs;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.asm.xml;version="2.0.0.qualifier"
+Bundle-ClassPath: .
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm

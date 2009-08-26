@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>insurance</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.Address</class>
+         <alias>Address</alias>
+         <primary-key>
+            <field table="INS_ADDR" name="SSN" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>city</attribute-name>
+               <get-method>getCity</get-method>
+               <set-method>setCity</set-method>
+               <field table="INS_ADDR" name="CITY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>country</attribute-name>
+               <get-method>getCountry</get-method>
+               <set-method>setCountry</set-method>
+               <field table="INS_ADDR" name="COUNTRY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>policyHolder</attribute-name>
+               <get-method>getPolicyHolder</get-method>
+               <set-method>setPolicyHolder</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.PolicyHolder</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="INS_ADDR" name="SSN" xsi:type="column"/>
+                     <target-field table="HOLDER" name="SSN" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="INS_ADDR" name="SSN" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>state</attribute-name>
+               <get-method>getState</get-method>
+               <set-method>setState</set-method>
+               <field table="INS_ADDR" name="STATE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>street</attribute-name>
+               <get-method>getStreet</get-method>
+               <set-method>setStreet</set-method>
+               <field table="INS_ADDR" name="STREET" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>zipCode</attribute-name>
+               <get-method>getZipCode</get-method>
+               <set-method>setZipCode</set-method>
+               <field table="INS_ADDR" name="ZIPCODE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="INS_ADDR"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.Claim</class>
+         <alias>Claim</alias>
+         <primary-key>
+            <field table="CLAIM" name="CLM_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="CLAIM" name="CLM_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.HealthClaim</class>
+                  <class-indicator xsi:type="xsd:string">E</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.HouseClaim</class>
+                  <class-indicator xsi:type="xsd:string">H</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.VehicleClaim</class>
+                  <class-indicator xsi:type="xsd:string">V</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>amount</attribute-name>
+               <get-method>getAmount</get-method>
+               <set-method>setAmount</set-method>
+               <field table="CLAIM" name="AMOUNT" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <get-method>getId</get-method>
+               <set-method>setId</set-method>
+               <field table="CLAIM" name="CLM_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>policy</attribute-name>
+               <get-method>getPolicy</get-method>
+               <set-method>setPolicy</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.Policy</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="CLAIM" name="POL_ID" xsi:type="column"/>
+                     <target-field table="POLICY" name="POL_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="CLAIM" name="POL_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="CLAIM"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.HealthClaim</class>
+         <alias>HealthClaim</alias>
+         <primary-key>
+            <field table="CLAIM" name="CLM_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Claim</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>disease</attribute-name>
+               <get-method>getDisease</get-method>
+               <set-method>setDisease</set-method>
+               <field table="CLAIM" name="DISEASE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="CLAIM"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.HealthPolicy</class>
+         <alias>HealthPolicy</alias>
+         <primary-key>
+            <field table="POLICY" name="POL_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Policy</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>coverageRate</attribute-name>
+               <get-method>getCoverageRate</get-method>
+               <set-method>setCoverageRate</set-method>
+               <field table="POLICY" name="COV_RATE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="POLICY"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.HouseClaim</class>
+         <alias>HouseClaim</alias>
+         <primary-key>
+            <field table="CLAIM" name="CLM_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Claim</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>area</attribute-name>
+               <get-method>getArea</get-method>
+               <set-method>setArea</set-method>
+               <field table="CLAIM" name="AREA" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="CLAIM"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.HousePolicy</class>
+         <alias>HousePolicy</alias>
+         <primary-key>
+            <field table="POLICY" name="POL_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Policy</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>dateOfConstruction</attribute-name>
+               <get-method>getDateOfConstruction</get-method>
+               <set-method>setDateOfConstruction</set-method>
+               <field table="POLICY" name="CNST_DTE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="POLICY"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.Phone</class>
+         <alias>Phone</alias>
+         <primary-key>
+            <field table="INS_PHONE" name="HOLDER_SSN" xsi:type="column"/>
+            <field table="INS_PHONE" name="TYPE" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>areaCode</attribute-name>
+               <get-method>getAreaCode</get-method>
+               <set-method>setAreaCode</set-method>
+               <field table="INS_PHONE" name="AREACODE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>number</attribute-name>
+               <get-method>getNumber</get-method>
+               <set-method>setNumber</set-method>
+               <field table="INS_PHONE" name="PHONE_NUMBER" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>type</attribute-name>
+               <get-method>getType</get-method>
+               <set-method>setType</set-method>
+               <field table="INS_PHONE" name="TYPE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.insurance.InsuranceSystem</amendment-class>
+            <amendment-method>modifyPhoneDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="INS_PHONE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.Policy</class>
+         <alias>Policy</alias>
+         <primary-key>
+            <field table="POLICY" name="POL_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="POLICY" name="POL_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.VehiclePolicy</class>
+                  <class-indicator xsi:type="xsd:int">1</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.HealthPolicy</class>
+                  <class-indicator xsi:type="xsd:int">2</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.insurance.HousePolicy</class>
+                  <class-indicator xsi:type="xsd:int">3</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>claims</attribute-name>
+               <get-method>getClaims</get-method>
+               <set-method>setClaims</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.Claim</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="CLAIM" name="POL_ID" xsi:type="column"/>
+                     <target-field table="POLICY" name="POL_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <get-method>getDescription</get-method>
+               <set-method>setDescription</set-method>
+               <field table="POLICY" name="DESCRIPT" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>maxCoverage</attribute-name>
+               <get-method>getMaxCoverage</get-method>
+               <set-method>setMaxCoverage</set-method>
+               <field table="POLICY" name="MAX_COV" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>policyHolder</attribute-name>
+               <get-method>getPolicyHolder</get-method>
+               <set-method>setPolicyHolder</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.PolicyHolder</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="POLICY" name="SSN" xsi:type="column"/>
+                     <target-field table="HOLDER" name="SSN" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="POLICY" name="SSN" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>policyNumber</attribute-name>
+               <get-method>getPolicyNumber</get-method>
+               <set-method>setPolicyNumber</set-method>
+               <field table="POLICY" name="POL_ID" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="POLICY"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.PolicyHolder</class>
+         <alias>PolicyHolder</alias>
+         <primary-key>
+            <field table="HOLDER" name="SSN" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>address</attribute-name>
+               <get-method>getAddress</get-method>
+               <set-method>internalSetAddress</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.Address</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="HOLDER" name="SSN" xsi:type="column"/>
+                     <target-field table="INS_ADDR" name="SSN" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>birthDate</attribute-name>
+               <get-method>getBirthDate</get-method>
+               <set-method>setBirthDate</set-method>
+               <field table="HOLDER" name="BDATE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-collection-mapping">
+               <attribute-name>childrenNames</attribute-name>
+               <get-method>getChildrenNames</get-method>
+               <set-method>setChildrenNames</set-method>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="direct-read-query">
+                  <maintain-cache>false</maintain-cache>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <reference-table>CHILDNAM</reference-table>
+               <direct-field table="CHILDNAM" name="CHILD_NAME" xsi:type="column"/>
+               <reference-foreign-key>
+                  <field-reference>
+                     <source-field table="CHILDNAM" name="HOLDER_ID" xsi:type="column"/>
+                     <target-field table="HOLDER" name="SSN" xsi:type="column"/>
+                  </field-reference>
+               </reference-foreign-key>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <get-method>getFirstName</get-method>
+               <set-method>setFirstName</set-method>
+               <field table="HOLDER" name="F_NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <get-method>getLastName</get-method>
+               <set-method>setLastName</set-method>
+               <field table="HOLDER" name="L_NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>occupation</attribute-name>
+               <get-method>getOccupation</get-method>
+               <set-method>setOccupation</set-method>
+               <field table="HOLDER" name="OCC" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>policies</attribute-name>
+               <get-method>getPolicies</get-method>
+               <set-method>setPolicies</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.insurance.Policy</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="POLICY" name="SSN" xsi:type="column"/>
+                     <target-field table="HOLDER" name="SSN" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>sex</attribute-name>
+               <get-method>getSex</get-method>
+               <set-method>setSex</set-method>
+               <field table="HOLDER" name="SEX" xsi:type="column"/>
+               <converter xsi:type="object-type-converter">
+                  <type-mappings>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string">Female</object-value>
+                        <data-value xsi:type="xsd:string">F</data-value>
+                     </type-mapping>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string">Male</object-value>
+                        <data-value xsi:type="xsd:string">M</data-value>
+                     </type-mapping>
+                  </type-mappings>
+               </converter>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>ssn</attribute-name>
+               <get-method>getSsn</get-method>
+               <set-method>setSsn</set-method>
+               <field table="HOLDER" name="SSN" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.insurance.InsuranceSystem</amendment-class>
+            <amendment-method>modifyPolicyHolderDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="HOLDER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.VehicleClaim</class>
+         <alias>VehicleClaim</alias>
+         <primary-key>
+            <field table="VHCL_CLM" name="CLM_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Claim</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>part</attribute-name>
+               <get-method>getPart</get-method>
+               <set-method>setPart</set-method>
+               <field table="VHCL_CLM" name="PART" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>partDescription</attribute-name>
+               <get-method>getPartDescription</get-method>
+               <set-method>setPartDescription</set-method>
+               <field table="VHCL_CLM" name="PART_DESC" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="VHCL_CLM"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.insurance.VehiclePolicy</class>
+         <alias>VehiclePolicy</alias>
+         <primary-key>
+            <field table="VHCL_POL" name="POL_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.insurance.Policy</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>model</attribute-name>
+               <get-method>getModel</get-method>
+               <set-method>setModel</set-method>
+               <field table="VHCL_POL" name="MODEL" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="VHCL_POL"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+      <user-name>jsutherl</user-name>
+      <driver-class>oracle.jdbc.OracleDriver</driver-class>
+      <connection-url>jdbc:oracle:thin:@tlsvrdb3.ca.oracle.com:1521:toplink</connection-url>
+      <bind-all-parameters>false</bind-all-parameters>
+   </login>
+</object-persistence>

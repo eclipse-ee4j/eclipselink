@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Specification-Version: 2.0.0
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Implementation-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink MOXy
+Bundle-SymbolicName: org.eclipse.persistence.moxy
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.0.0.qualifier";visibility:=reexport,
+ org.eclipse.persistence.asm;bundle-version="2.0.0.qualifier"
+Export-Package: org.eclipse.persistence.internal.jaxb;version="2.0.0.qualifier",
+ org.eclipse.persistence.jaxb;version="2.0.0.qualifier",
+ org.eclipse.persistence.jaxb.attachment;version="2.0.0.qualifier",
+ org.eclipse.persistence.jaxb.compiler;version="2.0.0.qualifier",
+ org.eclipse.persistence.jaxb.javamodel;version="2.0.0.qualifier",
+ org.eclipse.persistence.jaxb.javamodel.reflection;version="2.0.0.qualifier"
+Bundle-ClassPath: .
+Import-Package: javax.activation;version="1.1.0";resolution:=optional,
+ javax.mail;version="1.4.0";resolution:=optional,
+ javax.xml.bind;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation.adapters;version="2.0.0";resolution:=optional,
+ javax.xml.bind.attachment;version="2.0.0";resolution:=optional,
+ javax.xml.bind.helpers;version="2.0.0";resolution:=optional,
+ javax.xml.bind.util;version="2.0.0";resolution:=optional,
+ javax.xml.stream;version="1.0.0";resolution:=optional,
+ javax.xml.stream.events;version="1.0.0";resolution:=optional,
+ javax.xml.stream.util;version="1.0.0";resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy

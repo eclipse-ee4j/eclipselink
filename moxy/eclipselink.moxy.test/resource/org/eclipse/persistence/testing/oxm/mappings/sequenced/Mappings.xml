@@ -1,0 +1,17 @@
+<ns:employee xmlns:ns="urn:example">
+	<personal-info>
+		<last-name>Doe</last-name>
+	</personal-info>
+	<address aid="1">
+		<street>1 A Street</street>
+		<city>Town A</city>
+	</address>
+	<personal-info>
+		<ns:first-name>Jane</ns:first-name>
+	</personal-info>
+	<dependent>
+		<last-name>Dependent Last</last-name>
+		<address-id>1</address-id>
+		<first-name>Dependent First</first-name>
+	</dependent>
+</ns:employee>

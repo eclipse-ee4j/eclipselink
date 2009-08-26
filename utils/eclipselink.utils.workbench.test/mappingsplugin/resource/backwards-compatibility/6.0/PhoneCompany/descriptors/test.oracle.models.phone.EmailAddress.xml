@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.phone.EmailAddress</name>
+   <class-handle>
+      <type-name>test.oracle.models.phone.EmailAddress</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>EmailAddress</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>98</cache-size>
+         <cache-type>Weak</cache-type>
+         <existence-checking>Assume existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>EMAIL</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>address</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.EmailAddress</attribute-declaring-type-name>
+            <attribute-name>address</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.phone.EmailAddress</method-declaring-type-name>
+            <method-signature>getAddress()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.phone.EmailAddress</method-declaring-type-name>
+            <method-signature>setAddress(java.lang.String)</method-signature>
+         </set-method-handle>
+         <column-handle>
+            <column-table-name>EMAIL</column-table-name>
+            <column-name>ADDRESS</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.EmailAddress</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.phone.EmailAddress</method-declaring-type-name>
+            <method-signature>getId()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.phone.EmailAddress</method-declaring-type-name>
+            <method-signature>setId(int)</method-signature>
+         </set-method-handle>
+         <column-handle>
+            <column-table-name>EMAIL</column-table-name>
+            <column-name>ID</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <user-defined-query-keys>
+      <user-defined-query-key>
+         <name>email</name>
+         <column-handle>
+            <column-table-name>EMAIL</column-table-name>
+            <column-name>ADDRESS</column-name>
+         </column-handle>
+      </user-defined-query-key>
+   </user-defined-query-keys>
+   <primary-table-handle>
+      <table-name>EMAIL</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>test.oracle.models.phone.EmailAddress</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>EMAIL</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>EMAIL</column-table-name>
+      <column-name>ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

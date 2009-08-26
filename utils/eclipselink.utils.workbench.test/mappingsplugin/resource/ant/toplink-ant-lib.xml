@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<antlib>
+    <taskdef name="mappings.export"
+       classname="org.eclipse.persistence.workbench.ant.taskdefs.ExportDeploymentXMLTask" />
+
+    <taskdef name="mappings.validate"
+       classname="org.eclipse.persistence.workbench.ant.taskdefs.MappingsValidateTask" />
+
+    <taskdef name="session.validate"
+       classname="org.eclipse.persistence.workbench.ant.taskdefs.SessionValidateTask" />
+
+    <typedef name="ignoreerror"
+        classname="org.eclipse.persistence.workbench.ant.typedefs.IgnoreError" />
+
+    <typedef name="ignoreerrorset"
+        classname="org.eclipse.persistence.workbench.ant.typedefs.IgnoreErrorSet" />
+
+    <typedef name="loginspec"
+        classname="org.eclipse.persistence.workbench.ant.typedefs.LoginSpec" />
+</antlib>

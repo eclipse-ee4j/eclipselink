@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="utility/source"/>
+	<classpathentry kind="src" path="uitools/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="framework/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="platformsmodel/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="platformsplugin/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="mappingsmodel/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="mappingsio/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="mappingsplugin/source"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="scplugin/source"/>
+	<classpathentry kind="lib" path="config"/>
+	<classpathentry kind="lib" path="iconlib/resource"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_JAR" sourcepath="/ECLIPSELINK_SRC_JAR"/>
+	<classpathentry kind="output" path="class"/>
+</classpath>

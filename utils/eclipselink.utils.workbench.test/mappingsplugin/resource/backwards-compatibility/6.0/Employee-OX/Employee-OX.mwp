@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project type="o-x">
+   <name>Employee-OX</name>
+   <product-version>10.1.3.1.0</product-version>
+   <schema-version>6.0</schema-version>
+   <class-repository>
+      <user-type-names>
+         <name>test.oracle.models.xml.employee.Address</name>
+         <name>test.oracle.models.xml.employee.Dependent</name>
+         <name>test.oracle.models.xml.employee.Employee</name>
+         <name>test.oracle.models.xml.employee.NormalHoursTransformer</name>
+         <name>test.oracle.models.xml.employee.PhoneNumber</name>
+      </user-type-names>
+   </class-repository>
+   <descriptor-names>
+      <descriptor-name>test.oracle.models.xml.employee.Address</descriptor-name>
+      <descriptor-name>test.oracle.models.xml.employee.Dependent</descriptor-name>
+      <descriptor-name>test.oracle.models.xml.employee.Employee</descriptor-name>
+      <descriptor-name>test.oracle.models.xml.employee.PhoneNumber</descriptor-name>
+   </descriptor-names>
+   <defaults-policy type="o-x">
+      <use-method-accessing>false</use-method-accessing>
+      <default-descriptor-policies>
+         <policy-type>After Load</policy-type>
+         <policy-type>Copy Policy</policy-type>
+         <policy-type>Inheritance</policy-type>
+         <policy-type>Instantiation</policy-type>
+      </default-descriptor-policies>
+   </defaults-policy>
+   <xml-schema-repository>
+      <schema-names>
+         <name>employee.xsd</name>
+      </schema-names>
+   </xml-schema-repository>
+</project>

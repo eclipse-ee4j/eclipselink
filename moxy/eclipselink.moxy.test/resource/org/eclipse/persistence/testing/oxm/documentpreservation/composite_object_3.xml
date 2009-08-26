@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee employee-number = "1001">
+  <!-- This is a comment -->
+  <first-name>Matt</first-name>
+  <last-name>MacIvor</last-name>
+  <address type="us-address">
+    <street>2001 Odessy Drive</street>
+    <city>New York</city>
+    <state>NY</state>
+    <zip-code>90210</zip-code>
+  </address>
+  <responsibilities>
+  <!-- Here is a comment for this node -->
+    <responsibility>Write Java Code</responsibility>
+    <responsibility>Write Design Spec</responsibility>
+  </responsibilities>
+  <phones>
+    <phone>
+      <!-- This is another comment -->
+      <area-code>902</area-code>
+      <exchange>555</exchange>
+      <number>3226</number>
+    </phone>
+    <phone>
+      <!--This is One More Comment -->
+      <area-code>613</area-code>
+      <exchange>555</exchange>
+      <number>1234</number>
+    </phone>
+  </phones>
+</employee>
+      
+  

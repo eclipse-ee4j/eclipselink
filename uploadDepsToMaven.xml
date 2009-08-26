@@ -1,0 +1,194 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     mmeswani - initial API and implementation (checked in by tware)
+*     egwin    - updated variables as they have changed in the rest of the system
+*                updated svnversion to not break build, and default if exec fails
+#******************************************************************************/-->
+<!-- Variables Needed:
+*         release.version - need three tokens: Major.Minor.Service
+*         build.date      - in format YYYYMMDD
+*         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
+*           
+*********************************************************************************-->
+
+<project name="Upload EclipseLink artifacts to Maven repository"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
+  <path id="maven-ant-tasks.classpath" path="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
+           classpathref="maven-ant-tasks.classpath" />
+
+   <!-- The repository where maven artifacts will be uploaded -->
+   <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/rt/eclipselink/maven.repo" />
+
+    <target name = "upload-maven-init">
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+
+        <!--  Get the subversion version for current working copy. A freshly       -->
+        <!--  checked out copy of workspace is guaranteed to not have mixed        -->
+        <!--  revisions                                                            -->
+        <exec outputproperty="svn.revision" 
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="svnversion.failed"
+            executable="svnversion">
+            <arg line="."/>
+        </exec>
+        <property name="svn.revision" value="NA"/>
+        <!-- fail message="Cannot upload to Maven a build with an unknown revision!" if="svnversion.failed"/ -->
+
+        <echo message="build.date:      ${build.date}"/>
+        <echo message="svn.revision:    ${svn.revision}"/>
+    </target>
+
+   <target name = "upload-maven-all" depends = "upload-maven-init">
+        <!--  Dependencies -->
+        <antcall target="upload-artifact"> 
+            <param name="groupId" value="commonj.sdo"/>
+            <param name="artifactId" value="commonj.sdo"/>
+            <param name="artifactVersion" value="2.1.0"/>
+            <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/commonj.sdo_2.1.0.jar"/>
+            <param name="artifactName" value="SDO API"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.activation"/>
+            <param name="artifactId" value="javax.activation"/>
+            <param name="artifactVersion" value="1.1.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.activation_1.1.0.jar"/>
+            <param name="artifactName" value="Javax Activation"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.jms"/>
+            <param name="artifactId" value="javax.jms"/>
+            <param name="artifactVersion" value="1.1.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.jms_1.1.0.jar"/>
+            <param name="artifactName" value="Javax JMS"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.mail"/>
+            <param name="artifactId" value="javax.mail"/>
+            <param name="artifactVersion" value="1.4.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.mail_1.4.0.jar"/>
+            <param name="artifactName" value="Javax Mail"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.persistence"/>
+            <param name="artifactId" value="javax.persistence"/>
+            <param name="artifactVersion" value="1.0.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.persistence_1.0.0.jar"/>
+            <param name="artifactName" value="Javax Persistence 1.0"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.resource"/>
+            <param name="artifactId" value="javax.resource"/>
+            <param name="artifactVersion" value="1.5.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.resource_1.5.0.jar"/>
+            <param name="artifactName" value="Javax Resource"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.transaction"/>
+            <param name="artifactId" value="javax.transaction"/>
+            <param name="artifactVersion" value="1.1.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.transaction_1.1.0.jar"/>
+            <param name="artifactName" value="Javax Transaction"/>
+        </antcall>
+        <antcall target="upload-artifact"> 
+            <param name="groupId" value="javax.xml.bind"/>
+            <param name="artifactId" value="javax.xml.bind"/>
+            <param name="artifactVersion" value="2.0.0"/>
+            <param name="artifact" value="${eclipselink.moxy.base}/${plugins.dir}/javax.xml.bind_2.0.0.jar"/>
+            <param name="artifactName" value="Javax XML Bind"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.xml.rpc"/>
+            <param name="artifactId" value="javax.xml.rpc"/>
+            <param name="artifactVersion" value="1.1.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.xml.rpc_1.1.0.v200706111329.zip"/>
+            <param name="artifactName" value="Javax XML RPC"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.xml.soap"/>
+            <param name="artifactId" value="javax.xml.soap"/>
+            <param name="artifactVersion" value="1.3.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.xml.soap_1.3.0.jar"/>
+            <param name="artifactName" value="Javax XML SOAP"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="javax.xml.stream"/>
+            <param name="artifactId" value="javax.xml.stream"/>
+            <param name="artifactVersion" value="1.0.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.xml.stream_1.0.0.jar"/>
+            <param name="artifactName" value="Javax XML Stream"/>
+        </antcall>
+        <!-- Dependent libs that may need to be added to Maven in the future -->
+        <!-- antcall target="upload-artifact">
+            <param name="groupId" value="javax.servlet"/>
+            <param name="artifactId" value="javax.servlet"/>
+            <param name="artifactVersion" value="2.4.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/javax.servlet_2.4.0.v200806031604.jar"/>
+            <param name="artifactName" value="Javax Servlet"/>
+        </antcall -->
+        <!-- antcall target="upload-artifact">
+            <param name="groupId" value="javax.wsdl"/>
+            <param name="artifactId" value="javax.wsdl"/>
+            <param name="artifactVersion" value="1.6.2"/>
+            <param name="artifact" value="${eclipselink.util.base}/${plugins.dir}/javax.wsdl_1.6.2.jar"/>
+            <param name="artifactName" value="Javax WSDL"/>
+        </antcall -->
+        <!-- antcall target="upload-artifact">
+            <param name="groupId" value="jaxax.xml.ws"/>
+            <param name="artifactId" value="jaxax.xml.ws"/>
+            <param name="artifactVersion" value="2.0.0"/>
+            <param name="artifact" value="${eclipselink.plugins}/jaxax.xml.ws_2.0.0.jar"/>
+            <param name="artifactName" value="Javax XML WebServices"/>
+        </antcall -->
+   </target>
+
+   <!-- Uploads a single artifact to maven repository -->
+   <target name="upload-artifact" >
+       <!-- Copy pom.template to pom.xml filtering various properties -->
+       <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
+         <filterset>
+           <filter token="groupId"      value="${groupId}"/>
+           <filter token="version"      value="${artifactVersion}"/>
+           <filter token="svn.revision" value="${svn.revision}"/>
+           <filter token="artifactId"   value="${artifactId}"/>
+           <filter token="artifactName" value="${artifactName}"/>
+          </filterset>
+       </copy>
+
+       <!-- Delploy the jar to maven repository along with sources -->
+       <artifact:pom id="maven.project" file="pom.xml" />
+       <artifact:deploy file="${artifact}">
+         <remoteRepository refid="eclipselink.repository"/>
+         <pom refid="maven.project"/>
+       </artifact:deploy>
+
+       <!-- cleanup -->
+       <delete file="pom.xml"/>
+
+   </target>
+</project>
+
+

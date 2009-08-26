@@ -1,0 +1,12 @@
+<employee id="123">
+	<email-addresses>
+		<email-address>
+			<user-id>jane.doe</user-id>
+			<domain>example.com</domain>
+		</email-address>
+		<email-address>
+			<user-id>jdoe</user-id>
+			<domain>test.com</domain>
+		</email-address>
+	</email-addresses>
+</employee>

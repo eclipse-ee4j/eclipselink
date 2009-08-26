@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <myAnySimpleTypeTest>String</myAnySimpleTypeTest>
+   <myAnyTypeTest2 xsi:type="ns0:PersonType">
+      <firstName>Joe</firstName>
+      <lastName>Smith</lastName>
+   </myAnyTypeTest2>
+   <myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <firstName>Jane</firstName>
+      <lastName>Smith</lastName>
+   </myAnyTypeTest4>
+   <myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <firstName>Jill</firstName>
+      <lastName>Smith</lastName>
+   </myAnyTypeTest4>
+   <myAnyURITest>http://www.altova.com</myAnyURITest>
+   <myBase64BinaryTest>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</myBase64BinaryTest>
+   <myBooleanTest>true</myBooleanTest>
+   <myByteTest>127</myByteTest>
+   <myDateTest>1967-08-13</myDateTest>
+   <myDateTimeTest>2001-12-17T09:30:47-05:00</myDateTimeTest>
+   <myDecimalTest>3.1415926535897932384626433832795</myDecimalTest>
+   <myDoubleTest>3.14159265358979</myDoubleTest>
+   <myDurationTest>P1Y2M3DT10H30M</myDurationTest>
+   <myENTITIESTest>ENTITIES</myENTITIESTest>
+   <myENTITYTest>ENTITY</myENTITYTest>
+   <myFloatTest>3.14159</myFloatTest>
+   <myGDayTest>---17</myGDayTest>
+   <myGMonthTest>--12--</myGMonthTest>
+   <myGMonthDayTest>--12-17</myGMonthDayTest>
+   <myGYearTest>2001</myGYearTest>
+   <myGYearMonthTest>2001-12</myGYearMonthTest>
+   <myHexBinaryTest>A9FD64E12C</myHexBinaryTest>
+   <myIDTest>ID000000</myIDTest>
+   <myIDREFTest>ID000000</myIDREFTest>
+   <myIDREFSTest>ID000000 ID000000</myIDREFSTest>
+   <myIntTest>0</myIntTest>
+   <myIntegerTest>0</myIntegerTest>
+   <myLanguageTest>en-us</myLanguageTest>
+   <myLongTest>2147483647</myLongTest>
+   <myNameTest>Name</myNameTest>
+   <myNCNameTest>NCName</myNCNameTest>
+   <myNegativeIntegerTest>-2</myNegativeIntegerTest>
+   <myNonNegativeIntegerTest>1</myNonNegativeIntegerTest>
+   <myNMTOKENTest>NMTOKEN</myNMTOKENTest>
+   <myNMTOKENSTest>NMTOKENS</myNMTOKENSTest>
+   <myNOTATIONTest>NOTATION</myNOTATIONTest>
+   <myNormalizedStringTest>normalizedString</myNormalizedStringTest>
+   <myPositiveIntegerTest>2</myPositiveIntegerTest>
+   <myNonPositiveIntegerTest>-1</myNonPositiveIntegerTest>
+   <myQNameTest>ns0:name</myQNameTest>
+   <myShort>4096</myShort>
+   <myStringTest>String</myStringTest>
+   <myTimeTest>14:20:00-05:00</myTimeTest>
+   <myTokenTest>token</myTokenTest>
+   <myUnsignedByteTest>255</myUnsignedByteTest>
+   <myUnsignedIntTest>0</myUnsignedIntTest>
+   <myUnsignedLongTest>4294967295</myUnsignedLongTest>
+   <myUnsignedShortTest>65535</myUnsignedShortTest>
+</ns0:Test>

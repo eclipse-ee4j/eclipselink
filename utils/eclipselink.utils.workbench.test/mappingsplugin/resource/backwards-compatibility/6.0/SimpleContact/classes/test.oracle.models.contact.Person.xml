@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.contact.Person</name>
+   <is-interface>true</is-interface>
+   <modifier>1025</modifier>
+   <methods>
+      <method>
+         <name>getContact</name>
+         <modifier>1025</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>test.oracle.models.contact.Contact</type-name>
+            </type-handle>
+         </return-type-declaration>
+      </method>
+      <method>
+         <name>setContact</name>
+         <modifier>1025</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>void</type-name>
+            </type-handle>
+         </return-type-declaration>
+         <method-parameters>
+            <method-parameter>
+               <type-declaration>
+                  <type-handle>
+                     <type-name>test.oracle.models.contact.Contact</type-name>
+                  </type-handle>
+               </type-declaration>
+            </method-parameter>
+         </method-parameters>
+      </method>
+   </methods>
+</class>

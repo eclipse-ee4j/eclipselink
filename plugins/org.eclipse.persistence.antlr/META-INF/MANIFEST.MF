@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Specification-Vendor: 
+Specification-Version: 
+Implementation-Vendor: ${implementation.vendor}
+Implementation-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink ANTLR
+Bundle-SymbolicName: org.eclipse.persistence.antlr
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="2.0.0.qualifier"
+Bundle-ClassPath: .
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr

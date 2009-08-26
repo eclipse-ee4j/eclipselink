@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://xmlns.oracle.com/oracle/apps/fnd" targetNamespace="http://xmlns.oracle.com/oracle/apps/fnd">
+
+<xs:element name="CustomType">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="activity" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="what" type="xs:string"/>
+                        <xs:element name="when" type="xs:string"/>
+                        <xs:element name="where" type="xs:string"/>
+                        <xs:element name="who" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+</xs:schema>

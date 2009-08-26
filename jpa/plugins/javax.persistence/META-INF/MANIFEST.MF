@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Persistence 2.0 - EARLY ACCESS
+Bundle-SymbolicName: javax.persistence
+Bundle-Version: 1.99.4
+Export-Package: javax.persistence;version="1.99.4",
+ javax.persistence.criteria;version="1.99.4",
+ javax.persistence.metamodel;version="1.99.4",
+ javax.persistence.spi;version="1.99.4"
+Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activator
+Bundle-ClassPath: .
+Import-Package: org.osgi.framework;resolution:=optional,
+ org.osgi.util.tracker;resolution:=optional

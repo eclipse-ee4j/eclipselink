@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
+   <session xsi:type="server-session">
+      <name>rcm_test_session</name>
+      <remote-command>
+         <channel>new_channel</channel>
+         <commands>
+            <cache-sync>true</cache-sync>
+         </commands>
+         <transport xsi:type="jms-topic-transport">
+            <on-connection-error>KeepConnection</on-connection-error>
+            <topic-host-url>ormi://jms_topic_host</topic-host-url>
+            <topic-connection-factory-name>test-topic-connection-factory-name</topic-connection-factory-name>
+            <topic-name>test-topic-name</topic-name>
+            <jndi-naming-service>
+               <url>new_jndi_url</url>
+               <user-name>new_user_name</user-name>
+               <password>new_password</password>
+               <initial-context-factory-name>new_initial_context_factory_name</initial-context-factory-name>
+               <property name="name1" value="value1"/>
+               <property name="name2" value="value2"/>
+            </jndi-naming-service>
+         </transport>
+      </remote-command>
+      <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+      <login xsi:type="database-login">
+         <user-name>@dbUser@</user-name>
+         <driver-class>@driverClass@</driver-class>
+         <connection-url>@dbURL@</connection-url>
+         <byte-array-binding>false</byte-array-binding>
+         <optimize-data-conversion>false</optimize-data-conversion>
+         <trim-strings>false</trim-strings>
+         <jdbc-batch-writing>false</jdbc-batch-writing>
+      </login>
+   </session>
+</sessions>

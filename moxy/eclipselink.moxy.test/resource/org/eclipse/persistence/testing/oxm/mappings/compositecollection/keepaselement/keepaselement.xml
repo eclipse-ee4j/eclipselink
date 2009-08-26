@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+	<elem>
+		<elem/>
+		<elem/>
+		<elem1/>
+		<elem1/>
+		<elem1/>
+	</elem>
+	<elem1/>
+	<elem1/>
+	<elem1 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:boolean">false</elem1>
+</doc>

@@ -1,0 +1,530 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build All EclipseLink Mapping Workbench Tests" default="all" basedir=".">
+
+    <!-- =================================================================== -->
+    <!--  High level targets                                                 -->
+    <!-- =================================================================== -->
+
+    <target name="all"    depends="clean, build"/>
+
+    <target name="clean"  depends="clean-utility-debug,
+                                   clean-uitools-debug,
+                                   clean-framework-debug,
+                                   clean-platformsplugin-debug,
+                                   clean-scplugin-debug,
+                                   clean-mappingsplugin-debug,
+                                   clean-workbench-debug"/>
+
+    <target name="build"  depends="build-utility-debug,
+                                   build-uitools-debug,
+                                   build-framework-debug,
+                                   build-platformsplugin-debug,
+                                   build-scplugin-debug,
+                                   build-mappingsplugin-debug,
+                                   build-workbench-debug"/>
+
+    <target name="clean-nondebug"  depends="clean-utility-nondebug,
+                                   clean-uitools-nondebug,
+                                   clean-framework-nondebug,
+                                   clean-platformsplugin-nondebug,
+                                   clean-scplugin-nondebug,
+                                   clean-mappingsplugin-nondebug,
+                                   clean-workbench-nondebug"/>
+
+    <target name="build-nondebug"  depends="build-utility-nondebug,
+                                   build-uitools-nondebug,
+                                   build-framework-nondebug,
+                                   build-platformsplugin-nondebug,
+                                   build-scplugin-nondebug,
+                                   build-mappingsplugin-nondebug,
+                                   build-workbench-nondebug"/>
+
+
+    <!-- =================================================================== -->
+    <!--  Initialization                                                     -->
+    <!-- =================================================================== -->
+
+    <target name="init">
+        <tstamp>
+            <format property="_TodayMD" pattern="MMdd"/>
+            <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <echo message="java_home=${java.home}/.."/>
+        <property file="build.properties"/>
+        <mkdir dir="${_buildLogDir}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Non-Debug                                                    -->
+    <!-- =================================================================== -->
+
+    <target name="clean-utility-nondebug">
+        <antcall target="call-clean-utility"/>
+    </target>
+
+    <target name="clean-uitools-nondebug">
+        <antcall target="call-clean-uitools"/>
+    </target>
+
+    <target name="clean-framework-nondebug">
+        <antcall target="call-clean-framework"/>
+    </target>
+
+    <target name="clean-platformsplugin-nondebug">
+        <antcall target="call-clean-platformsplugin"/>
+    </target>
+
+    <target name="clean-scplugin-nondebug">
+        <antcall target="call-clean-scplugin"/>
+    </target>
+
+    <target name="clean-mappingsplugin-nondebug">
+        <antcall target="call-clean-mappingsplugin"/>
+    </target>
+
+    <target name="clean-workbench-nondebug" depends="init">
+        <delete file="${libDir}/${workbench.jarfile}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Debug                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="clean-utility-debug">
+        <antcall target="call-clean-utility">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-uitools-debug">
+        <antcall target="call-clean-uitools">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-framework-debug">
+        <antcall target="call-clean-framework">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-platformsplugin-debug">
+        <antcall target="call-clean-platformsplugin">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-scplugin-debug">
+        <antcall target="call-clean-scplugin">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-mappingsplugin-debug">
+        <antcall target="call-clean-mappingsplugin">
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean-workbench-debug" depends="init">
+        <delete file="${libDir}/${workbench.debug.jarfile}"/>
+        <delete file="${libDir}/${workbench.jarfile.src}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Calls                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="call-clean-utility" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${utilityDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call-clean-uitools" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${uitoolsDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call-clean-framework" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${frameworkDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call-clean-platformsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${platformspluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call-clean-scplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${scpluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call-clean-mappingsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingspluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Build Non-Debug                                                    -->
+    <!-- =================================================================== -->
+
+    <target name="dev"  depends="build-utility-nondebug,
+                                 build-uitools-nondebug,
+                                 build-framework-nondebug,
+                                 build-platformsplugin-nondebug,
+                                 build-scplugin-nondebug,
+                                 build-mappingsplugin-nondebug,
+                                 build-workbench-nondebug"/>
+
+    <target name="build-utility-nondebug">
+        <antcall target="call-build-all-utility">
+                <param name="_log" value="utility_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-uitools-nondebug">
+        <antcall target="call-build-all-uitools">
+                <param name="_log" value="uitools_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-framework-nondebug">
+        <antcall target="call-build-all-framework">
+                <param name="_log" value="framework_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-platformsplugin-nondebug">
+        <antcall target="call-build-all-platformsplugin">
+                <param name="_log" value="platformsplugin_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-scplugin-nondebug">
+        <antcall target="call-build-all-scplugin">
+                <param name="_log" value="scplugin_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-mappingsplugin-nondebug">
+        <antcall target="call-build-all-mappingsplugin">
+                <param name="_log" value="mappingsplugin_test.log"/>
+        </antcall>
+    </target>
+
+    <target name="build-workbench-nondebug" depends="jar-workbench"/>
+
+
+    <!-- =================================================================== -->
+    <!--  Build Debug                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="dev-debug"  depends="build-utility-debug,
+                                   build-uitools-debug,
+                                   build-framework-debug,
+                                   build-platformsplugin-debug,
+                                   build-scplugin-debug,
+                                   build-mappingsplugin-debug,
+                                   build-workbench-debug"/>
+
+    <target name="build-utility-debug">
+        <antcall target="call-build-all-utility">
+                <param name="_log" value="utility_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-uitools-debug">
+        <antcall target="call-build-all-uitools">
+                <param name="_log" value="uitools_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-framework-debug">
+        <antcall target="call-build-all-framework">
+                <param name="_log" value="framework_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-platformsplugin-debug">
+        <antcall target="call-build-all-platformsplugin">
+                <param name="_log" value="platformsplugin_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-scplugin-debug">
+        <antcall target="call-build-all-scplugin">
+                <param name="_log" value="scplugin_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-mappingsplugin-debug">
+        <antcall target="call-build-all-mappingsplugin">
+                <param name="_log" value="mappingsplugin_test_g.log"/>
+                <param name="debug" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build-workbench-debug" depends="jar-workbench-debug, jar-workbench-src"/>
+
+
+    <!-- =================================================================== -->
+    <!--  Build Calls                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="call-build-all-utility" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${utilityDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call-build-all-uitools" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${uitoolsDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call-build-all-framework" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${frameworkDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call-build-all-platformsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${platformspluginDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call-build-all-scplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${scpluginDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call-build-all-mappingsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingspluginDir}"
+            target="build-all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  misc                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="compile-results" unless="build.failed" depends="init">
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  JARs                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="jar-workbench" depends="init">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_test.jar"/>
+                <include name="uitools_test.jar"/>
+                <include name="framework_test.jar"/>
+                <include name="platformsplugin_test.jar"/>
+                <include name="scplugin_test.jar"/>
+                <include name="mappingsplugin_test.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar-workbench-debug" depends="init">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.debug.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests (debug)" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_testdebug.jar"/>
+                <include name="uitools_testdebug.jar"/>
+                <include name="framework_testdebug.jar"/>
+                <include name="platformsplugin_testdebug.jar"/>
+                <include name="scplugin_testdebug.jar"/>
+                <include name="mappingsplugin_testdebug.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar-workbench-src" depends="init">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile.src}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests (source)" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_test_src.jar"/>
+                <include name="uitools_test_src.jar"/>
+                <include name="framework_test_src.jar"/>
+                <include name="platformsplugin_test_src.jar"/>
+                <include name="scplugin_test_src.jar"/>
+                <include name="mappingsplugin_test_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  JUnit tests                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="test-all" depends="init">
+        <junit>
+            <classpath path="${junit.classpath}" />
+            <formatter type="brief" usefile="false" />
+            <test name="test.org.eclipse.persistence.workbench.AllTests" />
+        </junit>
+    </target>
+
+    <!-- use this target to run a single test case -->
+    <target name="test-scratch" depends="init">
+        <junit>
+            <classpath path="${junit.classpath}" />
+            <formatter type="brief" usefile="false" />
+            <test name="test.org.eclipse.persistence.workbench.mappingsplugin.ExportRuntimeProjectJavaSourceCommandLineTests" />
+        </junit>
+    </target>
+
+    <!-- use this target to run a single sub-suite -->
+    <target name="test-scratch-suite" depends="test-uitools"/>
+
+    <target name="test-utility" depends="init">
+        <ant antfile="build.xml" dir="${utilityDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-uitools" depends="init">
+        <ant antfile="build.xml" dir="${uitoolsDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-framework" depends="init">
+        <ant antfile="build.xml" dir="${frameworkDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-platformsplugin" depends="init">
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-scplugin" depends="init">
+        <ant antfile="build.xml" dir="${scpluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-mappingsplugin" depends="init">
+        <ant antfile="build.xml" dir="${mappingspluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+</project>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="0">
+	<session xsi:type="database-session">
+		<name>EmployeeSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+		<login xsi:type="database-login">
+			<!--user-name>coretest3</user-name>
+			<password>@dbPassword@</password-->
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
+		</login>
+	</session>
+
+	<session xsi:type="server-session">
+		<name>ServerSession</name>
+		<!--server-platform xsi:type="oc4j-1013-platform"/-->
+		<remote-command>
+			<commands>
+				<cache-sync>true</cache-sync>
+			</commands>
+			<transport xsi:type="jms-topic-transport">
+				<jndi-naming-service/>
+			</transport>
+		</remote-command>
+		<logging xsi:type="eclipselink-log">
+			<log-level>@loglevel@</log-level>
+		</logging>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+		<login xsi:type="database-login">
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
+		</login>
+		<connection-pools>
+			<read-connection-pool>
+				<name>ReadConnectionPool</name>
+			</read-connection-pool>
+			<write-connection-pool>
+				<name>default</name>
+			</write-connection-pool>
+		</connection-pools>
+	</session>
+</sessions>
