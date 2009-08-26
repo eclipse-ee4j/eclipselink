@@ -648,7 +648,7 @@
                 <include name="${jsr173_1.0_api.jar}"/>
             </zipfileset>
             <!-- moxy jar's and zips -->
-            <zipfileset dir="${eclipselink.moxy.base}/${plugins.dir}" prefix="eclipselink/jlib/moxy">
+            <zipfileset dir="${eclipselink.plugins}" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-api.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.util.jaxb}" prefix="eclipselink/jlib/moxy">
