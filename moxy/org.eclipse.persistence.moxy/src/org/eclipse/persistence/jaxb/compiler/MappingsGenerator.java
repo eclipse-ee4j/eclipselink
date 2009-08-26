@@ -619,6 +619,10 @@ public class MappingsGenerator {
                 mapping.setContainerSetMethodName(containerProp.setMethodName());
             }
         }
+        
+        if (property.isRequired()) {
+            ((XMLField) mapping.getField()).setRequired(true);
+        }
 
         descriptor.addMapping(mapping);
         return mapping;
@@ -655,6 +659,10 @@ public class MappingsGenerator {
         
         if (!mapping.getXPath().equals("text()")) {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        }
+        
+        if (property.isRequired()) {
+            ((XMLField) mapping.getField()).setRequired(true);
         }
 
         if(property.isXmlElementType()){
@@ -1112,6 +1120,10 @@ public class MappingsGenerator {
         	mapping.setReferenceClassName(referenceClassName);	
         }
         
+        if (property.isRequired()) {
+            ((XMLField) mapping.getField()).setRequired(true);
+        }
+        
         if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
             XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
             String name = containerProp.value();
@@ -1206,7 +1218,11 @@ public class MappingsGenerator {
         
         if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
-        }     
+        }
+        
+        if (property.isRequired()) {
+            ((XMLField) mapping.getField()).setRequired(true);
+        }
         
         if(property.isXmlElementType() && property.getGenericType()!=null ){           	
         	Class theClass = helper.getClassForJavaClass(property.getGenericType());

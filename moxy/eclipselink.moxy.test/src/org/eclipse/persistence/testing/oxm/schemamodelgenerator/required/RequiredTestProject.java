@@ -31,15 +31,14 @@ public class RequiredTestProject extends Project {
     public RequiredTestProject(boolean required) {
         shouldSetMappingsToRequired = required;
         addDescriptors();
-        
     }
 
     private void addDescriptors() {
-        addDescriptor(getNillableTestObjectDescriptor());
-        addDescriptor(getNillableTestSubObjectDescriptor());
+        addDescriptor(getRequiredTestObjectDescriptor());
+        addDescriptor(getRequiredTestSubObjectDescriptor());
     }
 
-    private XMLDescriptor getNillableTestObjectDescriptor() {
+    private XMLDescriptor getRequiredTestObjectDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(RequiredTestObject.class);
         descriptor.setAlias("RequiredTestObject");
@@ -80,7 +79,7 @@ public class RequiredTestProject extends Project {
         return descriptor;
     }
 
-    private XMLDescriptor getNillableTestSubObjectDescriptor() {
+    private XMLDescriptor getRequiredTestSubObjectDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(RequiredTestSubObject.class);
         descriptor.setAlias("RequiredTestSubObject");
