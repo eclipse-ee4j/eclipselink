@@ -29,7 +29,7 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 @Stateless(mappedName="EmployeeService")
 @Remote(EmployeeService.class)
 public class EmployeeServiceBean implements EmployeeService {
-    @PersistenceContext(name="fieldaccess")
+    @PersistenceContext(unitName="sessionbean")
     protected EntityManager entityManager;
 
     public List findAll() {
