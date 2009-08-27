@@ -120,7 +120,7 @@ public class LOBTestModel extends TestModel {
 
         suite.setName("LOB OCI Test Suite");
         Object obj = getSession().getPlatform();
-        suite.addTests(TestVariation.get(obj, str, new LOBTestWrapper(new LOBInsertTest(ImageSimulator.generateImage(240000, 120000)), true)));
+        suite.addTests(TestVariation.get(obj, str, new LOBTestWrapper(new LOBInsertTest(ImageSimulator.generateImage(240000, 120000)), false)));
         return suite;
     }
 }

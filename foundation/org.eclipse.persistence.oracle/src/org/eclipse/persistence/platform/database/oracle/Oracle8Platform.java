@@ -91,6 +91,21 @@ public class Oracle8Platform extends OraclePlatform {
     }
 
     /**
+     * INTERNAL:
+     * This method is used to unwrap the oracle connection wrapped by
+     * the application server.  TopLink needs this unwrapped connection for certain
+     * Oracle Specific support. (ie TIMESTAMPTZ, LOB)
+     * This is added as a workaround for bug 4565190
+     */
+    public Connection getConnection(AbstractSession session, Connection connection) {
+        if (session.getServerPlatform() != null && (session.getLogin()).shouldUseExternalConnectionPooling()){
+        // This is added as a workaround for bug 4460996
+            return session.getServerPlatform().unwrapConnection(connection);
+        }
+        return connection;
+    }
+
+    /**
      * INTERNAL
      * Used by SQLCall.translate(..)
      * Typically there is no field translation (and this is default implementation).
@@ -189,6 +204,15 @@ public class Oracle8Platform extends OraclePlatform {
      */
     protected boolean isClob(Class type) {
         return ClassConstants.CLOB.equals(type);
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether app. server should unwrap connection
+     * to use lob locator.
+     */
+    public boolean isNativeConnectionRequiredForLobLocator() {
+        return true;
     }
 
     /**

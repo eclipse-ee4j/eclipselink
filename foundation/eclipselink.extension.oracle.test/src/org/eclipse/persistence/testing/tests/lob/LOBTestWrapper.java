@@ -17,87 +17,63 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.database.oracle.Oracle8Platform;
 
 public class LOBTestWrapper extends TestWrapper {
-    protected boolean ociOnlyMode;
-    protected DatabasePlatform platformOriginal;
+    protected boolean shouldSetUseLocatorForLOBWriteIntoPlatform;
     protected boolean shouldUseLocatorForLOBWrite;
     protected boolean shouldUseLocatorForLOBWriteOriginal;
-    protected Oracle8Platform platform8;
-    protected boolean usesStreamForBindingOriginal;
-    protected boolean usesByteArrayBindingOriginal;
     protected boolean usesStringBindingOriginal;
 
     public LOBTestWrapper(AutoVerifyTestCase test) {
         super(test);
-        this.shouldUseLocatorForLOBWrite = true;
+        this.shouldSetUseLocatorForLOBWriteIntoPlatform = false;
     }
 
-    public LOBTestWrapper(AutoVerifyTestCase test, boolean ociOnlyMode) {
+    public LOBTestWrapper(AutoVerifyTestCase test, boolean shouldUseLocatorForLOBWrite) {
         super(test);
-        this.ociOnlyMode = ociOnlyMode;
-        setName(getName() + " OCI only mode: doesn't use LOBLocator, uses ByteArrayBinding, StreamsForBinding and StringBinding");
-    }
-
-    protected Oracle8Platform getOracle8Platform() throws ClassCastException {
-        return (Oracle8Platform)getSession().getPlatform();
+        this.shouldUseLocatorForLOBWrite = shouldUseLocatorForLOBWrite;
+        this.shouldSetUseLocatorForLOBWriteIntoPlatform = true;
+        setName(getName() + " platform forced to "+(shouldUseLocatorForLOBWrite ? "use" : "NOT use")+" lob locators)");
     }
 
     protected void setup() throws Throwable {
-        if (!getSession().getPlatform().isOracle()) {
+        DatabasePlatform platform = getSession().getPlatform(); 
+        if (!platform.isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
         }
-        try {
-            platform8 = getOracle8Platform();
-        } catch (ClassCastException ex) {
-            if (!ociOnlyMode) {
-                DatabasePlatform platform = getSession().getPlatform();
-                try {
-                    getSession().getLogin().usePlatform(new Oracle8Platform());
-                    getDatabaseSession().logout();
-                    getDatabaseSession().login();
-                    platform8 = getOracle8Platform();
-                    platformOriginal = platform;
-                } catch (Exception ex2) {
-                    throw new TestWarningException("Test with shouldUseLocatorForLOBWrite=true requires Oracle8Platform or higher");
-                }
-            }
-        }
-        if (platform8 != null) {
+        if(platform instanceof Oracle8Platform) {
+            Oracle8Platform platform8 = (Oracle8Platform)platform;
             shouldUseLocatorForLOBWriteOriginal = platform8.shouldUseLocatorForLOBWrite();
-            shouldUseLocatorForLOBWrite = !ociOnlyMode;
-            if (shouldUseLocatorForLOBWrite != shouldUseLocatorForLOBWriteOriginal) {
-                platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);
+            if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
+                platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);   
+            } else {
+                // otherwise don't change the flag. 
+                this.shouldUseLocatorForLOBWrite = shouldUseLocatorForLOBWriteOriginal;
             }
+        } else {
+            // can't use locators if it's not Oracle8Platform or higher.
+            if(shouldSetUseLocatorForLOBWriteIntoPlatform && shouldUseLocatorForLOBWrite) {
+                throw new TestProblemException("Can't call platform.setShouldUseLocatorForLobWrite(true) - it's not Oracle8Platform");
+            }
+            this.shouldUseLocatorForLOBWrite = false;
         }
-
-        if (ociOnlyMode) {
-            usesByteArrayBindingOriginal = getSession().getPlatform().usesByteArrayBinding();
-            getSession().getPlatform().setUsesByteArrayBinding(true);
-            usesStringBindingOriginal = getSession().getPlatform().usesStringBinding();
-            getSession().getPlatform().setUsesStringBinding(true);
-            usesStreamForBindingOriginal = getSession().getPlatform().usesStreamsForBinding();
-            getSession().getPlatform().setUsesStreamsForBinding(true);
+                
+        if(!shouldUseLocatorForLOBWrite) {
+            usesStringBindingOriginal = platform.usesStringBinding();
+            platform.setUsesStringBinding(true);
         }
         super.setup();
     }
 
     public void reset() throws Throwable {
         super.reset();
-        if (ociOnlyMode) {
-            getSession().getPlatform().setUsesByteArrayBinding(usesByteArrayBindingOriginal);
-            getSession().getPlatform().setUsesStringBinding(usesStringBindingOriginal);
-            getSession().getPlatform().setUsesStreamsForBinding(usesStreamForBindingOriginal);
+        DatabasePlatform platform = getSession().getPlatform(); 
+        if(!shouldUseLocatorForLOBWrite) {
+            platform.setUsesStringBinding(usesStringBindingOriginal);
         }
-        if (platform8 != null) {
-            if (shouldUseLocatorForLOBWrite != shouldUseLocatorForLOBWriteOriginal) {
-                getOracle8Platform().setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWriteOriginal);
+        if(platform instanceof Oracle8Platform) {
+            Oracle8Platform platform8 = (Oracle8Platform)platform;
+            if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
+                platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWriteOriginal);
             }
-            if (platformOriginal != null) {
-                getSession().getLogin().usePlatform(platformOriginal);
-                getDatabaseSession().logout();
-                getDatabaseSession().login();
-                platformOriginal = null;
-            }
-            platform8 = null;
         }
     }
 }

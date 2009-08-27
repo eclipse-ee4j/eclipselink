@@ -415,6 +415,16 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(operatorLocate2());
     }
 
+    /**
+     * INTERNAL:
+     * Used by derived platforms (Oracle8Platform and higher)
+     * to indicate whether app. server should unwrap connection
+     * to use lob locator.
+     */
+    public boolean isNativeConnectionRequiredForLobLocator() {
+        return false;
+    }
+    
     public boolean isOracle() {
         return true;
     }

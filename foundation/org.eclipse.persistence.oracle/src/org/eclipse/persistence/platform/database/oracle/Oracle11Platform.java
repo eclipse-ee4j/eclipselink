@@ -17,4 +17,9 @@ package org.eclipse.persistence.platform.database.oracle;
  * Supports usage of certain Oracle JDBC specific APIs for the Oracle 11 database.
  */
 public class Oracle11Platform extends Oracle10Platform {
+    public Oracle11Platform() {
+        super();
+        // Locator is no longer required to write LOB values
+        usesLocatorForLOBWrite = false;
+    }
 }
