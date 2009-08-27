@@ -883,7 +883,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
         // PERF: Avoid synchronization through get and putIfAbsent double-check.
         IdentityMap identityMap = this.identityMaps.get(descriptorClass);
         if (identityMap == null) {
-            if (returnNullIfNoMap) {
+            if (returnNullIfNoMap && descriptor.getCacheInterceptorClass() == null) {
+                //interceptor monitors the identity map and needs to know that a request occurred.
                 return null;
             }
             IdentityMap newIdentityMap = null;
