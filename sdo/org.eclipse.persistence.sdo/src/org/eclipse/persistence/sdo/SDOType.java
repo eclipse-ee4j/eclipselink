@@ -815,7 +815,7 @@ public class SDOType implements Type, Serializable {
     public void postInitialize() {
         String idPropName = (String)get(SDOConstants.ID_PROPERTY);
         if (idPropName != null) {
-            SDOProperty idProp = (SDOProperty)getProperty(idPropName);
+            SDOProperty idProp = getProperty(idPropName);
             if (idProp != null) {
                 String targetxpath = idProp.getQualifiedXPath(getURI(), true);
                 getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);

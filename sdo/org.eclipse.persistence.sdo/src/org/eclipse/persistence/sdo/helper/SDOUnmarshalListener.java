@@ -129,7 +129,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     }
                     //nextModifiedDO is the real modified current data object
                     String sdoPath = convertXPathToSDOPath(refValue);
-                    nextModifiedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                    nextModifiedDO = targetDataObject.getDataObject(sdoPath);
                     //if it failed, try peeling off the first fragment (may be the root
                     if(nextModifiedDO == null) {
                         int nextSlash = sdoPath.indexOf('/');
@@ -148,11 +148,11 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     }
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);
-                        SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(((SDOType)nextModifiedDO.getType()).getHelperContext(), true);
+                        SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(nextModifiedDO.getType().getHelperContext(), true);
                         unmarshaller.setUnmarshalListener(listener);
                         unmarshaller.getProperties().put("sdoHelperContext", aHelperContext);
                         unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);                        
-                        Object unmarshalledNode = unmarshaller.unmarshal(nextNode, ((SDOType)nextModifiedDO.getType()).getXmlDescriptor().getJavaClass());
+                        Object unmarshalledNode = unmarshaller.unmarshal(nextNode, nextModifiedDO.getType().getXmlDescriptor().getJavaClass());
                         //unmarshalledDO is the modified dataobject from the changesummary xml
                         DataObject unmarshalledDO = null;
                         // Assumption: unmarshalledNode should always be either an instance of XMLRoot or DataObject                        
@@ -271,7 +271,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                                 // need to add at the right pos in the list, not at the end
                                                 nextModifiedDO.set(nextProp, existingValue, false);
                                                 if (settingIdx != -1) {
-                                                    ((SDOSequence)nextModifiedDO.getSequence()).addSettingWithoutModifyingDataObject(settingIdx, nextProp, existingValue);
+                                                    nextModifiedDO.getSequence().addSettingWithoutModifyingDataObject(settingIdx, nextProp, existingValue);
                                                 }
                                             } else {
                                                 nextModifiedDO.unset(nextProp);
@@ -307,7 +307,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                             Property nextProp = unmarshalledDO.getInstanceProperty((String)unsetValueList.get(k));
                             if (nextProp != null) {
                                 Object oldValue = null;
-                                if (nextProp.getType().isDataType() || nextProp.isMany()) {
+                                if (((SDOType)nextProp.getType()).isDataType() || nextProp.isMany()) {
                                     //to get default
                                     oldValue = unmarshalledDO.get(nextProp);
                                 }
@@ -335,7 +335,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     SDODataObject next = (SDODataObject)created.next();
                     Property containmentProperty = next.getContainmentProperty();
                     if(containmentProperty != null && containmentProperty.isMany()) {
-                        SDODataObject container = (SDODataObject)next.getContainer();
+                        SDODataObject container = next.getContainer();
                         ListWrapper list = (ListWrapper)container.get(containmentProperty);
                         if(!(nextCS.getOriginalElements().containsKey(list))) {
                             //if there was an object created as part of a list, and that list is not

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.ListIterator;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 
 /**
@@ -60,7 +61,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
         04/25/07 - adding duplicate containment true dataObjects are ignored - only a single instance can exist
      */
     protected SDODataObject dataObject;
-    protected Property property;
+    protected SDOProperty property;
 
     /**
      * We are maintaining two pointers to potentially two ArrayList objects.
@@ -87,7 +88,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
     public ListWrapper(SDODataObject theDataObject, Property theProperty) {
         this();
         dataObject = theDataObject;
-        property = theProperty;
+        property = (SDOProperty) theProperty;
     }
 
     /**
@@ -203,9 +204,9 @@ public class ListWrapper implements List, Serializable, Cloneable {
      */
     protected void copyElements() {
         // update element arrays before we modify original object        
-        if (isLogging() && (!((SDOChangeSummary)dataObject.getChangeSummary()).isDirty(this))) {
+        if (isLogging() && (!dataObject.getChangeSummary().isDirty(this))) {
             // original will maintain object identity - swap before copying            
-            ((SDOChangeSummary)dataObject.getChangeSummary()).getOriginalElements().put(this, currentElements);
+            dataObject.getChangeSummary().getOriginalElements().put(this, currentElements);
             // current list will now be a shallow copy of original(itself) - we will not use ArrayList.clone()            
             currentElements = new ArrayList(currentElements);
         }
@@ -243,7 +244,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
                 Object next = valuesIter.next();
 
                 // do not add duplicate settings for containment dataObjects
-                if ((null != aProperty) && !aProperty.getType().isDataType() && aProperty.isContainment()) {// dataType and containment are mutually exclusive
+                if ((null != aProperty) && !((SDOProperty)aProperty).getType().isDataType() && aProperty.isContainment()) {// dataType and containment are mutually exclusive
                     if (!duplicatesList.contains(next)) {
                         updateSequenceSettingInternal(property, next);
                         duplicatesList.add(next);
@@ -264,7 +265,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // create a new setting
         // Note: A non spec isSequenced=true after type define will throw a NPE    	
         if (dataObject.getType().isSequenced()) {
-            ((SDOSequence)dataObject.getSequence()).addSettingWithoutModifyingDataObject(property, item);
+            dataObject.getSequence().addSettingWithoutModifyingDataObject(property, item);
         }
     }
 
@@ -277,7 +278,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // get index corresponding to the property:value pair
         // Note: A non spec isSequenced=true after type define will throw a NPE
         if (dataObject.getType().isSequenced()) {
-            ((SDOSequence)dataObject.getSequence()).removeSettingWithoutModifyingDataObject(property, item);
+            dataObject.getSequence().removeSettingWithoutModifyingDataObject(property, item);
         }
     }
 

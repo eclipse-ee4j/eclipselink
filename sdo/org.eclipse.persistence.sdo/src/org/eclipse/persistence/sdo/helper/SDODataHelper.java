@@ -30,6 +30,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -686,7 +687,7 @@ public class SDODataHelper implements DataHelper {
      */
     public Object convert(Type type, Object value) {
         Class convertClass = null;
-        if (type.isDataType()) {
+        if (((SDOType) type).isDataType()) {
             convertClass = type.getInstanceClass();
         } /*else {
             convertClass = ((org.eclipse.persistence.sdo.SDOType) type).getImplClass();

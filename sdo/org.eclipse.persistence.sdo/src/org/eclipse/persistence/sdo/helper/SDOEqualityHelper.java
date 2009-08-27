@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -241,8 +242,8 @@ public class SDOEqualityHelper implements EqualityHelper {
             return false;
         }
 
-        Property originalProperty = null;
-        Property copyProperty = null;
+        SDOProperty originalProperty = null;
+        SDOProperty copyProperty = null;
 
         /**
          * For shallow equal when dataType is false we do not check this setting,
@@ -339,13 +340,13 @@ public class SDOEqualityHelper implements EqualityHelper {
             boolean locatedSetting;
             // compare settings
             for (int idx = 0; idx < aSequence.getSettings().size(); idx++) {
-                Property nextProperty = aSequence.getProperty(idx);
+                SDOProperty nextProperty = aSequence.getProperty(idx);
                 if (nextProperty == null || nextProperty.getType().isDataType()) {
                     // compare to the next copy datatype setting
                     Object nextValue = aSequence.getValue(idx);
                     locatedSetting = false;
                     for (; cpyIdx < aSequenceCopy.getSettings().size(); cpyIdx++) {
-                        Property nextCopyProperty = aSequenceCopy.getProperty(cpyIdx);
+                        SDOProperty nextCopyProperty = aSequenceCopy.getProperty(cpyIdx);
                         if (nextCopyProperty == null || nextCopyProperty.getType().isDataType()) {
                             // at this point we need to compare the two Settings and their properties
                             Object nextCopyValue = aSequenceCopy.getValue(cpyIdx);
@@ -381,7 +382,7 @@ public class SDOEqualityHelper implements EqualityHelper {
     private int getIndexOfNextDataTypeSetting(SDOSequence aSequence, int index) {
         List<Setting> settings = aSequence.getSettings();
         for (int i = index; i < settings.size(); i++) {
-            Property nextProperty = aSequence.getProperty(i);
+            SDOProperty nextProperty = aSequence.getProperty(i);
             if (nextProperty == null || nextProperty.getType().isDataType()) {
                 return i;
             }
@@ -509,7 +510,7 @@ public class SDOEqualityHelper implements EqualityHelper {
         List l1 = dataObject1.getList(p);
         List l2 = dataObject2.getList(p);
 
-        if (p.getType().isDataType()) {
+        if (((SDOType)p.getType()).isDataType()) {
             if (dataObject1.isSet(p) != dataObject2.isSet(p)) {
                 return false;
             }

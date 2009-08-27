@@ -282,12 +282,12 @@ public class SDOChangeSummary implements ChangeSummary {
         if(isModified(sdoDataObject)) {
             modifiedList.add(sdoDataObject);
         }
-        List<Property> properties = (List<Property>) sdoDataObject.getInstanceProperties();
+        List<Property> properties = sdoDataObject.getInstanceProperties();
         for(int x=0; x<properties.size(); x++) {
             Property property = properties.get(x);
             if(property.isContainment()) {
                 if(property.isMany()) {
-                    List<SDODataObject> dataObjects = (List<SDODataObject>) sdoDataObject.getList(property);
+                    List<SDODataObject> dataObjects = sdoDataObject.getList(property);
                     for(int y=0; y<dataObjects.size(); y++) {
                         getModified(dataObjects.get(y), modifiedList);
                     }
@@ -381,7 +381,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #getChangedDataObjects
      */
     public List getOldValues(DataObject dataObject) {
-        if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
+        if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return new ArrayList();
         }
         if (!isCreated(dataObject) && isDirty(dataObject)) {
@@ -581,7 +581,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #getChangedDataObjects
      */
     public SDOChangeSummary.Setting getOldValue(DataObject dataObject, Property property) {
-        if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
+        if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return null;
         }
 
@@ -705,7 +705,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the old containment property.
      */
     public SDOSequence getOldSequence(DataObject dataObject) {
-        if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
+        if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return null;
         }
         if (!isCreated(dataObject) && dataObject.getType().isSequenced()) {
@@ -729,7 +729,7 @@ public class SDOChangeSummary implements ChangeSummary {
                 }
 
                 // property may be null if the setting contains unstructured text
-                Property nextOriginalSettingProp = originalSeq.getProperty(i);
+                SDOProperty nextOriginalSettingProp = originalSeq.getProperty(i);
                 if (nextOriginalSettingProp == null) {
                     // handle unstructured text
                     seqWithDeepCopies.addText(nextOriginalSettingValue.toString());
@@ -768,7 +768,7 @@ public class SDOChangeSummary implements ChangeSummary {
         if (oldProp != null) {
             oldName = oldProp.getName();
         }
-        rootDataObject.undoChanges(true, this, (SDODataObject)getOldContainer(rootDataObject), oldName);
+        rootDataObject.undoChanges(true, this, getOldContainer(rootDataObject), oldName);
         resetChanges();
         rootDataObject.resetChanges();
     }

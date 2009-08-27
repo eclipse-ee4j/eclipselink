@@ -644,7 +644,7 @@ public class SDOUtil {
     }
 
     public static String getJavaTypeForProperty(SDOProperty property) {
-        if (property.isMany() || ((SDOType)property.getType()).isXsdList()) {
+        if (property.isMany() || property.getType().isXsdList()) {
             return "java.util.List";
         } else {
             SDOType propertyType = property.getType();

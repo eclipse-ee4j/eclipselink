@@ -99,7 +99,7 @@ public class XPathEngine {
             return caller.getContainer();
         }
         if (path.equals(SDOConstants.SDO_XPATH_TO_ROOT)) {
-            return caller.getRootObject();
+            return ((SDODataObject)caller).getRootObject();
         }
         path = getLocalName(path);
 

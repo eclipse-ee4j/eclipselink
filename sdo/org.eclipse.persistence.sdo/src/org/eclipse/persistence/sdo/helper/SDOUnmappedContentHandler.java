@@ -261,7 +261,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     value = ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue((String)value, currentProperty.getType(), currentSchemaType);
                 }
                 currentSchemaType = null;
-            } else if ((currentProperty.getType() != null) && currentProperty.getType().isDataType()) {
+            } else if ((currentProperty.getType() != null) && ((SDOType)currentProperty.getType()).isDataType()) {
                 value = ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue((String)value, currentProperty.getType());
             }
 
@@ -292,7 +292,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             currentProperties.push(globalProperty);
             SDOType theType = ((SDOType)globalProperty.getType());
 
-            if (globalProperty.getType().isDataType()) {                
+            if (((SDOType)globalProperty.getType()).isDataType()) {                
                 depth++;                
             } else {
                 XMLDescriptor xmlDescriptor = theType.getXmlDescriptor();
@@ -396,7 +396,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(localName);
         property.setMany(isElement);
-        property.setContainment(!type.isDataType());
+        property.setContainment(!((SDOType)type).isDataType());
         property.setType(type);
         property.setUri(uri);
         property.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, isElement);

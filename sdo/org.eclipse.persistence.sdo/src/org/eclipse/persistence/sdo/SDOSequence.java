@@ -126,11 +126,11 @@ public class SDOSequence implements Sequence {
             return false;
         }
         // Disallow the addition of a read only Property
-        if (property.isReadOnly()) {
+        if (((SDOProperty)property).isReadOnly()) {
             return false;
         }
         // Disallow the addition of a Properties representing an XML attribute
-        if (((SDOType) dataObject.getType()).getHelperContext().getXSDHelper().isAttribute(property)) {
+        if (dataObject.getType().getHelperContext().getXSDHelper().isAttribute(property)) {
             throw SDOException.sequenceAttributePropertyNotSupported(property.getName());
         }
         // Disallow an open Property on a closed Type
@@ -217,13 +217,13 @@ public class SDOSequence implements Sequence {
 
     public SDOProperty getProperty(int index) {
         try {
-            return (SDOProperty) getProperty(settings.get(index));
+            return getProperty(settings.get(index));
         } catch (IndexOutOfBoundsException iobex) {
             throw SDOException.invalidIndex(iobex, index);
         }
     }
 
-    public Property getProperty(Setting setting) {
+    public SDOProperty getProperty(Setting setting) {
         DatabaseMapping mapping = setting.getMapping();
         if (null == mapping) {
             List<Setting> children = setting.getChildren();
@@ -231,16 +231,16 @@ public class SDOSequence implements Sequence {
                 return getProperty(children.get(0));
             }
         } else {
-            Property property = null;
+            SDOProperty property = null;
             if (null == setting.getName()) {
                 Object value = setting.getValue();
-                if (value instanceof DataObject) {
-                    Property containmentProp = ((DataObject) value).getContainmentProperty();
+                if (value instanceof SDODataObject) {
+                    SDOProperty containmentProp = ((SDODataObject) value).getContainmentProperty();
                     if (containmentProp != null) {
                         property = dataObject.getInstanceProperty(containmentProp.getName());
                     }
                     if (property == null) {
-                        XMLDescriptor desc = ((SDOType) ((DataObject) value).getType()).getXmlDescriptor();
+                        XMLDescriptor desc = ((SDODataObject) value).getType().getXmlDescriptor();
 
                         String qualifiedName = desc.getDefaultRootElement();
                         int index = qualifiedName.indexOf(':');
@@ -307,7 +307,7 @@ public class SDOSequence implements Sequence {
         Setting setting = settings.remove(fromIndex);
         settings.add(toIndex, setting);
 
-        Property prop = getProperty(setting);
+        SDOProperty prop = getProperty(setting);
         if (prop != null && prop.isMany()) {
             ListWrapper lw = (ListWrapper) dataObject.getList(prop);
             Object value = getValue(setting);
@@ -394,7 +394,7 @@ public class SDOSequence implements Sequence {
             return null;
         }
 
-        Property property = getProperty(setting);
+        SDOProperty property = getProperty(setting);
         Object oldValue = setting.getValue();
 
         if (property.isMany()) {
@@ -410,7 +410,7 @@ public class SDOSequence implements Sequence {
             } else {
                 addSettingWithoutModifyingDataObject(property, value);
             }
-            dataObject.setPropertyInternal((SDOProperty) property, value, false);
+            dataObject.setPropertyInternal(property, value, false);
         }
         return oldValue;
     }
@@ -423,7 +423,7 @@ public class SDOSequence implements Sequence {
         SDOProperty sdoProperty = (SDOProperty) property;
         DatabaseMapping mapping = sdoProperty.getXmlMapping();
         Setting setting = new Setting();
-        SDOType sdoType = (SDOType) dataObject.getType();
+        SDOType sdoType = dataObject.getType();
         XMLDescriptor xmlDescriptor = sdoType.getXmlDescriptor();
         if (null == mapping) {
             setting.setObject(dataObject);
@@ -440,7 +440,7 @@ public class SDOSequence implements Sequence {
                 xmlRoot.setNamespaceURI(sdoProperty.getUri());
                 xmlRoot.setObject(value);
                 // do not set schema type for global properties
-                SDOTypeHelper hlpr = (SDOTypeHelper) ((SDOType) dataObject.getType()).getHelperContext().getTypeHelper();
+                SDOTypeHelper hlpr = (SDOTypeHelper) dataObject.getType().getHelperContext().getTypeHelper();
                 if (hlpr.getOpenContentProperty(sdoProperty.getUri(), sdoProperty.getName()) == null) {
                     QName schemaTypeQName = hlpr.getXSDTypeFromSDOType(property.getType());
                     if (schemaTypeQName != null && schemaTypeQName != XMLConstants.STRING_QNAME) {
@@ -625,7 +625,7 @@ public class SDOSequence implements Sequence {
         int returnIndex = -1;
         for (int i = 0; i < settings.size(); i++) {
             Setting nextSetting = settings.get(i);
-            Property prop = getProperty(nextSetting);
+            SDOProperty prop = getProperty(nextSetting);
             if (prop.equals(manyProp)) {
                 returnIndex++;
                 if (value.equals(getValue(nextSetting))) {

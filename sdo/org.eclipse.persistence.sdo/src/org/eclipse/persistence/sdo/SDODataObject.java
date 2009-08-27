@@ -500,8 +500,8 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     private Sequence getSequencePrivate(Property aProperty) {
         // we process only complex types that are non-many
-        if ((aProperty != null) && aProperty.getType().isSequenced() && isSet(aProperty) &&//
-                !aProperty.getType().isDataType() && !aProperty.isMany()) {
+        if ((aProperty != null) && ((SDOProperty)aProperty).getType().isSequenced() && isSet(aProperty) &&//
+                !((SDOProperty)aProperty).getType().isDataType() && !aProperty.isMany()) {
             return ((DataObject)get(aProperty)).getSequence();
         } else {
             throw SDOException.sequenceNotSupportedForProperty(aProperty.getName());
@@ -735,7 +735,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (property.isContainment() || isContainedByDataGraph(property)) {
                 for(Object next: listValue) {
                     if(next instanceof SDODataObject) {
-                        if (parentContains((SDODataObject) next)) {
+                        if (parentContains(next)) {
                             throw new IllegalArgumentException("Circular reference.");
                         }
                     }
@@ -856,7 +856,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw SDOException.cannotPerformOperationOnNullArgument("unset");
         }
 
-        if (property.isReadOnly()) {
+        if (((SDOProperty)property).isReadOnly()) {
         	throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
 
@@ -1207,7 +1207,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
         if (isRootOfRecursiveLoop || fromDelete) {
             if (null != getContainer()) {
-                ((SDODataObject)getContainer())._setModified(true);
+                getContainer()._setModified(true);
                 _setContainer(null);
                 _setContainmentPropertyName(null);
             }
@@ -1326,7 +1326,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     private void detach(boolean fromDelete, boolean updateSequence) {
         // Note: there is no case10 where fromDelete=true and updateSequence=false
-        Property containmentProperty = getContainmentProperty();
+        SDOProperty containmentProperty = getContainmentProperty();
 
         if ((containmentProperty != null) && containmentProperty.isReadOnly()) {
         	throw new UnsupportedOperationException("Property is Readonly." + containmentProperty.getName() + "  " + getType().getName());
@@ -1445,7 +1445,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public SDOChangeSummary getChangeSummary() {
-        return (SDOChangeSummary) changeSummary;
+        return changeSummary;
     }
 
     /**
@@ -1455,7 +1455,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     public void _setCreated(boolean created) {
         if (changeSummary != null) {
-            ((SDOChangeSummary)changeSummary).setCreated(this, created);
+            changeSummary.setCreated(this, created);
         }
     }
 
@@ -1480,7 +1480,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     private void _setDeleted(boolean deleted) {
         // reduced scope from public to private 17 May 2007 - use the public deprecated public function until we remove it
         if (changeSummary != null) {
-            boolean wasDeleted = ((SDOChangeSummary)changeSummary).setDeleted(this, deleted);
+            boolean wasDeleted = changeSummary.setDeleted(this, deleted);
             if (wasDeleted && isLogging()) {
                 updateChangeSummaryWithOriginalValues();
             }
@@ -1692,7 +1692,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         // swap sequences (may be UC2(DataObject and sequence change) or UC4 (sequence change only)
         if (getType().isSequenced()) {// assume sequence is !null
             // perform sequence.isDirty check independent of a dataObject.isDirty check
-            if (((SDOChangeSummary)cs).isDirty((SDOSequence)sequence)) {
+            if (((SDOChangeSummary)cs).isDirty(sequence)) {
                 Sequence currentSequence = sequence;
                 SDOSequence originalSequence = (SDOSequence)((SDOChangeSummary)cs).getOriginalSequences().get(this);
 
@@ -1732,7 +1732,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                         // check for modified ListWrapper
                         // assumption that we never have a null ListWrapper should still avoid a possible NPE
                         if (null != value) {
-                            ((ListWrapper)value).undoChanges((SDOChangeSummary)getChangeSummary());
+                            ((ListWrapper)value).undoChanges(getChangeSummary());
                             if (!property.getType().isDataType()) {
                                 for (Iterator iterMany = ((List)value).iterator();
                                          iterMany.hasNext();) {
@@ -2025,16 +2025,16 @@ public class SDODataObject implements DataObject, SequencedObject {
     public List _getOpenContentPropertiesWithXMLRoots() {
         List returnList = new ArrayList();
         for (int i = 0, size = openContentProperties.size(); i < size; i++) {
-            Property next = (Property)openContentProperties.get(i);
+            SDOProperty next = (SDOProperty) openContentProperties.get(i);
 
             XMLRoot root = new XMLRoot();
-            String localName = ((SDOProperty)next).getXPath();
+            String localName = next.getXPath();
             if (next.getType() != null) {
                 if (!next.getType().isDataType()) {
-                    String uri = ((SDOProperty)next).getUri();
+                    String uri = next.getUri();
                     root.setNamespaceURI(uri);
                 } else {
-                    String uri = ((SDOProperty)next).getUri();
+                    String uri = next.getUri();
                     root.setNamespaceURI(uri);
                 }
             }
@@ -2048,14 +2048,14 @@ public class SDODataObject implements DataObject, SequencedObject {
                     nextRoot.setNamespaceURI(root.getNamespaceURI());
                     nextRoot.setLocalName(root.getLocalName());
                     Object nextItem = ((List)value).get(j);
-                    if ((next.getType() != null) && (((SDOType)next.getType()).getXmlDescriptor() == null)) {
+                    if ((next.getType() != null) && (next.getType().getXmlDescriptor() == null)) {
                         nextItem = XMLConversionManager.getDefaultXMLManager().convertObject(nextItem, String.class);
                     }
                     nextRoot.setObject(nextItem);
                     returnList.add(nextRoot);
                 }
             } else {
-                if ((next.getType() != null) && (((SDOType)next.getType()).getXmlDescriptor() == null)) {
+                if ((next.getType() != null) && (next.getType().getXmlDescriptor() == null)) {
                     value = XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class);
                 }
                 root.setObject(value);
@@ -2218,7 +2218,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value.equals(getContainer())) {
                 return true;
             }
-            return ((SDODataObject)getContainer()).parentContains(value);
+            return getContainer().parentContains(value);
         }
         return false;
     }
@@ -2232,7 +2232,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     private boolean isContainedByDataGraph(Property aProperty) {
     	// The property is of type DataObject that points to a DataGraph
-    	return isContainedByDataGraph(getDataGraph(),  aProperty);
+    	return isContainedByDataGraph(getDataGraph(),  (SDOProperty) aProperty);
     }
 
     /**
@@ -2244,7 +2244,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param aProperty
      * @return
      */
-    private boolean isContainedByDataGraph(DataGraph aDataGraph, Property aProperty) {
+    private boolean isContainedByDataGraph(DataGraph aDataGraph, SDOProperty aProperty) {
     	// The property is of type DataObject that points to a DataGraph
     	return (null != aDataGraph) && (null != aProperty.getType()) && !aProperty.getType().isDataType();
     }
@@ -2475,7 +2475,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                                   SDODataObject targetObject,//
                                   String aSeparator) {
         // Base Case: check we are at the root (get parent first)
-        SDODataObject aParent = (SDODataObject)targetObject.getContainer();
+        SDODataObject aParent = targetObject.getContainer();
         if (aParent == null) {
             // check for indexed property if root is a ListWrapper
             return currentPath;
@@ -2677,8 +2677,8 @@ public class SDODataObject implements DataObject, SequencedObject {
             }
             theList.add(property);
             getInstanceProperties().add(property);
-            for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
-                _getOpenContentAliasNamesMap().put((String)property.getAliasNames().get(i), property);
+            for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
+                _getOpenContentAliasNamesMap().put((String)((SDOProperty)property).getAliasNames().get(i), property);
             }
         }
     }
@@ -2700,8 +2700,8 @@ public class SDODataObject implements DataObject, SequencedObject {
         _getOpenContentProperties().remove(property);
         _getOpenContentPropertiesAttributes().remove(property);
         getInstanceProperties().remove(property);
-        for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
-           _getOpenContentAliasNamesMap().remove(property.getAliasNames().get(i));
+        for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
+           _getOpenContentAliasNamesMap().remove(((SDOProperty)property).getAliasNames().get(i));
         }
     }
 
@@ -2750,7 +2750,7 @@ public class SDODataObject implements DataObject, SequencedObject {
          */
         if (type.isSequenced() && (sequence != null) && updateSequence && aHelperContext.getXSDHelper().isElement(property)) {
             // remove all instances of the property from the sequence
-            ((SDOSequence)sequence).removeSettingWithoutModifyingDataObject(property);
+            sequence.removeSettingWithoutModifyingDataObject(property);
         }
     }
 

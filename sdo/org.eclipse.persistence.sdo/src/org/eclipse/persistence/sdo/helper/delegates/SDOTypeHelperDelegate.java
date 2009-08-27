@@ -504,7 +504,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         sdoTypeForSimpleJavaType.put(ClassConstants.PSHORT, SDOConstants.SDO_SHORT);
     }
 
-    public Class getJavaWrapperTypeForSDOType(Type sdoType) {
+    public Class getJavaWrapperTypeForSDOType(Type type) {
+        SDOType sdoType = (SDOType) type;
         if (sdoType.getInstanceClass() != null) {
             return sdoType.getInstanceClass();
         }
@@ -804,7 +805,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     private boolean isBaseTypeBytes(Type theType) {
-        List baseTypes = theType.getBaseTypes();
+        List baseTypes = ((SDOType)theType).getBaseTypes();
         if (baseTypes.size() > 0) {
             Type nextType = (Type)baseTypes.get(0);
             if (nextType == SDOConstants.SDO_BYTES) {
@@ -838,7 +839,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (typeValue != null) {
             if (typeValue == SDOConstants.SDO_BYTES) {
                 newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
-            } else if (typeValue.isDataType()) {
+            } else if (((SDOType)typeValue).isDataType()) {
                 if (isBaseTypeBytes(typeValue)) {
                     newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
                 }
@@ -849,7 +850,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             newProperty.setContainment(dataObject.getBoolean("containment"));
         } else {
             if (typeValue != null) {
-                newProperty.setContainment(!typeValue.isDataType());
+                newProperty.setContainment(!((SDOType)typeValue).isDataType());
             }
         }
 
@@ -1017,11 +1018,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);
         }
 
-        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {
+        if (propertyToReturn == null) {
             List types = new ArrayList();
             propertyToReturn = buildPropertyFromDataObject(propertyDO, null, types);
             initializeTypes(types);
-            defineOpenContentProperty(uri, name, (Property)propertyToReturn);
+            defineOpenContentProperty(uri, name, propertyToReturn);
         }
 
         if (propertyToReturn != null) {
@@ -1066,7 +1067,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             ((SDOProperty)property).setUri(propertyUri);
 
             XMLDescriptor aDescriptor;
-            if (property.getType().isDataType()) {
+            if (((SDOType)property.getType()).isDataType()) {
                 // RICK: Types from DataObjects: isDataType() == true so:
                 //   - find the SDOWrapperType from TypeHelper's WrappersHashMap
                 //   - add the descriptor to XMLContext's DescriptorsByQName map

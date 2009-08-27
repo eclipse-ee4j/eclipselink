@@ -595,7 +595,7 @@ public class SDOProperty implements Property, Serializable {
                 xmlMapping.setAttributeAccessor(accessor);
             }
             if ((getContainingType() != null) && !getContainingType().isDataType()) {
-                ClassDescriptor containingDescriptor = ((SDOType)getContainingType()).getXmlDescriptor();
+                ClassDescriptor containingDescriptor = getContainingType().getXmlDescriptor();
                 xmlMapping.setDescriptor(containingDescriptor);
                 XMLMapping mapping = (XMLMapping)getContainingType().getXmlDescriptor().getMappingForAttributeName(getName());
                 if (mapping != null) {
@@ -838,7 +838,7 @@ public class SDOProperty implements Property, Serializable {
         Iterator<SDOProperty> properties = this.getSubstitutableElements().iterator();
         while(properties.hasNext()) {
             SDOProperty nextProp = properties.next();
-            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), (SDOType)getContainingType());
+            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), getContainingType());
             mapping.addChoiceElement(xPath, nextProp.getType().getImplClass());
         }
         return mapping;
@@ -867,7 +867,7 @@ public class SDOProperty implements Property, Serializable {
      * @return id Property or null
      */
     private SDOProperty getIDProp(Type aType) {
-        return (SDOProperty)aType.getProperty((String)aType.get(SDOConstants.ID_PROPERTY));
+        return (SDOProperty)aType.getProperty((String)((SDOType)aType).get(SDOConstants.ID_PROPERTY));
     }
 
     private DatabaseMapping buildXMLCollectionReferenceMapping(String mappingUri) {

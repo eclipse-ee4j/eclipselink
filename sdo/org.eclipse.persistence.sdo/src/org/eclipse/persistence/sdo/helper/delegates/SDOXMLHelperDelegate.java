@@ -689,7 +689,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         setXmlContext(null);
         this.xmlMarshallerMap.clear();
         this.xmlUnmarshallerMap.clear();
-        setLoader(new SDOClassLoader(getClass().getClassLoader(), (HelperContext)aHelperContext));
+        setLoader(new SDOClassLoader(getClass().getClassLoader(), aHelperContext));
     }
 
     public HelperContext getHelperContext() {
