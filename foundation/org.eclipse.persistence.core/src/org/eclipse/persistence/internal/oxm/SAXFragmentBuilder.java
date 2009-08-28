@@ -60,6 +60,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
             if (prefix != null && prefix.length() >0){
                 qName = prefix + XMLConstants.COLON + qName;
+                qNameColonIndex = prefix.length();
             }
         }
 
@@ -73,7 +74,6 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         appendChildNode(parentNode, element);
         nodes.push(element);
 
-        qNameColonIndex = qName.indexOf(XMLConstants.COLON);
         if (qNameColonIndex > -1) {
             String prefix = qName.substring(0, qNameColonIndex);
             String parentUri = null;

@@ -64,7 +64,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected static int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
     protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
 
-    private static final String PLUS = "+";
+    private static final char PLUS = '+';
     
     protected DatatypeFactory datatypeFactory;
 
@@ -531,7 +531,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *        parsable integer.
     */
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {   
-       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+       if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToInteger(((String)sourceObject).substring(1));
        }
        return super.convertObjectToInteger(sourceObject);
@@ -544,8 +544,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *        parsable long.
     *
     */
-  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {	  
+      if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){		  
           return super.convertObjectToLong(((String)sourceObject).substring(1));
       }
       return super.convertObjectToLong(sourceObject);
@@ -560,7 +560,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
    *    parsable short.
    */
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+	  if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
           return super.convertObjectToShort(((String)sourceObject).substring(1));
       }
       return super.convertObjectToShort(sourceObject);
@@ -577,7 +577,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
    *    parsable BigDecimal.
    */
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {	  
-      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+	  if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
           return super.convertObjectToNumber(((String)sourceObject).substring(1));
       }
       return super.convertObjectToNumber(sourceObject);	  	  
@@ -588,7 +588,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *    @param sourceObject    Valid instance of String, BigDecimal, or any Number
     */
    protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {	  
-       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+	   if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToBigInteger(((String)sourceObject).substring(1));
        }
        return super.convertObjectToBigInteger(sourceObject);	  
@@ -599,7 +599,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *    @param sourceObject    Valid instance of String, BigInteger, any Number
     */
    protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {        
-       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+	   if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToBigDecimal(((String)sourceObject).substring(1));
        }       
        return super.convertObjectToBigDecimal(sourceObject);	    
@@ -614,7 +614,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *
     */
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
-        if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+    	if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
             return super.convertObjectToByte(((String)sourceObject).substring(1));
         }       
         return super.convertObjectToByte(sourceObject);	
