@@ -16,12 +16,16 @@ import java.io.*;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -159,6 +163,46 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         Object unmarshalledObject = unmarshaller.unmarshal(stream, Employee.class);
 
         assertEquals(controlObject, unmarshalledObject);
+    }
+    
+    public void testUnmarshalFromXMLStreamReader() throws Exception {
+    	if(XML_INPUT_FACTORY != null){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            XMLStreamReader xmlStreamReader =  XML_INPUT_FACTORY.createXMLStreamReader(stream);
+            Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceStreamReaderConstructor, new Object[]{xmlStreamReader});
+            Object unmarshalledObject = unmarshaller.unmarshal(ss);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
+    }
+    
+    public void testUnmarshalFromXMLStreamReaderWithClass() throws Exception {
+    	if(XML_INPUT_FACTORY != null){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);        
+            XMLStreamReader xmlStreamReader =  XML_INPUT_FACTORY.createXMLStreamReader(stream);
+            Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceStreamReaderConstructor, new Object[]{xmlStreamReader});
+            Object unmarshalledObject = unmarshaller.unmarshal(ss, Employee.class);        
+            assertEquals(controlObject, unmarshalledObject);
+        }
+    }
+    
+    public void testUnmarshalFromXMLEventReader() throws Exception {
+    	if(XML_INPUT_FACTORY != null){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(stream);
+            Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceEventReaderConstructor, new Object[]{reader});
+            Object unmarshalledObject = unmarshaller.unmarshal(ss);                
+            assertEquals(controlObject, unmarshalledObject);
+    	}
+    }
+    
+    public void testUnmarshalFromXMLEventReaderWithClass() throws Exception {
+    	if(XML_INPUT_FACTORY != null){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(stream);
+            Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceEventReaderConstructor, new Object[]{reader});
+            Object unmarshalledObject = unmarshaller.unmarshal(ss, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromInputStreamWithNullClass() throws Exception {
