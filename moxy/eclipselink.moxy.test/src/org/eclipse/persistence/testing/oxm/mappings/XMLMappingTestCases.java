@@ -45,29 +45,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
-
-    protected static XMLInputFactory XML_INPUT_FACTORY;
-    protected static XMLOutputFactory XML_OUTPUT_FACTORY;
-    protected static Class staxResultClass;
-    protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
-    protected static Constructor staxResultConstructor;
-
-    static {
-        try {
-            XML_INPUT_FACTORY = XMLInputFactory.newInstance();
-            XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
-        } catch(Exception e) {
-            XML_INPUT_FACTORY = null;
-            XML_OUTPUT_FACTORY = null;
-        }
-        try {
-            staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
-            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
-        } catch(Exception ex) {
-            staxResultClass = null;
-        }
-    }
-
+  
     protected Document controlDocument;
     protected Document writeControlDocument;
     protected XMLMarshaller xmlMarshaller;

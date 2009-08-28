@@ -20,7 +20,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Constructor;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -36,6 +42,7 @@ import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
 import org.eclipse.persistence.sessions.factories.SessionManager;
@@ -47,6 +54,40 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public abstract class OXTestCase extends XMLTestCase {
+    protected static XMLInputFactory XML_INPUT_FACTORY;
+    protected static XMLOutputFactory XML_OUTPUT_FACTORY;
+    protected static Class staxResultClass;
+    protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
+    protected static Class staxSourceClass;
+    protected static String staxSourceClassName = "javax.xml.transform.stax.StAXSource";
+    protected static Constructor staxResultConstructor;
+    protected static Constructor staxSourceStreamReaderConstructor;
+    protected static Constructor staxSourceEventReaderConstructor;
+
+    static {
+        try {
+            XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+            XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+        } catch(javax.xml.stream.FactoryConfigurationError error){
+            XML_INPUT_FACTORY = null;
+            XML_OUTPUT_FACTORY = null;
+        }
+        try {
+            staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
+            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
+        } catch(Exception ex) {
+            staxResultClass = null;
+        }
+	    	    
+        try {
+            staxSourceClass = PrivilegedAccessHelper.getClassForName(staxSourceClassName);
+            staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLStreamReader.class}, true);
+            staxSourceEventReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLEventReader.class}, true);
+        } catch(Exception ex) {
+            staxSourceClass = null;
+        }
+    }
+	
     public boolean useLogging = false;    
     public static enum Platform { DOM, SAX, DOC_PRES };
     public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };

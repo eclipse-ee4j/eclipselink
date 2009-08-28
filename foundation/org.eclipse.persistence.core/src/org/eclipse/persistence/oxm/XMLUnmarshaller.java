@@ -548,7 +548,7 @@ public class XMLUnmarshaller {
                 Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
-                    XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{xmlStreamReader});
+                    XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
                 }
             } catch(Exception e) {
