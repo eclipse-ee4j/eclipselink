@@ -15,11 +15,8 @@ package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
@@ -38,8 +35,6 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_FILE_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_PACKAGE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_PACKAGE_DEFAULT;
 
 /**
  * Used to read persistence units through the java annotation processing API. 
@@ -62,29 +57,12 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public static FileObject getFileObject(String filename, StandardLocation standardLocation, ProcessingEnvironment processingEnv) {
+    public FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) {
         FileObject fileObject = null;
         try {
-            fileObject = processingEnv.getFiler().getResource(standardLocation, "", filename);
-        } catch (Exception e) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename);
-            return null;
-        }
-        
-        return fileObject;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public static FileObject getFileObject(String pkg, String filename, StandardLocation standardLocation, ProcessingEnvironment processingEnv) {
-        FileObject fileObject = null;
-        try {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Package: " + pkg);
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Filename: " + filename);
-            
-            fileObject = processingEnv.getFiler().getResource(standardLocation, pkg, filename);
-        } catch (Exception e) {
+            String standardLocation = CanonicalModelProperties.getOption(PERSISTENCE_XML_LOCATION, PERSISTENCE_XML_LOCATION_DEFAULT, processingEnv.getOptions());
+            fileObject = processingEnv.getFiler().getResource(StandardLocation.valueOf(standardLocation), "", filename);
+        } catch (IOException e) {
             processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename);
             return null;
         }
@@ -102,79 +80,33 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    protected void initPersistenceUnits(MetadataMirrorFactory factory) throws IOException {
+    protected void initPersistenceUnits(MetadataMirrorFactory factory) {
         ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
-        Map<String, String> options = processingEnv.getOptions();
-        String pkg = CanonicalModelProperties.getOption(PERSISTENCE_XML_PACKAGE, PERSISTENCE_XML_PACKAGE_DEFAULT, options);
-        String stdLocation = CanonicalModelProperties.getOption(PERSISTENCE_XML_LOCATION, PERSISTENCE_XML_LOCATION_DEFAULT, options);
-        String filename = CanonicalModelProperties.getOption(PERSISTENCE_XML_FILE, PERSISTENCE_XML_FILE_DEFAULT, options);
-        
-        FileObject fileObject = null;
-        if (stdLocation.equals(CanonicalModelProperties.LOCATION.CP.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class path ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_PATH, processingEnv);
-        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SP.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source path ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_PATH, processingEnv);
-        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.APP.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off annotation processor path ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.ANNOTATION_PROCESSOR_PATH, processingEnv);
-        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.SO.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off source output ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.SOURCE_OUTPUT, processingEnv);
-        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.PCP.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off platform class path ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.PLATFORM_CLASS_PATH, processingEnv);
-        } else if (stdLocation.equals(CanonicalModelProperties.LOCATION.CO.name())) {
-            //processingEnv.getMessager().printMessage(Kind.NOTE, "Reading off class output ... ");
-            fileObject = getFileObject(pkg, filename, StandardLocation.CLASS_OUTPUT, processingEnv);
-        }
+        String filename = CanonicalModelProperties.getOption(PERSISTENCE_XML_FILE, PERSISTENCE_XML_FILE_DEFAULT, processingEnv.getOptions());        
+        FileObject fileObject = getFileObject(filename, processingEnv);
         
         if (fileObject != null) {
-            InputStream inStream = fileObject.openInputStream();
-            XMLContext context = PersistenceXMLMappings.createXMLContext();
-            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
-            inStream.close();
+            try {
+                InputStream inStream = null;
+                
+                try {
+                    inStream = fileObject.openInputStream();
+                    XMLContext context = PersistenceXMLMappings.createXMLContext();
+                    PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
     
-            if (! persistenceXML.getVersion().equals("1.0")) {
-                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                    persistenceUnits.add(new PersistenceUnit(puInfo, factory));
+                    if (! persistenceXML.getVersion().equals("1.0")) {
+                        for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                            persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
+                        }
+                    }
+                } finally {
+                    if (inStream != null) {
+                        inStream.close();
+                    }
                 }
-            }
-        } else {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void initPersistenceUnits2(MetadataMirrorFactory factory) throws IOException {
-        ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
-        ClassLoader loader = processingEnv.getClass().getClassLoader();
-        
-        Enumeration<URL> resources = loader.getResources("persistence.xml");
-        
-        URL url = null;
-        
-        while (resources.hasMoreElements()) {
-            url = resources.nextElement();
-            processingEnv.getMessager().printMessage(Kind.NOTE, "We found a URL ... " + url);
-        }
-        
-        if (url != null) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Loading content from URL ... " + url);
-            
-            InputStream inStream = url.openStream();
-            XMLContext context = PersistenceXMLMappings.createXMLContext();
-            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
-            inStream.close();
-    
-            if (! persistenceXML.getVersion().equals("1.0")) {
-                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                    persistenceUnits.add(new PersistenceUnit(puInfo, factory));
-                }
-            }
+            } catch (IOException e) {
+                processingEnv.getMessager().printMessage(Kind.NOTE, "Could not find file: " + fileObject.getName());
+            } 
         } else {
             processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
         }

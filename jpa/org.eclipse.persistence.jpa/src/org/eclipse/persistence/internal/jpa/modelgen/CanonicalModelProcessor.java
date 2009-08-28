@@ -71,29 +71,17 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         try {
             ClassAccessor accessor = persistenceUnit.getClassAccessor(element);
             String qualifiedName = accessor.getAccessibleObjectName();
+            String className = (qualifiedName.indexOf(".") > -1) ? qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1) : qualifiedName;
+            String qualifiedCanonicalName = persistenceUnit.getQualifiedCanonicalName(qualifiedName);
+            String canonicalName = getCanonicalName(qualifiedCanonicalName);
+            String canonicalpackage = getCanonicalPackage(qualifiedCanonicalName);
             
-            String className;
-            String packageName = null;
-            String canonicalName;
-            String generatedFileName;
-            
-            if (qualifiedName.indexOf(".") > -1) {
-                className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
-                canonicalName = persistenceUnit.getCanonicalName(className);
-                packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
-                generatedFileName = packageName + "." + canonicalName;
-            } else {
-                className = qualifiedName;
-                canonicalName = persistenceUnit.getCanonicalName(className);
-                generatedFileName = canonicalName;
-            }
-            
-            JavaFileObject file = processingEnv.getFiler().createSourceFile(generatedFileName, element);
+            JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
             writer = file.openWriter();
             
             // Print the package if we have one.
-            if (packageName != null) {
-                writer.append("package " + packageName + ";\n\n");
+            if (! canonicalpackage.equals("")) {
+                writer.append("package " + canonicalpackage + ";\n\n");
             }
             
             HashSet<String> attributeTypes = new HashSet<String>();
@@ -162,7 +150,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             }
                         
             // Will import the parent as well if needed
-            String parent = writeImportStatements(attributeTypes, typeImports, accessor, writer, persistenceUnit);
+            String parent = writeImportStatements(attributeTypes, typeImports, accessor, writer, persistenceUnit, canonicalpackage);
                      
             // Write out the generation annotations.
             writer.append("@Generated(\"EclipseLink JPA 2.0 Canonical Model Generation\")\n");
@@ -214,6 +202,28 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         }
         
         return annotatedElement.getType();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected String getCanonicalName(String qualifiedName) {
+        if (qualifiedName.indexOf(".") > -1) {
+            return qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+        }
+        
+        return qualifiedName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected String getCanonicalPackage(String qualifiedName) {
+        if (qualifiedName.indexOf(".") > -1) {
+            return qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+        }
+        
+        return "";
     }
     
     /**
@@ -376,8 +386,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String writeImportStatements(HashSet<String> attributeTypes, HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit) throws IOException {
-        String unqualifiedCanonicalParent = null;
+    protected String writeImportStatements(HashSet<String> attributeTypes, HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit, String childCanonicalpackage) throws IOException {
+        String parentCanonicalName = null;
         
         // Write the java imports. Sort them?
         for (String typeImport : typeImports.values()) {
@@ -409,26 +419,22 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         
         writer.append("import javax.persistence.metamodel.StaticMetamodel;\n");
         
-        // Write the parent class now and import it as well if need be.
+        // Write the parent canonical class now and import it as well if need be.
         MetadataClass cls = (MetadataClass) accessor.getAnnotatedElement();
         MetadataClass parentCls = cls.getSuperclass();
         MetadataProject project = accessor.getProject();
         
         if (project.hasEntity(parentCls) || project.hasEmbeddable(parentCls) || project.hasMappedSuperclass(parentCls)) {
-            String parent = parentCls.getName();
-            String unqualifiedParent = parent.substring(parent.lastIndexOf(".") + 1);
-            String parentPackage = parent.substring(0, parent.lastIndexOf("."));
-            String child = accessor.getJavaClassName();
-            String childPackage = child.substring(0, child.lastIndexOf("."));
+            String qualifiedParentCanonicalName = persistenceUnit.getQualifiedCanonicalName(parentCls.getName());
+            parentCanonicalName = getCanonicalName(qualifiedParentCanonicalName);
+            String parentCanonicalPackage = getCanonicalPackage(qualifiedParentCanonicalName);
             
-            if (! parentPackage.equals(childPackage)) {
-                writer.append("\nimport " + persistenceUnit.getCanonicalName(parent) + ";\n");
+            if (! parentCanonicalPackage.equals(childCanonicalpackage)) {
+                writer.append("\nimport " + qualifiedParentCanonicalName + ";\n");
             }
-            
-            unqualifiedCanonicalParent = persistenceUnit.getCanonicalName(unqualifiedParent);
         }
         
         writer.append("\n");
-        return unqualifiedCanonicalParent;
+        return parentCanonicalName;
     }
 }

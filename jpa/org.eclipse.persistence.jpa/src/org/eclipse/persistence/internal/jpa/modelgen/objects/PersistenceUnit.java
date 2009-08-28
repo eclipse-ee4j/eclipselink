@@ -26,7 +26,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
+import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -56,16 +56,17 @@ public class PersistenceUnit {
     
     protected MetadataProject project;
     protected MetadataMirrorFactory factory; 
-    
+    protected PersistenceUnitReader persistenceUnitReader;
     protected ProcessingEnvironment processingEnv;
     protected SEPersistenceUnitInfo persistenceUnitInfo;
     
     /**
      * INTERNAL:
      */
-    public PersistenceUnit(SEPersistenceUnitInfo puInfo, MetadataMirrorFactory mirrorFactory) throws IOException {
+    public PersistenceUnit(SEPersistenceUnitInfo puInfo, MetadataMirrorFactory mirrorFactory, PersistenceUnitReader reader) {
         factory = mirrorFactory;
         persistenceUnitInfo = puInfo;
+        persistenceUnitReader = reader;
         
         // Ask the factory for the project and processing environment
         processingEnv = factory.getProcessingEnvironment();
@@ -164,38 +165,38 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) throws IOException {
-        InputStream in = null;
+    protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) {
         try {
-            in = fileObject.openInputStream();
-            xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
-        } catch (XMLMarshalException e) {
-            throw e;
-        } finally {
-            if (in != null) {
-                in.close();
+            InputStream in = null;
+            
+            try {
+                in = fileObject.openInputStream();
+                xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
             }
+        } catch (IOException ee) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Could not find file: " + fileObject.getName());
         }
     }
     
     /**
      * INTERNAL:
      */
-    protected void addXMLEntityMappings(String mappingFile, boolean validate) throws IOException {
-        FileObject fileObject = PersistenceUnitReader.getFileObject(mappingFile, StandardLocation.CLASS_OUTPUT, processingEnv);
+    protected void addXMLEntityMappings(String mappingFile) {
+        FileObject fileObject = persistenceUnitReader.getFileObject(mappingFile, processingEnv);
         
         if (fileObject != null) {
             try {
                 // Try eclipselink project
-                //APTHelper.printNOTE("Trying eclipselink context ... ", m_processingEnv);
                 addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getEclipseLinkOrmProject());
             } catch (XMLMarshalException e) {
                 try {
                     // Try JPA 2.0 project
-                    //APTHelper.printNOTE("Trying JPA 2.0 context ... ", m_processingEnv);
                     addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getOrm2Project());
                 } catch (XMLMarshalException ee) {
-                    //APTHelper.printNOTE("Trying JPA 1.0 context ... ", m_processingEnv);
                     // Try JPA 1.0 project, don't catch any exception at this point and throw it.
                     addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getOrm1Project());
                 }
@@ -238,13 +239,6 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    public String getCanonicalName(String name) {
-        return persistenceUnitInfo.getCanonicalName(name, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption());
-    }
-    
-    /**
-     * INTERNAL:
-     */
     protected String getCanonicalQualifierOption() {
         return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
     }
@@ -280,16 +274,23 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected void initXMLEntityMappings() throws IOException {
+    public String getQualifiedCanonicalName(String qualifiedName) {
+        return persistenceUnitInfo.getQualifiedCanonicalName(qualifiedName, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption()); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void initXMLEntityMappings() {
         xmlEntityMappings = new ArrayList<XMLEntityMappings>();
         
         // Load the orm.xml if it exists.
-        addXMLEntityMappings("META-INF/orm.xml", false);
+        addXMLEntityMappings("META-INF/orm.xml");
         
         // Load the listed mapping files.
         for (String mappingFile : persistenceUnitInfo.getMappingFileNames()) {
             if (! mappingFile.equals("META-INF/orm.xml")) {
-                addXMLEntityMappings(mappingFile, true);
+                addXMLEntityMappings(mappingFile);
             }
         }
     

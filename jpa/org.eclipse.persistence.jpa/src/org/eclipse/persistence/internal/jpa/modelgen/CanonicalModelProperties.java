@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 
 import java.util.Map;
 
+import javax.tools.StandardLocation;
+
 /**
  * The main APT processor to generate the JPA 2.0 Canonical model. 
  * 
@@ -25,14 +27,12 @@ public abstract class CanonicalModelProperties {
     // TODO: all the naming needs to be finalized ...
     // Some properties are temporary.
     
-    public enum LOCATION { CP, SP, APP, SO, PCP, CO };
     public enum QUALIFIER_POSITION { PRE, POST }
 
-    public static String PERSISTENCE_XML_PACKAGE = "package";
-    public static String PERSISTENCE_XML_PACKAGE_DEFAULT = "";
     public static String PERSISTENCE_XML_LOCATION = "std-location";
-    public static String PERSISTENCE_XML_LOCATION_DEFAULT = LOCATION.CO.name();
-    public static String PERSISTENCE_XML_FILE = "filename";
+    public static String PERSISTENCE_XML_LOCATION_DEFAULT = StandardLocation.CLASS_OUTPUT.name();
+    
+    public static String PERSISTENCE_XML_FILE = "eclipselink.canonical-model.persistence-xml";
     public static String PERSISTENCE_XML_FILE_DEFAULT = "META-INF/persistence.xml";
 
     public static String CANONICAL_MODEL_QUALIFIER = "eclipselink.canonical-model.qualifier";

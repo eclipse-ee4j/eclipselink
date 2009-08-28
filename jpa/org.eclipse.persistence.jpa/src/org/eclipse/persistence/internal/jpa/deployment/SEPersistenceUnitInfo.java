@@ -58,7 +58,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     
     // Persistence.xml loaded from the canonical model processor will 
     // populate the properties into this collection.
-    protected Collection<SEPersistenceUnitProperty> persistenceUnitProperties;
+    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<SEPersistenceUnitProperty>();
     // Persistence.xml loaded from the metadata processor will populate the
     // properties into this properties map.
     protected Properties properties;
@@ -89,14 +89,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
-    public Collection<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
+    public List<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
        return persistenceUnitProperties; 
     }
 
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
-    public void setPersistenceUnitProperties(Collection<SEPersistenceUnitProperty> persistenceUnitProperties) {
+    public void setPersistenceUnitProperties(List<SEPersistenceUnitProperty> persistenceUnitProperties) {
        this.persistenceUnitProperties = persistenceUnitProperties; 
     }
 
@@ -338,17 +338,9 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
     
     /**
-     * Return the canonical name. This will apply the default qualifier "_" 
-     * in the default position "POST".
-     */
-    public String getCanonicalName(String name) {
-        return getCanonicalName(name, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT);
-    }
-    
-    /**
      * Return the canonical name. This will apply the default qualifier given 
      * in the default position given. If the defaults given are null, then the
-     * default qualifer "_" in the default position "POST" will be aplied.
+     * default qualifier "_" in the default position "POST" will be applied.
      */
     public String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
         // If we have persistence unit properties but our properties map is 
@@ -364,6 +356,17 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
             // works from the CanonicalModelProcessor remains the same as if
             // coming from metadata processing, last one in wins.
             for (SEPersistenceUnitProperty property : getPersistenceUnitProperties()) {
+                // If the name or value of the property is null, set them to
+                // "" for now. If the name is null we'll likely need an
+                // exception in the future when actual preDeploy uses this code. 
+                if (property.getName() == null) {
+                    property.setName("");
+                }
+                
+                if (property.getValue() == null) {
+                    property.setValue("");
+                }
+                
                 properties.put(property.getName(), property.getValue());
             }
         }
@@ -394,6 +397,36 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
         } 
     }
 
+    /**
+     * Return the qualified canonical name applying any default package. This 
+     * will apply the default qualifier "_" in the default position "POST" on
+     * the name portion.  
+     */
+    public String getQualifiedCanonicalName(String qualifiedName) {
+        return getQualifiedCanonicalName(qualifiedName, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT);
+    }
+    
+    /**
+     * Return the canonical name applying any default package. This will apply 
+     * the default qualifier given in the default position given. If the 
+     * defaults given are null, then the default qualifier "_" in the default 
+     * position "POST" will be applied.
+     */
+    public String getQualifiedCanonicalName(String qualifiedName, String defaultQualifier, String defaultQualifierPosition) {
+       // TODO: This will take any default package specification and apply it 
+       // to the canonical name.
+       String pkg;
+       
+       if (qualifiedName.indexOf(".") > -1) {
+           String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), defaultQualifier, defaultQualifierPosition);
+           pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
+           
+           return pkg + canonicalName;
+       } else {
+           return getCanonicalName(qualifiedName, defaultQualifier, defaultQualifierPosition);
+       }
+    }
+    
     /**
      * @see PersistenceUnitInfo#getValidationMode()
      * @since Java Persistence 2.0
