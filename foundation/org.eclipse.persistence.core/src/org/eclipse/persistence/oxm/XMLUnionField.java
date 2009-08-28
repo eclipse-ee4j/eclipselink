@@ -184,9 +184,10 @@ public class XMLUnionField extends XMLField {
       */
     public Class getJavaClass(QName qname) {
         if (userXMLTypes != null) {
-            if (userXMLTypes.containsKey(qname)) {
-                return (Class) userXMLTypes.get(qname);
-            }
+        	Class theClass = (Class) userXMLTypes.get(qname);
+        	if(theClass != null){
+        		return theClass;
+        	}            
         }
         Class javaClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
         return XMLConversionManager.getObjectClass(javaClass);

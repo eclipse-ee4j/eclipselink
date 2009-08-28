@@ -624,8 +624,7 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
             return xmlRoot;
         }
-
-        return wrapObjectInXMLRoot(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix, forceWrap);
+        return unmarshalRecord.getCurrentObject();
     }
 
     /**

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -313,9 +314,8 @@ public class XMLField extends DatabaseField {
      * @param xPath The xPath statement for this field
      */
     public XMLField(String xPath) {
-        super();
+        super(xPath, new DatabaseTable());
         isTypedTextField = false;
-        setXPath(xPath);
     }
 
     /**
@@ -530,9 +530,10 @@ public class XMLField extends DatabaseField {
     */
     public Class getJavaClass(QName qname) {
         if (userXMLTypes != null) {
-            if (userXMLTypes.containsKey(qname)) {
-                return (Class)userXMLTypes.get(qname);
-            }
+        	Class theClass = (Class)userXMLTypes.get(qname);
+        	if(theClass != null){
+        		return theClass;
+        	}            
         }
         return (Class)XMLConversionManager.getDefaultXMLTypes().get(qname);
     }
@@ -544,8 +545,9 @@ public class XMLField extends DatabaseField {
      */
     public QName getXMLType(Class javaClass) {
         if (userJavaTypes != null) {
-            if (userJavaTypes.containsKey(javaClass)) {
-                return (QName)userJavaTypes.get(javaClass);
+            QName theQName = (QName)userJavaTypes.get(javaClass);
+            if (theQName !=null) {
+                return theQName;
             }
         }
 

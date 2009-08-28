@@ -123,20 +123,6 @@ public class SAXUnmarshallerHandler implements ContentHandler {
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {
-            String name;
-            if (localName == null || localName.length() == 0) {
-                name = qName;
-            } else {
-                name = localName;
-            }
-
-            QName rootQName;
-            if (namespaceURI == null || namespaceURI.length() == 0) {
-                rootQName = new QName(name);
-            } else {
-                rootQName = new QName(namespaceURI, name);
-            }
-
             XMLDescriptor xmlDescriptor = null;
             String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             if (null != type) {
@@ -149,6 +135,20 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                 xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
             }
             if(xmlDescriptor == null){
+            String name;
+            if (localName == null || localName.length() == 0) {
+                name = qName;
+            } else {
+                name = localName;
+            }
+
+            QName rootQName;
+            if (namespaceURI == null || namespaceURI.length() == 0) {
+                rootQName = new QName(name);
+            } else {
+                rootQName = new QName(namespaceURI, name);
+                }
+            	
             	xmlDescriptor = xmlContext.getDescriptor(rootQName);
             	
                 if (null == xmlDescriptor) {

@@ -31,7 +31,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
  */
 public class XPathFragment {
     public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(XMLConstants.TEXT);
-    public static final XPathFragment SELF_FRAGMENT = new XPathFragment(".");
+    public static final String SELF_XPATH = ".";
+    public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
     public static final XPathFragment ANY_FRAGMENT = null;
     private XPathFragment nextFragment;
     private String xpath;
@@ -68,8 +69,11 @@ public class XPathFragment {
     }
 
     public void setXPath(String xpathString) {
+    	
         xpath = xpathString;
-        
+        if(xpathString.length() == 0){
+            return;
+    	}
         // handle case:  company[name/text()="Oracle"]
         if ((xpath.indexOf('[') != -1) && (xpath.indexOf(']') == -1)) {
             setShouldExecuteSelectNodes(true);
@@ -83,15 +87,14 @@ public class XPathFragment {
         }
 
         shortName = xpathString;
-        int attrindex = xpathString.indexOf(XMLConstants.ATTRIBUTE);
-        if (attrindex == 0) {
+        if (xpathString.charAt(0) == '@') {        
             hasAttribute = true;
-            shortName = xpathString.substring(attrindex + 1);
+            shortName = xpathString.substring(1);
             indexValue = hasIndex(xpathString);
             setupNamespaceInformation(shortName);
             return;
-        }
-       if (xpathString.startsWith("/")) {
+        }        
+       if (xpathString.charAt(0) == '/') {
             setShouldExecuteSelectNodes(true);
             shortName = xpathString;
             indexValue = hasIndex(xpathString);
@@ -107,7 +110,7 @@ public class XPathFragment {
         }
 
         // handle "self" xpath
-        if (xpathString.equals(".")) {
+        if (xpathString.equals(SELF_XPATH)) {
             isSelfFragment = true;
             shortName = xpathString;            
             return;

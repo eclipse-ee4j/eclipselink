@@ -132,11 +132,9 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
         XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXPath = tgtFld.getXPath();
-        Vector pks;
         HashMap primaryKeyMap = reference.getPrimaryKeyMap();
-        if (primaryKeyMap.containsKey(tgtXPath)) {
-            pks = (Vector) primaryKeyMap.get(tgtXPath);
-        } else {
+        Vector pks = (Vector) primaryKeyMap.get(tgtXPath);
+        if(pks == null){
             pks = new Vector();
             primaryKeyMap.put(tgtXPath, pks);
         }
