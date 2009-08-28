@@ -21,6 +21,7 @@ public abstract class BaseNcharTest extends TestCase {
     protected DatabasePlatform platformOriginal;
     protected CharNchar object;
     protected CharNchar controlObject;
+    protected boolean usesStringBindingOriginal;    
 
     protected Oracle9Platform getOracle9Platform() throws ClassCastException {
         return (Oracle9Platform)getSession().getPlatform();
@@ -43,6 +44,12 @@ public abstract class BaseNcharTest extends TestCase {
             } catch (Exception ex2) {
                 throw new TestWarningException("This test case works with Oracle9 platform or higher");
             }
+        }
+        DatabasePlatform platform = getSession().getPlatform();
+        if(!platform.shouldBindAllParameters()) {
+            // without binding string binding must be enabled to so that a big String for NCLOB is still bound.
+            usesStringBindingOriginal = platform.usesStringBinding();
+            platform.setUsesStringBinding(true);
         }
     }
 
@@ -166,6 +173,11 @@ public abstract class BaseNcharTest extends TestCase {
             object = null;
         }
         controlObject = null;
+        DatabasePlatform platform = getSession().getPlatform();
+        if(!platform.shouldBindAllParameters()) {            
+            // restore original value
+            platform.setUsesStringBinding(usesStringBindingOriginal);
+        }
         if (platformOriginal != null) {
             getSession().getLogin().usePlatform(platformOriginal);
             getDatabaseSession().logout();
