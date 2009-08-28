@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,7 @@ public class PersistenceUnitProcessor {
     public static String buildClassNameFromEntryString(String classEntryString){
         String classNameForLoader = classEntryString;
         if (classEntryString.endsWith(".class")){
-            classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);;
+            classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);
             classNameForLoader = classNameForLoader.replace("/", ".");              
         }
         return classNameForLoader;
@@ -129,24 +130,71 @@ public class PersistenceUnitProcessor {
      * @return
      * @throws IOException
      */
-    public static URL computePURootURL(URL pxmlURL) throws IOException {
+    public static URL computePURootURL(URL pxmlURL) throws IOException, URISyntaxException {
+        URL result;
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
             // e.g. file:/tmp/META-INF/persistence.xml
             // 210280: any file url will be assumed to always reference a file (not a directory)
-            return new URL(pxmlURL, ".."); // NOI18N
+            result = new URL(pxmlURL, ".."); // NOI18N
         } else if("jar".equals(protocol)) { // NOI18N
             // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             JarURLConnection conn =
                     JarURLConnection.class.cast(pxmlURL.openConnection());
             assert(conn.getJarEntry().getName().equals(
                     "META-INF/persistence.xml")); // NOI18N
-            return conn.getJarFileURL();
+            result = conn.getJarFileURL();
         } else {
             // some other protocol,
             // e.g. bundleresource://21/META-INF/persistence.xml
-            return new URL(pxmlURL, "../"); // NOI18N
+            result = new URL(pxmlURL, "../"); // NOI18N
         }
+        result = fixUNC(result);
+        return result;
+    }
+
+
+    /**
+     * This method fixes incorret authority attribute
+     * that is set by JDK when UNC is used in classpath.
+     * See JDK bug #6585937 and GlassFish issue #3209 for more details.
+     */
+    private static URL fixUNC(URL url) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException
+    {
+        String protocol = url.getProtocol();
+        if (!"file".equalsIgnoreCase(protocol)) {
+            return url;
+        }
+        String authority= url.getAuthority();
+        String file = url.getFile();
+        if (authority != null) {
+            AbstractSessionLog.getLog().finer(
+                    "fixUNC: before fixing: url = " + url + ", authority = " + authority + ", file = " + file);
+            assert(url.getPort() == -1);
+
+            // See GlassFish issue https://glassfish.dev.java.net/issues/show_bug.cgi?id=3209 and
+            // JDK issue http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6585937
+            // When there is UNC path in classpath, the classloader.getResource
+            // returns a file: URL with an authority component in it.
+            // The URL looks like this:
+            // file://ahost/afile.
+            // Interestingly, authority and file components for the above URL
+            // are either "ahost" and "/afile" or "" and "//ahost/afile" depending on
+            // how the URL is obtained. If classpath is set as a jar with UNC,
+            // the former is true, if the classpath is set as a directory with UNC,
+            // the latter is true.
+            String prefix = "";
+            if (authority.length() > 0) {
+                prefix = "////";
+            } else if (file.startsWith("//")) {
+                prefix = "//";
+            }
+            file = prefix.concat(authority).concat(file);
+            url = new URL(protocol, null, file);
+            AbstractSessionLog.getLog().finer(
+                    "fixUNC: after fixing: url = " + url + ", authority = " + url.getAuthority() + ", file = " + url.getFile());
+        }
+        return url;
     }
 
     /**
