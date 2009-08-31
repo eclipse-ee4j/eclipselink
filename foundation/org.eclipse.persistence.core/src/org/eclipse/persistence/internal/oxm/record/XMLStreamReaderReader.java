@@ -90,6 +90,18 @@ public class XMLStreamReaderReader extends XMLReader {
     public void parse(String systemId) throws SAXException {}
 
     private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
+    	try{    
+            parseEvent(xmlStreamReader);	
+            while(depth > 0 && xmlStreamReader.hasNext()) {
+                xmlStreamReader.next();
+                parseEvent(xmlStreamReader);                            
+            }
+        }catch(XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void parseEvent(XMLStreamReader xmlStreamReader) throws SAXException {
         if(null == getContentHandler()) {
             return;
         }
@@ -172,14 +184,6 @@ public class XMLStreamReaderReader extends XMLReader {
                 }
                 break;
             }
-        }
-        try {
-            if(depth > 0 && xmlStreamReader.hasNext()) {
-                xmlStreamReader.next();
-                parse(xmlStreamReader);
-            }
-        } catch(XMLStreamException e) {
-            throw new RuntimeException(e);
         }
     }
 
