@@ -14,10 +14,11 @@ package org.eclipse.persistence.testing.tests.jpa.spring.dao;
 
 import java.util.List;
 
-import org.eclipse.persistence.testing.models.jpa.spring.*;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
 import org.springframework.orm.jpa.support.JpaDaoSupport;
-
 
 /**
  * This class is a JPA data access object and implements Spring's jpaTemplate which functions 

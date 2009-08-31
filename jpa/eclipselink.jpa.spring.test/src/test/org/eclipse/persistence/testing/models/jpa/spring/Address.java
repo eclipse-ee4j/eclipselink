@@ -10,46 +10,55 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.spring;
+package test.org.eclipse.persistence.testing.models.jpa.spring;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="Spring_TLE_Truck")
-@NamedQuery (
-        name="findTruckByDriverName",
-        query="SELECT Object(t) FROM Truck t WHERE t.driverName = ?1"
-)
-public class Truck {
-    private long   id;
-    private String driverName;
-    private Route  route;
+@Table(name="Spring_TLE_Address")
+public class Address {
+    
+    private Integer id;
+    private int     number;
+    private String  street;
+    private Route   route;
 
-    public Truck() {}
-
-    public Truck(String driver) {
-        this.driverName = driver;
+    public Address() {}
+    
+    public Address (Integer id, int number, String street){
+        this.id     = id;
+        this.number = number;
+        this.street = street;
     }
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
-    
-    public String getDriverName() {
-        return driverName;
+
+    @Column(name = "NUM")
+    public int getNumber() {
+        return number;
     }
 
-    public void setDriverName(String driver) {
-        this.driverName = driver;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     public Route getRoute() {
         return route;
     }

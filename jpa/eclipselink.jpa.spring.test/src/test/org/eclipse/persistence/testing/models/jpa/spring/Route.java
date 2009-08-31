@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.spring;
+package test.org.eclipse.persistence.testing.models.jpa.spring;
 
 import java.util.Collection;
 import java.util.Vector;

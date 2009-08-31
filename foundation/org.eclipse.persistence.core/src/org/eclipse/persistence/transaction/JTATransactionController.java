@@ -13,6 +13,7 @@
 package org.eclipse.persistence.transaction;
 
 import javax.transaction.*;
+
 import org.eclipse.persistence.exceptions.TransactionException;
 
 /**
@@ -48,6 +49,8 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * @see AbstractTransactionController
  */
 public class JTATransactionController extends AbstractTransactionController {
+    public static String JNDI_TRANSACTION_MANAGER_NAME = "java:comp/TransactionManager";
+    
     // Primary point of integration with JTA 
     protected TransactionManager transactionManager;
 
@@ -218,7 +221,7 @@ public class JTATransactionController extends AbstractTransactionController {
     /**
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform.
-     * By default do nothing.
+     * By default try java:comp JNDI lookup.
      *
      * This method can be can be overridden by subclasses to obtain the
      * transaction manager by whatever means is appropriate to the server.
@@ -230,7 +233,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @return The TransactionManager for the transaction system
      */
     protected TransactionManager acquireTransactionManager() throws Exception {
-        return null;
+        return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME);
     }
 
     /**

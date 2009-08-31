@@ -45,4 +45,8 @@ public class EntityManagerTransactionalWrapper extends EntityManagerWrapper {
         em.flush();  
     }
     
+    public int executeNativeQuery(String string) {
+        return em.createNativeQuery(string).executeUpdate();
+    }
+    
 }

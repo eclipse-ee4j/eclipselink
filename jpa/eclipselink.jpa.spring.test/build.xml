@@ -152,7 +152,7 @@
         </replace>
         <copy todir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}">
             <fileset dir="${eclipselink.jpa.spring.test}/${classes.dir}">
-                <include name="org/eclipse/persistence/testing/models/jpa/spring/**"/>
+                <include name="test/org/eclipse/persistence/testing/models/jpa/spring/**"/>
                 <include name="org/eclipse/persistence/testing/tests/jpa/spring/**"/>
             </fileset>
         </copy>
