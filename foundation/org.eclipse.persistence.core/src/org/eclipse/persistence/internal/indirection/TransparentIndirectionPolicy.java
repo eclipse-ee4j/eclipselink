@@ -278,6 +278,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      *    Return the original indirection object for a unit of work indirection object.
      */
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        if (! (unitOfWorkIndirectionObject instanceof IndirectContainer)){
+            return new ValueHolder();
+        }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
