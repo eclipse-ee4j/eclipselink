@@ -127,7 +127,7 @@ public class ReferenceResolver {
      * @param session typically will be a unit of work
      */
     public void resolveReferences(AbstractSession session) {
-        for (int x = 0; x < references.size(); x++) {
+        for (int x = 0, referencesSize = references.size(); x < referencesSize; x++) {
             Reference reference = (Reference) references.get(x);
 
             if (reference.getMapping() instanceof XMLCollectionReferenceMapping) {
