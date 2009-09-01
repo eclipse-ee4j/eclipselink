@@ -48,6 +48,6 @@ public class JAXBElementComplexTestCases extends JAXBElementTestCases {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);
 
-        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), Object.class, peep);
+        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), targetClass, peep);
     }  
 }

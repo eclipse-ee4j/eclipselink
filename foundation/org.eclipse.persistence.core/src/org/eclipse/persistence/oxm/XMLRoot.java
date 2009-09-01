@@ -23,6 +23,7 @@ public class XMLRoot {
     protected String schemaLocation;
     protected String noNamespaceSchemaLocation;
     protected QName schemaType;
+    protected Class declaredType;
 
     public XMLRoot() {
         rootFragment = new XPathFragment();
@@ -104,5 +105,13 @@ public class XMLRoot {
 
     public QName getSchemaType() {
         return schemaType;
+    }
+    
+    public void setDeclaredType(Class type) {
+        this.declaredType = type;
+    }
+    
+    public Class getDeclaredType() {
+        return this.declaredType;
     }
 }

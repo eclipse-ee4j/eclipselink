@@ -36,7 +36,7 @@ public class JAXBElementNilTestCases extends JAXBElementTestCases {
     }
 
     public Object getControlObject() {        
-        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), Object.class, null);
+        return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, CONTROL_ELEMENT_NAME), targetClass, null);
     }
 
     public Document getWriteControlDocument() throws Exception {

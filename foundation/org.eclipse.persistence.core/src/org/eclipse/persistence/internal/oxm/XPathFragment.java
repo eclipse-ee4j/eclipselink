@@ -69,38 +69,40 @@ public class XPathFragment {
     }
 
     public void setXPath(String xpathString) {
-    	
+
         xpath = xpathString;
-        if(xpathString.length() == 0){
-            return;
-    	}
+        shortName = xpathString;
+
         // handle case:  company[name/text()="Oracle"]
-        if ((xpath.indexOf('[') != -1) && (xpath.indexOf(']') == -1)) {
-            setShouldExecuteSelectNodes(true);
-            return;
+        if(xpathString.length() > 0){
+            if ((xpath.indexOf('[') != -1) && (xpath.indexOf(']') == -1)) {
+                setShouldExecuteSelectNodes(true);
+                return;
+            }
+
+            // handle case:  ancestor::*/jaxb:class/@name
+            if (xpath.indexOf("::") != -1) {
+                setShouldExecuteSelectNodes(true);
+                return;
+            }
+
+            if (xpathString.charAt(0) == '@') {
+                hasAttribute = true;
+                shortName = xpathString.substring(1);
+                indexValue = hasIndex(xpathString);
+                setupNamespaceInformation(shortName);
+                return;
+            }
+
+            if (xpathString.charAt(0) == '/') {
+                setShouldExecuteSelectNodes(true);
+                shortName = xpathString;
+                indexValue = hasIndex(xpathString);
+                setupNamespaceInformation(shortName);
+                return;
+            }
         }
 
-        // handle case:  ancestor::*/jaxb:class/@name
-        if (xpath.indexOf("::") != -1) {
-            setShouldExecuteSelectNodes(true);
-            return;
-        }
-
-        shortName = xpathString;        
-        if (xpathString.charAt(0) == '@') {        
-            hasAttribute = true;
-            shortName = xpathString.substring(1);
-            indexValue = hasIndex(xpathString);
-            setupNamespaceInformation(shortName);
-            return;
-        }        
-       if (xpathString.charAt(0) == '/') {
-            setShouldExecuteSelectNodes(true);
-            shortName = xpathString;
-            indexValue = hasIndex(xpathString);
-            setupNamespaceInformation(shortName);
-            return;
-        }
         if (xpathString.equals(XMLConstants.TEXT)) {
             nameIsText = true;
             shortName = xpathString;
@@ -112,14 +114,13 @@ public class XPathFragment {
         // handle "self" xpath
         if (xpathString.equals(SELF_XPATH)) {
             isSelfFragment = true;
-            shortName = xpathString;            
+            shortName = xpathString;
             return;
         }
 
         indexValue = hasIndex(xpathString);
         setupNamespaceInformation(shortName);
     }
-
     private void setupNamespaceInformation(String xpathString) {
         int nsindex = xpathString.indexOf(XMLConstants.COLON);
         if (nsindex != -1) {
