@@ -409,26 +409,21 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Add a mapped superclass accessor to this project. Every consecutive 
-     * mapped superclass accessor to the same class is merged with the first 
-     * one that was added.
-     * 
-     * Note: The mapped-superclasses that are added here are those that are 
-     * defined in XML only!
+     * Add a mapped superclass accessor to this project. Assumes the mapped
+     * superclass needs to be added. That is, does not check if it already 
+     * exists and cause a merge. The caller is responsible for that. At runtime,
+     * this map will contain mapped superclasses from XML only. The canonical
+     * model processor will populate all mapped superclasses in this map.
      */
-    public void addMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
-        if (m_mappedSuperclasses.containsKey(className)) {
-            m_mappedSuperclasses.get(className).merge(mappedSuperclass);
-        } else {
-            m_mappedSuperclasses.put(className, mappedSuperclass);
-        }
+    public void addMappedSuperclass(MappedSuperclassAccessor mappedSuperclass) {
+        m_mappedSuperclasses.put(mappedSuperclass.getJavaClassName(), mappedSuperclass);
     }
 
     /**
      * INTERNAL:
-     *     The metamodel API requires that descriptors exist for 
-     * mappedSuperclasses in order to obtain their mappings.<p>
-     *     In order to accomplish this, this method that is called from EntityAccessor 
+     * The metamodel API requires that descriptors exist for mappedSuperclasses 
+     * in order to obtain their mappings.<p>
+     * In order to accomplish this, this method that is called from EntityAccessor 
      * will ensure that the descriptors on all mappedSuperclass accessors 
      * are setup so that they can be specially processed later in 
      * MetadataProject.processStage2() - where the m_mappedSuperclassAccessors 
@@ -445,7 +440,7 @@ public class MetadataProject {
         String className = metadataClass.getName();
         
         // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
-        if(null != className && !m_metamodelMappedSuperclasses.containsKey(className)) {
+        if (null != className && ! m_metamodelMappedSuperclasses.containsKey(className)) {
             // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
             accessor.getDescriptor().setClassAccessor(accessor);
             accessor.processAccessType();
@@ -466,7 +461,7 @@ public class MetadataProject {
             // Add PK field to the relationalDescriptor only if there are none yet - or "will be none"
             // Check accessor collection on the metadataDescriptor (note: getIdAttributeName() and getIdAttributeNames() are not populated yet - so are unavailable
             // We will check for an IdAccessor instance as one of the accessors directly
-            if(!metadataDescriptor.hasIdAccessor()) {
+            if (!metadataDescriptor.hasIdAccessor()) {
                 relationalDescriptor.addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
             }
             

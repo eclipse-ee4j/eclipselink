@@ -16,17 +16,16 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
 import javax.lang.model.type.PrimitiveType;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 import javax.tools.JavaFileObject;
 import javax.tools.Diagnostic.Kind;
 
@@ -55,7 +54,6 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-//@SupportedAnnotationTypes("javax.persistence.*, org.eclipse.persistence.annotations.*")
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(RELEASE_6)
 public class CanonicalModelProcessor extends AbstractProcessor {
@@ -71,10 +69,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         try {
             ClassAccessor accessor = persistenceUnit.getClassAccessor(element);
             String qualifiedName = accessor.getAccessibleObjectName();
-            String className = (qualifiedName.indexOf(".") > -1) ? qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1) : qualifiedName;
+            String className = getName(qualifiedName);
+            String classPackage = getPackage(qualifiedName);
+            
             String qualifiedCanonicalName = persistenceUnit.getQualifiedCanonicalName(qualifiedName);
-            String canonicalName = getCanonicalName(qualifiedCanonicalName);
-            String canonicalpackage = getCanonicalPackage(qualifiedCanonicalName);
+            String canonicalName = getName(qualifiedCanonicalName);
+            String canonicalpackage = getPackage(qualifiedCanonicalName);
             
             JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
             writer = file.openWriter();
@@ -84,41 +84,51 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 writer.append("package " + canonicalpackage + ";\n\n");
             }
             
-            HashSet<String> attributeTypes = new HashSet<String>();
+            // Go through the accessor list, ignoring any transient accessors
+            // to build our attributes and import list.
             ArrayList<String> attributes = new ArrayList<String>();
-                 
-            // Go through the accessor list, ignoring any transient accessors.
-            // Those accessors come from an XML specification.
-            HashMap<String, String> typeImports = new HashMap<String, String>();
+            HashMap<String, String> imports = new HashMap<String, String>();
+            
+            // Import the model class if the canonical class is generated elsewhere. 
+            if (! classPackage.equals(canonicalpackage)) {
+                imports.put(className, qualifiedName);
+            }
+            
             for (MappingAccessor mappingAccessor : accessor.getDescriptor().getAccessors()) {
                 if (! mappingAccessor.isTransient()) {
                     MetadataAnnotatedElement annotatedElement = mappingAccessor.getAnnotatedElement();
                     MetadataClass rawClass = annotatedElement.getRawClass(mappingAccessor.getDescriptor());
-                    
-                    // By default, attributeTyps is singular attribute.
-                    String attributeType = AttributeType.SingularAttribute.name();
 
                     // NOTE: order of checking is important.
+                    String attributeType;
                     String types = className;
                     
                     if (mappingAccessor.isBasic()) {
-                        types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement), typeImports);
+                        types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement), imports);
                         attributeType = AttributeType.SingularAttribute.name();
+                        imports.put(attributeType, "javax.persistence.metamodel.SingularAttribute");
                     } else {
                         if (rawClass.isList()) {
                             attributeType = AttributeType.ListAttribute.name();
+                            imports.put(attributeType, "javax.persistence.metamodel.ListAttribute");
                         } else if (rawClass.isSet()) {
                             attributeType = AttributeType.SetAttribute.name();
+                            imports.put(attributeType, "javax.persistence.metamodel.SetAttribute");
                         } else if (rawClass.isMap()) {
                             attributeType = AttributeType.MapAttribute.name();
+                            imports.put(attributeType, "javax.persistence.metamodel.MapAttribute");
                         } else if (rawClass.isCollection()) {
                             attributeType = AttributeType.CollectionAttribute.name();
+                            imports.put(attributeType, "javax.persistence.metamodel.CollectionAttribute");
+                        } else {
+                            attributeType = AttributeType.SingularAttribute.name();
+                            imports.put(attributeType, "javax.persistence.metamodel.SingularAttribute");
                         }
                         
                         if (mappingAccessor.isMapAccessor()) {
                             if (mappingAccessor.isMappedKeyMapAccessor()) {
                                 MetadataClass mapKeyClass = ((MappedKeyMapAccessor) mappingAccessor).getMapKeyClass();
-                                types = types + ", " + getUnqualifiedType(mapKeyClass.getName(), typeImports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), typeImports);
+                                types = types + ", " + getUnqualifiedType(mapKeyClass.getName(), imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
                             } else {
                                 String mapKeyType;
                                 if (annotatedElement.isGenericCollectionType()) {
@@ -134,23 +144,20 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                                     }                                    
                                 }
                                 
-                                types = types + ", " + getUnqualifiedType(mapKeyType, typeImports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), typeImports);
+                                types = types + ", " + getUnqualifiedType(mapKeyType, imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
                             }
                         } else {
-                            types = types + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), typeImports);
+                            types = types + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
                         }
                     }
-                    
-                    // Build a list of attribute types to import.
-                    attributeTypes.add(attributeType);
                         
                     // Add the mapping attribute to the list of attributes for this class.
                     attributes.add("\tpublic static volatile " + attributeType + "<" + types + "> " + annotatedElement.getAttributeName() + ";\n");
                 }
             }
                         
-            // Will import the parent as well if needed
-            String parent = writeImportStatements(attributeTypes, typeImports, accessor, writer, persistenceUnit, canonicalpackage);
+            // Will import the parent as well if needed.
+            String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
                      
             // Write out the generation annotations.
             writer.append("@Generated(\"EclipseLink JPA 2.0 Canonical Model Generation\")\n");
@@ -207,7 +214,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String getCanonicalName(String qualifiedName) {
+    protected String getName(String qualifiedName) {
         if (qualifiedName.indexOf(".") > -1) {
             return qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
         }
@@ -218,7 +225,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String getCanonicalPackage(String qualifiedName) {
+    protected String getPackage(String qualifiedName) {
         if (qualifiedName.indexOf(".") > -1) {
             return qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
         }
@@ -227,31 +234,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     }
     
     /**
-     * INTERNAL:
-     */
-    protected String getCanonicalType(MappingAccessor mappingAccessor) {
-        MetadataClass rawClass = mappingAccessor.getAnnotatedElement().getRawClass(mappingAccessor.getDescriptor());
-        
-        // NOTE: order of checking is important.
-        if (mappingAccessor.isBasic()) {
-            return AttributeType.SingularAttribute.name();
-        } else if (rawClass.isList() && mappingAccessor.isBasic()) {
-            return AttributeType.ListAttribute.name();
-        } else if (rawClass.isSet()) {
-            return AttributeType.SetAttribute.name();
-        } else if (rawClass.isMap()) {
-            return AttributeType.MapAttribute.name();
-        } else if (rawClass.isCollection()) {
-            return AttributeType.CollectionAttribute.name();
-        } else {
-            // catch all, but likely would never hit?
-            return AttributeType.SingularAttribute.name();
-        }
-    }
-    
-    /**
      * INTERNAL: This method will hack off any package qualification. It will 
-     * add that type to the import list unless it is a known jdk type that does 
+     * add that type to the import list unless it is a known JDK type that does 
      * not need to be imported (java.lang). This method also trims the type
      * from leading and trailing white spaces.
      */
@@ -326,6 +310,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     // about removing some? 
                     MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
                     factory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Creating the metadata factory ...");
                 }
                 
                 // Step 1 - The factory is passed around so those who want the 
@@ -386,52 +371,38 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String writeImportStatements(HashSet<String> attributeTypes, HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit, String childCanonicalpackage) throws IOException {
+    protected String writeImportStatements(HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit, String childCanonicalpackage) throws IOException {
         String parentCanonicalName = null;
         
-        // Write the java imports. Sort them?
-        for (String typeImport : typeImports.values()) {
-            writer.append("import " + typeImport + ";\n");
-        }
+        // Get the import list ready to be sorted.
+        ArrayList<String> imps = new ArrayList<String>();
+        imps.addAll(typeImports.values());
         
-        // Write the javax imports.
-        writer.append("import javax.annotation.Generated;\n");
+        // Add the standard canonical model generator imports.
+        imps.add("javax.annotation.Generated");
+        imps.add("javax.persistence.metamodel.StaticMetamodel");
         
-        if (attributeTypes.contains("CollectionAttribute")) {
-            writer.append("import javax.persistence.metamodel.CollectionAttribute;\n");
-        }
-        
-        if (attributeTypes.contains("ListAttribute")) {
-            writer.append("import javax.persistence.metamodel.ListAttribute;\n");
-        } 
-        
-        if (attributeTypes.contains("MapAttribute")) {
-            writer.append("import javax.persistence.metamodel.MapAttribute;\n");
-        } 
-        
-        if (attributeTypes.contains("SetAttribute")) {
-            writer.append("import javax.persistence.metamodel.SetAttribute;\n");
-        } 
-            
-        if (attributeTypes.contains("SingularAttribute")) {
-            writer.append("import javax.persistence.metamodel.SingularAttribute;\n");
-        }
-        
-        writer.append("import javax.persistence.metamodel.StaticMetamodel;\n");
-        
-        // Write the parent canonical class now and import it as well if need be.
+        // Import the parent canonical class if need be.
         MetadataClass cls = (MetadataClass) accessor.getAnnotatedElement();
         MetadataClass parentCls = cls.getSuperclass();
         MetadataProject project = accessor.getProject();
         
         if (project.hasEntity(parentCls) || project.hasEmbeddable(parentCls) || project.hasMappedSuperclass(parentCls)) {
             String qualifiedParentCanonicalName = persistenceUnit.getQualifiedCanonicalName(parentCls.getName());
-            parentCanonicalName = getCanonicalName(qualifiedParentCanonicalName);
-            String parentCanonicalPackage = getCanonicalPackage(qualifiedParentCanonicalName);
+            parentCanonicalName = getName(qualifiedParentCanonicalName);
+            String parentCanonicalPackage = getPackage(qualifiedParentCanonicalName);
             
             if (! parentCanonicalPackage.equals(childCanonicalpackage)) {
-                writer.append("\nimport " + qualifiedParentCanonicalName + ";\n");
+                imps.add(qualifiedParentCanonicalName);
             }
+        }
+        
+        // Sort the list of imports before writing them.
+        Collections.sort(imps);
+        
+        // Write out the imports.
+        for (String typeImport : imps) {
+            writer.append("import " + typeImport + ";\n");
         }
         
         writer.append("\n");

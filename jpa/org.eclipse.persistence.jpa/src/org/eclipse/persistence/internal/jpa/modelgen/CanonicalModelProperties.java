@@ -15,8 +15,6 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 
 import java.util.Map;
 
-import javax.tools.StandardLocation;
-
 /**
  * The main APT processor to generate the JPA 2.0 Canonical model. 
  * 
@@ -24,21 +22,18 @@ import javax.tools.StandardLocation;
  * @since EclipseLink 1.2
  */
 public abstract class CanonicalModelProperties {
-    // TODO: all the naming needs to be finalized ...
-    // Some properties are temporary.
-    
     public enum QUALIFIER_POSITION { PRE, POST }
-
-    public static String PERSISTENCE_XML_LOCATION = "std-location";
-    public static String PERSISTENCE_XML_LOCATION_DEFAULT = StandardLocation.CLASS_OUTPUT.name();
-    
-    public static String PERSISTENCE_XML_FILE = "eclipselink.canonical-model.persistence-xml";
-    public static String PERSISTENCE_XML_FILE_DEFAULT = "META-INF/persistence.xml";
-
     public static String CANONICAL_MODEL_QUALIFIER = "eclipselink.canonical-model.qualifier";
     public static String CANONICAL_MODEL_QUALIFIER_DEFAULT = "_";
+    
+    public static String CANONICAL_MODEL_PERSISTENCE_XML_FILE = "eclipselink.canonical-model.persistence-xml";
+    public static String CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT = "META-INF/persistence.xml";
+    
     public static String CANONICAL_MODEL_QUALIFIER_POSITION = "eclipselink.canonical-model.qualifier-position";
     public static String CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT = QUALIFIER_POSITION.POST.name();
+    
+    public static String CANONICAL_MODEL_PACKAGE_SUFFIX = "eclipselink.canonical-model.package-suffix";
+    public static String CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT = "";
     
     /**
      * INTERNAL:

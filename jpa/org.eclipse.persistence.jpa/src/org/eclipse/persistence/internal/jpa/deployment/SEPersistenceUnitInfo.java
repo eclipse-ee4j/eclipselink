@@ -19,6 +19,9 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
+
 
 import javax.persistence.*;
 import javax.persistence.spi.*;
@@ -337,12 +340,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
         return caching;
     }
     
-    /**
-     * Return the canonical name. This will apply the default qualifier given 
-     * in the default position given. If the defaults given are null, then the
-     * default qualifier "_" in the default position "POST" will be applied.
-     */
-    public String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
+    protected void initCanonicalProperties() {
         // If we have persistence unit properties but our properties map is 
         // empty, we have not initialize yet, so do it now.
         if (! persistenceUnitProperties.isEmpty() && properties.isEmpty()) {
@@ -370,7 +368,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
                 properties.put(property.getName(), property.getValue());
             }
         }
+    }
         
+    /**
+     * Return the canonical name. This will apply the default qualifier given 
+     * in the default position given. If the defaults given are null, then the
+     * default qualifier "_" in the default position "POST" will be applied.
+     */
+    protected String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
         String qualifier = properties.getProperty(CANONICAL_MODEL_QUALIFIER);
         String qualifierPosition = properties.getProperty(CANONICAL_MODEL_QUALIFIER_POSITION);
         
@@ -403,7 +408,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * the name portion.  
      */
     public String getQualifiedCanonicalName(String qualifiedName) {
-        return getQualifiedCanonicalName(qualifiedName, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT);
+        return getQualifiedCanonicalName(qualifiedName, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT, CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT);
     }
     
     /**
@@ -412,19 +417,26 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * defaults given are null, then the default qualifier "_" in the default 
      * position "POST" will be applied.
      */
-    public String getQualifiedCanonicalName(String qualifiedName, String defaultQualifier, String defaultQualifierPosition) {
-       // TODO: This will take any default package specification and apply it 
-       // to the canonical name.
-       String pkg;
+    public String getQualifiedCanonicalName(String qualifiedName, String defaultQualifier, String defaultQualifierPosition, String defaultPackageSuffix) {
+        initCanonicalProperties();
+        
+        String packageSuffix = properties.getProperty(CANONICAL_MODEL_PACKAGE_SUFFIX);
+        if (packageSuffix == null) {
+            if (defaultPackageSuffix == null) {
+                packageSuffix = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+            } else {
+                packageSuffix = defaultPackageSuffix;
+            }
+        }
        
-       if (qualifiedName.indexOf(".") > -1) {
-           String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), defaultQualifier, defaultQualifierPosition);
-           pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
+        if (qualifiedName.indexOf(".") > -1) {
+            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), defaultQualifier, defaultQualifierPosition);
+            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
            
-           return pkg + canonicalName;
-       } else {
-           return getCanonicalName(qualifiedName, defaultQualifier, defaultQualifierPosition);
-       }
+            return pkg + packageSuffix + "." + canonicalName;
+        } else {
+            return packageSuffix + "." + getCanonicalName(qualifiedName, defaultQualifier, defaultQualifierPosition);
+        }
     }
     
     /**

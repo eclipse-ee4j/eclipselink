@@ -30,6 +30,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.oxm.XMLContext;
 
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
 
@@ -95,13 +97,35 @@ public class PersistenceUnit {
                     // remove it!
                 } else {
                     // override it!
-                    project.addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
+                    addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
                 }
             }
         } else if (! excludeUnlistedClasses(cls)) {
             // add it!
-            project.addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
+            addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add an embeddable accessor to the project, preserving any previous
+     * owning descriptors set if applicable.
+     */
+    protected void addEmbeddableAccessor(EmbeddableAccessor embeddableAccessor) {
+        // We need to preserve owning descriptors to ensure we process
+        // an embeddable accessor in the correct context. That is, if the
+        // user changed only the embeddable class then we won't process
+        // the owning entity (which ensures the owning descriptor, itself,
+        // is set on the embeddable accessor).
+        // If ownership changed, then those entities involved will be
+        // in the round elements and we will correctly set the owning
+        // descriptor in the pre-process stage of those entities, overriding 
+        // this setting)
+        if (project.hasEmbeddable(embeddableAccessor.getJavaClass())) {
+            embeddableAccessor.setOwningDescriptor(project.getEmbeddableAccessor(embeddableAccessor.getJavaClass()).getOwningDescriptor());
+        }
+        
+        project.addEmbeddableAccessor(embeddableAccessor);
     }
     
     /**
@@ -153,12 +177,12 @@ public class PersistenceUnit {
                     // remove it!
                 } else {
                     // override it!
-                    project.addMappedSuperclass(element.toString(), new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
+                    project.addMappedSuperclass(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
                 }
             }
         } else if (! excludeUnlistedClasses(cls)) {
             // add it!
-            project.addMappedSuperclass(element.toString(), new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
+            project.addMappedSuperclass(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
         }
     }
     
@@ -239,6 +263,13 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
+    protected String getCanonicalPackageSuffixOption() {
+        return processingEnv.getOptions().get(CANONICAL_MODEL_PACKAGE_SUFFIX);
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected String getCanonicalQualifierOption() {
         return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
     }
@@ -275,7 +306,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     public String getQualifiedCanonicalName(String qualifiedName) {
-        return persistenceUnitInfo.getQualifiedCanonicalName(qualifiedName, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption()); 
+        return persistenceUnitInfo.getQualifiedCanonicalName(qualifiedName, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption(), getCanonicalPackageSuffixOption()); 
     }
     
     /**
@@ -330,7 +361,7 @@ public class PersistenceUnit {
         // project and apply any persistence unit defaults.
         for (EmbeddableAccessor embeddable : embeddables.values()) {
             // This will apply global persistence unit defaults.
-            project.addEmbeddableAccessor(embeddable);
+            addEmbeddableAccessor(embeddable);
             
             // This will override any global settings.
             embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
@@ -393,9 +424,11 @@ public class PersistenceUnit {
         for (EmbeddableAccessor embeddableAccessor : project.getEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
                 //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
-                // Must set the owning descriptor to be itself at this point
-                // since this embeddable is not 'owned' by an entity.
-                embeddableAccessor.setOwningDescriptor(embeddableAccessor.getOwningDescriptor());
+                // Need to set a default access type if one is not explicitly set.
+                if (embeddableAccessor.getAccessType() == null) {
+                    embeddableAccessor.getDescriptor().setDefaultAccess(MetadataConstants.FIELD);
+                }
+                
                 embeddableAccessor.preProcessForCanonicalModel();
             }
         }

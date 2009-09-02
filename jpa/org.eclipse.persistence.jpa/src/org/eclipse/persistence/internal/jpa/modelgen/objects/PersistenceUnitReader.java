@@ -31,10 +31,8 @@ import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXMLMappings;
 import org.eclipse.persistence.oxm.XMLContext;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_FILE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_FILE_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.PERSISTENCE_XML_LOCATION_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PERSISTENCE_XML_FILE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT;
 
 /**
  * Used to read persistence units through the java annotation processing API. 
@@ -60,8 +58,7 @@ public class PersistenceUnitReader {
     public FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) {
         FileObject fileObject = null;
         try {
-            String standardLocation = CanonicalModelProperties.getOption(PERSISTENCE_XML_LOCATION, PERSISTENCE_XML_LOCATION_DEFAULT, processingEnv.getOptions());
-            fileObject = processingEnv.getFiler().getResource(StandardLocation.valueOf(standardLocation), "", filename);
+            fileObject = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", filename);
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename);
             return null;
@@ -82,7 +79,7 @@ public class PersistenceUnitReader {
      */
     protected void initPersistenceUnits(MetadataMirrorFactory factory) {
         ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
-        String filename = CanonicalModelProperties.getOption(PERSISTENCE_XML_FILE, PERSISTENCE_XML_FILE_DEFAULT, processingEnv.getOptions());        
+        String filename = CanonicalModelProperties.getOption(CANONICAL_MODEL_PERSISTENCE_XML_FILE, CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT, processingEnv.getOptions());        
         FileObject fileObject = getFileObject(filename, processingEnv);
         
         if (fileObject != null) {
@@ -105,7 +102,7 @@ public class PersistenceUnitReader {
                     }
                 }
             } catch (IOException e) {
-                processingEnv.getMessager().printMessage(Kind.NOTE, "Could not find file: " + fileObject.getName());
+                processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml: " + fileObject.getName());
             } 
         } else {
             processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
