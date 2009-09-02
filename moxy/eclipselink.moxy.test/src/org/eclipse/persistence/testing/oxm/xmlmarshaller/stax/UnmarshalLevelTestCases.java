@@ -87,5 +87,31 @@ public class UnmarshalLevelTestCases extends OXTestCase {
 
         instream.close();
     }
+    
+    public void testUnmarshalLevelElementWithClass() throws Exception{
+    	   if(null == xmlInputFactory) {
+               return;
+           }
+
+           InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlmarshaller/stax/address.xml");
+           XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(instream);
+           xmlStreamReader.next();  // Advance event to start element
+
+           XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
+           XMLContext xmlContext = new XMLContext(new AddressProject());
+           XMLUnmarshaller xmlUnmarshaller = xmlContext.createUnmarshaller();
+           staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+           XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+           xmlUnmarshaller.unmarshal(staxReader, inputSource, Address.class);          
+
+           if(xmlStreamReader.getEventType() != XMLStreamReader.END_ELEMENT) {
+               fail("The last event type should have the been end document");
+           }
+           if(!xmlStreamReader.getLocalName().equals("address")) {
+               fail("The last local name should have been 'address'");
+           }
+
+           instream.close();
+    }
 
 }
