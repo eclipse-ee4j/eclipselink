@@ -91,11 +91,13 @@ public class XMLStreamReaderReader extends XMLReader {
 
     private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
     	try{    
+            getContentHandler().startDocument();
             parseEvent(xmlStreamReader);	
             while(depth > 0 && xmlStreamReader.hasNext()) {
                 xmlStreamReader.next();
                 parseEvent(xmlStreamReader);                            
             }
+            getContentHandler().endDocument();
         }catch(XMLStreamException e) {
             throw new RuntimeException(e);
         }
@@ -135,7 +137,6 @@ public class XMLStreamReaderReader extends XMLReader {
             }
             case XMLStreamReader.END_DOCUMENT: {
                 depth--;
-                getContentHandler().endDocument();
                 return;
             }
             case XMLStreamReader.END_ELEMENT: {
@@ -171,7 +172,6 @@ public class XMLStreamReaderReader extends XMLReader {
             }
             case XMLStreamReader.START_DOCUMENT: {
                 depth++;
-                getContentHandler().startDocument();
                 break;
             }
             case XMLStreamReader.START_ELEMENT: {
