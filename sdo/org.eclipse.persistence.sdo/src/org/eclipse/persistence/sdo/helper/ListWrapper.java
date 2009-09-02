@@ -23,7 +23,6 @@ import java.util.ListIterator;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOSequence;
 
 /**
  * INTERNAL:

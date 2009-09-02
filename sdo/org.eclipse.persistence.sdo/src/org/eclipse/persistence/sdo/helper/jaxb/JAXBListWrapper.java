@@ -15,7 +15,6 @@ package org.eclipse.persistence.sdo.helper.jaxb;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 
