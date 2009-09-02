@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -35,9 +36,13 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -48,6 +53,8 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -621,6 +628,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             if (isPrimitiveWrapper) {
                 unmarshalRecord = new XMLRootRecord(clazz);
                 unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+            } else if(clazz == ClassConstants.OBJECT) {
+                SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
+                saxUnmarshallerHandler.setXMLReader((XMLReader)xmlReader);
+                saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
+                saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                xmlReader.setContentHandler(saxUnmarshallerHandler);
+                xmlReader.parse(inputSource);
+
+                // resolve any mapping references
+                saxUnmarshallerHandler.resolveReferences();
+                return saxUnmarshallerHandler.getObject();
             } else {
                 // for XMLObjectReferenceMappings we need a non-shared cache, so
                 // try and get a Unit Of Work from the XMLContext
@@ -648,7 +666,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // resolve mapping references
             xmlUnmarshaller.resolveReferences(session);
 
-            if (isPrimitiveWrapper) {
+            if (isPrimitiveWrapper || clazz == ClassConstants.OBJECT) {
                 return unmarshalRecord.getCurrentObject();
             }
             return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);

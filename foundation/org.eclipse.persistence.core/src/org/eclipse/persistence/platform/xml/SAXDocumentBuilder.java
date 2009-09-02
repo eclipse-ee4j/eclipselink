@@ -128,7 +128,14 @@ public class SAXDocumentBuilder implements ContentHandler {
             if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
                 attributeNamespaceURI = null;
             }
-            element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), atts.getValue(x));
+            
+            // Handle case where prefix/uri are not set on an xmlns prefixed attribute
+            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + ":")) {
+                attributeNamespaceURI = XMLConstants.XMLNS_URL;
+            }
+            
+            String value = atts.getValue(x);
+            element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value);
         }
     }
 

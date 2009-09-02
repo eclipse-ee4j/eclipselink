@@ -363,7 +363,11 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
     
      protected void compareValues(Object controlValue, Object testValue){
-         assertEquals(controlValue, testValue);
+         if(controlValue instanceof Node && testValue instanceof Node) {
+             assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
+         } else {
+             assertEquals(controlValue, testValue);
+         }
      }
     
 
