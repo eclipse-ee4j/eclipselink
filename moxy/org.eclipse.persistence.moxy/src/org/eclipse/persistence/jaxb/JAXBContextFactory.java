@@ -41,6 +41,9 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -225,7 +228,11 @@ public class JAXBContextFactory {
         // disable instantiation policy validation during descriptor initialization
         SessionEventListener eventListener = new SessionEventListener();
         eventListener.setShouldValidateInstantiationPolicy(false);
-
+        XMLPlatform platform = new SAXPlatform();
+        platform.getConversionManager().setLoader(loader);
+        XMLLogin login = new XMLLogin(platform);
+        login.setEqualNamespaceResolvers(false);
+        proj.setLogin(login);
         xmlContext = new XMLContext(proj, loader, eventListener);
         jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
 

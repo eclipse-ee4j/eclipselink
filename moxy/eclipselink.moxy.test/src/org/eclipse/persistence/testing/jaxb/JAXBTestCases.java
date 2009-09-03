@@ -46,8 +46,11 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -100,9 +103,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         this.classes = newClasses;
         this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
         generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(this.classLoader)));
-
         Project proj = generator.generateProject();
         proj.convertClassNamesToClasses(classLoader);
+        XMLPlatform platform = new SAXPlatform();
+        platform.getConversionManager().setLoader(classLoader);
+        XMLLogin login = new XMLLogin(platform);
+        login.setEqualNamespaceResolvers(false);
+        proj.setLogin(login);
         setProject(proj);
         xmlContext = getXMLContext(proj);
         // need to make sure that the java class is set properly on each
