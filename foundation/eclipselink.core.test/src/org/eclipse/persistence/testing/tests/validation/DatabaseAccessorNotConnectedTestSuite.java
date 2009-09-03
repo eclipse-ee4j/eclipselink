@@ -30,5 +30,6 @@ public class DatabaseAccessorNotConnectedTestSuite extends org.eclipse.persisten
         addTest(new NotConnectedUpdateObjectQueryTest());
         addTest(new NotConnectedWriteObjectTest());
         addTest(new ConnectionIsNullAccessorTest());
+        addTest(new ConnectionIsNullReleasedSessionTest());
     }
 }

@@ -28,7 +28,7 @@ public class ConnectionIsNullAccessorTest extends ExceptionTest {
     DatabaseAccessor dbAccessor;
     protected void setup() {
         dbAccessor = new DatabaseAccessor();
-        expectedException = org.eclipse.persistence.exceptions.DatabaseException.databaseAccessorConnectionIsNull(dbAccessor);
+        expectedException = org.eclipse.persistence.exceptions.DatabaseException.databaseAccessorConnectionIsNull(dbAccessor, null);
     }
 
     public void test() {

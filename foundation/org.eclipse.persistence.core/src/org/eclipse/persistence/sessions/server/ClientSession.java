@@ -218,13 +218,19 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Return the read or write connection depending on the transaction state.
+     * Return the read or write connection depending on the transaction state.  Will throw a DatabaseException if the Accessor cannot be returned.
      */
     public Accessor getAccessor() {
+        Accessor accessor = null;
         if (isInTransaction()) {
-            return getWriteConnection();
+            accessor = getWriteConnection();
+        } else {
+            accessor = super.getAccessor();
         }
-        return super.getAccessor();
+        if (accessor==null){
+            throw DatabaseException.databaseAccessorConnectionIsNull(null, this);
+        }
+        return accessor;
     }
 
 
@@ -493,7 +499,7 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Set if the client session is actvie (has not been released).
+     * Set if the client session is active (has not been released).
      */
     protected void setIsActive(boolean isActive) {
         this.isActive = isActive;
