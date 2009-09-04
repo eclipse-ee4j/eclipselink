@@ -190,6 +190,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected Integer pessimisticLockTimeoutDefault;
 
     protected int queryTimeoutDefault;
+    
+    /**
+     * This map will hold onto class to static metamodel class references from JPA.
+     */
+    protected Map<String, String> staticMetamodelClasses;
 
     /**
      * INTERNAL:
@@ -363,7 +368,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void addJPAQuery(DatabaseQuery query) {
         getJPAQueries().add(query);
     }
-
+    
     /**
      * INTERNAL:
      * Add the query to the session queries.
@@ -384,6 +389,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             }
         }
         queriesByName.add(query);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a metamodel class to model class reference.
+     */
+    public void addStaticMetamodelClass(String modelClassName, String metamodelClassName) {
+        if (staticMetamodelClasses == null) {
+            staticMetamodelClasses = new HashMap<String, String>();
+        }
+        
+        staticMetamodelClasses.put(modelClassName, metamodelClassName);
     }
 
     /**
@@ -1874,6 +1891,19 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
+     * INTERNAL:
+     * Return the static metamodel class associated with the given model class 
+     * if available. Callers must handle null.
+     */
+    public String getStaticMetamodelClass(String modelClassName) {
+        if (staticMetamodelClasses != null) {
+            return staticMetamodelClasses.get(modelClassName);
+        }
+        
+        return null;
+    }
+    
+    /**
      * OBSOLETE:
      * Return the login, the login holds any database connection information given.
      * This has been replaced by getDatasourceLogin to make use of the Login interface
@@ -1896,7 +1926,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public Login getDatasourceLogin() {
         return getProject().getDatasourceLogin();
     }
-
+    
     /**
      * PUBLIC:
      * Return the name of the session.

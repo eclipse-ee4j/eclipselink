@@ -20,14 +20,24 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.QUALIFIER_POSITION;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -41,8 +51,33 @@ public class MetadataHelper {
     public static final String ECLIPSELINK_ORM_FILE = "META-INF/eclipselink-orm.xml";
     
     /**
-     * INTERNAL: XMLEntityMappings calls this one
-     * Load a class from a given class name.
+     * INTERNAL:
+     * Return the canonical name. This will apply the default qualifier given 
+     * in the default position given. If the defaults given are null, then the
+     * default qualifier "_" in the default position "POST" will be applied.
+     */
+    protected static String getCanonicalName(String name, Map<String, String> properties) {
+        String qualifier = properties.get(CANONICAL_MODEL_QUALIFIER);
+        String qualifierPosition = properties.get(CANONICAL_MODEL_QUALIFIER_POSITION);
+        
+        if (qualifier == null) {
+            qualifier = CANONICAL_MODEL_QUALIFIER_DEFAULT;
+        }
+        
+        if (qualifierPosition == null) {
+            qualifierPosition = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+        }
+        
+        if (qualifierPosition.equals(QUALIFIER_POSITION.PRE.name())) {
+            return qualifier + name;
+        } else {
+            return name + qualifier;
+        } 
+    }
+    
+    /**
+     * INTERNAL: 
+     * Load a class from a given class name. (XMLEntityMappings calls this one)
      */
     public static Class getClassForName(String classname, ClassLoader loader) {
         try {
@@ -125,6 +160,47 @@ public class MetadataHelper {
             actualName =  defaultName;
         }
         return actualName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the qualified canonical name of the given qualified class name.
+     * This method will check the session for a corresponding class that was
+     * processed during deploy. If one is not found, will build the canonical
+     * name applying any default package, the default qualifier "_" in the 
+     * default position "POST" on the name portion.  
+     */
+    public static String getQualifiedCanonicalName(String qualifiedName, AbstractSession session) {
+        String sessionStaticMetamodelClass = session.getStaticMetamodelClass(qualifiedName);
+        
+        if (sessionStaticMetamodelClass == null) {
+            return getQualifiedCanonicalName(qualifiedName, session.getProperties());
+        } else {
+            return sessionStaticMetamodelClass;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the canonical name applying any default package. This will apply 
+     * the default qualifier given in the default position given. If the 
+     * defaults given are null, then the default qualifier "_" in the default 
+     * position "POST" will be applied.
+     */
+    public static String getQualifiedCanonicalName(String qualifiedName, Map<String, String> properties) {
+        String packageSuffix = properties.get(CANONICAL_MODEL_PACKAGE_SUFFIX);
+        if (packageSuffix == null) {
+            packageSuffix = CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
+        }
+       
+        if (qualifiedName.indexOf(".") > -1) {
+            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), properties);
+            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
+           
+            return pkg + packageSuffix + "." + canonicalName;
+        } else {
+            return packageSuffix + "." + getCanonicalName(qualifiedName, properties);
+        }
     }
     
     /**

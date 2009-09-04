@@ -14,15 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.QUALIFIER_POSITION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
-
-
 import javax.persistence.*;
 import javax.persistence.spi.*;
 import javax.sql.DataSource;
@@ -338,105 +329,6 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      */
     public CachingType getCaching() {
         return caching;
-    }
-    
-    protected void initCanonicalProperties() {
-        // If we have persistence unit properties but our properties map is 
-        // empty, we have not initialize yet, so do it now.
-        if (! persistenceUnitProperties.isEmpty() && properties.isEmpty()) {
-            // Mapping the properties to a collection allows us to perform extra
-            // validation (multiple settings for the same property etc) if we 
-            // so desire. If we  map the properties directly into a map we lose 
-            // this ability and last one in will win.
-            // TODO: Determine how much validation we want to do. There is 
-            // currently a bug to have the reading of the persistence.xml from
-            // metadata processing changed to use OX. For now, the way this
-            // works from the CanonicalModelProcessor remains the same as if
-            // coming from metadata processing, last one in wins.
-            for (SEPersistenceUnitProperty property : getPersistenceUnitProperties()) {
-                // If the name or value of the property is null, set them to
-                // "" for now. If the name is null we'll likely need an
-                // exception in the future when actual preDeploy uses this code. 
-                if (property.getName() == null) {
-                    property.setName("");
-                }
-                
-                if (property.getValue() == null) {
-                    property.setValue("");
-                }
-                
-                properties.put(property.getName(), property.getValue());
-            }
-        }
-    }
-        
-    /**
-     * Return the canonical name. This will apply the default qualifier given 
-     * in the default position given. If the defaults given are null, then the
-     * default qualifier "_" in the default position "POST" will be applied.
-     */
-    protected String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
-        String qualifier = properties.getProperty(CANONICAL_MODEL_QUALIFIER);
-        String qualifierPosition = properties.getProperty(CANONICAL_MODEL_QUALIFIER_POSITION);
-        
-        if (qualifier == null) {
-            if (defaultQualifier == null) {
-                qualifier = CANONICAL_MODEL_QUALIFIER_DEFAULT;
-            } else {
-                qualifier = defaultQualifier;
-            }
-        }
-        
-        if (qualifierPosition == null) {
-            if (defaultQualifierPosition == null) {
-                qualifierPosition = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
-            } else {
-                qualifierPosition = defaultQualifierPosition;
-            }
-        }
-        
-        if (qualifierPosition.equals(QUALIFIER_POSITION.PRE.name())) {
-            return qualifier + name;
-        } else {
-            return name + qualifier;
-        } 
-    }
-
-    /**
-     * Return the qualified canonical name applying any default package. This 
-     * will apply the default qualifier "_" in the default position "POST" on
-     * the name portion.  
-     */
-    public String getQualifiedCanonicalName(String qualifiedName) {
-        return getQualifiedCanonicalName(qualifiedName, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT, CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT);
-    }
-    
-    /**
-     * Return the canonical name applying any default package. This will apply 
-     * the default qualifier given in the default position given. If the 
-     * defaults given are null, then the default qualifier "_" in the default 
-     * position "POST" will be applied.
-     */
-    public String getQualifiedCanonicalName(String qualifiedName, String defaultQualifier, String defaultQualifierPosition, String defaultPackageSuffix) {
-        initCanonicalProperties();
-        
-        String packageSuffix = properties.getProperty(CANONICAL_MODEL_PACKAGE_SUFFIX);
-        if (packageSuffix == null) {
-            if (defaultPackageSuffix == null) {
-                packageSuffix = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
-            } else {
-                packageSuffix = defaultPackageSuffix;
-            }
-        }
-       
-        if (qualifiedName.indexOf(".") > -1) {
-            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), defaultQualifier, defaultQualifierPosition);
-            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
-           
-            return pkg + packageSuffix + "." + canonicalName;
-        } else {
-            return packageSuffix + "." + getCanonicalName(qualifiedName, defaultQualifier, defaultQualifierPosition);
-        }
     }
     
     /**

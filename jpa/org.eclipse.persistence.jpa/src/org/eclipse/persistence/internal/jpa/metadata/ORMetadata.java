@@ -110,31 +110,38 @@ public abstract class ORMetadata {
         return m_accessibleObject;
     }
     
-    public MetadataFactory getMetadataFactory() {
-        if (getAccessibleObject() != null) {
-            return getAccessibleObject().getMetadataFactory();
-        }
-        return getEntityMappings().getMetadataFactory();
+    /**
+     * INTERNAL:
+     * This is a value is that is used when logging messages for overriding.
+     * @see shouldOverride
+     */
+    protected MetadataAnnotation getAnnotation() {
+        return m_annotation;
     }
     
     /**
-     * Return the MetadataClass for the class.
+     * INTERNAL:
      */
-    public MetadataClass getMetadataClass(Class javaClass) {
-        if (javaClass == null) {
-            return null;
-        }
-        return getMetadataClass(javaClass.getName());
+    public XMLEntityMappings getEntityMappings() {
+        return m_entityMappings;
     }
     
     /**
-     * Return the MetadataClass for the class name.
+     * INTERNAL:
+     * Sub classed must that can uniquely be identified must override this
+     * message to allow the overriding and merging to uniquely identify objects.
+     * It will also be used when logging messages (that is provide a more
+     * detailed message).
+     * 
+     * @see shouldOverride
+     * @see mergeListsAndOverride
      */
-    public MetadataClass getMetadataClass(String className) {
-        return getMetadataFactory().getMetadataClass(className);
+    protected String getIdentifier() {
+        return "";
     }
-
+    
     /**
+     * INTERNAL:
      * Return the Java class for the metadata class using the metadata loader.
      * The loader is the temp loader during predeploy, and the app loader during deploy.
      */
@@ -143,6 +150,7 @@ public abstract class ORMetadata {
     }
     
     /**
+     * INTERNAL:
      * Return the Java class for the class name using the metadata loader.
      * The loader is the temp loader during predeploy, and the app loader during deploy.
      */
@@ -184,39 +192,39 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
-     * This is a value is that is used when logging messages for overriding.
-     * @see shouldOverride
-     */
-    protected MetadataAnnotation getAnnotation() {
-        return m_annotation;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public XMLEntityMappings getEntityMappings() {
-        return m_entityMappings;
-    }
-    
-    /**
-     * INTERNAL:
-     * Sub classed must that can uniquely be identified must override this
-     * message to allow the overriding and merging to uniquely identify objects.
-     * It will also be used when logging messages (that is provide a more
-     * detailed message).
-     * 
-     * @see shouldOverride
-     * @see mergeListsAndOverride
-     */
-    protected String getIdentifier() {
-        return "";
-    }
-    
-    /**
-     * INTERNAL:
      */
     public Object getLocation() {
         return m_location;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the MetadataClass for the class.
+     */
+    public MetadataClass getMetadataClass(Class javaClass) {
+        if (javaClass == null) {
+            return null;
+        }
+        
+        return getMetadataClass(javaClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the MetadataClass for the class name.
+     */
+    public MetadataClass getMetadataClass(String className) {
+        return getMetadataFactory().getMetadataClass(className);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataFactory getMetadataFactory() {
+        if (getAccessibleObject() != null) {
+            return getAccessibleObject().getMetadataFactory();
+        }
+        return getEntityMappings().getMetadataFactory();
     }
     
     /**

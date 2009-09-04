@@ -30,7 +30,9 @@ import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitProperty;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -61,6 +63,7 @@ public class PersistenceUnit {
     protected PersistenceUnitReader persistenceUnitReader;
     protected ProcessingEnvironment processingEnv;
     protected SEPersistenceUnitInfo persistenceUnitInfo;
+    protected HashMap<String, String> persistenceUnitProperties;
     
     /**
      * INTERNAL:
@@ -74,7 +77,11 @@ public class PersistenceUnit {
         processingEnv = factory.getProcessingEnvironment();
         project = factory.getMetadataProject(persistenceUnitInfo);
 
+        // Init our mapping files.
         initXMLEntityMappings();
+        
+        // Init our OX mapped properties into a map.
+        initPersistenceUnitProperties();
     }
     
     /**
@@ -189,6 +196,15 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
+    protected void addPropertyFromOptions(String propertyName) {
+        if (! persistenceUnitProperties.containsKey(propertyName) || persistenceUnitProperties.get(propertyName) == null) {
+            persistenceUnitProperties.put(propertyName, processingEnv.getOptions().get(propertyName));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) {
         try {
             InputStream in = null;
@@ -230,8 +246,9 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
-     * TODO: If the accessor is no longer valid it should be removed from the
-     * project (could cause a memory leak)
+     * If the accessor is no longer valid it we should probably look into
+     * removing the accessor from the project. For now I don't think its a big
+     * deal.
      */
     public boolean containsElement(Element element) {
         MetadataClass cls = factory.getMetadataClass(element);
@@ -263,27 +280,6 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected String getCanonicalPackageSuffixOption() {
-        return processingEnv.getOptions().get(CANONICAL_MODEL_PACKAGE_SUFFIX);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected String getCanonicalQualifierOption() {
-        return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected String getCanonicalQualifierPositionOption() {
-        return processingEnv.getOptions().get(CANONICAL_MODEL_QUALIFIER_POSITION);
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public ClassAccessor getClassAccessor(Element element) {
         String elementString = element.toString();
         
@@ -306,7 +302,30 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     public String getQualifiedCanonicalName(String qualifiedName) {
-        return persistenceUnitInfo.getQualifiedCanonicalName(qualifiedName, getCanonicalQualifierOption(), getCanonicalQualifierPositionOption(), getCanonicalPackageSuffixOption()); 
+        return MetadataHelper.getQualifiedCanonicalName(qualifiedName, persistenceUnitProperties); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void initPersistenceUnitProperties() {
+        persistenceUnitProperties = new HashMap<String, String>();
+        
+        // Determine how much validation we want to do. For now, last one
+        // in wins (in the case of multiple settings) and we ignore null
+        // named properties.
+        for (SEPersistenceUnitProperty property : persistenceUnitInfo.getPersistenceUnitProperties()) { 
+            if (property.getName() != null) {
+                //processingEnv.getMessager().printMessage(Kind.NOTE, "Key: " + property.getName() + " , value: " + property.getValue());
+                persistenceUnitProperties.put(property.getName(), property.getValue());
+            }
+        }
+        
+        // Check for user specified options and add them to the properties
+        // if they were not specified in the persistence.xml.
+        addPropertyFromOptions(CANONICAL_MODEL_QUALIFIER);
+        addPropertyFromOptions(CANONICAL_MODEL_QUALIFIER_POSITION);
+        addPropertyFromOptions(CANONICAL_MODEL_PACKAGE_SUFFIX);
     }
     
     /**

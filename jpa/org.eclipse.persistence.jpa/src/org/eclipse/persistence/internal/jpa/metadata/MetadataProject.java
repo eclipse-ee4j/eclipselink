@@ -73,6 +73,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSup
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
@@ -552,6 +553,16 @@ public class MetadataProject {
         if (sqlResultSetMapping.shouldOverride(m_sqlResultSetMappings.get(sqlResultSetMapping.getName()))) {
             m_sqlResultSetMappings.put(sqlResultSetMapping.getName(), sqlResultSetMapping);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a discovered metamodel class to the session.
+     */
+    public void addStaticMetamodelClass(MetadataAnnotation annotation, MetadataClass metamodelClass) {
+        MetadataClass modelClass = metamodelClass.getMetadataFactory().getMetadataClass((String) annotation.getAttributeString("value"));
+        
+        m_session.addStaticMetamodelClass(modelClass.getName(), metamodelClass.getName());
     }
     
     /**

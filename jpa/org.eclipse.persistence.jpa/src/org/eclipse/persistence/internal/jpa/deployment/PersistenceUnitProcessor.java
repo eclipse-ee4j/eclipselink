@@ -280,6 +280,13 @@ public class PersistenceUnitProcessor {
     }
     
     /**
+     * Return the @StaticMetamodel annotation on the given class.
+     */
+    public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(javax.persistence.metamodel.StaticMetamodel.class);
+    }
+    
+    /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static boolean isEmbeddable(MetadataClass candidateClass) {
@@ -291,6 +298,13 @@ public class PersistenceUnitProcessor {
      */
     public static boolean isEntity(MetadataClass candidateClass){
         return candidateClass.isAnnotationPresent(javax.persistence.Entity.class);
+    }
+    
+    /**
+     * Return if a given class is annotated with @StaticMetamodel.
+     */
+    public static boolean isStaticMetamodelClass(MetadataClass candidateClass) {
+        return candidateClass.isAnnotationPresent(javax.persistence.metamodel.StaticMetamodel.class);
     }
     
     /**
