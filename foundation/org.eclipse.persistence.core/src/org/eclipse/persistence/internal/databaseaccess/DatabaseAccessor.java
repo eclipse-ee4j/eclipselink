@@ -1362,7 +1362,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         if (statement == null) {
             Connection nativeConnection = getConnection();
             if (nativeConnection==null){
-                throw DatabaseException.databaseAccessorConnectionIsNull(this);
+                throw DatabaseException.databaseAccessorConnectionIsNull(this, session);
             }
 
             // Unwrap the connection if required.

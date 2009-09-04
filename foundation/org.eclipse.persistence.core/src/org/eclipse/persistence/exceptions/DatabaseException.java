@@ -127,12 +127,13 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
     
-    public static DatabaseException databaseAccessorConnectionIsNull(DatabaseAccessor databaseAccessor) {
+    public static DatabaseException databaseAccessorConnectionIsNull(DatabaseAccessor databaseAccessor, AbstractSession session) {
         Object[] args = {  };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, DATABASE_ACCESSOR_CONNECTION_IS_NULL, args));
         databaseException.setErrorCode(DATABASE_ACCESSOR_CONNECTION_IS_NULL);
         databaseException.setAccessor(databaseAccessor);
+        databaseException.setSession(session);
         return databaseException;
     }
 
