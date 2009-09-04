@@ -105,7 +105,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
-        suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
+        //suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -187,7 +187,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testMetamodelMinimalSanityTest() {
         EntityManager em = createEntityManager("default1");
         // pre-clear metamodel to enable test reentry
-        ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        //266912: Test that gets EMF directly is not container-managed friendly - commenting secondary test.
+        //The following line needs to be refactored for both SE and EE
+        //((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
         Metamodel metamodel = em.getMetamodel();
         // get declared attributes
         EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
