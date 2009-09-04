@@ -18,6 +18,7 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.converter.typesafeenum.Employee;
 import org.eclipse.persistence.testing.oxm.converter.typesafeenum.TypeSafeEnumConverterProject;
@@ -32,17 +33,16 @@ public class JAXBEnumTypeConverterTestCases extends OXTestCase {
 
 	public void testConverterClassNotFound() throws Exception {
 		 try{
-			 XMLContext xmlContext = new XMLContext(new JAXBEnumTypeConverterProject());
-		 }catch(IntegrityException integrityException){
-	    	    Exception internalException = (Exception)((IntegrityException)integrityException).getIntegrityChecker().getCaughtExceptions().get(0);             
-	    		if(internalException instanceof ValidationException){
-	    			Throwable nestedException = ((ValidationException)internalException).getInternalException();
-	    			if(nestedException instanceof ClassNotFoundException){
-	    				return;
-	    			}
-	    		}    		
-	    	}
-	        fail("An ClassNotFoundException should have occurred.");
+		     Project proj = new JAXBEnumTypeConverterProject();
+		     proj.convertClassNamesToClasses(this.getClass().getClassLoader());
+			 XMLContext xmlContext = new XMLContext(proj);
+		 }catch(ValidationException validationException){
+		     Throwable nestedException = validationException.getInternalException();
+		     if(nestedException instanceof ClassNotFoundException){
+		         return;
+		     }
+		 }
+		 fail("An ClassNotFoundException should have occurred.");
 	 }
 
 	public static void main(String[] args) {

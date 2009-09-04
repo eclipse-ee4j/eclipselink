@@ -780,5 +780,19 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     public boolean isCollectionMapping() {
         return true;
     }
+    
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        super.convertClassNamesToClasses(classLoader);
+        
+        if (valueConverter != null) {
+            if (valueConverter instanceof TypeConversionConverter) {
+                ((TypeConversionConverter)valueConverter).convertClassNamesToClasses(classLoader);
+            } else if (valueConverter instanceof ObjectTypeConverter) {
+                // To avoid 1.5 dependencies with the EnumTypeConverter check
+                // against ObjectTypeConverter.
+                ((ObjectTypeConverter) valueConverter).convertClassNamesToClasses(classLoader);
+            }
+        }         
+    }
 
 }

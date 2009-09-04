@@ -54,16 +54,16 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(){       
-    	try {
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    m_enumClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName));
+                    m_enumClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
                 }
             } else {
-                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName);
+                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
             }
         } catch (ClassNotFoundException exception){
             throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
@@ -74,8 +74,6 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * INTERNAL:
      */
     public void initialize(DatabaseMapping mapping, Session session) {
-        convertClassNamesToClasses();
-        
         Iterator<Enum> i = EnumSet.allOf(m_enumClass).iterator();
         while (i.hasNext()) {
             Enum theEnum = i.next();
