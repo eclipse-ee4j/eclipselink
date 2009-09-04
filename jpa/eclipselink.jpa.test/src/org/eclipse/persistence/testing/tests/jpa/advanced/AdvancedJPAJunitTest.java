@@ -16,11 +16,21 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Bindable;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.Bindable.BindableType;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import junit.framework.*;
 
@@ -32,7 +42,9 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 
@@ -41,6 +53,7 @@ import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
@@ -54,6 +67,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.multipletable.Budget;
 
 /**
  * This test suite tests TopLink JPA annotations extensions.
@@ -91,6 +105,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
+        suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -162,6 +177,60 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache();
+    }
+    
+    /**
+     * This test performs minimal sanity testing on the advanced JPA model
+     * in order to verify metamodel creation.<p>
+     * See the metamodel test package suite for full regression tests.
+     */
+    public void testMetamodelMinimalSanityTest() {
+        EntityManager em = createEntityManager("default1");
+        // pre-clear metamodel to enable test reentry
+        ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        Metamodel metamodel = em.getMetamodel();
+        // get declared attributes
+        EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
+        Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
+        assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
+        
+        // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute        
+        Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
+        assertNotNull(budgetAttribute);
+        Attribute<LargeProject, ?> budgetSingularAttribute = entityLargeProject.getDeclaredSingularAttribute("budget");
+        assertNotNull(budgetSingularAttribute);
+        assertEquals(budgetSingularAttribute, budgetAttribute);
+        assertTrue(declaredAttributes.contains(budgetSingularAttribute));        
+        // check the type
+        Class budgetClass = budgetSingularAttribute.getJavaType();
+        // Verify whether we expect a boxed class or not 
+        assertEquals(double.class, budgetClass);
+        //assertEquals(Double.class, budgetClass);
+        
+        // Test LargeProject.budget.buyingDays
+        
+        // Check an EnumSet on an Entity
+        EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
+        // public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
+        // private EnumSet<Weekdays> buyingDays;
+        assertNotNull(entityBuyer);
+        // check persistence type
+        assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
+        assertEquals(Buyer.class, entityBuyer.getJavaType());
+        // verify EnumSet is a SingularAttribute
+        Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
+        assertNotNull(buyingDaysAttribute);
+        // Check persistent attribute type
+        assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
+        // Non-spec check on the attribute impl type
+        // EnumSet is not a Set in the Metamodel - it is a treated as a BasicType single object (SingularAttributeType)
+        // BasicTypeImpl@8980685:EnumSet [ javaType: class java.util.EnumSet]
+        assertFalse(((SingularAttributeImpl)buyingDaysAttribute).isPlural());
+        BindableType buyingDaysElementBindableType = ((SingularAttributeImpl)buyingDaysAttribute).getBindableType();
+        assertEquals(BindableType.SINGULAR_ATTRIBUTE, buyingDaysElementBindableType);
+        SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
+        assertNotNull(buyingDaysSingularAttribute);
+        assertFalse(buyingDaysSingularAttribute.isCollection());
     }
     
     /**

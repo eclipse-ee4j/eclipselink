@@ -41,6 +41,42 @@ public class HardwareDesigner extends Designer implements java.io.Serializable{
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
             inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
     private Manufacturer mappedEmployer;
+
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC1A", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployerUC1a;
+
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC2", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployerUC2;
+
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC4", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployerUC4;
+
+    // UC6 is invalid
+    // The M:1 side is the owning side
+/*    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC6", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployerUC6;*/
+
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC7", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployerUC7;
     
     @Version
     @Column(name="HWDESIGNER_VERSION")
@@ -70,6 +106,38 @@ public class HardwareDesigner extends Designer implements java.io.Serializable{
 
     public void setMappedEmployer(Manufacturer mappedEmployer) {
         this.mappedEmployer = mappedEmployer;
+    }
+
+    public Manufacturer getMappedEmployerUC1a() {
+        return mappedEmployerUC1a;
+    }
+
+    public void setMappedEmployerUC1a(Manufacturer mappedEmployerUC1a) {
+        this.mappedEmployerUC1a = mappedEmployerUC1a;
+    }
+
+    public Manufacturer getMappedEmployerUC2() {
+        return mappedEmployerUC2;
+    }
+
+    public void setMappedEmployerUC2(Manufacturer mappedEmployerUC2) {
+        this.mappedEmployerUC2 = mappedEmployerUC2;
+    }
+
+    public Manufacturer getMappedEmployerUC4() {
+        return mappedEmployerUC4;
+    }
+
+    public void setMappedEmployerUC4(Manufacturer mappedEmployerUC4) {
+        this.mappedEmployerUC4 = mappedEmployerUC4;
+    }
+
+    public Manufacturer getMappedEmployerUC7() {
+        return mappedEmployerUC7;
+    }
+
+    public void setMappedEmployerUC7(Manufacturer mappedEmployerUC7) {
+        this.mappedEmployerUC7 = mappedEmployerUC7;
     }
     
 }

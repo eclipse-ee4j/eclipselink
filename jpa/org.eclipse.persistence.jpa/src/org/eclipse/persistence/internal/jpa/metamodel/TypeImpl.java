@@ -92,6 +92,8 @@ public abstract class TypeImpl<X> implements Type<X> {
         if(null != this.getJavaType()) {
             aBuffer.append(":");
             aBuffer.append(this.getJavaType().getSimpleName());
+        } else {
+            aBuffer.append("javaType unknown");
         }
         aBuffer.append(" [ javaType: ");
         aBuffer.append(this.getJavaType());

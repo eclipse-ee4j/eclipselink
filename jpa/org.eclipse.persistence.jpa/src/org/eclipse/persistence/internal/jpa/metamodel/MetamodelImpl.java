@@ -80,6 +80,9 @@ public class MetamodelImpl implements Metamodel {
     /** The Set of MappedSuperclassTypes in this metamodel**/
     private Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses;
 
+    /** Default elementType Class when we the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
+    public static final Class DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS = Object.class;
+
     public MetamodelImpl(DatabaseSession session) {
         this.session = session;
         initialize();

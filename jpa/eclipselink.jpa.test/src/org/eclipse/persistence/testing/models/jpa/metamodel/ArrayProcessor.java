@@ -20,6 +20,21 @@ import javax.persistence.Table;
 
 @Entity(name="ArrayProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
-public class ArrayProcessor extends Processor implements java.io.Serializable{
+public class ArrayProcessor extends Processor implements java.io.Serializable{    
     public ArrayProcessor() {}
+    
+    /**
+     * Even though the object model has this field declared here, 
+     * the relational model has it declared on the superclass 
+     * because we are using single table inheritance
+     */
+    private int speed;
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    } 
 }

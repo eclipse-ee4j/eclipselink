@@ -26,6 +26,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
@@ -61,23 +62,41 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * @param validationEnabled
      */
     protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
-        // Note: 20090730 Implementation is incomplete when the elementDescriptor on the containerPolicy is null
-        super(managedType, mapping);
+        super(managedType, mapping);        
+        // 1) Check the mapping type first        
+        // 2) Get the type set on the policy        
         ClassDescriptor elementDesc = mapping.getContainerPolicy().getElementDescriptor();
 
         // Set the element type on this attribute
         if (elementDesc != null) {
-            // Mappings: OneToMany, 
+            // Mappings: OneToMany, UnidirectionalOneToMany, ManyToMany
             this.elementType = (Type<V>)getMetamodel().getType(elementDesc.getJavaClass());
         } else {
-            // TODO: BasicCollection (DirectCollectionMapping)
             // See CollectionContainerPolicy
             Class attributeClass = null;
+            // TODO: handle AggregateCollectionMapping
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
                 //CollectionContainerPolicy policy = (CollectionContainerPolicy) mapping.getContainerPolicy();
                 //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());                
                 if(mapping.isDirectCollectionMapping()) {
                     attributeClass = ((DirectCollectionMapping)mapping).getDirectField().getType();                    
+                }
+                /**
+                 * TODO: REFACTOR
+                 * We were unable to get the type because it is not declared as a generic parameter on the method level attribute.
+                 * It may be declared on the field.
+                 * See design issue 65 - we need a way to parse the signature of the declaration on the java class - if it exists.
+                 * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_65:_20090827:_Handle_DirectCollection_elementType_retrieval_in_the_absence_of_a_generic_type
+                 * Example:
+                 *  
+                 * Collection<String> basicCollection; 
+                 *  @BasicCollection
+                 *  Collection getBasicCollection()
+                 */
+                // Note: a call to managedType.getTypeClassFromAttributeOrMethodLevelAccesso will only return the class of the collection on the method accessor
+                if(null == attributeClass) {
+                    //attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
                 }
             } else if(mapping.isMapKeyMapping()) {
                     // TODO: Handle DirectMapContainerPolicy                    
@@ -86,6 +105,9 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             } else if(mapping.isManyToManyMapping() || mapping.isOneToManyMapping()) {
                 // Example: Collection with an instantiated Set/List
                 attributeClass = ((CollectionMapping)mapping).getReferenceClass();
+            } else if(mapping.isAggregateCollectionMapping()) {
+                // get reference class and check if managedType is a MappedSuperclass
+                attributeClass = ((AggregateCollectionMapping)mapping).getReferenceClass();
             }
 
             // TODO: refactor exception handling

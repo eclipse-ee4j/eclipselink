@@ -28,8 +28,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ManyToManyMapping;
-import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.structures.ReferenceMapping;
@@ -63,8 +61,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this(managedType, mapping, false);
-    }
-    
+    }    
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
@@ -74,16 +71,27 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
+        // Case: Handle primitive or java lang type (non-Entity) targets
         Class attributeClass = mapping.getAttributeClassification();
-
-        // If attribute is a primitive type (non-null) - we will wrap it in a BasicType automatically in getType below
-        // The attribute classification is null for non-collection mappings such as embeddable keys
-        if (null == attributeClass) { // BasicType will != null --> else clause
-            // EntityType
+        /**
+         * Case: Handle Entity targets
+         * Process supported mappings by assigning their elementType.
+         * For unsupported mappings we default to MetamodelImpl.DEFAULT_ELEMENT_TYPE.
+         * If attribute is a primitive type (non-null) - we will wrap it in a BasicType automatically in getType below
+         * The attribute classification is null for non-collection mappings such as embeddable keys.
+         */
+        if (null == attributeClass) {
+            
             // We support @OneToOne but not EIS, Reference or VariableOneToOne
             // Note: OneToMany, ManyToMany are handled by PluralAttributeImpl
             if(mapping.isOneToOneMapping()) { // handles @ManyToOne
                 attributeClass = ((OneToOneMapping)mapping).getReferenceClass();
+            } else if (mapping.isDirectToFieldMapping()) { // Also handles the keys of an EmbeddedId
+                attributeClass = mapping.getField().getType();
+                if(null == attributeClass) {
+                    // lookup the attribute on the containing class
+                    attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
+                }
             } else if (mapping.isAggregateObjectMapping()) { // IE: EmbeddedId
                 attributeClass = ((AggregateMapping)mapping).getReferenceClass();
             } else if (mapping.isVariableOneToOneMapping()) { // interfaces are unsupported in the JPA 2.0 spec for the Metamodel API
@@ -92,41 +100,26 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                 }
                 // see JUnitCriteriaUnitTestSuite.testSelectPhoneNumberAreaCode() line: 246
                 // VariableOneToOne mappings are unsupported - default to referenceClass (Interface) anyway
+                // see interface org.eclipse.persistence.testing.models.jpa.relationships.Distributor
                 attributeClass = ((VariableOneToOneMapping)mapping).getReferenceClass();
-            } else if (mapping.isEISMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
+            } else if (mapping.isEISMapping() || mapping.isTransformationMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
-                // EIS mappings are unsupported - default to Object:
             } else if ( mapping.isReferenceMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
                 // Reference mappings are unsupported - default to referenceClass anyway
                 attributeClass = ((ReferenceMapping)mapping).getReferenceClass();
-            } else if (mapping.isDirectToFieldMapping()) { // Also handles the keys of an EmbeddedId
-                attributeClass = mapping.getField().getType();
-                if(null == attributeClass) {
-                    // lookup the attribute on the containing class                    
-                    Class containingClass = mapping.getDescriptor().getJavaClass();
-                    Field aField = null;
-                    try {
-                        aField = containingClass.getDeclaredField(mapping.getAttributeName());
-                        attributeClass = aField.getType();
-                    } catch (NoSuchFieldException nsfe) {
-                        // This exception will be warned about below
-                        //nsfe.printStackTrace();
-                    }                    
-                }
             }
         }
-        // All unsupported mappings
+        // All unsupported mappings such as TransformationMapping
         if(null == attributeClass && validationEnabled) {
             // TODO: refactor
-            attributeClass = Object.class;
+            attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
-        }
-        
+        }        
         elementType = (Type<T>)getMetamodel().getType(attributeClass);        
     }
 
@@ -211,7 +204,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                         //nsfe.printStackTrace();
                         if(null == aJavaType) {
                             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);
-                            return (Class<T>)Object.class;
+                            return (Class<T>)MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
                     }                    
                 }
