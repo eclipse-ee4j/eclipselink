@@ -38,7 +38,7 @@ public class ConcurrencyManager implements Serializable {
     protected int numberOfReaders;
     protected int depth;
     protected int numberOfWritersWaiting;
-    protected transient Thread activeThread;
+    protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
 
