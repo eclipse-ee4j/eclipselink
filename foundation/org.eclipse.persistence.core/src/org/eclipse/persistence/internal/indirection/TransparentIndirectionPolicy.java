@@ -328,6 +328,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * or converting the valueHolder to another type.
      */
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        if (! (unitOfWorkIndirectionObject instanceof IndirectContainer)){
+            return new ValueHolder();
+        }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
