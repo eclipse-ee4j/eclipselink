@@ -28,8 +28,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -62,8 +61,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
  */
 
 public class TypeInfo {
-    private static final String ATT = "@";
-    private static final String TXT = "/text()";
     private XMLDescriptor descriptor;
     private ComplexType complexType;
     private boolean hasRootElement;
@@ -134,50 +131,7 @@ public class TypeInfo {
      * @param desc
      */
     public void setDescriptor(XMLDescriptor desc) {
-        // if there is an @XmlID annotation, we need to add
-        // primary key field names to the descriptor
-        if (isIDSet()) {
-            String pkFieldName;
-            
-            String uri = getIDProperty().getSchemaName().getNamespaceURI();
-            String local = getIDProperty().getSchemaName().getLocalPart();
-            String resolvedUri = desc.getNamespaceResolver().resolveNamespaceURI(uri);
-            if (resolvedUri == null) {
-                resolvedUri = "";
-            } else {
-                resolvedUri += ":";
-            }
-            
-            if (helper.isAnnotationPresent(getIDProperty().getElement(), XmlAttribute.class)) {
-                pkFieldName = ATT + resolvedUri + local;
-            } else { // assume element
-                pkFieldName = resolvedUri + local + TXT;
-            }
-            desc.addPrimaryKeyFieldName(pkFieldName);
-        }
-        descriptor = desc;
-
-        // TODO: do we need to relocate this code?
-        XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
-
-        if (classNamespace == null || classNamespace.equals("")) {
-            schemaRef.setSchemaContext("/" + schemaTypeName);
-        } else {
-            String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(classNamespace);
-            if (prefix != null && !prefix.equals("")) {
-                schemaRef.setSchemaContext("/" + prefix + ":" + schemaTypeName);
-            } else {
-                String generatedPrefix = desc.getNonNullNamespaceResolver().generatePrefix();
-                schemaRef.setSchemaContext("/" + generatedPrefix + ":" + schemaTypeName);
-                desc.getNonNullNamespaceResolver().put(generatedPrefix, classNamespace);
-            }
-            schemaRef.setSchemaContextAsQName(new QName(classNamespace, schemaTypeName));
-        }
-        // the default type is complex; need to check for simple type case
-        if (isEnumerationType() || (propertyNames.size() == 1 && helper.isAnnotationPresent(getProperties().get(propertyNames.get(0)).getElement(), XmlValue.class))) {
-            schemaRef.setType(XMLSchemaReference.SIMPLE_TYPE);
-        }
-        descriptor.setSchemaReference(schemaRef);
+    	descriptor = desc;
     }
 
     public ComplexType getComplexType() {
