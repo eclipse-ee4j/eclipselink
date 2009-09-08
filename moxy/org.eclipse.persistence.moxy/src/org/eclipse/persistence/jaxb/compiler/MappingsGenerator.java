@@ -53,6 +53,7 @@ import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.internal.jaxb.many.JAXBObjectArrayAttributeAccessor;
@@ -88,6 +89,8 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  *
  */
 public class MappingsGenerator {
+    private static final String ATT = "@";
+    private static final String TXT = "/text()";
     private static String WRAPPER_CLASS = "org.eclipse.persistence.jaxb.generated";
     private static String OBJECT_CLASS_NAME = "java.lang.Object";
     public static final QName RESERVED_QNAME = new QName("urn:ECLIPSELINK_RESERVEDURI", "RESERVEDNAME");
@@ -106,6 +109,7 @@ public class MappingsGenerator {
     private HashMap<QName, ElementDeclaration> globalElements;
     private Map<MapEntryGeneratedKey, Class> generatedMapEntryClasses;
     private Project project;
+    private NamespaceResolver globalNamespaceResolver;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -114,6 +118,7 @@ public class MappingsGenerator {
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
         classToGeneratedClasses = new HashMap<String, Class>();       
+        globalNamespaceResolver = new NamespaceResolver();
     }
     
     public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements) throws Exception {
@@ -213,11 +218,14 @@ public class MappingsGenerator {
             if (namespace.length() == 0) {
                 descriptor.setDefaultRootElement(elementName);
             } else {
-                descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver()) + ":" + elementName);
+                descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + elementName);
             }
         }
         
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolver());
+        
+        setPKField(descriptor, info);
+        setSchemaContext(descriptor, info);
         project.addDescriptor(descriptor);
         info.setDescriptor(descriptor);
     }
@@ -258,9 +266,60 @@ public class MappingsGenerator {
         }
         xmlDescriptor.setNamespaceResolver(nsr);
         
+        setPKField(xmlDescriptor, info);
+        setSchemaContext(xmlDescriptor, info);
         project.addDescriptor(xmlDescriptor);
         info.setDescriptor(xmlDescriptor);
     }
+    private void setSchemaContext(XMLDescriptor desc, TypeInfo info) {
+        XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
+
+        
+        if (info.getClassNamespace() == null || info.getClassNamespace().equals("")) {
+            schemaRef.setSchemaContext("/" + info.getSchemaTypeName());
+        } else {
+            String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
+            if (prefix != null && !prefix.equals("")) {
+                schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
+            } else {
+            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null);
+                schemaRef.setSchemaContext("/" + generatedPrefix + ":" + info.getSchemaTypeName());
+            }
+            schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
+        }
+        // the default type is complex; need to check for simple type case
+        if (info.isEnumerationType() || (info.getPropertyNames().size() == 1 && helper.isAnnotationPresent(info.getProperties().get(info.getPropertyNames().get(0)).getElement(), XmlValue.class))) {
+            schemaRef.setType(XMLSchemaReference.SIMPLE_TYPE);
+        }
+        desc.setSchemaReference(schemaRef);
+        
+    }
+    
+    private void setPKField(XMLDescriptor desc, TypeInfo info) {
+    	
+        // if there is an @XmlID annotation, we need to add
+        // primary key field names to the descriptor
+        if (info.isIDSet()) {
+            String pkFieldName;
+            
+            String uri = info.getIDProperty().getSchemaName().getNamespaceURI();
+            String local = info.getIDProperty().getSchemaName().getLocalPart();
+            String resolvedUri = desc.getNamespaceResolver().resolveNamespaceURI(uri);
+            if (resolvedUri == null) {
+                resolvedUri = "";
+            } else {
+                resolvedUri += ":";
+            }
+            
+            if (helper.isAnnotationPresent(info.getIDProperty().getElement(), XmlAttribute.class)) {
+                pkFieldName = ATT + resolvedUri + local;
+            } else { // assume element
+                pkFieldName = resolvedUri + local + TXT;
+            }
+            desc.addPrimaryKeyFieldName(pkFieldName);
+        }      
+    }
+    
     public void generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         if (property.isSetXmlJavaTypeAdapter()) {
             // need to check the adapter to determine whether we require a
@@ -941,10 +1000,7 @@ public class MappingsGenerator {
             desc.addMapping(generateMappingForType(keyType, "key"));            	
             desc.addMapping(generateMappingForType(valueType, "value"));
             NamespaceResolver newNr = new NamespaceResolver();
-            String prefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-            if(prefix == null){
-            	prefix = newNr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            }
+            String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, nr, XMLConstants.SCHEMA_INSTANCE_PREFIX, false);
             newNr.put(prefix, XMLConstants.SCHEMA_INSTANCE_URL);
             desc.setNamespaceResolver(newNr);
             project.addDescriptor(desc);            
@@ -1239,7 +1295,10 @@ public class MappingsGenerator {
         return mapping;
     }
 
-    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver) {
+    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix) {
+    	return getPrefixForNamespace(URI, namespaceResolver, suggestedPrefix, true);
+    }
+    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
         Enumeration keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
             String next = (String) keys.nextElement();
@@ -1248,8 +1307,19 @@ public class MappingsGenerator {
                 return next;
             }
         }
-        String prefix = namespaceResolver.generatePrefix();
-        namespaceResolver.put(prefix, URI);
+        String prefix = null;
+        if(suggestedPrefix != null){
+        	prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
+        }else{
+        	prefix = globalNamespaceResolver.generatePrefix();	
+        }
+                
+        while(null != namespaceResolver.resolveNamespacePrefix(prefix)){
+        	prefix = globalNamespaceResolver.generatePrefix();
+        }
+        if(addPrefixToNR){
+        	namespaceResolver.put(prefix, URI);
+        }
         return prefix;
     }
 
@@ -1308,12 +1378,9 @@ public class MappingsGenerator {
             }
             
             if(rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
-                String prefix = rootDescriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-                if(prefix == null){
-                    prefix = rootDescriptor.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                }
-                XMLField classIndicatorField = new XMLField("@"+ prefix + ":type");
-                rootDescriptor.getNamespaceResolver().put(prefix, XMLConstants.SCHEMA_INSTANCE_URL); 
+            	String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                                
+                XMLField classIndicatorField = new XMLField("@"+ prefix + ":type");                 
                 rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);                  
             }
                         
@@ -1490,7 +1557,7 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 xPath += (wrapper.name() + "/");
             } else {
-                xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver()) + ":" + wrapper.name() + "/");
+                xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + wrapper.name() + "/");
             }
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
@@ -1505,7 +1572,7 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 xPath += ("@" + name.getLocalPart());
             } else {
-                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
+                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
                 xPath += ("@" + prefix + ":" + name.getLocalPart());
             }
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getClass());
@@ -1561,7 +1628,7 @@ public class MappingsGenerator {
                 path += "/text()";
             }
         } else {
-            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
+            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
             path += prefix + ":" + elementName.getLocalPart();
             if (isText) {
                 path += "/text()";
@@ -1653,11 +1720,7 @@ public class MappingsGenerator {
                 } else {                    
                     XMLDescriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
-                    String prefix = descriptor.getNamespaceResolver().resolveNamespaceURI(uri);
-                    if(prefix == null) {
-                        prefix = descriptor.getNamespaceResolver().generatePrefix();
-                        descriptor.getNamespaceResolver().put(prefix, uri);
-                    }
+                    String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
                     descriptor.addRootElement(prefix + ":" + next.getLocalPart());
                 }
             }
@@ -1803,10 +1866,9 @@ public class MappingsGenerator {
                       desc.setDefaultRootElement(next.getLocalPart());                      
                   } else {
                       NamespaceResolver resolver = new NamespaceResolver();
-                      String prefix = resolver.generatePrefix();
-                      resolver.put(prefix, namespaceUri);
+                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
+                      
                       desc.setNamespaceResolver(resolver);
-                      //desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
                       desc.setDefaultRootElement("");
                       desc.addRootElement(prefix + ":" + next.getLocalPart());
 
