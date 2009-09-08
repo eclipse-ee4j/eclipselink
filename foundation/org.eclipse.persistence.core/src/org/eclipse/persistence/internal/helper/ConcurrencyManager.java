@@ -38,7 +38,7 @@ public class ConcurrencyManager implements Serializable {
     protected int numberOfReaders;
     protected int depth;
     protected int numberOfWritersWaiting;
-    protected transient Thread activeThread;
+    protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
 
@@ -251,12 +251,23 @@ public class ConcurrencyManager implements Serializable {
      * If this is acquired return false otherwise acquire readlock and return true
      */
     public synchronized boolean acquireReadLockNoWait() {
-        if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) {
+
+ /*       if ((this.activeThread == Thread.currentThread()) || (null == this.activeThread)) {
             acquireReadLock();
             return true;
         } else {
+            System.out.println("Active Thread : " + this.activeThread);
             return false;
         }
+*/
+        if ((null == this.activeThread) || (this.activeThread == Thread.currentThread())) {
+            acquireReadLock();
+            return true;
+        } else {
+            System.out.println("Active Thread : " + this.activeThread);
+            return false;
+        }
+
     }
 
     /**
