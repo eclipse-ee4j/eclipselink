@@ -125,7 +125,7 @@
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
-        <jar jarfile="${jpa.2.common.plugins.dir}/EclipseLink_modelgen_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${jpa.2.common.plugins.dir}/eclipselink_modelgen_processor_${version.string}.jar" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
