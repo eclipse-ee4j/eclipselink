@@ -373,6 +373,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
+        { "metamodel_canonical_model_classes_not_found", "No Canonical Metamodel classes found during initialization"},
+        { "metamodel_canonical_model_class_found", "Canonical Metamodel class[{0}] found and intantiated during initialization"},
         // MESSAGES end        
         
         
@@ -632,8 +634,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
-        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"}
-        
+        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
+        { "metamodel_canonical_model_class_found.MSGID", "TOP-50234"},
+        { "metamodel_canonical_model_classes_not_found.MSGID", "TOP-50235"}
+
     }; 
      
     /**
