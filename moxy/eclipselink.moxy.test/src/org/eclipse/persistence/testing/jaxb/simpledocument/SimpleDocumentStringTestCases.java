@@ -27,12 +27,12 @@ public class SimpleDocumentStringTestCases extends JAXBTestCases {
 	        super(name);
 	        setControlDocument(XML_RESOURCE);        
 	        Class[] classes = new Class[1];
-	        classes[0] = ObjectFactory.class;
+	        classes[0] = StringObjectFactory.class;
 	        setClasses(classes);
 	    }
 
 	    protected Object getControlObject() {
-	    	JAXBElement value = new ObjectFactory().createStringRoot();
+	    	JAXBElement value = new StringObjectFactory().createStringRoot();
 	    	value.setValue("StringValue");
 	    	return value;      
 	    }

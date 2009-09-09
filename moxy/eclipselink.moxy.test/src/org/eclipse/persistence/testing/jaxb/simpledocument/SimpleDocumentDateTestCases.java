@@ -31,12 +31,12 @@ public class SimpleDocumentDateTestCases extends JAXBTestCases {
 	        super(name);
 	        setControlDocument(XML_RESOURCE);        
 	        Class[] classes = new Class[1];
-	        classes[0] = ObjectFactory.class;
+	        classes[0] = DateObjectFactory.class;
 	        setClasses(classes);
 	    }
 
 	    protected Object getControlObject() {
-	    	JAXBElement value = new ObjectFactory().createDateRoot();
+	    	JAXBElement value = new DateObjectFactory().createDateRoot();
 	    		    	
 	    	Calendar cal = Calendar.getInstance();
 	    	cal.clear();
