@@ -33,6 +33,8 @@ import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
@@ -812,6 +814,17 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     protected static DatabaseQuery applyHints(Map<String, Object> hints, DatabaseQuery query, ClassLoader classLoader) {
         return QueryHintsHandler.apply(hints, query, classLoader);
+    }
+
+    /**
+     * Return a boolean indicating whether a value has been bound 
+     * to the parameter.
+     * @param param parameter object
+     * @return boolean indicating whether parameter has been bound
+     */
+    public boolean isBound(Parameter<?> param){
+        //TODO
+        throw new UnsupportedOperationException();
     }
 
     /**

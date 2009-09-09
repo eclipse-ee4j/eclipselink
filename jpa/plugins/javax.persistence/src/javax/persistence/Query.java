@@ -29,13 +29,11 @@ package javax.persistence;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * Interface used to control query execution.
- * 
- * @since Java Persistence 2.0
  */
 public interface Query {
 
@@ -190,7 +188,7 @@ public interface Query {
      * @throws IllegalArgumentException if position does not
      *         correspond to a parameter of the query
      */
-    Query setParameter(Parameter<Date> param, Date value,  TemporalType temporalType);
+    Query setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType);
 
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
@@ -201,7 +199,7 @@ public interface Query {
      * @throws IllegalArgumentException if position does not
      *         correspond to a parameter of the query
      */
-    Query setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType);
+    Query setParameter(Parameter<Date> param, Date value, TemporalType temporalType);
 
     /**
      * Bind an argument to a named parameter.
@@ -225,7 +223,7 @@ public interface Query {
      *             if parameter name does not correspond to a parameter of the
      *             query
      */
-    Query setParameter(String name, Date value, TemporalType temporalType);
+    Query setParameter(String name, Calendar value, TemporalType temporalType);
 
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
@@ -238,7 +236,7 @@ public interface Query {
      *             if parameter name does not correspond to a parameter of the
      *             query
      */
-    Query setParameter(String name, Calendar value, TemporalType temporalType);
+    Query setParameter(String name, Date value, TemporalType temporalType);
 
      /**
      * Bind an argument to a positional parameter.
@@ -263,7 +261,7 @@ public interface Query {
      *             if position does not correspond to a positional parameter of
      *             the query
      */
-    Query setParameter(int position, Date value, TemporalType temporalType);
+    Query setParameter(int position, Calendar value,  TemporalType temporalType);
 
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
@@ -276,7 +274,7 @@ public interface Query {
      *             if position does not correspond to a positional parameter of
      *             the query
      */
-    Query setParameter(int position, Calendar value, TemporalType temporalType);
+    Query setParameter(int position, Date value,  TemporalType temporalType);
 
     /**
      * Get the query parameter objects. Returns empty set if the query has no
@@ -296,23 +294,67 @@ public interface Query {
     Parameter<?> getParameter(String name);
 
     /**
-     * Get the positional parameter with the given position
-     * 
+     * Get the parameter of the given name and type.
+     * This method is required to be supported for criteria queries
+     * only.
+     * @param name 
+     * @param type
      * @return parameter object
-     * @throws IllegalArgumentException
-     *             if the parameter with the specified position doesn't
-     *             exist
+     * @throws IllegalArgumentException if the parameter of the
+     *         specified name does not exist or is not assignable
+     *         to the type
+     * @throws IllegalStateException if invoked on a native
+     *         query or Java Persistence query language query when
+     *         the implementation does not support this use
+     */
+    <T> Parameter<T> getParameter(String name, Class<T> type);
+
+    /**
+     * Get the parameter object corresponding to the declared
+     * positional parameter with the given position.
+     * This method is not required to be supported for native
+     * queries.
+     * @param position
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist
+     * @throws IllegalStateException if invoked on a native
+     *         query when the implementation does not support 
+     *         this use
      */
     Parameter<?> getParameter(int position);
 
     /**
-     * Return the value that has been bound to the parameter.
-     * 
-     * @param param
-     *            parameter object
+     * Get the positional parameter with the given position and type.
+     * This method is not required to be supported by the provider.
+     * @param position 
+     * @param type
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist or is not assignable
+     *         to the type
+     * @throws IllegalStateException if invoked on a native
+     *         query or Java Persistence query language query when
+     *         the implementation does not support this use
+     */
+    <T> Parameter<T> getParameter(int position, Class<T> type);
+
+    /**
+     * Return a boolean indicating whether a value has been bound 
+     * to the parameter.
+     * @param param parameter object
+     * @return boolean indicating whether parameter has been bound
+     */
+    boolean isBound(Parameter<?> param);
+
+    /**
+     * Return the value bound to the parameter.
+     * @param param parameter object
      * @return parameter value
-     * @throws IllegalStateException
-     *             if the parameter has not been been bound
+     * @throws IllegalArgumentException if the parameter is not 
+     *         a parameter of the query
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
      */
     <T> T getParameterValue(Parameter<T> param);
 

@@ -17,7 +17,7 @@ public class OrderImpl implements Order {
         this.isAscending = isAscending;
     }
 
-    public <T extends Comparable<T>> Expression<T> getExpression() {
+    public Expression<?> getExpression() {
         return this.expression;
     }
 

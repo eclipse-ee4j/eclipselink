@@ -59,11 +59,9 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
     protected SelectionImpl<?> selection;
-    protected Class<?> queryType;
     
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
-        super(metamodel, queryResult, queryBuilder);
-        this.queryType = result;
+        super(metamodel, queryResult, queryBuilder, result);
     }
 
     /**
@@ -280,6 +278,23 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> groupBy(Expression<?>... grouping){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Specify the expressions that are used to form groups over
+     * the query results.
+     * Replaces the previous specified grouping expressions, if any.
+     * If no grouping expressions are specified, any previously 
+     * added grouping expressions are simply removed.
+     * This method only overrides the return type of the 
+     * corresponding AbstractQuery method.
+     * @param grouping  list of zero or more grouping expressions
+     * @return the modified query
+     */
+    public CriteriaQuery<T> groupBy(List<Expression<?>> grouping){
+        //TODO
         throw new UnsupportedOperationException();
     }
 
@@ -334,8 +349,27 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query.
      */
     public CriteriaQuery<T> orderBy(Order... o){
+        //TODO
         throw new UnsupportedOperationException();
     }
+    /**
+     * Specify the ordering expressions that are used to
+     * order the query results.
+     * Replaces the previous ordering expressions, if any.
+     * If no ordering expressions are specified, the previous
+     * ordering, if any, is simply removed, and results will
+     * be returned in no particular order.
+     * The order of the ordering expressions in the list
+     * determines the precedence, whereby the first element in the
+     * list has highest precedence.
+     * @param o  list of zero or more ordering expressions
+     * @return the modified query.
+     */
+    public CriteriaQuery<T> orderBy(List<Order> o){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
     
     public boolean discoverResultType(Selection<?> ... selections){
         Class[] constructorArgs = new Class[selections.length];
@@ -383,35 +417,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
-     * product with any existing roots.
-     * 
-     * @param entity
-     *            metamodel entity representing the entity of type X
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(EntityType<X> entity){
-        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
-        initialRoot(root, entity);
-        return root;
-    }
-
-    /**
-     * Add a query root corresponding to the given entity, forming a cartesian
-     * product with any existing roots.
-     * 
-     * @param entityClass
-     *            the entity class
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(Class<X> entityClass) {
-        EntityType<X> entity = this.metamodel.entity(entityClass);
-        return this.from(entity);
-    }
-
-    
-    /**
      * Return the ordering expressions in order of precedence.
      * 
      * @return the list of ordering expressions
@@ -437,24 +442,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * Return the result type of the query.
-     * If a result type was specified as an argument to the
-     * createQuery method, that type will be returned.
-     * If the query was created using the createTupleQuery
-     * method, the result type is Tuple.
-     * Otherwise, the result type is Object.
-     * @return result type
-     */
-    public Class<?> getResultType(){
-        return this.queryType;
-    }
-    
-    /**
      * Translates from the criteria query to a EclipseLink
      * Database Query.
      */
     public DatabaseQuery translate(){
         //TODO fetch joins
+        //find and translate subqueries.
         
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)){

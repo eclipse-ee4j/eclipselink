@@ -184,12 +184,24 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
     CriteriaQuery<T> groupBy(Expression<?>... grouping);
 
     /**
-     * Specify a restriction over the groups of the query. Replaces the previous
-     * having restriction(s), if any. This method only overrides the return type
-     * of the corresponding AbstractQuery method.
-     * 
-     * @param restriction
-     *            a simple or compound boolean expression
+     * Specify the expressions that are used to form groups over
+     * the query results.
+     * Replaces the previous specified grouping expressions, if any.
+     * If no grouping expressions are specified, any previously 
+     * added grouping expressions are simply removed.
+     * This method only overrides the return type of the 
+     * corresponding AbstractQuery method.
+     * @param grouping  list of zero or more grouping expressions
+     * @return the modified query
+     */
+    CriteriaQuery<T> groupBy(List<Expression<?>> grouping);
+
+    /**
+     * Specify a restriction over the groups of the query.
+     * Replaces the previous having restriction(s), if any.
+     * This method only overrides the return type of the 
+     * corresponding AbstractQuery method.
+     * @param restriction  a simple or compound boolean expression
      * @return the modified query
      */
     CriteriaQuery<T> having(Expression<Boolean> restriction);
@@ -223,30 +235,34 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
     CriteriaQuery<T> orderBy(Order... o);
 
     /**
-     * Specify whether duplicate query results will be eliminated. A true value
-     * will cause duplicates to be eliminated. A false value will cause
-     * duplicates to be retained. If distinct has not been specified, duplicate
-     * results must be retained. This method only overrides the return type of
-     * the corresponding AbstractQuery method.
-     * 
-     * @param distinct
-     *            boolean value specifying whether duplicate results must be
-     *            eliminated from the query result or whether they must be
-     *            retained
+     * Specify the ordering expressions that are used to
+     * order the query results.
+     * Replaces the previous ordering expressions, if any.
+     * If no ordering expressions are specified, the previous
+     * ordering, if any, is simply removed, and results will
+     * be returned in no particular order.
+     * The order of the ordering expressions in the list
+     * determines the precedence, whereby the first element in the
+     * list has highest precedence.
+     * @param o  list of zero or more ordering expressions
+     * @return the modified query.
+     */
+    CriteriaQuery<T> orderBy(List<Order> o);
+
+    /**
+     * Specify whether duplicate query results will be eliminated.
+     * A true value will cause duplicates to be eliminated.
+     * A false value will cause duplicates to be retained.
+     * If distinct has not been specified, duplicate results must
+     * be retained.
+     * This method only overrides the return type of the 
+     * corresponding AbstractQuery method.
+     * @param distinct  boolean value specifying whether duplicate
+     *        results must be eliminated from the query result or
+     *        whether they must be retained
      * @return the modified query.
      */
     CriteriaQuery<T> distinct(boolean distinct);
- 
-    /**
-     * Return the result type of the query.
-     * If a result type was specified as an argument to the
-     * createQuery method, that type will be returned.
-     * If the query was created using the createTupleQuery
-     * method, the result type is Tuple.
-     * Otherwise, the result type is Object.
-     * @return result type
-     */
-    Class<?> getResultType();
     
     /**
      * Return the ordering expressions in order of precedence.

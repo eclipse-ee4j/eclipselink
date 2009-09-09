@@ -47,5 +47,5 @@ public interface Order {
      * 
      * @return expression used for ordering
      */
-    <T extends Comparable<T>> Expression<T> getExpression();
+   Expression<?> getExpression();
 }

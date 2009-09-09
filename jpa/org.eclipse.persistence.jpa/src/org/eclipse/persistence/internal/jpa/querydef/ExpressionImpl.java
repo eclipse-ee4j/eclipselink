@@ -43,12 +43,12 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     protected boolean isLiteral;
     protected Object literal;
     
-    public <T> ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
+    protected ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
     }
     
-    public <T> ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
+    public ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
         this.literal = value;
@@ -140,5 +140,10 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     
     protected Object getValue(){
         return this.getValue();
+    }
+    
+    protected void prepare(){
+        //This is a no op 
+        //This would be abstract but this is a concrete class
     }
 }

@@ -123,4 +123,13 @@ public interface EntityManagerFactory {
      *             if the entity manager factory has been closed.
      */
     public Cache getCache();
+
+    /**
+     * Return interface providing access to utility methods
+     * for the persistence unit.
+     * @return PersistenceUnitUtil interface
+     * @throws IllegalStateException if the entity manager factory
+     * has been closed.
+     */
+    public PersistenceUnitUtil getPersistenceUnitUtil();
 }

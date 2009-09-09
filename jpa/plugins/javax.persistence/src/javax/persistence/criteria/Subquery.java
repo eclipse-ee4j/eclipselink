@@ -35,13 +35,7 @@ package javax.persistence.criteria;
  * @since Java Persistence 2.0
  */
 public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
-    /**
-     * Return the query of which this is a subquery.
-     * 
-     * @return the enclosing query or subquery
-     */
-    AbstractQuery<?> getParent();
-
+	
     /**
      * Specify the item that is to be returned in the query result. Replaces the
      * previously specified selection, if any.
@@ -203,6 +197,12 @@ public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
      */
     <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentMap);
 
+    /**
+     * Return the query of which this is a subquery.
+     * @return the enclosing query or subquery
+     */
+    AbstractQuery<?> getParent();
+	
     /**
      * Return the joins that have been made from the subquery.
      * 

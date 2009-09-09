@@ -68,7 +68,7 @@ public class SelectionImpl<X> implements Selection<X> {
         return this.alias;
     }
 
-    public Class<X> getJavaType() {
+    public Class<? extends X> getJavaType() {
         return this.javaType;
     }
     /**

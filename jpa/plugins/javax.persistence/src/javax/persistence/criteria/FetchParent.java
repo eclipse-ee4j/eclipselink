@@ -94,7 +94,7 @@ public interface FetchParent<Z, X> {
      *            join
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(String attributeName);
+    <X, Y> Fetch<X, Y> fetch(String attributeName);
 
     /**
      * Fetch join to the specified attribute or association using the given join
@@ -107,5 +107,5 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
+    <X, Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
 }

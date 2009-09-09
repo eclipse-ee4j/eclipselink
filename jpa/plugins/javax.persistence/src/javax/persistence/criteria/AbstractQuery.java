@@ -181,4 +181,15 @@ public interface AbstractQuery<T> {
      * @return subquery corresponding to the query
      */
     <U> Subquery<U> subquery(Class<U> type);
+
+    /**
+     * Return the result type of the query or subquery.
+     * If a result type was specified as an argument to the
+     * createQuery or subquery method, that type will be returned.
+     * If the query was created using the createTupleQuery
+     * method, the result type is Tuple.
+     * Otherwise, the result type is Object.
+     * @return result type
+     */
+    Class<T> getResultType();  	
 }

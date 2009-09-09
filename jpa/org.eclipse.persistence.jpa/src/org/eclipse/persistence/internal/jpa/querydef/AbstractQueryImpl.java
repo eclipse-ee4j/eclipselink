@@ -55,16 +55,19 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected ResultType queryResult;
     protected QueryBuilderImpl queryBuilder;
     protected boolean distinct;
+    protected List<Expression<?>> stupidImplicitDanglingJoins;
+    protected Class queryType;
 
     protected enum ResultType{
         OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
     
-    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder){
+    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder, Class<T> resultType){
         this.roots = new HashSet<Root<?>>();
         this.metamodel = metamodel;
         this.queryResult = queryResult;
         this.queryBuilder = queryBuilder;
+        this.queryType = resultType;
     }
     
     /**
@@ -94,6 +97,19 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
         Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
         this.roots.add(root);
         return root;
+    }
+
+    /**
+     * Return the result type of the query.
+     * If a result type was specified as an argument to the
+     * createQuery method, that type will be returned.
+     * If the query was created using the createTupleQuery
+     * method, the result type is Tuple.
+     * Otherwise, the result type is Object.
+     * @return result type
+     */
+    public Class<T> getResultType(){
+        return this.queryType;
     }
 
     /**

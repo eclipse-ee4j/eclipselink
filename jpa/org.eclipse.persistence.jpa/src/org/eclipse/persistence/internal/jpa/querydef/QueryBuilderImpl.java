@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -23,6 +24,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
@@ -83,13 +85,24 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            arguments to the constructor
      * @return selection item
      */
-    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections){
+    public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections){
         return new CompoundSelectionImpl(result, selections);
     }
     
 
-    public Selection<Tuple> tuple(Selection<?>... selections){
+    public CompoundSelection<Tuple> tuple(Selection<?>... selections){
         return construct(Tuple.class, selections);
+    }
+
+    /**
+     * Create an array-valued selection item
+     * @param selections  selection items
+     * @return array-valued compound selection
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
+     */
+    public CompoundSelection<Object[]> array(Selection<?>... selections){
+        return construct(ClassConstants.AOBJECT, selections);
     }
 
     /**
@@ -246,6 +259,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return all expression
      */
     public <Y> Expression<Y> all(Subquery<Y> subquery){
+  //      return new SubQueryImpl(metamodel, queryResult, result, queryBuilder)<Y>(metamodel, ExpressionMath.abs(((ExpressionImpl)x).getCurrentNode().all(((SubQueryImpl)subquery).translate())), buildList(x),"ABS");
         //TODO
         throw new UnsupportedOperationException();
     }
@@ -406,7 +420,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((ExpressionImpl)restriction).isPredicate()){
             return ((PredicateImpl)restriction).negate();
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)restriction).currentNode.not(), buildList(restriction), BooleanOperator.NOT);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)restriction).currentNode.not(), buildList(restriction), "not");
     }
 
     /**
@@ -869,8 +883,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return absolute value
      */
     public <N extends Number> Expression<N> abs(Expression<N> x){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).isPredicate()) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_PREDICATE_PROVIDED EXP_EXPECTED_TODO"));
+        return new FunctionExpressionImpl<N>(metamodel, (Class<N>) x.getJavaType(), ExpressionMath.abs(((ExpressionImpl)x).getCurrentNode()), buildList(x),"ABS");
     }
 
     /**
@@ -883,8 +897,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).isPredicate()) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_PREDICATE_PROVIDED EXP_EXPECTED_TODO"));
+        return new FunctionExpressionImpl<N>(metamodel, (Class<N>) x.getJavaType(), ((ExpressionImpl)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
 
     /**

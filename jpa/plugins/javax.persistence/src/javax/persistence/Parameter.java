@@ -48,4 +48,18 @@ public interface Parameter<T> {
      * @return position of parameter
      */
     Integer getPosition();
+
+    /**
+     * Return the Java type of the parameter. Values bound to the
+     * parameter must be assignable to this type.
+     * This method is required to be supported for criteria queries
+     * only. Applications that use this method for Java Persistence
+     * query language queries and native queries will not be portable.
+     * @return the Java type of the parameter
+     * @throws IllegalStateException if invoked on a parameter
+     * obtained from a Java persistence query language query or
+     * native query when the implementation does not support this
+     * use.
+     */
+     Class<T> getParameterType();
 }

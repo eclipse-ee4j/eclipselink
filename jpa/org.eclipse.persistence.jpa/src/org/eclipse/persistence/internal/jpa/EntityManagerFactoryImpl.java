@@ -344,7 +344,19 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 		return persistOnCommit;
 	}
 
-	/**
+    /**
+     * Return interface providing access to utility methods
+     * for the persistence unit.
+     * @return PersistenceUnitUtil interface
+     * @throws IllegalStateException if the entity manager factory
+     * has been closed.
+     */
+    public PersistenceUnitUtil getPersistenceUnitUtil(){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    /**
 	 * Set default property to avoid discover new objects in unit of work if
 	 * application always uses persist.
 	 */

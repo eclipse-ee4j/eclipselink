@@ -63,21 +63,40 @@ public interface QueryBuilder {
     CriteriaQuery<Tuple> createTupleQuery();
 
     /**
-     * Define a select list item corresponding to a constructor.
-     * 
-     * @param result
-     *            class whose instance is to be constructed
-     * @param selections
-     *            arguments to the constructor
-     * @return selection item
+     * Create a selection item corresponding to a constructor.
+     * This method is used to specify a constructor that will be
+     * applied to the results of the query execution. If the
+     * constructor is for an entity class, the resulting entities
+     * will be in the new state after the query is executed.
+     * @param result  class whose instance is to be constructed
+     * @param selections  arguments to the constructor
+     * @return compound selection item
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
      */
-    <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections);
+    <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections);
+
+    /**
+     * Create a tuple-valued selection item
+     * @param selections  selection items
+     * @return tuple-valued compound selection
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
+     */
+    CompoundSelection<Tuple> tuple(Selection<?>... selections);
+
+    /**
+     * Create an array-valued selection item
+     * @param selections  selection items
+     * @return array-valued compound selection
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
+     */
+    CompoundSelection<Object[]> array(Selection<?>... selections);
 
     /**
      * Create an ordering by the ascending value of the expression.
-     * 
-     * @param x
-     *            expression used to define the ordering
+     * @param x  expression used to define the ordering
      * @return ascending ordering corresponding to the expression
      */
     Order asc(Expression<?> x);
@@ -215,35 +234,28 @@ public interface QueryBuilder {
      * @return and predicate
      */
     Predicate and(Expression<Boolean> x, Expression<Boolean> y);
-
+    
     /**
-     * Create a disjunction of the given boolean expressions.
-     * 
-     * @param x
-     *            boolean expression
-     * @param y
-     *            boolean expression
-     * @return or predicate
-     */
-    Predicate or(Expression<Boolean> x, Expression<Boolean> y);
-
-    /**
-     * Create a conjunction of the given restriction predicates. A conjunction
-     * of zero predicates is true.
-     * 
-     * @param restriction
-     *            zero or more restriction predicates
+     * Create a conjunction of the given restriction predicates.
+     * A conjunction of zero predicates is true.
+     * @param restriction  zero or more restriction predicates
      * @return and predicate
      */
     Predicate and(Predicate... restrictions);
 
     /**
-     * Create a disjunction of the given restriction predicates. A disjunction
-     * of zero predicates is false.
-     * 
-     * @param restriction
-     *            zero or more restriction predicates
-     * @return and predicate
+     * Create a disjunction of the given boolean expressions.
+     * @param x  boolean expression
+     * @param y  boolean expression
+     * @return or predicate
+     */
+    Predicate or(Expression<Boolean> x, Expression<Boolean> y);
+
+    /**
+     * Create a disjunction of the given restriction predicates.
+     * A disjunction of zero predicates is false.
+     * @param restriction  zero or more restriction predicates
+     * @return or predicate
      */
     Predicate or(Predicate... restrictions);
 

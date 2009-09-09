@@ -37,7 +37,7 @@ import java.util.List;
  */
 public interface Predicate extends Expression<Boolean> {
     public static enum BooleanOperator {
-        AND, OR, NOT
+		AND, OR
     }
 
     /**
