@@ -18,31 +18,11 @@ import javax.xml.namespace.*;
 import java.util.Date;
 
 @XmlRegistry
-public class ObjectFactory {
-
-    @XmlElementDecl(namespace = "myns", name = "stringroot")
-    public JAXBElement<String> createStringRoot() {
-        return new JAXBElement(new QName("myns", "stringroot"), String.class, null);
-    }
-
-    @XmlElementDecl(namespace = "myns", name = "integerroot")
-    public JAXBElement<Integer> createIntegerRoot() {
-        return new JAXBElement(new QName("myns", "integerroot"), Integer.class, null);
-    }
-
-    @XmlElementDecl(namespace = "myns", name = "base64root")
-    public JAXBElement<Byte[]> createBase64Root() {
-        return new JAXBElement(new QName("myns", "base64root"), Byte[].class, null);
-    }
+public class DateObjectFactory {
 
     @XmlElementDecl(namespace = "myns", name = "dateroot")
     public JAXBElement<Date> createDateRoot() {
         return new JAXBElement(new QName("myns", "dateroot"), Date.class, null);
-    }
-
-    @XmlElementDecl(namespace = "myns", name = "root")
-    public JAXBElement<Date> createRoot() {
-        return new JAXBElement(new QName("myns", "root"), Root.class, null);
     }
 
 }

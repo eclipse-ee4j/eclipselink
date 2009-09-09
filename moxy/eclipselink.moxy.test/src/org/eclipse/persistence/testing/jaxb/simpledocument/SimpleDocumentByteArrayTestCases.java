@@ -27,12 +27,12 @@ public class SimpleDocumentByteArrayTestCases extends JAXBTestCases {
 	        super(name);
 	        setControlDocument(XML_RESOURCE);        
 	        Class[] classes = new Class[1];
-	        classes[0] = ObjectFactory.class;
+	        classes[0] = ByteArrayObjectFactory.class;
 	        setClasses(classes);
 	    }
 
 	    protected Object getControlObject() {
-	    	JAXBElement value = new ObjectFactory().createBase64Root();
+	    	JAXBElement value = new ByteArrayObjectFactory().createBase64Root();
 	    	value.setValue(new Byte[]{new Byte((byte)1), new Byte((byte)2), new Byte((byte)3), new Byte((byte)4), new Byte((byte)5), new Byte((byte)6), new Byte((byte)7)});
 	    	return value;      
 	    }
