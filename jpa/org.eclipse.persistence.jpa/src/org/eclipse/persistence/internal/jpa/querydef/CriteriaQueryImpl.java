@@ -72,6 +72,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
+        validateRoot(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
             if (!selection.getJavaType().equals(Tuple.class) && !this.queryResult.equals(ResultType.TUPLE) && !this.queryResult.equals(ResultType.OBJECT_ARRAY)) {
@@ -95,7 +96,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.OTHER;
             }
         }
-        integrateRoot(selection);
         return this;
     }
 
@@ -485,15 +485,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((ExpressionImpl)this.where).getCurrentNode() != null){
-                reportQuery.setReferenceClass(((ExpressionImpl)this.where).getCurrentNode().getBuilder().getQueryClass());
+            if (this.where != null && ((InternalSelection)this.where).getCurrentNode() != null){
+                reportQuery.setReferenceClass(((InternalSelection)this.where).getCurrentNode().getBuilder().getQueryClass());
             }else{
             reportQuery.setReferenceClass(this.getRoots().iterator().next().getJavaType());
         }
             query = reportQuery;
         }
         if (this.where != null){
-            query.setSelectionCriteria(((ExpressionImpl)this.where).getCurrentNode());
+            query.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
         }
         if (this.distinct){
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);

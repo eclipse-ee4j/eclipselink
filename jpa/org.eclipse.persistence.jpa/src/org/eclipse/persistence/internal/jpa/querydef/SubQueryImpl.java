@@ -14,23 +14,18 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Tuple;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -40,17 +35,13 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -68,16 +59,23 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author gyorke
  * @since EclipseLink 2.0
  */
-public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T> {
+public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T> , InternalExpression, InternalSelection{
     
     protected SelectionImpl<?> selection;
     protected SubSelectExpression currentNode;
     protected String alias;
+    protected ReportQuery subQuery;
+    protected Set<Join<?,?>> correlatedJoins;
+    protected AbstractQuery parent;
         
 
 
-    public SubQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
-        super(metamodel, queryResult, queryBuilder, result);
+    public SubQueryImpl(Metamodel metamodel, Class result, QueryBuilderImpl queryBuilder, AbstractQuery parent){
+        super(metamodel, ResultType.OTHER, queryBuilder, result);
+        this.subQuery = new ReportQuery();
+        this.correlatedJoins = new HashSet();
+        this.currentNode = new SubSelectExpression(subQuery, new ExpressionBuilder());
+        this.parent = parent;
     }
 
     /**
@@ -88,18 +86,38 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> select(Expression<T> selection) {
+        validateRoot(selection);
+
         this.selection = (SelectionImpl) selection;
         this.queryType = selection.getJavaType();
-        ManagedType type = this.metamodel.type(this.queryType);
-        if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-            if (!((EntityType)type).hasSingleIdAttribute()){
-                this.selection = (SelectionImpl) ((Path)this.selection).get(((EntityType)type).getId(Object.class));
-            }else{
-                this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, (Selection[])((EntityType)type).getIdClassAttributes().toArray());
+
+        if (selection.isCompoundSelection()) {
+            int count = 0;
+            for (Selection select : selection.getCompoundSelectionItems()) {
+                this.subQuery.addItem(String.valueOf(count), ((InternalSelection) select).getCurrentNode());
+            }
+        } else {
+            ManagedType<T> type = this.metamodel.type(this.queryType);
+            if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+                if (!((EntityType<T>) type).hasSingleIdAttribute()) {
+                    this.selection = (SelectionImpl) ((Path) this.selection).get(((EntityType) type).getId(Object.class));
+                    this.subQuery.addItem(selection.getAlias() + "ID", this.selection.getCurrentNode());
+                } else {
+                    Expression[] expressions = new Expression[((EntityType<T>) type).getIdClassAttributes().size()];
+                    int index = 0;
+                    for (SingularAttribute<? super T, ?> attr : ((EntityType<T>) type).getIdClassAttributes()) {
+                        PathImpl path = (PathImpl) ((Path) selection).get(attr);
+                        expressions[index] = path;
+                        ++index;
+                        this.subQuery.addItem(selection.getAlias() + "ID" + index, path.getCurrentNode());
+                    }
+                    this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, expressions);
+                }
+            } else {
+                this.subQuery.addItem(selection.getAlias(), ((InternalSelection) selection).getCurrentNode());
             }
         }
         this.queryResult = ResultType.OTHER;
-        integrateRoot(selection);
         return this;
     }
     // override the return type only:
@@ -114,7 +132,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> where(Expression<Boolean> restriction){
-        return (Subquery<T>) super.where(restriction);
+        super.where(restriction);
+        this.subQuery.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
+        return this;
     }
 
     /**
@@ -130,7 +150,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> where(Predicate... restrictions){
-        return (Subquery<T>) super.where(restrictions);
+        super.where(restrictions);
+        this.subQuery.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
+        return this;
     }
 
     /**
@@ -145,7 +167,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> groupBy(Expression<?>... grouping){
-        return (Subquery<T>) super.groupBy(grouping);
+        super.groupBy(grouping);
+        for (Expression groupby: grouping){
+            this.subQuery.addGrouping(((InternalSelection)groupby).getCurrentNode());
+        }
+        return this;
     }
 
     /**
@@ -158,7 +184,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> having(Expression<Boolean> restriction){
-        return (Subquery<T>)super.having(restriction);
+        super.having(restriction);
+        this.subQuery.setHavingExpression(((InternalSelection)restriction).getCurrentNode());
+        return this;
     }
 
     /**
@@ -174,16 +202,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> having(Predicate... restrictions){
-        return (Subquery<T>)super.having(restrictions);
+        super.having(restrictions);
+        this.subQuery.setHavingExpression(((InternalSelection)this.havingClause).getCurrentNode());
+        return this;
     }
     
-    protected void initialRoot(RootImpl root, EntityType entity){
-        if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))){
-            //this is the first root, set return type and selection and query type
-            select(root);
-        }
-    }
-
     /**
      * Correlates a root of the enclosing query to a root of the subquery and
      * returns the subquery root.
@@ -193,8 +216,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return subquery root
      */
     public <Y> Root<Y> correlate(Root<Y> parentRoot){
-        //TODO
-        throw new UnsupportedOperationException();
+        return from(parentRoot.getModel());
     }
 
     /**
@@ -206,8 +228,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return subquery join
      */
     public <X, Y> Join<X, Y> correlate(Join<X, Y> parentJoin){
-        //TODO
-        throw new UnsupportedOperationException();
+        this.correlatedJoins.add(parentJoin);
+        return new JoinImpl(parentJoin.getParentPath(), metamodel.type(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), ((InternalSelection)parentJoin).getCurrentNode(), parentJoin.getModel(), parentJoin.getJoinType());
+        
     }
     /**
      * Correlates a join to a Collection-valued association or element
@@ -219,8 +242,8 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return subquery join
      */
     public <X, Y> CollectionJoin<X, Y> correlate(CollectionJoin<X, Y> parentCollection){
-        //TODO
-        throw new UnsupportedOperationException();
+        this.correlatedJoins.add(parentCollection);
+        return new CollectionJoinImpl(parentCollection.getParentPath(), metamodel.type(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
     }
     
     /**
@@ -232,9 +255,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      *            join target of the containing query
      * @return subquery join
      */
-    public <X, Y> SetJoin<X, Y> correlate(SetJoin<X, Y> parentSet){
-        //TODO
-        throw new UnsupportedOperationException();
+    public <X, Y> SetJoin<X, Y> correlate(SetJoin<X, Y> parentCollection){
+        this.correlatedJoins.add(parentCollection);
+        return new SetJoinImpl(parentCollection.getParentPath(), metamodel.type(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
     }
     
     
@@ -247,9 +270,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      *            join target of the containing query
      * @return subquery join
      */
-    public <X, Y> ListJoin<X, Y> correlate(ListJoin<X, Y> parentList){
-        //TODO
-        throw new UnsupportedOperationException();
+    public <X, Y> ListJoin<X, Y> correlate(ListJoin<X, Y> parentCollection){
+        this.correlatedJoins.add(parentCollection);
+        return new ListJoinImpl(parentCollection.getParentPath(), metamodel.type(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
     }
     
     /**
@@ -261,9 +284,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      *            join target of the containing query
      * @return subquery join
      */
-    public <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentMap){
-        //TODO
-        throw new UnsupportedOperationException();
+    public <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentCollection){
+        this.correlatedJoins.add(parentCollection);
+        return new MapJoinImpl(parentCollection.getParentPath(), metamodel.type(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
     }
     
     /**
@@ -271,8 +294,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the enclosing query or subquery
      */
     public AbstractQuery<?> getParent(){
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.parent;
     }
     
     /**
@@ -315,49 +337,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return joins made from this type
      */
     public java.util.Set<Join<?, ?>> getJoins(){
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.correlatedJoins;
     }
 
-    /**
-     * Translates from the criteria query to a EclipseLink Database Query.
-     */
-    public DatabaseQuery translate() {
-        
-        ReportQuery reportQuery = new ReportQuery();
-        reportQuery.setShouldReturnWithoutReportQueryResult(true);
-
-        if (this.selection != null) {
-            if (this.selection.isCompoundSelection()) {
-                for (Selection nested : this.selection.getCompoundSelectionItems()) {
-                    reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
-                }
-            } else {
-                reportQuery.addAttribute(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode(), this.selection.getJavaType());
-            }
-        }
-        if (this.where != null && ((ExpressionImpl) this.where).getCurrentNode() != null) {
-            reportQuery.setReferenceClass(((ExpressionImpl) this.where).getCurrentNode().getBuilder().getQueryClass());
-        } else {
-            reportQuery.setReferenceClass(this.getRoots().iterator().next().getJavaType());
-        }
-        if (this.where != null) {
-            reportQuery.setSelectionCriteria(((ExpressionImpl) this.where).getCurrentNode());
-        }
-        if (this.distinct) {
-            reportQuery.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
-        } else {
-            reportQuery.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
-
-        }
-        
-        return reportQuery;
-    }
-    
-    
     //Expression
     public <X> Expression<X> as(Class<X> type) {
-        // TODO Auto-generated method stub
         return (Expression<X>) this;
     }
     
@@ -377,7 +361,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         List list = new ArrayList();
         list.add(this);
         for (Expression exp: values){
-            if (!((ExpressionImpl)exp).isLiteral()){
+            if (!((InternalExpression)exp).isLiteral()){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
             }
         }
@@ -405,7 +389,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public Predicate in(Expression<Collection<?>> values) {
         List list = new ArrayList();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()), list, "in");
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
     }
     
     public Predicate isNotNull() {
@@ -432,6 +416,22 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.alias = name;
         return this;
     }
+
+    /**
+     * Add a query root corresponding to the given entity, forming a cartesian
+     * product with any existing roots.
+     * 
+     * @param entity
+     *            metamodel entity representing the entity of type X
+     * @return query root corresponding to the given entity
+     */
+    public <X> Root<X> from(EntityType<X> entity){
+        if (this.roots.isEmpty()){
+            this.subQuery.setExpressionBuilder(new ExpressionBuilder(entity.getJavaType()));
+        }
+        return super.from(entity);
+    }
+
     public String getAlias() {
         return this.alias;
     }
@@ -456,8 +456,24 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isCompoundSelection(){
         return false;
     }
+    public boolean isPredicate(){
+        return false;
+    }
 
+    public boolean isCompoundExpression(){
+        return false;
+    }
+    public boolean isExpression(){
+        return true;
+    }
     
-    
+    public boolean isLiteral(){
+        return false;
+    }
+    public void findRoot(Set<Root<?>> roots){
+        for (Join join: this.correlatedJoins){
+            ((JoinImpl)join).findRoot(roots);
+        }
+    }
 
 }

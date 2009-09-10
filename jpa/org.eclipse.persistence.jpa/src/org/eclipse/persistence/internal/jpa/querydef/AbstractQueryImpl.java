@@ -18,13 +18,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
@@ -57,6 +55,8 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected boolean distinct;
     protected List<Expression<?>> stupidImplicitDanglingJoins;
     protected Class queryType;
+    protected ExpressionImpl havingClause;
+    protected ExpressionImpl groupBy;
 
     protected enum ResultType{
         OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
@@ -94,9 +94,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      */
     public <X> Root<X> from(Class<X> entityClass) {
         EntityType<X> entity = this.metamodel.entity(entityClass);
-        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
-        return root;
+        return this.from(entity);
     }
 
     /**
@@ -130,6 +128,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> where(Expression<Boolean> restriction){
+        validateRoot(restriction);
         this.where = restriction;
         return this;
     }
@@ -149,7 +148,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
             this.where = null;
         }
         Predicate predicate = this.queryBuilder.and(restrictions);
-        integrateRoot(predicate);
+        validateRoot(predicate);
         this.where = predicate;
         return this;
     }
@@ -263,38 +262,30 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return subquery corresponding to the query
      */
     public <U> Subquery<U> subquery(Class<U> type){
-        throw new UnsupportedOperationException();
+        return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
     }
     
     /**
      *  Used to use a root from a different query.
      */
     
-    protected void integrateRoot(Expression<?> predicate){
+    protected void validateRoot(Expression<?> predicate) {
         Set<Root<?>> newRoots = new HashSet<Root<?>>();
-        ((ExpressionImpl)predicate).findRoot(newRoots);
-        if (this.roots.isEmpty()){
-            this.roots.addAll(newRoots);
-        }else{
-            boolean found = false;
-            for (Root root : newRoots){
-                if (this.roots.contains(root)){
-                    this.roots.addAll(newRoots);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found){
+        ((InternalSelection) predicate).findRoot(newRoots);
+        for (Root root : newRoots) {
+            if (!this.roots.contains(root)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
             }
         }
     }
 
-    protected void integrateRoot(Selection<?> selection){
+    protected void validateRoot(Selection<?> selection){
         if (selection.isCompoundSelection()){
             for (Selection subSelection: selection.getCompoundSelectionItems()){
-                integrateRoot(subSelection);
+                validateRoot(subSelection);
             }
+        }else{
+            validateRoot((Expression)selection);
         }
     }
 }

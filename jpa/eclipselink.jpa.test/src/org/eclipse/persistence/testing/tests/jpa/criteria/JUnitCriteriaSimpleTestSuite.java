@@ -90,7 +90,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("JUnitJPQLSimpleTestSuite");
+        suite.setName("JUnitCriteriaSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
         
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));

@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
 
@@ -38,7 +39,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
+public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>, InternalExpression{
     protected Metamodel metamodel;
     protected boolean isLiteral;
     protected Object literal;
@@ -76,7 +77,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List list = new ArrayList();
         list.add(this);
         for (Expression exp: values){
-            if (!((ExpressionImpl)exp).isLiteral()){
+            if (!((InternalExpression)exp).isLiteral()){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
             }
         }
@@ -104,7 +105,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Expression<Collection<?>> values) {
         List list = new ArrayList();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()), list, "in");
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
     }
     
     public Predicate isNotNull() {
@@ -134,7 +135,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isLiteral(){
         return this.isLiteral;
     }
-    protected void findRoot(Set<Root<?>> roots){
+    public void findRoot(Set<Root<?>> roots){
         //no-op because an expression will have no root
     }
     
@@ -142,8 +143,4 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return this.getValue();
     }
     
-    protected void prepare(){
-        //This is a no op 
-        //This would be abstract but this is a concrete class
-    }
 }

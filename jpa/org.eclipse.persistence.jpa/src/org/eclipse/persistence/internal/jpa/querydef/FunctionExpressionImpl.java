@@ -76,17 +76,11 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
         return false;
     }
 
-    protected void findRoot(Set<Root<?>> roots){
+    public void findRoot(Set<Root<?>> roots){
         if (this.expressions != null){
             for (Object exp : this.expressions){
-                ((ExpressionImpl)exp).findRoot(roots);
+                ((InternalSelection)exp).findRoot(roots);
             }   
-        }
-    }
-
-    protected void prepare(){
-        for (Iterator<ExpressionImpl> iterator = this.expressions.iterator(); iterator.hasNext();){
-            iterator.next().prepare();
         }
     }
 }
