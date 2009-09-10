@@ -191,15 +191,17 @@ public class MetadataHelper {
         String packageSuffix = properties.get(CANONICAL_MODEL_PACKAGE_SUFFIX);
         if (packageSuffix == null) {
             packageSuffix = CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
+        } else {
+            packageSuffix = packageSuffix + ".";
         }
        
         if (qualifiedName.indexOf(".") > -1) {
             String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), properties);
             String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
            
-            return pkg + packageSuffix + "." + canonicalName;
+            return pkg + packageSuffix + canonicalName;
         } else {
-            return packageSuffix + "." + getCanonicalName(qualifiedName, properties);
+            return packageSuffix + getCanonicalName(qualifiedName, properties);
         }
     }
     
