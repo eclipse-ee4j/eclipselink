@@ -92,7 +92,7 @@ public class JAXBContextFactory {
         for (String key : xmlBindings.keySet()) {
             classesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, classesToBeBound);
         }
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
         classesToBeBound = updateClassesWithObjectFactory(classesToBeBound, loader);
         try {
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, classLoader);
@@ -182,7 +182,7 @@ public class JAXBContextFactory {
             typesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, typesToBeBound);
         }
         
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
         typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
         try {
@@ -194,7 +194,7 @@ public class JAXBContextFactory {
     }
 
     private static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);    	
         try {
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, loader);
             return createContext(generator, properties, classLoader, loader, classesToBeBound);

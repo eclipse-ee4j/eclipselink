@@ -101,6 +101,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTest(org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.singleobject.JAXBSingleObjectTestSuite.suite());
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.DifferentClassLoaderTestCases.class);
+
         return suite;
     }
 
