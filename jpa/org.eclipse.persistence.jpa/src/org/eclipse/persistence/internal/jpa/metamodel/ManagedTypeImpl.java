@@ -96,7 +96,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     /** Native RelationalDescriptor that contains all the mappings of this type **/
-    private RelationalDescriptor descriptor;
+    protected RelationalDescriptor descriptor;
 
     /** The map of attributes keyed on attribute string name **/
     protected Map<String, Attribute<X,?>> members;

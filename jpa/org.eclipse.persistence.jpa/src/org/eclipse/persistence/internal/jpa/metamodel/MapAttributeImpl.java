@@ -68,7 +68,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
      */
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping, validationEnabled);
-
+        // We need to set the keyType Type that represents the type of the Map key for this mapping
         MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
         Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
         Type<?> aKeyType = null;
@@ -80,6 +80,23 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                 // Use the CMPPolicy on the element not the one on the managedType
                 if(policy.getElementDescriptor() != null && policy.getElementDescriptor().getCMPPolicy() != null) {
                     javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
+                    if(null == javaClass) {
+                        // check for a @MapKeyClass annotation
+                        if(policy.isMappedKeyMapPolicy()) {                            
+                            MapKeyMapping mapKeyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
+                            RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
+                            // If the reference descriptor is null then we are on a direct mapping
+                            if(null != descriptor) { 
+                                javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
+                                if(null == javaClass) {
+                                    // Default to the PK of the owning descriptor when no MapKey is specified
+                                    if (null != descriptor.getCMPPolicy()) {
+                                        javaClass = descriptor.getCMPPolicy().getPKClass();
+                                    }                                        
+                                }
+                            }
+                        }
+                    }
                 } else {
                     if(null == policy.getElementDescriptor()) {
                         // check for a keyMapping on the mapping
@@ -88,7 +105,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                             RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
                             // If the reference descriptor is null then we are on a direct mapping
                             if(null == descriptor) {
-                                throw new IllegalArgumentException("Unsupported operation on " + managedType);
+                                javaClass = Object.class;
                             } else {
                                 if(null == descriptor.getCMPPolicy()) { // for __PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME
                                     javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
@@ -96,16 +113,16 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                                         javaClass = Object.class;
                                     }
                                 } else {
+                                    // Default to the PK of the owning descriptor when no MapKey is specified
                                     javaClass = descriptor.getCMPPolicy().getPKClass();        
                                 }
                             }
                         }
-                    } else {                        
                     }
                 }
             } else {
-                // Handle EmbeddableType
-                System.out.println("_embeddableType: " + this + " mapping: " + mapping);
+                // TODO: Handle EmbeddableType
+                javaClass = Object.class;
             }
         } else {            
             if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping
@@ -114,6 +131,10 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                 javaClass = (Class<?>)policyKeyType;
             }            
         }
+        if(null == javaClass) {
+            javaClass = Object.class;
+        }                                
+        
         aKeyType = getMetamodel().getType(javaClass);
         this.keyType = (Type<K>) aKeyType;
     }
