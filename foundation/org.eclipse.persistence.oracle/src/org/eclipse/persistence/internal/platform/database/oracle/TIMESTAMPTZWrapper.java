@@ -9,14 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dminsky - removed Timestamp & TimeZone retrieval code from constructor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.platform.database.oracle;
 
 import java.io.Serializable;
 import java.sql.*;
 import java.util.TimeZone;
-import oracle.sql.TIMESTAMPTZ;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  * This class is used as a wrapper for TIMESTAMPTZ.  It stores a Timestamp and a TimeZone.
@@ -28,14 +27,11 @@ public class TIMESTAMPTZWrapper implements Serializable {
     TimeZone tz;
     boolean isTimestampInGmt;
 
-    public TIMESTAMPTZWrapper(TIMESTAMPTZ timestampTZ, Connection connection, boolean isTimestampInGmt) {
-		try {
-            ts = timestampTZ.timestampValue(connection);
-            tz = TIMESTAMPHelper.extractTimeZone(timestampTZ.toBytes());
-            this.isTimestampInGmt = isTimestampInGmt;
-		} catch (SQLException exception) {
-			throw DatabaseException.sqlException(exception);
-		}
+    public TIMESTAMPTZWrapper(Timestamp ts, TimeZone tz, boolean isTimestampInGmt) {
+        // EL Bug 288858 - removed Timestamp & TimeZone retrieval code
+        this.ts = ts;
+        this.tz = tz;
+        this.isTimestampInGmt = isTimestampInGmt;
     }
 
     public Timestamp getTimestamp() {
