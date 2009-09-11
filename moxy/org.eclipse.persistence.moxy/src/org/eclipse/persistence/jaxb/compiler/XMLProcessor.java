@@ -168,7 +168,7 @@ public class XMLProcessor {
                         JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
                         JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
                         if (boundType != null) {
-                            tInfo.addAdapterClass(adapterClass, boundType);
+                            tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
                         }
                     }
                 }
@@ -441,32 +441,6 @@ public class XMLProcessor {
         return nsInfo;
     }
 
-    /**
-     * Combines classes from XmlBindings and JavaModel into a single array. Duplicates will not
-     * exist in the array.
-     * 
-     * @param xmlBindings
-     * @param jModelInput
-     * @return an array of JavaClass instances based on a given JavaModel
-     */
-    private JavaClass[] getClassesToProcess(XmlBindings xmlBindings) {
-        ArrayList allClasses = new ArrayList<JavaClass>();
-        // add binding classes - the Java Model will be used to get a JavaClass via class name
-        JavaTypes jTypes = xmlBindings.getJavaTypes();
-        if (jTypes != null) {
-            for (JavaType javaType : jTypes.getJavaType()) {
-                allClasses.add(jModelInput.getJavaModel().getClass(javaType.getName()));
-            }
-        }
-        // add any other classes that aren't declared via external metadata
-        for (JavaClass jClass : jModelInput.getJavaClasses()) {
-            if (!AnnotationsProcessor.classExistsInArray(jClass.getQualifiedName(), allClasses)) {
-                allClasses.add(jClass);
-            }
-        }
-        return (JavaClass[]) allClasses.toArray(new JavaClass[allClasses.size()]);
-    }
-    
     /**
      * Convenience method for building a Map of package to classes.
      * 

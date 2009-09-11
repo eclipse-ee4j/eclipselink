@@ -565,14 +565,23 @@ public class AnnotationsProcessor {
             XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(pack, XmlJavaTypeAdapters.class);
             XmlJavaTypeAdapter[] adapterArray = adapters.value();
             for (XmlJavaTypeAdapter next : adapterArray) {
-                JavaClass adapterClass = helper.getJavaClass(next.value());
-                JavaClass boundType = helper.getJavaClass(next.type());
-                if (boundType != null) {
-                    info.addAdapterClass(adapterClass, boundType);
-                } else {
-                    // TODO: should log a warning here
-                }
+                processPackageLevelAdapter(next, info);
             }
+        }
+        
+        if(helper.isAnnotationPresent(pack, XmlJavaTypeAdapter.class)){
+            XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(pack, XmlJavaTypeAdapter.class);
+            processPackageLevelAdapter(adapter, info);
+        }
+    }
+
+    private void processPackageLevelAdapter(XmlJavaTypeAdapter next, TypeInfo info){
+    	JavaClass adapterClass = helper.getJavaClass(next.value());
+        JavaClass boundType = helper.getJavaClass(next.type());
+        if (boundType != null) {
+            info.addPackageLevelAdapterClass(adapterClass, boundType);
+        } else {
+            // TODO: should log a warning here
         }
     }
 
@@ -585,10 +594,14 @@ public class AnnotationsProcessor {
     private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapter.class)) {
             XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(javaClass, XmlJavaTypeAdapter.class);
+            String boundType = adapter.type().getName(); 
+        	
+            if (boundType == null || boundType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                boundType = javaClass.getRawName();
+            }
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
             xja.setValue(adapter.value().getName());
-            xja.setType(adapter.type().getName());
-            
+            xja.setType(boundType);
             
             info.setXmlJavaTypeAdapter(xja);
         }
@@ -862,14 +875,25 @@ public class AnnotationsProcessor {
             xja.setValue(adapter.value().getName());
             xja.setType(adapter.type().getName());
             property.setXmlJavaTypeAdapter(xja);
-        }  else if (info.getAdaptersByClass().get(ptype.getQualifiedName()) != null) {
-            adapterClass = info.getAdapterClass(ptype);
+        } else{ 
+            TypeInfo ptypeInfo = typeInfo.get(ptype.getRawName());        	
+            if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
+                JavaClass[] jClassArray = new JavaClass[] { ptype };
+                buildNewTypeInfo(jClassArray);
+            }
+            if (ptypeInfo!= null && ptypeInfo.getXmlJavaTypeAdapter() != null){
+                property.setXmlJavaTypeAdapter(ptypeInfo.getXmlJavaTypeAdapter() );
+        	
+            } else if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null) {
+                adapterClass = info.getPackageLevelAdapterClass(ptype);
             
-            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
-            xja.setValue(adapterClass.getQualifiedName());
-            xja.setType(ptype.getQualifiedName());
-            property.setXmlJavaTypeAdapter(xja);
-        }
+                org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+                xja.setValue(adapterClass.getQualifiedName());
+                xja.setType(ptype.getQualifiedName());
+                property.setXmlJavaTypeAdapter(xja);
+            }
+            
+        } 
     }
 
     /**
