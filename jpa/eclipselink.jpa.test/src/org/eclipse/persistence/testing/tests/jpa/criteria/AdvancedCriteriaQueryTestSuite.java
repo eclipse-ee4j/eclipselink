@@ -103,7 +103,6 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimple"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleWhere"));
-        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSharedWhere"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testTupleQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheFirstCacheHits"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheOnlyCacheHits"));
@@ -193,26 +192,6 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
     }
 
-    public void testSharedWhere(){
-        EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
-        
-        CriteriaQuery<Employee> cq2 = em.getQueryBuilder().createQuery(Employee.class);
-        cq2.where(cq.getRestriction());
-        TypedQuery<Employee> tq2 = em.createQuery(cq);
-        List<Employee> result2 = tq.getResultList();
-        assertTrue("Employee's did not match with query with same where clause", comparer.compareObjects(result.get(0), result2.get(0)));
-    }
-
-    
     /**
      * Test cursored queries.
      */

@@ -18,11 +18,11 @@ import javax.persistence.criteria.Root;
 
 /**
  * <p>
- * <b>Purpose</b>: Represents an Expression in the Criteria API implementation heirarchy.
+ * <b>Purpose</b>: Represents a Selection in the Criteria API implementation hierarchy.
  * <p>
- * <b>Description</b>: Expressions are expression nodes that can not be joined from 
- * and may or not be the result of a Path expression.  The SubQuery is a special type of expression that
- * requires certain methods but can not extend ExpressionImpl.  This interface provide a common API.
+ * <b>Description</b>: An InternalSelection has the EclipseLink expression representation of the
+ * Criteria API expressions.  A special interface was created because Subqueries can be selections but are not in the
+ * ExpressionImpl hierarchy
  * <p>
  * 
  * @see javax.persistence.criteria Expression

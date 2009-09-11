@@ -38,8 +38,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  */
 public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate{
     
-    protected List expressions;
-    
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
