@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -75,7 +76,7 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
     public DatabaseField getPrimaryKeyField() {
         DatabaseField pkField = new DatabaseField();
         
-        pkField.setName(m_referencedColumnName == null ? "" : m_referencedColumnName);
+        pkField.setName(m_referencedColumnName == null ? "" : m_referencedColumnName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
         
         return pkField;
     }

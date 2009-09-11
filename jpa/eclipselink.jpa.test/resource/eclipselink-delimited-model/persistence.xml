@@ -5,7 +5,6 @@
         </provider>
         <properties>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.delimited.DelimitedSessionCustomizer"/>
         </properties>
 
         <exclude-unlisted-classes>false</exclude-unlisted-classes>

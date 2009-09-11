@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.expressions.*;
@@ -248,7 +249,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // instead of the wrong one:
             //   DELETE FROM PROJECT WHERE EXISTS(SELECT PROJ_ID FROM PROJECT WHERE (PROJ_NAME = ?) AND PROJECT.PROJ_ID = PROJECT.PROJ_ID)
             deleteAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
-            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table));
+            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getSession().getPlatform()));
         } else {
             // inheritanceExpression is irrelevant in case selectCallForExist != null
             if(inheritanceExpression != null) {
@@ -258,7 +259,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         if(selectCallForNotExist != null) {
             deleteAllStatement.setSelectCallForNotExist(selectCallForNotExist);
-            deleteAllStatement.setTableAliasInSelectCallForNotExist(getAliasTableName(selectStatementForNotExist, table));
+            deleteAllStatement.setTableAliasInSelectCallForNotExist(getAliasTableName(selectStatementForNotExist, table, getSession().getPlatform()));
         }
 
         deleteAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
@@ -290,7 +291,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         deleteAllStatement.setSelectCallForExist(selectCallForExist);
         DatabaseTable sourceTable = ((DatabaseField)sourceFields.firstElement()).getTable();
         if(selectStatementForExist != null) {
-            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, sourceTable));
+            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, sourceTable, getSession().getPlatform()));
         }
 
         deleteAllStatement.setAliasedFieldsForJoin(sourceFields);
@@ -331,7 +332,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return deleteStatements;
     }
     
-    protected static String getAliasTableName(SQLSelectStatement selectStatement, DatabaseTable table) {
+    protected static String getAliasTableName(SQLSelectStatement selectStatement, DatabaseTable table, DatasourcePlatform platform) {
         if(!selectStatement.requiresAliases()) {
             return null;
         }
@@ -348,7 +349,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if(aliasTables.isEmpty()) {
             return null;
         } else if(aliasTables.size() == 1) {
-            return aliasTable.getQualifiedNameDelimited();
+            return aliasTable.getQualifiedNameDelimited(platform);
         }
         // The table has several aliases, 
         // remove the aliases that used by DataExpressions 
@@ -656,7 +657,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     databaseFieldsToTableAliases = new HashMap();
                     updateAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
                 }
-                databaseFieldsToTableAliases.put(field, getAliasTableName(selStatement, table));
+                databaseFieldsToTableAliases.put(field, getAliasTableName(selStatement, table, getSession().getPlatform()));
             } else {
                 // should be Expression
                 databaseFieldsToValuesCopy.put(field, value);
@@ -667,7 +668,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         
         updateAllStatement.setSelectCallForExist(selectCallForExist);
         updateAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
-        updateAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table));
+        updateAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getSession().getPlatform()));
         updateAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
 
         return updateAllStatement;

@@ -210,7 +210,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
             for (int i = 0; i < returnFields.size(); i++) {
                 DatabaseField field = (DatabaseField)returnFields.elementAt(i);
-                writer.write(field.getNameDelimited());
+                writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
                 }

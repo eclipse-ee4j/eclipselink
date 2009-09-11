@@ -429,12 +429,11 @@ public class XMLField extends DatabaseField {
     }
 
     /**
-     * This has the same effect as calling the setXPath method
-     *
-     * @param xPath The xPath associated with this XMLField
+     * Override setName in superclass
      */
-    public void setName(String xPath) {
-        super.setName(xPath);
+    @Override
+    public void setName(String xPath, String startDelimiter, String endDelimiter) {
+        super.setName(xPath, null, null);
 
         if (hasPath(xPath)) {
             buildFragments(xPath);
@@ -443,6 +442,15 @@ public class XMLField extends DatabaseField {
             setXPathFragment(xPathFragment);
             setLastXPathFragment(xPathFragment);
         }
+    }
+    
+    /**
+     * This has the same effect as calling the setXPath method
+     *
+     * @param xPath The xPath associated with this XMLField
+     */
+    public void setName(String xPath) {
+        setName(xPath, null, null);
     }
 
     private boolean hasPath(String xpathString) {

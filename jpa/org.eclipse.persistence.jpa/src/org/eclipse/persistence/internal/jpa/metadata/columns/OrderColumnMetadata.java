@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -84,8 +85,10 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
 
             // Process and default is necessary the name.
-            orderField.setName(MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, descriptor.getLogger(), getAccessibleObject().toString()));
-            orderField.setUseDelimiters(useDelimitedIdentifier);
+            orderField.setName(MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, descriptor.getLogger(), getAccessibleObject().toString()), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier){
+                orderField.setUseDelimiters(useDelimitedIdentifier);
+            }
             
             // We don't set a table, the mapping will figure that out for us at runtime.
     

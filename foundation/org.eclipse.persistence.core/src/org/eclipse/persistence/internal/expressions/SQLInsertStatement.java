@@ -44,7 +44,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
                 writer.write(" ");
             }
             writer.write("INTO ");
-            writer.write(getTable().getQualifiedNameDelimited());
+            writer.write(getTable().getQualifiedNameDelimited(session.getPlatform()));
             writer.write(" (");
 
             Vector fieldsForTable = new Vector();
@@ -60,7 +60,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                writer.write(((DatabaseField)fieldsForTable.elementAt(i)).getNameDelimited());
+                writer.write(((DatabaseField)fieldsForTable.elementAt(i)).getNameDelimited(session.getPlatform()));
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");
                 }

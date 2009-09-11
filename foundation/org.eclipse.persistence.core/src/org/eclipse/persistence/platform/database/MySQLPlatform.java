@@ -47,6 +47,8 @@ public class MySQLPlatform extends DatabasePlatform {
     public MySQLPlatform(){
         super();
         this.pingSQL = "SELECT 1";
+        this.startDelimiter = "`";
+        this.endDelimiter = "`";
     }
     
     /**
@@ -455,7 +457,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      */
      protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return " LIKE " + table.getQualifiedNameDelimited();
+         return " LIKE " + table.getQualifiedNameDelimited(this);
      }
      
     /**
@@ -479,6 +481,9 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * INTERNAL:
      * MySQL uses ' to allow identifier to have spaces.
+     * @deprecated
+     * @see getStartDelimiter()
+     * @see getEndDelimiter()
      */
     public String getIdentifierQuoteCharacter() {
         return "`";
@@ -540,13 +545,13 @@ public class MySQLPlatform extends DatabasePlatform {
                                                     Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedNameDelimited();
+        String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
         writer.write(", ");
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
-        writeAutoAssignmentSetClause(writer, tableName, tempTableName, assignedFields);
-        writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields);
+        writeAutoAssignmentSetClause(writer, tableName, tempTableName, assignedFields, this);
+        writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
     }
 
     /**
@@ -558,14 +563,14 @@ public class MySQLPlatform extends DatabasePlatform {
                                                         Collection targetPkFields) throws IOException 
     {
         writer.write("DELETE FROM ");
-        String targetTableName = targetTable.getQualifiedNameDelimited();
+        String targetTableName = targetTable.getQualifiedNameDelimited(this);
         writer.write(targetTableName);
         writer.write(" USING ");
         writer.write(targetTableName);
         writer.write(", ");
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
-        writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
+        writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields, this);
     }
 
     @Override

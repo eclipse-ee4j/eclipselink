@@ -170,21 +170,21 @@ public class Oracle8Platform extends OraclePlatform {
     @SuppressWarnings("deprecation")
 	public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
-            oracle.sql.BLOB blob = (oracle.sql.BLOB)resultSet.getObject(field.getNameDelimited());
+            oracle.sql.BLOB blob = (oracle.sql.BLOB)resultSet.getObject(field.getNameDelimited(this));
 
             //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing 
             //for the time being, simply use Oracle api.
             blob.putBytes(1, (byte[])value);
             //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getNameDelimited());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getNameDelimited(this));
         } else if (isClob(field.getType())) {
-            oracle.sql.CLOB clob = (oracle.sql.CLOB)resultSet.getObject(field.getNameDelimited());
+            oracle.sql.CLOB clob = (oracle.sql.CLOB)resultSet.getObject(field.getNameDelimited(this));
 
             //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing
             //for the time being, simply use Oracle api.
             clob.putString(1, (String)value);
             //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getNameDelimited());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getNameDelimited(this));
         } else {
             //do nothing for now, open to BFILE or NCLOB types
         }

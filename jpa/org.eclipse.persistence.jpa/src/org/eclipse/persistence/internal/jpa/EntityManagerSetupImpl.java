@@ -717,11 +717,6 @@ public class EntityManagerSetupImpl {
             // Translate old properties.
             // This should be done before using properties (i.e. ServerPlatform).
             translateOldProperties(predeployProperties, null);
-            
-            String databaseDelimiter = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.DATABASE_DELIMITERS, predeployProperties, session);
-            if(databaseDelimiter != null) {
-                Helper.setDatabaseDelimiters(databaseDelimiter);
-            }
 
             String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
             String sessionNameStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);

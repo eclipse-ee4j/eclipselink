@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.mappings.*;
 
@@ -33,18 +34,18 @@ public class NestedTable extends DatabaseTable {
     /**
      * INTERNAL:
      */
-    public String getQualifiedName() {
-        return getQualifiedName(false);
+    public String getQualifiedName(DatasourcePlatform platform) {
+        return getQualifiedName(platform, false);
     }
 
     /**
      * INTERNAL:
      */
-    public String getQualifiedNameDelimited() {
-        return getQualifiedName(true);
+    public String getQualifiedNameDelimited(DatasourcePlatform platform) {
+        return getQualifiedName(platform, true);
     }
     
-    private String getQualifiedName(boolean allowDelimiters){
+    private String getQualifiedName(DatasourcePlatform platform, boolean allowDelimiters){
         if (qualifiedName == null) {
             // Print nested table using the TABLE function.
             DatabaseMapping mapping = queryKeyExpression.getMapping();
@@ -55,19 +56,19 @@ public class NestedTable extends DatabaseTable {
             StringBuffer name = new StringBuffer();
             name.append("TABLE(");
             if (allowDelimiters && useDelimiters){
-                name.append(Helper.getStartDatabaseDelimiter());
+                name.append(platform.getStartDelimiter());
             }
             name.append(tableAlias.getName());
             if (allowDelimiters && useDelimiters){
-                name.append(Helper.getEndDatabaseDelimiter());
+                name.append(platform.getEndDelimiter());
             }
             name.append(".");
             if (allowDelimiters && useDelimiters){
-                name.append(Helper.getStartDatabaseDelimiter());
+                name.append(platform.getStartDelimiter());
             }
-            name.append(mapping.getField().getNameDelimited());
+            name.append(mapping.getField().getNameDelimited(platform));
             if (allowDelimiters && useDelimiters){
-                name.append(Helper.getEndDatabaseDelimiter());
+                name.append(platform.getEndDelimiter());
             }
             name.append(")");
 

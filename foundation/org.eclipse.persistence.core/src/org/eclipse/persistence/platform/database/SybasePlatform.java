@@ -641,7 +641,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      */
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
-        return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters());
+        return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
     }          
 
     /**
@@ -652,14 +652,14 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
                                                     Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedNameDelimited();
+        String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
-        writeAutoAssignmentSetClause(writer, null, tempTableName, assignedFields);
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
+        writeAutoAssignmentSetClause(writer, null, tempTableName, assignedFields, this);
         writer.write(" FROM ");
         writer.write(tableName);
         writer.write(", ");
         writer.write(tempTableName);
-        writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields);
+        writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
     }          
 }

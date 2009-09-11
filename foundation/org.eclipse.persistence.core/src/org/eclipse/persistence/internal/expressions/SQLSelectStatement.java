@@ -199,37 +199,37 @@ public class SQLSelectStatement extends SQLStatement {
                 }
 
                 firstTable = false;
-                writer.write(sourceTable.getQualifiedNameDelimited());
+                writer.write(sourceTable.getQualifiedNameDelimited(printer.getPlatform()));
                 outerJoinedAliases.addElement(sourceAlias);
                 writer.write(" ");
-                writer.write(sourceAlias.getQualifiedNameDelimited());
+                writer.write(sourceAlias.getQualifiedNameDelimited(printer.getPlatform()));
 
                 if (outerExpression.getMapping().isManyToManyMapping()) {// for many to many mappings, you need to do some funky stuff to get the relation table's alias
                     DatabaseTable newTarget = ((ManyToManyMapping)outerExpression.getMapping()).getRelationTable();
                     DatabaseTable newAlias = relationExpression.aliasForTable(newTarget);
                     writer.write(", OUTER ");// need to outer join only to relation table for many-to-many case in Informix
-                    writer.write(newTarget.getQualifiedNameDelimited());
+                    writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
                     writer.write(" ");
                     outerJoinedAliases.addElement(newAlias);
-                    writer.write(newAlias.getQualifiedNameDelimited());
+                    writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else if (outerExpression.getMapping().isDirectCollectionMapping()) {// for many to many mappings, you need to do some funky stuff to get the relation table's alias
                     DatabaseTable newTarget = ((DirectCollectionMapping)outerExpression.getMapping()).getReferenceTable();
                     DatabaseTable newAlias = relationExpression.aliasForTable(newTarget);
                     writer.write(", OUTER ");
-                    writer.write(newTarget.getQualifiedNameDelimited());
+                    writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
                     writer.write(" ");
                     outerJoinedAliases.addElement(newAlias);
-                    writer.write(newAlias.getQualifiedNameDelimited());
+                    writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else {// do normal outer stuff for Informix
                     for (Enumeration target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
                              target.hasMoreElements();) {
                         DatabaseTable newTarget = (DatabaseTable)target.nextElement();
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
-                        writer.write(newTarget.getQualifiedNameDelimited());
+                        writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
                         writer.write(" ");
                         outerJoinedAliases.addElement(newAlias);
-                        writer.write(newAlias.getQualifiedNameDelimited());
+                        writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                     }
                 }
             }
@@ -303,10 +303,10 @@ public class SQLSelectStatement extends SQLStatement {
 
                     requiresEscape = true;
                     firstTable = false;
-                    writer.write(sourceTable.getQualifiedNameDelimited());
+                    writer.write(sourceTable.getQualifiedNameDelimited(printer.getPlatform()));
                     outerJoinedAliases.addElement(sourceAlias);
                     writer.write(" ");
-                    writer.write(sourceAlias.getQualifiedNameDelimited());
+                    writer.write(sourceAlias.getQualifiedNameDelimited(printer.getPlatform()));
                     if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(sourceAlias))) {
                         getForUpdateClause().printSQL(printer, this);
                     }
@@ -324,10 +324,10 @@ public class SQLSelectStatement extends SQLStatement {
         
                             DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
                             writer.write(" LEFT OUTER JOIN ");
-                            writer.write(targetTable.getQualifiedNameDelimited());
+                            writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                             writer.write(" ");
                             outerJoinedAliases.addElement(newAlias);
-                            writer.write(newAlias.getQualifiedNameDelimited());
+                            writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                             if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(newAlias))) {
                                 getForUpdateClause().printSQL(printer, this);
                             }
@@ -348,10 +348,10 @@ public class SQLSelectStatement extends SQLStatement {
                             if(hasAdditionalJoinExpressions) {
                                 writer.write("(");
                             }
-                            writer.write(targetTable.getQualifiedNameDelimited());
+                            writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                             writer.write(" ");
                             outerJoinedAliases.addElement(targetAlias);
-                            writer.write(targetAlias.getQualifiedNameDelimited());
+                            writer.write(targetAlias.getQualifiedNameDelimited(printer.getPlatform()));
                             if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
                                 getForUpdateClause().printSQL(printer, this);
                             }
@@ -376,13 +376,13 @@ public class SQLSelectStatement extends SQLStatement {
                         // Now OneToOneMapping also may have relation table.
                         DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);
                         writer.write(" LEFT OUTER JOIN (");
-                        writer.write(relationTable.getQualifiedNameDelimited());
+                        writer.write(relationTable.getQualifiedNameDelimited(printer.getPlatform()));
                         writer.write(" ");
                         outerJoinedAliases.addElement(relationAlias);
                         if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(relationAlias))) {
                             getForUpdateClause().printSQL(printer, this);
                         }
-                        writer.write(relationAlias.getQualifiedNameDelimited());
+                        writer.write(relationAlias.getQualifiedNameDelimited(printer.getPlatform()));
                         
                         Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
                         // glassfish issue 2440: store aliases instead of tables
@@ -397,10 +397,10 @@ public class SQLSelectStatement extends SQLStatement {
                         Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(new Integer(2));
                         
                         writer.write(" JOIN ");
-                        writer.write(targetTable.getQualifiedNameDelimited());
+                        writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                         writer.write(" ");
                         outerJoinedAliases.addElement(targetAlias);
-                        writer.write(targetAlias.getQualifiedNameDelimited());
+                        writer.write(targetAlias.getQualifiedNameDelimited(printer.getPlatform()));
                         if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
                             getForUpdateClause().printSQL(printer, this);
                         }
@@ -456,7 +456,7 @@ public class SQLSelectStatement extends SQLStatement {
                     // it's child's table
                     writer.write(" LEFT OUTER JOIN ");
                 }
-                writer.write(table.getQualifiedNameDelimited());
+                writer.write(table.getQualifiedNameDelimited(printer.getPlatform()));
                 writer.write(" ");
                 DatabaseTable alias = onExpression.aliasForTable(table);
                 outerJoinedAliases.addElement(alias);
@@ -526,7 +526,7 @@ public class SQLSelectStatement extends SQLStatement {
                     }
 
                     firstTable = false;
-                    writer.write(table.getQualifiedNameDelimited());
+                    writer.write(table.getQualifiedNameDelimited(printer.getPlatform()));
                     writer.write(" ");
 
                     if (alias.isDecorated()) {
@@ -534,9 +534,9 @@ public class SQLSelectStatement extends SQLStatement {
                         writer.write(" ");
                     }
 
-                    writer.write(alias.getQualifiedNameDelimited());
+                    writer.write(alias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else {
-                    writer.write(table.getQualifiedNameDelimited());
+                    writer.write(table.getQualifiedNameDelimited(printer.getPlatform()));
 
                     if (alias.isDecorated()) {
                         writer.write(" ");
@@ -620,7 +620,7 @@ public class SQLSelectStatement extends SQLStatement {
             if (requiresAliases()) {
                 tableName = getBuilder().aliasForTable(defaultTable).getName();
             } else {
-                tableName = defaultTable.getNameDelimited();
+                tableName = defaultTable.getNameDelimited(printer.getPlatform());
             }
 
             if ((foreignKeys != null) && !foreignKeys.isEmpty()) {
@@ -638,11 +638,11 @@ public class SQLSelectStatement extends SQLStatement {
 
                 //OneToOneMappings -> Source in parent object goes to target in child object 
                 if (mapping.isOneToOneMapping()) {
-                    printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited());
-                    printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited());
+                    printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited(printer.getPlatform()));
+                    printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                 } else {//collections are the opposite way
-                    printer.getWriter().write(tableName + "." + source.getNameDelimited());
-                    printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited());
+                    printer.getWriter().write(tableName + "." + source.getNameDelimited(printer.getPlatform()));
+                    printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                 }
 
                 while (sourceKeys.hasNext()) {
@@ -651,11 +651,11 @@ public class SQLSelectStatement extends SQLStatement {
                     target = (DatabaseField)foreignKeys.get(source);
 
                     if (mapping.isOneToOneMapping()) {
-                        printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited());
-                        printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited());
+                        printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited(printer.getPlatform()));
+                        printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                     } else {//collections are the opposite way
-                        printer.getWriter().write(tableName + "." + source.getNameDelimited());
-                        printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited());
+                        printer.getWriter().write(tableName + "." + source.getNameDelimited(printer.getPlatform()));
+                        printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                     }
                 }
 
@@ -1766,14 +1766,14 @@ public class SQLSelectStatement extends SQLStatement {
                 }
             }
 
-            printer.printString(currentAlias.getQualifiedNameDelimited());
+            printer.printString(currentAlias.getQualifiedNameDelimited(printer.getPlatform()));
             printer.printString(".");
-            printer.printString(field.getNameDelimited());
+            printer.printString(field.getNameDelimited(printer.getPlatform()));
         } else {
-            printer.printString(field.getNameDelimited());
+            printer.printString(field.getNameDelimited(printer.getPlatform()));
         }
         if (this.getUseUniqueFieldAliases()){
-            printer.printString(" AS "+ generatedAlias(field.getNameDelimited()));
+            printer.printString(" AS "+ generatedAlias(field.getNameDelimited(printer.getPlatform())));
         }
     }
     /**

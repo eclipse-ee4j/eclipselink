@@ -21,6 +21,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.util.Collection;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
@@ -101,7 +102,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     writer.write(" WHERE EXISTS(");
                     // EXIST Example: selectCall.sqlString:
                     // "SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE (((t0.F_NAME LIKE 'a') AND (t1.SALARY = 0)) AND (t1.EMP_ID = t0.EMP_ID))"
-                    writeSelect(writer, selectCallForExist, tableAliasInSelectCallForExist, call);
+                    writeSelect(writer, selectCallForExist, tableAliasInSelectCallForExist, call, session.getPlatform());
                     // closing bracket for EXISTS
                     writer.write(")");
                 }
@@ -133,7 +134,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                 writer.write(" ");
             }
 
-            writer.write(getTable().getQualifiedNameDelimited());
+            writer.write(getTable().getQualifiedNameDelimited(session.getPlatform()));
 
             // SET CLAUSE //
             writer.write(" SET ");
@@ -149,7 +150,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                 DatabaseField field = (DatabaseField)i.next();
                 Object value = m_updateClauses.get(field);
 
-                writer.write(field.getNameDelimited());
+                writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
                 if(value instanceof Expression) {
                     printer.printExpression((Expression)value);
@@ -159,7 +160,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     String tableAlias = (String)getDatabaseFieldsToTableAliases().get(field);
                     // should be SQLCall select
                     writer.write("(");
-                    writeSelect(writer, selCall, tableAlias, call);
+                    writeSelect(writer, selCall, tableAlias, call, session.getPlatform());
                     writer.write(")");
                 }
 
@@ -179,7 +180,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
         }
     }
 
-    protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call) throws IOException {
+    protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call, DatasourcePlatform platform) throws IOException {
         String str = selectCall.getSQLString();
         writer.write(str);
         
@@ -196,14 +197,14 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             } else {
                 writer.write(" AND ");
             }
-            String fieldName = ((DatabaseField)it.next()).getNameDelimited();
+            String fieldName = ((DatabaseField)it.next()).getNameDelimited(platform);
             if(tableAliasInSelectCall != null) {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
             writer.write(fieldName);
             writer.write(" = ");
-            writer.write(table.getQualifiedNameDelimited());
+            writer.write(table.getQualifiedNameDelimited(platform));
             writer.write('.');
             writer.write(fieldName);
         }

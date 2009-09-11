@@ -380,8 +380,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         fkConstraint.setSourceFields(sourceFields);
         fkConstraint.setTargetFields(targetFields);
-        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited());
-        String tempName = buildForeignKeyConstraintName(this.getName(), tempSourceField.getName(), platform.getMaxForeignKeyNameSize());
+        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited(platform));
+        String tempName = buildForeignKeyConstraintName(this.getName(), tempSourceField.getName(), platform.getMaxForeignKeyNameSize(), platform);
 
         fkConstraint.setName(tempName);
         return fkConstraint;
@@ -401,7 +401,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         fkConstraint.setTargetTable(targetTable.getFullName());
         String fkFieldName = (String)fkFieldNames.get(0);
-        String name = buildForeignKeyConstraintName(this.getName(), fkFieldName, platform.getMaxForeignKeyNameSize());
+        String name = buildForeignKeyConstraintName(this.getName(), fkFieldName, platform.getMaxForeignKeyNameSize(), platform);
 
         fkConstraint.setName(name);
         return fkConstraint;
@@ -415,7 +415,15 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * 3. Drop the vowels from the table and field name.
      * 4. Truncate the table name to zero length if necessary.
      */
-    protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength) {
+    protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength, DatabasePlatform platform) {
+        String startDelimiter = "";
+        String endDelimiter = "";
+        boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
+        // we will only delimit our generated constraints if either of the names that composes them is already delimited
+        if (useDelimiters){
+            startDelimiter = platform.getStartDelimiter();
+            endDelimiter = platform.getEndDelimiter();
+        }
         String adjustedTableName = tableName;
         if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
             //if table name has spaces and/or is quoted, remove this from the constraint name.
@@ -436,26 +444,27 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
         }
         String adjustedFieldName = buff.toString();
-        String foreignKeyName = "FK_" + adjustedTableName + "_" + adjustedFieldName;
+        String foreignKeyName = startDelimiter + "FK_" + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
         if (foreignKeyName.length() > maximumNameLength) {
             // First Remove the "FK_" prefix.
-            foreignKeyName = adjustedTableName + "_" + adjustedFieldName;
+            foreignKeyName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
             if (foreignKeyName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
-                foreignKeyName = Helper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength);
+                foreignKeyName = startDelimiter + Helper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
                 if (foreignKeyName.length() > maximumNameLength) {
                     // Still too long: remove vowels from the table name and field name.
                     String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
                     String onlyAlphaNumericFieldName = Helper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
-                    foreignKeyName = Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength);
+                    foreignKeyName = startDelimiter + Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
                     if (foreignKeyName.length() > maximumNameLength) {
                         // Still too long: remove vowels from the table name and field name and truncate the table name.
                         String shortenedFieldName = Helper.removeVowels(onlyAlphaNumericFieldName);
                         String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
-                        if (shortenedFieldName.length() >= maximumNameLength) {
-                            foreignKeyName = Helper.truncate(shortenedFieldName, maximumNameLength);
+                        int delimiterLength = startDelimiter.length() + endDelimiter.length();
+                        if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
+                            foreignKeyName = startDelimiter + Helper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
                         } else {
-                            foreignKeyName = Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length()) + shortenedFieldName;
+                            foreignKeyName = startDelimiter + Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
                         }
                     }
                 }

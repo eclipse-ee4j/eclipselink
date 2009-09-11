@@ -519,7 +519,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * INTERNAL:
      */
      protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return " LIKE " + table.getQualifiedNameDelimited();
+         return " LIKE " + table.getQualifiedNameDelimited(this);
      }
      
      /**

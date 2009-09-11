@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.history;
 
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.*;
 
 /**
@@ -53,19 +54,19 @@ public class HistoricalDatabaseTable extends DatabaseTable {
      * Constructs a new database table which appears as <code>guise</code> but
      * in fact really is <code>identity</code>.
      */
-    public HistoricalDatabaseTable(DatabaseTable source, DatabaseTable mirroring) {
+    public HistoricalDatabaseTable(DatabaseTable source, DatabaseTable mirroring, DatasourcePlatform platform) {
         super(source.getName(), source.getTableQualifier());
         this.historicalName = mirroring.getQualifiedName();
         if(mirroring.shouldUseDelimiters()) {
-            this.historicalNameDelimited = mirroring.getQualifiedNameDelimited();
+            this.historicalNameDelimited = mirroring.getQualifiedNameDelimited(platform);
         }
     }
 
     public void setHistoricalName(String name) {
-        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())) {
+        if (name.startsWith(Helper.getDefaultStartDatabaseDelimiter()) && name.endsWith(Helper.getDefaultEndDatabaseDelimiter())) {
             this.historicalNameDelimited = name;
-            this.historicalName = this.historicalNameDelimited.replaceAll(Helper.getStartDatabaseDelimiter(), "");
-            this.historicalName = this.historicalName.replaceAll(Helper.getEndDatabaseDelimiter(), "");
+            this.historicalName = this.historicalNameDelimited.replaceAll(Helper.getDefaultStartDatabaseDelimiter(), "");
+            this.historicalName = this.historicalName.replaceAll(Helper.getDefaultEndDatabaseDelimiter(), "");
         } else {
             this.historicalName = name ;
         }
@@ -79,13 +80,13 @@ public class HistoricalDatabaseTable extends DatabaseTable {
         }
     }
 
-    public String getQualifiedNameDelimited() {
+    public String getQualifiedNameDelimited(DatasourcePlatform platform) {
         if (historicalNameDelimited != null) {
             return historicalNameDelimited;
         } else if(historicalName != null) {
             return historicalName;
         } else {
-            return super.getQualifiedNameDelimited();
+            return super.getQualifiedNameDelimited(platform);
         }
     }
 }

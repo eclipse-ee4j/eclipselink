@@ -211,7 +211,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
      */
     @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
-        return new DatabaseTable("$" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters());
+        return new DatabaseTable("$" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
     }
 
     @Override

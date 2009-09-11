@@ -139,7 +139,7 @@ public class ExpressionSQLPrinter {
             if (shouldPrintQualifiedNames()) {
                 getWriter().write(field.getQualifiedName());
             } else {
-                getWriter().write(field.getNameDelimited());
+                getWriter().write(field.getNameDelimited(platform));
             }
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);

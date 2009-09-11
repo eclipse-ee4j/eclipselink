@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
@@ -170,7 +171,7 @@ public class TableMetadata extends ORMetadata {
      * INTERNAL:
      */
     public void setFullyQualifiedTableName(String fullyQualifiedTableName) {
-        m_databaseTable.setPossiblyQualifiedName(fullyQualifiedTableName);  
+        m_databaseTable.setPossiblyQualifiedName(fullyQualifiedTableName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());  
     }
     
     /**

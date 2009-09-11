@@ -19,6 +19,7 @@ import static java.lang.Integer.MIN_VALUE;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 
 /**
  * INTERNAL:
@@ -70,7 +71,7 @@ public class DatabaseField implements Cloneable, Serializable {
     public int index;
     
     protected boolean useDelimiters = false;
-
+    
     /**
      * used to represent the value when it has not being defined
      */
@@ -81,16 +82,20 @@ public class DatabaseField implements Cloneable, Serializable {
     }
 
     public DatabaseField(String qualifiedName) {
+        this(qualifiedName, null, null);
+    }
+    
+    public DatabaseField(String qualifiedName, String startDelimiter, String endDelimiter) {
         this.index = -1;
         this.sqlType = NULL_SQL_TYPE;
         int index = qualifiedName.lastIndexOf('.');
-
+        
         if (index == -1) {
-            setName(qualifiedName);
+            setName(qualifiedName, startDelimiter, endDelimiter);
             this.table = new DatabaseTable();
         } else {
-            setName(qualifiedName.substring(index + 1, qualifiedName.length()));
-            this.table = new DatabaseTable(qualifiedName.substring(0, index));
+            setName(qualifiedName.substring(index + 1, qualifiedName.length()), startDelimiter, endDelimiter);
+            this.table = new DatabaseTable(qualifiedName.substring(0, index), startDelimiter, endDelimiter);
         }
         initDDLFields();
     }
@@ -100,9 +105,13 @@ public class DatabaseField implements Cloneable, Serializable {
     }
 
     public DatabaseField(String fieldName, DatabaseTable databaseTable) {
+        this(fieldName, databaseTable, null, null);
+    }
+    
+    public DatabaseField(String fieldName, DatabaseTable databaseTable, String startDelimiter, String endDelimiter) {
         this.index = -1;
         this.sqlType = NULL_SQL_TYPE;
-        setName(fieldName);
+        setName(fieldName, startDelimiter, endDelimiter);
         this.table = databaseTable;
         initDDLFields();
     }
@@ -222,9 +231,9 @@ public class DatabaseField implements Cloneable, Serializable {
      * This method should be called any time the field name is requested for writing SQL
      * @return
      */
-    public String getNameDelimited() {
+    public String getNameDelimited(DatasourcePlatform platform) {
         if (useDelimiters){
-            return Helper.getStartDatabaseDelimiter() + name + Helper.getEndDatabaseDelimiter();
+            return platform.getStartDelimiter() + name + platform.getEndDelimiter();
         }
         return name;
     }
@@ -236,19 +245,27 @@ public class DatabaseField implements Cloneable, Serializable {
         return this.precision;
     }
     
+    public String getQualifiedName(){
+        if (this.qualifiedName == null) {
+            if (hasTableName()) {
+                this.qualifiedName = this.table.getQualifiedName() + "." + getName();
+            } else {
+                this.qualifiedName = getName();
+            }
+        }
+        return this.qualifiedName;
+    }
+    
     /**
      * Return the qualified name of the field.
      * PERF: Cache the qualified name.
      */
-    public String getQualifiedName() {
-        if (this.qualifiedName == null) {
-            if (hasTableName()) {
-                this.qualifiedName = this.table.getQualifiedNameDelimited() + "." + getNameDelimited();
-            } else {
-                this.qualifiedName = getNameDelimited();
-            }
+    public String getQualifiedNameDelimited(DatasourcePlatform platform) {
+        if (hasTableName()) {
+            return this.table.getQualifiedNameDelimited(platform) + "." + getNameDelimited(platform);
+        } else {
+            return getNameDelimited(platform);
         }
-        return this.qualifiedName;
     }
     /**
      * Returns the scale for a decimal column when generating DDL. 
@@ -256,7 +273,7 @@ public class DatabaseField implements Cloneable, Serializable {
     public int getScale() {
         return this.scale;
     }
-
+    
     public DatabaseTable getTable() {
         return table;
     }
@@ -408,8 +425,29 @@ public class DatabaseField implements Cloneable, Serializable {
      * added when the DatabaseField is written to SQL
      */
     public void setName(String name) {
-        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())){
-            this.name = name.substring(1, name.length() - 1);
+        setName(name, null, null);
+    }
+    
+    /**
+     * Set the unqualified name of the field.
+     * 
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     * added when the DatabaseField is written to SQL
+     */
+    public void setName(String name, DatasourcePlatform platform){
+        setName(name, platform.getStartDelimiter(), platform.getEndDelimiter());
+    }
+    
+    /**
+     * Set the unqualified name of the field.
+     * 
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     * added when the DatabaseField is written to SQL
+     */
+    public void setName(String name, String startDelimiter, String endDelimiter) {
+        
+        if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
+            this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());
             useDelimiters = true;
         } else {
             this.name = name;

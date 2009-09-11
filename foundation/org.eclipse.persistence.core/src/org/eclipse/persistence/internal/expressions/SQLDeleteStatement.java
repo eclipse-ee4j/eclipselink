@@ -44,7 +44,7 @@ public class SQLDeleteStatement extends SQLModifyStatement {
                 writer.write(" ");
             }
             writer.write("FROM ");
-            writer.write(getTable().getQualifiedNameDelimited());
+            writer.write(getTable().getQualifiedNameDelimited(session.getPlatform()));
 
             if (getWhereClause() != null) {
                 writer.write(" WHERE ");

@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 import javax.persistence.DiscriminatorType;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -105,8 +106,10 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
         boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
         
         // Process the name
-        field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
-        field.setUseDelimiters(useDelimitedIdentifier);
+        field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        if (useDelimitedIdentifier){
+            field.setUseDelimiters(useDelimitedIdentifier);
+        }
         
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());

@@ -15,6 +15,7 @@ package org.eclipse.persistence.tools.history;
 import java.util.*;
 
 import org.eclipse.persistence.history.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.mappings.*;
@@ -195,7 +196,7 @@ public class HistoryFacade {
      * being the current table name with a _HIST suffix.  Hence Employee would
      * become Employee_Hist.
      */
-    public static void generateHistoryPolicies(Iterator descriptors) {
+    public static void generateHistoryPolicies(Iterator descriptors, DatasourcePlatform platform) {
         HistoryPolicy basePolicy = new HistoryPolicy();
         basePolicy.addStartFieldName("ROW_START");
         basePolicy.addEndFieldName("ROW_END");
@@ -212,10 +213,10 @@ public class HistoryFacade {
             }
             for (int i = 0; i < size; i++) {
                 DatabaseTable table = tables.get(i);
-                String name = table.getQualifiedNameDelimited();
+                String name = table.getQualifiedNameDelimited(platform);
                 String historicalName;
                 if(table.shouldUseDelimiters()) {
-                    historicalName = name.substring(0, name.length() - 1) + "_HIST" + Helper.getEndDatabaseDelimiter();
+                    historicalName = name.substring(0, name.length() - 1) + "_HIST" + Helper.getDefaultEndDatabaseDelimiter();
                 } else { 
                     historicalName = name + "_HIST";
                 }
@@ -246,10 +247,10 @@ public class HistoryFacade {
     }
 
     public static void generateHistoryPolicies(org.eclipse.persistence.sessions.Project project) {
-        generateHistoryPolicies(project.getDescriptors().values().iterator());
+        generateHistoryPolicies(project.getDescriptors().values().iterator(), project.getDatasourceLogin().getPlatform());
     }
 
     public static void generateHistoryPolicies(org.eclipse.persistence.sessions.Session session) {
-        generateHistoryPolicies(session.getDescriptors().values().iterator());
+        generateHistoryPolicies(session.getDescriptors().values().iterator(), session.getPlatform());
     }
 }
