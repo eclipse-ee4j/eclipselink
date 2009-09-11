@@ -247,8 +247,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return exists predicate
      */
     public Predicate exists(Subquery<?> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
+        return new CompoundExpressionImpl(metamodel, new ExpressionBuilder().exists(((SubQueryImpl)subquery).subQuery), buildList(subquery), "exists");
     }
 
     /**
@@ -259,9 +258,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return all expression
      */
     public <Y> Expression<Y> all(Subquery<Y> subquery){
-  //      return new SubQueryImpl(metamodel, queryResult, result, queryBuilder)<Y>(metamodel, ExpressionMath.abs(((InternalSelection)x).getCurrentNode().all(((SubQueryImpl)subquery).translate())), buildList(x),"ABS");
-        //TODO
-        throw new UnsupportedOperationException();
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().all(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "all");
     }
 
     /**
@@ -272,8 +269,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return all expression
      */
     public <Y> Expression<Y> some(Subquery<Y> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().some(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "some");
     }
 
     /**
@@ -284,9 +280,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return any expression
      */
     public <Y> Expression<Y> any(Subquery<Y> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
-    }
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().any(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "any");
+   }
 
     // boolean functions:
     /**
