@@ -275,6 +275,7 @@
             <!-- param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/ -->
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
         </antcall>
+        <delete dir="${jpatest.build.location}/${classes.dir}/META-INF"/>
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                debug="${javac.debug}"
