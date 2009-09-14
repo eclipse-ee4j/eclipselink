@@ -137,7 +137,7 @@ public class ExpressionSQLPrinter {
         try {
             // Print the field using either short or long notation i.e. owner + table name.
             if (shouldPrintQualifiedNames()) {
-                getWriter().write(field.getQualifiedName());
+                getWriter().write(field.getQualifiedNameDelimited(platform));
             } else {
                 getWriter().write(field.getNameDelimited(platform));
             }
