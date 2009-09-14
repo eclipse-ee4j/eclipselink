@@ -125,7 +125,8 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
             ExpressionBuilder empbuilder = new ExpressionBuilder();
             reportQuery.addAttribute("project",empbuilder);
             List result = (List)getServerSession().executeQuery(reportQuery);
-        }catch (QueryException ex){
+            result.size();
+        } catch (QueryException ex){
            return; 
         }
         fail("Failed to throw exception, ReportItems must not have multi-table inheritance.");
@@ -143,16 +144,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
     }
     
     public static Test suite() {
-        return new TestSuite(ReportQueryMultipleReturnTestSuite.class) {
-        
-            protected void setUp(){               
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return new TestSuite(ReportQueryMultipleReturnTestSuite.class);
     }
-    
 
 }

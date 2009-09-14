@@ -87,7 +87,13 @@ public class JEEPlatform implements ServerPlatform {
             throw new RuntimeException(exception);
         }
     }
-
+    
+    /**
+     * Not required in JEE.
+     */
+    public void closeEntityManager(EntityManager entityManager) {
+    }
+    
     public UserTransaction getUserTransaction() {
         try {
             return (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");

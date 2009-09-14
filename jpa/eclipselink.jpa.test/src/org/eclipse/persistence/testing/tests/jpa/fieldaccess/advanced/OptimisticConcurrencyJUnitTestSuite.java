@@ -178,7 +178,6 @@ import javax.persistence.PersistenceException;
                 persistenceException = persistenceException.getCause();
             }
             if (persistenceException instanceof OptimisticLockException) {
-                OptimisticLockException oe = (OptimisticLockException) persistenceException;
                 return;
             } else {
                 fail("updating object version with wrong value threw a wrong exception: " + exception.getMessage());
@@ -220,7 +219,6 @@ import javax.persistence.PersistenceException;
                 persistenceException = persistenceException.getCause();
             }
             if (persistenceException instanceof OptimisticLockException) {
-                OptimisticLockException oe = (OptimisticLockException) persistenceException;
                 return;
             } else {
                 fail("employee2.setVersion(null) threw a wrong exception: " + exception.getMessage());

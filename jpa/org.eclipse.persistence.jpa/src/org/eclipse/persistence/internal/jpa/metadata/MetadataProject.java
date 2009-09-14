@@ -658,7 +658,7 @@ public class MetadataProject {
             if (cachingType != null) {
                 return ((CachingType) cachingType).name();
             }
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             // Catch and swallow any exceptions and return null.
         }
         

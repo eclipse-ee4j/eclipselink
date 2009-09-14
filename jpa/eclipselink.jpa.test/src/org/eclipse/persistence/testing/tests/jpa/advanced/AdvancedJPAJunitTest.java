@@ -261,7 +261,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager("default1");
         ClassDescriptor descriptor;
         if (isOnServer()) {
-            descriptor = getServerSession().getDescriptorForAlias("Employee");
+            descriptor = getServerSession("default1").getDescriptorForAlias("Employee");
         } else {
             descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
         }
@@ -995,7 +995,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em1.remove(emp);
             commitTransaction(em1);
             closeEntityManager(em1);
-            Integer version = emp.getVersion();
 
             em1 = createEntityManager();
             beginTransaction(em1);
@@ -1025,7 +1024,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testOptimisticLockExceptionOnMergeWithAssumeExists() {
         org.eclipse.persistence.sessions.Project project = getServerSession().getProject();
-        ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptor(Employee.class);
+        ClassDescriptor descriptor = project.getDescriptor(Employee.class);
         int existencePolicy = descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy();
 
         descriptor.getQueryManager().assumeExistenceForDoesExist();

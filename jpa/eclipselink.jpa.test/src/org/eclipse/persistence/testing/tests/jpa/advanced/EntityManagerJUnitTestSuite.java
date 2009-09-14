@@ -29,7 +29,6 @@ import java.util.Vector;
 import java.util.Iterator;
 
 import java.sql.Date;
-import java.sql.Connection;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -983,6 +982,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if (ex.getCause() instanceof javax.transaction.RollbackException) {
                     return;
                 }
+                if (ex.getCause() instanceof javax.persistence.RollbackException) {
+                    return;
+                }
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
@@ -1756,7 +1758,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -1809,7 +1811,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -1915,7 +1917,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // cache ids
         int id = emp.getId();
         int smallProjId = smallProject.getId();
-        int largeProjId = largeProject.getId();
         
         clearCache();
 
@@ -2562,7 +2563,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
               Employee e1=em.find(Employee.class,empId);
               e1.setFirstName("testfind");
               queryhints.put(QueryHints.REFRESH, "TRUE");
-              Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
+              Employee e2= em.find(Employee.class,empId ,queryhints);
               assertFalse(e2.getFirstName().equals("testfind"));
               commitTransaction(em);
             } catch (IllegalArgumentException iae) {
@@ -2722,7 +2723,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        Map properties = new HashMap();
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee employee = new Employee();
@@ -4477,6 +4477,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.persist(emp7);
                 commitTransaction(em);
                 beginTransaction(em);
+                emp = em.find(Employee.class, emp.getId());
+                emp1 = em.find(Employee.class, emp1.getId());
+                emp2 = em.find(Employee.class, emp2.getId());
+                emp3 = em.find(Employee.class, emp3.getId());
+                emp4 = em.find(Employee.class, emp4.getId());
+                emp5 = em.find(Employee.class, emp5.getId());
+                emp6 = em.find(Employee.class, emp6.getId());
+                emp7 = em.find(Employee.class, emp7.getId());
                 em.lock(emp, LockModeType.OPTIMISTIC);
                 LockModeType lt = em.getLockMode(emp);
                 em.lock(emp1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
@@ -4506,8 +4514,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt7);
             } catch (UnsupportedOperationException use) {
                 return;
-            } catch (Exception e) {
-                fail("Wrong exception type thrown: " + e.getClass());
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);
@@ -4558,14 +4564,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // unWrap not supported on 1.0
         if (! isJPA10()) {
             EntityManager em = createEntityManager();
-            EntityManagerImpl emi = (EntityManagerImpl) em;
-            ServerSession session = emi.getServerSession();
-            UnitOfWork uow = emi.getUnitOfWork();
-            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) uow;
-            JpaEntityManager jem = emi;
-            boolean caughtException = false;
             try {
                 beginTransaction(em);
+                EntityManagerImpl emi = (EntityManagerImpl) em.getDelegate();
+                ServerSession session = emi.getServerSession();
+                UnitOfWork uow = emi.getUnitOfWork();
+                JpaEntityManager jem = emi;
                 org.eclipse.persistence.sessions.server.ServerSession session1;
                 session1 = (ServerSession) em.unwrap(org.eclipse.persistence.sessions.Session.class);
                 assertEquals("Does not return server session", session, session1);
@@ -4575,17 +4579,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 JpaEntityManager jem1;
                 jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
                 assertEquals("Does not return underlying entitymanager", jem, jem1);
-                Connection conn1;
+                // TODO: This should be supported.
+                /*Connection conn1;
                 conn1 = em.unwrap(java.sql.Connection.class);
                 Connection conn = uowImpl.getAccessor().getConnection();
-                assertEquals("Does not return underlying connection", conn, conn1);
-            } catch (PersistenceException e) {
-                caughtException = true;
+                assertEquals("Does not return underlying connection", conn, conn1);*/
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);
             }
-            assertFalse("PersistenceException was thrown for the specified class.", caughtException);
         }
     }
 
@@ -5210,9 +5212,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
            
     // Test multiple items from a report query. Will verify the version on
     // only one of the results.
-    public void testLockingLeftJoinOneToOneQuery() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        
+    public void testLockingLeftJoinOneToOneQuery() {        
         // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
         if (! isJPA10()) {
             // Grab a copy of the results that we will lock then verify.
@@ -5256,9 +5256,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     // Test single item from a report query.
-    public void testLockingLeftJoinOneToOneQuery2() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        
+    public void testLockingLeftJoinOneToOneQuery2() {        
         // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
         if (! isJPA10()) {
             // Grab a copy of the results that we will lock then verify.
@@ -5555,33 +5553,34 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
             //persist the Employee
             EntityManager em = createEntityManager();
-            EntityManagerImpl em1=(EntityManagerImpl)em;
-            try{
+            try {
                 beginTransaction(em);
                 em.persist(emp);
                 commitTransaction(em);
-                }catch (RuntimeException re){
+            } catch (RuntimeException re){
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
                 throw re;
-             }
+            }
     
             beginTransaction(em);
-            em.remove(emp); //attempt to remove the Employee
+            em.remove(em.find(Employee.class, emp.getId())); //attempt to remove the Employee
             commitTransaction(em);
             beginTransaction(em);
-            try{  
+            EntityManagerImpl em1 = (EntityManagerImpl)em.getDelegate();
+            try {  
                 em.detach(emp);    //attempt to detach the Employee
-                UnitOfWork uow=em1.getUnitOfWork();
-                UnitOfWorkImpl uowImpl=(UnitOfWorkImpl)uow;
-                boolean afterClear=uowImpl.getDeletedObjects().containsKey(emp);
-                assertFalse("exception thrown when detaching a removed entity is attempted.",afterClear);
-            }catch (IllegalArgumentException iae){
+                UnitOfWork uow = em1.getUnitOfWork();
+                UnitOfWorkImpl uowImpl = (UnitOfWorkImpl)uow;
+                boolean afterClear = uowImpl.getDeletedObjects().containsKey(emp);
+                assertFalse("exception thrown when detaching a removed entity is attempted.", afterClear);
+            } catch (IllegalArgumentException iae){
                 return;
-            }catch (Exception e) {
-                fail("Wrong exception type thrown: " + e.getClass());
-            }finally {
+            } finally {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
                 closeEntityManager(em);
             }
         }
@@ -7692,21 +7691,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testGetEntityManagerFactory() {
         // getEntityManagerFactory not supported on 1.0
         if (! isJPA10()) {
-            boolean testPass = false;
             Employee emp = new Employee();
             EntityManager em = createEntityManager();
-            EntityManagerFactory emf;
-            beginTransaction(em);
             try {
+                beginTransaction(em);
                 emp.setFirstName("test");
                 em.persist(emp);
                 commitTransaction(em);
+                EntityManagerFactory emf = em.getEntityManagerFactory();
+                if (emf == null) {
+                    fail("Factory is null.");
+                }
+            } finally {
                 closeEntityManager(em);
-                emf=em.getEntityManagerFactory();
-            } catch (IllegalStateException e) {
-                testPass = true;
-            } 
-            Assert.assertTrue(testPass);
+            }
         }   
     }
     
@@ -8221,7 +8219,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
         
         // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
-        int id = ((Number)ss.getNextSequenceNumberValue(Employee.class)).intValue();
+        int id = (ss.getNextSequenceNumberValue(Employee.class)).intValue();
         
         // cache the original driver name and connection string.
         String originalDriverName = ss.getLogin().getDriverClassName();

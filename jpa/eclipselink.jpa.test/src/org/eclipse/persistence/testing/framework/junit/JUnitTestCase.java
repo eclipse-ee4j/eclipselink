@@ -53,7 +53,7 @@ public abstract class JUnitTestCase extends TestCase {
     private static Map emfNamedPersistenceUnits = null;
     
     /** Determine if the test is running on a JEE server, or in JSE. */
-    protected static boolean isOnServer = false;
+    protected static Boolean isOnServer;
     
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
@@ -125,6 +125,13 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if the test is running on a JEE server, or in JSE.
      */
     public static boolean isOnServer() {
+        if (isOnServer == null) {
+            if (System.getProperty("TEST_SERVER_PLATFORM") != null) {
+                isOnServer = true;
+            } else {
+                isOnServer = false;                
+            }
+        }
         return isOnServer;
     }
     
@@ -140,7 +147,16 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public static ServerPlatform getServerPlatform() {
         if (serverPlatform == null) {
-            serverPlatform = new JEEPlatform();
+            String platformClass = System.getProperty("TEST_SERVER_PLATFORM");
+            if (platformClass == null) {
+                serverPlatform = new JEEPlatform();
+            } else {
+                try {
+                    serverPlatform = (ServerPlatform)Class.forName(platformClass).newInstance();
+                } catch (Exception notFound) {
+                    throw new RuntimeException(notFound);
+                }
+            }
         }
         return serverPlatform;
     }

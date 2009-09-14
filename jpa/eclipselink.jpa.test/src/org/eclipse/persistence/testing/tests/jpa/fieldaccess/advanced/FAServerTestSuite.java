@@ -15,19 +15,6 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJPAJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.CallbackEventJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ExtendedPersistenceContextJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.JoinedAttributeAdvancedJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.NamedNativeQueryJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OptimisticConcurrencyJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryAdvancedJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryConstructorExpressionTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryMultipleReturnTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQueryAdvancedJunitTest;
-
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
@@ -48,7 +35,7 @@ public class FAServerTestSuite extends TestSuite {
         suite.addTest(ReportQueryAdvancedJUnitTest.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
-        //suite.addTest(SQLResultSetMappingTestSuite.suite()); - hangup for J2SE
+        suite.addTest(SQLResultSetMappingTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         
         return suite;

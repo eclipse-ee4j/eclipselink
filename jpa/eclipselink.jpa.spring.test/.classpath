@@ -8,8 +8,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/commons-logging.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring-agent.jar"/>
+	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring.jar" sourcepath="C:/Engineering/Spring/spring-framework-2.5.6.SEC01/src"/>
+	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring-agent.jar" sourcepath="C:/Engineering/Spring/spring-framework-2.5.6.SEC01/tiger/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 1.99"/>
 	<classpathentry kind="lib" path="jpa-spring.jar"/>
 	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring-test.jar"/>

@@ -49,6 +49,9 @@ public class ConcurrencyTest extends JUnitTestCase {
      * execution in the server.
      */
     public void testDeadLockOnReadLock() {
+        if (isOnServer()) {
+            return;
+        }
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -99,6 +102,9 @@ public class ConcurrencyTest extends JUnitTestCase {
      * execution in the server.
      */
     public void testTransitionToDeferedFailure() {
+        if (isOnServer()) {
+            return;
+        }
         Integer toWaitOn = new Integer(4);
         Thread thread1 = null;
         EntityManagerFactory emf = getEntityManagerFactory();
@@ -130,7 +136,7 @@ public class ConcurrencyTest extends JUnitTestCase {
             a.setConcurrencyB(b);
             a.setConcurrencyC(c);
 
-            UnitOfWorkImpl uow = (UnitOfWorkImpl) ((EntityManagerImpl) em).getActivePersistenceContext(null);
+            UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
             try {
                 Thread.currentThread().sleep(20000);
                 synchronized (toWaitOn) {

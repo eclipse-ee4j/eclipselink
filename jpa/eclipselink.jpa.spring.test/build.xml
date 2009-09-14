@@ -80,6 +80,7 @@
         <path id="compile.path">
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${persistence.jar.testing}"/>
             <fileset
@@ -129,7 +130,6 @@
         </javac>
     </target>
 
-
     <!-- Packages JPA persistent unit test jars. -->
     <target name="package" depends="compile">
         <copy todir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}">
@@ -161,6 +161,16 @@
         </jar>
     </target>
 
+    <!-- Repackages JPA persistent unit test jars. -->
+    <target name="repackage">
+        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/spring" includes="**"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/spring" includes="**"/>
+        </copy>
+    </target>
+    
     <!-- Classpath used for running tests. -->
     <target name="config-run-path">
         <path id="run.classpath">
