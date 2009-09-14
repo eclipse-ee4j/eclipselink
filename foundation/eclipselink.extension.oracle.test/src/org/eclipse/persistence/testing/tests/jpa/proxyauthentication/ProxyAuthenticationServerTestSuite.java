@@ -270,7 +270,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     private Map createProperties(){
         Map newProps = new HashMap(3);
         newProps.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
-        newProps.put(OracleConnection.PROXY_USER_NAME, "PAS_PROXY");
+        newProps.put(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
         newProps.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
         return newProps;
     }
@@ -313,6 +313,13 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             return true;
         }else
             return false;
+    }
+
+    protected java.util.Properties getServerProperties(){
+        String proxy_user=System.getProperty("proxy.user.name");
+        Properties p = new Properties();
+        p.setProperty("proxy.user.name", proxy_user);
+        return p;
     }
 
 }
