@@ -635,29 +635,32 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (schemaWriter == null) {
             this.dropConstraintsOnDatabase(session);
         } else {
-            for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-                buildConstraintDeletionWriter(session, foreignKey, schemaWriter).toString();
-                try {
-                    if (createSQLFiles) {
-                        schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
+            if (session.getPlatform().supportsForeignKeyConstraints()){
+                for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
+                    buildConstraintDeletionWriter(session, foreignKey, schemaWriter).toString();
+                    try {
+                        if (createSQLFiles) {
+                            schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
+                        }
+                        schemaWriter.write("\n");
+                    } catch (IOException exception) {
+                        throw ValidationException.fileError(exception);
                     }
-                    schemaWriter.write("\n");
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
                 }
             }
-                     
-            for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
-                     uniqueKeysEnum.hasMoreElements();) {        
-                UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
-                buildUniqueConstraintDeletionWriter(session, uniqueKey, schemaWriter).toString();
-                try {
-                    if (createSQLFiles) {                    
-                        schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
+            if (session.getPlatform().supportsUniqueKeyConstraints()){
+                for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
+                         uniqueKeysEnum.hasMoreElements();) {        
+                    UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
+                    buildUniqueConstraintDeletionWriter(session, uniqueKey, schemaWriter).toString();
+                    try {
+                        if (createSQLFiles) {                    
+                            schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
+                        }
+                        schemaWriter.write("\n");
+                    } catch (IOException exception) {
+                        throw ValidationException.fileError(exception);
                     }
-                    schemaWriter.write("\n");
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
                 }
             }
         }

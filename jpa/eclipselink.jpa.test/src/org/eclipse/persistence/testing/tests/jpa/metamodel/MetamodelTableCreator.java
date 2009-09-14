@@ -928,7 +928,7 @@ DROP TABLE CMP3_MM_MANUF
 /*        FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GALACTIC_ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
@@ -950,7 +950,7 @@ DROP TABLE CMP3_MM_MANUF
         /*FieldDefinition fieldID2 = new FieldDefinition();
         fieldID2.setName("PK_PART2");
         fieldID2.setTypeName("NUMBER");
-        fieldID2.setSize(19);
+        fieldID2.setSize(18);
         fieldID2.setSubSize(0);
         fieldID2.setIsPrimaryKey(true);
         fieldID2.setIsIdentity(true);
@@ -1019,7 +1019,7 @@ DROP TABLE CMP3_MM_MANUF
 /*        FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("LOCATION_ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
@@ -1030,7 +1030,7 @@ DROP TABLE CMP3_MM_MANUF
         /*FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("PK_PART1");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
@@ -1041,7 +1041,7 @@ DROP TABLE CMP3_MM_MANUF
         /*FieldDefinition fieldID2 = new FieldDefinition();
         fieldID2.setName("PK_PART2");
         fieldID2.setTypeName("NUMBER");
-        fieldID2.setSize(19);
+        fieldID2.setSize(18);
         fieldID2.setSubSize(0);
         fieldID2.setIsPrimaryKey(true);
         fieldID2.setIsIdentity(true);
@@ -1086,7 +1086,7 @@ DROP TABLE CMP3_MM_MANUF
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GALACTIC_ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);

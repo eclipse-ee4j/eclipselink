@@ -32,7 +32,7 @@ public class MegaBrands implements Distributor {
     @Id
     @GeneratedValue(strategy=TABLE, generator="DISTRIBUTOR_TABLE_GENERATOR")
     @TableGenerator(
-        name="DISTRIBUTOR_GENERATOR_TABLE", 
+        name="DISTRIBUTOR_TABLE_GENERATOR", 
         table="CMP3_DISTRIBUTOR_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

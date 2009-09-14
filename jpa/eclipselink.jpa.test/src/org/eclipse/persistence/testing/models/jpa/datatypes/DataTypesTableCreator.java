@@ -91,7 +91,7 @@ public class DataTypesTableCreator extends org.eclipse.persistence.tools.schemaf
         FieldDefinition fieldLONGDATA = new FieldDefinition();
         fieldLONGDATA.setName("LONG_DATA");
         fieldLONGDATA.setTypeName("NUMERIC");
-        fieldLONGDATA.setSize(19);
+        fieldLONGDATA.setSize(18);
         fieldLONGDATA.setIsPrimaryKey(false);
         fieldLONGDATA.setIsIdentity(false);
         fieldLONGDATA.setUnique(false);
@@ -147,7 +147,7 @@ public class DataTypesTableCreator extends org.eclipse.persistence.tools.schemaf
         FieldDefinition fieldBIGDECIMALDATA = new FieldDefinition();
         fieldBIGDECIMALDATA.setName("BIGDECIMAL_DATA");
         fieldBIGDECIMALDATA.setTypeName("NUMERIC");
-        fieldBIGDECIMALDATA.setSize(38);
+        fieldBIGDECIMALDATA.setSize(18);
         fieldBIGDECIMALDATA.setSubSize(0);
         fieldBIGDECIMALDATA.setIsPrimaryKey(false);
         fieldBIGDECIMALDATA.setIsIdentity(false);
@@ -158,7 +158,7 @@ public class DataTypesTableCreator extends org.eclipse.persistence.tools.schemaf
         FieldDefinition fieldBIGINTEGERDATA = new FieldDefinition();
         fieldBIGINTEGERDATA.setName("BIGINTEGER_DATA");
         fieldBIGINTEGERDATA.setTypeName("NUMERIC");
-        fieldBIGINTEGERDATA.setSize(38);
+        fieldBIGINTEGERDATA.setSize(18);
         fieldBIGINTEGERDATA.setSubSize(0);
         fieldBIGINTEGERDATA.setIsPrimaryKey(false);
         fieldBIGINTEGERDATA.setIsIdentity(false);
@@ -215,7 +215,7 @@ public class DataTypesTableCreator extends org.eclipse.persistence.tools.schemaf
         FieldDefinition fieldLONGDATA = new FieldDefinition();
         fieldLONGDATA.setName("LONG_DATA");
         fieldLONGDATA.setTypeName("NUMERIC");
-        fieldLONGDATA.setSize(19);
+        fieldLONGDATA.setSize(18);
         fieldLONGDATA.setIsPrimaryKey(false);
         fieldLONGDATA.setIsIdentity(false);
         fieldLONGDATA.setUnique(false);

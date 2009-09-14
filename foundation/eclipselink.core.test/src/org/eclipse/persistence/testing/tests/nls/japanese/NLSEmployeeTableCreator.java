@@ -327,7 +327,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("\u3044\u306a\u3048\u304d\u304a\u3068");//("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
-        field1.setSize(32);
+        field1.setSize(18);
         field1.setShouldAllowNull(true);
         field1.setIsPrimaryKey(false);
         field1.setUnique(false);

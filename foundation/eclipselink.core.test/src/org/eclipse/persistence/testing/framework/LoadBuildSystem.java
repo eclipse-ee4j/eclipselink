@@ -93,10 +93,12 @@ public class LoadBuildSystem {
         session.executeNonSelectingCall(new SQLCall("Create table LOADBUILD (id number(10), lbtimestamp date, lberrors number(10), fatalErrors number(10), loginChoice varchar2(100), os varchar2(100), toplink_version varchar(100), jvm varchar2(100), machine varchar2(100), numberOfTests number(10), lbuserName varchar2(50), primary key (id))"));
         session.executeNonSelectingCall(new SQLCall("Create table RESULT (id number(10), description varchar2(2000), exception varchar2(2000), name varchar2(1000), outcome varchar2(100), test_time number(10), total_time number(10), summaryId number(10), lbuildId number(10), primary key (id))"));
         session.executeNonSelectingCall(new SQLCall("Create table SUMMARY (id number(10), description varchar2(2000), setup_failures number(10), errors number(10), fatalErrors number(10), name varchar2(1000), passed number(10), problems number(10), setupException varchar2(2000), total_time number(10), totalTests number(10), warnings number(10), lbuildId number(10), parentId number(10), primary key (id))"));
-        session.executeNonSelectingCall(new SQLCall("ALTER TABLE RESULT ADD CONSTRAINT FK_RESULT_summaryId FOREIGN KEY (summaryId) REFERENCES SUMMARY (id)"));
-        session.executeNonSelectingCall(new SQLCall("ALTER TABLE RESULT ADD CONSTRAINT FK_RESULT_lbuildId FOREIGN KEY (lbuildId) REFERENCES LOADBUILD (id)"));
-        session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_lbuildId FOREIGN KEY (lbuildId) REFERENCES LOADBUILD (id)"));
-        session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_parentId FOREIGN KEY (parentId) REFERENCES SUMMARY (id)"));
+        if (session.getPlatform().supportsUniqueKeyConstraints()){
+            session.executeNonSelectingCall(new SQLCall("ALTER TABLE RESULT ADD CONSTRAINT FK_RESULT_summaryId FOREIGN KEY (summaryId) REFERENCES SUMMARY (id)"));
+            session.executeNonSelectingCall(new SQLCall("ALTER TABLE RESULT ADD CONSTRAINT FK_RESULT_lbuildId FOREIGN KEY (lbuildId) REFERENCES LOADBUILD (id)"));
+            session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_lbuildId FOREIGN KEY (lbuildId) REFERENCES LOADBUILD (id)"));
+            session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_parentId FOREIGN KEY (parentId) REFERENCES SUMMARY (id)"));
+        }
         session.executeNonSelectingCall(new SQLCall("Create INDEX IX_LOADBUILD_lbtimestamp ON LOADBUILD (lbtimestamp)"));
         session.executeNonSelectingCall(new SQLCall("Create INDEX IX_LOADBUILD_loginChoice ON LOADBUILD (loginChoice)"));
         session.executeNonSelectingCall(new SQLCall("Create INDEX IX_LOADBUILD_toplink_version ON LOADBUILD (toplink_version)"));

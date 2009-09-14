@@ -200,7 +200,7 @@ public class STI_EmployeeTableCreator extends org.eclipse.persistence.tools.sche
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field6.setName("BUDGET");
         field6.setTypeName("DOUBLE PRECIS");
-        field6.setSize(32);
+        field6.setSize(18);
         field6.setShouldAllowNull(true);
         field6.setIsPrimaryKey(false);
         field6.setUnique(false);

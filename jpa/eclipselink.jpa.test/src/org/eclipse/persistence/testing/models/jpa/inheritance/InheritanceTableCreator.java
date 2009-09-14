@@ -1671,7 +1671,9 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
      */
     public void replaceTables(DatabaseSession session) {
         try {
-            session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
+            if (session.getPlatform().supportsUniqueKeyConstraints()){
+                session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
+            }
         } catch (Exception ignore) {}
         super.replaceTables(session);
     }

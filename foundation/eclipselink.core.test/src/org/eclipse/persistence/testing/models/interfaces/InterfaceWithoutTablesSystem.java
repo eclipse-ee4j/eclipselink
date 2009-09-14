@@ -53,8 +53,12 @@ public class InterfaceWithoutTablesSystem extends TestSystem {
          * There is no possibility of existing instances being messed up, because all the tables are dropped
          * here as well
          */
-        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM SEQUENCE WHERE SEQ_NAME = 'EMAIL_SEQ'"));
-        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM SEQUENCE WHERE SEQ_NAME = 'PHONE_SEQ'"));
+        String sequenceTableName = "SEQUENCE";
+        if (session.getPlatform().getDefaultSequence().isTable()) {
+            sequenceTableName = session.getPlatform().getQualifiedSequenceTableName();
+        }
+        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM " + sequenceTableName + " WHERE SEQ_NAME = 'EMAIL_SEQ'"));
+        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM " + sequenceTableName  + " WHERE SEQ_NAME = 'PHONE_SEQ'"));
         schemaManager.createSequences();
     }
 
