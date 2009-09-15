@@ -2578,7 +2578,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     protected void printFieldUnique(Writer writer) throws IOException {
-        if (supportsPrimaryKeyConstraint()) {
+        if (supportsUniqueKeyConstraints()) {
             writer.write(" UNIQUE");
         }
     }

@@ -85,7 +85,7 @@ public class Language implements Serializable {
         definition.setName("AGG_LAN");
 
         definition.addIdentityField("ID", java.math.BigDecimal.class, 15);
-        definition.addField("LANGUAGE", String.class, 30);
+        definition.addField("LANG", String.class, 30);
 
         return definition;
     }

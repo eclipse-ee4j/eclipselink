@@ -237,7 +237,7 @@ public class ProxyIndirectionTableCreator extends org.eclipse.persistence.tools.
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field4.setName("DOMAIN");
+        field4.setName("EMAIL_DOMAIN");
         field4.setTypeName("VARCHAR");
         field4.setSize(50);
         field4.setShouldAllowNull(true);

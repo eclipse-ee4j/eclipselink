@@ -1071,7 +1071,7 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("language");
         directtofieldmapping1.setIsReadOnly(false);
-        directtofieldmapping1.setFieldName("AGG_LAN.LANGUAGE");
+        directtofieldmapping1.setFieldName("AGG_LAN.LANG");
         descriptor.addMapping(directtofieldmapping1);
         addDescriptor(descriptor);
     }

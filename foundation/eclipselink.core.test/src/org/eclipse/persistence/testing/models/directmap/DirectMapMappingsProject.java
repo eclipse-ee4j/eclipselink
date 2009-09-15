@@ -72,7 +72,7 @@ public class DirectMapMappingsProject extends Project {
         DirectMapMapping directMapMapping = new DirectMapMapping();
         directMapMapping.setAttributeName("directMap");
         directMapMapping.setReferenceTableName("DIRECTMAP1");
-        directMapMapping.setDirectFieldName("DIRECTMAP1.VALUE");
+        directMapMapping.setDirectFieldName("DIRECTMAP1.VAL");
         //"KEY" is a reserved keyword for SyBase, it can't be used as a field name
         directMapMapping.setDirectKeyFieldName("DIRECTMAP1.KEY_FIELD");
         directMapMapping.addReferenceKeyFieldName("DIRECTMAP1.ID", "DIRECTMAPMAPPINGS.ID");
@@ -87,7 +87,7 @@ public class DirectMapMappingsProject extends Project {
         DirectMapMapping directMapBatchMapping = new DirectMapMapping();
         directMapBatchMapping.setAttributeName("directMapForBatchRead");
         directMapBatchMapping.setReferenceTableName("DIRECTMAP2");
-        directMapBatchMapping.setDirectFieldName("DIRECTMAP2.VALUE");
+        directMapBatchMapping.setDirectFieldName("DIRECTMAP2.VAL");
         directMapBatchMapping.setDirectKeyFieldName("DIRECTMAP2.KEY_FIELD");
         directMapBatchMapping.addReferenceKeyFieldName("DIRECTMAP2.ID", "DIRECTMAPMAPPINGS.ID");
         directMapBatchMapping.setReferenceClass(Hashtable.class);
@@ -101,7 +101,7 @@ public class DirectMapMappingsProject extends Project {
         DirectMapMapping indirectionDirectMapMapping = new DirectMapMapping();
         indirectionDirectMapMapping.setAttributeName("indirectionDirectMap");
         indirectionDirectMapMapping.setReferenceTableName("DIRECTMAP3");
-        indirectionDirectMapMapping.setDirectFieldName("DIRECTMAP3.VALUE");
+        indirectionDirectMapMapping.setDirectFieldName("DIRECTMAP3.VAL");
         indirectionDirectMapMapping.setDirectKeyFieldName("DIRECTMAP3.KEY_FIELD");
         indirectionDirectMapMapping.addReferenceKeyFieldName("DIRECTMAP3.ID", "DIRECTMAPMAPPINGS.ID");
         indirectionDirectMapMapping.setReferenceClass(Hashtable.class);
@@ -114,7 +114,7 @@ public class DirectMapMappingsProject extends Project {
         DirectMapMapping directMapBlobMapping = new DirectMapMapping();
         directMapBlobMapping.setAttributeName("blobDirectMap");
         directMapBlobMapping.setReferenceTableName("DIRECTMAPBLOB");
-        directMapBlobMapping.setDirectFieldName("DIRECTMAPBLOB.VALUE");
+        directMapBlobMapping.setDirectFieldName("DIRECTMAPBLOB.VAL");
         directMapBlobMapping.setDirectKeyFieldName("DIRECTMAPBLOB.KEY_FIELD");
         directMapBlobMapping.addReferenceKeyFieldName("DIRECTMAPBLOB.ID", "DIRECTMAPMAPPINGS.ID");
         directMapBlobMapping.setReferenceClass(Hashtable.class);
@@ -128,7 +128,7 @@ public class DirectMapMappingsProject extends Project {
         DirectMapMapping directHashMapMapping = new DirectMapMapping();
         directHashMapMapping.setAttributeName("directHashMap");
         directHashMapMapping.setReferenceTableName("DIRECTMAP4");
-        directHashMapMapping.setDirectFieldName("DIRECTMAP4.VALUE");
+        directHashMapMapping.setDirectFieldName("DIRECTMAP4.VAL");
         directHashMapMapping.setDirectKeyFieldName("DIRECTMAP4.KEY_FIELD");
         directHashMapMapping.addReferenceKeyFieldName("DIRECTMAP4.ID", "DIRECTMAPMAPPINGS.ID");
         directHashMapMapping.setReferenceClass(HashMap.class);
