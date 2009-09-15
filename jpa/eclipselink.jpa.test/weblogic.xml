@@ -82,6 +82,7 @@
 
     <!-- Start the server. -->
     <target name="weblogic-start" depends="weblogic-start-nosleep">
+        <echo>WebLogic Server has been started ......</echo>
         <sleep hours="2"/>
     </target>
 
