@@ -11,6 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
  *     tware - added implementation of computeMaxRowsForSQL 
+ *     Dies Koper - bug fix for printFieldUnique()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Dies Koper - avoid generating constraints on platforms that do not support constraint generation
  *     
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
