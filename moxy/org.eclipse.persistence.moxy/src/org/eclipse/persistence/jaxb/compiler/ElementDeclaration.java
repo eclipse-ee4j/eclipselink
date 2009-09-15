@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -39,6 +40,7 @@ public class ElementDeclaration {
         this.javaType = javaType;
         this.substitutableElements = new ArrayList<ElementDeclaration>();
         this.isList = isList;
+        this.scopeClass = XmlElementDecl.GLOBAL.class;
     }
     
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList, Class scopeClass) {
