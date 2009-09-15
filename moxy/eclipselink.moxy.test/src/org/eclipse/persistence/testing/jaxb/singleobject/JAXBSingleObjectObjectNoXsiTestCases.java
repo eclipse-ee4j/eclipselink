@@ -113,7 +113,21 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
     
     public void testUnmarshallerHandler() throws Exception {
     }
-
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {
+    		InputStream instream = null;
+    		if(writeControlDocumentLocation !=null){
+    			instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+    		}else{
+    			instream = ClassLoader.getSystemResourceAsStream(resourceName);
+    		}
+    	    Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), Object.class);
+    	    instream.close();
+    	    xmlToObjectTest(testObject);
+            
+            objectToXMLStringWriter(testObject);
+        }    	
+    }
     
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);

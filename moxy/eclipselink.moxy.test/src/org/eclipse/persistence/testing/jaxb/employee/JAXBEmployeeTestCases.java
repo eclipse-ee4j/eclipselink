@@ -59,7 +59,7 @@ public class JAXBEmployeeTestCases extends JAXBTestCases {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(2005,04,24,16,06,53);
-      
+			
 		employee.birthday = cal;
 				
 		employee.id = CONTROL_ID;
@@ -69,6 +69,10 @@ public class JAXBEmployeeTestCases extends JAXBTestCases {
 		employee.setBlah("Some String");
               
         return employee;
+    }
+    
+    
+    public void testRoundTrip() throws Exception{
     }
     
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
@@ -113,4 +117,5 @@ public class JAXBEmployeeTestCases extends JAXBTestCases {
         	objectToXMLDocumentTest(testDocument);
         }
     }  
+
 }

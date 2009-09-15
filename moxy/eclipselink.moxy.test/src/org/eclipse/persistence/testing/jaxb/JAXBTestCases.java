@@ -179,10 +179,29 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         instream.close();
         xmlToObjectTest(testObject);
     }
+    
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {
+    		InputStream instream = null;
+    		if(writeControlDocumentLocation !=null){
+    			instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+    		}else{
+    			instream = ClassLoader.getSystemResourceAsStream(resourceName);
+    		}
+                Object testObject = jaxbUnmarshaller.unmarshal(instream);
+                instream.close();
+                xmlToObjectTest(testObject);
+            
+                objectToXMLStringWriter(testObject);
+        }    	
+    }
 
     public void testObjectToXMLStringWriter() throws Exception {
+    	objectToXMLStringWriter(getWriteControlObject());
+    }
+    public void objectToXMLStringWriter(Object objectToWrite) throws Exception {
         StringWriter writer = new StringWriter();
-        Object objectToWrite = getWriteControlObject();
+        
         XMLDescriptor desc = null;
         if (objectToWrite instanceof XMLRoot) {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());

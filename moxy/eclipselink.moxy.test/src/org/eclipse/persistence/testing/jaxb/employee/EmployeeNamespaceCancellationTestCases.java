@@ -51,6 +51,9 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         setClasses(classes);
     }
     
+    public void testRoundTrip(){
+    	
+    }
 
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();

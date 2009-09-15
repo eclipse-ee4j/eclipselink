@@ -135,6 +135,12 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
         objectToXMLDocumentTest(testDocument);
     }
+	
+	
+	public void testRoundTrip() throws Exception {
+		//This test is not applicable because to Marshal we need a specialized jaxbelement
+    }
+	
 
 	//Override and don't compare namespaceresolver size
 	 public void testObjectToContentHandler() throws Exception {

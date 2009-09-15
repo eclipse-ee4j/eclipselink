@@ -135,6 +135,35 @@ public class RootWithCompositeCollectionTestCases extends JAXBTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {    	
+    		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            Object testObject = getJAXBUnmarshaller().unmarshal(instream);
+            instream.close();
+            super.xmlToObjectTest(testObject);
+            
+            StringWriter writer = new StringWriter();
+            getJAXBMarshaller().marshal(testObject, writer);
+
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+
+            super.objectToXMLDocumentTest(testDocument);
+            
+            assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
+            
+            assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
+            
+            ArrayList expectedEvents = new ArrayList();
+            expectedEvents.addAll(expectedClassBasedUnmarshalEvents);
+            expectedEvents.addAll(expectedClassBasedMarshalEvents);
+            assertTrue("Class based callbacks not corrent", ((Employee)testObject).triggeredEvents.equals(expectedEvents));
+        }    	
+    }
+    
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);

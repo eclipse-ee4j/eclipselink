@@ -75,6 +75,20 @@ public class JAXBElementTestCases extends JAXBTestCases {
         xmlToObjectTest(testObject);
     }
     
+    
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {    	
+    		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputSource inputSource = new InputSource(instream);
+            Document testDocument = parser.parse(inputSource);
+            Object testObject = getJAXBUnmarshaller().unmarshal(testDocument, target);
+            instream.close();
+            xmlToObjectTest(testObject);
+            
+            objectToXMLStringWriter(testObject);
+        }    	
+    }
+    
     public void testXMLToObjectFromSource() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         StreamSource source = new StreamSource(instream);
