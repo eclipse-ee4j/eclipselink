@@ -131,6 +131,8 @@
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
 
+    <property name="modelgen.processor.jar" value="${eclipselink.jpa.modelgen.processor.prefix}_${version.string}.jar"/>
+
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${commonj.sdo.lib}"/>
@@ -429,6 +431,7 @@
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
+                <exclude name="${eclipselink.jpa.modelgen.processor.prefix}_*.jar"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
@@ -632,6 +635,7 @@
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar.name}"/>
                 <include name="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.plugins}/${modelgen.processor.jar}"/>
             </zipfileset>
             <zipfileset dir="./${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename.jar}"/>
