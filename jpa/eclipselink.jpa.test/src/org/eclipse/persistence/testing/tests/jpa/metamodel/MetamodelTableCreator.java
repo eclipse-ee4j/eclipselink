@@ -13,7 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
-import java.math.BigInteger;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
@@ -25,6 +24,7 @@ public class MetamodelTableCreator extends TableCreator {
      * 
      * DDL schema cleanup order
 DROP TABLE CMP3_MM_HIST_EMPLOY
+DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC8
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC7
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC4
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC2
@@ -78,6 +78,7 @@ DROP TABLE CMP3_MM_MANUF
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC2_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC4_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC7_JOINTable());
+        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable());        
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
         addTableDefinition(buildBOARD_PROCESSOR_JOINTable());
@@ -100,7 +101,7 @@ DROP TABLE CMP3_MM_MANUF
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("MANUF_VERSION");
         field4.setTypeName("NUMERIC");
@@ -341,6 +342,16 @@ DROP TABLE CMP3_MM_MANUF
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_HWDESIGNER");
 
+        /*FieldDefinition field_id2 = new FieldDefinition();
+        field_id2.setName("DESIGNER_ID");
+        field_id2.setTypeName("NUMERIC");
+        field_id2.setSize(15);
+        field_id2.setShouldAllowNull(false);
+        field_id2.setIsPrimaryKey(true);
+        field_id2.setUnique(false);
+        field_id2.setIsIdentity(true);
+        table.addField(field_id2);*/
+
         FieldDefinition field = new FieldDefinition();
         field.setName("PERSON_ID");
         field.setTypeName("NUMERIC");
@@ -449,6 +460,18 @@ DROP TABLE CMP3_MM_MANUF
         field49.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
         table.addField(field49);        
 
+        // from MappedSuperclass
+        // m:1 does not require a JoinTable - only a JoinColumn
+        FieldDefinition field59 = new FieldDefinition();
+        field59.setName("MAPPEDEMPLOYERUC8_PERSON_ID");
+        field59.setTypeName("NUMERIC");
+        field59.setSize(15);
+        field59.setShouldAllowNull(false);
+        field59.setIsPrimaryKey(false);
+        field59.setUnique(false);
+        field59.setIsIdentity(false);
+        field59.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field59);        
         
         // from MappedSuperclass
         // 1:1 unidirectional
@@ -483,6 +506,16 @@ DROP TABLE CMP3_MM_MANUF
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_SWDESIGNER");
 
+        /*FieldDefinition field_id2 = new FieldDefinition();
+        field_id2.setName("DESIGNER_ID");
+        field_id2.setTypeName("NUMERIC");
+        field_id2.setSize(15);
+        field_id2.setShouldAllowNull(false);
+        field_id2.setIsPrimaryKey(true);
+        field_id2.setUnique(false);
+        field_id2.setIsIdentity(true);
+        table.addField(field_id2);*/
+        
         FieldDefinition field = new FieldDefinition();
         field.setName("PERSON_ID");
         field.setTypeName("NUMERIC");
@@ -1342,6 +1375,35 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
 
+    public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_MANUF_MM_HWDES_MAPUC8");
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("MANUF_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field1);        
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("DESIGNER_MAP_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
+        table.addField(field2);        
+
+        return table;
+    }
+    
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_HWDES_MAP");

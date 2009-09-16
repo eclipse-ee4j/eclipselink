@@ -79,6 +79,10 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     @OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
     
+    // UC8: no targetEntity, MapKey uses name default
+    @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC8")
+    @MapKey // name attribute will default to "id"
+    private Map<Integer, HardwareDesigner> hardwareDesignersMapUC8;
     
     // Define Uppercase Object non-java.lang Basic types
     //private Object anObject; // Not supported in JPA
@@ -215,6 +219,16 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
             Map<String, HardwareDesigner> hardwareDesignersMapUC7) {
         this.hardwareDesignersMapUC7 = hardwareDesignersMapUC7;
     }
+
+    public Map<Integer, HardwareDesigner> getHardwareDesignersMapUC8() {
+        return hardwareDesignersMapUC8;
+    }
+
+    public void setHardwareDesignersMapUC8(
+            Map<Integer, HardwareDesigner> hardwareDesignersMapUC8) {
+        this.hardwareDesignersMapUC8 = hardwareDesignersMapUC8;
+    }
+
     /*
     // Not supported in JPA
     public Object getAnObject() {

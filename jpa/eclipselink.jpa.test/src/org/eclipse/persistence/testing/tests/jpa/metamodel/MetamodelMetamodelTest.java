@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -117,9 +116,9 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 92;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 94;
     public static final int METAMODEL_ALL_TYPES = 37;
-    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 25;    
+    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 26;    
     
     public MetamodelMetamodelTest() {
         super();
@@ -254,6 +253,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //manufacturer.setHardwareDesignersMapUC2(mappedDesigners);
             //manufacturer.setHardwareDesignersMapUC4(mappedDesigners);
             //manufacturer.setHardwareDesignersMapUC7(mappedDesigners);
+            //manufacturer.setHardwareDesignersMapUC8(mappedDesigners);            
 
             // set owning and inverse sides of 1:m and m:1 relationships
             manufacturer.setComputers(computersList);
@@ -268,6 +268,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             hardwareDesigner1.setMappedEmployerUC2(manufacturer);
             hardwareDesigner1.setMappedEmployerUC4(manufacturer);
             hardwareDesigner1.setMappedEmployerUC7(manufacturer);
+            hardwareDesigner1.setMappedEmployerUC8(manufacturer);            
             
             arrayComputer1.setManufacturer(manufacturer);
             vectorComputer2.setManufacturer(manufacturer);
@@ -534,7 +535,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          given type is not present in the identifiable type
              */
             //<Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
-
+            //SingularAttribute<? super Manufacturer, Integer> versionAttribute = entityManufacturer.getVersion(Integer.class);
             /**
              *  Return the attribute that corresponds to the id attribute 
              *  declared by the entity or mapped superclass.
@@ -609,6 +610,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNull(superTypeLocation);
             
 
+            
+            
             /**
              *  Whether or not the identifiable type has an id attribute.
              *  Returns true for a simple id or embedded id; returns false
@@ -616,8 +619,37 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @return boolean indicating whether or not the identifiable
              *           type has a single id attribute
              */
+            // Not Implemented yet
+/*            
             //boolean hasSingleIdAttribute();
+            // verify false for "no" type of Id attribute
+            // test normal path
+            expectedIAExceptionThrown = false;
+            boolean hasSingleIdAttribute = false;
+            try {
+                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertTrue(hasSingleIdAttribute);
 
+            // test exception path
+            expectedIAExceptionThrown = false;
+            hasSingleIdAttribute = false;
+            try {
+                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertTrue(hasSingleIdAttribute);
+
+*/
             /**
              *  Whether or not the identifiable type has a version attribute.
              *  @return boolean indicating whether or not the identifiable
@@ -725,6 +757,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            
             /*
              * Metamodel model toString
              * ************************************************************************************
@@ -916,7 +950,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              //java.util.Set<Attribute<? super X, ?>> getAttributes();
             Set<Attribute<? super Manufacturer, ?>> attributeSet = entityManufacturer_.getAttributes();
             assertNotNull(attributeSet);
-            // We should see 29 attributes (3 List, 3 Singular, 17 basic (java.lang, java.math) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
+            // We should see 30 attributes (3 List, 3 Singular, 17 basic (java.lang, java.math) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
             // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
             assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 4, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
@@ -931,6 +965,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC2"))); //
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC4"))); //
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC7"))); //            
+            assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC8"))); //            
             // ManyToMany Collection Attribute from Person MappedSuperclass
             assertTrue(attributeSet.contains(entityManufacturer_.getCollection("historicalEmployers"))); //
             assertTrue(entityManufacturer_.getCollection("historicalEmployers").isCollection()); //
@@ -1084,6 +1119,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC2"))); //
                 assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC4"))); //
                 assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC7"))); //
+                assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC8"))); //                
                 // historicalEmployers is declared 2 levels above
                 assertFalse(declaredAttributesSet.contains(entityManufacturer_.getAttribute("historicalEmployers"))); //
                 
@@ -1154,7 +1190,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer_.getSingularAttributes();
             assertNotNull(singularAttributeSet);
             // We should see 3+17 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
-            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 5, singularAttributeSet.size());
+            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 6, singularAttributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("id"))); // 
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("version"))); //
@@ -1327,6 +1363,28 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertFalse(expectedIAExceptionThrown);            
 
+            expectedIAExceptionThrown = false;            
+            try {
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC8");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
+                // Same as UC1a - that is missing the @MapKey name attribute
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
             /**
              *  Return the Collection-valued attribute declared by the 
              *  managed type that corresponds to the specified name and Java 
@@ -1813,109 +1871,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              */
             //MapAttribute<X, ?, ?> getDeclaredMap(String name);            
             
-            // Verify ManagedType operations
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            /**
-             *  Return the attribute that corresponds to the id attribute 
-             *  declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared id attribute
-             *  @return declared id attribute
-             *  @throws IllegalArgumentException if id attribute of the given
-             *          type is not declared in the identifiable type or if
-             *          the identifiable type has an id class
-             */
-            //public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-            
-            /**
-             *  Return the attribute that corresponds to the version 
-             *  attribute declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared version 
-             *               attribute
-             *  @return declared version attribute
-             *  @throws IllegalArgumentException if version attribute of the 
-             *          type is not declared in the identifiable type
-             */
-            //public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
-            
-            /**
-             *   Return the attributes corresponding to the id class of the
-             *   identifiable type.
-             *   @return id attributes
-             *   @throws IllegalArgumentException if the identifiable type
-             *           does not have an id class
-             */
-            //public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
-            
-            /**
-             *  Return the attribute that corresponds to the id attribute of 
-             *  the entity or mapped superclass.
-             *  @param type  the type of the represented id attribute
-             *  @return id attribute
-             *  @throws IllegalArgumentException if id attribute of the given
-             *          type is not present in the identifiable type or if
-             *          the identifiable type has an id class
-             */
-            //public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-            
-            /**
-             *  Return the type that represents the type of the id.
-             *  @return type of id
-             */
-            //public abstract Type<?> getIdType();
-            
-            /**
-             *  Return the identifiable type that corresponds to the most
-             *  specific mapped superclass or entity extended by the entity 
-             *  or mapped superclass. 
-             *  @return supertype of identifiable type or null if no such supertype
-             */
-            //public IdentifiableType<? super X> getSupertype() {
-
-            /**
-             *  Return the attribute that corresponds to the version 
-             *    attribute of the entity or mapped superclass.
-             *  @param type  the type of the represented version attribute
-             *  @return version attribute
-             *  @throws IllegalArgumentException if version attribute of the 
-             *          given type is not present in the identifiable type
-             */
-            //public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-            // in progress
-            //SingularAttribute<? super Manufacturer, Integer> versionAttribute = entityManufacturer.getVersion(Integer.class);
-            
-            /**
-             *  Whether or not the identifiable type has an id attribute.
-             *  Returns true for a simple id or embedded id; returns false
-             *  for an idclass.
-             *  @return boolean indicating whether or not the identifiable
-             *           type has a single id attribute
-             */
-            //public boolean hasSingleIdAttribute() {
-            // verify false for "no" type of Id attribute
-            // test normal path
-// 20090817: mid-implementation in parallel dev stream
-/*            
-            expectedIAExceptionThrown = false;
-            boolean hasSingleIdAttribute = false;
-            try {
-                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
-                hasSingleIdAttribute = aType.hasSingleIdAttribute();
-            } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
-                expectedIAExceptionThrown = true;            
-            }
-            assertFalse(expectedIAExceptionThrown);            
-            assertTrue(hasSingleIdAttribute);
-*/            
-            
-            
-            /**
-             *  Whether or not the identifiable type has a version attribute.
-             *  @return boolean indicating whether or not the identifiable
-             *           type has a version attribute
-             */
-            //public boolean hasVersionAttribute() {
 
 
             // Verify MetamodelImpl operations

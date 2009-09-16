@@ -21,7 +21,7 @@ import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -69,7 +69,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping, validationEnabled);
         // We need to set the keyType Type that represents the type of the Map key for this mapping
-        MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
+        ContainerPolicy policy = mapping.getContainerPolicy();
         Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
         Type<?> aKeyType = null;
         // Default to Object class for any variant cases that are not handled

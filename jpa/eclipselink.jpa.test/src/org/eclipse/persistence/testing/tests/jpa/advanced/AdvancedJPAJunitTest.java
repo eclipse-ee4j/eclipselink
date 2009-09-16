@@ -24,7 +24,6 @@ import java.util.Vector;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
@@ -67,7 +66,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.multipletable.Budget;
 
 /**
  * This test suite tests TopLink JPA annotations extensions.
@@ -105,7 +103,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
-        //suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
+        suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -186,10 +184,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testMetamodelMinimalSanityTest() {
         EntityManager em = createEntityManager("default1");
-        // pre-clear metamodel to enable test reentry
-        //266912: Test that gets EMF directly is not container-managed friendly - commenting secondary test.
-        //The following line needs to be refactored for both SE and EE
-        //((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        // pre-clear metamodel to enable test reentry (SE only - not EE)
+        if(!this.isOnServer()) {
+            ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        }
         Metamodel metamodel = em.getMetamodel();
         // get declared attributes
         EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
@@ -233,6 +231,44 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
         assertNotNull(buyingDaysSingularAttribute);
         assertFalse(buyingDaysSingularAttribute.isCollection());
+        
+        // Not yet implemented
+/*        // Check for Id that exists
+        boolean expectedIAExceptionThrown = false;
+        boolean hasSingleIdAttribute = false;
+        try {
+            hasSingleIdAttribute = entityBuyer.hasSingleIdAttribute();
+        } catch (IllegalArgumentException iae) {
+            //iae.printStackTrace();
+            expectedIAExceptionThrown = true;            
+        }
+        assertFalse(expectedIAExceptionThrown);            
+        assertTrue(hasSingleIdAttribute);
+*/
+        
+        // Fixing elementType in parallel transaction for Design Issue 83
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_83:_20090914:_MapAttributeImpl.elementType_incorrectly_set_when_.40ObjectTypeConverter_is_present
+/*        // Verify that the BasicMap Buyer.creditCards is picked up properly
+        //* @param <X> The type the represented Map belongs to
+        //* @param <K> The type of the key of the represented Map
+        //* @param <V> The type of the value of the represented Map
+        //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
+        Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
+        assertNotNull(buyerCreditCards);
+        assertTrue(buyerCreditCards.isCollection());
+        assertTrue(buyerCreditCards instanceof MapAttributeImpl);
+        MapAttribute<? super Buyer, ?, ?> buyerCreditCardsMap = entityBuyer.getMap("creditCards");
+        
+        // Verify owning type
+        assertNotNull(buyerCreditCardsMap);
+        assertEquals(entityBuyer, buyerCreditCardsMap.getDeclaringType());
+        
+        // Verify Map Key
+        assertEquals(String.class, buyerCreditCardsMap.getKeyJavaType());
+        
+        // Verify Map Value
+        assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
+*/        
     }
     
     /**

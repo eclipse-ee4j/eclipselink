@@ -1062,7 +1062,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 // Handle 1:m, n:m collection mappings
                 CollectionMapping colMapping = (CollectionMapping) mapping;
                 ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
-                if (collectionContainerPolicy.isMapPolicy()) {
+                if (collectionContainerPolicy.isMapPolicy() || collectionContainerPolicy.isDirectMapPolicy()) {
                     // Handle Map type mappings
                     member = new MapAttributeImpl(this, colMapping, true);
                     // check mapping.attributeAcessor.attributeField.type=Collection
@@ -1085,13 +1085,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                         }
                         if(null == aField) {
                             // Check attributeName when the field is null
-                            Field field = null;
-                            String getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();
                             aType = this.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
-                            
-                            
-                            
-                            
                         } else {
                             aType = aField.getType();
                         }
