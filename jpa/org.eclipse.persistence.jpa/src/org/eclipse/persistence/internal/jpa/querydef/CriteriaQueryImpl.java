@@ -460,8 +460,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             query = raq;
         }else{
             if (this.roots == null || this.roots.isEmpty()) throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
-            ReportQuery reportQuery = new ReportQuery();
+            ReportQuery reportQuery = null;
             if (this.queryResult.equals(ResultType.CONSTRUCTOR)){
+                reportQuery = new ReportQuery();
                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)this.selection).translate());
                 reportQuery.setShouldReturnSingleAttribute(true);
             }else {
@@ -487,9 +488,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
             if (this.where != null && ((InternalSelection)this.where).getCurrentNode() != null){
                 reportQuery.setReferenceClass(((InternalSelection)this.where).getCurrentNode().getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(((InternalSelection)this.where).getCurrentNode().getBuilder());
             }else{
-            reportQuery.setReferenceClass(this.getRoots().iterator().next().getJavaType());
-        }
+                Root root = this.getRoots().iterator().next();
+                reportQuery.setReferenceClass(root.getJavaType());
+                reportQuery.setExpressionBuilder(((RootImpl)root).getCurrentNode().getBuilder());
+            }
             query = reportQuery;
         }
         if (this.where != null){

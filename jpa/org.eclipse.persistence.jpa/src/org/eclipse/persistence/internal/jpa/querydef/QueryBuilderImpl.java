@@ -143,7 +143,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return avg expression
      */
     public <N extends Number> Expression<Double> avg(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().average());
+        return new FunctionExpressionImpl<Double>(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().average(), buildList(x),"AVG");
     }
 
     /**
@@ -154,7 +154,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum expression
      */
     public <N extends Number> Expression<N> sum(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().sum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
 
     /**
@@ -165,7 +165,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return max expression
      */
     public <N extends Number> Expression<N> max(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().maximum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().maximum(), buildList(x),"MAX");
     }
 
     /**
@@ -176,7 +176,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return min expression
      */
     public <N extends Number> Expression<N> min(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().minimum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().minimum(), buildList(x),"MIN");
     }
 
     /**
@@ -191,7 +191,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().maximum());
+        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().maximum());
     }
 
     /**
@@ -206,7 +206,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().minimum());
+        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().minimum());
     }
 
     /**
@@ -220,7 +220,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().count());
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().count(), buildList(x),"COUNT");
     }
 
     /**
@@ -235,7 +235,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().distinct().count());
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().distinct().count(), buildList(x),"COUNT");
     }
 
     // subqueries:
@@ -614,8 +614,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "greaterThanEqual");
     }
 
     /**
@@ -629,8 +634,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -646,8 +656,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return between predicate
      */
     public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -661,8 +676,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThan");
     }
 
     /**
@@ -676,8 +697,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThan");
     }
 
     /**
@@ -691,8 +718,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThanEqual");
     }
 
     /**
@@ -706,8 +739,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -891,7 +930,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
-        return new FunctionExpressionImpl<N>(metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
+        //TODO - this is addition, not just applying the EclipseLink sum expression.  
+        return null;
     }
 
     /**

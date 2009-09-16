@@ -125,7 +125,7 @@ public class MetamodelImpl implements Metamodel {
     public <X> EntityType<X> entity(Class<X> clazz) {
         Object aType = this.entities.get(clazz);
         if(aType instanceof EntityType) {
-            return (EntityType<X>) this.entities.get(clazz);
+            return (EntityType<X>) aType;
         } else {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_class_incorrect_type_instance", 
