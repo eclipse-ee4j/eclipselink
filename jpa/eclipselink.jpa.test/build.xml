@@ -51,11 +51,12 @@
 <project name="eclipselink.jpa.test" default="all" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="jpatest.is.local"/>
     <!-- fail message="Not running from '${ant.project.name}' directory" unless="jpatest.is.local"/ -->
+
     <dirname  property="jpatest.build.location" file="${ant.file.eclipselink.jpa.test}"/>
     <condition property="jpatest.2.base.dir" value="../.." else="..">
         <contains string="${jpatest.build.location}" substring="jpa"/>
     </condition>
-    <property name="jpatest.2.common.plugins.dir" value="${jpa.2.base.dir}/plugins"/>
+    <property name="jpatest.2.common.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
 
     <property name="env" environment="env" value="env"/>
 
@@ -67,7 +68,7 @@
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.test}/${test.properties}"/>
     <property file="${eclipselink.jpa.test}/test.properties"/>
- 
+
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
     <condition property="jpatest.2.base.dir" value="../.." else="..">
@@ -80,7 +81,7 @@
     <property name="jpa.processor.jar" value="${jpatest.build.location}/${jpatest.2.plugins.dir}/eclipselink_modelgen_processor_${version.string}.jar"/>
     <echo message="jpatest.build.location='${jpatest.build.location}'"/>
     <echo message="jpa.processor.jar='${jpa.processor.jar}'"/>
-    
+
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
         <condition property="is.windows" value="true">
@@ -900,7 +901,7 @@
             </not>
         </condition>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="1024m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>
