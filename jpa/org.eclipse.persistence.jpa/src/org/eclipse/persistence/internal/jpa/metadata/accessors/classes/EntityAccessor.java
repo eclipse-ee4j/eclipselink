@@ -161,7 +161,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
 
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(sourceTable);
             
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
