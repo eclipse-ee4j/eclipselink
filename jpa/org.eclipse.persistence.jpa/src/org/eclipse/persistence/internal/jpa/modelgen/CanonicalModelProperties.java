@@ -23,16 +23,16 @@ import java.util.Map;
  */
 public abstract class CanonicalModelProperties {
     public enum QUALIFIER_POSITION { PRE, POST }
-    public static String CANONICAL_MODEL_QUALIFIER = "eclipselink.canonical-model.qualifier";
+    public static String CANONICAL_MODEL_QUALIFIER = "eclipselink.canonical_model.qualifier";
     public static String CANONICAL_MODEL_QUALIFIER_DEFAULT = "_";
     
-    public static String CANONICAL_MODEL_PERSISTENCE_XML_FILE = "eclipselink.canonical-model.persistence-xml";
+    public static String CANONICAL_MODEL_PERSISTENCE_XML_FILE = "eclipselink.canonical_model.persistence_xml";
     public static String CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT = "META-INF/persistence.xml";
     
-    public static String CANONICAL_MODEL_QUALIFIER_POSITION = "eclipselink.canonical-model.qualifier-position";
+    public static String CANONICAL_MODEL_QUALIFIER_POSITION = "eclipselink.canonical_model.qualifier_position";
     public static String CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT = QUALIFIER_POSITION.POST.name();
     
-    public static String CANONICAL_MODEL_PACKAGE_SUFFIX = "eclipselink.canonical-model.package-suffix";
+    public static String CANONICAL_MODEL_PACKAGE_SUFFIX = "eclipselink.canonical_model.package_suffix";
     public static String CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT = "";
     
     /**
