@@ -23,6 +23,10 @@ set JAVA_ARGS=%*
 
 %JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% org.eclipse.persistence.jaxb.xjc.MOXyXJC %JAVA_ARGS%
 
+SET EXIT_VALUE=%ERRORLEVEL%
+
+exit %EXIT_VALUE%
+
 @endlocal
 goto :EOF
 

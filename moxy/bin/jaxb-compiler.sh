@@ -17,3 +17,7 @@ CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v200903100845.jar:\
 JAVA_ARGS="$@"
 
 ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}
+
+EXIT_VALUE=$?
+
+exit ${EXIT_VALUE}

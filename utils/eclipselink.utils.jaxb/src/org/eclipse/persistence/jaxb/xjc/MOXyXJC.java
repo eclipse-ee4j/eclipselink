@@ -61,6 +61,8 @@ public class MOXyXJC {
             listener.generatedFile(listener.getGeneratedPackagePath() + File.separator + "jaxb.properties", 0, 0);
             writer.close();
         }
+
+        System.exit(compileSuccess);
     }
 
     static class Listener extends XJCListener {
