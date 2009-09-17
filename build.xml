@@ -169,7 +169,7 @@
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
     <!-- Compiles core components, tests and extensions (excluding utilities). -->
-    <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension, build-oracle-extension-test"/>
+    <target name="build-extensions" depends="build-oracle-extension, build-oracle-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
@@ -265,9 +265,16 @@
 
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"      target="build"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
     </target>
+
     <target name="build-oracle-extension-test">
+        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
