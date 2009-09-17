@@ -13,11 +13,13 @@
 package org.eclipse.persistence.testing.sdo.helper.classgen.dynamicimpl;
 
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 import commonj.sdo.DataObject;
@@ -189,6 +191,19 @@ public class DataTypesTestCases extends SDOTestCase {
 
         dataTypes.setUnsignedShort(CONTROL_INT);
         assertEquals(CONTROL_INT, dataTypes.getUnsignedInt());
+    }
+    
+    public void testBooleanMethodsExist() throws Exception {
+    	
+    	SDOType theType  = (SDOType)aHelperContext.getTypeHelper().getType("http://www.example.com", "DataTypes");
+    	Class implClass = theType.getImplClass();
+    	assertNotNull(implClass);
+    	
+    	Method isMethod = implClass.getMethod("isBooleanProperty", new Class[0]);
+    	assertNotNull(isMethod);
+    	Method getMethod = implClass.getMethod("getBooleanProperty", new Class[0]);
+    	assertNotNull(getMethod);
+    	
     }
 
 }

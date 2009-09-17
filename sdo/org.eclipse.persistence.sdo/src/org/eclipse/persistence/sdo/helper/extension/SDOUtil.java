@@ -487,6 +487,23 @@ public class SDOUtil {
         stringBuffer.append(SDOUtil.className(s, true, false, false));
         return stringBuffer.toString();
     }
+    
+    /**
+     * INTERNAL:
+     * Return a valid Java get method name for a given string. This method will NOT check
+     * the returnType to see if it is a boolean/Boolean and all method names will start with
+     * "GET"
+     *   
+     * @param s
+     * @param returnType
+     * @return
+     */
+    public static String getBooleanGetMethodName(String s, String returnType){
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(SDOUtil.GET);
+        stringBuffer.append(SDOUtil.className(s, true, false, false));
+        return stringBuffer.toString();    	
+    }
 
     /**
      * INTERNAL:
