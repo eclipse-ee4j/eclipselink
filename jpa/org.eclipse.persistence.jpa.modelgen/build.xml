@@ -54,7 +54,7 @@
     <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
     <property name="implementation.vendor" value="${specification.vendor}"/>
 
-    <property name="modelgen.processor.jar" value="${eclipselink.jpa.modelgen.processor.prefix}_${version.string}.jar"/>
+    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
     <!-- Set Compile Path-->
     <path id="modelgen.compile.path">
@@ -80,7 +80,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${modelgen.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+            <fileset dir="${modelgen.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar, ${eclipselink.modelgen.processor.prefix}_*.jar"/>
         </delete>
     </target>
 

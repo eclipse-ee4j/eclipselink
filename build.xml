@@ -131,7 +131,7 @@
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
 
-    <property name="modelgen.processor.jar" value="${eclipselink.jpa.modelgen.processor.prefix}_${version.string}.jar"/>
+    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
@@ -194,6 +194,7 @@
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
@@ -219,34 +220,36 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"  target="repackage"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"    target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.jaxb}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="build"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="bnd-core">
         <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
-        <ant antfile="build.xml" dir="${jpa.prototype}"       target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"     target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"    target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"  target="bnd-repackage"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}" target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}" target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"    target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="bnd"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"                target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="bnd-repackage"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="bnd"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="bnd"/>
     </target>
 
     <!-- Compiles all utils components. -->
@@ -330,7 +333,7 @@
                     javax/persistence/LockModeType.class,
                     javax/persistence/LockTimeoutException.class,
                     javax/persistence/PessimisticLockException.class,
-					javax/persistence/PessimisticLockScope.class,
+                    javax/persistence/PessimisticLockScope.class,
                     javax/persistence/NamedQuery.class,
                     javax/persistence/ElementCollection.class,
                     javax/persistence/CollectionTable.class,
@@ -431,7 +434,8 @@
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-                <exclude name="${eclipselink.jpa.modelgen.processor.prefix}_*.jar"/>
+                <exclude name="${eclipselink.modelgen.processor.prefix}_*.jar"/>
+                <exclude name="${eclipselink.modelgen.prefix}_*.jar"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
@@ -553,7 +557,7 @@
             <doctitle><![CDATA[${eclipselink.javadoc.title}]]></doctitle>
             <header><![CDATA[${eclipselink.javadoc.title}]]></header>
 
-            <!-- *** include Dependent APIs in Javadoc  *** --> 
+            <!-- *** include Dependent APIs in Javadoc  *** -->
             <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
@@ -563,7 +567,7 @@
             <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
                 <include name="commonj/sdo/**/*.java"/>
             </fileset>
-            <!-- *** EclipseLink modules *** --> 
+            <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>

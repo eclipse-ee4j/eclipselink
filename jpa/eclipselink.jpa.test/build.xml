@@ -53,11 +53,9 @@
     <!-- fail message="Not running from '${ant.project.name}' directory" unless="jpatest.is.local"/ -->
 
     <dirname  property="jpatest.build.location" file="${ant.file.eclipselink.jpa.test}"/>
-    <condition property="jpatest.2.base.dir" value="../.." else="..">
+    <!-- condition property="jpatest.2.base.dir" value="../.." else="..">
         <contains string="${jpatest.build.location}" substring="jpa"/>
-    </condition>
-    <property name="jpatest.2.common.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
-
+    </condition -->
     <property name="env" environment="env" value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
@@ -74,13 +72,23 @@
     <condition property="jpatest.2.base.dir" value="../.." else="..">
         <isset property="is.trunk"/>
     </condition>
+    <property name="jpatest.2.common.plugins.dir" value="${jpatest.build.location}/${jpatest.2.base.dir}/plugins"/>
+    <property name="jpatest.2.modelgentest.dir"   value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
+    <property name="jpatest.2.jpa.dir"            value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
+    <property name="jpatest.2.core.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="jpatest.2.coretest.dir"       value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
+    <property name="jpatest.2.oracle.dir"         value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
+    <property name="jpatest.2.oracletest.dir"     value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
+    <property name="jpatest.2.moxy.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="jpatest.2.moxy.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/plugins"/>
+
     <property name="jpatest.2.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
-    <property name="jpa.processor.jar" value="${jpatest.build.location}/${jpatest.2.plugins.dir}/eclipselink_modelgen_processor_${version.string}.jar"/>
+    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
     <echo message="jpatest.build.location='${jpatest.build.location}'"/>
-    <echo message="jpa.processor.jar='${jpa.processor.jar}'"/>
+    <echo message="modelgen.processor.jar='${modelgen.processor.jar}'"/>
 
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
@@ -130,6 +138,9 @@
         </and>
     </condition>
 
+    <available file="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}" property="modelgen.jar.exist"/>
+
+
     <target name="set-app-name">
         <condition property="APP_NAME" value="">
             <contains string="${server.name}" substring="websphere"/>
@@ -178,6 +189,9 @@
     </target>
 
     <target name="config-compile-path">
+        <echo message="core.classes='${eclipselink.core.dir}/${classes.dir}'"/>
+        <echo message="coretest.classes='${eclipselink.core.test.dir}/${classes.dir}'"/>
+
         <path id="compile.path">
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
@@ -208,7 +222,7 @@
             </fileset-->
         </path>
         <path id="compile.modelgen.path">
-            <pathelement path="${jpa.processor.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}"/>
             <path refid="compile.path"/>
         </path>
         <path id="compile.server.path">
@@ -237,7 +251,7 @@
         <!--mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.multibyte}"/-->
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}"/>
-         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.delimited.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.delimited.model}"/>
     </target>
 
     <target name="model-compile" description="compile models that need canonical processing">
@@ -252,31 +266,34 @@
             deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
-            <!-- TEMPORARY: Commented out until the -A flag is fixed -->
-            <!-- compilerarg value="-Aeclipselink.canonicalmodel.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/ -->
+            <compilerarg value="-Aeclipselink.canonical_model.persistence_xml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
     </target>
 
     <!-- Compiles all tests. -->
-    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
-        <!--  *** The way this should work, but is dependent on a codechange for the -A flag to work ***
+    <target name="compile" description="compile EclipseLink testing"
+            depends="init, config-trunk, config-flat,
+                     compile-with-modelgen, compile-standard, compile-criteria"/>
+
+    <target name="compile-with-modelgen">
+        <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
+        <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}' not found." unless="modelgen.jar.exist"/ -->
         <copy todir="${jpatest.build.location}/${classes.dir}">
-            <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/**/*"/>
-        </copy -->
-        <!-- TEMPORARY Until the -A flag is fixed -->
-        <copy todir="${jpatest.build.location}/${classes.dir}/META-INF">
-            <fileset dir="${jpatest.build.location}/${resource.dir}/eclipselink-canonical-meta-model/" includes="persistence.xml"/>
+            <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/persistence.xml"/>
         </copy>
         <antcall target="model-compile" inheritRefs="true">
             <param name="SRC_PATH" value="${eclipselink.jpa.test}/${src.dir}"/>
             <param name="DEST_PATH" value="${eclipselink.jpa.test}/${classes.dir}"/>
             <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
-            <!-- TEMPORARY: Commented out until the -A flag is fixed -->
-            <!-- param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/ -->
+            <param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/>
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
         </antcall>
-        <delete dir="${jpatest.build.location}/${classes.dir}/META-INF"/>
+        <!-- delete dir="${jpatest.build.location}/${classes.dir}/eclipselink-canonical-meta-model"/ -->
+        <available file="${jpatest.build.location}/${classes.dir}/org/eclipse/persistence/testing/models/jpa/advanced/Address_.class" property="modelgen.created.classes.exist"/>
+    </target>
+
+    <target name="compile-standard">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                debug="${javac.debug}"
@@ -288,6 +305,26 @@
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="compile-criteria" if="modelgen.created.classes.exist">
+       <!--  Compile the Modelgen (criteria metamodel) Tests -->
+       <!--  *** Depends upon JPA Test Framework having been compiled already -->
+       <echo message="Compile the Modelgen (criteria metamodel) Tests"/>
+       <javac srcdir="${jpatest.2.modelgentest.dir}/${src.dir}"
+               destdir="${jpatest.build.location}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>

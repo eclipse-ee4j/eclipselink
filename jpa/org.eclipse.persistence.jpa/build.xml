@@ -57,8 +57,6 @@
     <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
     <property name="implementation.vendor" value="${specification.vendor}"/>
     
-    <property name="modelgen.processor.jar" value="${eclipselink.jpa.modelgen.processor.prefix}_${version.string}.jar"/>
-
     <!-- Set Compile Path-->
     <path id="jpa.compile.path">
         <pathelement path="${jpa.2.common.plugins.dir}/${antlr}"/>
@@ -85,7 +83,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${jpa.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar, ${eclipselink.jpa.modelgen.processor.prefix}_*.jar"/>
+            <fileset dir="${jpa.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
@@ -151,27 +149,6 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${jpa.2.common.plugins.dir}/${modelgen.processor.jar}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Canonical Model Processing Service"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
                 <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
@@ -270,27 +247,6 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${jpa.2.common.plugins.dir}/{modelgen.processor.jar}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Canonical Model Processing Service"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
                 <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
