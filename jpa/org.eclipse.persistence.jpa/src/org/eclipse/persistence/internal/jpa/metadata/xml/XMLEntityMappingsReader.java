@@ -251,15 +251,15 @@ public class XMLEntityMappingsReader {
     }
 
     public static Schema getOrm2_0Schema() throws IOException, SAXException {
-        if (m_orm1_0Schema == null) {
-            m_orm1_0Schema = loadLocalSchema(ORM_2_0_XSD);
+        if (m_orm2_0Schema == null) {
+            m_orm2_0Schema = loadLocalSchema(ORM_2_0_XSD);
         }
         return m_orm2_0Schema;
     }
 
     public static Schema getEclipseLinkOrmSchema() throws IOException, SAXException {
-        if (m_orm1_0Schema == null) {
-            m_orm1_0Schema = loadLocalSchema(ECLIPSELINK_ORM_XSD);
+        if (m_eclipseLinkOrmSchema == null) {
+            m_eclipseLinkOrmSchema = loadLocalSchema(ECLIPSELINK_ORM_XSD);
         }
         return m_eclipseLinkOrmSchema;
     }
