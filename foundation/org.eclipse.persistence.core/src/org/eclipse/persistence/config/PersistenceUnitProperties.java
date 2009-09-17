@@ -20,8 +20,8 @@ import java.util.HashMap;
  * The class defines EclipseLink properties' names.
  * 
  * JPA persistence properties could be specified either in PersistenceUnit or 
- * passes to createEntityManagerFactory / createContainerEntityManagerFactory
- * methods of EntityManagerFactoryProvider.
+ * passed to createEntityManagerFactory / createContainerEntityManagerFactory
+ * methods of PersistenceProvider.
  * 
  * Property values are usually case-insensitive with some common sense exceptions,
  * for instance class names.

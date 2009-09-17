@@ -108,7 +108,7 @@ public class MetamodelImpl implements Metamodel {
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         Object aType = this.embeddables.get(clazz);
         if(aType instanceof EmbeddableType) {
-            return (EmbeddableType<X>) this.embeddables.get(clazz);
+            return (EmbeddableType<X>) aType;
         } else {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_class_incorrect_type_instance", 
@@ -368,7 +368,7 @@ public class MetamodelImpl implements Metamodel {
             return null;
         } else {        
             if(aType instanceof ManagedType) {
-                return (ManagedType<X>) this.managedTypes.get(clazz);
+                return (ManagedType<X>) aType;
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_class_incorrect_type_instance", 
