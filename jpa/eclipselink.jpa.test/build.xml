@@ -1854,7 +1854,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-custom-features" if="run.jpa.customfeatures.model" if="is.oracle">
+    <target name="server-test-custom-features" if="run.jpa.customfeatures.model">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="customfeatures"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/customfeatures"/>
