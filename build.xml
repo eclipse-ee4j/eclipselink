@@ -368,6 +368,7 @@
                     javax/persistence/SelectItem.class,
                     javax/persistence/QueryBuilder.class,
                     javax/persistence/TypedQuery.class,
+					javax/persistence/ValidationMode.class,
                     javax/persistence/criteria/QueryBuilder$Trimspec.class,
                     javax/persistence/criteria/QueryBuilder$SimpleCase.class,
                     javax.persistence/criteria/QueryBuilder$Coalesce.class,
