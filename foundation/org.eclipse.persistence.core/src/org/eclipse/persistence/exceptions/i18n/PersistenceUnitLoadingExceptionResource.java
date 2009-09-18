@@ -29,7 +29,9 @@ public class PersistenceUnitLoadingExceptionResource extends ListResourceBundle 
                                            { "30010", "An exception was thrown while loading ORM XML file: {0}"},
                                            { "30011", "EclipseLink could not get classes from the URL: {0}.  EclipseLink attempted to read this URL as a jarFile and as a Directory and was unable to process it."},
                                            { "30012", "EclipseLink could not get persistence unit info from the URL:{0}"},
-                                           { "30013", "An exception was thrown while trying to build a persistence unit name for the persistence unit [{1}] from URL: {0}."}
+                                           { "30013", "An exception was thrown while trying to build a persistence unit name for the persistence unit [{1}] from URL: {0}."},
+                                           { "30014", "The persistence unit specifies validation-mode as 'CALLBACK' but a Bean Validation ValidatorFactory could not be initialized. Please refer to the nested exception for details. Please ensure that Bean Validation API and Bean Validation Provider is available in classpath."},
+                                           { "30015", "An exception was thrown while loading validation group class: {0}."}
     };
 
     /**

@@ -33,6 +33,7 @@ import java.lang.reflect.Constructor;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
+import javax.persistence.ValidationMode;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
@@ -73,6 +74,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
@@ -220,6 +222,7 @@ public class EntityManagerSetupImpl {
                                     // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                                     processor.setClassLoader(realClassLoader);
                                     processor.addEntityListeners();
+                                    addBeanValidationListeners(deployProperties, realClassLoader);
                                     processor.addNamedQueries();
                                     
                                     // Process the customizers last.
@@ -1813,5 +1816,57 @@ public class EntityManagerSetupImpl {
             session.setQueryTimeoutDefault(Integer.parseInt(QueryTimeout));
         }
     }
-    
+
+    /**
+     * If Bean Validation is enabled, bootstraps Bean Validation on descriptors.
+     * @param puProperties merged properties for this persitence unit
+     */
+    private void addBeanValidationListeners(Map puProperties, ClassLoader appClassLoader) {
+        ValidationMode validationMode = getValidationMode(persistenceUnitInfo, puProperties);
+        if (validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK) {
+            // BeanValidationInitializationHelper contains static reference to javax.validation.* classes. We need to support
+            // environment where thse classses are not available.
+            // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
+            String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
+            ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+            Class helperClass;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    helperClass = (Class) AccessController.doPrivileged(
+                            new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                } else {
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
+                }
+                BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
+                beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, processor.getProject(), appClassLoader);
+            } catch (Throwable e) {  //Catching Throwable to catch any linkage errors on vms that resolve eagerly
+                if (validationMode == ValidationMode.CALLBACK) {
+                    throw PersistenceUnitLoadingException.exceptionObtainingRequiredBeanValidatorFactory(e);
+                } // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
+                session.logMessage("Could not initialize Validation Factory. Encountered following exception: " + e);
+            }
+        }
+    }
+
+    /**
+     * Validation mode from information in persistence.xml and properties specified at EMF creation
+     * @param persitenceUnitInfo PersitenceUnitInfo instance for this persitence unit
+     * @param puProperties merged properties for this persitence unit
+     * @return validtion mode
+     */
+    private static ValidationMode getValidationMode(PersistenceUnitInfo persitenceUnitInfo, Map puProperties) {
+        ValidationMode validationMode = persitenceUnitInfo.getValidationMode(); //Initialize with value in persitence.xml
+        if(validationMode == null) {
+            // Default to AUTO as specified in JPA spec.
+            validationMode = ValidationMode.AUTO;
+        }
+        //Check if overridden at emf creation
+        String validationModeAtEMFCreation = (String) puProperties.get(PersistenceUnitProperties.VALIDATION_MODE);
+        if(validationModeAtEMFCreation != null) {
+            //User would get IllegalArgumentException if he has specified invalid mode
+            validationMode = ValidationMode.valueOf(validationModeAtEMFCreation);
+        }
+        return validationMode;
+    }
+
 }

@@ -34,7 +34,9 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
     public static final int COULD_NOT_GET_CLASS_NAMES_FROM_URL = 30011;
     public static final int COULD_NOT_GET_PERSISTENCE_UNIT_INFO_FROM_URL = 30012;
     public static final int EXCEPTION_BUILDING_PERSISTENCE_UNIT_NAME = 30013;
-    
+    public static final int EXCEPTION_OBTAINING_REQUIRED_BEAN_VALIDATOR_FACTORY = 30014;
+    public static final int EXCEPTION_LOADING_VALIDATION_GROUP_CLASS = 30015;
+
 
     /**
      * INTERNAL:
@@ -175,6 +177,22 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
         return loadingException;
     } 
     
+    public static PersistenceUnitLoadingException exceptionObtainingRequiredBeanValidatorFactory(Throwable cause) {
+        Object[] args = {};
+
+        PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, EXCEPTION_OBTAINING_REQUIRED_BEAN_VALIDATOR_FACTORY, args), cause);
+        loadingException.setErrorCode(EXCEPTION_OBTAINING_REQUIRED_BEAN_VALIDATOR_FACTORY);
+        return loadingException;
+    }
+
+    public static PersistenceUnitLoadingException exceptionLoadingClassWhileInitializingValidationGroups(String className, Exception cause) {
+        Object[] args = { className };
+
+        PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, EXCEPTION_LOADING_VALIDATION_GROUP_CLASS, args), cause);
+        loadingException.setErrorCode(EXCEPTION_LOADING_VALIDATION_GROUP_CLASS);
+        return loadingException;
+    }
+
     public String getResourceName(){
         return resourceName;
     }

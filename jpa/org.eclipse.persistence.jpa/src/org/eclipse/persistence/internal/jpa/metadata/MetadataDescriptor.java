@@ -60,6 +60,7 @@ import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -278,6 +279,13 @@ public class MetadataDescriptor {
      */
     public void addEntityListenerEventListener(EntityListener listener) {
         m_descriptor.getEventManager().addEntityListenerEventListener(listener);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void addInternalListener(DescriptorEventListener validationListener) {
+        m_descriptor.getEventManager().addinternalListener(validationListener);
     }
 
     /**

@@ -35,6 +35,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
 
     // What about 2.0 in 1.0 container here ...
     protected CachingType caching;
+    protected ValidationMode validationMode;
     protected String persistenceUnitName;
     protected String persistenceProviderClassName;
     protected DataSource jtaDataSource;
@@ -296,16 +297,27 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
     
     /**
-     * @see PersistenceUnitInfo#setCaching()
+     * @see PersistenceUnitInfo#getCaching()
      * @since Java Persistence 2.0
      */
     public void setCaching(String cachingType) {
-        // If user enters in invalid caching type valueOf will throw an illegal
+        // If user enters an invalid caching type valueOf will throw an illegal
         // argument exception, e.g. 
         // java.lang.IllegalArgumentException: No enum const class javax.persistence.CachingType.ALLBOGUS
         this.caching = CachingType.valueOf(cachingType);
     }
     
+    /**
+     * @see PersistenceUnitInfo#getValidationMode()
+     * @since Java Persistence 2.0
+     */
+    public void setValidationMode(String validationMode) {
+        // If user enters an invalid validation mode valueOf will throw an illegal
+        // argument exception, e.g.
+        // java.lang.IllegalArgumentException: No enum const class javax.persistence.ValidationMode.ALLBOGUS
+        this.validationMode = ValidationMode.valueOf(validationMode);
+    }
+
     public void setClassLoader(ClassLoader loader) {
         this.realClassLoader = loader;
     }
@@ -336,7 +348,6 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @since Java Persistence 2.0
      */
     public ValidationMode getValidationMode() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        return validationMode;
     }
 }
