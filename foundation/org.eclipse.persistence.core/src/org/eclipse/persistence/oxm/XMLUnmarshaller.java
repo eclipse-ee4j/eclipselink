@@ -75,14 +75,21 @@ public class XMLUnmarshaller {
 
     private static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     private static final String XML_STREAM_READER_CLASS_NAME = "javax.xml.stream.XMLStreamReader";
+    private static final String XML_EVENT_READER_CLASS_NAME = "javax.xml.stream.XMLEventReader";
     private static final String GET_XML_STREAM_READER_METHOD_NAME = "getXMLStreamReader";
+    private static final String GET_XML_EVENT_READER_METHOD_NAME = "getXMLEventReader";
     private static final String XML_STREAM_READER_READER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader";
+    private static final String XML_EVENT_READER_READER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader";
     private static final String XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource";
+    private static final String XML_EVENT_READER_INPUT_SOURCE_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource";
 
     private static Class staxSourceClass;
     private static Method staxSourceGetStreamReaderMethod;
+    private static Method staxSourceGetEventReaderMethod;
     private static Constructor xmlStreamReaderReaderConstructor;
     private static Constructor xmlStreamReaderInputSourceConstructor;
+    private static Constructor xmlEventReaderReaderConstructor;
+    private static Constructor xmlEventReaderInputSourceConstructor;
 
     private XMLContext xmlContext;
     private XMLUnmarshallerHandler xmlUnmarshallerHandler;
@@ -100,11 +107,20 @@ public class XMLUnmarshaller {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
             if(staxSourceClass != null) {
                 staxSourceGetStreamReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_STREAM_READER_METHOD_NAME, new Class[]{});
+                staxSourceGetEventReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_EVENT_READER_METHOD_NAME, new Class[]{});
                 Class xmlStreamReaderInputSourceClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME);
+                Class xmlEventReaderInputSourceClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_INPUT_SOURCE_CLASS_NAME);
                 Class xmlStreamReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_CLASS_NAME);
                 xmlStreamReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderInputSourceClass, new Class[]{xmlStreamReaderClass}, true);
+
+                Class xmlEventReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_CLASS_NAME);
+                xmlEventReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderInputSourceClass, new Class[]{xmlEventReaderClass}, true);
+
                 Class xmlStreamReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_READER_CLASS_NAME);
                 xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class[0], true);
+                
+                Class xmlEventReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_READER_CLASS_NAME);
+                xmlEventReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderReaderClass, new Class[0], true);
             }
         } catch(Exception ex) {
         }
@@ -501,6 +517,13 @@ public class XMLUnmarshaller {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                } else {
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    if(xmlEventReader != null) {
+                        InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
+                        XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
+                        return platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                    }
                 }
             } catch(Exception e) {
                 throw XMLMarshalException.unmarshalException(e);
@@ -550,6 +573,13 @@ public class XMLUnmarshaller {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                } else {
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    if(xmlEventReader != null) {
+                        InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
+                        XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
+                        return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                    }
                 }
             } catch(Exception e) {
                 throw XMLMarshalException.unmarshalException(e);

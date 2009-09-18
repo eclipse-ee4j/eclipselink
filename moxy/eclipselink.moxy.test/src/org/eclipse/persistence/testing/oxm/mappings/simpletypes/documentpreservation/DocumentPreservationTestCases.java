@@ -150,6 +150,9 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
 
     public void testObjectToXMLStreamWriter() throws Exception {
     }    
+    
+    public void testObjectToXMLEventWriter() throws Exception {
+    }
 
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();

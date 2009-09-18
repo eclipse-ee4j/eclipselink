@@ -41,6 +41,7 @@ import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -229,15 +230,22 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
 	// TODO: add support for StAX
 	public void marshal(Object object, XMLEventWriter eventWriter) throws JAXBException {
-		try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventWriter.class}, false);
-			Result result = (Result)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventWriter});
-			this.marshal(object, result);
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}
-	}
+        if (object == null || eventWriter == null) {
+            throw new IllegalArgumentException();
+        }
+        // let the JAXBIntrospector determine if the object is a JAXBElement
+        if (object instanceof JAXBElement) {
+            // use the JAXBElement's properties to populate an XMLRoot
+            object = createXMLRootFromJAXBElement((JAXBElement) object);
+        }
+        try {
+            XMLEventWriterRecord record = new XMLEventWriterRecord(eventWriter);
+            record.setMarshaller(this.xmlMarshaller);
+            this.xmlMarshaller.marshal(object, record);
+        } catch (Exception ex) {
+            throw new MarshalException(ex);
+        }
+    }
 
 	public void marshal(Object object, Node node) throws JAXBException {
         if (object == null || node == null) {

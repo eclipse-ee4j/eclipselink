@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
@@ -77,6 +78,16 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, String.class);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, String.class);
             instream.close();
             xmlToObjectTest(testObject);
         }

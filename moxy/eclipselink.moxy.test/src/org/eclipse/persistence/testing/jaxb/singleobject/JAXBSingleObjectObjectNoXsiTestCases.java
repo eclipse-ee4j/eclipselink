@@ -24,6 +24,7 @@ import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
@@ -106,7 +107,16 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject);
         }
     }
-    
+
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, Object.class);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
     public void testXMLToObjectFromURL() throws Exception {
     }
     

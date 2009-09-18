@@ -18,6 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -106,6 +107,16 @@ public class JAXBElementTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject);
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, target);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }    
 
     public void xmlToObjectTest(Object testObject) throws Exception {
     /*	JAXBElement testObj = (JAXBElement ) testObject;

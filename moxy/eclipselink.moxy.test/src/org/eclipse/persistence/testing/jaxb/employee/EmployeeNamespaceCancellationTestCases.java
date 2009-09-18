@@ -90,7 +90,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         }
     }
     //Bug #283424  needs to be fixed then this test can be added 
-    /*
+    
     public void testXMLToObjectFromXMLEventReader() throws Exception {    	
     	if(System.getProperty("java.version").contains("1.6")) {
         	InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -101,7 +101,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         	this.xmlToObjectTest(obj);
         }
     }
-    */
+    
     
     public void testObjectToXMLStreamWriter() throws Exception {
         if(System.getProperty("java.version").contains("1.6")) {
