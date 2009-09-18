@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -7,10 +7,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,6 +31,11 @@ import java.util.Calendar;
 /**
  * Interface used to control the execution of typed queries.
  * @param <X> query result type
+ *
+ * @see Query
+ * @see Parameter
+ *
+ * @since Java Persistence 2.0
  */
 public interface TypedQuery<X> extends Query {
 	
@@ -103,7 +108,7 @@ public interface TypedQuery<X> extends Query {
     TypedQuery<X> setHint(String hintName, Object value);
 
     /**
-     * Bind the value of a Parameter object.
+     * Bind the value of a <code>Parameter</code> object.
      * @param param  parameter object
      * @param value  parameter value
      * @return the same query instance
@@ -114,30 +119,33 @@ public interface TypedQuery<X> extends Query {
      <T> TypedQuery<X> setParameter(Parameter<T> param, T value);
 
     /**
-     * Bind an instance of java.util.Calendar to a Parameter object.
-     * @param parameter
+     * Bind an instance of <code>java.util.Calendar</code> to a <code>Parameter</code> object.
+     * @param param  parameter object
      * @param value
      * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not
      *         correspond to a parameter of the query
      */
-    TypedQuery<X> setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType);
+    TypedQuery<X> setParameter(Parameter<Calendar> param, 
+                               Calendar value,  
+                               TemporalType temporalType);
 
     /**
-     * Bind an instance of java.util.Date to a Parameter object.
-     * @param parameter object
+     * Bind an instance of <code>java.util.Date</code> to a <code>Parameter</code> object.
+     * @param param  parameter object
      * @param value
      * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not
      *         correspond to a parameter of the query
      */
-    TypedQuery<X> setParameter(Parameter<Date> param, Date value,  TemporalType temporalType);
+    TypedQuery<X> setParameter(Parameter<Date> param, Date value,  
+                               TemporalType temporalType);
 
     /**
      * Bind an argument to a named parameter.
-     * @param name the parameter name
+     * @param name  the parameter name
      * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does 
@@ -147,8 +155,8 @@ public interface TypedQuery<X> extends Query {
     TypedQuery<X> setParameter(String name, Object value);
 
     /**
-     * Bind an instance of java.util.Calendar to a named parameter.
-     * @param name
+     * Bind an instance of <code>java.util.Calendar</code> to a named parameter.
+     * @param name  the parameter name
      * @param value
      * @param temporalType
      * @return the same query instance
@@ -156,11 +164,12 @@ public interface TypedQuery<X> extends Query {
      *         not correspond to a parameter of the query or if 
      *         the value argument is of incorrect type
      */
-    TypedQuery<X> setParameter(String name, Calendar value, TemporalType temporalType);
+    TypedQuery<X> setParameter(String name, Calendar value, 
+                               TemporalType temporalType);
 
     /**
-     * Bind an instance of java.util.Date to a named parameter.
-     * @param name
+     * Bind an instance of <code>java.util.Date</code> to a named parameter.
+     * @param name   the parameter name
      * @param value
      * @param temporalType
      * @return the same query instance
@@ -168,7 +177,8 @@ public interface TypedQuery<X> extends Query {
      *         not correspond to a parameter of the query or if 
      *         the value argument is of incorrect type
      */
-    TypedQuery<X> setParameter(String name, Date value, TemporalType temporalType);
+    TypedQuery<X> setParameter(String name, Date value, 
+                               TemporalType temporalType);
 
     /**
      * Bind an argument to a positional parameter.
@@ -182,7 +192,7 @@ public interface TypedQuery<X> extends Query {
     TypedQuery<X> setParameter(int position, Object value);
 
     /**
-     * Bind an instance of java.util.Calendar to a positional
+     * Bind an instance of <code>java.util.Calendar</code> to a positional
      * parameter.
      * @param position
      * @param value
@@ -192,10 +202,11 @@ public interface TypedQuery<X> extends Query {
      *         correspond to a positional parameter of the query
      *         or if the value argument is of incorrect type
      */
-    TypedQuery<X> setParameter(int position, Calendar value,  TemporalType temporalType);
+    TypedQuery<X> setParameter(int position, Calendar value,  
+                               TemporalType temporalType);
 
     /**
-     * Bind an instance of java.util.Date to a positional parameter.
+     * Bind an instance of <code>java.util.Date</code> to a positional parameter.
      * @param position
      * @param value
      * @param temporalType
@@ -204,7 +215,8 @@ public interface TypedQuery<X> extends Query {
      *         correspond to a positional parameter of the query
      *         or if the value argument is of incorrect type
      */
-    TypedQuery<X> setParameter(int position, Date value,  TemporalType temporalType);
+    TypedQuery<X> setParameter(int position, Date value,  
+                               TemporalType temporalType);
 
      /**
       * Set the flush mode type to be used for the query execution.
@@ -220,7 +232,7 @@ public interface TypedQuery<X> extends Query {
       * @param lockMode
       * @return the same query instance
       * @throws IllegalStateException if the query is found not to 
-      *	        be a Java Persistence query language SELECT query
+      *         be a Java Persistence query language SELECT query
       *         or a Criteria API query
       */
      TypedQuery<X> setLockMode(LockModeType lockMode);

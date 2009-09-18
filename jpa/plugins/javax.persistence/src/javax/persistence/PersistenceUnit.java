@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,7 +31,8 @@ import static java.lang.annotation.RetentionPolicy.*;
 
 
 /**
- * Expresses a dependency on an {@link EntityManagerFactory}.
+ * Expresses a dependency on an {@link EntityManagerFactory} and its
+ * associated persistence unit.
  *
  * @since Java Persistence 1.0
  */
@@ -40,16 +41,17 @@ import static java.lang.annotation.RetentionPolicy.*;
 public @interface PersistenceUnit {
 
     /**
-     * The name by which the entity manager factory is to be accessed 
-     * in the environment referencing context, and is not needed when 
+     * (Optional) The name by which the entity manager factory is to be accessed 
+     * in the environment referencing context;  not needed when 
      * dependency injection is used.
      */
     String name() default "";
 
     /**
-     * The name of the persistence unit as defined in the persistence.xml 
-     * file. If specified, the persistence unit for the entity manager factory 
-     * that is accessible in JNDI must have the same name.
+     * (Optional) The name of the persistence unit as defined in the
+     * <code>persistence.xml</code> file. If specified, the
+     * persistence unit for the entity manager factory that is
+     * accessible in JNDI must have the same name.
      */
     String unitName() default "";
 

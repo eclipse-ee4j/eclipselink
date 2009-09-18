@@ -1238,6 +1238,16 @@ public class QueryBuilderImpl implements QueryBuilder {
         return new ExpressionImpl<T>(metamodel, (Class<T>) value.getClass(), new ConstantExpression(value, new ExpressionBuilder()), value);
     }
 
+    /**
+     * Create an expression for a null literal with the given type.
+     *
+     * @param resultClass  type of the null literal
+     * @return null expression literal
+     */
+    public <T> Expression<T> nullLiteral(Class<T> resultClass){
+        //TODO
+        return null;
+    }
     // parameters:
     /**
      * Create a parameter.

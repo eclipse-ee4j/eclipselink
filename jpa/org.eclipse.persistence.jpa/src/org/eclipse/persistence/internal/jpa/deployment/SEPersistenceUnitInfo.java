@@ -34,7 +34,7 @@ import java.net.URL;
 public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceUnitInfo {
 
     // What about 2.0 in 1.0 container here ...
-    protected CachingType caching;
+    protected SharedCacheMode cacheMode;
     protected ValidationMode validationMode;
     protected String persistenceUnitName;
     protected String persistenceProviderClassName;
@@ -297,14 +297,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
     
     /**
-     * @see PersistenceUnitInfo#getCaching()
+     * @see PersistenceUnitInfo#setSharedCacheMode()
      * @since Java Persistence 2.0
      */
-    public void setCaching(String cachingType) {
+    public void setSharedCacheMode(String sharedCacheMode) {
         // If user enters an invalid caching type valueOf will throw an illegal
         // argument exception, e.g. 
-        // java.lang.IllegalArgumentException: No enum const class javax.persistence.CachingType.ALLBOGUS
-        this.caching = CachingType.valueOf(cachingType);
+        // java.lang.IllegalArgumentException: No enum const class javax.persistence.SharedCacheMode.ALLBOGUS
+        this.cacheMode = SharedCacheMode.valueOf(sharedCacheMode);
     }
     
     /**
@@ -327,20 +327,20 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
 
     /**
-     * @see PersistenceUnitInfo#PersistenceXMLSchemaVersion()
+     * @see PersistenceUnitInfo#getPersistenceXMLSchemaVersion()
      * @since Java Persistence 2.0
      */
-    public String PersistenceXMLSchemaVersion() {
+    public String getPersistenceXMLSchemaVersion() {
         // TODO 
         throw new PersistenceException("Not Yet Implemented");
     }
 
     /**
-     * @see PersistenceUnitInfo#getCaching()
+     * @see PersistenceUnitInfo#getSharedCacheMode()
      * @since Java Persistence 2.0
      */
-    public CachingType getCaching() {
-        return caching;
+    public SharedCacheMode getSharedCacheMode() {
+        return cacheMode;
     }
     
     /**

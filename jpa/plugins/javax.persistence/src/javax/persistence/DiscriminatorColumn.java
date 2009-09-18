@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,8 +32,8 @@ import static javax.persistence.DiscriminatorType.STRING;
 
 /**
  * Is used to define the discriminator column for the 
- * {@link InheritanceType#SINGLE_TABLE SINGLE_TABLE} and 
- * {@link InheritanceType#JOINED JOINED} inheritance mapping strategies.
+ * <code>SINGLE_TABLE</code> and 
+ * <code>JOINED</code> {@link Inheritance} mapping strategies.
  * 
  * <p> The strategy and the discriminator column are only 
  * specified in the root of an entity class hierarchy or
@@ -46,15 +46,18 @@ import static javax.persistence.DiscriminatorType.STRING;
  *
  * <pre>
  *     Example:
+ *
  *     &#064;Entity
  *     &#064;Table(name="CUST")
  *     &#064;Inheritance(strategy=SINGLE_TABLE)
- *     &#064;DiscriminatorColumn(name="DISC", discriminatorType=STRING,length=20)
+ *     &#064;DiscriminatorColumn(name="DISC", discriminatorType=STRING, length=20)
  *     public class Customer { ... }
  *
  *     &#064;Entity
  *     public class ValuedCustomer extends Customer { ... }
  * </pre>
+ *
+ * @see DiscriminatorValue
  *
  * @since Java Persistence 1.0
  */

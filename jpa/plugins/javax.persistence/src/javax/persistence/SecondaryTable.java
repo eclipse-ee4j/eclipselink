@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -30,10 +30,9 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation is used to specify a secondary table for 
- * the annotated entity class. Specifying one or more secondary 
- * tables indicates that the data for the entity class is stored 
- * across multiple tables.
+ * Specifies a secondary table for the annotated entity
+ * class. Specifying one or more secondary tables indicates that the
+ * data for the entity class is stored across multiple tables.
  *
  * <p> If no <code>SecondaryTable</code> annotation is specified, 
  * it is assumed that all persistent fields or properties of the 
@@ -44,13 +43,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * primary table.
  *
  * <pre>
- * Example 1: Single secondary table with a single primary key column.
+ *    Example 1: Single secondary table with a single primary key column.
  *
  *    &#064;Entity
  *    &#064;Table(name="CUSTOMER")
  *    &#064;SecondaryTable(name="CUST_DETAIL", 
  *        pkJoinColumns=&#064;PrimaryKeyJoinColumn(name="CUST_ID"))
  *    public class Customer { ... } 
+ *
  *
  *    Example 2: Single secondary table with multiple primary key columns.
  *
@@ -87,7 +87,7 @@ public @interface SecondaryTable {
      * (Optional) The columns that are used to join with 
      * the primary table.
      * <p> Defaults to the column(s) of the same name(s) 
-     * as the primary key column(s) in the primary table
+     * as the primary key column(s) in the primary table.
      */
     PrimaryKeyJoinColumn[] pkJoinColumns() default {};
 
@@ -95,7 +95,7 @@ public @interface SecondaryTable {
      * (Optional) Unique constraints that are to be placed on the 
      * table. These are typically only used if table generation 
      * is in effect. These constraints apply in addition to any 
-     * constraints specified by the {@link Column} and {@link JoinColumn} 
+     * constraints specified by the <code>Column</code> and <code>JoinColumn</code> 
      * annotations and constraints entailed by primary key mappings.
      * <p> Defaults to no additional constraints.
      */

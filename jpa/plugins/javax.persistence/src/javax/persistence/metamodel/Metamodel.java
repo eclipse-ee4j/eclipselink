@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -24,9 +24,13 @@
  ******************************************************************************/
 package javax.persistence.metamodel;
 
+import java.util.Set;
+
 /**
  * Provides access to the metamodel of persistent
  * entities in the persistence unit. 
+ *
+ * @since Java Persistence 2.0
  */
 public interface Metamodel {
 
@@ -60,17 +64,18 @@ public interface Metamodel {
      *  Return the metamodel managed types.
      *  @return the metamodel managed types
      */
-    java.util.Set<ManagedType<?>> getManagedTypes();
+    Set<ManagedType<?>> getManagedTypes();
 
     /**
      * Return the metamodel entity types.
      * @return the metamodel entity types
      */
-    java.util.Set<EntityType<?>> getEntities();
+    Set<EntityType<?>> getEntities();
 
     /**
-     * Return the metamodel embeddable types.
+     * Return the metamodel embeddable types.  Returns empty set
+     * if there are no embeddable types.
      * @return the metamodel embeddable types
      */
-    java.util.Set<EmbeddableType<?>> getEmbeddables();
+    Set<EmbeddableType<?>> getEmbeddables();
 }

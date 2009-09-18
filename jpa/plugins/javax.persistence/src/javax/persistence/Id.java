@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,14 +31,30 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Specifies the primary key property or field of an entity.
+ * Specifies the primary key of an entity.
+ * The field or property to which the <code>Id</code> annotation is applied 
+ * should be one of the following types: any Java primitive type; 
+ * any primitive wrapper type; 
+ * <code>String</code>; 
+ * <code>java.util.Date</code>; 
+ * <code>java.sql.Date</code>; 
+ * <code>java.math.BigDecimal</code>;
+ * <code>java.math.BigInteger</code>.
+ *
+ * <p>The mapped column for the primary key of the entity is assumed 
+ * to be the primary key of the primary table. If no <code>Column</code> annotation 
+ * is specified, the primary key column name is assumed to be the name 
+ * of the primary key property or field.
  *
  * <pre>
  *   Example:
  *
- *   @Id
+ *   &#064;Id
  *   public Long getId() { return id; }
  * </pre>
+ *
+ * @see Column
+ * @see GeneratedValue
  *
  * @since Java Persistence 1.0
  */

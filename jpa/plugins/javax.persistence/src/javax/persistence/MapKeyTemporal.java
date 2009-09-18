@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -35,16 +35,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * {@link java.util.Date} and {@link java.util.Calendar}. It may only be 
  * specified for map keys of these types.
  * 
- * <p> The <code>MapKeyTemporal</code> annotation can be applied to an element 
- * collection or relationship of type java.util.Map, in conjunction with the 
- * {@link ElementCollection}, {@link OneToMany}, or {@link ManyToMany annotation}.
+ * <p> The <code>MapKeyTemporal</code> annotation can be applied to an
+ * element collection or relationship of type <code>java.util.Map</code>
+ * in conjunction with the <code>ElementCollection</code>,
+ * <code>OneToMany</code>, or <code>ManyToMany</code> annotation.
  *
  * <pre>
  *     Example:
  * 
  *     &#064;OneToMany
  *     &#064;MapKeyTemporal(DATE)
- *     protected java.util.Map<java.util.Date, Employee> employees;
+ *     protected java.util.Map&#060;java.util.Date, Employee&#062; employees;
  * </pre>
  *
  * @since Java Persistence 2.0
@@ -53,7 +54,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface MapKeyTemporal {
 
-    /** The type used in mapping java.util.Date or java.util.Calendar. */
+    /** (Required) The type used in mapping
+     * <code>java.util.Date</code> or
+     * <code>java.util.Calendar</code>. 
+     */
     TemporalType value();
 }
+
 

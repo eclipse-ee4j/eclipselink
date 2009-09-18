@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,10 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
- *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -29,43 +27,46 @@ package javax.persistence.criteria;
 import java.util.List;
 
 /**
- * The type of a simple or compound predicate: a conjunction or disjunction of
- * restrictions. A simple predicate is considered to be a conjunction with a
+ * The type of a simple or compound predicate: a conjunction or
+ * disjunction of restrictions.
+ * A simple predicate is considered to be a conjunction with a
  * single conjunct.
- * 
- * since Java Persistence 2.0
+ *
+ * @since Java Persistence 2.0
  */
 public interface Predicate extends Expression<Boolean> {
-    public static enum BooleanOperator {
-		AND, OR
-    }
 
+        public static enum BooleanOperator {
+              AND, OR
+        }
+	
     /**
-     * Return the boolean operator for the predicate. If the predicate is
-     * simple, this is AND.
-     * 
+     * Return the boolean operator for the predicate.
+     * If the predicate is simple, this is <code>AND</code>.
      * @return boolean operator for the predicate
      */
     BooleanOperator getOperator();
-
+    
     /**
-     * Has negation been applied to the predicate.
-     * 
-     * @return boolean indicating if the predicate has been negated
+     * Whether the predicate has been created from another
+     * predicate by applying the <code>negate()</code> method.
+     * @return boolean indicating if the predicate is 
+     *                 a negated predicate
      */
     boolean isNegated();
 
     /**
      * Return the top-level conjuncts or disjuncts of the predicate.
-     * 
-     * @return list boolean expressions forming the predicate
+     * Returns empty list if there are no top-level conjuncts or
+     * disjuncts of the predicate.
+     * Modifications to the list do not affect the query.
+     * @return list of boolean expressions forming the predicate
      */
     List<Expression<Boolean>> getExpressions();
-
+	
     /**
-     * Apply negation to the predicate.
-     * 
-     * @return the negated predicate
+     * Create a negation of the predicate.
+     * @return negated predicate 
      */
     Predicate negate();
 }

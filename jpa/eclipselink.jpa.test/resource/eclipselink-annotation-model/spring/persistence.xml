@@ -100,7 +100,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <caching>ALL</caching>
+        <shared-cache-mode>ALL</shared-cache-mode>
     </persistence-unit>
     <persistence-unit name="NONE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -112,7 +112,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <caching>NONE</caching>
+        <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
     <persistence-unit name="ENABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -124,7 +124,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <caching>ENABLE_SELECTIVE</caching>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
     <persistence-unit name="DISABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -136,6 +136,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <caching>DISABLE_SELECTIVE</caching>
+        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
 </persistence>

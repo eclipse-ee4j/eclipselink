@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -30,10 +30,11 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to specify an array of native SQL named queries.
- * Query names are scoped to the persistence unit.
+ * Is used to specify multiple native SQL named queries.  Query names
+ * are scoped to the persistence unit.  The <code>NamedNativeQueries</code> 
+ * annotation can be applied to an entity or mapped superclass.
  *
- *@see NamedNativeQuery
+ * @see NamedNativeQuery
  *
  * @since Java Persistence 1.0
  */
@@ -41,6 +42,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NamedNativeQueries { 
 
-    /** Array of native SQL named queries */
+    /** (Required) Array of <code>NamedNativeQuery</code> annotations. */
     NamedNativeQuery[] value ();
 }

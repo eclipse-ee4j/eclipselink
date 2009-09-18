@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,9 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
- *     gyorke  - Post PFD updates
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -29,83 +28,82 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 /**
- * Represents an element of the from clause which may function as the parent of
- * Fetches.
- * 
- * @param <Z>
- * @param <X>
- * 
+ * Represents an element of the from clause which may
+ * function as the parent of Fetches.
+ *
+ * @param <Z>  the source type
+ * @param <X>  the target type
+ *
  * @since Java Persistence 2.0
  */
 public interface FetchParent<Z, X> {
+
     /**
-     * Return the fetch joins that have been made from this type.
-     * 
-     * @return fetch joins made from this type
+     *  Return the fetch joins that have been made from this type.
+     *  Returns empty set if no fetch joins have been made from
+     *  this type.
+     *  Modifications to the set do not affect the query.
+     *  @return fetch joins made from this type
      */
     java.util.Set<Fetch<X, ?>> getFetches();
 
     /**
-     * Fetch join to the specified attribute using an inner join.
-     * 
-     * @param assoc
-     *            target of the join
-     * @return the resulting fetch join
-     */
+     *  Create a fetch join to the specified single-valued attribute 
+     *  using an inner join.
+     *  @param attribute  target of the join
+     *  @return the resulting fetch join
+     */	
     <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute);
 
     /**
-     * Fetch join to the specified attribute using the given join type.
-     * 
-     * @param assoc
-     *            target of the join
-     * @param jt
-     *            join type
-     * @return the resulting fetch join
-     */
+     *  Create a fetch join to the specified single-valued attribute 
+     *  using the given join type.
+     *  @param attribute  target of the join
+     *  @param jt  join type
+     *  @return the resulting fetch join
+     */	
     <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute, JoinType jt);
 
     /**
-     * Fetch join to the specified collection using an inner join.
-     * 
-     * @param assoc
-     *            target of the join
-     * @return the resulting join
+     *  Create a fetch join to the specified collection-valued 
+     *  attribute using an inner join. 
+     *  @param attribute  target of the join
+     *  @return the resulting join
      */
     <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute);
-
+	
     /**
-     * Fetch join to the specified collection using the given join type.
-     * 
-     * @param assoc
-     *            target of the join
-     * @param jt
-     *            join type
-     * @return the resulting join
+     *  Create a fetch join to the specified collection-valued 
+     *  attribute using the given join type.
+     *  @param attribute  target of the join
+     *  @param jt  join type
+     *  @return the resulting join
      */
     <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute, JoinType jt);
+	
 
-    // String-based:
+    //String-based:
+	
     /**
-     * Fetch join to the specified attribute or association using an inner join.
-     * 
-     * @param assocName
-     *            name of the attribute or association for the target of the
-     *            join
-     * @return the resulting fetch join
-     */
+     *  Create a fetch join to the specified attribute using an 
+     *  inner join.
+     *  @param attributeName  name of the attribute for the
+     *         target of the join
+     *  @return the resulting fetch join
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name does not exist
+     */	
     <X, Y> Fetch<X, Y> fetch(String attributeName);
 
     /**
-     * Fetch join to the specified attribute or association using the given join
-     * type.
-     * 
-     * @param name
-     *            assocName of the attribute or association for the target of
-     *            the join
-     * @param jt
-     *            join type
-     * @return the resulting fetch join
-     */
+     *  Create a fetch join to the specified attribute using 
+     *  the given join type.
+     *  @param attributeName  name of the attribute for the
+     *               target of the join
+     *  @param jt  join type
+     *  @return the resulting fetch join
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name does not exist
+     */	
     <X, Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,11 +32,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Is used to specify the map key for associations of type 
- * {@link java.util.Map}.
+ * {@link java.util.Map java.util.Map} when the map key is itself the primary
+ * key or a persistent field or property of the entity that is
+ * the value of the map.
  * 
  * <p> If a persistent field or property other than the primary 
  * key is used as a map key then it is expected to have a 
  * uniqueness constraint associated with it.
+ *
+ * <p> The {@link MapKeyClass} annotation is not used when
+ * <code>MapKey</code> is specified and vice versa.
  *
  * <pre>
  *
@@ -47,7 +52,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        ...
  *        &#064;OneToMany(mappedBy="department")
  *        &#064;MapKey(name="empId")
- *        public Map<Integer, Employee> getEmployees() {... }
+ *        public Map&#060;Integer, Employee&#062; getEmployees() {... }
  *        ...
  *    }
  *
@@ -68,7 +73,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        ...
  *        &#064;OneToMany(mappedBy="department")
  *        &#064;MapKey(name="empPK")
- *        public Map<EmployeePK, Employee> getEmployees() {... }
+ *        public Map&#060;EmployeePK, Employee&#062; getEmployees() {... }
  *        ...
  *    }
  *
@@ -96,12 +101,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface MapKey {
 
     /**
-     * The name of the persistent field or property of the 
-     * associated entity that is used as the map key. If the 
-     * name element is not specified, the primary key of the 
+     * (Optional) The name of the persistent field or property of the 
+     * associated entity that is used as the map key. 
+     * <p> Default: If the 
+     * <code>name</code> element is not specified, the primary key of the 
      * associated entity is used as the map key. If the 
      * primary key is a composite primary key and is mapped 
-     * as {@link IdClass}, an instance of the primary key 
+     * as <code>IdClass</code>, an instance of the primary key 
      * class is used as the key.
      */
     String name() default "";

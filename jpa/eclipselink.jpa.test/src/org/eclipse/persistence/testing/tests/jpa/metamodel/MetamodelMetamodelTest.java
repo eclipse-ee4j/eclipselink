@@ -1588,7 +1588,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                 // UC3 - the attribute is on the managedType (not on any superType)
                 Set<PluralAttribute<Manufacturer, ?, ?>> collections = 
-                    entityManufacturer_.getDeclaredCollections();
+                    entityManufacturer_.getDeclaredPluralAttributes();
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            

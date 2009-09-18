@@ -175,6 +175,21 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     /**
+     * Specify the expressions that are used to form groups over the query
+     * results. Replaces the previous specified grouping expressions, if any. If
+     * no grouping expressions are specified, any previously added grouping
+     * expressions are simply removed. This method only overrides the return
+     * type of the corresponding AbstractQuery method.
+     * 
+     * @param grouping
+     *            zero or more grouping expressions
+     * @return the modified query
+     */
+    public Subquery<T> groupBy(List<Expression<?>> grouping){
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any. This method only overrides the return type
      * of the corresponding AbstractQuery method.
@@ -336,7 +351,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * 
      * @return joins made from this type
      */
-    public java.util.Set<Join<?, ?>> getJoins(){
+    public java.util.Set<Join<?, ?>> getCorrelatedJoins(){
         return this.correlatedJoins;
     }
 

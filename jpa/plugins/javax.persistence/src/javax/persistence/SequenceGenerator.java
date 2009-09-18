@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,56 +32,60 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation defines a primary key generator that may be referenced by
- * name when a generator element is specified for the {@link GeneratedValue}
- * annotation. A sequence generator may be specified on the entity class or on
- * the primary key field or property. The scope of the generator name is global
- * to the persistence unit (across all generator types).
- * 
+ * Defines a primary key generator that may be referenced by name when
+ * a generator element is specified for the {@link GeneratedValue}
+ * annotation. A sequence generator may be specified on the entity
+ * class or on the primary key field or property. The scope of the
+ * generator name is global to the persistence unit (across all
+ * generator types).
+ *
  * <pre>
  *   Example:
- *    @SequenceGenerator(name=&quot;EMP_SEQ&quot;, allocationSize=25)
+ *
+ *   &#064;SequenceGenerator(name="EMP_SEQ", allocationSize=25)
  * </pre>
- * 
+ *
  * @since Java Persistence 1.0
  */
-@Target( { TYPE, METHOD, FIELD })
+@Target({TYPE, METHOD, FIELD}) 
 @Retention(RUNTIME)
 public @interface SequenceGenerator {
 
-	/**
-	 * (Required) A unique generator name that can be referenced by one or more
-	 * classes to be the generator for primary key values.
-	 */
-	String name();
+    /** 
+     * (Required) A unique generator name that can be referenced 
+     * by one or more classes to be the generator for primary key 
+     * values.
+     */
+    String name();
 
-	/**
-	 * (Optional) The name of the database sequence object from which to obtain
-	 * primary key values.
-	 * <p>
-	 * Defaults to a provider-chosen value.
-	 */
-	String sequenceName() default "";
+    /**
+     * (Optional) The name of the database sequence object from 
+     * which to obtain primary key values.
+     * <p> Defaults to a provider-chosen value.
+     */
+    String sequenceName() default "";
 
-	/** (Optional) The catalog of the sequence generator. 
-	 * @since Java Persistence API 2.0
-	 */
-	String catalog() default "";
+    /** (Optional) The catalog of the sequence generator. 
+     *
+     * @since Java Persistence 2.0
+     */
+    String catalog() default "";
 
-	/** (Optional) The schema of the sequence generator. 
-	 * @since Java Persistence API 2.0
-	 */
-	String schema() default "";
+    /** (Optional) The schema of the sequence generator. 
+     *
+     * @since Java Persistence 2.0
+     */
+    String schema() default "";
 
-	/**
-	 * (Optional) The value from which the sequence object is to start
-	 * generating.
-	 */
-	int initialValue() default 1;
+    /** 
+     * (Optional) The value from which the sequence object 
+     * is to start generating.
+     */
+    int initialValue() default 1;
 
-	/**
-	 * (Optional) The amount to increment by when allocating sequence numbers
-	 * from the sequence.
-	 */
-	int allocationSize() default 50;
+    /**
+     * (Optional) The amount to increment by when allocating 
+     * sequence numbers from the sequence.
+     */
+    int allocationSize() default 50;
 }

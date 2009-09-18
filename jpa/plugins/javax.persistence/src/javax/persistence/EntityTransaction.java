@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,10 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
- *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -26,60 +24,62 @@
  ******************************************************************************/
 package javax.persistence;
 
+/**
+ * Interface used to control transactions on resource-local entity
+ * managers.  The {@link EntityManager#getTransaction
+ * EntityManager.getTransaction()} method returns the
+ * <code>EntityTransaction</code> interface.
+
+ *
+ * @since Java Persistence 1.0
+ */
 public interface EntityTransaction {
-    /**
-     * Start a resource transaction.
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is true.
-     */
-    public void begin();
 
-    /**
-     * Commit the current resource transaction, writing any 
-     * unflushed changes to the database.  
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is false.
-     * @throws RollbackException
-     *             if the commit fails.
-     */
-    public void commit();
+     /**
+      * Start a resource transaction. 
+      * @throws IllegalStateException if <code>isActive()</code> is true.
+      */
+     public void begin();
 
-    /**
-     * Roll back the current resource transaction. 
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is false.
-     * @throws PersistenceException
-     *             if an unexpected error condition is encountered.
-     */
-    public void rollback();
+     /**
+      * Commit the current resource transaction, writing any 
+      * unflushed changes to the database.  
+      * @throws IllegalStateException if <code>isActive()</code> is false.
+      * @throws RollbackException if the commit fails.
+      */
+     public void commit();
 
-    /**
-     * Mark the current resource transaction so that the only 
-     * possible outcome of the transaction is for the transaction 
-     * to be rolled back. 
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is false.
-     */
-    public void setRollbackOnly();
+     /**
+      * Roll back the current resource transaction. 
+      * @throws IllegalStateException if <code>isActive()</code> is false.
+      * @throws PersistenceException if an unexpected error 
+      *         condition is encountered.
+      */
+     public void rollback();
 
-    /**
-     * Determine whether the current resource transaction has been 
-     * marked for rollback.
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is false.
-     */
-    public boolean getRollbackOnly();
+     /**
+      * Mark the current resource transaction so that the only 
+      * possible outcome of the transaction is for the transaction 
+      * to be rolled back. 
+      * @throws IllegalStateException if isActive() is false.
+      */
+     public void setRollbackOnly();
 
-    /**
-     * Indicate whether a resource transaction is in progress.
-     * 
-     * @throws PersistenceException
-     *             if an unexpected error condition is encountered.
-     */
-    public boolean isActive();
+     /**
+      * Determine whether the current resource transaction has been 
+      * marked for rollback.
+      * @return boolean indicating whether the transaction has been
+      *         marked for rollback
+      * @throws IllegalStateException if <code>isActive()</code> is false.
+      */
+     public boolean getRollbackOnly();
+
+     /**
+      * Indicate whether a resource transaction is in progress.
+      * @return boolean indicating whether transaction is
+      *         in progress
+      * @throws PersistenceException if an unexpected error 
+      *         condition is encountered.
+      */
+     public boolean isActive();
 }

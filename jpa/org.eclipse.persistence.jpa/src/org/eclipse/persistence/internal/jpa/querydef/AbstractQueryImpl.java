@@ -154,6 +154,20 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
 
     /**
+     * Specify the expressions that are used to form groups over
+     * the query results.
+     * Replaces the previous specified grouping expressions, if any.
+     * If no grouping expressions are specified, any previously 
+     * added grouping expressions are simply removed.
+     * @param grouping  list of zero or more grouping expressions
+     * @return the modified query
+     */
+    public AbstractQuery<T> groupBy(List<Expression<?>> grouping){
+        throw new UnsupportedOperationException();
+    }
+
+
+    /**
      * Specify the expressions that are used to form groups over the query
      * results. Replaces the previous specified grouping expressions, if any. If
      * no grouping expressions are specified, any previously added grouping
@@ -224,6 +238,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the list of grouping expressions
      */
     public List<Expression<?>> getGroupList(){
+        //TODO
         throw new UnsupportedOperationException();
     }
     /**
@@ -231,8 +246,9 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * 
      * @return where clause predicate
      */
-    public Expression<Boolean> getRestriction(){
-        return this.where;
+    public Predicate getRestriction(){
+        //TODO
+        throw new UnsupportedOperationException();
     }
     
     /**

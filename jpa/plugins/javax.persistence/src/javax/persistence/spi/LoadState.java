@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,29 +25,15 @@
 package javax.persistence.spi;
 
 /**
- * The LoadState is returned from the PersistenceProvider's isLoaded methods to
- * indicate the load status of the given entity, attribute, or relationship with
- * respect to the provider being used.
- * 
- * @see PersistenceProvider#isLoaded(Object)
- * @see PersistenceProvider#isLoadedWithoutReference(Object, String)
- * @see PersistenceProvider#isLoadedWithReference(Object, String)
- * 
+ * Load states returned by the {@link ProviderUtil} SPI methods.
  * @since Java Persistence 2.0
+ *
  */
 public enum LoadState {
-    /**
-     * The state of the element is known to have been loaded
-     */
+    /** The state of the element is known to have been loaded. */
     LOADED,
-
-    /**
-     * The state of the element is known not to have been loaded
-     */
+    /** The state of the element is known not to have been loaded. */
     NOT_LOADED,
-
-    /**
-     * The load state of the element cannot be determined
-     */
+    /** The load state of the element cannot be determined. */
     UNKNOWN
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,25 +31,27 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to specify a mapped column for a persistent property or field.
- * If no Column annotation is specified, the default values are applied.
- * <p> Examples:
+ * Is used to specify the mapped column for a persistent property or field.
+ * If no <code>Column</code> annotation is specified, the default values apply.
  *
  * <blockquote><pre>
- * Example 1:
- * &#064;Column(name="DESC", nullable=false, length=512)
- * public String getDescription() { return description; }
+ *    Example 1:
  *
- * Example 2:
- * &#064;Column(name="DESC",
- *         columnDefinition="CLOB NOT NULL",
- *         table="EMP_DETAIL")
- * &#064;Lob
- * public String getDescription() { return description; }
+ *    &#064;Column(name="DESC", nullable=false, length=512)
+ *    public String getDescription() { return description; }
  *
- * Example 3:
- * &#064;Column(name="ORDER_COST", updatable=false, precision=12, scale=2)
- * public BigDecimal getCost() { return cost; }
+ *    Example 2:
+ *
+ *    &#064;Column(name="DESC",
+ *            columnDefinition="CLOB NOT NULL",
+ *            table="EMP_DETAIL")
+ *    &#064;Lob
+ *    public String getDescription() { return description; }
+ *
+ *    Example 3:
+ *
+ *    &#064;Column(name="ORDER_COST", updatable=false, precision=12, scale=2)
+ *    public BigDecimal getCost() { return cost; }
  *
  * </pre></blockquote>
  *
@@ -67,11 +69,11 @@ public @interface Column {
     String name() default "";
 
     /**
-     * (Optional) Whether the property is a unique key.  This is a 
-     * shortcut for the UniqueConstraint annotation at the table 
-     * level and is useful for when the unique key constraint is 
-     * only a single field. This constraint applies in addition 
-     * to any constraint entailed by primary key mapping and 
+     * (Optional) Whether the column is a unique key.  This is a 
+     * shortcut for the <code>UniqueConstraint</code> annotation at the table 
+     * level and is useful for when the unique key constraint 
+     * corresponds to only a single column. This constraint applies 
+     * in addition to any constraint entailed by primary key mapping and 
      * to constraints specified at the table level.
      */
     boolean unique() default false;

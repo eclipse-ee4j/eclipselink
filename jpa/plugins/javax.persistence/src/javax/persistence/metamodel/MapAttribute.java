@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,9 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
-*     gyorke  - Post PFD updates
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -26,12 +25,15 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type MapAttribute represent persistent Map-valued
- * attributes.
+ * Instances of the type <code>MapAttribute</code> represent
+ * persistent <code>java.util.Map</code>-valued attributes.
  *
  * @param <X> The type the represented Map belongs to
  * @param <K> The type of the key of the represented Map
  * @param <V> The type of the value of the represented Map
+ *
+ * @since Java Persistence 2.0
+ *
  */
 public interface MapAttribute<X, K, V> 
 	extends PluralAttribute<X, java.util.Map<K, V>, V> {

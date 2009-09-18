@@ -203,7 +203,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  Return all collection-valued attributes of the managed type.
      *  @return collection valued attributes
      */
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
+    public Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
@@ -344,11 +344,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  managed type.
      *  @return declared collection valued attributes
      */
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-        // It is evident from the fact that we have only getAttributes(), getCollections() and getSingularAttributes() that a Collection is a superset of all Set, List and even Map
+    public Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
+        // It is evident from the fact that we have only getAttributes(), getPluralAttributes() and getSingularAttributes() that a Collection is a superset of all Set, List and even Map
         // return only a set of collections declared on this class - not via inheritance
         // Get all collection attribute and filter only on declared ones
-        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getCollections();
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getPluralAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
         Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)

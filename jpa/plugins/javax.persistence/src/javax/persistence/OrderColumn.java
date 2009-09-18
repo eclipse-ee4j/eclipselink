@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,26 +31,53 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The OrderColumn annotation specifies a column that is used to maintain the
- * persistent order of a list. The persistence provider is responsible for
- * maintaining the order upon retrieval and in the database. The persistence
- * provider is responsible for updating the ordering upon flushing to the
- * database to reflect any insertion, deletion, or reordering affecting the
- * list. The OrderColumn annotation is specified on a one-to-many or
- * many-to-many relationship or on an element collection. The OrderColumn
- * annotation is specified on the side of the relationship that references the
- * collection that is to be ordered. The order column is not visible as part of
- * the state of the entity or embeddable class.[78] [78]The OrderBy annotation
+ * Specifies a column that is used to maintain the persistent order of
+ * a list. The persistence provider is responsible for maintaining the
+ * order upon retrieval and in the database and for updating the
+ * ordering upon flushing to the database to reflect any insertion,
+ * deletion, or reordering affecting the list.
+ *
+ * <p> The <code>OrderColumn</code> annotation is specified on a
+ * OneToMany or ManyToMany relationship or on an element
+ * collection. The <code>OrderColumn</code> annotation is specified on
+ * the side of the relationship that references the collection that is
+ * to be ordered. The order column is not visible as part of the state
+ * of the entity or embeddable class.
+ *
+ * <p> The {@link OrderBy} annotation
  * should be used for ordering that is visible as persistent state and
- * maintained by the application. The OrderBy annotation is not used when
- * OrderColumn is specified.
+ * maintained by the application. The <code>OrderBy</code> annotation is not used
+ * when <code>OrderColumn</code> is specified.
  * 
+ * <pre>
+ *
+ *    Example:
+ *
+ *    &#064;Entity
+ *    public class CreditCard {
+ *
+ *       &#064;Id long ccNumber;
+ *
+ *       &#064;OneToMany  // unidirectional
+ *       &#064;OrderColumn
+ *       List&#060;CardTransaction&#062; transactionHistory;
+ *       ...
+ *    }
+ *
+ * </pre>
+ *
+ * @see OrderBy
+ *
  * @since Java Persistence 2.0
  */
 @Target( { METHOD, FIELD })
 @Retention(RUNTIME)
 public @interface OrderColumn {
-	/** (Optional) The name of the ordering column. */
+
+	/** (Optional) The name of the ordering column. 
+         *  Defaults to the concatenation of the name of the 
+         *  referencing property or field; "_"; "ORDER".
+         */
 	String name() default "";
 
 	/** (Optional) Whether the database column is nullable. */
@@ -70,19 +97,7 @@ public @interface OrderColumn {
 
 	/**
 	 * (Optional) The SQL fragment that is used when generating the DDL for the
-	 * column.
+	 * column.  Defaults to generated SQL to create a column of the inferred type.
 	 */
 	String columnDefinition() default "";
-
-	/**
-	 * (Optional) Whether the value of the ordering column need to be contiguous
-	 * or may be sparse.
-	 */
-	boolean contiguous() default true;
-
-	/** (Optional) The ordering column value for the first element of the list. */
-	int base() default 0;
-
-	/** (Optional) The name of the table that contains the column. */
-	String table() default "";
 }

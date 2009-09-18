@@ -1266,7 +1266,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItem(String, Class)
      * @since Java Persistence 2.0
      */
-    public <T> ResultItem<T> getResultItem(String alias, Class<T> type) {
+    public <T> TupleElement<T> getResultItem(String alias, Class<T> type) {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1275,7 +1275,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItem(int, Class)
      * @since Java Persistence 2.0
      */
-    public <T> ResultItem<T> getResultItem(int position, Class<T> type) {
+    public <T> TupleElement<T> getResultItem(int position, Class<T> type) {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1284,7 +1284,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItems()
      * @since Java Persistence 2.0
      */
-    public List<ResultItem<?>> getResultItems() {
+    public List<TupleElement<?>> getResultItems() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1302,7 +1302,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getTypedResultList()
      * @since Java Persistence 2.0
      */
-    public List<Result> getTypedResultList() {
+    public List<Tuple> getTypedResultList() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1311,7 +1311,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getTypedSingleResult()
      * @since Java Persistence 2.0
      */
-    public Result getTypedSingleResult() {
+    public Tuple getTypedSingleResult() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }

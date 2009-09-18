@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,9 +31,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static javax.persistence.InheritanceType.SINGLE_TABLE;
 
 /**
- * Defines the inheritance strategy to be used for an entity class 
- * hierarchy. It is specified on the entity class that is the root 
- * of the entity class hierarchy.
+ * Defines the inheritance strategy to be used for an entity class
+ * hierarchy. It is specified on the entity class that is the root of
+ * the entity class hierarchy.  If the <code>Inheritance</code> annotation is not
+ * specified or if no inheritance type is specified for an entity
+ * class hierarchy, the <code>SINGLE_TABLE<code> mapping strategy is used.
  *
  * <pre>
  *
@@ -54,6 +56,6 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 
 public @interface Inheritance {
 
-    /** The strategy to be used */
+    /** The strategy to be used for the entity inheritance hierarchy. */
     InheritanceType strategy() default SINGLE_TABLE;
 }

@@ -35,7 +35,7 @@ public class PersistenceContentHandler implements ContentHandler {
     private static final String ELEMENT_JAR_FILE = "jar-file";
     private static final String ELEMENT_CLASS = "class";
     private static final String ELEMENT_EXCLUDE_UNLISTED_CLASSES = "exclude-unlisted-classes";
-    private static final String ELEMENT_CACHING = "caching";
+    private static final String ELEMENT_CACHING = "shared-cache-mode";
     private static final String ELEMENT_VALIDATION_MODE = "validation-mode";
     private static final String ELEMENT_PROPERTY = "property";
     private static final String ATTRIBUTE_NAME = "name";
@@ -155,7 +155,7 @@ public class PersistenceContentHandler implements ContentHandler {
                 }
                 return;
             } else if (ELEMENT_CACHING.equals(localName)) {
-                persistenceUnitInfo.setCaching(string);
+                persistenceUnitInfo.setSharedCacheMode(string);
             } else if (ELEMENT_VALIDATION_MODE.equals(localName)) {
                 persistenceUnitInfo.setValidationMode(string);
             } else if (ELEMENT_PERSISTENCE_UNIT.equals(localName)) {

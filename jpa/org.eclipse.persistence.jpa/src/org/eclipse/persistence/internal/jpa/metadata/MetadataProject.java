@@ -54,7 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CachingType;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.Embeddable;
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -637,7 +637,7 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * This method will return the name of the CachingType if specified in the 
+     * This method will return the name of the SharedCacheMode if specified in the 
      * persistence.xml file. Note, this is a JPA 2.0 feature, therefore, this 
      * method needs to catch any exception as a result of trying to access this 
      * information from a JPA 1.0 container.   
@@ -645,18 +645,18 @@ public class MetadataProject {
     protected String getCaching() {
         try {
             Method method = null;
-            Object cachingType = null;
+            Object SharedCacheMode = null;
             
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getCaching", null));
-                cachingType = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
+                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
+                SharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
             } else {
-                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getCaching", null);
-                cachingType = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
+                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
+                SharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
             }
          
-            if (cachingType != null) {
-                return ((CachingType) cachingType).name();
+            if (SharedCacheMode != null) {
+                return ((SharedCacheMode) SharedCacheMode).name();
             }
         } catch (Throwable exception) {
             // Catch and swallow any exceptions and return null.

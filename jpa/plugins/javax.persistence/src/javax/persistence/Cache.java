@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,26 +25,33 @@
 package javax.persistence;
 
 /**
- * Interface used to interact with the second-level cache. If a cache is not in
- * use, the methods of this interface have no effect, except for contains, which
- * returns false.
- * 
+ * Interface used to interact with the second-level cache.
+ * If a cache is not in use, the methods of this interface have
+ * no effect, except for <code>contains</code>, which returns false.
+ *
  * @since Java Persistence 2.0
  */
 public interface Cache {
+
     /**
      * Whether the cache contains data for the given entity.
+     * @param cls  entity class 
+     * @param primaryKey  primary key
+     * @return boolean indicating whether the entity is in the cache
      */
     public boolean contains(Class cls, Object primaryKey);
 
     /**
      * Remove the data for the given entity from the cache.
+     * @param cls  entity class
+     * @param primaryKey  primary key
      */
     public void evict(Class cls, Object primaryKey);
 
     /**
-     * Remove the data for entities of the specified class (and its subclasses)
-     * from the cache.
+     * Remove the data for entities of the specified class (and its
+     * subclasses) from the cache.
+     * @param cls  entity class
      */
     public void evict(Class cls);
 

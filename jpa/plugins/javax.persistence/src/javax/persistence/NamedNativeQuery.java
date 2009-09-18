@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -30,8 +30,10 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to specify a native SQL named query.
+ * Specifies a named native SQL query.
  * Query names are scoped to the persistence unit.
+ * The <code>NamedNativeQuery</code> annotation can be applied to an 
+ * entity or mapped superclass.
  *
  * @since Java Persistence 1.0
  */
@@ -40,20 +42,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface NamedNativeQuery { 
 
     /**
-     * Is used to refer to the query when using the {@link EntityManager} 
+     * The name used to refer to the query with the {@link EntityManager} 
      * methods that create query objects.
      */
     String name();
 
-    /** The SQL query string */
+    /** The SQL query string. */
     String query();
 
-    /** Vendor-specific query hints */
+    /** Query properties and hints.  (May include vendor-specific query hints.) */
     QueryHint[] hints() default {};
 
-    /** The class of the result */
+    /** The class of the result. */
     Class resultClass() default void.class; 
 
-    /** The name of a {@link SqlResultSetMapping}, as defined in metadata */
+    /** The name of a {@link SqlResultSetMapping}, as defined in metadata. */
     String resultSetMapping() default "";
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,7 +32,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation defines a primary key generator that may be 
+ * Defines a primary key generator that may be 
  * referenced by name when a generator element is specified for 
  * the {@link GeneratedValue} annotation. A table generator 
  * may be specified on the entity class or on the primary key 
@@ -73,6 +73,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        ...
  *    }
  * </pre>
+ *
+ * @see GeneratedValue
  *
  * @since Java Persistence 1.0
  */
@@ -124,8 +126,8 @@ public @interface TableGenerator {
     String pkColumnValue() default "";
 
     /** 
-     * (Optional) The initial value to be used when allocating id 
-     * numbers from the generator. 
+     * (Optional) The initial value to be used to initialize the column
+     * that stores the last value generated.
      */
     int initialValue() default 0;
 

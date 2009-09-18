@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -37,7 +37,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * or properties of these types.
  * 
  * <p> The <code>Temporal</code> annotation may be used in 
- * conjunction with the {@link Basic} annotation.
+ * conjunction with the {@link Basic} annotation, the {@link Id}
+ * annotation, or the {@link ElementCollection} annotation (when
+ * the element collection value is of such a temporal type.
  *
  * <pre>
  *     Example:
@@ -52,6 +54,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Temporal {
 
-    /** The type used in mapping java.util.Date or java.util.Calendar. */
+    /** The type used in mapping <code>java.util.Date</code> or <code>java.util.Calendar</code>. */
     TemporalType value();
 }

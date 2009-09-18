@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,25 +31,36 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation is used in the mapping of associations. It 
- * is specified on the owning side of a many-to-many association, 
- * or in a unidirectional one-to-many association.
+ * Is used in the mapping of associations. It is specified on the
+ * owning side of an association.  
+ *
+ * <p> A join table is typically used in the mapping of many-to-many
+ * and unidirectional one-to-many associations. It may also be used to
+ * map bidirectional many-to-one/one-to-many associations,
+ * unidirectional many-to-one relationships, and one-to-one
+ * associations (both bidirectional and unidirectional).
+ *
+ *<p>When a join table is used in mapping a relationship with an
+ *embeddable class on the owning side of the relationship, the
+ *containing entity rather than the embeddable class is considered the
+ *owner of the relationship.
  *
  * <p> If the <code>JoinTable</code> annotation is missing, the 
- * default values of the annotation elements apply.  The name 
- * of the join table is assumed to be the table names of the 
+ * default values of the annotation elements apply.  
+ * The name of the join table is assumed to be the table names of the 
  * associated primary tables concatenated together (owning side 
  * first) using an underscore.
  *
  * <pre>
  *
  *    Example:
+ *
  *    &#064;JoinTable(
- *    name="CUST_PHONE",
- *    joinColumns=
- *        &#064;JoinColumn(name="CUST_ID", referencedColumnName="ID"),
- *    inverseJoinColumns=
- *        &#064;JoinColumn(name="PHONE_ID", referencedColumnName="ID")
+ *        name="CUST_PHONE",
+ *        joinColumns=
+ *            &#064;JoinColumn(name="CUST_ID", referencedColumnName="ID"),
+ *        inverseJoinColumns=
+ *            &#064;JoinColumn(name="PHONE_ID", referencedColumnName="ID")
  *    )
  * </pre>
  * 
@@ -86,7 +97,7 @@ public @interface JoinTable {
      * (Optional) The foreign key columns
      * of the join table which reference the
      * primary table of the entity owning the
-     * association (i.e. the owning side of
+     * association. (I.e. the owning side of
      * the association).
      *
      * <p> Uses the same defaults as for {@link JoinColumn}.
@@ -97,7 +108,7 @@ public @interface JoinTable {
      * (Optional) The foreign key columns
      * of the join table which reference the
      * primary table of the entity that does
-     * not own the association (i.e. the
+     * not own the association. (I.e. the
      * inverse side of the association).
      *
      * <p> Uses the same defaults as for {@link JoinColumn}.

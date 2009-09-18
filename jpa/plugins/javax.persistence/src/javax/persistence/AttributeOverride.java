@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,44 +32,112 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The <code>AttributeOverride</code> annotation is used to 
- * override the mapping of a {@link Basic} (whether explicit or 
- * default) property or field or Id property or field.
+ * Is used to override the mapping of a <code>Basic</code> (whether
+ * explicit or default) property or field or <code>Id</code> property or
+ * field.
  *
- * <p> The <code>AttributeOverride</code> annotation may be 
- * applied to an entity that extends a mapped superclass or to 
- * an embedded field or property to override a basic mapping 
- * defined by the mapped superclass or embeddable class. If the 
- * <code>AttributeOverride</code> annotation is not specified, 
- * the column is mapped the same as in the original mapping.
+ * <p> May be applied to an entity that extends a mapped superclass or
+ * to an embedded field or property to override a basic mapping or id
+ * mapping defined by the mapped superclass or embeddable class (or
+ * embeddable class of one of its attributes).
+
+ * <p> May be applied to an element collection containing instances of
+ * an embeddable class or to a map collection whose key and/or value
+ * is an embeddable class. When <code>AttributeOverride</code> is
+ * applied to a map, "<code>key.</code>" or "<code>value.</code>" must
+ * be used to prefix the name of the attribute that is being
+ * overridden in order to specify it as part of the map key or map
+ * value.
+ *
+ * <p> To override mappings at multiple levels of embedding, a dot (".")
+ * notation form must be used in the <code>name</code> element to indicate an
+ * attribute within an embedded attribute.  The value of each identifier
+ * used with the dot notation is the name of the respective embedded
+ * field or property.
+ *
+ * <p> If <code>AttributeOverride</code> is not specified, the column
+ * is mapped the same as in the original mapping.
  *
  * <pre>
- * <p> Example:
+ *    Example 1:
  *
- *   &#064;MappedSuperclass
- *   public class Employee {
- *       &#064;Id protected Integer id;
- *       &#064;Version protected Integer version;
- *       protected String address;
- *       public Integer getId() { ... }
- *       public void setId(Integer id) { ... }
- *       public String getAddress() { ... }
- *       public void setAddress(String address) { ... }
+ *    &#064;MappedSuperclass
+ *    public class Employee {
+ *        &#064;Id protected Integer id;
+ *        &#064;Version protected Integer version;
+ *        protected String address;
+ *        public Integer getId() { ... }
+ *        public void setId(Integer id) { ... }
+ *        public String getAddress() { ... }
+ *        public void setAddress(String address) { ... }
+ *    }
+ *
+ *    &#064;Entity
+ *    &#064;AttributeOverride(name="address", column=&#064;Column(name="ADDR"))
+ *    public class PartTimeEmployee extends Employee {
+ *        // address field mapping overridden to ADDR
+ *        protected Float wage();
+ *        public Float getHourlyWage() { ... }
+ *        public void setHourlyWage(Float wage) { ... }
+ *    }
+ * 
+ *
+ *    Example 2:
+ *
+ *    &#064;Embeddable public class Address {
+ *        protected String street;
+ *        protected String city;
+ *        protected String state;
+ *        &#064;Embedded protected Zipcode zipcode;
+ *    }
+ *
+ *    &#064;Embeddable public class ZipCode {
+ *        protected String zip;
+ *        protected String plusFour;
+ *    }
+ *
+ *    &#064;Entity public class Customer {
+ *        &#064;Id protected Integer id;
+ *        protected String name;
+ *        &#064;AttributeOverrides({
+ *            &#064;AttributeOverride(name="state",
+ *                               column=&#064;Column(name="ADDR_STATE")),
+ *            &#064;AttributeOverride(name="zipcode.zip",
+ *                               column=&#064;Column(name="ADDR_ZIP"))
+ *        })
+ *        &#064;Embedded protected Address address;
+ *        ...
+ *    }
+ *
+ *
+ *    Example 3:
+ *
+ *    &#064;Entity public class PropertyRecord {
+ *        &#064;EmbeddedId PropertyOwner owner;
+ *        &#064;AttributeOverrides({
+ *            &#064;AttributeOverride(name="key.street", 
+ *                               column=&#064;Column(name="STREET_NAME")),
+ *            &#064;AttributeOverride(name="value.size", 
+ *                               column=&#064;Column(name="SQUARE_FEET")),
+ *            &#064;AttributeOverride(name="value.tax", 
+ *                               column=&#064;Column(name="ASSESSMENT"))
+ *        })
+ *       &#064;ElementCollection
+ *       Map&#060;Address, PropertyInfo&#062; parcels;
+ *    }
+ *
+ *   &#064;Embeddable public class PropertyInfo {
+ *       Integer parcelNumber;
+ *       Integer size;
+ *       BigDecimal tax;
  *   }
  *
- *   &#064;Entity
- *   &#064;AttributeOverride(name="address", column=&#064;Column(name="ADDR"))
- *   public class PartTimeEmployee extends Employee {
- *       // address field mapping overridden to ADDR
- *       protected Float wage();
- *       public Float getHourlyWage() { ... }
- *       public void setHourlyWage(Float wage) { ... }
- *   }
  * </pre>
  *
  * @see Embedded
  * @see Embeddable
  * @see MappedSuperclass
+ * @see AssociationOverride
  *
  * @since Java Persistence 1.0
  */
