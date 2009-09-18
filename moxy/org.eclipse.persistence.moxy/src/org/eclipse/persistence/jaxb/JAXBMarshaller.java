@@ -402,5 +402,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		this.jaxbContext = jaxbContext;
 	}
 
-	
+    public XMLMarshaller getXMLMarshaller() {
+        return this.xmlMarshaller;
+    }
 }
