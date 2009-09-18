@@ -71,7 +71,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
     
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
+     * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
      * 
      * @param entity
@@ -85,7 +85,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
 
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
+     * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
      * 
      * @param entityClass

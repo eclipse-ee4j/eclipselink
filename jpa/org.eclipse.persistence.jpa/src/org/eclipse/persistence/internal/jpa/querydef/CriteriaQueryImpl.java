@@ -60,6 +60,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     
     protected SelectionImpl<?> selection;
     
+    protected List<Order> orderBy;
+    
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
         super(metamodel, queryResult, queryBuilder, result);
     }
@@ -349,8 +351,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query.
      */
     public CriteriaQuery<T> orderBy(Order... o){
-        //TODO
-        throw new UnsupportedOperationException();
+        this.orderBy = new ArrayList();
+        for (Order order : o){
+            this.orderBy.add(order);
+        }
+        return this;
     }
     /**
      * Specify the ordering expressions that are used to
@@ -366,16 +371,16 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query.
      */
     public CriteriaQuery<T> orderBy(List<Order> o){
-        //TODO
-        throw new UnsupportedOperationException();
+        this.orderBy = o;
+        return this;
     }
 
     
     public boolean discoverResultType(Selection<?> ... selections){
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
-        for (Selection select: selection.getCompoundSelectionItems()){
-            constructorArgs[++count] = select.getJavaType();
+        for (Selection select: selections){
+            constructorArgs[count++] = select.getJavaType();
         }
         try{
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -506,6 +511,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
 
         }
+        if (this.orderBy!= null && !this.orderBy.isEmpty()){
+            for (Order order: this.orderBy){
+                OrderImpl orderImpl = (OrderImpl)order;
+                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl)orderImpl.getExpression()).getCurrentNode();
+                if (orderImpl.isAscending()){
+                    orderExp = orderExp.ascending();
+                } else{
+                    orderExp = orderExp.descending();
+                }
+                query.addOrdering(orderExp);
+            }
+        }
+        
         return query;
     }
 
