@@ -84,6 +84,14 @@
         <contains string="${db.driver}" substring="oracle"/>
     </condition>
 
+    <!-- This checks if the environment is ready for proxy authentication tests -->
+    <condition property="is.ready.for.proxy.authentication">
+        <and>
+            <isset property="is.oracle"/>
+            <contains string="${oracle.proxy.authentication.is.setup}" substring="true"/>
+        </and>
+    </condition>
+
     <!-- This checks if the Apllication Server is WebSphere -->
     <condition property="is.websphere">
         <contains string="${server.name}" substring="websphere"/>
@@ -517,10 +525,11 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="test-oracle-proxy" inheritRefs="true"/>
     </target>
 
-    <!-- Runs JPA Oracle-specific tests. -->
-    <target name="test-oracle-proxy" if="is.oracle" depends="clean-test, config-trunk, config-flat">
+    <!-- Oracle proxy authentication needs to be setup for the tests. -->
+    <target name="test-oracle-proxy" if="is.ready.for.proxy.authentication" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
@@ -730,6 +739,7 @@
         </condition>
 
         <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+            <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>
@@ -1200,13 +1210,11 @@
         <antcall target="server-test-validation" inheritRefs="true"/>
         <antcall target="server-test-xml-mergeinherited" inheritRefs="true"/>
         <antcall target="server-test-xmltest" inheritRefs="true"/>
+        <!-- The following models are oracle specific -->
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
         <antcall target="server-test-custom-features" inheritRefs="true"/>
         <antcall target="server-test-struct-converter" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
-    </target>
-
-    <target name="server-test-oracle-proxy" depends="clean-test">
+        <!-- Oracle proxy authentication needs to be setup properly for the following model -->
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
         <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
@@ -1533,7 +1541,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         </antcall>
     </target>
 
-    <target name="server-test-proxy-authentication" if="is.oracle">
+    <target name="server-test-proxy-authentication" if="is.ready.for.proxy.authentication">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="proxyauthentication"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/proxyauthentication"/>
