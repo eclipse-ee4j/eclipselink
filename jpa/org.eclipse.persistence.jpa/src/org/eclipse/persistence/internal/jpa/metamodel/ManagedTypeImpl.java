@@ -402,7 +402,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 } else if (descriptor.isAggregateCollectionDescriptor()) {
                     // TODO: Embeddable Collection handling is in progress
                     // AGGREGATE_COLLECTION:3 can be an embeddable or entity type depending on ?
-                    //managedType = new EntityTypeImpl(metamodel, descriptor);
                     managedType = new EmbeddableTypeImpl(metamodel, descriptor);
                 }
             } else if(descriptor.isDescriptorTypeNormal()) {

@@ -59,6 +59,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EmbeddableTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.PluralAttributeImpl;
@@ -164,19 +165,157 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
-
-        //suite.addTest(new MetamodelMetamodelTest("testMetamodelStringBasedQuery"));
-        //suite.addTest(new MetamodelMetamodelTest("testMetamodelTypeSafeBasedQuery"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodelLazyInitialization"));
         suite.addTest(new MetamodelMetamodelTest("testMetamodelFullImplementation"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));        
         return suite;
     }
 
+    private EntityManager privateTestSetup() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        Metamodel metamodel = null;
+        try {
+            emf = initialize();
+            em = emf.createEntityManager();
+            // Unset the metamodel - for repeated runs through this test
+            if(!isOnServer()) { 
+                ((EntityManagerFactoryImpl)emf).setMetamodel(null);
+            }
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if(null != em) {
+                cleanup(em);
+            }
+        }
+        return em;
+    }
+    
+    private void privateTestTeardown() {        
+    }
+    
+    public void testMetamodelLazyInitialization() {
+        if(!this.isJPA10()) {
+            boolean exceptionThrown = false;
+            EntityManager em = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+            } catch (Exception e) {
+                e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }    
+
+    /**
+     * This test will verify that MapAttribute instance have their elementType set correctly.
+     * The elementType corresponds to the 3rd V parameter on the class definition - which is the Map value.
+     * MapAttributeImpl<X, K, V> 
+     */
+    public void testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted() {
+        if(!this.isJPA10()) {
+            boolean exceptionThrown = false;
+            EntityManager em = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                
+                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer);                
+                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC8");
+                assertNotNull(hardwareDesignersMap);
+                assertTrue(hardwareDesignersMap.isCollection());
+                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
+                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC8");            
+                // Verify owning type
+                assertNotNull(manufactuerHardwareDesignersMap);
+                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
+                // Verify Map Key - should be PK of owning type
+                assertEquals(Integer.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
+                // Verify Map Value
+                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());
+                
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
+    }
+
+    public void testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                
+                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer);                
+                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC4");
+                assertNotNull(hardwareDesignersMap);
+                assertTrue(hardwareDesignersMap.isCollection());
+                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
+                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC4");            
+                // Verify owning type
+                assertNotNull(manufactuerHardwareDesignersMap);
+                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
+                // Verify Map Key - should be PK of owning type
+                assertEquals(String.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
+                // Verify Map Value
+                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());
+                
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * The following large single test case contains signatures of all the spec functions.
      * Those that have a test are implemented, the missing ones may still be in development.
      */
     public void testMetamodelFullImplementation() {
-        EntityManagerFactory emf = null;
+        if(!this.isJPA10()) {
         EntityManager em = null;
         Collection<Board> boardCollection = new HashSet<Board>();        
         Set<Computer> computersList = new HashSet<Computer>();
@@ -206,20 +345,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         EmbeddedPK embeddedPKforLocation2 = new EmbeddedPK();
         
         boolean exceptionThrown = false;
-        Metamodel metamodel = null;
-
         try {
-            emf = initialize();
-            em = emf.createEntityManager();
-
-            // Unset the metamodel - for repeated runs through this test
-            ((EntityManagerFactoryImpl)emf).setMetamodel(null);
-            // Pre-Persist: get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
             assertNotNull(metamodel);
-            // Test toString() override
-            //System.out.println("_Metamodel just after initialization - toString() testing: " + metamodel);
 
+            // SE only            
             em.getTransaction().begin();
 
             // setup entity relationships
@@ -2425,6 +2557,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     cleanup(em);
                 }
             }
+        }
         }
     }
     

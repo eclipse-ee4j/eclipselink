@@ -23,12 +23,12 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
 /**
  * <p>
@@ -67,20 +67,22 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         // 2) Get the type set on the policy        
         ClassDescriptor elementDesc = mapping.getContainerPolicy().getElementDescriptor();
 
-        // Set the element type on this attribute
-        if (elementDesc != null) {
+        // Set the element type on this attribute (the value parameter for a MapAttribute)
+        if (elementDesc != null && !(mapping.isMapKeyMapping() || mapping.isDirectMapMapping())) {
             // Mappings: OneToMany, UnidirectionalOneToMany, ManyToMany
             this.elementType = (Type<V>)getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // See CollectionContainerPolicy
             Class attributeClass = null;
             // TODO: handle AggregateCollectionMapping
-            if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
-                //CollectionContainerPolicy policy = (CollectionContainerPolicy) mapping.getContainerPolicy();
-                //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());                
-                if(mapping.isDirectCollectionMapping()) {
-                    attributeClass = ((DirectCollectionMapping)mapping).getDirectField().getType();                    
-                }
+            if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping() 
+                    || mapping.isDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
+                /**
+                 * The Map Value parameter was set during metadata processing in DirectCollectionMapping.convertClassNamesToClasses() for example.
+                 * The attributeClassification is set from the valueField.typeName String instead of the type Class because of the
+                 * way that converters shadow the type/typeName in bug# 289487
+                 */
+                attributeClass = mapping.getAttributeClassification();
                 /**
                  * TODO: REFACTOR
                  * We were unable to get the type because it is not declared as a generic parameter on the method level attribute.
@@ -98,10 +100,17 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                     //attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
                 }
-            } else if(mapping.isMapKeyMapping()) {
-                    // TODO: Handle DirectMapContainerPolicy                    
-                    MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-                    attributeClass = policy.getElementClass();
+            } else if(mapping.isMapKeyMapping()) {                   
+                ContainerPolicy policy = mapping.getContainerPolicy();
+                if(policy.isMapPolicy()) {
+                    MapContainerPolicy mapPolicy = (MapContainerPolicy) mapping.getContainerPolicy();
+                    attributeClass = mapPolicy.getElementClass();
+                } else if(policy.isDirectMapPolicy()) {
+                    attributeClass = mapping.getAttributeClassification();
+                } else {
+                    // TODO: refactor: default to the managedType
+                    attributeClass = managedType.getJavaType();
+                }
             } else if(mapping.isManyToManyMapping() || mapping.isOneToManyMapping()) {
                 // Example: Collection with an instantiated Set/List
                 attributeClass = ((CollectionMapping)mapping).getReferenceClass();

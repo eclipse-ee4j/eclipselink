@@ -218,7 +218,7 @@ public class EntityManagerSetupImpl {
                     if (state == STATE_PREDEPLOYED) {
                         try {
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
-                            // If the session was loaded from sessions.xml this will also converter the descriptor classes to the correct class loader.
+                            // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
                             session.getProject().convertClassNamesToClasses(realClassLoader);
 
                             if (!isSessionLoadedFromSessionsXML) {

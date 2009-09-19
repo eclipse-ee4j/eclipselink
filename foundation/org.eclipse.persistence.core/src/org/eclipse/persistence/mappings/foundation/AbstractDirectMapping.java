@@ -1029,7 +1029,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
-     * the base data type must be explicitly specified in the mapping to tell TopLink to force
+     * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
     public void setAttributeClassification(Class attributeClassification) {

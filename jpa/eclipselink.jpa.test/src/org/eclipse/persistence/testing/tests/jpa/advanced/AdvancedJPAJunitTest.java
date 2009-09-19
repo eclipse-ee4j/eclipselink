@@ -21,34 +21,35 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.queries.DoesExistQuery;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.Helper;
-
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -57,18 +58,18 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
-import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 
 /**
- * This test suite tests TopLink JPA annotations extensions.
+ * This test suite tests EclipseLink JPA annotations extensions.
  */
 public class AdvancedJPAJunitTest extends JUnitTestCase {
     private static int empId;
@@ -251,8 +252,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertFalse(expectedIAExceptionThrown);            
             assertTrue(hasSingleIdAttribute);
 */
-            // In mid implementation in Design Issue 83
-/*          // Verify that the BasicMap Buyer.creditCards is picked up properly
+            // Verify that the BasicMap Buyer.creditCards is picked up properly
             //* @param <X> The type the represented Map belongs to
             //* @param <K> The type of the key of the represented Map
             //* @param <V> The type of the value of the represented Map
@@ -272,7 +272,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
             // Verify Map Value
             assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
-*/        
+        
         }
     }
     

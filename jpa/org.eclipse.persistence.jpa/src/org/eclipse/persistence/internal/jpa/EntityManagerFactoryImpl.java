@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
