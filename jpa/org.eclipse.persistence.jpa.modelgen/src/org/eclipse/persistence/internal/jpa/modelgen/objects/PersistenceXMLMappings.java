@@ -43,8 +43,6 @@ public class PersistenceXMLMappings {
 
         descriptor.setJavaClass(PersistenceXML.class);
         descriptor.setDefaultRootElement("persistence");
-
-        descriptor.addDirectMapping("version", "@version");
         
         XMLCompositeCollectionMapping puMapping = new XMLCompositeCollectionMapping();
         puMapping.setAttributeName("persistenceUnitInfos");

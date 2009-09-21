@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -160,7 +161,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
                      
             // Write out the generation annotations.
-            writer.append("@Generated(\"EclipseLink JPA 2.0 Canonical Model Generation\")\n");
+            writer.append("@Generated(\"EclipseLink - " + new Date() + "\")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
                 
             int modifier = accessor.getAccessibleObject().getModifiers();

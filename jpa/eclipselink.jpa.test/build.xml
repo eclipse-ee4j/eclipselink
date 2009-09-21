@@ -274,7 +274,7 @@
             deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
-            <compilerarg value="-Aeclipselink.canonical_model.persistence_xml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
+            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
     </target>

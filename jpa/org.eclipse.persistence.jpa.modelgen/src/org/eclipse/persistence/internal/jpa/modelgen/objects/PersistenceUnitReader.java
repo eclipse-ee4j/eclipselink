@@ -16,13 +16,15 @@ package org.eclipse.persistence.internal.jpa.modelgen.objects;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-import javax.tools.Diagnostic.Kind;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
@@ -31,8 +33,8 @@ import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXMLMappings;
 import org.eclipse.persistence.oxm.XMLContext;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PERSISTENCE_XML_FILE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 
 /**
  * Used to read persistence units through the java annotation processing API. 
@@ -55,16 +57,30 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) {
-        FileObject fileObject = null;
-        try {
-            fileObject = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", filename);
-        } catch (IOException e) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename);
-            return null;
+    public FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) throws IOException {
+        return processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", filename);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will look for an process the -A eclipselink.persistenceunits
+     * option. This list is treated as an include/filter list and if it is not
+     * specified all persistence units are processed.
+     */
+    protected HashSet<String> getPersistenceUnitList(ProcessingEnvironment processingEnv ) {
+        String persistenceUnits = processingEnv.getOptions().get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_UNITS);
+        HashSet<String> persistenceUnitList = null;
+        
+        if (persistenceUnits != null) {
+            persistenceUnitList = new HashSet<String>();
+            StringTokenizer st = new StringTokenizer(persistenceUnits, ",");
+        
+            while (st.hasMoreTokens()) {
+                persistenceUnitList.add(((String) st.nextToken()).trim());
+            }
         }
         
-        return fileObject;
+        return persistenceUnitList;
     }
     
     /**
@@ -79,34 +95,34 @@ public class PersistenceUnitReader {
      */
     protected void initPersistenceUnits(MetadataMirrorFactory factory) {
         ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
-        String filename = CanonicalModelProperties.getOption(CANONICAL_MODEL_PERSISTENCE_XML_FILE, CANONICAL_MODEL_PERSISTENCE_XML_FILE_DEFAULT, processingEnv.getOptions());        
-        FileObject fileObject = getFileObject(filename, processingEnv);
+        String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());        
+        HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
         
-        if (fileObject != null) {
-            try {
-                InputStream inStream = null;
+        try {
+            FileObject fileObject = getFileObject(filename, processingEnv);        
+            InputStream inStream = null;
                 
-                try {
-                    inStream = fileObject.openInputStream();
-                    XMLContext context = PersistenceXMLMappings.createXMLContext();
-                    PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
+            try {
+                inStream = fileObject.openInputStream();
+                XMLContext context = PersistenceXMLMappings.createXMLContext();
+                PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
     
-                    if (! persistenceXML.getVersion().equals("1.0")) {
-                        for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                            persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
-                        }
-                    }
-                } finally {
-                    if (inStream != null) {
-                        inStream.close();
+                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                    // If no persistence unit list has been specified or one
+                    // has been specified and this persistence unit info's name
+                    // appears in that list then add it.
+                    if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
+                        persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
                     }
                 }
-            } catch (IOException e) {
-                processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml: " + fileObject.getName());
-            } 
-        } else {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Unable to load persistence xml.");
-        }
+            } finally {
+                if (inStream != null) {
+                    inStream.close();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load persistence.xml : " + e.getLocalizedMessage());
+        } 
     }
 }
 

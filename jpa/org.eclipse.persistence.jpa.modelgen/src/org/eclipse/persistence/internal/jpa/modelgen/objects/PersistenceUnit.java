@@ -45,9 +45,9 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.oxm.XMLContext;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
 
 /**
  * A representation of a persistence unit definition. 
@@ -205,20 +205,16 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) {
-        try {
-            InputStream in = null;
+    protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) throws IOException {
+        InputStream in = null;
             
-            try {
-                in = fileObject.openInputStream();
-                xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
+        try {
+            in = fileObject.openInputStream();
+            xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
+        } finally {
+            if (in != null) {
+                in.close();
             }
-        } catch (IOException ee) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Could not find file: " + fileObject.getName());
         }
     }
     
@@ -226,10 +222,12 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void addXMLEntityMappings(String mappingFile) {
-        FileObject fileObject = persistenceUnitReader.getFileObject(mappingFile, processingEnv);
-        
-        if (fileObject != null) {
+        try {
+            FileObject fileObject = null;
+            
             try {
+                fileObject = persistenceUnitReader.getFileObject(mappingFile, processingEnv);
+                
                 // Try eclipselink project
                 addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getEclipseLinkOrmProject());
             } catch (XMLMarshalException e) {
@@ -241,6 +239,8 @@ public class PersistenceUnit {
                     addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getOrm1Project());
                 }
             }
+        } catch (IOException exception) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + mappingFile);
         }
     }
     
@@ -323,9 +323,9 @@ public class PersistenceUnit {
         
         // Check for user specified options and add them to the properties
         // if they were not specified in the persistence.xml.
-        addPropertyFromOptions(CANONICAL_MODEL_QUALIFIER);
-        addPropertyFromOptions(CANONICAL_MODEL_QUALIFIER_POSITION);
-        addPropertyFromOptions(CANONICAL_MODEL_PACKAGE_SUFFIX);
+        addPropertyFromOptions(CANONICAL_MODEL_PREFIX);
+        addPropertyFromOptions(CANONICAL_MODEL_SUFFIX);
+        addPropertyFromOptions(CANONICAL_MODEL_SUB_PACKAGE);
     }
     
     /**

@@ -20,12 +20,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX_DEFAULT;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.QUALIFIER_POSITION;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -52,27 +51,23 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * Return the canonical name. This will apply the default qualifier given 
-     * in the default position given. If the defaults given are null, then the
-     * default qualifier "_" in the default position "POST" will be applied.
+     * Return the canonical name. This will apply the prefix and suffix 
+     * qualifiers given to the canonical name. If the given prefix is null, the
+     * the default "" is applied. If the given suffix is null, then the default 
+     * "_" will be applied.
      */
     protected static String getCanonicalName(String name, Map<String, String> properties) {
-        String qualifier = properties.get(CANONICAL_MODEL_QUALIFIER);
-        String qualifierPosition = properties.get(CANONICAL_MODEL_QUALIFIER_POSITION);
-        
-        if (qualifier == null) {
-            qualifier = CANONICAL_MODEL_QUALIFIER_DEFAULT;
+        String prefix = properties.get(CANONICAL_MODEL_PREFIX);
+        if (prefix == null) {
+            prefix = CANONICAL_MODEL_PREFIX_DEFAULT;
         }
         
-        if (qualifierPosition == null) {
-            qualifierPosition = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
+        String suffix = properties.get(CANONICAL_MODEL_SUFFIX);
+        if (suffix == null) {
+            suffix = CANONICAL_MODEL_SUFFIX_DEFAULT;
         }
         
-        if (qualifierPosition.equals(QUALIFIER_POSITION.PRE.name())) {
-            return qualifier + name;
-        } else {
-            return name + qualifier;
-        } 
+        return prefix + name + suffix;
     }
     
     /**
@@ -167,8 +162,7 @@ public class MetadataHelper {
      * Return the qualified canonical name of the given qualified class name.
      * This method will check the session for a corresponding class that was
      * processed during deploy. If one is not found, will build the canonical
-     * name applying any default package, the default qualifier "_" in the 
-     * default position "POST" on the name portion.  
+     * name applying any default package and the default suffix qualifier "_".
      */
     public static String getQualifiedCanonicalName(String qualifiedName, AbstractSession session) {
         String sessionStaticMetamodelClass = session.getStaticMetamodelClass(qualifiedName);
@@ -183,14 +177,14 @@ public class MetadataHelper {
     /**
      * INTERNAL:
      * Return the canonical name applying any default package. This will apply 
-     * the default qualifier given in the default position given. If the 
-     * defaults given are null, then the default qualifier "_" in the default 
-     * position "POST" will be applied.
+     * the prefix and suffix qualifiers given to the canonical name. If the 
+     * prefix is null, the default "" is applied. If the suffix is null, then 
+     * the default "_" will be applied.
      */
     public static String getQualifiedCanonicalName(String qualifiedName, Map<String, String> properties) {
-        String packageSuffix = properties.get(CANONICAL_MODEL_PACKAGE_SUFFIX);
+        String packageSuffix = properties.get(CANONICAL_MODEL_SUB_PACKAGE);
         if (packageSuffix == null) {
-            packageSuffix = CANONICAL_MODEL_PACKAGE_SUFFIX_DEFAULT;
+            packageSuffix = CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
         } else {
             packageSuffix = packageSuffix + ".";
         }

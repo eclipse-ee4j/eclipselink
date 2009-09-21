@@ -437,6 +437,31 @@ public class PersistenceUnitProperties {
      */
     public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
     
+    /**
+     * This optional property specifies the full resource name to look for the 
+     * persistence XML files in. If not specified the default 
+     * META-INF/persistence.xml will be used. 
+     * 
+     * Note: For now this property is used for the canonical model generator but 
+     * it can later be used as a system property for customizing weaving and 
+     * application bootstrap usage.
+     */
+    public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
+    public static final String ECLIPSELINK_PERSISTENCE_XML_DEFAULT = "META-INF/persistence.xml";
+    
+    /**
+     * This optional property specifies the set of persistence unit names that 
+     * will be used when generating the canonical model. By default all 
+     * persistence units available in all persistence XML files will be used. 
+     * The value of this property is a comma separated list. When specifying 
+     * multiple persistence units it is not possible to have persistence units 
+     * with a comma in their name.
+     * 
+     * Note: In the future this property can also be used to limit the 
+     * persistence units that will be processed by the static or dynamic weaving.
+     */
+    public static final String ECLIPSELINK_PERSISTENCE_UNITS = "eclipselink.persistenceunits";
+    
     /** Specify ExceptionHandler implementing class. */
     public static final String EXCEPTION_HANDLER_CLASS = "eclipselink.exception-handler";
     

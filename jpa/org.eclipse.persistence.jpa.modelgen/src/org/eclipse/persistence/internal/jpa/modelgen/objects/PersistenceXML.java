@@ -24,8 +24,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
  * @author Guy Pelletier, Doug Clarke
  * @since EclipseLink 1.2
  */
-public class PersistenceXML {
-    private String version; 
+public class PersistenceXML { 
     private List<SEPersistenceUnitInfo> persistenceUnitInfos = new ArrayList<SEPersistenceUnitInfo>();
     
     /**
@@ -33,12 +32,5 @@ public class PersistenceXML {
      */
     public List<SEPersistenceUnitInfo> getPersistenceUnitInfos() {
         return persistenceUnitInfos;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getVersion() {
-        return version;
     }
 }
