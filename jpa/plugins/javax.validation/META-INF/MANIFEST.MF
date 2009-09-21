@@ -9,5 +9,5 @@ Export-Package: javax.validation,
  javax.validation.constraints,
  javax.validation.groups,
  javax.validation.metadata,
- javax.validation.spi"
+ javax.validation.spi
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
