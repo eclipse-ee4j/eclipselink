@@ -46,6 +46,7 @@ public class XMLProcessor {
     private Map<String, XmlBindings> xmlBindingMap;
     private JavaModelInput jModelInput;
     private AnnotationsProcessor aProcessor;
+    private JAXBMetadataLogger logger;
 
     /**
      * This is the preferred constructor.
@@ -75,6 +76,7 @@ public class XMLProcessor {
         for (String packageName : xmlBindingMap.keySet()) {
             ArrayList classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
+                getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
             }
 
@@ -234,8 +236,8 @@ public class XMLProcessor {
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
                 Property oldProperty = typeInfo.getProperties().get(javaAttribute.getJavaAttribute());
-                // TODO: we should log a warning here
                 if (oldProperty == null) {
+                    getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
                     continue;
                 }
                 Property newProperty = processJavaAttribute(javaAttribute, oldProperty, nsInfo);
@@ -274,6 +276,7 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlJavaTypeAdapter) {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
         }
+        getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
     }
 
@@ -440,7 +443,7 @@ public class XMLProcessor {
         nsInfo.setNamespaceResolver(nsr);
         return nsInfo;
     }
-
+    
     /**
      * Convenience method for building a Map of package to classes.
      * 
@@ -478,7 +481,18 @@ public class XMLProcessor {
                 theMap.put(pkg, classes);
             }
         }
-        
         return theMap;
+    }
+    
+    /**
+     * Lazy load the metadata logger.
+     * 
+     * @return
+     */
+    private JAXBMetadataLogger getLogger() {
+        if (logger == null) {
+            logger = new JAXBMetadataLogger();
+        }
+        return logger;
     }
 }

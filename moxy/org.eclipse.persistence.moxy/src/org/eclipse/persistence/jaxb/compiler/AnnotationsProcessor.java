@@ -133,6 +133,8 @@ public class AnnotationsProcessor {
     private Helper helper;
     private ArrayList<Property> xmlIdRefProps;
 
+    private JAXBMetadataLogger logger;
+    
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
     }
@@ -581,7 +583,7 @@ public class AnnotationsProcessor {
         if (boundType != null) {
             info.addPackageLevelAdapterClass(adapterClass, boundType);
         } else {
-            // TODO: should log a warning here
+            getLogger().logWarning(JAXBMetadataLogger.INVALID_BOUND_TYPE, new Object[] { boundType, adapterClass });
         }
     }
 
@@ -842,7 +844,7 @@ public class AnnotationsProcessor {
                 throw JAXBException.invalidId(property.getPropertyName());
             }
             if (info.isIDSet()) {
-                // TODO: throw an exception here
+                throw JAXBException.idAlreadySet(property.getPropertyName(), info.getIDProperty().getPropertyName(), info.getDescriptor().getAlias());
             }
             info.setIDProperty(property);
         }
@@ -1955,7 +1957,7 @@ public class AnnotationsProcessor {
                     } else {
                         elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
                     }
-                    // TODO - remove this TCK hack...
+                    // TCK Compliancy
                     if (elementName.length() >= 3) {
                         int idx = elementName.length() - 1;
                         char ch = elementName.charAt(idx - 1);
@@ -1998,9 +2000,6 @@ public class AnnotationsProcessor {
             while(substitutionHead != null) {
                 ElementDeclaration rootDeclaration = this.globalElements.get(substitutionHead);
                 rootDeclaration.addSubstitutableElement(nextDeclaration);
-                /*if(rootDeclaration == nextDeclaration) {
-                    break;
-                }*/
                 substitutionHead = rootDeclaration.getSubstitutionHead();
             }
         }
@@ -2794,7 +2793,7 @@ public class AnnotationsProcessor {
                     elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
                 }
 
-                // TODO - remove this TCK hack...
+                // TCK Compliancy
                 if (elementName.length() >= 3) {
                     int idx = elementName.length() - 1;
                     char ch = elementName.charAt(idx - 1);
@@ -2866,5 +2865,17 @@ public class AnnotationsProcessor {
         if (xmlCustomizer != null) {
             tInfo.setXmlCustomizer(xmlCustomizer.value().getName());
         }            
+    }
+
+    /**
+     * Lazy load the metadata logger.
+     * 
+     * @return
+     */
+    private JAXBMetadataLogger getLogger() {
+        if (logger == null) {
+            logger = new JAXBMetadataLogger();
+        }
+        return logger;
     }
 }

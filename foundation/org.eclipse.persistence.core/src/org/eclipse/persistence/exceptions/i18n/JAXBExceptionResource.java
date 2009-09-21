@@ -48,7 +48,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50026", "An exception occurred while attempting to create a JAXBContext for the XmlModel."},
         {"50027", "An exception occurred while attempting to unmarshal externalized metadata file."},
         {"50028", "A new instance of [{0}] could not be created."},
-        {"50029", "The class [{0}] provided on the XmlCustomizer does not implement the org.eclipse.persistence.config.DescriptorCustomizer interface."}
+        {"50029", "The class [{0}] provided on the XmlCustomizer does not implement the org.eclipse.persistence.config.DescriptorCustomizer interface."},
+        {"50030", "An attempt was made to set more than one ID property on descriptor [{1}].  Property [{0}] cannot be set as ID, because property [{2}] is already set as ID."}
     };
     
     /**

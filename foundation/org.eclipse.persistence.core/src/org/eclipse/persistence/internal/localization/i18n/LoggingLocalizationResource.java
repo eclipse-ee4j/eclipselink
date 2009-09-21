@@ -636,8 +636,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
         { "metamodel_canonical_model_class_found.MSGID", "TOP-50234"},
-        { "metamodel_canonical_model_classes_not_found.MSGID", "TOP-50235"}
-
+        { "metamodel_canonical_model_classes_not_found.MSGID", "TOP-50235"},
+        // JAXB Metadata Logging Messages
+        { "jaxb_metadata_warning_ignoring_java_attribute", "Ignoring attribute [{0}] on class [{1}] as no Property was generated for it."},
+        { "jaxb_metadata_warning_invalid_bound_type", "The bound type [{0}] for adapter class [{1}] is invalid, and will be ignored."},
+        { "jaxb_metadata_warning_no_classes_to_process", "There are no classes to process for package [{0}]."},
+        { "jaxb_metadata_warning_invalid_java_attribute", "An unsupported JavaAttribute [{0}] was encountered an will be ignored."}
     }; 
      
     /**
