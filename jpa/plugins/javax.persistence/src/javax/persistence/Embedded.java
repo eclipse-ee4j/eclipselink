@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -35,17 +35,27 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * value is an instance of an embeddable class. The embeddable 
  * class must be annotated as {@link Embeddable}.
  *
+ * <p> The <code>AttributeOverride</code>, <code>AttributeOverrides</code>,
+ * <code>AssociationOverride</code>, and <code>AssociationOverrides</code>
+ * annotations may be used to override mappings declared or defaulted
+ * by the embeddable class.
+ *
  * <pre>
  *   Example:
  *
  *   &#064;Embedded
  *   &#064;AttributeOverrides({
- *       &#064;AttributeOverride(name="startDate",
- *           column=&#064;Column("EMP_START")),
+ *       &#064;AttributeOverride(name="startDate", column=&#064;Column("EMP_START")),
  *       &#064;AttributeOverride(name="endDate", column=&#064;Column("EMP_END"))
  *   })
  *   public EmploymentPeriod getEmploymentPeriod() { ... }
  * </pre>
+ *
+ * @see Embeddable
+ * @see AttributeOverride
+ * @see AttributeOverrides
+ * @see AssociationOverride
+ * @see AssociationOverrides
  *
  * @since Java Persistence 1.0
  */

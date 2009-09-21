@@ -58,6 +58,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
@@ -375,13 +376,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
            
-        field.setName(getName(field.getName(), defaultName, loggingCtx));
+        field.setName(getName(field.getName(), defaultName, loggingCtx), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
         
         if(field.getTable() != null){
-            field.getTable().setUseDelimiters(useDelimitedIdentifier());
+            if (useDelimitedIdentifier()){
+                field.getTable().setUseDelimiters(useDelimitedIdentifier());
+            }
         }
-        field.setUseDelimiters(useDelimitedIdentifier());
-                       
+        if (useDelimitedIdentifier()){
+            field.setUseDelimiters(useDelimitedIdentifier());
+        }
+
         return field;
     }
     
@@ -1428,13 +1433,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(defaultPKTable);
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
-            fkField.setUseDelimiters(useDelimitedIdentifier());
+            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                fkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(defaultFKTable);

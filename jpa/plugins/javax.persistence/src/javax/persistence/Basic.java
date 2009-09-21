@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,22 +32,38 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static javax.persistence.FetchType.EAGER;
 
 /**
- * The <code>Basic</code> annotation is the simplest type of mapping 
- * to a database column. The <code>Basic</code> annotation can be 
- * applied to a persistent property or instance variable of any of the 
- * following types: Java primitive types, wrappers of the primitive types, 
- * {@link String}, {@link java.math.BigInteger java.math.BigInteger}, 
- * {@link java.math.BigDecimal java.math.BigDecimal}, 
- * {@link java.util.Date java.util.Date}, 
- * {@link java.util.Calendar java.util.Calendar}, 
- * {@link java.sql.Date java.sql.Date}, {@link java.sql.Time java.sql.Time}, 
- * {@link java.sql.Timestamp java.sql.Timestamp}, <code>byte[], Byte[], 
- * char[], Character[]</code>, enums, and any other type that implements 
- * {@link java.io.Serializable Serializable}. 
+ * The simplest type of mapping to a database column. The
+ * <code>Basic</code> annotation can be applied to a persistent
+ * property or instance variable of any of the following types: Java
+ * primitive types, wrappers of the primitive types, <code>String</code>, 
+ * <code>java.math.BigInteger</code>,
+ * <code>java.math.BigDecimal</code>,
+ * <code>java.util.Date</code>,
+ * <code>java.util.Calendar</code>, 
+ * <code>java.sql.Date</code>, 
+ * <code>java.sql.Time</code>,
+ * <code>java.sql.Timestamp</code>, <code>byte[]</code>, <code>Byte[]</code>,
+ * <code>char[]</code>, <code>Character[]</code>, enums, and any other type that
+ * implements <code>java.io.Serializable</code>.
  * 
- * <p> The use of the <code>Basic</code> annotation is optional for 
- * persistent fields and properties of these types.
+ * <p> The use of the <code>Basic</code> annotation is optional for
+ * persistent fields and properties of these types.  If the
+ * <code>Basic</code> annotation is not specified for such a field or
+ * property, the default values of the <code>Basic</code> annotation
+ * will apply.
  *
+ * <pre>
+ *    Example 1:
+ *
+ *    &#064;Basic
+ *    protected String name;
+ *
+ *    Example 2:
+ *
+ *    &#064;Basic(fetch=LAZY)
+ *    protected String getName() { return name; }
+ *
+ * </pre>
  * @since Java Persistence 1.0
  */
 @Target({METHOD, FIELD}) 

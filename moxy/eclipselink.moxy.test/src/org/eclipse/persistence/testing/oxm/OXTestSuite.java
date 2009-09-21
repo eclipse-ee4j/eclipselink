@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.oxm.readonly.ReadOnlyTestSuite;
 import org.eclipse.persistence.testing.oxm.platform.PlatformTestSuite;
 import org.eclipse.persistence.testing.oxm.xmlbinder.XMLBinderTestSuite;
 import org.eclipse.persistence.testing.oxm.xmlbinder.basictests.XMLBinderBasicTestCases;
+import org.eclipse.persistence.testing.oxm.xmlcontext.byxpath.XMLContextByXPathTestSuite;
 import org.eclipse.persistence.testing.oxm.xmlconversionmanager.XMLConversionManagerTestSuite;
 import org.eclipse.persistence.testing.oxm.xmlroot.XMLRootTestSuite;
 
@@ -66,6 +67,8 @@ public class OXTestSuite extends TestCase {
         
         suite.addTest(XMLLoginTestSuite.suite());
         suite.addTest(GenerateSchemaTestSuite.suite());
+        
+        suite.addTest(XMLContextByXPathTestSuite.suite());
 
         //this suite does not include the JAXBDOM and JAXBSAX test suites as they need system properties set to run.     
         return suite;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -7,10 +7,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,20 +25,24 @@
 package javax.persistence;
 
 /**
- * The <code>javax.persistence.CacheRetrieveMode</code> property specifies the
- * behavior when data is retrieved by the find methods and by the execution of
- * queries. The cacheRetrieveMode property is ignored for the refresh method, 
- * which always causes data to be retrieved from the database, not the cache.
- * 
+ * Used as the value of the
+ * <code>javax.persistence.cache.retrieveMode</code> property to
+ * specify the behavior when data is retrieved by the
+ * <code>find</code> methods and by queries.
+ *
  * @since Java Persistence 2.0
  */
 public enum CacheRetrieveMode {
+
     /**
-     * Read entity data from the cache: this is the default behavior.
+     * Read entity data from the cache: this is 
+     * the default behavior.
      */
     USE,
+
     /**
-     * Bypass the cache: get data directly from the database.
+     * Bypass the cache: get data directly from
+     * the database.
      */
-    BYPASS
+    BYPASS  
 }

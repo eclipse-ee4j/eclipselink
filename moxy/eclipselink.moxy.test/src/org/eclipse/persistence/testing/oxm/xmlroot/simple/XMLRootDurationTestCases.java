@@ -17,10 +17,13 @@ import java.io.InputStream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 
 import junit.textui.TestRunner;
 
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -94,6 +97,21 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
                 xmlToObjectTest(testObject);
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+                InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+                XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+
+                XMLEventReaderReader staxReader = new XMLEventReaderReader();
+                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+                XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(xmlEventReader);
+                Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource, Duration.class);
+
+                instream.close();
+                xmlToObjectTest(testObject);
+        }
+    }    
 
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");

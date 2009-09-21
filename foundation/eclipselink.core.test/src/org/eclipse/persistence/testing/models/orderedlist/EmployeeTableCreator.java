@@ -299,7 +299,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
-        field1.setSize(32);
+        field1.setSize(18);
         field1.setShouldAllowNull(true);
         field1.setIsPrimaryKey(false);
         field1.setUnique(false);

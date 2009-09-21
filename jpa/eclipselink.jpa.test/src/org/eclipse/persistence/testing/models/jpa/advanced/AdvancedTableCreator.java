@@ -980,7 +980,7 @@ public class AdvancedTableCreator extends TableCreator {
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
-        field1.setSize(32);
+        field1.setSize(18);
         field1.setShouldAllowNull(true );
         field1.setIsPrimaryKey(false );
         field1.setUnique(false );
@@ -1168,7 +1168,7 @@ public class AdvancedTableCreator extends TableCreator {
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PURCHASES");
         field1.setTypeName("DOUBLE PRECIS");
-        field1.setSize(32);
+        field1.setSize(18);
         field1.setShouldAllowNull(true );
         field1.setIsPrimaryKey(false );
         field1.setUnique(false );
@@ -1395,7 +1395,7 @@ public class AdvancedTableCreator extends TableCreator {
         FieldDefinition fieldCOST = new FieldDefinition();
         fieldCOST.setName("COST");
         fieldCOST.setTypeName("DOUBLE PRECIS");
-        fieldCOST.setSize(32);
+        fieldCOST.setSize(18);
         table.addField(fieldCOST);
 
         FieldDefinition fieldTAGS = new FieldDefinition();

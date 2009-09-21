@@ -21,7 +21,7 @@ import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -67,57 +67,72 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
      * @param validationEnabled
      */
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        // Set the managedType (X or owning Type)
         super(managedType, mapping, validationEnabled);
-
-        MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
+        // Override the elementType (V or Map value)
+        // We need to set the keyType Type that represents the type of the Map key for this mapping
+        ContainerPolicy policy = mapping.getContainerPolicy();
         Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
         Type<?> aKeyType = null;
         // Default to Object class for any variant cases that are not handled
-        Class<?> javaClass = Object.class;
+        Class<?> javaClass = null;
         if(null == policyKeyType) {
             // No policy key type = IdClass (use CMP3Policy.pkClass)
             if(managedType.isIdentifiableType()) {
                 // Use the CMPPolicy on the element not the one on the managedType
                 if(policy.getElementDescriptor() != null && policy.getElementDescriptor().getCMPPolicy() != null) {
                     javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
-                } else {
-                    if(null == policy.getElementDescriptor()) {
-                        // check for a keyMapping on the mapping
-                        if(policy.isMappedKeyMapPolicy()) {                            
-                            MapKeyMapping mapKeyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
-                            RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
-                            // If the reference descriptor is null then we are on a direct mapping
-                            if(null == descriptor) {
-                                throw new IllegalArgumentException("Unsupported operation on " + managedType);
-                            } else {
-                                if(null == descriptor.getCMPPolicy()) { // for __PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME
-                                    javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
-                                    if(null == javaClass) {
-                                        javaClass = Object.class;
-                                    }
-                                } else {
-                                    javaClass = descriptor.getCMPPolicy().getPKClass();        
-                                }
-                            }
-                        }
-                    } else {                        
+                }
+                if(null == javaClass) {
+                    // check for a @MapKeyClass annotation
+                    if(policy.isMappedKeyMapPolicy()) {                            
+                        javaClass = getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted((MappedKeyMapContainerPolicy)policy);
                     }
                 }
             } else {
-                // Handle EmbeddableType
-                System.out.println("_embeddableType: " + this + " mapping: " + mapping);
+                // TODO: Handle EmbeddableType
+                javaClass = Object.class;
             }
         } else {            
             if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping
                 javaClass = (Class<?>)((ClassDescriptor)policyKeyType).getJavaClass();
             } else {
-                javaClass = (Class<?>)policyKeyType;
+                if(policy.isMappedKeyMapPolicy()) {                            
+                    javaClass = getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted((MappedKeyMapContainerPolicy)policy);
+                } else {                                        
+                    javaClass = (Class<?>)policyKeyType;
+                }
             }            
         }
+        if(null == javaClass) {
+            javaClass = Object.class;
+        }                                
+        
         aKeyType = getMetamodel().getType(javaClass);
         this.keyType = (Type<K>) aKeyType;
     }
 
+    /**
+     * INTERNAL:
+     * Default to the PK of the owning descriptor when no MapKey or MapKey:name attribute is specified.
+     * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
+     * @return
+     */
+    private Class getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
+        Class<?> javaClass = null;;
+        MapKeyMapping mapKeyMapping = policy.getKeyMapping();
+        RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
+        // If the reference descriptor is null then we are on a direct mapping
+        if(null != descriptor) {
+            javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
+            if(null == javaClass) {
+                // Default to the PK of the owning descriptor when no MapKey or MapKey:name attribute is specified
+                javaClass = descriptor.getCMPPolicy().getPKClass();        
+            }
+        }
+        return javaClass;
+    }
+    
     /**
      * Return the collection type.
      * @return collection type

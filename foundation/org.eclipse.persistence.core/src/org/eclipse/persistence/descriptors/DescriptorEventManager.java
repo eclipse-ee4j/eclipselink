@@ -56,6 +56,10 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     protected transient Vector defaultEventListeners;
     protected transient Vector entityListenerEventListeners;
     protected transient DescriptorEventListener entityEventListener;
+    /**
+     * Listeners that are fired after all other listeners are fired
+     */
+    protected transient List<DescriptorEventListener>  internalListeners = new ArrayList<DescriptorEventListener>();
     
     // EJB 3.0 support - cache our parent event managers.
     protected transient Vector entityEventManagers;
@@ -133,8 +137,17 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     public void addListener(DescriptorEventListener listener) {
         getEventListeners().addElement(listener);
         setHasAnyEventListeners(true);
-    } 
-    
+    }
+
+    /**
+     * INTERNAL:
+     *
+     */
+    public void addinternalListener(DescriptorEventListener listener) {
+        internalListeners.add(listener);
+        setHasAnyEventListeners(true); // ensure that events are generated
+    }
+
     /**
      * INTERNAL:
      * Clone the manager and its private parts.
@@ -592,6 +605,11 @@ public class DescriptorEventManager implements Cloneable, Serializable {
             if (! entityEventListener.isOverriddenEvent(event, entityEventManagers)) {
                 notifyListener(entityEventListener, event);
             }
+        }
+
+        // Step 4 - Notify internal listeners.
+        for(DescriptorEventListener listener : internalListeners) {
+            notifyListener(listener, event);
         }
     }
     

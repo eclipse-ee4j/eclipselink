@@ -15,14 +15,10 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
 
 /**
  * <p>
@@ -41,12 +37,14 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     
     protected BooleanOperator booloperator;
+    protected boolean isNegated = false;
     
     public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
         this.booloperator = operator;
     }
 
+    @Override
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
@@ -58,14 +56,38 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     }
 
     /**
+     * Return the top-level conjuncts or disjuncts of the predicate.
+     * 
+     * @return list boolean expressions forming the predicate
+     */
+    public List<Expression<Boolean>> getExpressions(){
+        return (List<Expression<Boolean>>) this.expressions;
+    }
+
+    
+    /**
      * Has negation been applied to the predicate.
      * 
      * @return boolean indicating if the predicate has been negated
      */
     public boolean isNegated(){
-        return this.booloperator == BooleanOperator.NOT;
+        return isNegated;
     }
-
+    /**
+     * Apply negation to the predicate.
+     * 
+     * @return the negated predicate
+     */
+    public Predicate negate(){
+        if (this.currentNode == null){
+            return new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+        }
+        List<Expression<?>> list = new ArrayList();
+        list.add(this);
+        return new PredicateImpl(this.metamodel, this.currentNode.not(), list, this.booloperator);
+    }
+    
+    
     /**
      * @param operator the operator to set
      */
@@ -81,12 +103,4 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     public boolean isCompoundExpression(){
         return false;
     }
-
-    @Override
-    public boolean isExpression(){
-        return false;
-    }
-
-
-
 }

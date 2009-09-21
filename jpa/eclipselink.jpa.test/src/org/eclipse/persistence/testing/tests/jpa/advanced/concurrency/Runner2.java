@@ -29,7 +29,7 @@ public class Runner2 implements Runnable {
             equip.setDescription("To changed");
             Department dept = em.find(Department.class, deptPK);
             dept.setName("Name Change As Well");
-            UnitOfWorkImpl uow = (UnitOfWorkImpl) ((EntityManagerImpl) em).getActivePersistenceContext(null);
+            UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
             synchronized (this.waitOn) {
                 try {
                     this.waitOn.wait();

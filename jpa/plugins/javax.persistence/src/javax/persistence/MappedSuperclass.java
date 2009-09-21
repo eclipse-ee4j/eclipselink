@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -40,8 +40,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * exists for the mapped superclass itself. When applied to the 
  * subclasses the inherited mappings will apply in the context 
  * of the subclass tables. Mapping information may be overridden 
- * in such subclasses by using the {@link AttributeOverride} and 
- * {@link AssociationOverride} annotations or corresponding XML elements.
+ * in such subclasses by using the <code>AttributeOverride</code> and 
+ * <code>AssociationOverride</code> annotations or corresponding XML elements.
  *
  * <pre>
  *    Example: Concrete class as a mapped superclass
@@ -69,24 +69,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        // Inherited address field mapped to FTEMPLOYEE.ADDR fk
  *        
  *    
- *    // Defaults to FTEMPLOYEE.SALARY
+ *        // Defaults to FTEMPLOYEE.SALARY
+ *        protected Integer salary;
  *    
- *    protected Integer salary;
+ *        public FTEmployee() {}
  *    
+ *        public Integer getSalary() { ... }
  *    
- *    public FTEmployee() {}
- *    
- *    
- *    public Integer getSalary() { ... }
- *    
- *    public void setSalary(Integer salary) { ... }
+ *        public void setSalary(Integer salary) { ... }
  *    }
  *    
  *    &#064;Entity &#064;Table(name="PT_EMP")
- *    &#064;AssociationOverride(name="address", 
- *    
- *    
- *    joincolumns=&#064;JoinColumn(name="ADDR_ID"))
+ *    &#064;AssociationOverride(
+ *        name="address", 
+ *        joincolumns=&#064;JoinColumn(name="ADDR_ID"))
  *    public class PartTimeEmployee extends Employee {
  *    
  *        // Inherited empId field mapped to PT_EMP.EMPID
@@ -101,37 +97,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        public void setHourlyWage(Float wage) { ... }
  *    }
  *
- *    Example: Non-entity superclass
- *
- *    public class Cart {
- *    
- *        // This state is transient
- *        Integer operationCount;
- *    
- *        public Cart() { operationCount = 0; }
- *        public Integer getOperationCount() { return operationCount; }
- *        public void incrementOperationCount() { operationCount++; }
- *    }
- *    
- *    &#064Entity
- *    public class ShoppingCart extends Cart {
- *    
- *        Collection<Item> items = new Vector<Item>();
- *    
- *        public ShoppingCart() { super(); }
- *    
- *    
- *    ...
- *    
- *        &#064OneToMany
- *        public Collection<Item> getItems() { return items; }
- *        public void addItem(Item item) {
- *            items.add(item);
- *            incrementOperationCount();
- *        }
- *    }
  * </pre>
  *
+ * @see AttributeOverride 
+ * @see AssociationOverride
  * @since Java Persistence 1.0
  */
 @Target({TYPE})

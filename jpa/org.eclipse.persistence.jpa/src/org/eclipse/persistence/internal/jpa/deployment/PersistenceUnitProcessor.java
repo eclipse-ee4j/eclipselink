@@ -62,7 +62,7 @@ public class PersistenceUnitProcessor {
     public static String buildClassNameFromEntryString(String classEntryString){
         String classNameForLoader = classEntryString;
         if (classEntryString.endsWith(".class")){
-            classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);;
+            classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);
             classNameForLoader = classNameForLoader.replace("/", ".");              
         }
         return classNameForLoader;
@@ -132,7 +132,7 @@ public class PersistenceUnitProcessor {
      */
     public static URL computePURootURL(URL pxmlURL) throws IOException, URISyntaxException {
         URL result;
-		String protocol = pxmlURL.getProtocol();
+        String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
             // e.g. file:/tmp/META-INF/persistence.xml
             // 210280: any file url will be assumed to always reference a file (not a directory)
@@ -152,7 +152,8 @@ public class PersistenceUnitProcessor {
         result = fixUNC(result);
         return result;
     }
-	
+
+
     /**
      * This method fixes incorret authority attribute
      * that is set by JDK when UNC is used in classpath.
@@ -279,6 +280,13 @@ public class PersistenceUnitProcessor {
     }
     
     /**
+     * Return the @StaticMetamodel annotation on the given class.
+     */
+    public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(javax.persistence.metamodel.StaticMetamodel.class);
+    }
+    
+    /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static boolean isEmbeddable(MetadataClass candidateClass) {
@@ -290,6 +298,13 @@ public class PersistenceUnitProcessor {
      */
     public static boolean isEntity(MetadataClass candidateClass){
         return candidateClass.isAnnotationPresent(javax.persistence.Entity.class);
+    }
+    
+    /**
+     * Return if a given class is annotated with @StaticMetamodel.
+     */
+    public static boolean isStaticMetamodelClass(MetadataClass candidateClass) {
+        return candidateClass.isAnnotationPresent(javax.persistence.metamodel.StaticMetamodel.class);
     }
     
     /**

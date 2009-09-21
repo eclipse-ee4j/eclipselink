@@ -40,7 +40,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldHOLDER_ID = new FieldDefinition();
         fieldHOLDER_ID.setName("HOLDER_ID");
         fieldHOLDER_ID.setTypeName("NUMBER");
-        fieldHOLDER_ID.setSize(19);
+        fieldHOLDER_ID.setSize(18);
         fieldHOLDER_ID.setSubSize(0);
         fieldHOLDER_ID.setIsPrimaryKey(true);
         fieldHOLDER_ID.setIsIdentity(false);
@@ -76,7 +76,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldCLM_ID = new FieldDefinition();
         fieldCLM_ID.setName("CLM_ID");
         fieldCLM_ID.setTypeName("NUMBER");
-        fieldCLM_ID.setSize(19);
+        fieldCLM_ID.setSize(18);
         fieldCLM_ID.setSubSize(0);
         fieldCLM_ID.setIsPrimaryKey(true);
         fieldCLM_ID.setIsIdentity(false);
@@ -87,7 +87,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldPOL_ID = new FieldDefinition();
         fieldPOL_ID.setName("POL_ID");
         fieldPOL_ID.setTypeName("NUMBER");
-        fieldPOL_ID.setSize(19);
+        fieldPOL_ID.setSize(18);
         fieldPOL_ID.setSubSize(0);
         fieldPOL_ID.setIsPrimaryKey(false);
         fieldPOL_ID.setIsIdentity(false);
@@ -109,7 +109,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldAMOUNT = new FieldDefinition();
         fieldAMOUNT.setName("AMOUNT");
         fieldAMOUNT.setTypeName("FLOAT");
-        fieldAMOUNT.setSize(19);
+        fieldAMOUNT.setSize(18);
         fieldAMOUNT.setSubSize(4);
         fieldAMOUNT.setIsPrimaryKey(false);
         fieldAMOUNT.setIsIdentity(false);
@@ -131,7 +131,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldAREA = new FieldDefinition();
         fieldAREA.setName("AREA");
         fieldAREA.setTypeName("NUMBER");
-        fieldAREA.setSize(19);
+        fieldAREA.setSize(18);
         fieldAREA.setSubSize(4);
         fieldAREA.setIsPrimaryKey(false);
         fieldAREA.setIsIdentity(false);
@@ -156,7 +156,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldSSN = new FieldDefinition();
         fieldSSN.setName("SSN");
         fieldSSN.setTypeName("NUMBER");
-        fieldSSN.setSize(19);
+        fieldSSN.setSize(18);
         fieldSSN.setSubSize(0);
         fieldSSN.setIsPrimaryKey(true);
         fieldSSN.setIsIdentity(false);
@@ -229,7 +229,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldSSN = new FieldDefinition();
         fieldSSN.setName("SSN");
         fieldSSN.setTypeName("NUMBER");
-        fieldSSN.setSize(19);
+        fieldSSN.setSize(18);
         fieldSSN.setSubSize(0);
         fieldSSN.setIsPrimaryKey(true);
         fieldSSN.setIsIdentity(false);
@@ -309,7 +309,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldHOLDER_SSN = new FieldDefinition();
         fieldHOLDER_SSN.setName("HOLDER_SSN");
         fieldHOLDER_SSN.setTypeName("NUMBER");
-        fieldHOLDER_SSN.setSize(19);
+        fieldHOLDER_SSN.setSize(18);
         fieldHOLDER_SSN.setSubSize(0);
         fieldHOLDER_SSN.setIsPrimaryKey(true);
         fieldHOLDER_SSN.setIsIdentity(false);
@@ -367,7 +367,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldPOL_ID = new FieldDefinition();
         fieldPOL_ID.setName("POL_ID");
         fieldPOL_ID.setTypeName("NUMBER");
-        fieldPOL_ID.setSize(19);
+        fieldPOL_ID.setSize(18);
         fieldPOL_ID.setSubSize(0);
         fieldPOL_ID.setIsPrimaryKey(true);
         fieldPOL_ID.setIsIdentity(false);
@@ -378,7 +378,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldSSN = new FieldDefinition();
         fieldSSN.setName("SSN");
         fieldSSN.setTypeName("NUMBER");
-        fieldSSN.setSize(19);
+        fieldSSN.setSize(18);
         fieldSSN.setSubSize(0);
         fieldSSN.setIsPrimaryKey(false);
         fieldSSN.setIsIdentity(false);
@@ -411,7 +411,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldMAX_COV = new FieldDefinition();
         fieldMAX_COV.setName("MAX_COV");
         fieldMAX_COV.setTypeName("NUMBER");
-        fieldMAX_COV.setSize(19);
+        fieldMAX_COV.setSize(18);
         fieldMAX_COV.setSubSize(4);
         fieldMAX_COV.setIsPrimaryKey(false);
         fieldMAX_COV.setIsIdentity(false);
@@ -424,7 +424,7 @@ public class InsuranceTableCreator extends TableCreator {
         //NUMBER corresponds to long which is mapped to INTEGER data type in some database such as DB2 and MySQL.  
         //FLOAT should be used which reflect float java type.
         fieldCOV_RATE.setTypeName("FLOAT(16)");
-        fieldCOV_RATE.setSize(19);
+        fieldCOV_RATE.setSize(18);
         fieldCOV_RATE.setSubSize(4);
         fieldCOV_RATE.setIsPrimaryKey(false);
         fieldCOV_RATE.setIsIdentity(false);
@@ -460,7 +460,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldCLM_ID = new FieldDefinition();
         fieldCLM_ID.setName("CLM_ID");
         fieldCLM_ID.setTypeName("NUMBER");
-        fieldCLM_ID.setSize(19);
+        fieldCLM_ID.setSize(18);
         fieldCLM_ID.setSubSize(0);
         fieldCLM_ID.setIsPrimaryKey(true);
         fieldCLM_ID.setIsIdentity(false);
@@ -507,7 +507,7 @@ public class InsuranceTableCreator extends TableCreator {
         FieldDefinition fieldPOL_ID = new FieldDefinition();
         fieldPOL_ID.setName("POL_ID");
         fieldPOL_ID.setTypeName("NUMBER");
-        fieldPOL_ID.setSize(19);
+        fieldPOL_ID.setSize(18);
         fieldPOL_ID.setSubSize(0);
         fieldPOL_ID.setIsPrimaryKey(true);
         fieldPOL_ID.setIsIdentity(false);

@@ -30,7 +30,7 @@ public class Runner1 implements Runnable {
             Department dept = em.find(Department.class, deptPK);
             Equipment equip = em.find(Equipment.class, equipPK);
             dept.getEquipment().put(equip.getId(), equip);
-            UnitOfWorkImpl uow = (UnitOfWorkImpl) ((EntityManagerImpl) em).getActivePersistenceContext(null);
+            UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
             try {
                 Thread.currentThread().sleep(4000);
             } catch (InterruptedException e) {

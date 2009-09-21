@@ -235,6 +235,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         return factory;
     }
 
+    
     public LoadState isLoaded(Object entity) {
         // TODO. Need to correctly implement this
        return LoadState.UNKNOWN;
@@ -249,5 +250,14 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         // TODO. Need to correctly implement this 
         return LoadState.UNKNOWN;
     }
-
+    /**
+     * Return the utility interface implemented by the persistence
+     * provider.
+     * @return ProviderUtil interface
+     *
+     * @since Java Persistence 2.0
+     */
+    public ProviderUtil getProviderUtil() {
+        return null;
+    }
 }

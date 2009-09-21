@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -289,6 +291,7 @@ public class XMLField extends DatabaseField {
     private XPathFragment lastXPathFragment;
     private boolean isCDATA = false;
     private boolean isRequired = false;
+    private boolean isInitialized = false;
 
     /** Makes this maintain the collection of items in a single attribute or element instead of having one element per item in the collection.
     * Default is false */
@@ -316,6 +319,37 @@ public class XMLField extends DatabaseField {
     public XMLField(String xPath) {
         super(xPath, new DatabaseTable());
         isTypedTextField = false;
+    }
+
+    public void initialize() {
+        if(null != xPathFragment) {
+           initializeXPathFragment(xPathFragment);
+        }
+        isInitialized = true;
+    }
+
+    private void initializeXPathFragment(XPathFragment xPathFragment) {
+        if(null == xPathFragment.getNamespaceURI()) {
+            if(xPathFragment.hasNamespace()) {
+                if(null == namespaceResolver) {
+                    throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+                } else {
+                    String uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+                    if(null == uri && null != xPathFragment.getPrefix()) {
+                        throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+                    }
+                    xPathFragment.setNamespaceURI(uri);
+                }
+                xPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix()));
+            }
+            else if(!xPathFragment.isAttribute() && null != namespaceResolver) {
+                xPathFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+            }
+        }
+        XPathFragment nextXPathFragment = xPathFragment.getNextFragment();
+        if(null != nextXPathFragment) {
+            initializeXPathFragment(nextXPathFragment);
+        }
     }
 
     /**
@@ -429,12 +463,11 @@ public class XMLField extends DatabaseField {
     }
 
     /**
-     * This has the same effect as calling the setXPath method
-     *
-     * @param xPath The xPath associated with this XMLField
+     * Override setName in superclass
      */
-    public void setName(String xPath) {
-        super.setName(xPath);
+    @Override
+    public void setName(String xPath, String startDelimiter, String endDelimiter) {
+        super.setName(xPath, null, null);
 
         if (hasPath(xPath)) {
             buildFragments(xPath);
@@ -443,6 +476,15 @@ public class XMLField extends DatabaseField {
             setXPathFragment(xPathFragment);
             setLastXPathFragment(xPathFragment);
         }
+    }
+    
+    /**
+     * This has the same effect as calling the setXPath method
+     *
+     * @param xPath The xPath associated with this XMLField
+     */
+    public void setName(String xPath) {
+        setName(xPath, null, null);
     }
 
     private boolean hasPath(String xpathString) {
@@ -486,7 +528,7 @@ public class XMLField extends DatabaseField {
                 i++;
             }
             setLastXPathFragment(currentXPathFragment);
-        }
+        } 
     }
 
     /**
@@ -807,6 +849,42 @@ public class XMLField extends DatabaseField {
      */
     public void setRequired(boolean isRequired) {
         this.isRequired = isRequired;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        try {
+            if(!isInitialized) {
+                return super.equals(object);
+            }
+            if(this == object) {
+                return true;
+            }
+            XMLField xmlField = (XMLField) object;
+            if(!xPathFragment.equals(xmlField.getXPathFragment())) {
+                return false;
+            }
+            XPathFragment xpf = xPathFragment;
+            XPathFragment xpf2 = xmlField.getXPathFragment();
+            while(xpf.getNextFragment() != null) {
+                xpf = xpf.getNextFragment();
+                xpf2 = xpf2.getNextFragment();
+                if(!xpf.equals(xpf2)) {
+                    return false;
+                }
+            }
+            return null == xpf2.getNextFragment();
+        } catch(ClassCastException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        if(null == xPathFragment) {
+            return 1;
+        }
+        return xPathFragment.hashCode();
     }
 
 }

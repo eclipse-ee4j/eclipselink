@@ -445,7 +445,7 @@ public class ExpressionBuilder extends ObjectExpression {
     
     /**
      * INTERNAL:
-     * Returns true if TopLink set the query class as apposed to the customer.  This
+     * Returns true if TopLink set the query class as opposed to the customer.  This
      * is important in determining if this Expression should be treated as a parallel
      * expression during normalization
      */

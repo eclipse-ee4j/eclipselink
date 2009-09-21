@@ -17,10 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -28,7 +24,6 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
 import org.eclipse.persistence.oxm.XMLDescriptor;
-
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -75,8 +70,7 @@ public class TypeInfo {
     private ArrayList<Property> propertyList;// keep the keys in a list to preserve order
     private HashMap<String, Property> properties;
     private Property idProperty; // if there is an XmlID annotation, set the property for mappings gen
-    private HashMap<String, JavaClass> adaptersByClass;
-    private Helper helper;
+    private HashMap<String, JavaClass> packageLevelAdaptersByClass;
     private String objectFactoryClassName;
     private String factoryMethodName;
     private String[] factoryMethodParamTypes;
@@ -108,8 +102,7 @@ public class TypeInfo {
         propertyNames = new ArrayList<String>();
         properties = new HashMap<String, Property>();
         propertyList = new ArrayList<Property>();
-        adaptersByClass = new HashMap<String, JavaClass>();
-        this.helper = helper;
+        packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
 
         isSetXmlTransient = false;
         isPreBuilt = false;
@@ -326,8 +319,8 @@ public class TypeInfo {
      * @param boundType
      * @return
      */
-    public JavaClass getAdapterClass(JavaClass boundType) {
-        return getAdaptersByClass().get(boundType.getQualifiedName());
+    public JavaClass getPackageLevelAdapterClass(JavaClass boundType) {
+        return getPackageLevelAdaptersByClass().get(boundType.getQualifiedName());
     }
 
     /**
@@ -336,8 +329,8 @@ public class TypeInfo {
      * @param boundType
      * @return
      */
-    public JavaClass getAdapterClass(String boundTypeName) {
-        return getAdaptersByClass().get(boundTypeName);
+    public JavaClass getPackageLevelAdapterClass(String boundTypeName) {
+        return getPackageLevelAdaptersByClass().get(boundTypeName);
     }
 
     /**
@@ -345,8 +338,8 @@ public class TypeInfo {
      * 
      * @return
      */
-    public HashMap<String, JavaClass> getAdaptersByClass() {
-        return adaptersByClass;
+    public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
+        return packageLevelAdaptersByClass;
     }
 
     /**
@@ -355,18 +348,8 @@ public class TypeInfo {
      * @param adapterClass
      * @param boundType
      */
-    public void addAdapterClass(JavaClass adapterClass, JavaClass boundType) {
-        adaptersByClass.put(boundType.getQualifiedName(), adapterClass);
-    }
-    
-    /**
-     * Put a bound type class name to adapter class entry in the Map.
-     * 
-     * @param adapterClass
-     * @param boundTypeName
-     */
-    public void addAdapterClass(JavaClass adapterClass, String boundTypeName) {
-        adaptersByClass.put(boundTypeName, adapterClass);
+    public void addPackageLevelAdapterClass(JavaClass adapterClass, JavaClass boundType) {
+    	packageLevelAdaptersByClass.put(boundType.getQualifiedName(), adapterClass);
     }
 
     public boolean hasRootElement() {
@@ -701,7 +684,7 @@ public class TypeInfo {
     }
 
     /**
-     * Return the xmlJavaTypeAdapter set on this Property.
+     * Return the xmlJavaTypeAdapter set on this Type.
      * 
      * @return xmlJavaTypeAdapter, or null if not set
      * @see XmlJavaTypeAdapter
@@ -711,8 +694,7 @@ public class TypeInfo {
     }
 
     /**
-     * Set an XmlJavaTypeAdapter on this Property.  This call sets the adapterClass
-     * property to the given adapter's value.
+     * Set an XmlJavaTypeAdapter on this Type.  
      * 
      * @param xmlJavaTypeAdapter
      * @see XmlJavaTypeAdapter

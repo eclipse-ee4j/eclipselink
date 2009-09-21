@@ -15,7 +15,6 @@ package org.eclipse.persistence.sdo.helper.jaxb;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 
@@ -28,8 +27,8 @@ public class JAXBListWrapper extends ListWrapper {
 
     @Override
     protected void copyElements() {
-        if (isLogging() && (!((SDOChangeSummary)dataObject.getChangeSummary()).isDirty(this))) {
-            ((SDOChangeSummary)dataObject.getChangeSummary()).getOriginalElements().put(this, new ArrayList(currentElements));
+        if (isLogging() && (!dataObject.getChangeSummary().isDirty(this))) {
+            dataObject.getChangeSummary().getOriginalElements().put(this, new ArrayList(currentElements));
         } 
     }
 

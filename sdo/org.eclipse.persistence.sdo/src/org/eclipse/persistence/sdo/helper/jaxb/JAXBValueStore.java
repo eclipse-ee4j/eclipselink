@@ -306,10 +306,10 @@ public class JAXBValueStore implements ValueStore {
                 Object attributeValue = attributeAccessor.getAttributeValueFromObject(originalEntity);
                 if(mapping.isCollectionMapping()) {
                     Object containerCopy = null;
-                    SDOChangeSummary sdoChangeSummary = (SDOChangeSummary) dataObject.getChangeSummary();
+                    SDOChangeSummary sdoChangeSummary = dataObject.getChangeSummary();
                     if(null != sdoChangeSummary) {
                         List list = listWrappers.get(sdoProperty);
-                        containerCopy = (List) sdoChangeSummary.getOriginalElements().get(list);
+                        containerCopy = sdoChangeSummary.getOriginalElements().get(list);
                     }
                     if(null == containerCopy) {
                         ContainerPolicy containerPolicy = mapping.getContainerPolicy();

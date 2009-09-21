@@ -24,10 +24,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -42,6 +44,7 @@ import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
@@ -716,5 +719,182 @@ public class XMLContext {
                 }
             }
         }
+    }
+
+    /**
+     * <p>Query the object model based on the corresponding XML document.  The following pairings are equivalent:</p> 
+     * 
+     * <i>Return the Customer's ID</i>
+     * <pre> Integer id = xmlContext.getValueByXPath(customer, "@id", null, Integer.class);
+     * Integer id = customer.getId();</pre>
+     * 
+     * <i>Return the Customer's Name</i>
+     * <pre> String name = xmlContext.getValueByXPath(customer, "ns:personal-info/ns:name/text()", null, String.class);
+     * String name = customer.getName();</pre>
+     * 
+     * <i>Return the Customer's Address</i>
+     * <pre> Address address = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, Address.class);
+     * Address address = customer.getAddress();</pre>
+     * 
+     * <i>Return all the Customer's PhoneNumbers</i> 
+     * <pre> List phoneNumbers = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, List.class);
+     * List phoneNumbers = customer.getPhoneNumbers();</pre>
+     * 
+     * <i>Return the Customer's second PhoneNumber</i>
+     * <pre> PhoneNumber phoneNumber = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, PhoneNumber.class);
+     * PhoneNumber phoneNumber = customer.getPhoneNumbers().get(1);</pre>
+     * 
+     * <i>Return the base object</i>
+     * <pre> Customer customer = xmlContext.getValueByXPath(customer, ".", aNamespaceResolver, Customer.class);
+     * Customer customer = customer;
+     * </pre>
+     * 
+     * @param <T> The return type of this method corresponds to the returnType parameter.
+     * @param object  The XPath will be executed relative to this object.
+     * @param xPath The XPath statement
+     * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
+     * @param returnType The return type.
+     * @return The object corresponding to the XPath or null if no result was found.
+     */
+    public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) { 
+        if(null == xPath) { 
+            return null; 
+         } 
+        if(".".equals(xPath)) { 
+           return (T) object; 
+        } 
+        Session session = this.getSession(object); 
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object); 
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
+        return getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
     } 
+ 
+    private <T> T getValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        if(null == object) {
+            return null;
+        }
+        String xPath = ""; 
+        XMLField xmlField = new XMLField(); 
+        xmlField.setNamespaceResolver(namespaceResolver); 
+        while(stringTokenizer.hasMoreElements()) {
+            String nextToken = stringTokenizer.nextToken();
+            xmlField.setXPath(xPath + nextToken);
+            xmlField.initialize();
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
+            if(null == mapping) {
+                XPathFragment xPathFragment = new XPathFragment(nextToken);
+                if(xPathFragment.getIndexValue() > 0) {
+                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.initialize();
+                    mapping = objectBuilder.getMappingForField(xmlField);
+                    if(null != mapping) {
+                        if(mapping.isCollectionMapping()) {
+                            if(mapping.getContainerPolicy().isListPolicy()) {
+                                Object childObject = ((ListContainerPolicy) mapping.getContainerPolicy()).get(xPathFragment.getIndexValue() - 1, mapping.getAttributeValueFromObject(object), null);
+                                if(stringTokenizer.hasMoreElements()) {
+                                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
+                                    return (T) getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
+                                } else {
+                                    return (T) childObject;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if(stringTokenizer.hasMoreElements()) { 
+                    Object childObject = mapping.getAttributeValueFromObject(object); 
+                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
+                    return (T) getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
+                } else { 
+                    return (T) mapping.getAttributeValueFromObject(object); 
+                } 
+            } 
+            xPath = xPath + nextToken + "/"; 
+        }
+        return null; 
+    } 
+
+    /**
+     * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p> 
+     * 
+     * <i>Set the Customer's ID</i>
+     * <pre> xmlContext.setValueByXPath(customer, "@id", null, new Integer(123));
+     * customer.setId(new Integer(123));</pre>
+     * 
+     * <i>Set the Customer's Name</i>
+     * <pre> xmlContext.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");
+     * customer.setName("Jane Doe");</pre>
+     * 
+     * <i>Set the Customer's Address</i>
+     * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, anAddress);
+     * customer.setAddress(anAddress);</pre>
+     * 
+     * <i>Set the Customer's PhoneNumbers</i> 
+     * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, phoneNumbers);
+     * customer.setPhoneNumbers(phoneNumbers);</pre>
+     * 
+     * <i>Set the Customer's second PhoneNumber</i>
+     * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, aPhoneNumber);
+     * customer.getPhoneNumbers().get(1);</pre>
+     * 
+     * @param object  The XPath will be executed relative to this object.
+     * @param xPath The XPath statement
+     * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
+     * @param value The value to be set.
+     */
+    public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) { 
+        Session session = this.getSession(object); 
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object); 
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
+        setValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, value); 
+    } 
+ 
+    private void setValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Object value) { 
+        String xPath = ""; 
+        XMLField xmlField = new XMLField(); 
+        xmlField.setNamespaceResolver(namespaceResolver); 
+        while(stringTokenizer.hasMoreElements()) { 
+            String nextToken = stringTokenizer.nextToken();
+            xmlField.setXPath(xPath + nextToken); 
+            xmlField.initialize();
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
+            if(null == mapping) {
+                XPathFragment xPathFragment = new XPathFragment(nextToken);
+                if(xPathFragment.getIndexValue() > 0) {
+                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.initialize();
+                    mapping = objectBuilder.getMappingForField(xmlField);
+                    if(null != mapping) {
+                        if(mapping.isCollectionMapping()) {
+                            if(mapping.getContainerPolicy().isListPolicy()) {
+                                if(stringTokenizer.hasMoreElements()) {
+                                    Object childObject = ((ListContainerPolicy) mapping.getContainerPolicy()).get(xPathFragment.getIndexValue() - 1, mapping.getAttributeValueFromObject(object), null);
+                                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                                    setValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, value);
+                                    return;
+                                } else {
+                                    List list = (List) mapping.getAttributeValueFromObject(object);
+                                    list.add(xPathFragment.getIndexValue() - 1, value);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if(stringTokenizer.hasMoreElements()) { 
+                    Object childObject = mapping.getAttributeValueFromObject(object); 
+                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
+                    setValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, value); 
+                    return; 
+                } else { 
+                    mapping.setAttributeValueInObject(object, value); 
+                    return; 
+                } 
+            } 
+            xPath = xPath + nextToken + "/"; 
+        } 
+    } 
+
 }

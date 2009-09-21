@@ -46,6 +46,7 @@ public class XMLProcessor {
     private Map<String, XmlBindings> xmlBindingMap;
     private JavaModelInput jModelInput;
     private AnnotationsProcessor aProcessor;
+    private JAXBMetadataLogger logger;
 
     /**
      * This is the preferred constructor.
@@ -75,6 +76,7 @@ public class XMLProcessor {
         for (String packageName : xmlBindingMap.keySet()) {
             ArrayList classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
+                getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
             }
 
@@ -168,7 +170,7 @@ public class XMLProcessor {
                         JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
                         JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
                         if (boundType != null) {
-                            tInfo.addAdapterClass(adapterClass, boundType);
+                            tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
                         }
                     }
                 }
@@ -234,8 +236,8 @@ public class XMLProcessor {
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
                 Property oldProperty = typeInfo.getProperties().get(javaAttribute.getJavaAttribute());
-                // TODO: we should log a warning here
                 if (oldProperty == null) {
+                    getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
                     continue;
                 }
                 Property newProperty = processJavaAttribute(javaAttribute, oldProperty, nsInfo);
@@ -274,6 +276,7 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlJavaTypeAdapter) {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
         }
+        getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
     }
 
@@ -440,32 +443,6 @@ public class XMLProcessor {
         nsInfo.setNamespaceResolver(nsr);
         return nsInfo;
     }
-
-    /**
-     * Combines classes from XmlBindings and JavaModel into a single array. Duplicates will not
-     * exist in the array.
-     * 
-     * @param xmlBindings
-     * @param jModelInput
-     * @return an array of JavaClass instances based on a given JavaModel
-     */
-    private JavaClass[] getClassesToProcess(XmlBindings xmlBindings) {
-        ArrayList allClasses = new ArrayList<JavaClass>();
-        // add binding classes - the Java Model will be used to get a JavaClass via class name
-        JavaTypes jTypes = xmlBindings.getJavaTypes();
-        if (jTypes != null) {
-            for (JavaType javaType : jTypes.getJavaType()) {
-                allClasses.add(jModelInput.getJavaModel().getClass(javaType.getName()));
-            }
-        }
-        // add any other classes that aren't declared via external metadata
-        for (JavaClass jClass : jModelInput.getJavaClasses()) {
-            if (!AnnotationsProcessor.classExistsInArray(jClass.getQualifiedName(), allClasses)) {
-                allClasses.add(jClass);
-            }
-        }
-        return (JavaClass[]) allClasses.toArray(new JavaClass[allClasses.size()]);
-    }
     
     /**
      * Convenience method for building a Map of package to classes.
@@ -504,7 +481,18 @@ public class XMLProcessor {
                 theMap.put(pkg, classes);
             }
         }
-        
         return theMap;
+    }
+    
+    /**
+     * Lazy load the metadata logger.
+     * 
+     * @return
+     */
+    private JAXBMetadataLogger getLogger() {
+        if (logger == null) {
+            logger = new JAXBMetadataLogger();
+        }
+        return logger;
     }
 }

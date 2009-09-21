@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,9 +31,13 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * When the MapKeyJoinColumns annotation is used, both the name and the
- * referencedColumnName elements must be specified in each of the grouped
- * MapKeyJoinColumn annotations.
+ * Is used to support composite map keys referencing entities.  
+ * <p> The <code>MapKeyJoinColumns</code> annotation groups
+ * <code>MapKeyJoinColumn</code> annotations.  When the
+ * <code>MapKeyJoinColumns</code> annotation is used, both the
+ * <code>name</code> and the <code>referencedColumnName</code>
+ * elements must be specified in each of the grouped
+ * <code>MapKeyJoinColumn</code> annotations.
  * 
  * @see MapKeyJoinColumn
  * 

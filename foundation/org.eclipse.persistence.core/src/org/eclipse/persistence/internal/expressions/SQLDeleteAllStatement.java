@@ -18,6 +18,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -136,7 +137,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                     writer.write(" WHERE EXISTS(");
                     // EXIST Example: selectCallForExist.sqlString:
                     // "SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE (((t0.F_NAME LIKE 'a') AND (t1.SALARY = 0)) AND (t1.EMP_ID = t0.EMP_ID))"
-                    writeSelect(writer, selectCallForExist, tableAliasInSelectCallForExist, call);
+                    writeSelect(writer, selectCallForExist, tableAliasInSelectCallForExist, call, session.getPlatform());
                     // closing bracket for EXISTS
                     writer.write(")");
                     // The result is (target table is SALARY):
@@ -163,7 +164,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(" NOT EXISTS(");
                 // NOT EXIST Example: selectCall.sqlString:
                 // "SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE (t1.EMP_ID = t0.EMP_ID)"
-                writeSelect(writer, selectCallForNotExist, tableAliasInSelectCallForNotExist, call);
+                writeSelect(writer, selectCallForNotExist, tableAliasInSelectCallForNotExist, call, session.getPlatform());
                 // closing bracket for EXISTS
                 writer.write(")");
                 // The result is (target table is EMPLOYEE):
@@ -179,7 +180,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
         return call;
     }
     
-    protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call) throws IOException {
+    protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call, DatasourcePlatform platform) throws IOException {
         String str = selectCall.getSQLString();
         writer.write(str);
         
@@ -200,11 +201,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
-            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getNameDelimited());
+            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getNameDelimited(platform));
             writer.write(" = ");
-            writer.write(table.getQualifiedNameDelimited());
+            writer.write(table.getQualifiedNameDelimited(platform));
             writer.write('.');
-            writer.write(((DatabaseField)originalFields.elementAt(i)).getNameDelimited());
+            writer.write(((DatabaseField)originalFields.elementAt(i)).getNameDelimited(platform));
         }
 
         // add parameters

@@ -16,9 +16,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -104,6 +107,26 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
             fail("no error occurred...expected XMLConversionException");
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            try {
+                InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+                XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+
+                XMLEventReaderReader staxReader = new XMLEventReaderReader();
+                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+                XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(xmlEventReader);
+                xmlUnmarshaller.unmarshal(staxReader, inputSource);
+
+                instream.close();
+            } catch (Exception e) {
+                handleException(e);
+                return;
+            }
+            fail("no error occurred...expected XMLConversionException");
+        }
+    }    
 
     private void handleException(Exception e) {
         boolean rightException = (e instanceof ConversionException);

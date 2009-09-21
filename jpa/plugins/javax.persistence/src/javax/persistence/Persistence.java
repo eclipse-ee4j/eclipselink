@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems, Oracle Corporation. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ * *   dclarke - EclipseLink implementation of Persistence and PersistenceUtil 
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -24,14 +25,15 @@
  ******************************************************************************/
 package javax.persistence;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+
+import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
-import javax.persistence.spi.LoadState;
 
 /**
  * Bootstrap class that is used to obtain an {@link EntityManagerFactory}.
@@ -44,8 +46,8 @@ public class Persistence {
      * Create and return an EntityManagerFactory for the named persistence unit.
      * 
      * @param persistenceUnitName
-     *            The name of the persistence unit
-     * @return The factory that creates EntityManagers configured according to
+     *            the name of the persistence unit
+     * @return the factory that creates EntityManagers configured according to
      *         the specified persistence unit
      */
     public static EntityManagerFactory createEntityManagerFactory(String persistenceUnitName) {
@@ -57,12 +59,12 @@ public class Persistence {
      * using the given properties.
      * 
      * @param persistenceUnitName
-     *            The name of the persistence unit
+     *            the name of the persistence unit
      * @param properties
      *            Additional properties to use when creating the factory. The
      *            values of these properties override any values that may have
      *            been configured elsewhere.
-     * @return The factory that creates EntityManagers configured according to
+     * @return the factory that creates EntityManagers configured according to
      *         the specified persistence unit.
      */
     public static EntityManagerFactory createEntityManagerFactory(String persistenceUnitName, Map properties) {
@@ -86,42 +88,46 @@ public class Persistence {
 
     /**
      * Return the PersistenceUtil instance
+     * 
+     * @return PersistenceUtil instance
+     * @since Java Persistence 2.0
      */
     public static PersistenceUtil getPersistenceUtil() {
-       return new PersistenceUtilImpl();
+        return new PersistenceUtilImpl();
     }
 
-    
     /**
      * Implementation of PersistenceUtil interface
+     * 
      * @since Java Persistence 2.0
      */
     private static class PersistenceUtilImpl implements PersistenceUtil {
+
         public boolean isLoaded(Object entity, String attributeName) {
             PersistenceProviderResolver resolver = PersistenceProviderResolverHolder.getPersistenceProviderResolver();
-
             List<PersistenceProvider> providers = resolver.getPersistenceProviders();
 
             for (PersistenceProvider provider : providers) {
-                LoadState loadstate = provider.isLoadedWithoutReference(entity, attributeName);
-                if(loadstate == LoadState.LOADED) {
+                LoadState loadstate = provider.getProviderUtil().isLoadedWithoutReference(entity, attributeName);
+                if (loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
 
-            //None of the providers could determine the load state try isLoadedWithReference
+            // None of the providers could determine the load state try
+            // isLoadedWithReference
             for (PersistenceProvider provider : providers) {
-                LoadState loadstate = provider.isLoadedWithReference(entity, attributeName);
-                if(loadstate == LoadState.LOADED) {
+                LoadState loadstate = provider.getProviderUtil().isLoadedWithReference(entity, attributeName);
+                if (loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
 
-            //None of the providers could determine the load state.
+            // None of the providers could determine the load state.
             return true;
         }
 
@@ -131,28 +137,32 @@ public class Persistence {
             List<PersistenceProvider> providers = resolver.getPersistenceProviders();
 
             for (PersistenceProvider provider : providers) {
-                LoadState loadstate = provider.isLoaded(entity);
-                if(loadstate == LoadState.LOADED) {
+                LoadState loadstate = provider.getProviderUtil().isLoaded(entity);
+                if (loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
-            //None of the providers could determine the load state
+            // None of the providers could determine the load state
             return true;
         }
     }
 
     /**
-     * This final String is deprecated and should be removed and is only here for TCK backward compatibility
+     * This final String is deprecated and should be removed and is only here
+     * for TCK backward compatibility
+     * 
      * @since Java Persistence 1.0
      * @deprecated
      */
     @Deprecated
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
-    
+
     /**
-     * This instance variable is deprecated and should be removed and is only here for TCK backward compatibility
+     * This instance variable is deprecated and should be removed and is only
+     * here for TCK backward compatibility
+     * 
      * @since Java Persistence 1.0
      * @deprecated
      */

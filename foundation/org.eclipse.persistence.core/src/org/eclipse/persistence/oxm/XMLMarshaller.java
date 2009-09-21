@@ -100,29 +100,47 @@ public class XMLMarshaller {
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
+    private static final String GET_XML_EVENT_WRITER_METHOD_NAME = "getXMLEventWriter";
     private static final String XML_STREAM_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLStreamWriterRecord";
+    private static final String XML_EVENT_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLEventWriterRecord";
     private static final String XML_STREAM_WRITER_CLASS_NAME = "javax.xml.stream.XMLStreamWriter";
+    private static final String XML_EVENT_WRITER_CLASS_NAME = "javax.xml.stream.XMLEventWriter";
     private static final String DOM_TO_STREAM_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.DomToXMLStreamWriter";
+    private static final String DOM_TO_EVENT_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.DomToXMLEventWriter";
     private static final String WRITE_TO_STREAM_METHOD_NAME = "writeToStream";
+    private static final String WRITE_TO_EVENT_WRITER_METHOD_NAME = "writeToEventWriter";
 
     private static Class staxResultClass;
     private static Method staxResultGetStreamWriterMethod;
+    private static Method staxResultGetEventWriterMethod;
     private static Constructor xmlStreamWriterRecordConstructor;
+    private static Constructor xmlEventWriterRecordConstructor;
     private static Method writeToStreamMethod;
+    private static Method writeToEventWriterMethod;
     private static Class domToStreamWriterClass;
+    private static Class domToEventWriterClass;
 
     static {
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
             if(staxResultClass != null) {
                 staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class[]{});
+                staxResultGetEventWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_EVENT_WRITER_METHOD_NAME, new Class[]{});
             }
             Class streamWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_RECORD_CLASS_NAME);
             Class streamWriterClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_CLASS_NAME);
             xmlStreamWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(streamWriterRecordClass, new Class[]{streamWriterClass}, true);
 
+            Class eventWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_RECORD_CLASS_NAME);
+            Class eventWriterClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_CLASS_NAME);
+            xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
+            
             domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
             writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, streamWriterClass}, true);
+            
+            domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
+            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {ClassConstants.NODE, eventWriterClass}, true);
+            
         } catch (Exception ex) {
             // Do nothing
         }
@@ -308,6 +326,14 @@ public class XMLMarshaller {
                             record.setMarshaller(this);
                             marshal(object, record);
                             return;
+                        } else {
+                            Object xmlEventWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetEventWriterMethod, result);
+                            if(xmlEventWriter != null) {
+                                MarshalRecord record = (MarshalRecord)PrivilegedAccessHelper.invokeConstructor(xmlEventWriterRecordConstructor, new Object[]{xmlEventWriter});
+                                record.setMarshaller(this);
+                                marshal(object, record);
+                                return;
+                            }
                         }
                     } catch (Exception e) {
                         throw XMLMarshalException.marshalException(e);
@@ -353,6 +379,13 @@ public class XMLMarshaller {
                             Object domtostax = PrivilegedAccessHelper.newInstanceFromClass(domToStreamWriterClass);
                             PrivilegedAccessHelper.invokeMethod(writeToStreamMethod, domtostax, new Object[]{document, xmlStreamWriter});
                             return;
+                        } else {
+                            Object xmlEventWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetEventWriterMethod, result);
+                            if(xmlEventWriter != null) {
+                                Object domToEventWriter = PrivilegedAccessHelper.newInstanceFromClass(domToEventWriterClass);
+                                PrivilegedAccessHelper.invokeMethod(writeToEventWriterMethod, domToEventWriter, new Object[]{document, xmlEventWriter});
+                                return;
+                            }
                         }
 
                     } catch(Exception e) {

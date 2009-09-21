@@ -133,6 +133,8 @@ public class AnnotationsProcessor {
     private Helper helper;
     private ArrayList<Property> xmlIdRefProps;
 
+    private JAXBMetadataLogger logger;
+    
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
     }
@@ -565,14 +567,23 @@ public class AnnotationsProcessor {
             XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(pack, XmlJavaTypeAdapters.class);
             XmlJavaTypeAdapter[] adapterArray = adapters.value();
             for (XmlJavaTypeAdapter next : adapterArray) {
-                JavaClass adapterClass = helper.getJavaClass(next.value());
-                JavaClass boundType = helper.getJavaClass(next.type());
-                if (boundType != null) {
-                    info.addAdapterClass(adapterClass, boundType);
-                } else {
-                    // TODO: should log a warning here
-                }
+                processPackageLevelAdapter(next, info);
             }
+        }
+        
+        if(helper.isAnnotationPresent(pack, XmlJavaTypeAdapter.class)){
+            XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(pack, XmlJavaTypeAdapter.class);
+            processPackageLevelAdapter(adapter, info);
+        }
+    }
+
+    private void processPackageLevelAdapter(XmlJavaTypeAdapter next, TypeInfo info){
+    	JavaClass adapterClass = helper.getJavaClass(next.value());
+        JavaClass boundType = helper.getJavaClass(next.type());
+        if (boundType != null) {
+            info.addPackageLevelAdapterClass(adapterClass, boundType);
+        } else {
+            getLogger().logWarning(JAXBMetadataLogger.INVALID_BOUND_TYPE, new Object[] { boundType, adapterClass });
         }
     }
 
@@ -585,10 +596,14 @@ public class AnnotationsProcessor {
     private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapter.class)) {
             XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(javaClass, XmlJavaTypeAdapter.class);
+            String boundType = adapter.type().getName(); 
+        	
+            if (boundType == null || boundType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                boundType = javaClass.getRawName();
+            }
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
             xja.setValue(adapter.value().getName());
-            xja.setType(adapter.type().getName());
-            
+            xja.setType(boundType);
             
             info.setXmlJavaTypeAdapter(xja);
         }
@@ -829,7 +844,7 @@ public class AnnotationsProcessor {
                 throw JAXBException.invalidId(property.getPropertyName());
             }
             if (info.isIDSet()) {
-                // TODO: throw an exception here
+                throw JAXBException.idAlreadySet(property.getPropertyName(), info.getIDProperty().getPropertyName(), info.getDescriptor().getAlias());
             }
             info.setIDProperty(property);
         }
@@ -862,14 +877,25 @@ public class AnnotationsProcessor {
             xja.setValue(adapter.value().getName());
             xja.setType(adapter.type().getName());
             property.setXmlJavaTypeAdapter(xja);
-        }  else if (info.getAdaptersByClass().get(ptype.getQualifiedName()) != null) {
-            adapterClass = info.getAdapterClass(ptype);
+        } else{ 
+            TypeInfo ptypeInfo = typeInfo.get(ptype.getRawName());        	
+            if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
+                JavaClass[] jClassArray = new JavaClass[] { ptype };
+                buildNewTypeInfo(jClassArray);
+            }
+            if (ptypeInfo!= null && ptypeInfo.getXmlJavaTypeAdapter() != null){
+                property.setXmlJavaTypeAdapter(ptypeInfo.getXmlJavaTypeAdapter() );
+        	
+            } else if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null) {
+                adapterClass = info.getPackageLevelAdapterClass(ptype);
             
-            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
-            xja.setValue(adapterClass.getQualifiedName());
-            xja.setType(ptype.getQualifiedName());
-            property.setXmlJavaTypeAdapter(xja);
-        }
+                org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+                xja.setValue(adapterClass.getQualifiedName());
+                xja.setType(ptype.getQualifiedName());
+                property.setXmlJavaTypeAdapter(xja);
+            }
+            
+        } 
     }
 
     /**
@@ -1931,7 +1957,7 @@ public class AnnotationsProcessor {
                     } else {
                         elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
                     }
-                    // TODO - remove this TCK hack...
+                    // TCK Compliancy
                     if (elementName.length() >= 3) {
                         int idx = elementName.length() - 1;
                         char ch = elementName.charAt(idx - 1);
@@ -1974,9 +2000,6 @@ public class AnnotationsProcessor {
             while(substitutionHead != null) {
                 ElementDeclaration rootDeclaration = this.globalElements.get(substitutionHead);
                 rootDeclaration.addSubstitutableElement(nextDeclaration);
-                /*if(rootDeclaration == nextDeclaration) {
-                    break;
-                }*/
                 substitutionHead = rootDeclaration.getSubstitutionHead();
             }
         }
@@ -2770,7 +2793,7 @@ public class AnnotationsProcessor {
                     elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
                 }
 
-                // TODO - remove this TCK hack...
+                // TCK Compliancy
                 if (elementName.length() >= 3) {
                     int idx = elementName.length() - 1;
                     char ch = elementName.charAt(idx - 1);
@@ -2842,5 +2865,17 @@ public class AnnotationsProcessor {
         if (xmlCustomizer != null) {
             tInfo.setXmlCustomizer(xmlCustomizer.value().getName());
         }            
+    }
+
+    /**
+     * Lazy load the metadata logger.
+     * 
+     * @return
+     */
+    private JAXBMetadataLogger getLogger() {
+        if (logger == null) {
+            logger = new JAXBMetadataLogger();
+        }
+        return logger;
     }
 }

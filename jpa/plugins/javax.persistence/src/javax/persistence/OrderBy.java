@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,48 +31,95 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation specifies the ordering of the elements of a 
- * collection valued association at the point when the association 
- * is retrieved.
+ * Specifies the ordering of the elements of a collection valued
+ * association or element collection at the point when the association
+ * or collection is retrieved.
  * 
  * <p> The syntax of the <code>value</code> ordering element is an 
  * <code>orderby_list</code>, as follows:
  * 
  * <pre>
  *    orderby_list::= orderby_item [,orderby_item]*
- *    orderby_item::= property_or_field_name [ASC | DESC]
+ *    orderby_item::= [property_or_field_name] [ASC | DESC]
  * </pre>
  * 
  * <p> If <code>ASC</code> or <code>DESC</code> is not specified, 
  * <code>ASC</code> (ascending order) is assumed.
  *
- * <p> If the ordering element is not specified, ordering by 
- * the primary key of the associated entity is assumed.
+ * <p> If the ordering element is not specified for an entity association,
+ * ordering by the primary key of the associated entity is assumed.
  *
  * <p> The property or field name must correspond to that of a 
- * persistent property or field of the associated class. The 
- * properties or fields used in the ordering must correspond to 
+ * persistent property or field of the associated class or embedded class
+ * within it.  The properties or fields used in the ordering must correspond to 
  * columns for which comparison operators are supported.
  *
+ * <p> The dot (".") notation is used to refer to an attribute within an
+ * embedded attribute.  The value of each identifier used with the dot
+ * notation is the name of the respective embedded field or property.
+ *
+ * <p> The <code>OrderBy</code> annotation may be applied to an element
+ * collection. When <code>OrderBy</code> is applied to an element collection of
+ * basic type, the ordering will be by value of the basic objects and
+ * the property or field name is not used. When specifying an ordering
+ * over an element collection of embeddable type, the dot notation
+ * must be used to specify the attribute or attributes that determine
+ * the ordering.  
+ *
+ * <p> The <code>OrderBy</code> annotation is not used when an order
+ * column is specified.
+ *
+ * 
  * <pre>
- *    Example:
+ *    Example 1:
  *    
- *    &#064;Entity public class Course {
- *     ...
- *     &#064;ManyToMany
- *     &#064;OrderBy("lastname ASC")
- *     public List<Student> getStudents() {...};
- *     ...
+ *    &#064;Entity 
+ *    public class Course {
+ *       ...
+ *       &#064;ManyToMany
+ *       &#064;OrderBy("lastname ASC")
+ *       public List&#060;Student&#062; getStudents() {...};
+ *       ...
  *    }
  *    
- *    &#064;Entity public class Student {
- *      ...
- *      &#064;ManyToMany(mappedBy="students")
- *      &#064;OrderBy // PK is assumed
- *      public List<Course> getCourses() {...};
- *      ...
+ *    Example 2:
+ *
+ *    &#064;Entity 
+ *    public class Student {
+ *       ...
+ *       &#064;ManyToMany(mappedBy="students")
+ *       &#064;OrderBy // PK is assumed
+ *       public List&#060;Course&#062; getCourses() {...};
+ *       ...
+ *    }
+ *
+ *    Example 3: 
+ *
+ *    &#064;Entity 
+ *    public class Person {
+ *         ...
+ *       &#064;ElementCollection
+ *       &#064;OrderBy("zipcode.zip, zipcode.plusFour")
+ *       public Set&#060;Address&#062; getResidences() {...};
+ *       ...
+ *    }
+ *  
+ *    &#064;Embeddable 
+ *    public class Address {
+ *       protected String street;
+ *       protected String city;
+ *       protected String state;
+ *       &#064;Embedded protected Zipcode zipcode;
+ *    }
+ *
+ *    &#064;Embeddable 
+ *    public class ZipCode {
+ *       protected String zip;
+ *       protected String plusFour;
  *    }
  * </pre>
+ *
+ * @see OrderColumn
  *
  * @since Java Persistence 1.0
  */
@@ -81,12 +128,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 public @interface OrderBy {
 
-    /**
-    * An <code>orderby_list</code>, specified as follows:
+   /**
+    * An <code>orderby_list</code>.  Specified as follows:
     *
     * <pre>
     *    orderby_list::= orderby_item [,orderby_item]*
-    *    orderby_item::= property_or_field_name [ASC | DESC]
+    *    orderby_item::= [property_or_field_name] [ASC | DESC]
     * </pre>
     *
     * <p> If <code>ASC</code> or <code>DESC</code> is not specified,

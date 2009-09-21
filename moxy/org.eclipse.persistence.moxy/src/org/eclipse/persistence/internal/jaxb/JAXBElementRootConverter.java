@@ -81,7 +81,7 @@ public class JAXBElementRootConverter implements XMLConverter {
         if(null != nestedConverter) {
             objectValue = nestedConverter.convertObjectValueToDataValue(objectValue, session, marshaller);
         }
-        if(objectValue instanceof JAXBElement && !(objectValue instanceof WrappedValue)) {
+        if(objectValue instanceof JAXBElement) {
             JAXBElement element = (JAXBElement) objectValue;
             XMLRoot root = new XMLRoot();
             root.setLocalName(element.getName().getLocalPart());

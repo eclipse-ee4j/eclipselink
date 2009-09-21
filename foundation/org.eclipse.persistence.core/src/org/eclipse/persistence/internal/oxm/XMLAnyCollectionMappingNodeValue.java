@@ -291,7 +291,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 } else {
                     rootFragment = new XPathFragment(defaultRootElementString);
                     //resolve URI
-                    if ((rootFragment.getNamespaceURI() == null) && (rootFragment.getPrefix() != null)) {
+                    if (rootFragment.getNamespaceURI() == null) {
                         String uri = descriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
                         rootFragment.setNamespaceURI(uri);
                     }

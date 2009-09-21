@@ -42,12 +42,11 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle_test.is.local"/>
 
     <dirname  property="oracle_test.build.location" file="${ant.file.eclipselink.extension.oracle.test}"/>
-    <condition property="oracle_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="oracle_test.2.base.dir" value="../.." else="..">
         <contains string="${oracle_test.build.location}" substring="foundation"/>
     </condition>
-    <condition property="oracle_test.2.jpa.test.dir" value="../../jpa/eclipselink.jpa.test" else="../eclipselink.jpa.test">
-        <contains string="${oracle_test.build.location}" substring="foundation"/>
-    </condition>
+    <property name="oracle_test.2.common.plugins.dir" value="${oracle_test.2.base.dir}/plugins"/>
+    <property name="oracle_test.2.jpa.test.dir" value="${oracle_test.2.base.dir}/jpa/eclipselink.jpa.test"/>
     <property name="oracle_test.2.core.test.dir" value="../eclipselink.core.test"/>
     <property name="oracle_test.plugins.dir" value="../plugins"/>
 

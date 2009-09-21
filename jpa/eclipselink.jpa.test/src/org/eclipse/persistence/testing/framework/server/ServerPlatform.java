@@ -46,7 +46,12 @@ public interface ServerPlatform {
      * Mark the existing JTS transaction for rollback.
      */
     void setTransactionForRollback();
-
+    
+    /**
+     * Close the entity manager if required.
+     */
+    void closeEntityManager(EntityManager entityManager);
+    
     /**
      * Is the platform Oracle?
      */

@@ -15,12 +15,13 @@ package org.eclipse.persistence.testing.tests.jpa.spring.dao;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.eclipse.persistence.testing.models.jpa.spring.Address;
-import org.eclipse.persistence.testing.models.jpa.spring.Truck;
-import org.eclipse.persistence.testing.models.jpa.spring.Route;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.jpa.AbstractJpaTests;
+
+import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
 /**
  * Base TestClass for Spring Framework tests that use Spring's AbstractJpaTests.

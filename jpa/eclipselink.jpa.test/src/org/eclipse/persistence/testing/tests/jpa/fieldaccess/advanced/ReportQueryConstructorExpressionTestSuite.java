@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReportQueryResult;
-import org.eclipse.persistence.exceptions.QueryException;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -30,6 +30,7 @@ import junit.framework.Test;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -95,9 +96,8 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
+        List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
         
         employees = new ExpressionBuilder();
         query = new ReportQuery(Employee.class, employees);
@@ -159,11 +159,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
-        query.addAttribute("id");
+        query.addAttribute("id");         
 
-        EntityManager em = createEntityManager("fieldaccess");          
-
-        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
+        List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
 
         Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
@@ -201,24 +199,21 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
         query.endAddingToConstructorItem();
-        EntityManager em = createEntityManager("fieldaccess");          
         QueryException exception = null;
-        try{
+        try {
             getServerSession("fieldaccess").executeQuery(query);
         } catch (QueryException ex){
             exception = ex;
         }
         assertTrue("Exception not throw. ", exception != null);
-        
     }
 
     public void testPrimitiveConstructorExpression(){
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("salary");
-        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
+        List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
 
         query = new ReportQuery(Employee.class, employees);
         Class[] argTypes = new Class[]{int.class};
@@ -253,10 +248,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
-        query.addAttribute("lastName");
-        EntityManager em = createEntityManager("fieldaccess");          
+        query.addAttribute("lastName");    
 
-        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
+        List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
 
         ConstructorReportItem citem = new ConstructorReportItem("Employee");
         citem.setResultType(Employee.class);

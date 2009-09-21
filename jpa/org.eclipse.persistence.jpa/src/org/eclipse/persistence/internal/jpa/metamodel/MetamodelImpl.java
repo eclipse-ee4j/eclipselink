@@ -80,6 +80,9 @@ public class MetamodelImpl implements Metamodel {
     /** The Set of MappedSuperclassTypes in this metamodel**/
     private Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses;
 
+    /** Default elementType Class when we the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
+    public static final Class DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS = Object.class;
+
     public MetamodelImpl(DatabaseSession session) {
         this.session = session;
         initialize();
@@ -105,7 +108,7 @@ public class MetamodelImpl implements Metamodel {
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         Object aType = this.embeddables.get(clazz);
         if(aType instanceof EmbeddableType) {
-            return (EmbeddableType<X>) this.embeddables.get(clazz);
+            return (EmbeddableType<X>) aType;
         } else {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_class_incorrect_type_instance", 
@@ -122,7 +125,7 @@ public class MetamodelImpl implements Metamodel {
     public <X> EntityType<X> entity(Class<X> clazz) {
         Object aType = this.entities.get(clazz);
         if(aType instanceof EntityType) {
-            return (EntityType<X>) this.entities.get(clazz);
+            return (EntityType<X>) aType;
         } else {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_class_incorrect_type_instance", 
@@ -365,7 +368,7 @@ public class MetamodelImpl implements Metamodel {
             return null;
         } else {        
             if(aType instanceof ManagedType) {
-                return (ManagedType<X>) this.managedTypes.get(clazz);
+                return (ManagedType<X>) aType;
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_class_incorrect_type_instance", 

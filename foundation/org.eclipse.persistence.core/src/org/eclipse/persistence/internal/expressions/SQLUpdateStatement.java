@@ -44,7 +44,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 writer.write(getHintString());
                 writer.write(" ");
             }
-            writer.write(getTable().getQualifiedNameDelimited());
+            writer.write(getTable().getQualifiedNameDelimited(session.getPlatform()));
             writer.write(" SET ");
 
             ExpressionSQLPrinter printer = null;
@@ -67,7 +67,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
                 DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
-                writer.write(field.getNameDelimited());
+                writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
                 if(values.elementAt(i) instanceof Expression) {
                     // the value in the modify row is an expression - assign it.

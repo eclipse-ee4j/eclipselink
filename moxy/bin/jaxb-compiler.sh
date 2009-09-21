@@ -2,7 +2,7 @@
 . `dirname $0`/setenv.sh 
 
 # User may increase Java memory setting(s) if desired:
-JVM_ARGS="-Xmx256m -Djava.endorsed.dirs=/../jlib/moxy"
+JVM_ARGS="-Xmx256m"
 
 # If going through a proxy, set the proxy host and proxy port below, then uncomment the line
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
@@ -16,5 +16,4 @@ CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v200903100845.jar:\
 `dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"
 
-${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} \
-    com.sun.tools.xjc.XJCFacade -eclipselink ${JAVA_ARGS}
+${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}

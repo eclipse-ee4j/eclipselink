@@ -29,10 +29,12 @@ import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
+import javax.persistence.ValidationMode;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
@@ -42,6 +44,8 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -73,6 +77,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
@@ -213,13 +218,14 @@ public class EntityManagerSetupImpl {
                     if (state == STATE_PREDEPLOYED) {
                         try {
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
-                            // If the session was loaded from sessions.xml this will also converter the descriptor classes to the correct class loader.
+                            // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
                             session.getProject().convertClassNamesToClasses(realClassLoader);
 
                             if (!isSessionLoadedFromSessionsXML) {
                                     // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                                     processor.setClassLoader(realClassLoader);
                                     processor.addEntityListeners();
+                                    addBeanValidationListeners(deployProperties, realClassLoader);
                                     processor.addNamedQueries();
                                     
                                     // Process the customizers last.
@@ -717,11 +723,6 @@ public class EntityManagerSetupImpl {
             // Translate old properties.
             // This should be done before using properties (i.e. ServerPlatform).
             translateOldProperties(predeployProperties, null);
-            
-            String databaseDelimiter = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.DATABASE_DELIMITERS, predeployProperties, session);
-            if(databaseDelimiter != null) {
-                Helper.setDatabaseDelimiters(databaseDelimiter);
-            }
 
             String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
             String sessionNameStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);
@@ -1818,5 +1819,73 @@ public class EntityManagerSetupImpl {
             session.setQueryTimeoutDefault(Integer.parseInt(QueryTimeout));
         }
     }
-    
+
+    /**
+     * If Bean Validation is enabled, bootstraps Bean Validation on descriptors.
+     * @param puProperties merged properties for this persitence unit
+     */
+    private void addBeanValidationListeners(Map puProperties, ClassLoader appClassLoader) {
+        ValidationMode validationMode = getValidationMode(persistenceUnitInfo, puProperties);
+        if (validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK) {
+            // BeanValidationInitializationHelper contains static reference to javax.validation.* classes. We need to support
+            // environment where thse classses are not available.
+            // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
+            String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
+            ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+            Class helperClass;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    helperClass = (Class) AccessController.doPrivileged(
+                            new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                } else {
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
+                }
+                BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
+                beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, processor.getProject(), appClassLoader);
+            } catch (Throwable e) {  //Catching Throwable to catch any linkage errors on vms that resolve eagerly
+                if (validationMode == ValidationMode.CALLBACK) {
+                    throw PersistenceUnitLoadingException.exceptionObtainingRequiredBeanValidatorFactory(e);
+                } // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
+                session.logMessage("Could not initialize Validation Factory. Encountered following exception: " + e);
+            }
+        }
+    }
+
+    /**
+     * Validation mode from information in persistence.xml and properties specified at EMF creation
+     * @param persitenceUnitInfo PersitenceUnitInfo instance for this persitence unit
+     * @param puProperties merged properties for this persitence unit
+     * @return validtion mode
+     */
+    private static ValidationMode getValidationMode(PersistenceUnitInfo persitenceUnitInfo, Map puProperties) {
+        ValidationMode validationMode = null;
+        // Initialize with value in persitence.xml
+        // Using reflection to call getValidationMode to prevent blowing up while we are running in JPA 1.0 environemnt
+        // (This would be all JavaEE5 appservers) where PersistenceUnitInfo does not implement method getValidationMode().
+        try {
+            Method method = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null));
+                validationMode = (ValidationMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, persitenceUnitInfo));
+            } else {
+                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null);
+                validationMode = (ValidationMode) PrivilegedAccessHelper.invokeMethod(method, persitenceUnitInfo, null);
+            }
+        } catch (Throwable exception) {
+            // We are running in JavaEE5 environment. Catch and swallow any exceptions and return null.
+        }
+
+        if(validationMode == null) {
+            // Default to AUTO as specified in JPA spec.
+            validationMode = ValidationMode.AUTO;
+        }
+        //Check if overridden at emf creation
+        String validationModeAtEMFCreation = (String) puProperties.get(PersistenceUnitProperties.VALIDATION_MODE);
+        if(validationModeAtEMFCreation != null) {
+            //User would get IllegalArgumentException if he has specified invalid mode
+            validationMode = ValidationMode.valueOf(validationModeAtEMFCreation);
+        }
+        return validationMode;
+    }
+
 }

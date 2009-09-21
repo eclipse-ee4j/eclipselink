@@ -180,7 +180,6 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new ExclusiveConnectionModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
-            addProp(new DatabaseDelimiterProp());
         }
         
         Prop(String name) {
@@ -589,11 +588,5 @@ public class PropertiesHandler {
                 ExclusiveConnectionMode.Always
             };
         }
-    }
-    
-    protected static class DatabaseDelimiterProp extends Prop {
-        DatabaseDelimiterProp() {
-            super(PersistenceUnitProperties.DATABASE_DELIMITERS, null);
-        }  
     }
 }

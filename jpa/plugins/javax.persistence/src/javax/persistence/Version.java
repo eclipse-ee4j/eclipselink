@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -31,10 +31,10 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation specifies the version field or property of 
- * an entity class that serves as its optimistic lock value. 
- * The version is used to ensure integrity when performing the 
- * merge operation and for optimistic concurrency control. 
+ * Specifies the version field or property of an entity class that
+ * serves as its optimistic lock value.  The version is used to ensure
+ * integrity when performing the merge operation and for optimistic
+ * concurrency control.
  *
  * <p> Only a single <code>Version</code> property or field 
  * should be used per class; applications that use more than one 
@@ -46,9 +46,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * the primary table will not be portable.
  * 
  * <p> The following types are supported for version properties: 
- * <code>int</code>, {@link Integer}, <code>short</code>, 
- * {@link Short}, <code>long</code>, {@link Long}, 
- * {@link java.sql.Timestamp Timestamp}.
+ * <code>int</code>, <code>Integer</code>, <code>short</code>, 
+ * <code>Short</code>, <code>long</code>, <code>Long</code>, 
+ * <code>java.sql.Timestamp</code>.
  *
  * <pre>
  *    Example:

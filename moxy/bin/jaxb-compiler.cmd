@@ -21,7 +21,7 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe -Djava.endorsed.dirs=\..\jlib\moxy -cp %CLASSPATH% %JVM_ARGS% com.sun.tools.xjc.XJCFacade -eclipselink %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% org.eclipse.persistence.jaxb.xjc.MOXyXJC %JAVA_ARGS%
 
 @endlocal
 goto :EOF

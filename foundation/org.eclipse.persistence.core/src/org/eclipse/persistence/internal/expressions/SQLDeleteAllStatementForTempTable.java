@@ -47,6 +47,6 @@ public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForT
     protected void writeUpdateOriginalTable(AbstractSession session, Writer writer) throws IOException {
         session.getPlatform().writeDeleteFromTargetTableUsingTempTableSql(writer, getTable(), getTargetTable(),
                                                         new Vector(getPrimaryKeyFields()), 
-                                                        new Vector(getTargetPrimaryKeyFields()));
+                                                        new Vector(getTargetPrimaryKeyFields()), session.getPlatform());
     }
 }

@@ -400,7 +400,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             setStartFields(sortedStartFields);
             setEndFields(sortedEndFields);
         }
-        verifyTableQualifiers(session.getDatasourcePlatform());
+        verifyTableQualifiers(session.getPlatform());
 
         // A user need not set a policy on every level of an inheritance, but
         // historic tables can be inherited.
@@ -652,7 +652,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * properly set.
      * <p>A similar method exists on ClassDescriptor.
      */
-    protected void verifyTableQualifiers(Platform platform) {
+    protected void verifyTableQualifiers(DatasourcePlatform platform) {
         HistoricalDatabaseTable table;
         DatabaseTable scratchTable;
         Enumeration tableEnumeration;
@@ -669,7 +669,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             scratchTable = new DatabaseTable(table.getQualifiedName());
             if (scratchTable.getTableQualifier().length() == 0) {
                 scratchTable.setTableQualifier(tableQualifier);
-                table.setHistoricalName(scratchTable.getQualifiedNameDelimited());
+                table.setHistoricalName(scratchTable.getQualifiedNameDelimited(platform));
             }
         }
     }

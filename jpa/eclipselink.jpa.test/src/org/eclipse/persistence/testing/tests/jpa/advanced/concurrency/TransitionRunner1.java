@@ -27,7 +27,7 @@ public class TransitionRunner1 implements Runnable {
         ConcurrencyC c = em.find(ConcurrencyC.class, concC.getId());
         c.setName(System.currentTimeMillis() + "_C");
         b.setName(System.currentTimeMillis() + "_B");
-        UnitOfWorkImpl uow = (UnitOfWorkImpl) ((EntityManagerImpl) em).getActivePersistenceContext(null);
+        UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
         try {
             synchronized (toWaitOn) {
                 toWaitOn.wait(120000);

@@ -11,6 +11,7 @@
  * Contributors:
  *     tware,mkeith - Initial OSGi support for JPA 
  *     smith - Cleanup of activator/listener into this class
+ *     dclarke - 20090916 - Added clearCachedProviders support
  ******************************************************************************/
 package org.eclipse.persistence.javax.persistence.osgi;
 
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
@@ -45,7 +48,7 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
     private Map<String, PersistenceProvider> providers;
 
     public void start(BundleContext context) throws Exception {
-        log("Persistence bundle starting...");
+        log(Level.FINE, context.getBundle().getSymbolicName() + " - starting...");
 
         // Init the bundle context
         this.ctx = context;
@@ -74,7 +77,7 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
             }
         }
 
-        log("Persistence bundle started.");
+        log(Level.FINE, context.getBundle().getSymbolicName() + " - started");
     }
 
     /**
@@ -97,20 +100,20 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
     }
 
     public void stop(BundleContext context) throws Exception {
-        log("Persistence bundle stopping...");
+        log(Level.FINE, context.getBundle().getSymbolicName() + " - stopping...");
 
         // Close the service tracker
-        serviceTracker.close();
-        serviceTracker = null;
+        this.serviceTracker.close();
+        this.serviceTracker = null;
 
         // Nil out the known provider list
         // Note: the holder is in this bundle so it will no longer be available
-        // anyways
-        // This is done to ensure all refs to providers in other bundles is
-        // removed
+        // anyways. This is done to ensure all refs to providers in other
+        // bundles is removed
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(null);
+        this.providers = null;
 
-        log("Persistence bundle stopped.");
+        log(Level.FINE, context.getBundle().getSymbolicName() + " - stopped...");
     }
 
     /**
@@ -139,8 +142,22 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
         return new ArrayList<PersistenceProvider>(getProviders().values());
     }
 
-    private void log(String message) {
-        System.out.println(message);
+    private static final String LOGGER_SUBSYSTEM = "org.eclipse.persistence.javax.persistence.osgi";
+
+    private Logger logger;
+
+    private void log(Level level, String message) {
+        if (this.logger == null) {
+            this.logger = Logger.getLogger(LOGGER_SUBSYSTEM);
+        }
+        this.logger.log(level, LOGGER_SUBSYSTEM + "::" + message);
+    }
+
+    /**
+     * Within OSGi where the providers are tracked dynamically the clear
+     * operation does nothing.
+     */
+    public void clearCachedProviders() {
     }
 
 }

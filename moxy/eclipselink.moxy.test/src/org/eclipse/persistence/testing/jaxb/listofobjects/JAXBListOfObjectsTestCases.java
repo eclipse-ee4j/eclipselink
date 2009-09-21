@@ -92,9 +92,9 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
   
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-            Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
+            Object obj = jaxbUnmarshaller.unmarshal(reader);
             this.xmlToObjectTest(obj);
         }
     }
@@ -119,6 +119,27 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 			objectToXMLDocumentTest(testDocument);
 		}
 	}
+	
+    public void testObjectToXMLEventWriter() throws Exception {
+        if (System.getProperty("java.version").contains("1.6")) {
+            StringWriter writer = new StringWriter();
+            Object objectToWrite = getWriteControlObject();
+            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
+                    .newInstance();
+            javax.xml.stream.XMLEventWriter eventWriter = factory
+                    .createXMLEventWriter(writer);
+
+            getJAXBMarshaller().marshal(objectToWrite, eventWriter);
+
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+
+            objectToXMLDocumentTest(testDocument);
+        }
+    }	
 
 	//Override and don't compare namespaceresolver size
 	public void testObjectToXMLStringWriter() throws Exception {
@@ -135,6 +156,12 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
         objectToXMLDocumentTest(testDocument);
     }
+	
+	
+	public void testRoundTrip() throws Exception {
+		//This test is not applicable because to Marshal we need a specialized jaxbelement
+    }
+	
 
 	//Override and don't compare namespaceresolver size
 	 public void testObjectToContentHandler() throws Exception {

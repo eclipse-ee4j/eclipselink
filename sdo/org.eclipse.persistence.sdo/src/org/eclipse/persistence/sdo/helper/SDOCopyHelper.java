@@ -157,17 +157,17 @@ public class SDOCopyHelper implements CopyHelper {
                 Setting nextSetting = (Setting)settings.get(index);
 
                 Property prop = dataObject.getSequence().getProperty(index);
-                if (prop == null || prop.getType().isDataType()) {
+                if (prop == null || ((SDOType) prop.getType()).isDataType()) {
                     Setting copySetting = nextSetting.copy(copy);
-                    ((SDOSequence)copy.getSequence()).getSettings().add(copySetting);
-                    ((SDOSequence)copy.getSequence()).addValueToSettings(copySetting);
+                    copy.getSequence().getSettings().add(copySetting);
+                    copy.getSequence().addValueToSettings(copySetting);
                 }
             }
         }
 
-        if ((copy != null) && (copy.getChangeSummary() != null) && (((SDOType)copy.getType()).getChangeSummaryProperty() != null)) {
+        if ((copy != null) && (copy.getChangeSummary() != null) && (copy.getType().getChangeSummaryProperty() != null)) {
             if (((SDODataObject)dataObject).getChangeSummary().isLogging()) {
-                ((SDOChangeSummary)copy.getChangeSummary()).setLogging(true);
+                copy.getChangeSummary().setLogging(true);
             }
         }
 
@@ -241,7 +241,7 @@ public class SDOCopyHelper implements CopyHelper {
             HashMap ncPropMap = new HashMap();
 
             // build object instances by recursing the tree        	            
-            DataObject aCopy = copyPrivate((SDODataObject)dataObject, doMap, ncPropMap, cs);
+            SDODataObject aCopy = copyPrivate((SDODataObject)dataObject, doMap, ncPropMap, cs);
 
             // After the copy containment tree has been built
             // Iterate the non-containment nodes and copy all uni/bi-directional properties on the copy.
@@ -257,10 +257,10 @@ public class SDOCopyHelper implements CopyHelper {
              * Setting logging to true only after recursively setting internal properties will not create oldSettings in the copy
              * The setLogging call will create oldContainer/oldContainmentProperty entries in the copy.
              */
-            if ((aCopy != null) && (aCopy.getChangeSummary() != null) && (((SDOType)aCopy.getType()).getChangeSummaryProperty() != null)) {
+            if ((aCopy != null) && (aCopy.getChangeSummary() != null) && (aCopy.getType().getChangeSummaryProperty() != null)) {
                 // re-reference copy objects in the copy changeSummary
                 if (((SDODataObject)dataObject).getChangeSummary().isLogging()) {// switch and use resume logging
-                    ((SDOChangeSummary)aCopy.getChangeSummary()).resumeLogging();//.setLogging(true);
+                    (aCopy.getChangeSummary()).resumeLogging();//.setLogging(true);
                 }
                 copyChangeSummary(((SDODataObject)dataObject).getChangeSummary(),//
                                   aCopy.getChangeSummary(), doMap);
@@ -385,10 +385,10 @@ public class SDOCopyHelper implements CopyHelper {
      */
     private void replicateAndRereferenceSequenceCopyPrivate(SDOSequence origSequence, SDOSequence copySequence, DataObject dataObject, DataObject copy, Map doMap, SDOChangeSummary cs) {
         if (cs != null && cs.isDeleted(dataObject)) {
-            origSequence = (SDOSequence) cs.getOldSequence(dataObject);
+            origSequence = cs.getOldSequence(dataObject);
         }
         
-        Property seqProperty = null;
+        SDOProperty seqProperty = null;
         try {
             List settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
@@ -567,14 +567,14 @@ public class SDOCopyHelper implements CopyHelper {
             Object aVSPropertyItem = null;
 
             // get the # of non-opencontent properties for the object holding the CS - do not use DVS.getTypePropertyValues()
-            for (int size = anOriginalObject.getType().getDeclaredProperties().size(), i = 0;
+            for (int size = ((SDOType) anOriginalObject.getType()).getDeclaredProperties().size(), i = 0; 
                      i < size; i++) {
                 aVSPropertyItem = aVSOriginal.getDeclaredProperty(i);
                 // only iterate set properties
                 if (aVSOriginal.isSetDeclaredProperty(i)) {
                     // shallow copy the object values
                     // handle single case
-                    SDOProperty currentProperty = (SDOProperty)anOriginalObject.getType().getDeclaredProperties().get(i);
+                    SDOProperty currentProperty = (SDOProperty)((SDOType)anOriginalObject.getType()).getDeclaredProperties().get(i);
                     if (currentProperty.isMany()) {
                         propertyToOriginalListMap.put(aVSPropertyItem, currentProperty);
 
@@ -611,7 +611,7 @@ public class SDOCopyHelper implements CopyHelper {
             ocPropertiesList.addAll(((SDODataObject)anOriginalObject)._getOpenContentPropertiesAttributes());
             // iterate existing open content properties            
             for (Iterator i = ocPropertiesList.iterator(); i.hasNext();) {
-                Property ocProperty = (Property)i.next();
+                SDOProperty ocProperty = (SDOProperty)i.next();
                 if (aVSOriginal.isSetOpenContentProperty(ocProperty)) {
                     // get oc value              
                     Object anOCPropertyItem = aVSOriginal.getOpenContentProperty(ocProperty);
@@ -656,7 +656,7 @@ public class SDOCopyHelper implements CopyHelper {
                  anIterator.hasNext();) {
             anOriginalListKey = (ListWrapper)anIterator.next();
             // create a new ListWrapper
-            Property aProperty = (Property)propertyToOriginalListMap.get(anOriginalListKey);
+            SDOProperty aProperty = (SDOProperty) propertyToOriginalListMap.get(anOriginalListKey);
             aCopyListWrapper = (ListWrapper)copyListWrapperCS2toCopyOfListCS2Map.get(anOriginalListKey);
             aCopyList = new ArrayList();
 
@@ -823,7 +823,7 @@ public class SDOCopyHelper implements CopyHelper {
      * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
      * @param ncPropMap (cache original DO:non-containment property values to be set after tree construction)
      */
-    private DataObject copyPrivate(SDODataObject dataObject, HashMap doMap,//
+    private SDODataObject copyPrivate(SDODataObject dataObject, HashMap doMap,//
                                    HashMap ncPropMap, SDOChangeSummary cs) throws IllegalArgumentException {
         // check for null DataObject
         if (null == dataObject) {
@@ -918,13 +918,13 @@ public class SDOCopyHelper implements CopyHelper {
             copy.setInternal(property, copyValue, false);
             for (Iterator iterValues = ((List)value).iterator(); iterValues.hasNext();) {
                 SDODataObject o = (SDODataObject)iterValues.next();
-                DataObject copyO = copyPrivate(o, doMap, ncPropMap, cs);
+                SDODataObject copyO = copyPrivate(o, doMap, ncPropMap, cs);
                 ((ListWrapper)copy.getList(property)).add(copyO, false);
                 // set changeSummary on all cs-root elements in the list after they are added to the containment tree
-                if ((copyO != null) && (copyO.getChangeSummary() != null) && (((SDOType)copyO.getType()).getChangeSummaryProperty() != null)) {
+                if ((copyO != null) && (copyO.getChangeSummary() != null) && (copyO.getType().getChangeSummaryProperty() != null)) {
                     // re-reference copy objects in the copy changeSummary
                     if (o.getChangeSummary().isLogging()) {
-                        ((SDOChangeSummary)copyO.getChangeSummary()).setLogging(true);
+                        (copyO.getChangeSummary()).setLogging(true);
                     }
                     copyChangeSummary(o.getChangeSummary(),//
                                       copyO.getChangeSummary(), doMap);
@@ -932,7 +932,7 @@ public class SDOCopyHelper implements CopyHelper {
             }
         } else {// handle non-many case
             // implementers of this function will always pass in a DataObject that may be null
-            DataObject copyO = copyPrivate((SDODataObject)value, doMap, ncPropMap, cs);
+            SDODataObject copyO = copyPrivate((SDODataObject)value, doMap, ncPropMap, cs);
 
             //  #5852525 handle null properties with isSet=true - fixed 20070130
             // we will set the isSet index in the ValueStore to true for all isSet=true objects, even NULL ones.
@@ -940,10 +940,10 @@ public class SDOCopyHelper implements CopyHelper {
             copy.setInternal(property, copyO, false);
 
             // set changeSummary on all cs-root elements in the list after they are added to the containment tree using the original logging value
-            if ((copyO != null) && (copyO.getChangeSummary() != null) && (((SDOType)copyO.getType()).getChangeSummaryProperty() != null)) {
+            if ((copyO != null) && (copyO.getChangeSummary() != null) && (copyO.getType().getChangeSummaryProperty() != null)) {
                 // re-reference copy objects in the copy changeSummary
                 if (((SDODataObject)value).getChangeSummary().isLogging()) {
-                    ((SDOChangeSummary)copyO.getChangeSummary()).setLogging(true);
+                    copyO.getChangeSummary().setLogging(true);
                 }
                 copyChangeSummary(((SDODataObject)value).getChangeSummary(),//
                                   copyO.getChangeSummary(), doMap);

@@ -14,12 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.QUALIFIER_POSITION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
-
 import javax.persistence.*;
 import javax.persistence.spi.*;
 import javax.sql.DataSource;
@@ -40,7 +34,8 @@ import java.net.URL;
 public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceUnitInfo {
 
     // What about 2.0 in 1.0 container here ...
-    protected CachingType caching;
+    protected SharedCacheMode cacheMode;
+    protected ValidationMode validationMode;
     protected String persistenceUnitName;
     protected String persistenceProviderClassName;
     protected DataSource jtaDataSource;
@@ -58,7 +53,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     
     // Persistence.xml loaded from the canonical model processor will 
     // populate the properties into this collection.
-    protected Collection<SEPersistenceUnitProperty> persistenceUnitProperties;
+    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<SEPersistenceUnitProperty>();
     // Persistence.xml loaded from the metadata processor will populate the
     // properties into this properties map.
     protected Properties properties;
@@ -89,14 +84,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
-    public Collection<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
+    public List<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
        return persistenceUnitProperties; 
     }
 
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
-    public void setPersistenceUnitProperties(Collection<SEPersistenceUnitProperty> persistenceUnitProperties) {
+    public void setPersistenceUnitProperties(List<SEPersistenceUnitProperty> persistenceUnitProperties) {
        this.persistenceUnitProperties = persistenceUnitProperties; 
     }
 
@@ -302,16 +297,27 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
     
     /**
-     * @see PersistenceUnitInfo#setCaching()
+     * @see PersistenceUnitInfo#setSharedCacheMode()
      * @since Java Persistence 2.0
      */
-    public void setCaching(String cachingType) {
-        // If user enters in invalid caching type valueOf will throw an illegal
+    public void setSharedCacheMode(String sharedCacheMode) {
+        // If user enters an invalid caching type valueOf will throw an illegal
         // argument exception, e.g. 
-        // java.lang.IllegalArgumentException: No enum const class javax.persistence.CachingType.ALLBOGUS
-        this.caching = CachingType.valueOf(cachingType);
+        // java.lang.IllegalArgumentException: No enum const class javax.persistence.SharedCacheMode.ALLBOGUS
+        this.cacheMode = SharedCacheMode.valueOf(sharedCacheMode);
     }
     
+    /**
+     * @see PersistenceUnitInfo#getValidationMode()
+     * @since Java Persistence 2.0
+     */
+    public void setValidationMode(String validationMode) {
+        // If user enters an invalid validation mode valueOf will throw an illegal
+        // argument exception, e.g.
+        // java.lang.IllegalArgumentException: No enum const class javax.persistence.ValidationMode.ALLBOGUS
+        this.validationMode = ValidationMode.valueOf(validationMode);
+    }
+
     public void setClassLoader(ClassLoader loader) {
         this.realClassLoader = loader;
     }
@@ -321,85 +327,27 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
 
     /**
-     * @see PersistenceUnitInfo#PersistenceXMLSchemaVersion()
+     * @see PersistenceUnitInfo#getPersistenceXMLSchemaVersion()
      * @since Java Persistence 2.0
      */
-    public String PersistenceXMLSchemaVersion() {
+    public String getPersistenceXMLSchemaVersion() {
         // TODO 
         throw new PersistenceException("Not Yet Implemented");
     }
 
     /**
-     * @see PersistenceUnitInfo#getCaching()
+     * @see PersistenceUnitInfo#getSharedCacheMode()
      * @since Java Persistence 2.0
      */
-    public CachingType getCaching() {
-        return caching;
+    public SharedCacheMode getSharedCacheMode() {
+        return cacheMode;
     }
     
-    /**
-     * Return the canonical name. This will apply the default qualifier "_" 
-     * in the default position "POST".
-     */
-    public String getCanonicalName(String name) {
-        return getCanonicalName(name, CANONICAL_MODEL_QUALIFIER_DEFAULT, CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT);
-    }
-    
-    /**
-     * Return the canonical name. This will apply the default qualifier given 
-     * in the default position given. If the defaults given are null, then the
-     * default qualifer "_" in the default position "POST" will be aplied.
-     */
-    public String getCanonicalName(String name, String defaultQualifier, String defaultQualifierPosition) {
-        // If we have persistence unit properties but our properties map is 
-        // empty, we have not initialize yet, so do it now.
-        if (! persistenceUnitProperties.isEmpty() && properties.isEmpty()) {
-            // Mapping the properties to a collection allows us to perform extra
-            // validation (multiple settings for the same property etc) if we 
-            // so desire. If we  map the properties directly into a map we lose 
-            // this ability and last one in will win.
-            // TODO: Determine how much validation we want to do. There is 
-            // currently a bug to have the reading of the persistence.xml from
-            // metadata processing changed to use OX. For now, the way this
-            // works from the CanonicalModelProcessor remains the same as if
-            // coming from metadata processing, last one in wins.
-            for (SEPersistenceUnitProperty property : getPersistenceUnitProperties()) {
-                properties.put(property.getName(), property.getValue());
-            }
-        }
-        
-        String qualifier = properties.getProperty(CANONICAL_MODEL_QUALIFIER);
-        String qualifierPosition = properties.getProperty(CANONICAL_MODEL_QUALIFIER_POSITION);
-        
-        if (qualifier == null) {
-            if (defaultQualifier == null) {
-                qualifier = CANONICAL_MODEL_QUALIFIER_DEFAULT;
-            } else {
-                qualifier = defaultQualifier;
-            }
-        }
-        
-        if (qualifierPosition == null) {
-            if (defaultQualifierPosition == null) {
-                qualifierPosition = CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT;
-            } else {
-                qualifierPosition = defaultQualifierPosition;
-            }
-        }
-        
-        if (qualifierPosition.equals(QUALIFIER_POSITION.PRE.name())) {
-            return qualifier + name;
-        } else {
-            return name + qualifier;
-        } 
-    }
-
     /**
      * @see PersistenceUnitInfo#getValidationMode()
      * @since Java Persistence 2.0
      */
     public ValidationMode getValidationMode() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        return validationMode;
     }
 }

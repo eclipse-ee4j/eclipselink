@@ -96,7 +96,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         validateConnectionHealthOnErrorMapping.setAttributeName("connectionHealthValidatedOnError");
         validateConnectionHealthOnErrorMapping.setGetMethodName("isConnectionHealthValidatedOnError");
         validateConnectionHealthOnErrorMapping.setSetMethodName("setConnectionHealthValidatedOnError");
-        validateConnectionHealthOnErrorMapping.setXPath("toplink:connection-health-validated-on-error/text()");
+        validateConnectionHealthOnErrorMapping.setXPath("connection-health-validated-on-error/text()");
         validateConnectionHealthOnErrorMapping.setNullPolicy(new NullPolicy(null, false, false, false));
         validateConnectionHealthOnErrorMapping.setNullValue(true);
         descriptor.addMapping(validateConnectionHealthOnErrorMapping);
@@ -105,7 +105,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         delayBetweenReconnectAttempts.setAttributeName("delayBetweenConnectionAttempts");
         delayBetweenReconnectAttempts.setGetMethodName("getDelayBetweenConnectionAttempts");
         delayBetweenReconnectAttempts.setSetMethodName("setDelayBetweenConnectionAttempts");
-        delayBetweenReconnectAttempts.setXPath("toplink:delay-between-reconnect-attempts/text()");
+        delayBetweenReconnectAttempts.setXPath("delay-between-reconnect-attempts/text()");
         delayBetweenReconnectAttempts.setNullPolicy(new NullPolicy(null, false, false, false));
         descriptor.addMapping(delayBetweenReconnectAttempts);
 
@@ -113,7 +113,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         queryRetryAttemptCount.setAttributeName("queryRetryAttemptCount");
         queryRetryAttemptCount.setGetMethodName("getQueryRetryAttemptCount");
         queryRetryAttemptCount.setSetMethodName("setQueryRetryAttemptCount");
-        queryRetryAttemptCount.setXPath("toplink:query-retry-attempt-count/text()");
+        queryRetryAttemptCount.setXPath("query-retry-attempt-count/text()");
         queryRetryAttemptCount.setNullPolicy(new NullPolicy(null, false, false, false));
         descriptor.addMapping(queryRetryAttemptCount);
 
@@ -121,7 +121,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         pingSQLMapping.setAttributeName("pingSQL");
         pingSQLMapping.setGetMethodName("getPingSQL");
         pingSQLMapping.setSetMethodName("setPingSQL");
-        pingSQLMapping.setXPath("toplink:ping-sql/text()");
+        pingSQLMapping.setXPath("ping-sql/text()");
         pingSQLMapping.setNullPolicy(new NullPolicy(null, false, false, false));
         descriptor.addMapping(pingSQLMapping);
 

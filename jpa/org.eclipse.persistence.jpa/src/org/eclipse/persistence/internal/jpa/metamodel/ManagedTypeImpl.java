@@ -96,7 +96,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     /** Native RelationalDescriptor that contains all the mappings of this type **/
-    private RelationalDescriptor descriptor;
+    protected RelationalDescriptor descriptor;
 
     /** The map of attributes keyed on attribute string name **/
     protected Map<String, Attribute<X,?>> members;
@@ -203,7 +203,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  Return all collection-valued attributes of the managed type.
      *  @return collection valued attributes
      */
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
+    public Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
@@ -344,11 +344,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  managed type.
      *  @return declared collection valued attributes
      */
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-        // It is evident from the fact that we have only getAttributes(), getCollections() and getSingularAttributes() that a Collection is a superset of all Set, List and even Map
+    public Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
+        // It is evident from the fact that we have only getAttributes(), getPluralAttributes() and getSingularAttributes() that a Collection is a superset of all Set, List and even Map
         // return only a set of collections declared on this class - not via inheritance
         // Get all collection attribute and filter only on declared ones
-        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getCollections();
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getPluralAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
         Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)
@@ -402,7 +402,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 } else if (descriptor.isAggregateCollectionDescriptor()) {
                     // TODO: Embeddable Collection handling is in progress
                     // AGGREGATE_COLLECTION:3 can be an embeddable or entity type depending on ?
-                    //managedType = new EntityTypeImpl(metamodel, descriptor);
                     managedType = new EmbeddableTypeImpl(metamodel, descriptor);
                 }
             } else if(descriptor.isDescriptorTypeNormal()) {
@@ -973,7 +972,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 if(null != anAttribute && anAttribute == firstLevelAttribute) {
                     return true;
                 } else {
-                    return false;
+                    return false; // TODO: verify use case
                 }
             }
         } else {            
@@ -986,7 +985,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
            } else {
                // UC1.4 (when caller is firstLevel.supertype) - the immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
                if(null == aSuperTypeAttribute) {
-                   // UC 1.5: keep searching a possible chain of mappedSuperclasses
+                   // UC 1.5: keep searching a possible chain of mappedSuperclasses or entities
                    return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
                } else {
                    // superType does not contain the attribute - check that the current attribute and the first differ
@@ -1062,7 +1061,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 // Handle 1:m, n:m collection mappings
                 CollectionMapping colMapping = (CollectionMapping) mapping;
                 ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
-                if (collectionContainerPolicy.isMapPolicy()) {
+                if (collectionContainerPolicy.isMapPolicy() || collectionContainerPolicy.isDirectMapPolicy()) {
                     // Handle Map type mappings
                     member = new MapAttributeImpl(this, colMapping, true);
                     // check mapping.attributeAcessor.attributeField.type=Collection
@@ -1083,7 +1082,10 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                 aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
                             }
                         }
-                        if(null != aField) {
+                        if(null == aField) {
+                            // Check attributeName when the field is null
+                            aType = this.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
+                        } else {
                             aType = aField.getType();
                         }
                         // This attribute is declared as List 
@@ -1202,7 +1204,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     }
                 }
             } else {
-                // Handle 1:1 single object and direct mappings
+                // Handle 1:1 single object and direct mappings including EnumSet
                 member = new SingularAttributeImpl(this, mapping, true);
             }
 
@@ -1210,6 +1212,103 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         }
     }
 
+    /**
+     * INTERNAL:
+     * Get the elementType directly from the class using a reflective method call
+     * directly on the containing java class associated with this managedType. 
+     * @param mapping
+     * @return
+     */
+    public Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
+        /**
+         * In this block we have the following scenario:
+         * 1) The access type is "method" or "field"
+         * 1a) The get method is set on the entity (method access)
+         * 1b) The get method is not set on the entity (field access)
+         * 1c) The get method is named differently than the attribute
+         */                                
+        // Type may be null when no getMethod exists for the class for a ManyToMany mapping
+        // Here we check the returnType on the declared method on the class directly
+        Class aType = null;
+        Field aField = null;
+        String getMethodName = null;
+        //boolean isFieldLevelAccess = false;
+
+        // 1) Check access Type
+        if(mapping.getAttributeAccessor() instanceof MethodAttributeAccessor) {
+            //isFieldLevelAccess = false;
+            getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();
+        } else if(mapping.getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
+            //isFieldLevelAccess = true;
+            aField = ((InstanceVariableAttributeAccessor)mapping.getAttributeAccessor()).getAttributeField();
+        }
+        
+        // 2) based on access type get the element type
+        // 3) If field level access - perform a getDeclaredField call
+        if(null == aField) {
+            // Field level access
+            // Check declaredFields in the case where we have no getMethod or getMethodName
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    aField = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                        this.getJavaType(), mapping.getAttributeName(), false));
+                } else {
+                    aField = PrivilegedAccessHelper.getDeclaredField(
+                        this.getJavaType(), mapping.getAttributeName(), false);
+                }                                        
+            } catch (PrivilegedActionException pae) {
+            } catch (NoSuchFieldException nsfe) {
+            }
+        }
+        
+        // 4) If method level access - perform a getDeclaredMethod call
+        /**
+         * Field access Handling:
+         * If a get method name exists, we check the return type on the method directly
+         * using reflection.
+         * In all failure cases we default to the List type.
+         */
+        if(null == aField) {
+            Method aMethod = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                            this.getJavaType(), getMethodName, null));
+                } else {
+                    aMethod = PrivilegedAccessHelper.getDeclaredMethod(
+                            this.getJavaType(), getMethodName, null);
+                }                
+            } catch (PrivilegedActionException pae) {
+            } catch (NoSuchMethodException nsfe) {
+            }
+    
+            if(null != aMethod) {
+                aType = aMethod.getReturnType();
+            }    
+        }
+
+        // 5) Special processing for MappedSuperclass hierarchies
+        // MappedSuperclasses need special handling to get their type from an inheriting subclass
+        if(null == aField && null == aType && this.isMappedSuperclass()) {
+            // get inheriting subtype member (without handling @override annotations)
+            MappedSuperclassTypeImpl aMappedSuperclass = ((MappedSuperclassTypeImpl)this);
+            AttributeImpl inheritingTypeMember = aMappedSuperclass.getMemberFromInheritingType(mapping.getAttributeName());
+            aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
+        }
+        
+        // 6) get the type from the resulting field (method level access was handled)
+        if(null != aField) {
+            // field access
+            aType = aField.getType();
+        }
+        
+        // 7) catch unsupported element type
+        if(null == aType) {        
+            aType = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+        }
+        return aType;
+    }
+    
     /**
      * INTERNAL:
      * Return whether this type is identifiable.

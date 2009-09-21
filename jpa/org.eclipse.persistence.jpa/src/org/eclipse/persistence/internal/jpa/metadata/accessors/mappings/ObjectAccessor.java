@@ -58,6 +58,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -480,15 +481,19 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             // The default primary key name is the primary key field name of the
             // referenced entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(referenceDescriptor.getPrimaryTable());
             
             // The default foreign key name is the primary key of the
             // referencing entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
-            fkField.setUseDelimiters(useDelimitedIdentifier());
+            fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                fkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             fkField.setTable(getDescriptor().getPrimaryTable());
             
             // Add a source foreign key to the mapping.

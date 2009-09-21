@@ -49,7 +49,7 @@ public class Customer implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy=TABLE, generator="CUSTOMER_TABLE_GENERATOR")
     @TableGenerator(
-        name="CUSTOMER_GENERATOR_TABLE", 
+        name="CUSTOMER_TABLE_GENERATOR", 
         table="CMP3_CUSTOMER_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

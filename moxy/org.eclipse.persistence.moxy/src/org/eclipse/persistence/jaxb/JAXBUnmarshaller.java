@@ -46,6 +46,8 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -305,39 +307,35 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public JAXBElement unmarshal(XMLEventReader eventReader, Class javaClass) throws JAXBException {
-		Source source = null;
-    	try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventReader.class}, false);
-			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventReader});
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}    	
-		return this.unmarshal(source, javaClass);      	
+        Class classToUnmarshalTo = javaClass;
+        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
+            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
+            if(generatedClass != null){
+                classToUnmarshalTo = generatedClass;
+            }
+        }
+        XMLEventReaderReader staxReader = new XMLEventReaderReader();
+        staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+        XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
+        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
     }
     
     public JAXBElement unmarshal(XMLEventReader eventReader, Type type) throws JAXBException {
-		Source source = null;
-    	try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventReader.class}, false);
-			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventReader});
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}
-		return this.unmarshal(source, type);    
+        Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+        if(unmarshalClass != null){
+            return  unmarshal(eventReader, unmarshalClass);
+        }else if(type instanceof Class){
+            return  unmarshal(eventReader, (Class)type);
+        }
+        return null;
     }
     
     public Object unmarshal(XMLEventReader eventReader) throws JAXBException {
-		Source source = null;
-    	try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventReader.class}, false);
-			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventReader});
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}    	
-		return this.unmarshal(source);
+        XMLEventReaderReader staxReader = new XMLEventReaderReader();
+        staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+        XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
+        Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
+        return createJAXBElementIfRequired(value);
     }
     public UnmarshallerHandler getUnmarshallerHandler() {
         return new JAXBUnmarshallerHandler(this);

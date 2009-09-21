@@ -474,7 +474,7 @@ public class ProxyIndirectionProject extends org.eclipse.persistence.sessions.Pr
         directtofieldmapping.setIsReadOnly(false);
         directtofieldmapping.setGetMethodName("getDomain");
         directtofieldmapping.setSetMethodName("setDomain");
-        directtofieldmapping.setFieldName("PROXY_EMAIL.DOMAIN");
+        directtofieldmapping.setFieldName("PROXY_EMAIL.EMAIL_DOMAIN");
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING

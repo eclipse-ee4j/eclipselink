@@ -55,9 +55,15 @@ public class DatasourcePlatform implements Platform {
 
     /** Store map of sequence names to sequences */
     protected Map sequences;
+    
+    /** Delimiter to use for fields and tables using spaces or other special values */
+    protected String startDelimiter = null;
+    protected String endDelimiter = null;
 
     public DatasourcePlatform() {
         this.tableQualifier = "";
+        this.startDelimiter = "";
+        this.endDelimiter = "";
     }
 
     protected void addOperator(ExpressionOperator operator) {
@@ -180,7 +186,7 @@ public class DatasourcePlatform implements Platform {
         }
         return conversionManager;
     }
-
+    
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
@@ -188,6 +194,26 @@ public class DatasourcePlatform implements Platform {
         this.conversionManager = conversionManager;
     }
 
+    /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the end of the value.
+     */
+    public String getEndDelimiter() {
+        return endDelimiter;
+    }
+    
+    /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the end of the value.
+     */
+    public void setEndDelimiter(String endDelimiter) {
+        this.endDelimiter = endDelimiter;
+    }
+    
     /**
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
@@ -226,6 +252,27 @@ public class DatasourcePlatform implements Platform {
         return getDefaultSequence().getPreallocationSize();
     }
 
+
+    /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the start of the value.
+     */
+    public String getStartDelimiter() {
+        return startDelimiter;
+    }
+    
+    /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the start of the value.
+     */
+    public void setStartDelimiter(String startDelimiter) {
+        this.startDelimiter = startDelimiter;
+    }
+    
     /**
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
@@ -669,6 +716,9 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Returns the correct quote character to use around SQL Identifiers that contain
      * Space characters
+     * @deprecated
+     * @see getStartDelimiter()
+     * @see getEndDelimiter()
      * @return The quote character for this platform
      */
     public String getIdentifierQuoteCharacter() {

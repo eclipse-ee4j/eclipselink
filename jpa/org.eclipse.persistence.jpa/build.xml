@@ -56,7 +56,7 @@
     <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
     <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
     <property name="implementation.vendor" value="${specification.vendor}"/>
-
+    
     <!-- Set Compile Path-->
     <path id="jpa.compile.path">
         <pathelement path="${jpa.2.common.plugins.dir}/${antlr}"/>
@@ -123,27 +123,6 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${jpa.2.common.plugins.dir}/EclipseLink_modelgen_${version.string}.jar" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Canonical Model Processing Service"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
         <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
@@ -229,7 +208,9 @@
         <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.validation;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.validation.groups;resolution:=optional${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
@@ -244,27 +225,6 @@
             exceptions="true"
             files="./org.eclipse.persistence.jpa.bnd"
             output="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
-        <jar jarfile="${jpa.2.common.plugins.dir}/EclipseLink_modelgen_${version.string}.jar" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Canonical Model Processing Service"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
-            </fileset>
-        </jar>
         <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>

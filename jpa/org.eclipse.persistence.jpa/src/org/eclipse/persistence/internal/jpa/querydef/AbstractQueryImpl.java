@@ -18,13 +18,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
@@ -55,20 +53,25 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected ResultType queryResult;
     protected QueryBuilderImpl queryBuilder;
     protected boolean distinct;
+    protected List<Expression<?>> stupidImplicitDanglingJoins;
+    protected Class queryType;
+    protected ExpressionImpl havingClause;
+    protected ExpressionImpl groupBy;
 
     protected enum ResultType{
         OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
     
-    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder){
+    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder, Class<T> resultType){
         this.roots = new HashSet<Root<?>>();
         this.metamodel = metamodel;
         this.queryResult = queryResult;
         this.queryBuilder = queryBuilder;
+        this.queryType = resultType;
     }
     
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
+     * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
      * 
      * @param entity
@@ -82,7 +85,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
 
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
+     * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
      * 
      * @param entityClass
@@ -91,9 +94,20 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      */
     public <X> Root<X> from(Class<X> entityClass) {
         EntityType<X> entity = this.metamodel.entity(entityClass);
-        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
-        return root;
+        return this.from(entity);
+    }
+
+    /**
+     * Return the result type of the query.
+     * If a result type was specified as an argument to the
+     * createQuery method, that type will be returned.
+     * If the query was created using the createTupleQuery
+     * method, the result type is Tuple.
+     * Otherwise, the result type is Object.
+     * @return result type
+     */
+    public Class<T> getResultType(){
+        return this.queryType;
     }
 
     /**
@@ -114,6 +128,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> where(Expression<Boolean> restriction){
+        validateRoot(restriction);
         this.where = restriction;
         return this;
     }
@@ -133,10 +148,24 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
             this.where = null;
         }
         Predicate predicate = this.queryBuilder.and(restrictions);
-        integrateRoot(predicate);
+        validateRoot(predicate);
         this.where = predicate;
         return this;
     }
+
+    /**
+     * Specify the expressions that are used to form groups over
+     * the query results.
+     * Replaces the previous specified grouping expressions, if any.
+     * If no grouping expressions are specified, any previously 
+     * added grouping expressions are simply removed.
+     * @param grouping  list of zero or more grouping expressions
+     * @return the modified query
+     */
+    public AbstractQuery<T> groupBy(List<Expression<?>> grouping){
+        throw new UnsupportedOperationException();
+    }
+
 
     /**
      * Specify the expressions that are used to form groups over the query
@@ -209,6 +238,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the list of grouping expressions
      */
     public List<Expression<?>> getGroupList(){
+        //TODO
         throw new UnsupportedOperationException();
     }
     /**
@@ -216,8 +246,9 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * 
      * @return where clause predicate
      */
-    public Expression<Boolean> getRestriction(){
-        return this.where;
+    public Predicate getRestriction(){
+        //TODO
+        throw new UnsupportedOperationException();
     }
     
     /**
@@ -247,38 +278,30 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return subquery corresponding to the query
      */
     public <U> Subquery<U> subquery(Class<U> type){
-        throw new UnsupportedOperationException();
+        return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
     }
     
     /**
      *  Used to use a root from a different query.
      */
     
-    protected void integrateRoot(Expression<?> predicate){
+    protected void validateRoot(Expression<?> predicate) {
         Set<Root<?>> newRoots = new HashSet<Root<?>>();
-        ((ExpressionImpl)predicate).findRoot(newRoots);
-        if (this.roots.isEmpty()){
-            this.roots.addAll(newRoots);
-        }else{
-            boolean found = false;
-            for (Root root : newRoots){
-                if (this.roots.contains(root)){
-                    this.roots.addAll(newRoots);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found){
+        ((InternalSelection) predicate).findRoot(newRoots);
+        for (Root root : newRoots) {
+            if (!this.roots.contains(root)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
             }
         }
     }
 
-    protected void integrateRoot(Selection<?> selection){
+    protected void validateRoot(Selection<?> selection){
         if (selection.isCompoundSelection()){
             for (Selection subSelection: selection.getCompoundSelectionItems()){
-                integrateRoot(subSelection);
+                validateRoot(subSelection);
             }
+        }else{
+            validateRoot((Expression)selection);
         }
     }
 }

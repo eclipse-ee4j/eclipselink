@@ -32,7 +32,7 @@ public class Lego implements Manufacturer {
     @Id
     @GeneratedValue(strategy=TABLE, generator="MANUFACTURER_TABLE_GENERATOR")
     @TableGenerator(
-        name="MANUFACTURER_GENERATOR_TABLE", 
+        name="MANUFACTURER_TABLE_GENERATOR", 
         table="CMP3_MANUFACTURER_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

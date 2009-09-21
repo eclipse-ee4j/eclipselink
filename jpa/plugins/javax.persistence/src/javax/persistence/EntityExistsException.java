@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -29,9 +29,9 @@ package javax.persistence;
  * EntityManager.persist(Object)} is called and the entity already exists. The
  * current transaction, if one is active, will be marked for rollback.
  * <p>
- * If the entity already exists, the EntityExistsException may be thrown when
- * the persist operation is invoked, or the EntityExistsException or another
- * PersistenceException may be thrown at flush or commit time.
+ * If the entity already exists, the <code>EntityExistsException</code> may be thrown when
+ * the persist operation is invoked, or the <code>EntityExistsException</code> or another
+ * <code>PersistenceException</code> may be thrown at flush or commit time.
  * 
  * @see javax.persistence.EntityManager#persist(Object)
  * 

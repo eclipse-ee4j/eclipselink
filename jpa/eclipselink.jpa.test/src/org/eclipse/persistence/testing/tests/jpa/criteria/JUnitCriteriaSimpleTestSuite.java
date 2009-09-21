@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -90,7 +91,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("JUnitJPQLSimpleTestSuite");
+        suite.setName("JUnitCriteriaSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
         
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
@@ -336,7 +337,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     }
 
     //Test case for selecting ALL employees from the database
-
     public void baseTestCase() {
         EntityManager em = createEntityManager();
 
@@ -496,7 +496,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        cq.where( qb.equal( root.get("firstName"), qb.concat(qb.literal("Smith"), qb.concat( qb.literal("Smith"), qb.literal("Smith")) ) ) );
+        cq.where( qb.equal( root.get("firstName"), qb.concat(qb.literal(partOne), qb.concat( qb.literal(partTwo), qb.literal(partThree)) ) ) );
         List result = em.createQuery(cq).getResultList();
 
 
@@ -707,7 +707,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         expectedResult.removeElementAt(0);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp <> ?1";
+        //"SELECT OBJECT(emp) FROM Employee emp WHERE emp <> ?1";
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
@@ -794,6 +794,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        //passing a collection to IN might not be supported in criteria api
         cq.where( qb.in(cq.from(Employee.class).get("id")).value(qb.parameter(List.class, "result")) );
         List result = em.createQuery(cq).setParameter("result", expectedResultList).getResultList();
 
@@ -867,7 +868,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        //casting required, like takes only Expression<String>
         cq.where( qb.like( root.<String>get("firstName"), qb.parameter(String.class)) );
 
         List result = em.createQuery(cq).setParameter(1, partialFirstName).getResultList();
@@ -896,7 +896,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Address> cq = qb.createQuery(Address.class);
         Root<Address> root = cq.from(Address.class);
-        //casting required, like takes only Expression<String>
         cq.where( qb.like( root.<String>get("street"), qb.parameter(String.class, "pattern"), qb.parameter(Character.class, "esc")) );
         
         String patternString = null;
@@ -937,7 +936,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        //casting required to allow matching root.get("id") to Integer for the between expression
         cq.where( qb.not(qb.between(root.<Integer>get("id"), emp1.getId(), emp2.getId())) );
 
         List result = em.createQuery(cq).getResultList();
@@ -1207,7 +1205,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(emp) FROM Employee emp WHERE CONCAT(\""+ partOne + "\", \""+ partTwo + "\") = emp.firstName";
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        //One argument to conact must be an expression
+        //One argument to concat must be an expression
         cq.where( qb.equal(qb.concat(partOne, qb.literal(partTwo)), cq.from(Employee.class).<String>get("firstName")) );
 
         List result = em.createQuery(cq).getResultList();
@@ -1655,19 +1653,18 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(employee) FROM Employee employee, SmallProject sp WHERE sp MEMBER OF employee.projects";
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        //cq.where( qb.isMember(cq.from(SmallProject.class), cq.from(Employee.class).<Collection>get("projects")) );
+        cq.where( qb.isMember(cq.<Project>from(Project.class), cq.from(Employee.class).<Collection<Project>>get("projects")) );
 
         List result = em.createQuery(cq).getResultList();
 
-        //Assert.assertTrue("Simple small Project Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("Simple small Project Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
     public void smallProjectNOTMemberOfProjectsTest() {
         EntityManager em = createEntityManager();
 
-        //query for those employees with Project named "Enterprise" (which should be
-        //a SmallProject)
+        //query for those employees with Project named "Enterprise" (which should be a SmallProject)
         ReadObjectQuery smallProjectQuery = new ReadObjectQuery();
         smallProjectQuery.setReferenceClass(SmallProject.class);
         smallProjectQuery.setSelectionCriteria(new ExpressionBuilder().get("name").equal("Enterprise"));
@@ -1687,11 +1684,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(employee) FROM Employee employee WHERE ?1 NOT MEMBER OF employee.projects"
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        //cq.where( qb.isNotMember(qb.parameter(SmallProject.class), cq.from(Employee.class).<Collection>get("projects")) );
+        cq.where( qb.isNotMember(qb.<Project>parameter(Project.class), cq.from(Employee.class).<Collection<Project>>get("projects")) );
 
         List result = em.createQuery(cq).setParameter(1, smallProject).getResultList();
 
-        //Assert.assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1860,7 +1857,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
-        cq.where(qb.equal(root.get("number"), qb.all(sq)));
+        cq.where(qb.equal(phone.get("number"), qb.all(sq)));
 
         Query jpqlQuery = em.createQuery(cq);
         jpqlQuery.setMaxResults(10);
@@ -1896,7 +1893,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        //cq.where(qb.isMember(qb.parameter(PhoneNumber.class), root.<Collection>get("phoneNumbers")));
+        cq.where(qb.isMember(qb.parameter(PhoneNumber.class), root.<Collection<PhoneNumber>>get("phoneNumbers")));
 
         Vector parameters = new Vector();
         parameters.add(phone);
@@ -1907,7 +1904,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow.deleteObject(phone);
         uow.commit();
 
-        //Assert.assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));*/
+        Assert.assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void selectSimpleNotMemberOfWithParameterTest() {
@@ -1940,7 +1937,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        //cq.where(qb.isNotMember(qb.parameter(PhoneNumber.class), root.<Collection>get("phoneNumbers")));
+        cq.where(qb.isNotMember(qb.parameter(PhoneNumber.class), root.<Collection<PhoneNumber>>get("phoneNumbers")));
 
         Vector parameters = new Vector();
         parameters.add(phone);
@@ -1951,7 +1948,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow.deleteObject(phone);
         uow.commit();
 
-        //Assert.assertTrue("Select simple Not member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("Select simple Not member of with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void selectSimpleBetweenWithParameterTest() {

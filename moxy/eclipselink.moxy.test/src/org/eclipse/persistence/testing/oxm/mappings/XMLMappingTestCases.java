@@ -20,12 +20,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.transform.stax.StAXResult;
 
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -205,6 +210,20 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             xmlToObjectTest(testObject);
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            XMLEventReaderReader staxReader = new XMLEventReaderReader();
+            staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+            XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(xmlEventReader);
+            Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource);
+            
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
 
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
@@ -329,6 +348,42 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             objectToXMLDocumentTest(testDocument);
         }
     }
+    
+    public void testObjectToXMLEventWriter() throws Exception {
+        if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
+            StringWriter writer = new StringWriter();
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+            XMLDescriptor desc = null;
+            if (objectToWrite instanceof XMLRoot) {
+                XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+                if(null != xmlRoot.getObject()) {
+                    desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());                    
+                }
+            } else {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+            }
+
+            int sizeBefore = getNamespaceResolverSize(desc);
+
+            Result result = new StAXResult(eventWriter);
+            xmlMarshaller.marshal(objectToWrite, result);
+
+            eventWriter.flush();
+            int sizeAfter = getNamespaceResolverSize(desc);
+            assertEquals(sizeBefore, sizeAfter);
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }
+    
     protected int getNamespaceResolverSize(XMLDescriptor desc){
        int size = -1;
         if (desc != null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -29,7 +29,7 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * References an entity in the SELECT clause of a SQL query.
+ * Used to map the SELECT clause of a SQL query to an entity result.
  * If this annotation is used, the SQL statement should select 
  * all of the columns that are mapped to the entity object. 
  * This should include foreign key columns to related entities. 
@@ -37,7 +37,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * are undefined.
  *
  * <pre>
- *   Example
+ *   Example:
+ *
  *   Query q = em.createNativeQuery(
  *       "SELECT o.id, o.quantity, o.item, i.id, i.name, i.description "+
  *           "FROM Order o, Item i " +
@@ -50,13 +51,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *   })
  * </pre>
  *
+ * @see SqlResultSetMapping
+ *
  * @since Java Persistence 1.0
  */
 @Target({}) 
 @Retention(RUNTIME)
 public @interface EntityResult { 
 
-    /** The class of the result */
+    /** The class of the result. */
     Class entityClass(); 
 
     /** 

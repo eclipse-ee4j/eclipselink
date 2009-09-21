@@ -33,6 +33,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -179,10 +181,29 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         instream.close();
         xmlToObjectTest(testObject);
     }
+    
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {
+    		InputStream instream = null;
+    		if(writeControlDocumentLocation !=null){
+    			instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+    		}else{
+    			instream = ClassLoader.getSystemResourceAsStream(resourceName);
+    		}
+                Object testObject = jaxbUnmarshaller.unmarshal(instream);
+                instream.close();
+                xmlToObjectTest(testObject);
+            
+                objectToXMLStringWriter(testObject);
+        }    	
+    }
 
     public void testObjectToXMLStringWriter() throws Exception {
+    	objectToXMLStringWriter(getWriteControlObject());
+    }
+    public void objectToXMLStringWriter(Object objectToWrite) throws Exception {
         StringWriter writer = new StringWriter();
-        Object objectToWrite = getWriteControlObject();
+        
         XMLDescriptor desc = null;
         if (objectToWrite instanceof XMLRoot) {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
@@ -238,6 +259,38 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             objectToXMLDocumentTest(testDocument);
         }
     }
+    
+    public void testObjectToXMLEventWriter() throws Exception {
+        if(XML_OUTPUT_FACTORY != null) {
+            StringWriter writer = new StringWriter();
+
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+            XMLDescriptor desc = null;
+            if (objectToWrite instanceof XMLRoot) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            } else {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+            }
+
+            int sizeBefore = getNamespaceResolverSize(desc);
+            jaxbMarshaller.marshal(objectToWrite, eventWriter);
+
+            eventWriter.flush();
+            int sizeAfter = getNamespaceResolverSize(desc);
+
+            assertEquals(sizeBefore, sizeAfter);
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }    
 
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
@@ -285,6 +338,16 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }    
 
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();

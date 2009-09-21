@@ -118,14 +118,15 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
     }
     
     public void testInheritanceMultiTableException(){
-        try{
+        try {
             ReportQuery reportQuery = new ReportQuery();
             reportQuery.returnWithoutReportQueryResult();
             reportQuery.setReferenceClass(Project.class);
             ExpressionBuilder empbuilder = new ExpressionBuilder();
             reportQuery.addAttribute("project",empbuilder);
             List result = (List)getServerSession("fieldaccess").executeQuery(reportQuery);
-        }catch (QueryException ex){
+            result.size();
+        } catch (QueryException ex){
            return; 
         }
         fail("Failed to throw exception, ReportItems must not have multi-table inheritance.");
@@ -142,17 +143,8 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         assertTrue("Failed to return Project as expression root correctly, Not A Project", LargeProject.class.isAssignableFrom(resultItem.getClass()));
     }
 
-	public static Test suite() {
-        return new TestSuite(ReportQueryMultipleReturnTestSuite.class) {
-        
-            protected void setUp(){               
-            }
-
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
-    }
-    
+    public static Test suite() {
+        return new TestSuite(ReportQueryMultipleReturnTestSuite.class);
+    }    
 
 }

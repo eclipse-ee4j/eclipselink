@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.Selection;
@@ -34,7 +33,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class SelectionImpl<X> implements Selection<X> {
+public abstract class SelectionImpl<X> implements Selection<X>, InternalSelection{
     
     protected Class<X> javaType;
     protected Expression currentNode;
@@ -54,6 +53,7 @@ public class SelectionImpl<X> implements Selection<X> {
         this.currentNode = expressionNode;
     }
 
+    //SELECTION
     /**
      * Assign an alias to the selection.
      * 
@@ -64,11 +64,13 @@ public class SelectionImpl<X> implements Selection<X> {
         this.alias = name;
         return this;
     }
+
+    
     public String getAlias() {
         return this.alias;
     }
 
-    public Class<X> getJavaType() {
+    public Class<? extends X> getJavaType() {
         return this.javaType;
     }
     /**

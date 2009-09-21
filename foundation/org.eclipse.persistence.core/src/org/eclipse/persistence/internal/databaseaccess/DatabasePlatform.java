@@ -11,6 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
  *     tware - added implementation of computeMaxRowsForSQL 
+ *     Dies Koper - bug fix for printFieldUnique()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -211,6 +212,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.supportsAutoCommit = true;
         this.usesNativeBatchWriting = false;
         this.castSizeForVarcharParameter = 32672;
+        this.startDelimiter = "\"";
+        this.endDelimiter = "\"";
     }
 
     /**
@@ -874,7 +877,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public int getCursorCode() {
         return cursorCode;
     }
-
+    
     /**
      * Return the field type object describing this databases platform specific representation
      * of the Java primitive class name.
@@ -904,6 +907,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Returns the correct quote character to use around SQL Identifiers that contain
      * Space characters
+     * @deprecated
+     * @see getStartDelimiter()
+     * @see getEndDelimiter()
      * @return The quote character for this platform
      */
     public String getIdentifierQuoteCharacter() {
@@ -1197,7 +1203,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
         }
     }
-
+    
     /**
      * The statement cache size for prepare parameterized statements.
      */
@@ -1467,7 +1473,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setCursorCode(int cursorCode) {
         this.cursorCode = cursorCode;
     }
-
+    
     protected void setFieldTypes(Hashtable theFieldTypes) {
         fieldTypes = theFieldTypes;
     }
@@ -1552,7 +1558,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setShouldTrimStrings(boolean aBoolean) {
         shouldTrimStrings = aBoolean;
     }
-
+    
     /**
      * The statement cache size for prepare parameterized statements.
      */
@@ -2155,7 +2161,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return DatabaseTable temorary table
      */
      public DatabaseTable getTempTableForTable(DatabaseTable table) {
-         return new DatabaseTable("TL_" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters());
+         return new DatabaseTable("TL_" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
      }          
 
     /**
@@ -2243,9 +2249,9 @@ public class DatabasePlatform extends DatasourcePlatform {
                     if (type == null) {
                         type = ClassConstants.STRING;
                     }
-                   fieldDef = new FieldDefinition(field.getNameDelimited(), type);
+                   fieldDef = new FieldDefinition(field.getNameDelimited(this), type);
                 } else {
-                   fieldDef = new FieldDefinition(field.getNameDelimited(), field.getColumnDefinition());
+                   fieldDef = new FieldDefinition(field.getNameDelimited(this), field.getColumnDefinition());
                 }
                 if (pkFields.contains(field) && shouldTempTableSpecifyPrimaryKeys()) {
                     fieldDef.setIsPrimaryKey(true);
@@ -2253,12 +2259,12 @@ public class DatabasePlatform extends DatasourcePlatform {
                 tableDef.addField(fieldDef);
             }            
             tableDef.setCreationPrefix(getCreateTempTableSqlPrefix());
-            tableDef.setName(getTempTableForTable(table).getQualifiedNameDelimited());
+            tableDef.setName(getTempTableForTable(table).getQualifiedNameDelimited(this));
             tableDef.setCreationSuffix(getCreateTempTableSqlSuffix());
             tableDef.buildCreationWriter(session, writer);
         } else {
             writer.write(getCreateTempTableSqlPrefix());
-            writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
+            writer.write(getTempTableForTable(table).getQualifiedNameDelimited(this));
             writer.write(body);
             writer.write(getCreateTempTableSqlSuffix());
         }
@@ -2276,10 +2282,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection usedFields) throws IOException {
         writer.write("INSERT INTO ");
-        writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
+        writer.write(getTempTableForTable(table).getQualifiedNameDelimited(this));
 
         writer.write(" (");        
-        writeFieldsList(writer, usedFields);
+        writeFieldsList(writer, usedFields, this);
         writer.write(") ");
     }          
 
@@ -2308,21 +2314,21 @@ public class DatabasePlatform extends DatasourcePlatform {
                                                      Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedNameDelimited();
+        String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
         writer.write(" SET (");
-        writeFieldsList(writer, assignedFields);
+        writeFieldsList(writer, assignedFields, this);
         writer.write(") = (SELECT ");        
-        writeFieldsList(writer, assignedFields);
+        writeFieldsList(writer, assignedFields, this);
         writer.write(" FROM ");
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
-        writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+        writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(") WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
-        writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+        writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(")");
     }          
 
@@ -2344,17 +2350,17 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
                                                      Collection pkFields, 
-                                                     Collection targetPkFields) throws IOException 
+                                                     Collection targetPkFields, DatasourcePlatform platform) throws IOException 
     {
         writer.write("DELETE FROM ");
-        String targetTableName = targetTable.getQualifiedNameDelimited();
+        String targetTableName = targetTable.getQualifiedNameDelimited(this);
         writer.write(targetTableName);
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(platform));
         writer.write(" FROM ");
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
-        writeJoinWhereClause(writer, null, targetTableName, pkFields, targetPkFields);
+        writeJoinWhereClause(writer, null, targetTableName, pkFields, targetPkFields, this);
         writer.write(")");
     }          
 
@@ -2408,7 +2414,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             // supportsGlobalTempTables() == true
             writer.write("DELETE FROM ");
         }
-        writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
+        writer.write(getTempTableForTable(table).getQualifiedNameDelimited(this));
     }          
 
     /**
@@ -2438,7 +2444,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsList(Writer writer, Collection fields) throws IOException {
+    protected static void writeFieldsList(Writer writer, Collection fields, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
         Iterator itFields = fields.iterator();
         while(itFields.hasNext()) {
@@ -2448,7 +2454,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(", ");
             }
             DatabaseField field = (DatabaseField)itFields.next();
-            writer.write(field.getNameDelimited());
+            writer.write(field.getNameDelimited(platform));
         }
     }
     
@@ -2456,41 +2462,41 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection fields) throws IOException {
+    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection fields, DatasourcePlatform platform) throws IOException {
         writer.write(" SET ");
-        writeFieldsAutoClause(writer, tableName1, tableName2, fields, ", ");
+        writeFieldsAutoClause(writer, tableName1, tableName2, fields, ", ", platform);
     }
 
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields) throws IOException {
+    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
-        writeFieldsAutoClause(writer, tableName1, tableName2, pkFields, " AND ");
+        writeFieldsAutoClause(writer, tableName1, tableName2, pkFields, " AND ", platform);
     }
 
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection fields, String separator) throws IOException {
-        writeFields(writer, tableName1, tableName2, fields, fields, separator);
+    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection fields, String separator, DatasourcePlatform platform) throws IOException {
+        writeFields(writer, tableName1, tableName2, fields, fields, separator, platform);
     }
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields1, Collection pkFields2) throws IOException {
+    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields1, Collection pkFields2, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
-        writeFields(writer, tableName1, tableName2, pkFields1, pkFields2, " AND ");
+        writeFields(writer, tableName1, tableName2, pkFields1, pkFields2, " AND ", platform);
     }
 
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection fields1, Collection fields2, String separator) throws IOException {
+    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection fields1, Collection fields2, String separator, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
         Iterator itFields1 = fields1.iterator();
         Iterator itFields2 = fields2.iterator();
@@ -2504,14 +2510,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(tableName1);
                 writer.write(".");
             }
-            String fieldName1 = ((DatabaseField)itFields1.next()).getNameDelimited();
+            String fieldName1 = ((DatabaseField)itFields1.next()).getNameDelimited(platform);
             writer.write(fieldName1);
             writer.write(" = ");
             if(tableName2 != null) {
                 writer.write(tableName2);
                 writer.write(".");
             }
-            String fieldName2 = ((DatabaseField)itFields2.next()).getNameDelimited();
+            String fieldName2 = ((DatabaseField)itFields2.next()).getNameDelimited(platform);
             writer.write(fieldName2);
         }
     }
@@ -2525,7 +2531,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
 
         boolean shouldAcquireSequenceValueAfterInsert = false;
-        DatabaseField field = new DatabaseField(qualifiedFieldName);
+        DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
         Iterator descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
@@ -2573,7 +2579,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     protected void printFieldUnique(Writer writer) throws IOException {
-        if (supportsPrimaryKeyConstraint()) {
+        if (supportsUniqueKeyConstraints()) {
             writer.write(" UNIQUE");
         }
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,9 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
- *     gyorke  - Post PFD updates
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -29,28 +28,29 @@ import javax.persistence.metamodel.Attribute;
 
 /**
  * Represents a join-fetched association or attribute.
- * 
- * @param <Z>
- * @param <X>
+ *
+ * @param <Z>  the source type of the fetch
+ * @param <X>  the target type of the fetch
+ *
+ * @since Java Persistence 2.0
  */
 public interface Fetch<Z, X> extends FetchParent<Z, X> {
+
     /**
-     * Return the metamodel attribute corresponding to the fetch join.
-     * 
-     * @return metamodel attribute type for the join
+     * Return the metamodel attribute corresponding to the 
+     * fetch join.
+     * @return metamodel attribute for the join
      */
     Attribute<? super Z, ?> getAttribute();
 
     /**
      * Return the parent of the fetched item.
-     * 
      * @return fetch parent
      */
     FetchParent<?, Z> getParent();
 
     /**
      * Return the join type used in the fetch join.
-     * 
      * @return join type
      */
     JoinType getJoinType();

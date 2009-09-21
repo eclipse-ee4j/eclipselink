@@ -15,8 +15,10 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -48,7 +50,6 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         }
     }
 
-    
     /**
      * Whether the selection item is a compound selection
      * @return boolean 
@@ -65,6 +66,12 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
      */
     public List<Selection<?>> getCompoundSelectionItems(){
         return (List<Selection<?>>)this.subSelections;
+    }
+    
+    public void findRoot(Set<Root<?>> roots){
+        for (Selection selection: getCompoundSelectionItems()){
+            ((InternalSelection)selection).findRoot(roots);
+        }
     }
 
 }

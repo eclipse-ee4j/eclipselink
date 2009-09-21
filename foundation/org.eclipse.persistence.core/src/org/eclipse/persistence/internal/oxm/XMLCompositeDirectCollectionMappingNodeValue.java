@@ -289,7 +289,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
                 xmlCompositeDirectCollectionMapping.getNullPolicy().directMarshal(nextFragment, marshalRecord, object, session, namespaceResolver);
 
-                marshalRecord.endElement(nextFragment, namespaceResolver);
+                marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
         }
         return true;

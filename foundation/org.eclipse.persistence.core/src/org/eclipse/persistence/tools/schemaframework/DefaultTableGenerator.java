@@ -427,8 +427,8 @@ public class DefaultTableGenerator {
         for (int index = 0; index < fkFields.size(); index++) {
             fkField = (DatabaseField) fkFields.get(index);
             targetField = (DatabaseField) targetFields.get(index);
-            fkFieldNames.add(fkField.getNameDelimited());
-            targetFieldNames.add(targetField.getNameDelimited());
+            fkFieldNames.add(fkField.getNameDelimited(databasePlatform));
+            targetFieldNames.add(targetField.getNameDelimited(databasePlatform));
             
             fkField = resolveDatabaseField(fkField, targetField);
             setFieldToRelationTable(fkField, tblDef);
@@ -605,7 +605,7 @@ public class DefaultTableGenerator {
         if (tblDef == null) {
             //table not built yet, simply built it
             tblDef = new TableDefinition();
-            tblDef.setName(dbTbl.getNameDelimited());
+            tblDef.setName(dbTbl.getNameDelimited(databasePlatform));
             tblDef.setQualifier(dbTbl.getTableQualifier());
             addUniqueKeyConstraints(tblDef, dbTbl.getUniqueConstraints());
             tableMap.put(dbTbl.getName(), tblDef);
@@ -667,7 +667,7 @@ public class DefaultTableGenerator {
         if (fieldDef == null) {
             //not built yet, build one
             fieldDef = new FieldDefinition();
-            fieldDef.setName(dbField.getNameDelimited());
+            fieldDef.setName(dbField.getNameDelimited(databasePlatform));
 
             if (dbField.getColumnDefinition() != null && dbField.getColumnDefinition().length() > 0) {
                 // This column definition would include the complete definition of the  

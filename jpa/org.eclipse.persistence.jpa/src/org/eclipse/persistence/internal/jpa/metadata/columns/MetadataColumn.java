@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -87,7 +88,7 @@ public abstract class MetadataColumn extends ORMetadata {
         // Initialize the DatabaseField with values and defaults.
         DatabaseField databaseField = new DatabaseField();
             
-        databaseField.setName(m_name == null ? "" : m_name);
+        databaseField.setName(m_name == null ? "" : m_name, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
         databaseField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
         
         return databaseField;

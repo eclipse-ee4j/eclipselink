@@ -20,16 +20,16 @@ import javax.persistence.Query;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import junit.framework.TestCase;
-import org.eclipse.persistence.testing.models.jpa.spring.Address;
-import org.eclipse.persistence.testing.models.jpa.spring.Truck;
-import org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
 
 /**
  * Base Junit TestClass for Spring Framework tests.
  * All test methods here will be exercised by the different Spring configurations that extend this class.
  */
-public class SpringJunitTestCase extends TestCase {
+public abstract class SpringJunitTestCase extends TestCase {
 
     private EntityManagerWrapper em;
 
@@ -42,9 +42,7 @@ public class SpringJunitTestCase extends TestCase {
         try {
             em.persist(truck);
             assertTrue(((Truck)em.find(truck)).getDriverName().equals("persist"));
-        }catch (Exception e) {
-            assertFalse("Error during persist: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }
@@ -66,9 +64,7 @@ public class SpringJunitTestCase extends TestCase {
             assertTrue(((Truck)em.find(truck)) == null);
             assertTrue(((Route)em.find(route)).getAverageTimeMins() == 155);
             assertTrue(((Address)em.find(address)).getStreet().equals("First St."));
-        }catch (Exception e) {
-            assertFalse("Error during cascade persist with remove: " + e, true);
-        }finally {
+        } finally {
             route.removeAddress(address);
             em.remove(address);
             em.remove(route);
@@ -77,14 +73,10 @@ public class SpringJunitTestCase extends TestCase {
     
     public void testRemove(){
         Truck truck = new Truck("remove");
-        try {
-            em.persist(truck);
-            assertTrue(((Truck) em.find(truck)).getDriverName().equals("remove"));
-            em.remove(truck);
-            assertTrue(em.find(truck) == null);
-        }catch (Exception e) {
-            assertFalse("Error during remove: " + e, true);
-        }
+        em.persist(truck);
+        assertTrue(((Truck) em.find(truck)).getDriverName().equals("remove"));
+        em.remove(truck);
+        assertTrue(em.find(truck) == null);
     }
     
     public void testContains(){
@@ -93,9 +85,7 @@ public class SpringJunitTestCase extends TestCase {
             em.persist(truck); 
             assertTrue(em.contains(truck));
             assertFalse(em.contains(new Truck("doesNotContain")));
-        }catch (Exception e) {
-            assertFalse("Error during contains: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }
@@ -105,9 +95,7 @@ public class SpringJunitTestCase extends TestCase {
         try {
             truck = (Truck)em.merge(truck);
             assertTrue(((Truck) em.find(truck)).getDriverName().equals("merge"));
-        }catch (Exception e) {
-            assertFalse("Error during merge: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }
@@ -121,9 +109,7 @@ public class SpringJunitTestCase extends TestCase {
             truck.setDriverName("changeRefresh");
             em.refresh(truck);
             assertTrue(truck.getDriverName().equals("refresh"));
-        }catch (Exception e) {
-            assertFalse("Error during refresh: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }
@@ -136,31 +122,25 @@ public class SpringJunitTestCase extends TestCase {
             truck.setDriverName("reflush");
             em.flush();
             assertTrue(((Truck) em.find(truck)).getDriverName().equals("reflush"));
-        }catch (Exception e) {
-            assertFalse("Error during flush: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }
 
     public void testCreateNativeQuery(){
         Route route = new Route();
-        try {
-            route.setAverageTimeMins(150);
-            em.persist(route);
-            Route r = (Route)em.createNativeQuery(
-                    "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
-                    .getSingleResult();
-            assertTrue(r.getAverageTimeMins() == 150);
-            
-            em.createNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")").executeUpdate();
-            List l = em.createNativeQuery(
-                    "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
-                    .getResultList();
-            assertTrue(l.size() == 0);
-        }catch (Exception e){
-            assertFalse("Error during native query: " + e, true);
-        }
+        route.setAverageTimeMins(150);
+        em.persist(route);
+        Route r = (Route)em.createNativeQuery(
+                "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
+                .getSingleResult();
+        assertTrue(r.getAverageTimeMins() == 150);
+        
+        em.executeNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")");
+        List l = em.createNativeQuery(
+                "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
+                .getResultList();
+        assertTrue(l.size() == 0);
     }
 
     public void testNamedQuery(){
@@ -172,9 +152,7 @@ public class SpringJunitTestCase extends TestCase {
             Query q = em.createNamedQuery("findTruckByDriverName");
             q.setParameter(1, "namedQuery");
             assertTrue(((Truck)q.getSingleResult()).getRoute().getId() == route.getId());
-        }catch (Exception e){
-            assertFalse("Error during named query: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
             em.remove(route);
         }
@@ -188,9 +166,7 @@ public class SpringJunitTestCase extends TestCase {
             Query q = em.createQuery("SELECT t FROM Truck t WHERE t.driverName LIKE ?1");
             q.setParameter(1, "createQuery");
             assertTrue(((Truck)q.getSingleResult()).getId() == truck.getId());
-        }catch (Exception e){
-            assertFalse("Error during create query: " + e, true);
-        }finally {
+        } finally {
             em.remove(truck);
         }
     }

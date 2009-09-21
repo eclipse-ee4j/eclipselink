@@ -20,8 +20,8 @@ import java.util.HashMap;
  * The class defines EclipseLink properties' names.
  * 
  * JPA persistence properties could be specified either in PersistenceUnit or 
- * passes to createEntityManagerFactory / createContainerEntityManagerFactory
- * methods of EntityManagerFactoryProvider.
+ * passed to createEntityManagerFactory / createContainerEntityManagerFactory
+ * methods of PersistenceProvider.
  * 
  * Property values are usually case-insensitive with some common sense exceptions,
  * for instance class names.
@@ -47,6 +47,26 @@ public class PersistenceUnitProperties {
     /** DataSource or JDBC DriverManager password. */
     public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
 
+    /** Validator Factory */
+    public static final String VALIDATOR_FACTORY = "javax.persistence.validation.factory";
+
+    /** Validation Mode */
+    public static final String VALIDATION_MODE = "javax.persistence.validation.mode";
+
+    /** Validator Group for prePersit event.
+     * Specified as fully qualified classnames deliminated by ','
+     */
+    public static final String VALIDATION_GROUP_PRE_PERSIST = "javax.persistence.validation.group.pre-persist";
+
+    /** Validator Group for preUpdate event.
+     * Specified as fully qualified classnames deliminated by ','
+     */
+    public static final String VALIDATION_GROUP_PRE_UPDATE = "javax.persistence.validation.group.pre-update";
+
+    /** Validator Group for preRemove event.
+     * Specified as fully qualified classnames deliminated by ','
+     */
+    public static final String VALIDATION_GROUP_PRE_REMOVE = "javax.persistence.validation.group.pre-remove";
 
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
@@ -417,6 +437,31 @@ public class PersistenceUnitProperties {
      */
     public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
     
+    /**
+     * This optional property specifies the full resource name to look for the 
+     * persistence XML files in. If not specified the default 
+     * META-INF/persistence.xml will be used. 
+     * 
+     * Note: For now this property is used for the canonical model generator but 
+     * it can later be used as a system property for customizing weaving and 
+     * application bootstrap usage.
+     */
+    public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
+    public static final String ECLIPSELINK_PERSISTENCE_XML_DEFAULT = "META-INF/persistence.xml";
+    
+    /**
+     * This optional property specifies the set of persistence unit names that 
+     * will be used when generating the canonical model. By default all 
+     * persistence units available in all persistence XML files will be used. 
+     * The value of this property is a comma separated list. When specifying 
+     * multiple persistence units it is not possible to have persistence units 
+     * with a comma in their name.
+     * 
+     * Note: In the future this property can also be used to limit the 
+     * persistence units that will be processed by the static or dynamic weaving.
+     */
+    public static final String ECLIPSELINK_PERSISTENCE_UNITS = "eclipselink.persistenceunits";
+    
     /** Specify ExceptionHandler implementing class. */
     public static final String EXCEPTION_HANDLER_CLASS = "eclipselink.exception-handler";
     
@@ -649,7 +694,7 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Only used for JMS coordination.
      * Sets the URL for the JMS server hosting the topic.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager#setTopicHostUrl(String)
      */
     public static final String COORDINATION_JMS_HOST = "eclipselink.cache.coordination.jms.host";
@@ -658,7 +703,7 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Only used for JMS coordination.
      * Sets the JMS topic name.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicName(String)
      */
     public static final String COORDINATION_JMS_TOPIC = "eclipselink.cache.coordination.jms.topic";
@@ -667,7 +712,7 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Only used for JMS coordination.
      * Sets the JMS topic connection factory name.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicConnectionFactoryName(String)
      */
     public static final String COORDINATION_JMS_FACTORY = "eclipselink.cache.coordination.jms.factory";
@@ -676,7 +721,7 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Only used for RMI coordination.
      * Sets the number of milliseconds to wait for announcements from other cluster members on startup.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setAnnouncementDelay(int)
      */
     public static final String COORDINATION_RMI_ANNOUNCEMENT_DELAY = "eclipselink.cache.coordination.rmi.announcement-delay";
@@ -686,7 +731,7 @@ public class PersistenceUnitProperties {
      * Only used for RMI coordination.
      * Sets the multicast socket group address.
      * The multicast group is used to find other members of the cluster.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastGroupAddress(String)
      */
     public static final String COORDINATION_RMI_MULTICAST_GROUP = "eclipselink.cache.coordination.rmi.multicast-group";
@@ -696,7 +741,7 @@ public class PersistenceUnitProperties {
      * Only used for RMI coordination.
      * Sets the multicast socket group port.
      * The multicast group port is used to find other members of the cluster.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastPort(int)
      */
     public static final String COORDINATION_RMI_MULTICAST_GROUP_PORT = "eclipselink.cache.coordination.rmi.multicast-group.port";
@@ -712,7 +757,7 @@ public class PersistenceUnitProperties {
      * Note that if sessions are hosted on different LANs that are part of WAN, the announcement sending by one session
      * may not reach other sessions.  In this case, consult your network administrator for the right time-to-live value
      * or test your network by increase the value until sessions receive announcement sent by others.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setPacketTimeToLive(int)
      */
     public static final String COORDINATION_RMI_PACKET_TIME_TO_LIVE = "eclipselink.cache.coordination.rmi.packet-time-to-live";
@@ -722,7 +767,7 @@ public class PersistenceUnitProperties {
      * Only used for RMI coordination.
      * Sets the URL of the host server.
      * This is the URL that other cluster member should use to connect to this host.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setUrl(String)
      */
     public static final String COORDINATION_RMI_URL = "eclipselink.cache.coordination.rmi.url";
@@ -730,7 +775,7 @@ public class PersistenceUnitProperties {
     /**
      * Configures cache coordination for a clustered environment.
      * Set the naming service to use, either "jndi" or "rmi".
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setNamingServiceType(int)
      */
     public static final String COORDINATION_NAMING_SERVICE = "eclipselink.cache.coordination.naming-service";
@@ -738,7 +783,7 @@ public class PersistenceUnitProperties {
     /**
      * Configures cache coordination for a clustered environment.
      * Set the JNDI naming service user name.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setUserName(String)
      */
     public static final String COORDINATION_JNDI_USER = "eclipselink.cache.coordination.jndi.user";
@@ -746,7 +791,7 @@ public class PersistenceUnitProperties {
     /**
      * Configures cache coordination for a clustered environment.
      * Set the JNDI naming service user name.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setPassword(String)
      */
     public static final String COORDINATION_JNDI_PASSWORD = "eclipselink.cache.coordination.jndi.password";
@@ -754,7 +799,7 @@ public class PersistenceUnitProperties {
     /**
      * Configures cache coordination for a clustered environment.
      * Set the JNDI InitialContext factory.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setInitialContextFactoryName(String)
      */
     public static final String COORDINATION_JNDI_CONTEXT = "eclipselink.cache.coordination.jndi.initial-context-factory";
@@ -763,7 +808,7 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Set if the connection should be removed if a communication error occurs when coordinating with it.
      * This is normally used for RMI coordination in case a server goes down (it will reconnect when it comes back up).
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setShouldRemoveConnectionOnError(boolean)
      */
     public static final String COORDINATION_REMOVE_CONNECTION = "eclipselink.cache.coordination.remove-connection-on-error";
@@ -773,7 +818,7 @@ public class PersistenceUnitProperties {
      * Set if the coordination broadcast should occur asynchronously with the committing thread.
      * This means the coordination will be complete before the thread returns from the commit of the transaction.
      * Note that JMS is always asynchronous.  By default RMI is asynchronous.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setShouldPropagateAsynchronously(boolean)
      */
     public static final String COORDINATION_ASYNCH = "eclipselink.cache.coordination.propagate-asynchronously";
@@ -782,23 +827,13 @@ public class PersistenceUnitProperties {
      * Configures cache coordination for a clustered environment.
      * Set if the channel for this cluster.
      * All server's in the same channel will be coordinated.
-     * @see COORDINATION_PROTOCOL
+     * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setChannel(String)
      */
     public static final String COORDINATION_CHANNEL = "eclipselink.cache.coordination.channel";
       
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
-    
-    /**
-     * Used to set delimiter used when using delimited identifiers
-     * Due to the way this property is used, it is universally set rather than configurable on per-persistence-unit basis
-     * (i.e. it is a global setting)
-     * This property should be set as a string that contains the following:
-     * 1. If the start and end delimiter are the same, the string consists of that identifier
-     * 2. If the start and end delimiter are different, the string has two characters, the first being the start identifier the second being the end identifier
-     */
-    public static final String DATABASE_DELIMITERS = "eclipselink.database.delimiters";
     
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
@@ -807,7 +842,7 @@ public class PersistenceUnitProperties {
     /**
      * INTERNAL: Return the overridden log string.
      */
-    public static final String getOverriddenLogStringForProperty(String propertyName){
+    public static String getOverriddenLogStringForProperty(String propertyName){
         return PROPERTY_LOG_OVERRIDES.get(propertyName);
     }    
 

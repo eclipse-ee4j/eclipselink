@@ -118,12 +118,14 @@ public class InheritanceSystem extends TestSystem {
          
             // Drop old constraints.
             try {
-                session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
-                session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
-                session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");
-                session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_FRND");
-                session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_REP");
-                session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_BS");
+                if (session.getPlatform().supportsUniqueKeyConstraints()){
+                    session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
+                    session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
+                    session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");
+                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_FRND");
+                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_REP");
+                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_BS");
+                }
             } catch (Exception ignore) {}
         }
     }

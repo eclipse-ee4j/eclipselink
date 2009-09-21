@@ -4285,14 +4285,14 @@ public abstract class Expression implements Serializable, Cloneable {
                 lastTable = field.getTable();
                 currentAlias = aliasForTable(lastTable);
             }
-            printer.printString(currentAlias.getQualifiedNameDelimited());
+            printer.printString(currentAlias.getQualifiedNameDelimited(printer.getPlatform()));
             printer.printString(".");
         }
-        printer.printString(field.getNameDelimited());
+        printer.printString(field.getNameDelimited(printer.getPlatform()));
 
         //bug6070214: unique field aliases need to be generated when required.
         if (statement.getUseUniqueFieldAliases()){
-            printer.printString(" AS " + field.getNameDelimited() + statement.getNextFieldCounterValue() );
+            printer.printString(" AS " + field.getNameDelimited(printer.getPlatform()) + statement.getNextFieldCounterValue() );
         }
     }
 
@@ -4314,9 +4314,9 @@ public abstract class Expression implements Serializable, Cloneable {
                 this.lastTable = field.getTable();
                 this.currentAlias = aliasForTable(this.lastTable);
             }
-            printer.printString(this.currentAlias.getQualifiedNameDelimited());
+            printer.printString(this.currentAlias.getQualifiedNameDelimited(printer.getPlatform()));
         } else {
-            printer.printString(field.getTable().getQualifiedNameDelimited());
+            printer.printString(field.getTable().getQualifiedNameDelimited(printer.getPlatform()));
         }
     }
 

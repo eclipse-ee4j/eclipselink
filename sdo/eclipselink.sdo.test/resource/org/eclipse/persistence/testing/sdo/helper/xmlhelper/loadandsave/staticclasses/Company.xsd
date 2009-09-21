@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://theUri" xmlns="http://theUri" elementFormDefault="qualified" sdoJava:package="org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.staticclasses" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" >
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="CompanyType">
+      <xsd:sequence>
+         <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="public" type="xsd:boolean" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="companyName" type="CompanyType" minOccurs="0"/>
+</xsd:schema>

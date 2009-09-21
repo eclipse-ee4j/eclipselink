@@ -544,7 +544,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *        parsable long.
     *
     */
-  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
+  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {	  
       if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){		  
           return super.convertObjectToLong(((String)sourceObject).substring(1));
       }

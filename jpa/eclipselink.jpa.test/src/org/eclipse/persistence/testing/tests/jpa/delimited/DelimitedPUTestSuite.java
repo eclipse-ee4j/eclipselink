@@ -57,10 +57,6 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     }
 
     public void testPopulate(){
-        // Temporarily disable testing on MySQL until build scripts can be updated to 
-        if (getServerSession("delimited").getDatasourcePlatform().isMySQL()){
-            return;
-        }
         EntityManager em = createEntityManager("delimited");
         beginTransaction(em);
         
@@ -102,11 +98,6 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     }
     
     public void testReadEmployee() {
-        // Temporarily disable testing on MySQL until build scripts can be updated to 
-        if (getServerSession("delimited").getDatasourcePlatform().isMySQL()){
-            return;
-        }
-        
         EntityManager em = createEntityManager("delimited");
 
         Employee returnedEmp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Del' and e.lastName = 'Imited'").getSingleResult();
@@ -118,11 +109,6 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     }
     
     public void testNativeQuery(){
-        // Temporarily disable testing on MySQL until build scripts can be updated to 
-        if (getServerSession("delimited").getDatasourcePlatform().isMySQL()){
-            return;
-        }
-        
         clearCache("delimited");
         EntityManager em = createEntityManager("delimited");
         List result = em.createNamedQuery("findAllSQLEmployees").getResultList();
@@ -132,11 +118,6 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     
     
     public void testUpdateEmployee() {
-        // Temporarily disable testing on MySQL until build scripts can be updated to 
-        if (getServerSession("delimited").getDatasourcePlatform().isMySQL()){
-            return;
-        }
-        
         EntityManager em = createEntityManager("delimited");
         try {
             beginTransaction(em);

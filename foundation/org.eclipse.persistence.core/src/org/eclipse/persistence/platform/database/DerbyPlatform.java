@@ -177,11 +177,11 @@ public class DerbyPlatform extends DB2Platform {
                                                      Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedNameDelimited();
+        String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
         writer.write(" SET ");
         
-        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         boolean isFirst = true;
         Iterator itFields = assignedFields.iterator();
         while(itFields.hasNext()) {
@@ -191,21 +191,21 @@ public class DerbyPlatform extends DB2Platform {
                 writer.write(", ");
             }
             DatabaseField field = (DatabaseField)itFields.next();
-            String fieldName = field.getNameDelimited();
+            String fieldName = field.getNameDelimited(this);
             writer.write(fieldName);
             writer.write(" = (SELECT ");
             writer.write(fieldName);
             writer.write(" FROM ");
             writer.write(tempTableName);
-            writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+            writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
             writer.write(")");
         }
         
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
-        writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+        writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(")");
     }          
 

@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
@@ -82,6 +83,16 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
         }
     }
     
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, String.class);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+    
     public void testXMLToObjectFromURL() throws Exception {
     }
     
@@ -95,6 +106,22 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
         Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), String.class);
         instream.close();
         xmlToObjectTest(testObject);
+    }
+    
+    public void testRoundTrip() throws Exception{
+    	if(isUnmarshalTest()) {
+    		InputStream instream = null;
+    		if(writeControlDocumentLocation !=null){
+    			instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+    		}else{
+    			instream = ClassLoader.getSystemResourceAsStream(resourceName);
+    		}
+    	    Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), String.class);
+    	    instream.close();
+    	    xmlToObjectTest(testObject);
+            
+            objectToXMLStringWriter(testObject);
+        }    	
     }
 
 }

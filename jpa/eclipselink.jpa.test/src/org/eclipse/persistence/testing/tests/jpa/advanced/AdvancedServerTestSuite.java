@@ -12,22 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
+import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
+
 import junit.framework.TestSuite;
 import junit.framework.Test;
-
-import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
-//import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceContextJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
@@ -41,7 +29,7 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
-        //suite.addTest(SQLResultSetMappingTestSuite.suite()); - hangup for J2SE
+        suite.addTest(SQLResultSetMappingTestSuite.suite());
         suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
         suite.addTest(ReportQueryAdvancedJUnitTest.suite());

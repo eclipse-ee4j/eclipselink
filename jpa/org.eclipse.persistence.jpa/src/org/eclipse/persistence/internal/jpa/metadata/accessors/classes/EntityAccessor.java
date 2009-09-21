@@ -160,13 +160,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             String defaultPKFieldName = getDescriptor().getPrimaryKeyFieldName();
 
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(sourceTable);
             
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, pkField.getName(), FK_CTX));
-            fkField.setUseDelimiters(useDelimitedIdentifier());
+            fkField.setName(getName(fkField, pkField.getName(), FK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                fkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             fkField.setTable(targetTable);
 
             // Add the foreign key field to the descriptor.

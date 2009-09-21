@@ -162,7 +162,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                         marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xopPrefix, XMLConstants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();
-                    marshalRecord.endElement(xPathFragment, namespaceResolver);
+                    marshalRecord.endElement(xopInclude, namespaceResolver);
                     //marshal as an attachment
                 }
             } else {

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.transaction;
 
 import javax.transaction.*;
+
 import org.eclipse.persistence.exceptions.TransactionException;
 
 /**
@@ -48,6 +49,10 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * @see AbstractTransactionController
  */
 public class JTATransactionController extends AbstractTransactionController {
+    
+    // Allows transaction manager to be set statically.
+    protected static TransactionManager defaultTransactionManager;
+    
     // Primary point of integration with JTA 
     protected TransactionManager transactionManager;
 
@@ -57,12 +62,22 @@ public class JTATransactionController extends AbstractTransactionController {
      */
     public JTATransactionController() {
         super();
-        listenerFactory = new JTASynchronizationListener();
+        this.listenerFactory = new JTASynchronizationListener();
         try {
-            transactionManager = acquireTransactionManager();
+            this.transactionManager = acquireTransactionManager();
         } catch (Exception ex) {
             throw TransactionException.errorObtainingTransactionManager(ex);
         }
+    }
+    
+    /**
+     * PUBLIC:
+     * Return a new controller for use with a JTA 1.0 compliant TransactionManager.
+     */
+    public JTATransactionController(TransactionManager transactionManager) {
+        super();
+        this.listenerFactory = new JTASynchronizationListener();
+        this.transactionManager = transactionManager;
     }
 
     /**
@@ -218,7 +233,7 @@ public class JTATransactionController extends AbstractTransactionController {
     /**
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform.
-     * By default do nothing.
+     * By default try java:comp JNDI lookup.
      *
      * This method can be can be overridden by subclasses to obtain the
      * transaction manager by whatever means is appropriate to the server.
@@ -230,6 +245,9 @@ public class JTATransactionController extends AbstractTransactionController {
      * @return The TransactionManager for the transaction system
      */
     protected TransactionManager acquireTransactionManager() throws Exception {
+        if (defaultTransactionManager != null) {
+            return defaultTransactionManager;
+        }
         return null;
     }
 
@@ -274,5 +292,18 @@ public class JTATransactionController extends AbstractTransactionController {
     protected String statusToString_impl(Object status) {
         int statusCode = getIntStatus(status);
         return codes[statusCode];
+    }
+
+    public static TransactionManager getDefaultTransactionManager() {
+        return defaultTransactionManager;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the JTA transaction manager to be used.
+     * This can be called directly before login to configure JTA integration manually, or using Spring injection.
+     */
+    public static void setDefaultTransactionManager(TransactionManager defaultTransactionManager) {
+        JTATransactionController.defaultTransactionManager = defaultTransactionManager;
     }
 }

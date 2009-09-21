@@ -93,7 +93,12 @@ public abstract class QueryTimeoutBatchTestCase extends TestCase {
     	try {
     		// Add expected inserts to sequence
     		DataModifyQuery modifyQuery = new DataModifyQuery();
-    		modifyQuery.setSQLString("UPDATE SEQUENCE SET SEQ_COUNT = SEQ_COUNT + 10 WHERE SEQ_NAME = 'EMP_SEQ'");
+    		
+            String sequenceTableName = "SEQUENCE";
+            if (getSession().getPlatform().getDefaultSequence().isTable()) {
+                sequenceTableName = getSession().getPlatform().getQualifiedSequenceTableName();
+            }
+    		modifyQuery.setSQLString("UPDATE " + sequenceTableName + " SET SEQ_COUNT = SEQ_COUNT + 10 WHERE SEQ_NAME = 'EMP_SEQ'");
     		modifyQuery.setForceBatchStatementExecution(true);
     		uow.addQuery("modify1", modifyQuery);    		
     		uow.executeQuery(modifyQuery);
@@ -101,7 +106,7 @@ public abstract class QueryTimeoutBatchTestCase extends TestCase {
     	
     		// Get next sequence
     		DataReadQuery readQuery = new DataReadQuery();
-    		readQuery.setSQLString("SELECT SEQ_COUNT FROM SEQUENCE WHERE SEQ_NAME = 'EMP_SEQ'");
+    		readQuery.setSQLString("SELECT SEQ_COUNT FROM " + sequenceTableName + " WHERE SEQ_NAME = 'EMP_SEQ'");
     		uow.addQuery("read1", readQuery);    		
     		Object resultFromRead = uow.executeQuery(readQuery);
     		DatabaseRecord dbRecord = (DatabaseRecord)((Vector)resultFromRead).get(0);

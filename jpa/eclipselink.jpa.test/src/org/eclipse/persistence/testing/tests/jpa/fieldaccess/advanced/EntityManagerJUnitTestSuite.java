@@ -217,7 +217,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // Force uppercase for Postgres.
         if (getServerSession("fieldaccess").getPlatform().isPostgreSQL()) {
-            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+            getServerSession("fieldaccess").getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
     
@@ -529,6 +529,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 return;    
             }catch (RuntimeException ex){
                 if (ex.getCause() instanceof javax.transaction.RollbackException) {
+                    return;
+                }
+                if (ex.getCause() instanceof RollbackException) {
                     return;
                 }
                 if (isTransactionActive(em)){
@@ -3066,7 +3069,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     // Test cascade merge on a detached entity
-    public void testCascadeMergeDetached() {
+    public void testCascadeMergeDetached() throws Throwable {
         // setup
         Project p1 = new Project();
         p1.setName("Project1");
@@ -3086,11 +3089,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(e2);
 
             commitTransaction(em);
-        } catch (RuntimeException re){
+        } catch (Throwable exception){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            throw re;
+            throw exception;
         }
         closeEntityManager(em);
         // end of setup
@@ -3126,18 +3129,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
 
             commitTransaction(em);
-        } catch (RuntimeException re){
+        } catch (Throwable exception){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            throw re;
+            throw exception;
         }
         closeEntityManager(em);
     }
 
     // Test cascade merge on a managed entity
     // Test for GF#1139 - Cascade doesn't work when merging managed entity
-    public void testCascadeMergeManaged() {
+    public void testCascadeMergeManaged() throws Throwable {
         // setup
         Project p1 = new Project();
         p1.setName("Project1");
@@ -3200,11 +3203,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
 
             commitTransaction(em);
-        } catch (RuntimeException re){
+        } catch (Throwable exception){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            throw re;
+            throw exception;
         }
         closeEntityManager(em);
     }
@@ -3371,14 +3374,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int addressId = address.getId();
         
         beginTransaction(em);
-        employee = em.getReference(Employee.class, employee.getId());
-        em.refresh(employee);
-        employee.getAddress();
-
-        address = new Address();
-        address.setCity("Metropolis");
-        employee.setAddressField(address);
         try {
+            employee = em.getReference(Employee.class, employee.getId());
+            em.refresh(employee);
+            employee.getAddress();
+    
+            address = new Address();
+            address.setCity("Metropolis");
+            employee.setAddressField(address);
             commitTransaction(em);
         } catch (RuntimeException e){
             if (isTransactionActive(em)){

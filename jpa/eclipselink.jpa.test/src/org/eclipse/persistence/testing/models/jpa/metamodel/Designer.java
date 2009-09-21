@@ -18,6 +18,8 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import static javax.persistence.FetchType.EAGER;
 
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -26,6 +28,11 @@ import javax.persistence.OneToOne;
 @MappedSuperclass
 public abstract class Designer extends Person {
 
+/*    @Id
+    // InstanceVariableAttributeAccessor testing
+    @Column(name="DESIGNER_ID")    
+    private Integer ident;
+*/    
     
     // The M:1 side is the owning side - but this is a unidirectional mapping
     // The ManyToOne will resolve to a OneToOne internally without a unique PK restriction

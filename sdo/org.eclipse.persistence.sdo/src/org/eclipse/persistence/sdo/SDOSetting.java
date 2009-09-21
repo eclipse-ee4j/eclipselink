@@ -29,7 +29,7 @@ import commonj.sdo.Property;
   * @since Oracle TopLink 11.1.1.0.0
   */
 public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting {
-    private Property property;
+    private SDOProperty property;
     private Object value;
     private boolean isSet;
 
@@ -37,7 +37,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
     }
 
     public SDOSetting(Property aProperty, Object aValue) {
-        property = aProperty;
+        property = (SDOProperty) aProperty;
         value = aValue;
         // isSet is false by default
     }
@@ -46,14 +46,14 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * @return The TopLink OXM mapping associated with this setting
      */
     public XMLMapping getMapping() {
-        return (XMLMapping)((SDOProperty)property).getXmlMapping();
+        return (XMLMapping)property.getXmlMapping();
     }
 
     /**
      * Returns the property of the setting.
      * @return the setting property.
      */
-    public Property getProperty() {
+    public SDOProperty getProperty() {
         return property;
     }
 
@@ -63,7 +63,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * @param property     The property to set on this setting.
      */
     public void setProperty(Property property) {
-        this.property = property;
+        this.property = (SDOProperty) property;
     }
 
     /**

@@ -33,6 +33,8 @@ import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
@@ -815,6 +817,17 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     }
 
     /**
+     * Return a boolean indicating whether a value has been bound 
+     * to the parameter.
+     * @param param parameter object
+     * @return boolean indicating whether parameter has been bound
+     */
+    public boolean isBound(Parameter<?> param){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Spec. 3.5.2: "FlushMode.AUTO is set on the Query object, or if the flush
      * mode setting for the persistence context is AUTO (the default) and a
      * flush mode setting has not been specified for the Query object, the
@@ -1253,7 +1266,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItem(String, Class)
      * @since Java Persistence 2.0
      */
-    public <T> ResultItem<T> getResultItem(String alias, Class<T> type) {
+    public <T> TupleElement<T> getResultItem(String alias, Class<T> type) {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1262,7 +1275,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItem(int, Class)
      * @since Java Persistence 2.0
      */
-    public <T> ResultItem<T> getResultItem(int position, Class<T> type) {
+    public <T> TupleElement<T> getResultItem(int position, Class<T> type) {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1271,7 +1284,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getResultItems()
      * @since Java Persistence 2.0
      */
-    public List<ResultItem<?>> getResultItems() {
+    public List<TupleElement<?>> getResultItems() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1289,7 +1302,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getTypedResultList()
      * @since Java Persistence 2.0
      */
-    public List<Result> getTypedResultList() {
+    public List<Tuple> getTypedResultList() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1298,7 +1311,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @see Query#getTypedSingleResult()
      * @since Java Persistence 2.0
      */
-    public Result getTypedSingleResult() {
+    public Tuple getTypedSingleResult() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }

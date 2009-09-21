@@ -68,7 +68,7 @@ public class SDOClassLoader extends ClassLoader {
     }
 
     public Class createGeneric(String className, SDOType type) {
-        Class javaClass = (Class)generatedClasses.get(className);
+        Class javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }

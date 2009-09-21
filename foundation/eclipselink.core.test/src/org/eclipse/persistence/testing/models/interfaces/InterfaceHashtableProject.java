@@ -189,7 +189,7 @@ protected void buildClass100Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS100.VALUE");
+	directtofieldmapping1.setFieldName("CLASS100.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -232,7 +232,7 @@ protected void buildClass10Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS10.VALUE");
+	directtofieldmapping1.setFieldName("CLASS10.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -275,7 +275,7 @@ protected void buildClass11Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS11.VALUE");
+	directtofieldmapping1.setFieldName("CLASS11.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -318,7 +318,7 @@ protected void buildClass12Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS12.VALUE");
+	directtofieldmapping1.setFieldName("CLASS12.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -361,7 +361,7 @@ protected void buildClass13Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS13.VALUE");
+	directtofieldmapping1.setFieldName("CLASS13.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -404,7 +404,7 @@ protected void buildClass14Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS14.VALUE");
+	directtofieldmapping1.setFieldName("CLASS14.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -447,7 +447,7 @@ protected void buildClass15Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS15.VALUE");
+	directtofieldmapping1.setFieldName("CLASS15.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -490,7 +490,7 @@ protected void buildClass16Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS16.VALUE");
+	directtofieldmapping1.setFieldName("CLASS16.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -533,7 +533,7 @@ protected void buildClass17Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS17.VALUE");
+	directtofieldmapping1.setFieldName("CLASS17.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -576,7 +576,7 @@ protected void buildClass18Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS18.VALUE");
+	directtofieldmapping1.setFieldName("CLASS18.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -619,7 +619,7 @@ protected void buildClass19Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS19.VALUE");
+	directtofieldmapping1.setFieldName("CLASS19.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -662,7 +662,7 @@ protected void buildClass1Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS1.VALUE");
+	directtofieldmapping1.setFieldName("CLASS1.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -705,7 +705,7 @@ protected void buildClass20Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS20.VALUE");
+	directtofieldmapping1.setFieldName("CLASS20.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -748,7 +748,7 @@ protected void buildClass21Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS21.VALUE");
+	directtofieldmapping1.setFieldName("CLASS21.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -791,7 +791,7 @@ protected void buildClass22Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS22.VALUE");
+	directtofieldmapping1.setFieldName("CLASS22.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -834,7 +834,7 @@ protected void buildClass23Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS23.VALUE");
+	directtofieldmapping1.setFieldName("CLASS23.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -877,7 +877,7 @@ protected void buildClass24Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS24.VALUE");
+	directtofieldmapping1.setFieldName("CLASS24.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -920,7 +920,7 @@ protected void buildClass25Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS25.VALUE");
+	directtofieldmapping1.setFieldName("CLASS25.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -963,7 +963,7 @@ protected void buildClass26Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS26.VALUE");
+	directtofieldmapping1.setFieldName("CLASS26.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1006,7 +1006,7 @@ protected void buildClass27Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS27.VALUE");
+	directtofieldmapping1.setFieldName("CLASS27.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1049,7 +1049,7 @@ protected void buildClass28Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS28.VALUE");
+	directtofieldmapping1.setFieldName("CLASS28.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1092,7 +1092,7 @@ protected void buildClass29Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS29.VALUE");
+	directtofieldmapping1.setFieldName("CLASS29.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1135,7 +1135,7 @@ protected void buildClass2Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS2.VALUE");
+	directtofieldmapping1.setFieldName("CLASS2.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1178,7 +1178,7 @@ protected void buildClass30Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS30.VALUE");
+	directtofieldmapping1.setFieldName("CLASS30.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1221,7 +1221,7 @@ protected void buildClass31Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS31.VALUE");
+	directtofieldmapping1.setFieldName("CLASS31.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1264,7 +1264,7 @@ protected void buildClass32Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS32.VALUE");
+	directtofieldmapping1.setFieldName("CLASS32.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1307,7 +1307,7 @@ protected void buildClass33Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS33.VALUE");
+	directtofieldmapping1.setFieldName("CLASS33.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1350,7 +1350,7 @@ protected void buildClass34Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS34.VALUE");
+	directtofieldmapping1.setFieldName("CLASS34.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1393,7 +1393,7 @@ protected void buildClass35Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS35.VALUE");
+	directtofieldmapping1.setFieldName("CLASS35.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1436,7 +1436,7 @@ protected void buildClass36Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS36.VALUE");
+	directtofieldmapping1.setFieldName("CLASS36.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1479,7 +1479,7 @@ protected void buildClass37Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS37.VALUE");
+	directtofieldmapping1.setFieldName("CLASS37.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1522,7 +1522,7 @@ protected void buildClass38Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS38.VALUE");
+	directtofieldmapping1.setFieldName("CLASS38.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1565,7 +1565,7 @@ protected void buildClass39Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS39.VALUE");
+	directtofieldmapping1.setFieldName("CLASS39.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1608,7 +1608,7 @@ protected void buildClass3Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS3.VALUE");
+	directtofieldmapping1.setFieldName("CLASS3.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1651,7 +1651,7 @@ protected void buildClass40Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS40.VALUE");
+	directtofieldmapping1.setFieldName("CLASS40.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1694,7 +1694,7 @@ protected void buildClass41Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS41.VALUE");
+	directtofieldmapping1.setFieldName("CLASS41.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1737,7 +1737,7 @@ protected void buildClass42Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS42.VALUE");
+	directtofieldmapping1.setFieldName("CLASS42.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1780,7 +1780,7 @@ protected void buildClass43Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS43.VALUE");
+	directtofieldmapping1.setFieldName("CLASS43.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1823,7 +1823,7 @@ protected void buildClass44Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS44.VALUE");
+	directtofieldmapping1.setFieldName("CLASS44.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1866,7 +1866,7 @@ protected void buildClass45Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS45.VALUE");
+	directtofieldmapping1.setFieldName("CLASS45.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1909,7 +1909,7 @@ protected void buildClass46Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS46.VALUE");
+	directtofieldmapping1.setFieldName("CLASS46.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1952,7 +1952,7 @@ protected void buildClass47Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS47.VALUE");
+	directtofieldmapping1.setFieldName("CLASS47.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -1995,7 +1995,7 @@ protected void buildClass48Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS48.VALUE");
+	directtofieldmapping1.setFieldName("CLASS48.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2038,7 +2038,7 @@ protected void buildClass49Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS49.VALUE");
+	directtofieldmapping1.setFieldName("CLASS49.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2081,7 +2081,7 @@ protected void buildClass4Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS4.VALUE");
+	directtofieldmapping1.setFieldName("CLASS4.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2124,7 +2124,7 @@ protected void buildClass50Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS50.VALUE");
+	directtofieldmapping1.setFieldName("CLASS50.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2167,7 +2167,7 @@ protected void buildClass51Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS51.VALUE");
+	directtofieldmapping1.setFieldName("CLASS51.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2210,7 +2210,7 @@ protected void buildClass52Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS52.VALUE");
+	directtofieldmapping1.setFieldName("CLASS52.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2253,7 +2253,7 @@ protected void buildClass53Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS53.VALUE");
+	directtofieldmapping1.setFieldName("CLASS53.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2296,7 +2296,7 @@ protected void buildClass54Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS54.VALUE");
+	directtofieldmapping1.setFieldName("CLASS54.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2339,7 +2339,7 @@ protected void buildClass55Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS55.VALUE");
+	directtofieldmapping1.setFieldName("CLASS55.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2382,7 +2382,7 @@ protected void buildClass56Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS56.VALUE");
+	directtofieldmapping1.setFieldName("CLASS56.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2425,7 +2425,7 @@ protected void buildClass57Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS57.VALUE");
+	directtofieldmapping1.setFieldName("CLASS57.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2468,7 +2468,7 @@ protected void buildClass58Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS58.VALUE");
+	directtofieldmapping1.setFieldName("CLASS58.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2511,7 +2511,7 @@ protected void buildClass59Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS59.VALUE");
+	directtofieldmapping1.setFieldName("CLASS59.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2554,7 +2554,7 @@ protected void buildClass5Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS5.VALUE");
+	directtofieldmapping1.setFieldName("CLASS5.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2597,7 +2597,7 @@ protected void buildClass60Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS60.VALUE");
+	directtofieldmapping1.setFieldName("CLASS60.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2640,7 +2640,7 @@ protected void buildClass61Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS61.VALUE");
+	directtofieldmapping1.setFieldName("CLASS61.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2683,7 +2683,7 @@ protected void buildClass62Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS62.VALUE");
+	directtofieldmapping1.setFieldName("CLASS62.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2726,7 +2726,7 @@ protected void buildClass63Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS63.VALUE");
+	directtofieldmapping1.setFieldName("CLASS63.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2769,7 +2769,7 @@ protected void buildClass64Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS64.VALUE");
+	directtofieldmapping1.setFieldName("CLASS64.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2812,7 +2812,7 @@ protected void buildClass65Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS65.VALUE");
+	directtofieldmapping1.setFieldName("CLASS65.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2855,7 +2855,7 @@ protected void buildClass66Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS66.VALUE");
+	directtofieldmapping1.setFieldName("CLASS66.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2898,7 +2898,7 @@ protected void buildClass67Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS67.VALUE");
+	directtofieldmapping1.setFieldName("CLASS67.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2941,7 +2941,7 @@ protected void buildClass68Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS68.VALUE");
+	directtofieldmapping1.setFieldName("CLASS68.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -2984,7 +2984,7 @@ protected void buildClass69Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS69.VALUE");
+	directtofieldmapping1.setFieldName("CLASS69.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3027,7 +3027,7 @@ protected void buildClass6Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS6.VALUE");
+	directtofieldmapping1.setFieldName("CLASS6.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3070,7 +3070,7 @@ protected void buildClass70Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS70.VALUE");
+	directtofieldmapping1.setFieldName("CLASS70.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3113,7 +3113,7 @@ protected void buildClass71Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS71.VALUE");
+	directtofieldmapping1.setFieldName("CLASS71.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3156,7 +3156,7 @@ protected void buildClass72Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS72.VALUE");
+	directtofieldmapping1.setFieldName("CLASS72.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3199,7 +3199,7 @@ protected void buildClass73Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS73.VALUE");
+	directtofieldmapping1.setFieldName("CLASS73.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3242,7 +3242,7 @@ protected void buildClass74Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS74.VALUE");
+	directtofieldmapping1.setFieldName("CLASS74.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3285,7 +3285,7 @@ protected void buildClass75Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS75.VALUE");
+	directtofieldmapping1.setFieldName("CLASS75.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3328,7 +3328,7 @@ protected void buildClass76Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS76.VALUE");
+	directtofieldmapping1.setFieldName("CLASS76.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3371,7 +3371,7 @@ protected void buildClass77Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS77.VALUE");
+	directtofieldmapping1.setFieldName("CLASS77.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3414,7 +3414,7 @@ protected void buildClass78Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS78.VALUE");
+	directtofieldmapping1.setFieldName("CLASS78.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3457,7 +3457,7 @@ protected void buildClass79Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS79.VALUE");
+	directtofieldmapping1.setFieldName("CLASS79.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3500,7 +3500,7 @@ protected void buildClass7Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS7.VALUE");
+	directtofieldmapping1.setFieldName("CLASS7.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3543,7 +3543,7 @@ protected void buildClass80Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS80.VALUE");
+	directtofieldmapping1.setFieldName("CLASS80.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3586,7 +3586,7 @@ protected void buildClass81Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS81.VALUE");
+	directtofieldmapping1.setFieldName("CLASS81.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3629,7 +3629,7 @@ protected void buildClass82Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS82.VALUE");
+	directtofieldmapping1.setFieldName("CLASS82.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3672,7 +3672,7 @@ protected void buildClass83Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS83.VALUE");
+	directtofieldmapping1.setFieldName("CLASS83.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3715,7 +3715,7 @@ protected void buildClass84Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS84.VALUE");
+	directtofieldmapping1.setFieldName("CLASS84.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3758,7 +3758,7 @@ protected void buildClass85Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS85.VALUE");
+	directtofieldmapping1.setFieldName("CLASS85.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3801,7 +3801,7 @@ protected void buildClass86Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS86.VALUE");
+	directtofieldmapping1.setFieldName("CLASS86.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3844,7 +3844,7 @@ protected void buildClass87Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS87.VALUE");
+	directtofieldmapping1.setFieldName("CLASS87.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3887,7 +3887,7 @@ protected void buildClass88Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS88.VALUE");
+	directtofieldmapping1.setFieldName("CLASS88.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3930,7 +3930,7 @@ protected void buildClass89Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS89.VALUE");
+	directtofieldmapping1.setFieldName("CLASS89.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -3973,7 +3973,7 @@ protected void buildClass8Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS8.VALUE");
+	directtofieldmapping1.setFieldName("CLASS8.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4016,7 +4016,7 @@ protected void buildClass90Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS90.VALUE");
+	directtofieldmapping1.setFieldName("CLASS90.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4059,7 +4059,7 @@ protected void buildClass91Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS91.VALUE");
+	directtofieldmapping1.setFieldName("CLASS91.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4102,7 +4102,7 @@ protected void buildClass92Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS92.VALUE");
+	directtofieldmapping1.setFieldName("CLASS92.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4145,7 +4145,7 @@ protected void buildClass93Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS93.VALUE");
+	directtofieldmapping1.setFieldName("CLASS93.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4188,7 +4188,7 @@ protected void buildClass94Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS94.VALUE");
+	directtofieldmapping1.setFieldName("CLASS94.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4231,7 +4231,7 @@ protected void buildClass95Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS95.VALUE");
+	directtofieldmapping1.setFieldName("CLASS95.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4274,7 +4274,7 @@ protected void buildClass96Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS96.VALUE");
+	directtofieldmapping1.setFieldName("CLASS96.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4317,7 +4317,7 @@ protected void buildClass97Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS97.VALUE");
+	directtofieldmapping1.setFieldName("CLASS97.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4360,7 +4360,7 @@ protected void buildClass98Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS98.VALUE");
+	directtofieldmapping1.setFieldName("CLASS98.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4403,7 +4403,7 @@ protected void buildClass99Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS99.VALUE");
+	directtofieldmapping1.setFieldName("CLASS99.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }
@@ -4446,7 +4446,7 @@ protected void buildClass9Descriptor()
 	org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
 	directtofieldmapping1.setAttributeName("value");
 	directtofieldmapping1.setIsReadOnly(false );
-	directtofieldmapping1.setFieldName("CLASS9.VALUE");
+	directtofieldmapping1.setFieldName("CLASS9.VAL");
 	descriptor.addMapping(directtofieldmapping1);
 	addDescriptor(descriptor);
 }

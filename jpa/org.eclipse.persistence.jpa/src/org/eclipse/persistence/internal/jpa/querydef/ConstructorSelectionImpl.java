@@ -15,7 +15,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -42,7 +44,8 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
         super(javaType, expressionNode);
         this.subSelections = new ArrayList<Selection<?>>();
     }
-@Override
+
+    @Override
     public boolean isCompoundSelection(){
         return true;
     }
@@ -80,4 +83,11 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
         return item;
 
     }
+    
+    public void findRoot(Set<Root<?>> roots){
+        for (Selection selection: getCompoundSelectionItems()){
+            ((InternalSelection)selection).findRoot(roots);
+        }
+    }
+
 }

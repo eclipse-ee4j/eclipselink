@@ -184,7 +184,7 @@ public class XMLStreamReaderReader extends XMLReader {
                 }
                 break;
             }
-        }
+        }       
     }
 
     private static class IndexedAttributeList implements Attributes {

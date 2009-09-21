@@ -44,6 +44,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -150,8 +151,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // defaults to the primary key of the referenced table.
             String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(descriptor.getPrimaryKeyTable());
             
             // If the fk field (name) is not specified, it defaults to the 

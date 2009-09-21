@@ -16,9 +16,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.testing.models.jpa.spring.Address;
-import org.eclipse.persistence.testing.models.jpa.spring.Truck;
-import org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
+import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
 
 /** 
@@ -88,6 +88,10 @@ public class EntityManagerWrapper {
     
     public Query createNativeQuery(String string) {
         return em.createNativeQuery(string);
+    }
+    
+    public int executeNativeQuery(String string) {
+        return em.createNativeQuery(string).executeUpdate();
     }
     
     public Query createNativeQuery(String string, Class clazz) {

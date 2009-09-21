@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -26,21 +26,25 @@ package javax.persistence;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * The Cacheable annotation specifies whether an entity should be cached if
- * caching is enabled when the value of the persistence.xml caching element is
- * ENABLE_SELECTIVE or DISABLE_SELECTIVE.
+ * Specifies whether an entity should be cached if caching is enabled
+ * when the value of the <code>persistence.xml</code> caching element is
+ * <code>ENABLE_SELECTIVE</code> or <code>DISABLE_SELECTIVE</code>.
  * 
- * Cacheable(false) means that the entity and its state must not be cached by the provider.
+ * <p> <code>Cacheable(false)</code> means that the entity and its state must 
+ * not be cached by the provider.
  * 
  * @since Java Persistence 2.0
  */
 @Target( { TYPE })
 @Retention(RUNTIME)
 public @interface Cacheable {
+
+    /**
+     * (Optional) Whether or not the entity should be cached.
+     */
     boolean value() default true;
 }

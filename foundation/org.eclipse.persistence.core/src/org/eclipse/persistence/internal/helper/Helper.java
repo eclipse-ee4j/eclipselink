@@ -86,8 +86,8 @@ public class Helper implements Serializable {
     
     public static final String DEFAULT_DATABASE_DELIMITER = "\"";
 
-    private static String startDatabaseDelimiter = null;
-    private static String endDatabaseDelimiter = null;
+    private static String defaultStartDatabaseDelimiter = null;
+    private static String defaultEndDatabaseDelimiter = null;
     
     /**
      * Return if JDBC date access should be optimized.
@@ -1909,6 +1909,7 @@ public class Helper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
+    @SuppressWarnings("deprecation")
     public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);
@@ -2201,42 +2202,26 @@ public class Helper implements Serializable {
         return leadingChar.toLowerCase().concat(restOfName);
     }
     
-    public static String getStartDatabaseDelimiter(){
-        if (startDatabaseDelimiter == null){
-            startDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
+    public static String getDefaultStartDatabaseDelimiter(){
+        if (defaultStartDatabaseDelimiter == null){
+            defaultStartDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
         }
-        return startDatabaseDelimiter;
+        return defaultStartDatabaseDelimiter;
     }
     
-    public static String getEndDatabaseDelimiter(){
-        if (endDatabaseDelimiter == null){
-            endDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
+    public static String getDefaultEndDatabaseDelimiter(){
+        if (defaultEndDatabaseDelimiter == null){
+            defaultEndDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
         }
-        return endDatabaseDelimiter;
+        return defaultEndDatabaseDelimiter;
     }
     
-    /**
-     * By default when JPA is set to use delimited strings the string "\"" is used.
-     * 
-     * This method can be used to change the delimiter
-     * @param delimiter
-     */
-    public static void setDatabaseDelimiters(String delimiter){
-        if (delimiter.length() == 1){
-            startDatabaseDelimiter = delimiter;
-            endDatabaseDelimiter = delimiter;
-        } else {
-            startDatabaseDelimiter = delimiter.substring(0,1);
-            endDatabaseDelimiter = delimiter.substring(1,2);
-        }
+    public static void setDefaultStartDatabaseDelimiter(String delimiter){
+        defaultStartDatabaseDelimiter = delimiter;
     }
     
-    public static void setStartDatabaseDelimiter(String delimiter){
-        startDatabaseDelimiter = delimiter;
-    }
-    
-    public static void setEndDatabaseDelimiter(String delimiter){
-        endDatabaseDelimiter = delimiter;
+    public static void setDefaultEndDatabaseDelimiter(String delimiter){
+        defaultEndDatabaseDelimiter = delimiter;
     }
     
 }

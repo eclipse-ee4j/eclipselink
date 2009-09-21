@@ -68,7 +68,11 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
     }
     
     public Sequence createTableSequence() {
-        return new TableSequence("", 50, "SEQUENCE", "SEQ_NAME", "SEQ_COUNT"); 
+        String sequenceTableName = "SEQUENCE";
+        if (getSession().getPlatform().getDefaultSequence().isTable()) {
+            sequenceTableName = getSession().getPlatform().getQualifiedSequenceTableName();
+        }
+        return new TableSequence("", 50, sequenceTableName, "SEQ_NAME", "SEQ_COUNT"); 
     }
     
     public void test() {

@@ -2380,7 +2380,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public Vector getTableNames() {
         Vector tableNames = new Vector(getTables().size());
         for (Enumeration fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
-            tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedNameDelimited());
+            tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedName());
         }
 
         return tableNames;
@@ -3276,10 +3276,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
             DatabaseTable next = (DatabaseTable)tables.next();
             if(next.getName().indexOf(' ') != -1) {
                 //table names contains a space so needs to be quoted.
-                String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
+                String startDelimiter = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
+                String endDelimiter = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
                 //Ensure this tablename hasn't already been quoted.
-                if(next.getName().indexOf(quoteChar) == -1) {
-                    next.setName(quoteChar + next.getName() + quoteChar);
+                if(next.getName().indexOf(startDelimiter) == -1) {
+                    next.setName(startDelimiter + next.getName() + endDelimiter);
                 }
             }
         }

@@ -45,7 +45,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
@@ -100,7 +100,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldWORLDID = new FieldDefinition();
         fieldWORLDID.setName("WORLD_ID");
         fieldWORLDID.setTypeName("NUMBER");
-        fieldWORLDID.setSize(19);
+        fieldWORLDID.setSize(18);
         fieldWORLDID.setSubSize(0);
         fieldWORLDID.setIsPrimaryKey(false);
         fieldWORLDID.setIsIdentity(false);
@@ -119,7 +119,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -174,7 +174,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldWORLDID = new FieldDefinition();
         fieldWORLDID.setName("WORLD_ID");
         fieldWORLDID.setTypeName("NUMBER");
-        fieldWORLDID.setSize(19);
+        fieldWORLDID.setSize(18);
         fieldWORLDID.setSubSize(0);
         fieldWORLDID.setIsPrimaryKey(false);
         fieldWORLDID.setIsIdentity(false);
@@ -193,7 +193,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -259,7 +259,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldTEAMID = new FieldDefinition();
         fieldTEAMID.setName("TEAM_ID");
         fieldTEAMID.setTypeName("NUMBER");
-        fieldTEAMID.setSize(19);
+        fieldTEAMID.setSize(18);
         fieldTEAMID.setSubSize(0);
         fieldTEAMID.setIsPrimaryKey(false);
         fieldTEAMID.setIsIdentity(false);
@@ -278,7 +278,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("PLAYERID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -366,7 +366,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldTEAMID = new FieldDefinition();
         fieldTEAMID.setName("TEAM_ID");
         fieldTEAMID.setTypeName("NUMBER");
-        fieldTEAMID.setSize(19);
+        fieldTEAMID.setSize(18);
         fieldTEAMID.setSubSize(0);
         fieldTEAMID.setIsPrimaryKey(false);
         fieldTEAMID.setIsIdentity(false);
@@ -385,7 +385,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -447,7 +447,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldPLAYERID = new FieldDefinition();
         fieldPLAYERID.setName("PLAYER_ID");
         fieldPLAYERID.setTypeName("NUMBER");
-        fieldPLAYERID.setSize(19);
+        fieldPLAYERID.setSize(18);
         fieldPLAYERID.setSubSize(0);
         fieldPLAYERID.setIsPrimaryKey(false);
         fieldPLAYERID.setIsIdentity(false);
@@ -459,7 +459,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldROLEID = new FieldDefinition();
         fieldROLEID.setName("ROLE_ID");
         fieldROLEID.setTypeName("NUMBER");
-        fieldROLEID.setSize(19);
+        fieldROLEID.setSize(18);
         fieldROLEID.setSubSize(0);
         fieldROLEID.setIsPrimaryKey(false);
         fieldROLEID.setIsIdentity(false);
@@ -478,7 +478,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -507,7 +507,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);

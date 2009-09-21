@@ -83,10 +83,9 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
          * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
          * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.
-         * getActiveSession will return a possible external transaction controller session when running on an application server container.
+         * The classLoader should be obtained from the ConversionManager so we handle EE deployments using a shared-library
          */ 
-        relationalDescriptor.convertClassNamesToClasses(metamodel.getSession().getActiveSession().getClass().getClassLoader());
-        
+        relationalDescriptor.convertClassNamesToClasses(metamodel.getSession().getDatasourcePlatform().getConversionManager().getLoader());
         MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(metamodel, relationalDescriptor);
         return mappedSuperclassTypeImpl;
     }

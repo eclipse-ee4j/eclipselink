@@ -15,11 +15,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -38,20 +36,16 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class CompoundExpressionImpl extends ExpressionImpl<Boolean> implements Predicate {
-    
-    protected String operator;
-    protected List expressions;
+public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate{
     
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
-        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode);
-        this.expressions = new ArrayList(compoundExpressions);
+        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
-        this(metamodel, expressionNode, compoundExpressions);
-        this.operator = operator;
+        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
     }
+
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
@@ -62,12 +56,13 @@ public class CompoundExpressionImpl extends ExpressionImpl<Boolean> implements P
         return BooleanOperator.AND;
     }
 
-    /**
-     * Has negation been applied to the predicate.
-     * 
-     * @return boolean indicating if the predicate has been negated
-     */
-    public boolean isNegated(){
+    @Override
+    public boolean isCompoundExpression(){
+        return true;
+    }
+    
+    @Override
+    public boolean isExpression(){
         return false;
     }
 
@@ -81,38 +76,27 @@ public class CompoundExpressionImpl extends ExpressionImpl<Boolean> implements P
     }
 
     /**
+     * Has negation been applied to the predicate.
+     * 
+     * @return boolean indicating if the predicate has been negated
+     */
+    public boolean isNegated(){
+        return false;
+    }
+    /**
      * Apply negation to the predicate.
      * 
      * @return the negated predicate
      */
     public Predicate negate(){
-        if (this.currentNode == null){
-            return new PredicateImpl(this.metamodel, null, null, BooleanOperator.NOT);
-        }
         List<Expression<?>> list = new ArrayList();
         list.add(this);
-        return new PredicateImpl(this.metamodel, this.currentNode.not(), list, BooleanOperator.NOT);
+        return new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
     }
-
-    @Override
-    public boolean isCompoundExpression(){
-        return true;
+    /**
+     * @param operator the operator to set
+     */
+    public void setOperator(BooleanOperator operator) {
+        //
     }
-    
-    @Override
-    public boolean isExpression(){
-        return false;
-    }
-
-    
-    protected void findRoot(Set<Root<?>> roots){
-        if (this.expressions != null){
-            for (Object exp : this.expressions){
-                ((ExpressionImpl)exp).findRoot(roots);
-            }   
-        }
-    }
-
-
-
 }

@@ -228,8 +228,7 @@ public class NodeRecord extends MarshalRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
-        String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
-        Element element = getDocument().createElementNS(namespaceURI, xPathFragment.getShortName());
+        Element element = getDocument().createElementNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName());
         try {
             getNode().appendChild(element);
             nodes.push(element);
@@ -252,9 +251,8 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
-        String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
         if (getNode().getNodeType() == Node.ELEMENT_NODE) {
-            getDOM().setAttributeNS(namespaceURI, xPathFragment.getShortName(), value);
+            getDOM().setAttributeNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName(), value);
         }
     }
 

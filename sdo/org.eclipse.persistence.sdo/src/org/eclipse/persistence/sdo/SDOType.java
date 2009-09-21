@@ -180,15 +180,25 @@ public class SDOType implements Type, Serializable {
             return false;
         }
         for(Object object: this.getDeclaredProperties()) {
-            try {
-                SDOProperty sdoProperty = (SDOProperty) object;
-                String javaType = SDOUtil.getJavaTypeForProperty(sdoProperty);
+            SDOProperty sdoProperty = (SDOProperty) object;                                
+            String javaType = SDOUtil.getJavaTypeForProperty(sdoProperty);
 
+            try {
                 // Verify get method
                 String getMethodName = SDOUtil.getMethodName(sdoProperty.getName(), javaType);
-                PrivilegedAccessHelper.getMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
+                PrivilegedAccessHelper.getPublicMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
             } catch(NoSuchMethodException e) {
-                return false;
+            	//if the method isn't found and the type is boolean try looking for a "get" method instead of an "is" method
+            	if(sdoProperty.getType() == SDOConstants.SDO_BOOLEAN || sdoProperty.getType() == SDOConstants.SDO_BOOLEANOBJECT ){
+                    try{
+                    	String booleanGetterMethodName = SDOUtil.getBooleanGetMethodName(sdoProperty.getName(), javaType);
+                        PrivilegedAccessHelper.getPublicMethod(clazz, booleanGetterMethodName, EMPTY_CLASS_ARRAY, false);
+                    } catch(NoSuchMethodException e2) {
+                        return false;
+                    }                    
+            	}else{
+                    return false;
+            	}
             }
         }
         return true;
@@ -815,7 +825,7 @@ public class SDOType implements Type, Serializable {
     public void postInitialize() {
         String idPropName = (String)get(SDOConstants.ID_PROPERTY);
         if (idPropName != null) {
-            SDOProperty idProp = (SDOProperty)getProperty(idPropName);
+            SDOProperty idProp = getProperty(idPropName);
             if (idProp != null) {
                 String targetxpath = idProp.getQualifiedXPath(getURI(), true);
                 getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);
@@ -872,7 +882,7 @@ public class SDOType implements Type, Serializable {
     public Class getImplClass() {
         if ((javaImplClass == null) && (getImplClassName() != null)) {
             try {
-                SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
+                SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();              
                 javaImplClass = loader.loadClass(getImplClassName(), this);
                 xmlDescriptor.setJavaClass(javaImplClass);
             } catch (ClassNotFoundException e) {

@@ -77,10 +77,6 @@ public class Property {
         this.helper = helper;
     }
     
-    public void setAdapterClass(Class adapterCls) {
-        setAdapterClass(helper.getJavaClass(adapterCls));
-    }
-    
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
         JavaClass newType  = helper.getJavaClass(Object.class);

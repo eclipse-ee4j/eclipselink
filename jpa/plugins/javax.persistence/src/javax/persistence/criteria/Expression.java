@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -28,63 +28,67 @@ import java.util.Collection;
 
 /**
  * Type for query expressions.
- * 
- * @param <T>
- *            the type of the expression
+ *
+ * @param <T> the type of the expression
+ *
+ * @since Java Persistence 2.0
  */
 public interface Expression<T> extends Selection<T> {
 
     /**
-     *  Apply a predicate to test whether the expression is null.
-     * @return predicate testing whether the expression is null
+     *  Create a predicate to test whether the expression is null.
+     *  @return predicate testing whether the expression is null
      */
     Predicate isNull();
 
     /**
-     * Apply a predicate to test whether the expression is not null.
-     * 
-     * @return predicate testing whether the expression is not null.
+     *  Create a predicate to test whether the expression is 
+     *  not null.
+     *  @return predicate testing whether the expression is not null
      */
     Predicate isNotNull();
 
     /**
-     * Apply a predicate to test whether the expression is a member of the
-     * argument list.
-     * 
-     * @param values
-     * @return predicate testing for membership in the list
+     * Create a predicate to test whether the expression is a member
+     * of the argument list.
+     * @param values  values to be tested against
+     * @return predicate testing for membership
      */
     Predicate in(Object... values);
 
     /**
-     * Apply a predicate to test whether the expression is a member
+     * Create a predicate to test whether the expression is a member
      * of the argument list.
-     * @param values
+     * @param values  expressions to be tested against
      * @return predicate testing for membership
      */
     Predicate in(Expression<?>... values);
 
     /**
-     * Apply a predicate to test whether the expression is a member
+     * Create a predicate to test whether the expression is a member
      * of the collection.
-     * @param values collection
+     * @param values  collection of values to be tested against
      * @return predicate testing for membership
      */
     Predicate in(Collection<?> values);
 
     /**
-     * Apply a predicate to test whether the expression is a member
+     * Create a predicate to test whether the expression is a member
      * of the collection.
-     * @param values expression corresponding to collection
+     * @param values expression corresponding to collection to be
+     *        tested against
      * @return predicate testing for membership
      */
     Predicate in(Expression<Collection<?>> values);
 
     /**
-     * Perform a typecast upon the expression.
+     * Perform a typecast upon the expression, returning new
+     * expression object.
+     * This method does not cause type conversion:
+     * the runtime type is not changed.
      * Warning: may result in a runtime failure.
-     * @param type 
-     * @return expression
+     * @param type  intended type of the expression
+     * @return new expression of the given type
      */
     <X> Expression<X> as(Class<X> type);
 }

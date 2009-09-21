@@ -327,6 +327,7 @@ public class EISDescriptor extends ClassDescriptor {
         if (getDataFormat().equals(XML)) {
             XMLField xmlField = new XMLField(fieldName);
             xmlField.setNamespaceResolver(this.getNamespaceResolver());
+            xmlField.initialize();
             return xmlField;
         } else {
             return super.buildField(fieldName);
@@ -339,8 +340,12 @@ public class EISDescriptor extends ClassDescriptor {
      * This allows the resolver to only be set in the descriptor.
      */
     public DatabaseField buildField(DatabaseField field) {
-        if (field instanceof XMLField) {
+        if(getDataFormat().equals(XML)) {
+            if(!(field instanceof XMLField)) {
+                field = new XMLField(field.getName());
+            }
             ((XMLField)field).setNamespaceResolver(getNamespaceResolver());
+            ((XMLField)field).initialize();
         }
         return super.buildField(field);
     }
@@ -399,7 +404,11 @@ public class EISDescriptor extends ClassDescriptor {
      * and supply an org.eclipse.persistence.oxm.XMLField parameter instead of using this method
      */
     public void addPrimaryKeyFieldName(String fieldName) {
-        super.addPrimaryKeyFieldName(fieldName);
+        if (getDataFormat() == EISDescriptor.XML) {
+            addPrimaryKeyField(new XMLField(fieldName));
+        } else {
+            super.addPrimaryKeyFieldName(fieldName);
+        }
     }
 
     /**
@@ -421,6 +430,17 @@ public class EISDescriptor extends ClassDescriptor {
       */
     public DatabaseCall buildCallFromStatement(SQLStatement statement, AbstractSession session) {
         throw QueryException.noCallOrInteractionSpecified();
+    }
+
+    public void initialize(AbstractSession session) throws DescriptorException {
+        if (getDataFormat().equals(XML)) {
+            for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
+                XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
+                pkField.setNamespaceResolver(this.namespaceResolver);
+                pkField.initialize();
+            }
+        }
+        super.initialize(session);
     }
 
     /**

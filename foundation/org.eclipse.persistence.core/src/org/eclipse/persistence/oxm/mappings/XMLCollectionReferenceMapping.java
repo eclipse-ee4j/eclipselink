@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -131,13 +132,13 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }
 
         XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
-        String tgtXPath = tgtFld.getXPath();
+        String tgtXPath = tgtFld.getXPath();        
         HashMap primaryKeyMap = reference.getPrimaryKeyMap();
         Vector pks = (Vector) primaryKeyMap.get(tgtXPath);
         if(pks == null){
             pks = new Vector();
             primaryKeyMap.put(tgtXPath, pks);
-        }
+        }        
 
         ClassDescriptor descriptor = session.getClassDescriptor(getReferenceClass());
         Class type = descriptor.getTypedField(tgtFld).getType();
@@ -171,6 +172,19 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                 Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
+        }
+
+        // iterate over each source & target XMLField and set the 
+        // appropriate namespace resolver
+        XMLDescriptor descriptor = (XMLDescriptor) this.getDescriptor();
+        XMLDescriptor targetDescriptor = (XMLDescriptor) getReferenceDescriptor();
+        for (int index = 0; index < sourceToTargetKeys.size(); index++) {
+            XMLField sourceField = (XMLField) sourceToTargetKeys.get(index);
+            sourceField = (XMLField) descriptor.buildField(sourceField);
+            sourceToTargetKeys.set(index, sourceField);
+            XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.get(sourceField);
+            targetField = (XMLField) targetDescriptor.buildField(targetField);
+            sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
     }
 

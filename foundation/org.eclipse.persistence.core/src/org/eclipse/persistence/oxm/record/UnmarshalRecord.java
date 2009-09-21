@@ -687,8 +687,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     xPathNode = xPathNode.getParent();
                 }
             } else {
-            	
-                XPathNode textNode = (XPathNode) xPathNode.getTextNode();
+                XPathNode textNode = xPathNode.getTextNode();
 
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
                     if (!isXsiNil) {
@@ -752,7 +751,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             XPathNode textNode = xPathNode.getTextNode();
             if (null == textNode && xPathNode.getNonAttributeChildrenMap() != null) {
-                textNode = (XPathNode) xPathNode.getNonAttributeChildrenMap().get(XPathFragment.ANY_FRAGMENT);
+                textNode = xPathNode.getAnyNode();
                 if (textNode != null) {
                     if (0 == length) {
                         return;
@@ -828,7 +827,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 resultNode = (XPathNode)nonAttributeChildrenMap.get(positionalFragment);
                 if (null == resultNode) {
                     // ANY MAPPING
-                    resultNode = (XPathNode)nonAttributeChildrenMap.get(XPathFragment.ANY_FRAGMENT);
+                    resultNode = xPathNode.getAnyNode();
                 }
             }
             return resultNode;

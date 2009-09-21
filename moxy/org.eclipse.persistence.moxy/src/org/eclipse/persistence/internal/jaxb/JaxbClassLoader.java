@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.jaxb;
 
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -39,6 +40,31 @@ public class JaxbClassLoader extends ClassLoader {
 	public JaxbClassLoader(ClassLoader nestedClassLoader) {
 		this.nestedClassLoader = nestedClassLoader;
 		this.generatedClasses = new HashMap();
+	}
+	
+	public JaxbClassLoader(ClassLoader nestedClassLoader, Class[] classes) {
+		this.nestedClassLoader = nestedClassLoader;
+		this.generatedClasses = new HashMap();
+		if(classes != null){
+			for(int i=0; i<classes.length; i++){
+				Class nextClass = classes[i];
+				generatedClasses.put(nextClass.getName(), nextClass);
+			}
+		}		
+	}
+	
+	public JaxbClassLoader(ClassLoader nestedClassLoader, Type[] types) {
+		this.nestedClassLoader = nestedClassLoader;
+		this.generatedClasses = new HashMap();
+		if(types != null){
+			for(int i=0; i<types.length; i++){
+				Type nextType = types[i];
+				if (nextType instanceof Class) {
+					generatedClasses.put(((Class)nextType).getName(), nextType);
+				}
+			}
+		}
+		
 	}
 	
     public Class loadClass(String className) throws ClassNotFoundException {

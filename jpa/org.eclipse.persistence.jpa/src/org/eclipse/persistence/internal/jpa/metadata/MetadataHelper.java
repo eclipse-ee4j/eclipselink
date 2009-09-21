@@ -20,14 +20,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX_DEFAULT;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -41,8 +50,29 @@ public class MetadataHelper {
     public static final String ECLIPSELINK_ORM_FILE = "META-INF/eclipselink-orm.xml";
     
     /**
-     * INTERNAL: XMLEntityMappings calls this one
-     * Load a class from a given class name.
+     * INTERNAL:
+     * Return the canonical name. This will apply the prefix and suffix 
+     * qualifiers given to the canonical name. If the given prefix is null, the
+     * the default "" is applied. If the given suffix is null, then the default 
+     * "_" will be applied.
+     */
+    protected static String getCanonicalName(String name, Map<String, String> properties) {
+        String prefix = properties.get(CANONICAL_MODEL_PREFIX);
+        if (prefix == null) {
+            prefix = CANONICAL_MODEL_PREFIX_DEFAULT;
+        }
+        
+        String suffix = properties.get(CANONICAL_MODEL_SUFFIX);
+        if (suffix == null) {
+            suffix = CANONICAL_MODEL_SUFFIX_DEFAULT;
+        }
+        
+        return prefix + name + suffix;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Load a class from a given class name. (XMLEntityMappings calls this one)
      */
     public static Class getClassForName(String classname, ClassLoader loader) {
         try {
@@ -125,6 +155,48 @@ public class MetadataHelper {
             actualName =  defaultName;
         }
         return actualName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the qualified canonical name of the given qualified class name.
+     * This method will check the session for a corresponding class that was
+     * processed during deploy. If one is not found, will build the canonical
+     * name applying any default package and the default suffix qualifier "_".
+     */
+    public static String getQualifiedCanonicalName(String qualifiedName, AbstractSession session) {
+        String sessionStaticMetamodelClass = session.getStaticMetamodelClass(qualifiedName);
+        
+        if (sessionStaticMetamodelClass == null) {
+            return getQualifiedCanonicalName(qualifiedName, session.getProperties());
+        } else {
+            return sessionStaticMetamodelClass;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the canonical name applying any default package. This will apply 
+     * the prefix and suffix qualifiers given to the canonical name. If the 
+     * prefix is null, the default "" is applied. If the suffix is null, then 
+     * the default "_" will be applied.
+     */
+    public static String getQualifiedCanonicalName(String qualifiedName, Map<String, String> properties) {
+        String packageSuffix = properties.get(CANONICAL_MODEL_SUB_PACKAGE);
+        if (packageSuffix == null) {
+            packageSuffix = CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
+        } else {
+            packageSuffix = packageSuffix + ".";
+        }
+       
+        if (qualifiedName.indexOf(".") > -1) {
+            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), properties);
+            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
+           
+            return pkg + packageSuffix + canonicalName;
+        } else {
+            return packageSuffix + getCanonicalName(qualifiedName, properties);
+        }
     }
     
     /**

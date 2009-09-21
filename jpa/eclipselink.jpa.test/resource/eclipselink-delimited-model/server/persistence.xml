@@ -5,7 +5,6 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.delimited.DelimitedSessionCustomizer"/>
 			<!--property name="eclipselink.weaving" value="true"/>
 			<property name="eclipselink.weaving" value="static"/-->
             <property name="eclipselink.target-server" value="%%server-platform%%"/>

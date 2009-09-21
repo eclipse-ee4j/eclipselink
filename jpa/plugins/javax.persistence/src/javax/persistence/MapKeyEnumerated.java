@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,12 +32,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static javax.persistence.EnumType.ORDINAL;
 
 /**
- * Specifies that a persistent map key should be persisted as a enumerated type. 
+ * Specifies the enum type for a map key whose basic type is an enumerated type.
  * 
  * The <code>MapKeyEnumerated</code> annotation can be applied to an 
  * element collection or relationship of type <code>java.util.Map</code>, in 
- * conjunction with the {@link ElementCollection}, {@link OneToMany}, or 
- * {@link ManyToMany} annotation.
+ * conjunction with the <code>ElementCollection</code>, <code>OneToMany</code>, or 
+ * <code>ManyToMany</code> annotation.
+ * If the enumerated type is not specified or the <code>MapKeyEnumerated</code>
+ * annotation is not used, the enumerated type is assumed to be
+ * <code>ORDINAL</code>.
  *
  * <pre>
  *   Example:
@@ -51,11 +54,15 @@ import static javax.persistence.EnumType.ORDINAL;
  *       public Projects<ProjectStatus, Project> getProjects() {...}
  *       
  *       &#064;OneToMany
- *       &#064;Enumerated(STRING)
+ *       &#064;MapKeyEnumerated(STRING)
  *       public Map<SalaryRate, Employee> getEmployees() {...}
  *       ...
  *   }
  * </pre>
+ *
+ * @see ElementCollection
+ * @see OneToMany
+ * @see ManyToMany
  *
  * @since Java Persistence 2.0
  */

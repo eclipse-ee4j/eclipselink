@@ -55,6 +55,10 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  *
  * @author Sati
  * @since TOPLink/Java 1.0
+ * 
+ *     09/18/2009-2.0 Michael O'Brien  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API) 
+ *         add support for passing BasicMap value type to MapAttributeImpl via new attributeClassification field  
  */
 public class DirectCollectionMapping extends CollectionMapping implements RelationalMapping {
 
@@ -92,6 +96,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected transient ModifyQuery updateAtIndexQuery;
     protected transient boolean hasCustomDeleteAtIndexQuery;
     protected transient boolean hasCustomUpdateAtIndexQuery;
+    
+    /**
+     * @since Java Persistence API 2.0
+     * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type 
+     * To specify the conversion type 
+     * */
+    protected transient Class attributeClassification;
+    protected transient String attributeClassificationName;    
+    /** 
+     * @since Java Persistence API 2.0
+     * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type 
+     * PERF: Also store object class of attribute in case of primitive. 
+     * */
+    protected transient Class attributeObjectClassification;
 
     /**
      * PUBLIC:
@@ -753,9 +771,44 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This method is implemented by subclasses as necessary.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
         
+        /**
+         * 266912 DI 83: This code block sets the value parameter type so that it
+         * can be picked up by the Metamodel PluralAttributeImpl constructor.
+         * The typeName String is used instead of the type Class because of the
+         * way that converters shadow the type/typeName in bug# 289487
+         *  @since Java Persistence API 2.0 for the Metamodel API
+         */
+        if(null == this.attributeClassification) {
+            String typeName = this.directField.getTypeName();
+            if(null != typeName) {
+                // Create the Class based on the class name - no need to use the ConversionManager as we have the correct ClassLoader
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        try {
+                            this.attributeClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(typeName, true, classLoader));
+                        } catch (PrivilegedActionException pae) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, pae.getException());
+                        }
+                    } else {
+                        this.attributeClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(typeName, true, classLoader);
+                    }
+                } catch (ClassNotFoundException cnfe) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, cnfe);
+                } catch (Exception iae_or_ie) {
+                    // Catches IllegalAccessException and InstantiationException
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, iae_or_ie);
+                }
+                this.attributeClassificationName = typeName;
+            }
+        }
+        if(null != this.attributeClassification) {
+            this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
+        }
+        
+
         if (valueConverter != null) {
             if (valueConverter instanceof TypeConversionConverter){
                 ((TypeConversionConverter)valueConverter).convertClassNamesToClasses(classLoader);
@@ -944,6 +997,31 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // do nothing
     }
 
+    
+    /**
+     * PUBLIC:
+     * Some databases do not properly support all of the base data types. For these databases,
+     * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
+     * the instance variable value to that data type.
+     * @since Java Persistence API 2.0
+     */
+    public Class getAttributeClassification() {
+        return attributeClassification;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the class name of the attribute type.
+     * This is only used by the MW.
+     * @since Java Persistence API 2.0
+     */
+    public String getAttributeClassificationName() {
+        if ((null == attributeClassificationName) && (attributeClassification != null)) {
+            attributeClassificationName = attributeClassification.getName();
+        }
+        return attributeClassificationName;
+    }
+    
     protected ModifyQuery getDeleteQuery() {
         if (changeSetDeleteQuery == null) {
             changeSetDeleteQuery = new DataModifyQuery();
@@ -1130,7 +1208,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (getReferenceTable() == null) {
             return null;
         }
-        return getReferenceTable().getQualifiedNameDelimited();
+        return getReferenceTable().getQualifiedName();
     }
 
     /**
@@ -2205,6 +2283,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
     }
+    
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
@@ -2220,6 +2299,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
     }
 
+  
     /**
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
@@ -2229,6 +2309,28 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         return null;
     }
 
+    /**
+     * PUBLIC:
+     * Some databases do not properly support all of the base data types. For these databases,
+     * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
+     * the instance variable value to that data type.
+     * @since Java Persistence API 2.0
+     * Migrated from AbstractDirectMapping 
+     */
+    public void setAttributeClassification(Class attributeClassification) {
+        this.attributeClassification = attributeClassification;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the name of the class for MW usage.
+     * @since Java Persistence API 2.0
+     * Migrated from AbstractDirectMapping 
+     */
+    public void setAttributeClassificationName(String attributeClassificationName) {
+        this.attributeClassificationName = attributeClassificationName;
+    }
+    
     protected void setDeleteQuery(ModifyQuery query) {
         this.changeSetDeleteQuery = query;
     }

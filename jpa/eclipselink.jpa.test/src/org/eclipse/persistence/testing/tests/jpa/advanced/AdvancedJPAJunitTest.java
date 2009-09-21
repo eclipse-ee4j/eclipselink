@@ -16,47 +16,60 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.Bindable.BindableType;
+import javax.persistence.metamodel.Type.PersistenceType;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.queries.DoesExistQuery;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
-
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
-import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 
 /**
- * This test suite tests TopLink JPA annotations extensions.
+ * This test suite tests EclipseLink JPA annotations extensions.
  */
 public class AdvancedJPAJunitTest extends JUnitTestCase {
     private static int empId;
@@ -91,6 +104,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
+        // This test runs only on a JEE6 / JPA 2.0 capable server
+        suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -165,6 +180,103 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
     
     /**
+     * This test performs minimal sanity testing on the advanced JPA model
+     * in order to verify metamodel creation.<p>
+     * See the metamodel test package suite for full regression tests.
+     * See SVN rev# 5124
+     * http://fisheye2.atlassian.com/changelog/~author=mobrien/eclipselink/?cs=5124
+     */
+    public void testMetamodelMinimalSanityTest() {
+        // Run test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
+        if(!this.isJPA10()) {
+            EntityManager em = createEntityManager("default1");
+            // pre-clear metamodel to enable test reentry (SE only - not EE)
+            if(!this.isOnServer()) {
+                ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+            }
+            Metamodel metamodel = em.getMetamodel();
+            // get declared attributes
+            EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
+            Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
+            assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
+        
+            // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute        
+            Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
+            assertNotNull(budgetAttribute);
+            Attribute<LargeProject, ?> budgetSingularAttribute = entityLargeProject.getDeclaredSingularAttribute("budget");
+            assertNotNull(budgetSingularAttribute);
+            assertEquals(budgetSingularAttribute, budgetAttribute);
+            assertTrue(declaredAttributes.contains(budgetSingularAttribute));        
+            // check the type
+            Class budgetClass = budgetSingularAttribute.getJavaType();
+            // Verify whether we expect a boxed class or not 
+            assertEquals(double.class, budgetClass);
+            //assertEquals(Double.class, budgetClass);
+        
+            // Test LargeProject.budget.buyingDays
+        
+            // Check an EnumSet on an Entity
+            EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
+            // public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
+            // private EnumSet<Weekdays> buyingDays;
+            assertNotNull(entityBuyer);
+            // check persistence type
+            assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
+            assertEquals(Buyer.class, entityBuyer.getJavaType());
+            // verify EnumSet is a SingularAttribute
+            Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
+            assertNotNull(buyingDaysAttribute);
+            // Check persistent attribute type
+            assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
+            // Non-spec check on the attribute impl type
+            // EnumSet is not a Set in the Metamodel - it is a treated as a BasicType single object (SingularAttributeType)
+            // BasicTypeImpl@8980685:EnumSet [ javaType: class java.util.EnumSet]
+            assertFalse(((SingularAttributeImpl)buyingDaysAttribute).isPlural());
+            BindableType buyingDaysElementBindableType = ((SingularAttributeImpl)buyingDaysAttribute).getBindableType();
+            assertEquals(BindableType.SINGULAR_ATTRIBUTE, buyingDaysElementBindableType);
+            SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
+            assertNotNull(buyingDaysSingularAttribute);
+            assertFalse(buyingDaysSingularAttribute.isCollection());
+/*        
+            // In mid-implementation in Design Issue 74
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
+            // Check for Id that exists
+            boolean expectedIAExceptionThrown = false;
+            boolean hasSingleIdAttribute = false;
+            try {
+                hasSingleIdAttribute = entityBuyer.hasSingleIdAttribute();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertTrue(hasSingleIdAttribute);
+*/
+            // Verify that the BasicMap Buyer.creditCards is picked up properly
+            //* @param <X> The type the represented Map belongs to
+            //* @param <K> The type of the key of the represented Map
+            //* @param <V> The type of the value of the represented Map
+            //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
+            Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
+            assertNotNull(buyerCreditCards);
+            assertTrue(buyerCreditCards.isCollection());
+            assertTrue(buyerCreditCards instanceof MapAttributeImpl);
+            MapAttribute<? super Buyer, ?, ?> buyerCreditCardsMap = entityBuyer.getMap("creditCards");
+        
+            // Verify owning type
+            assertNotNull(buyerCreditCardsMap);
+            assertEquals(entityBuyer, buyerCreditCardsMap.getDeclaringType());
+        
+            // Verify Map Key
+            assertEquals(String.class, buyerCreditCardsMap.getKeyJavaType());
+        
+            // Verify Map Value
+            assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
+        
+        }
+    }
+    
+    /**
      * Verifies that existence-checking metadata is correctly processed.
      */
     public void testExistenceCheckingSetting() {
@@ -190,7 +302,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager("default1");
         ClassDescriptor descriptor;
         if (isOnServer()) {
-            descriptor = getServerSession().getDescriptorForAlias("Employee");
+            descriptor = getServerSession("default1").getDescriptorForAlias("Employee");
         } else {
             descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
         }
@@ -924,7 +1036,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em1.remove(emp);
             commitTransaction(em1);
             closeEntityManager(em1);
-            Integer version = emp.getVersion();
 
             em1 = createEntityManager();
             beginTransaction(em1);
@@ -954,7 +1065,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testOptimisticLockExceptionOnMergeWithAssumeExists() {
         org.eclipse.persistence.sessions.Project project = getServerSession().getProject();
-        ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptor(Employee.class);
+        ClassDescriptor descriptor = project.getDescriptor(Employee.class);
         int existencePolicy = descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy();
 
         descriptor.getQueryManager().assumeExistenceForDoesExist();

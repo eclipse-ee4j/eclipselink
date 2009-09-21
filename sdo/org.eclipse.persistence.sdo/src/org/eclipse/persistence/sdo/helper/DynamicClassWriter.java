@@ -149,8 +149,16 @@ public class DynamicClassWriter {
     private void addPropertyGetMethod(ClassWriter cw, SDOProperty property) {
         String returnType = SDOUtil.getJavaTypeForProperty(property);
         String outerGetMethodName = SDOUtil.getMethodName(property.getName(), returnType);
-
-        CodeVisitor mv;
+        
+        if(property.getType() == SDOConstants.SDO_BOOLEAN || property.getType() == SDOConstants.SDO_BOOLEANOBJECT){
+        	String booleanGetterName = SDOUtil.getBooleanGetMethodName(property.getName(), returnType);
+        	addPropertyGetMethodInternal(cw, property, booleanGetterName, returnType);	
+        }        
+        addPropertyGetMethodInternal(cw, property, outerGetMethodName, returnType);        
+    }
+    
+    private void addPropertyGetMethodInternal(ClassWriter cw, SDOProperty property, String outerGetMethodName, String returnType){
+    	CodeVisitor mv;
         String propertyInstanceClassDescriptor;
         if(property.isMany()) {
             propertyInstanceClassDescriptor = Type.getDescriptor(List.class);

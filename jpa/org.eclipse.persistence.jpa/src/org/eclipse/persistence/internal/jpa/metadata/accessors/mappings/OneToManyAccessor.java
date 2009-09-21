@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -229,13 +230,17 @@ public class OneToManyAccessor extends CollectionAccessor {
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
-            pkField.setUseDelimiters(useDelimitedIdentifier());
+            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                pkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             pkField.setTable(owningDescriptor.getPrimaryKeyTable());
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
-            fkField.setUseDelimiters(useDelimitedIdentifier());
+            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            if (useDelimitedIdentifier()){
+                fkField.setUseDelimiters(useDelimitedIdentifier());
+            }
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(getReferenceDescriptor().getPrimaryTable());

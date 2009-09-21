@@ -184,7 +184,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join
      * @return the resulting fetch join
      */
-    public <Y> Fetch<X, Y> fetch(String assocName){
+    public <X, Y> Fetch<X, Y> fetch(String assocName){
         return fetch(assocName, JoinType.INNER);
     }
 
@@ -199,7 +199,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join type
      * @return the resulting fetch join
      */
-    public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt){
+    public <X, Y> Fetch<X, Y> fetch(String assocName, JoinType jt){
         Attribute attribute = this.managedType.getAttribute(assocName);
         if (attribute.isCollection()) {
             return fetch(((PluralAttribute)attribute), jt);

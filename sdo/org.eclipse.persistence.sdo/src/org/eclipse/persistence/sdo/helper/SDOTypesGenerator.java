@@ -208,21 +208,21 @@ public class SDOTypesGenerator {
             //go through generatedGlobalProperties and add to xsdhelper
             Iterator<QName> qNameIter = getGeneratedGlobalElements().keySet().iterator();
             while (qNameIter.hasNext()) {
-                QName nextQName = (QName) qNameIter.next();
+                QName nextQName = qNameIter.next();
                 SDOProperty nextSDOProperty = (SDOProperty) getGeneratedGlobalElements().get(nextQName);
                 ((SDOXSDHelper) aHelperContext.getXSDHelper()).addGlobalProperty(nextQName, nextSDOProperty, true);
             }
 
             qNameIter = getGeneratedGlobalAttributes().keySet().iterator();
             while (qNameIter.hasNext()) {
-                QName nextQName = (QName) qNameIter.next();
+                QName nextQName = qNameIter.next();
                 SDOProperty nextSDOProperty = (SDOProperty) getGeneratedGlobalAttributes().get(nextQName);
                 ((SDOXSDHelper) aHelperContext.getXSDHelper()).addGlobalProperty(nextQName, nextSDOProperty, false);
             }
 
             Iterator<java.util.List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();
             while (globalRefsIter.hasNext()) {
-                java.util.List<GlobalRef> nextList = (java.util.List) globalRefsIter.next();
+                java.util.List<GlobalRef> nextList = globalRefsIter.next();
                 if (nextList.size() > 0) {
                     GlobalRef ref = nextList.get(0);
                     throw SDOException.referencedPropertyNotFound(((SDOProperty) ref.getProperty()).getUri(), ref.getProperty().getName());
@@ -1042,7 +1042,7 @@ public class SDOTypesGenerator {
                 prop.setType(baseType);
                 prop.setValueProperty(true);
                 prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-                ((SDOType) owningType).addDeclaredProperty(prop);
+                owningType.addDeclaredProperty(prop);
                 prop.buildMapping(null, -1);
                 prop.setFinalized(true);
 
@@ -1411,10 +1411,10 @@ public class SDOTypesGenerator {
 
     private void updateCollisionProperty(SDOType owningType, SDOProperty p) {
         owningType.setSequenced(true);
-        Type baseType = owningType;
+        SDOType baseType = owningType;
         while ((baseType.getBaseTypes() != null) && (baseType.getBaseTypes().size() > 0)) {
-            baseType = (Type) baseType.getBaseTypes().get(0);
-            ((SDOType) baseType).setSequenced(true);
+            baseType = (SDOType) baseType.getBaseTypes().get(0);
+            baseType.setSequenced(true);
         }
         p.setNameCollision(true);
         p.setType(SDOConstants.SDO_OBJECT);
@@ -1461,15 +1461,15 @@ public class SDOTypesGenerator {
 
     private void addRootElementToDescriptor(SDOProperty p, String targetNamespace, String xsdName) {
         if (!p.getType().isDataType()) {
-            NamespaceResolver nr = ((SDOType) p.getType()).getXmlDescriptor().getNamespaceResolver();
+            NamespaceResolver nr = p.getType().getXmlDescriptor().getNamespaceResolver();
             String prefix = null;
             if (nr != null) {
                 prefix = nr.resolveNamespaceURI(targetNamespace);
             }
             if ((prefix == null) || prefix.equals(SDOConstants.EMPTY_STRING)) {
-                ((SDOType) p.getType()).getXmlDescriptor().addRootElement(xsdName);
+                p.getType().getXmlDescriptor().addRootElement(xsdName);
             } else {
-                ((SDOType) p.getType()).getXmlDescriptor().addRootElement(prefix + //
+                p.getType().getXmlDescriptor().addRootElement(prefix + //
                         SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + xsdName);
             }
         } else {
@@ -1758,7 +1758,7 @@ public class SDOTypesGenerator {
     private void postProcessing() {
         int size = getNonContainmentReferences().size();
         for (int i = 0; i < size; i++) {
-            NonContainmentReference nonContainmentReference = (NonContainmentReference) getNonContainmentReferences().get(i);
+            NonContainmentReference nonContainmentReference = getNonContainmentReferences().get(i);
             SDOType owningType = nonContainmentReference.getOwningType();
 
             if (owningType != null) {
@@ -1780,7 +1780,7 @@ public class SDOTypesGenerator {
                         // Bidirectional property name
                         String oppositePropName = nonContainmentReference.getOppositePropName();
                         if (oppositePropName != null) {
-                            SDOProperty prop = (SDOProperty) oppositeType.getProperty(oppositePropName);
+                            SDOProperty prop = oppositeType.getProperty(oppositePropName);
                             owningProp.setOpposite(prop);
                             prop.setOpposite(owningProp);
                         }
@@ -2395,7 +2395,7 @@ public class SDOTypesGenerator {
         String targetNamespace = schema.getTargetNamespace();
 
         // Global Complex Types
-        Collection<ComplexType> globalComplexTypes = (Collection<ComplexType>) schema.getTopLevelComplexTypes().values();
+        Collection<ComplexType> globalComplexTypes = schema.getTopLevelComplexTypes().values();
         for(ComplexType globalComplexType : globalComplexTypes) {
             QName xsdQName = new QName(targetNamespace, globalComplexType.getName());
             SDOType sdoType = preprocessComplexType(globalComplexType, schema);
@@ -2404,7 +2404,7 @@ public class SDOTypesGenerator {
         }
 
         // Global Simple Types
-        Collection<SimpleType> globalSimpleTypes = (Collection<SimpleType>) schema.getTopLevelSimpleTypes().values();
+        Collection<SimpleType> globalSimpleTypes = schema.getTopLevelSimpleTypes().values();
         for(SimpleType globalSimpleType : globalSimpleTypes) {
             QName xsdQName = new QName(targetNamespace, globalSimpleType.getName());
             SDOType sdoType = preprocessSimpleType(globalSimpleType, schema);

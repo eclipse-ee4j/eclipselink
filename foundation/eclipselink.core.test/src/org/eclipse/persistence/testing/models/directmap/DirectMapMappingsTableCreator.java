@@ -83,7 +83,7 @@ public class DirectMapMappingsTableCreator extends TableCreator {
         table.addField(fieldKEY);
 
         FieldDefinition fieldVALUE = new FieldDefinition();
-        fieldVALUE.setName("VALUE");
+        fieldVALUE.setName("VAL");
         fieldVALUE.setTypeName("VARCHAR2");
         fieldVALUE.setSize(100);
         fieldVALUE.setSubSize(0);
@@ -125,7 +125,7 @@ public class DirectMapMappingsTableCreator extends TableCreator {
         table.addField(fieldKEY);
 
         FieldDefinition fieldVALUE = new FieldDefinition();
-        fieldVALUE.setName("VALUE");
+        fieldVALUE.setName("VAL");
         fieldVALUE.setTypeName("BLOB");
         fieldVALUE.setIsPrimaryKey(false);
         fieldVALUE.setIsIdentity(false);

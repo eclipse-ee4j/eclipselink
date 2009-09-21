@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import java.util.Map;
@@ -86,7 +87,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write("DECLARE\n");
             
             for(int i=0; i < allFields.size(); i++) {
-                writeDeclareTypeAndVar(writer, (DatabaseField)allFields.elementAt(i));
+                writeDeclareTypeAndVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
             }
 
             //BEGIN
@@ -103,7 +104,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write(" BULK COLLECT INTO ");
 
             for(int i=0; i < allFields.size(); i++) {
-                writeVar(writer, (DatabaseField)allFields.elementAt(i));
+                writeVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
                 if(i < allFields.size() - 1) {
                     writer.write(", ");
                 }
@@ -117,17 +118,17 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             DatabaseField firstMainPrimaryKey = (DatabaseField)mainPrimaryKeys.firstElement();
             writer.write(tab);
             writer.write("IF ");
-            writeVar(writer, firstMainPrimaryKey);
+            writeVar(writer, firstMainPrimaryKey, session.getPlatform());
             writer.write(".COUNT > 0 THEN\n");
             
             Iterator itEntries = tables_databaseFieldsToValues.entrySet().iterator();
             while(itEntries.hasNext()) {
-                writeForAll(writer, firstMainPrimaryKey);
+                writeForAll(writer, firstMainPrimaryKey, session.getPlatform());
                 writer.write(trpltab);
                 writer.write("UPDATE ");
                 Map.Entry entry = (Map.Entry)itEntries.next();
                 DatabaseTable t = (DatabaseTable)entry.getKey();
-                writer.write(t.getQualifiedNameDelimited());
+                writer.write(t.getQualifiedNameDelimited(session.getPlatform()));
                 writer.write(" SET ");
                 HashMap databaseFieldsToValues = (HashMap)entry.getValue();
                 int counter = 0;
@@ -135,9 +136,9 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 while(itDatabaseFields.hasNext()) {
                     counter++;
                     DatabaseField field = (DatabaseField)itDatabaseFields.next();
-                    writer.write(field.getNameDelimited());
+                    writer.write(field.getNameDelimited(session.getPlatform()));
                     writer.write(" = ");
-                    writeVar(writer, field);
+                    writeVar(writer, field, session.getPlatform());
                     writer.write("(i)");
                     if(counter < databaseFieldsToValues.size()) {
                         writer.write(", ");
@@ -150,10 +151,10 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 tablePrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
                     DatabaseField tableField = (DatabaseField)tablePrimaryKeys.elementAt(i);
-                    writer.write(tableField.getNameDelimited());
+                    writer.write(tableField.getNameDelimited(session.getPlatform()));
                     writer.write(" = ");
                     DatabaseField mainField = (DatabaseField )mainPrimaryKeys.elementAt(i);
-                    writeVar(writer, mainField);
+                    writeVar(writer, mainField, session.getPlatform());
                     writer.write("(i)");
                     if(i < mainPrimaryKeys.size()-1) {
                         writer.write(" AND ");
@@ -171,7 +172,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             outField.setType(Integer.class);
             call.appendOut(writer, outField);
             writer.write(" := ");
-            writeVar(writer, firstMainPrimaryKey);
+            writeVar(writer, firstMainPrimaryKey, session.getPlatform());
             writer.write(".COUNT;\n");
             
             writer.write("END;");
@@ -185,49 +186,49 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
         return call;
     }    
     
-    protected static void writeUniqueFieldName(Writer writer, DatabaseField field) throws IOException {
+    protected static void writeUniqueFieldName(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         // EMPLOYEE_EMP_ID
-        writer.write(field.getTable().getNameDelimited());
+        writer.write(field.getTable().getNameDelimited(platform));
         writer.write("_");
-        writer.write(field.getNameDelimited());
+        writer.write(field.getNameDelimited(platform));
     }
     
-    protected static void writeType(Writer writer, DatabaseField field) throws IOException {
+    protected static void writeType(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         // EMPLOYEE_EMP_ID_TYPE
-        writeUniqueFieldName(writer, field);
+        writeUniqueFieldName(writer, field, platform);
         writer.write(typeSuffix);
     }
     
-    protected static void writeVar(Writer writer, DatabaseField field) throws IOException {
+    protected static void writeVar(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         // EMPLOYEE_EMP_ID_VAR 
-        writeUniqueFieldName(writer, field);
+        writeUniqueFieldName(writer, field, platform);
         writer.write(varSuffix);
     }
     
-    protected static void writeDeclareTypeAndVar(Writer writer, DatabaseField field) throws IOException {
+    protected static void writeDeclareTypeAndVar(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         //  TYPE EMPLOYEE_EMP_ID_TYPE IS TABLE OF EMPLOYEE.EMP_ID%TYPE;
         writer.write(tab);
         writer.write("TYPE ");
-        writeType(writer, field);
+        writeType(writer, field, platform);
         writer.write(" IS TABLE OF ");
         writer.write(field.getQualifiedName());
         writer.write("%TYPE;\n");
         
         //  EMPLOYEE_EMP_ID_VAR EMP_ID_TYPE;
         writer.write(tab);
-        writeVar(writer, field);
+        writeVar(writer, field, platform);
         writer.write(" ");
-        writeType(writer, field);
+        writeType(writer, field, platform);
         writer.write(";\n");
     }
 
-    protected static void writeForAll(Writer writer, DatabaseField field) throws IOException {
+    protected static void writeForAll(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         //FORALL i IN EMPLOYEE_EMP_ID_VAR.FIRST..EMPLOYEE_EMP_ID_VAR.LAST
         writer.write(dbltab);
         writer.write("FORALL i IN ");
-        writeVar(writer, field);
+        writeVar(writer, field, platform);
         writer.write(".FIRST..");
-        writeVar(writer, field);
+        writeVar(writer, field, platform);
         writer.write(".LAST\n");
     }
 }

@@ -46,7 +46,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         FieldDefinition serialNumber = new FieldDefinition();
         serialNumber.setName("SERIALNUMBER");
         serialNumber.setTypeName("NUMERIC");
-        serialNumber.setSize(19);
+        serialNumber.setSize(18);
         serialNumber.setSubSize(0);
         serialNumber.setIsPrimaryKey(false);
         serialNumber.setIsIdentity(false);
@@ -145,7 +145,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
-        fieldSERIALNUMBER.setSize(19);
+        fieldSERIALNUMBER.setSize(18);
         fieldSERIALNUMBER.setSubSize(0);
         fieldSERIALNUMBER.setIsPrimaryKey(false);
         fieldSERIALNUMBER.setIsIdentity(false);
@@ -175,7 +175,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
-        fieldSERIALNUMBER.setSize(19);
+        fieldSERIALNUMBER.setSize(18);
         fieldSERIALNUMBER.setSubSize(0);
         fieldSERIALNUMBER.setIsPrimaryKey(false);
         fieldSERIALNUMBER.setIsIdentity(false);
@@ -225,7 +225,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
-        fieldSERIALNUMBER.setSize(19);
+        fieldSERIALNUMBER.setSize(18);
         fieldSERIALNUMBER.setSubSize(0);
         fieldSERIALNUMBER.setIsPrimaryKey(false);
         fieldSERIALNUMBER.setIsIdentity(false);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -32,8 +32,8 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation specifies a primary key column that is used 
- * as a foreign key to join to another table. 
+ * Specifies a primary key column that is used as a foreign key to
+ * join to another table.
  *
  * <p> It is used to join the primary table of an entity subclass 
  * in the {@link InheritanceType#JOINED JOINED} mapping strategy 
@@ -44,10 +44,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * is used as a foreign key to the referenced entity. 
  *
  * <p> If no <code>PrimaryKeyJoinColumn</code> annotation is 
- * specified for a subclass in the {@link InheritanceType#JOINED 
- * JOINED} mapping strategy, the foreign key columns are assumed 
+ * specified for a subclass in the <code>JOINED</code>
+ * mapping strategy, the foreign key columns are assumed 
  * to have the same names as the primary key columns of the 
- * primary table of the superclass
+ * primary table of the superclass.
  *
  * <pre>
  *
@@ -66,6 +66,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    public class ValuedCustomer extends Customer { ... }
  * </pre>
  *
+ * @see SecondaryTable
+ * @see Inheritance
+ * @see OneToOne
+ *
  * @since Java Persistence 1.0
  */
 @Target({TYPE, METHOD, FIELD})
@@ -76,32 +80,30 @@ public @interface PrimaryKeyJoinColumn {
     /** 
      * The name of the primary key column of the current table.
      * <p> Defaults to the same name as the primary key column 
-     * of the primary table of the superclass ({@link 
-     * InheritanceType#JOINED JOINED} mapping strategy); the same 
+     * of the primary table of the superclass (<code>JOINED</code> mapping strategy); the same 
      * name as the primary key column of the primary table 
-     * ({@link SecondaryTable} mapping); or the same name as the 
+     * (<code>SecondaryTable</code> mapping); or the same name as the 
      * primary key column for the table for the referencing entity 
-     * ({@link OneToOne} mapping)
+     * (<code>OneToOne</code> mapping)
      */
     String name() default "";
 
     /** 
-     * (Optional) The name of the primary key column of the table 
-     * being joined to.
-     * <p> Defaults to the same name as the primary key column 
-     * of the primary table of the superclass ({@link 
-     * InheritanceType#JOINED JOINED} mapping strategy); the same 
-     * name as the primary key column of the primary table 
-     * ({@link SecondaryTable} mapping); or the same name as the 
-     * primary key column for the table for the referencing entity 
-     * ({@link OneToOne} mapping)
+     * (Optional) The name of the primary key column of the table
+     * being joined to.  <p> Defaults to the same name as the primary
+     * key column of the primary table of the superclass
+     * (<code>JOINED</code> mapping strategy); the same name as the
+     * primary key column of the primary table
+     * (<code>SecondaryTable</code> mapping); or the same name as the
+     * primary key column for the table for the referencing entity
+     * (<code>OneToOne</code> mapping)
      */
     String referencedColumnName() default "";
 
     /**
      * (Optional) The SQL fragment that is used when generating the 
      * DDL for the column. This should not be specified for a 
-     * {@link OneToOne} primary key association.
+     * <code>OneToOne</code> primary key association.
      * <p> Defaults to the generated SQL to create a column of the 
      * inferred type.
      */

@@ -146,29 +146,9 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
             return resultSet.getTimestamp(columnNumber);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPTZ) {
-            TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
-
-            //Need to call timestampValue once here with the connection to avoid null point 
-            //exception later when timestampValue is called in converObject()
-            if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
-                Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-                //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
-                //It has been fixed in the next version for both streams
-                return new TIMESTAMPTZWrapper(tsTZ, connection, isTimestampInGmt(connection));
-            }
-            return null;
+            return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
-            //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
-            //However the java object is not know here.  The solution is to store Timestamp and the 
-            //session timezone in a wrapper class, which will be used later in converObject().
-            TIMESTAMPLTZ tsLTZ = (TIMESTAMPLTZ)resultSet.getObject(columnNumber);
-            if ((tsLTZ != null) && (tsLTZ.getLength() != 0)) {
-                Timestamp ts = TIMESTAMPLTZ.toTimestamp(getConnection(session, resultSet.getStatement().getConnection()), tsLTZ.toBytes());
-
-                //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
-                return new TIMESTAMPLTZWrapper(ts, ((OracleConnection)getConnection(session, resultSet.getStatement().getConnection())).getSessionTimeZone());
-            }
-            return null;
+            return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
@@ -184,6 +164,44 @@ public class Oracle9Platform extends Oracle8Platform {
         } else {
             return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Get a TIMESTAMPTZ value from a result set.
+     */
+    public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
+        TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
+        //Need to call timestampValue once here with the connection to avoid null point 
+        //exception later when timestampValue is called in converObject()
+        if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
+            Connection connection = getConnection(session, resultSet.getStatement().getConnection());
+            //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
+            //It has been fixed in the next version for both streams
+            Timestamp timestampToWrap = tsTZ.timestampValue(connection);
+            TimeZone timezoneToWrap = TIMESTAMPHelper.extractTimeZone(tsTZ.toBytes());
+            return new TIMESTAMPTZWrapper(timestampToWrap, timezoneToWrap, isTimestampInGmt(connection));
+        }
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Get a TIMESTAMPLTZ value from a result set.
+     */
+    public Object getTIMESTAMPLTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
+        //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
+        //However the java object is not know here.  The solution is to store Timestamp and the 
+        //session timezone in a wrapper class, which will be used later in converObject().
+        TIMESTAMPLTZ tsLTZ = (TIMESTAMPLTZ)resultSet.getObject(columnNumber);
+        if ((tsLTZ != null) && (tsLTZ.getLength() != 0)) {
+            Connection connection = getConnection(session, resultSet.getStatement().getConnection());
+            Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
+            String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
+            //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
+            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone);
+        }
+        return null;
     }
 
     /**

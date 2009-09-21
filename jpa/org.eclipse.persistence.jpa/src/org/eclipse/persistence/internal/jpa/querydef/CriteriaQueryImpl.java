@@ -59,11 +59,11 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
     protected SelectionImpl<?> selection;
-    protected Class<?> queryType;
+    
+    protected List<Order> orderBy;
     
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
-        super(metamodel, queryResult, queryBuilder);
-        this.queryType = result;
+        super(metamodel, queryResult, queryBuilder, result);
     }
 
     /**
@@ -74,6 +74,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
+        validateRoot(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
             if (!selection.getJavaType().equals(Tuple.class) && !this.queryResult.equals(ResultType.TUPLE) && !this.queryResult.equals(ResultType.OBJECT_ARRAY)) {
@@ -97,7 +98,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.OTHER;
             }
         }
-        integrateRoot(selection);
         return this;
     }
 
@@ -280,6 +280,23 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> groupBy(Expression<?>... grouping){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Specify the expressions that are used to form groups over
+     * the query results.
+     * Replaces the previous specified grouping expressions, if any.
+     * If no grouping expressions are specified, any previously 
+     * added grouping expressions are simply removed.
+     * This method only overrides the return type of the 
+     * corresponding AbstractQuery method.
+     * @param grouping  list of zero or more grouping expressions
+     * @return the modified query
+     */
+    public CriteriaQuery<T> groupBy(List<Expression<?>> grouping){
+        //TODO
         throw new UnsupportedOperationException();
     }
 
@@ -334,14 +351,36 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query.
      */
     public CriteriaQuery<T> orderBy(Order... o){
-        throw new UnsupportedOperationException();
+        this.orderBy = new ArrayList();
+        for (Order order : o){
+            this.orderBy.add(order);
+        }
+        return this;
     }
+    /**
+     * Specify the ordering expressions that are used to
+     * order the query results.
+     * Replaces the previous ordering expressions, if any.
+     * If no ordering expressions are specified, the previous
+     * ordering, if any, is simply removed, and results will
+     * be returned in no particular order.
+     * The order of the ordering expressions in the list
+     * determines the precedence, whereby the first element in the
+     * list has highest precedence.
+     * @param o  list of zero or more ordering expressions
+     * @return the modified query.
+     */
+    public CriteriaQuery<T> orderBy(List<Order> o){
+        this.orderBy = o;
+        return this;
+    }
+
     
     public boolean discoverResultType(Selection<?> ... selections){
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
-        for (Selection select: selection.getCompoundSelectionItems()){
-            constructorArgs[++count] = select.getJavaType();
+        for (Selection select: selections){
+            constructorArgs[count++] = select.getJavaType();
         }
         try{
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -383,35 +422,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * Add a query root corresponding to the given entity, forming a cartesian
-     * product with any existing roots.
-     * 
-     * @param entity
-     *            metamodel entity representing the entity of type X
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(EntityType<X> entity){
-        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
-        initialRoot(root, entity);
-        return root;
-    }
-
-    /**
-     * Add a query root corresponding to the given entity, forming a cartesian
-     * product with any existing roots.
-     * 
-     * @param entityClass
-     *            the entity class
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(Class<X> entityClass) {
-        EntityType<X> entity = this.metamodel.entity(entityClass);
-        return this.from(entity);
-    }
-
-    
-    /**
      * Return the ordering expressions in order of precedence.
      * 
      * @return the list of ordering expressions
@@ -437,24 +447,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * Return the result type of the query.
-     * If a result type was specified as an argument to the
-     * createQuery method, that type will be returned.
-     * If the query was created using the createTupleQuery
-     * method, the result type is Tuple.
-     * Otherwise, the result type is Object.
-     * @return result type
-     */
-    public Class<?> getResultType(){
-        return this.queryType;
-    }
-    
-    /**
      * Translates from the criteria query to a EclipseLink
      * Database Query.
      */
     public DatabaseQuery translate(){
         //TODO fetch joins
+        //find and translate subqueries.
         
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)){
@@ -467,8 +465,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             query = raq;
         }else{
             if (this.roots == null || this.roots.isEmpty()) throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
-            ReportQuery reportQuery = new ReportQuery();
+            ReportQuery reportQuery = null;
             if (this.queryResult.equals(ResultType.CONSTRUCTOR)){
+                reportQuery = new ReportQuery();
                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)this.selection).translate());
                 reportQuery.setShouldReturnSingleAttribute(true);
             }else {
@@ -492,15 +491,18 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((ExpressionImpl)this.where).getCurrentNode() != null){
-                reportQuery.setReferenceClass(((ExpressionImpl)this.where).getCurrentNode().getBuilder().getQueryClass());
+            if (this.where != null && ((InternalSelection)this.where).getCurrentNode() != null){
+                reportQuery.setReferenceClass(((InternalSelection)this.where).getCurrentNode().getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(((InternalSelection)this.where).getCurrentNode().getBuilder());
             }else{
-            reportQuery.setReferenceClass(this.getRoots().iterator().next().getJavaType());
-        }
+                Root root = this.getRoots().iterator().next();
+                reportQuery.setReferenceClass(root.getJavaType());
+                reportQuery.setExpressionBuilder(((RootImpl)root).getCurrentNode().getBuilder());
+            }
             query = reportQuery;
         }
         if (this.where != null){
-            query.setSelectionCriteria(((ExpressionImpl)this.where).getCurrentNode());
+            query.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
         }
         if (this.distinct){
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
@@ -509,6 +511,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
 
         }
+        if (this.orderBy!= null && !this.orderBy.isEmpty()){
+            for (Order order: this.orderBy){
+                OrderImpl orderImpl = (OrderImpl)order;
+                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl)orderImpl.getExpression()).getCurrentNode();
+                if (orderImpl.isAscending()){
+                    orderExp = orderExp.ascending();
+                } else{
+                    orderExp = orderExp.descending();
+                }
+                query.addOrdering(orderExp);
+            }
+        }
+        
         return query;
     }
 

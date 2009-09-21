@@ -15,11 +15,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 @Entity(name="LocationMetamodel")
 @Table(name="CMP3_MM_GALACTIC")//LOCATION")

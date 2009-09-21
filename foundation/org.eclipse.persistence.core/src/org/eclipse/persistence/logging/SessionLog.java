@@ -105,10 +105,11 @@ public interface SessionLog extends Cloneable {
     public static final String EJB = "ejb";
     public static final String DMS = "dms";
     public static final String EJB_OR_METADATA = "ejb_or_metadata";
+    public static final String METAMODEL = "jpa_metamodel";
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
-    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA ,WEAVER ,PROPERTIES ,SERVER};
+    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL ,WEAVER ,PROPERTIES ,SERVER};
 
     /**
      * PUBLIC:

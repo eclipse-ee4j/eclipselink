@@ -268,5 +268,8 @@ public class JAXBBinder extends Binder {
 
         throw new PropertyException(propName);
     }
-
+    
+    public XMLBinder getXMLBinder() {
+        return xmlBinder;
+    }
 }

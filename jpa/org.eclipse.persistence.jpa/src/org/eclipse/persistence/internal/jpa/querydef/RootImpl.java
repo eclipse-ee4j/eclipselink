@@ -24,7 +24,7 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
         return (EntityType<X>)this.modelArtifact;
     }
     
-    protected void findRoot(Set<Root<?>> roots){
+    public void findRoot(Set<Root<?>> roots){
         roots.add(this);
     }
 

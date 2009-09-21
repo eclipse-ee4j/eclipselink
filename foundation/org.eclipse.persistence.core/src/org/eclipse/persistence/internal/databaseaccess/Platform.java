@@ -139,6 +139,22 @@ public interface Platform extends Serializable, Cloneable {
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind);
 
     /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the end of the value.
+     */
+    public String getEndDelimiter();
+
+    /**
+     * Delimiter to use for fields and tables using spaces or other special values.
+     * 
+     * Some databases use different delimiters for the beginning and end of the value.
+     * This delimiter indicates the start of the value.
+     */
+    public String getStartDelimiter();
+    
+    /**
      * Allow for the platform to handle the representation of parameters specially.
      */
     public boolean shouldUseCustomModifyForCall(DatabaseField field);

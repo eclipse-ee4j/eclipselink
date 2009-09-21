@@ -60,7 +60,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -82,7 +82,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldVICTIM_ID = new FieldDefinition();
         fieldVICTIM_ID.setName("VICTIM_ID");
         fieldVICTIM_ID.setTypeName("NUMBER");
-        fieldVICTIM_ID.setSize(19);
+        fieldVICTIM_ID.setSize(18);
         fieldVICTIM_ID.setSubSize(0);
         fieldVICTIM_ID.setIsPrimaryKey(false);
         fieldVICTIM_ID.setIsIdentity(false);
@@ -107,7 +107,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -147,7 +147,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(19);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -502,7 +502,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldGH_ID = new FieldDefinition();
         fieldGH_ID.setName("GH_ID");
         fieldGH_ID.setTypeName("NUMBER");
-        fieldGH_ID.setSize(19);
+        fieldGH_ID.setSize(18);
         fieldGH_ID.setSubSize(0);
         fieldGH_ID.setIsPrimaryKey(true);
         fieldGH_ID.setIsIdentity(false);
@@ -513,7 +513,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldGH_MAXIMUMJUMP = new FieldDefinition();
         fieldGH_MAXIMUMJUMP.setName("GH_MAXIMUMJUMP");
         fieldGH_MAXIMUMJUMP.setTypeName("NUMBER");
-        fieldGH_MAXIMUMJUMP.setSize(19);
+        fieldGH_MAXIMUMJUMP.setSize(18);
         fieldGH_MAXIMUMJUMP.setSubSize(0);
         fieldGH_MAXIMUMJUMP.setIsPrimaryKey(false);
         fieldGH_MAXIMUMJUMP.setIsIdentity(false);
@@ -705,7 +705,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldIN_ID = new FieldDefinition();
         fieldIN_ID.setName("IN_ID");
         fieldIN_ID.setTypeName("NUMBER");
-        fieldIN_ID.setSize(19);
+        fieldIN_ID.setSize(18);
         fieldIN_ID.setSubSize(0);
         fieldIN_ID.setIsPrimaryKey(true);
         fieldIN_ID.setIsIdentity(false);
@@ -727,7 +727,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldIN_NUMBEROFLEGS = new FieldDefinition();
         fieldIN_NUMBEROFLEGS.setName("IN_NUMBEROFLEGS");
         fieldIN_NUMBEROFLEGS.setTypeName("NUMBER");
-        fieldIN_NUMBEROFLEGS.setSize(19);
+        fieldIN_NUMBEROFLEGS.setSize(18);
         fieldIN_NUMBEROFLEGS.setSubSize(0);
         fieldIN_NUMBEROFLEGS.setIsPrimaryKey(false);
         fieldIN_NUMBEROFLEGS.setIsIdentity(false);
@@ -738,7 +738,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldENTOMOLOGIST = new FieldDefinition();
         fieldENTOMOLOGIST.setName("ENTOMOLOGIST");
         fieldENTOMOLOGIST.setTypeName("NUMBER");
-        fieldENTOMOLOGIST.setSize(19);
+        fieldENTOMOLOGIST.setSize(18);
         fieldENTOMOLOGIST.setSubSize(0);
         fieldENTOMOLOGIST.setIsPrimaryKey(false);
         fieldENTOMOLOGIST.setIsIdentity(false);
@@ -889,7 +889,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldLB_ID = new FieldDefinition();
         fieldLB_ID.setName("LB_ID");
         fieldLB_ID.setTypeName("NUMBER");
-        fieldLB_ID.setSize(19);
+        fieldLB_ID.setSize(18);
         fieldLB_ID.setSubSize(0);
         fieldLB_ID.setIsPrimaryKey(true);
         fieldLB_ID.setIsIdentity(false);
@@ -900,7 +900,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldLB_NUMBEROFSPOTS = new FieldDefinition();
         fieldLB_NUMBEROFSPOTS.setName("LB_NUMBEROFSPOTS");
         fieldLB_NUMBEROFSPOTS.setTypeName("NUMBER");
-        fieldLB_NUMBEROFSPOTS.setSize(19);
+        fieldLB_NUMBEROFSPOTS.setSize(18);
         fieldLB_NUMBEROFSPOTS.setSubSize(0);
         fieldLB_NUMBEROFSPOTS.setIsPrimaryKey(false);
         fieldLB_NUMBEROFSPOTS.setIsIdentity(false);

@@ -396,14 +396,9 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 String seqName = (String)entry.getKey();
                 Vector localSequenceForName = (Vector)entry.getValue();
                 if (!localSequenceForName.isEmpty()) {
-                    acquireLock(seqName);
-                    try {
-                        getPreallocationHandler().setPreallocated(seqName, localSequenceForName);
-                        // clear all localSequencesForName
-                        localSequenceForName.clear();
-                    } finally {
-                        releaseLock(seqName);
-                    }
+                    getPreallocationHandler().setPreallocated(seqName, localSequenceForName);
+                    // clear all localSequencesForName
+                    localSequenceForName.clear();
                 }
             }
             if(accessor != null) {
@@ -433,110 +428,127 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
          */
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
-            Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
-            // First grab the first sequence value without locking, a lock is only required if empty.
-            Object sequenceValue = sequencesForName.poll();
-            if (sequenceValue != null) {
-                return sequenceValue;
-            }
-            // KeepLocked indicates whether the sequence lock should be kept for the whole duration of this method.
-            // Of course the lock should be released in any case when the method returns or throws an exception.
-            // This is only used if a sequence transaction was begun by the unit of work,
-            // and will be committed before the unit of work commit.
-            boolean keepLocked = false;
-            acquireLock(seqName);
-            try {
-                sequenceValue = sequencesForName.poll();
+            if(sequence.getPreallocationSize() > 1) {
+                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                // First grab the first sequence value without locking, a lock is only required if empty.
+                Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
                     return sequenceValue;
-                } else {
-                    if (!getOwnerSession().getDatasourceLogin().shouldUseExternalTransactionController() && (sequence.getPreallocationSize() > 1) && !writeSession.isInTransaction()) {
-                        // To prevent several threads from sumultaneously allocating a separate bunch of
-                        // sequencing numbers each. With keepLocked==true the first thread locks out others
-                        // until it copies the obtained sequence numbers to the global storage.
-                        // Note that this optimization possible only in non-jts case when there is no transaction,
-                        // and makes sense only in case preallocation size > 1
+                }
+                // KeepLocked indicates whether the sequence lock should be kept for the whole duration of this method.
+                // Of course the lock should be released in any case when the method returns or throws an exception.
+                // This is only used if a sequence transaction was begun by the unit of work,
+                // and will be committed before the unit of work commit.
+                boolean keepLocked = false;
+                if (!getOwnerSession().getDatasourceLogin().shouldUseExternalTransactionController() && !writeSession.isInTransaction()) {
+                    // To prevent several threads from simultaneously allocating a separate bunch of
+                    // sequencing numbers each. With keepLocked==true the first thread locks out others
+                    // until it copies the obtained sequence numbers to the global storage.
+                    // Note that this optimization possible only in non-jts case when there is no transaction.
+                    acquireLock(seqName);
+                    try {
+                        sequenceValue = sequencesForName.poll();
+                        if (sequenceValue != null) {
+                            return sequenceValue;
+                        }
                         writeSession.beginTransaction();//write accessor is set in begin
                         keepLocked = true;
+                    } finally {
+                        if (!keepLocked) {
+                            releaseLock(seqName);
+                        }
                     }
                 }
-            } finally {
+    
+                Accessor accessor;
+                Vector localSequencesForName;
                 if (!keepLocked) {
-                    releaseLock(seqName);
-                }
-            }
-
-            Accessor accessor;
-            Vector localSequencesForName;
-            if (!keepLocked) {
-                writeSession.beginTransaction();//write accessor is set in begin
-            }
-            try {
-                accessor = writeSession.getAccessor();
-                SequencingCallbackImpl seqCallbackImpl = getCallbackImpl(writeSession, accessor);
-                Map localSequences = seqCallbackImpl.getPreallocatedSequenceValues();
-                localSequencesForName = (Vector)localSequences.get(seqName);
-                if ((localSequencesForName == null) || localSequencesForName.isEmpty()) {
-                    localSequencesForName = sequence.getGeneratedVector(null, writeSession);
-                    localSequences.put(seqName, localSequencesForName);
-                    logDebugLocalPreallocation(writeSession, seqName, localSequencesForName, accessor);
-                }
-            } catch (RuntimeException ex) {
-                if (keepLocked) {
-                    releaseLock(seqName);
+                    writeSession.beginTransaction();//write accessor is set in begin
                 }
                 try {
-                    // make sure to rollback the transaction we've begun
-                    writeSession.rollbackTransaction();
-                } catch (Exception rollbackException) {
-                    // ignore rollback exception
-                }
-
-                // don't eat the original exception
-                throw ex;
-            }
-
-            if (!keepLocked) {
-                acquireLock(seqName);
-            }
-            try {
-                try {
-                    // commitTransaction may copy preallocated sequence numbers 
-                    // from localSequences to preallocationHandler: that happens
-                    // if it isn't a nested transaction, and sequencingCallback.afterCommit 
-                    // method has been called.
-                    // In this case:
-                    // 1. localSequences corresponding to the accessor
-                    //    has been removed from accessorToPreallocated;
-                    // 2. All its members are empty (therefore localSequenceForName is empty).
-                    writeSession.commitTransaction();
-                } catch (DatabaseException ex) {
+                    accessor = writeSession.getAccessor();
+                    SequencingCallbackImpl seqCallbackImpl = getCallbackImpl(writeSession, accessor);
+                    Map localSequences = seqCallbackImpl.getPreallocatedSequenceValues();
+                    localSequencesForName = (Vector)localSequences.get(seqName);
+                    if ((localSequencesForName == null) || localSequencesForName.isEmpty()) {
+                        localSequencesForName = sequence.getGeneratedVector(null, writeSession);
+                        localSequences.put(seqName, localSequencesForName);
+                        logDebugLocalPreallocation(writeSession, seqName, localSequencesForName, accessor);
+                    }
+                } catch (RuntimeException ex) {
+                    if (keepLocked) {
+                        releaseLock(seqName);
+                    }
                     try {
                         // make sure to rollback the transaction we've begun
                         writeSession.rollbackTransaction();
                     } catch (Exception rollbackException) {
                         // ignore rollback exception
                     }
+    
                     // don't eat the original exception
                     throw ex;
                 }
-
-                if (!localSequencesForName.isEmpty()) {
-                    // localSeqencesForName is not empty, that means
-                    // sequencingCallback has not been called.
-                    sequenceValue = localSequencesForName.remove(0);
-                    return sequenceValue;
-                } else {
-                    // localSeqencesForName is empty, that means
-                    // sequencingCallback has been called.
-                    sequenceValue = sequencesForName.poll();
-                    if (sequenceValue != null) {
-                        return sequenceValue;
+    
+                try {
+                    try {
+                        // commitTransaction may copy preallocated sequence numbers 
+                        // from localSequences to preallocationHandler: that happens
+                        // if it isn't a nested transaction, and sequencingCallback.afterCommit 
+                        // method has been called.
+                        // In this case:
+                        // 1. localSequences corresponding to the accessor
+                        //    has been removed from accessorToPreallocated;
+                        // 2. All its members are empty (therefore localSequenceForName is empty).
+                        writeSession.commitTransaction();
+                    } catch (DatabaseException ex) {
+                        try {
+                            // make sure to rollback the transaction we've begun
+                            writeSession.rollbackTransaction();
+                        } catch (Exception rollbackException) {
+                            // ignore rollback exception
+                        }
+                        // don't eat the original exception
+                        throw ex;
                     }
-                    return getNextValue(sequence, writeSession);
+    
+                    if (!localSequencesForName.isEmpty()) {
+                        // localSeqencesForName is not empty, that means
+                        // sequencingCallback has not been called.
+                        sequenceValue = localSequencesForName.remove(0);
+                        return sequenceValue;
+                    } else {
+                        // localSeqencesForName is empty, that means
+                        // sequencingCallback has been called.
+                        sequenceValue = sequencesForName.poll();
+                        if (sequenceValue != null) {
+                            return sequenceValue;
+                        }
+                        return getNextValue(sequence, writeSession);
+                    }
+                } finally {
+                    if(keepLocked) {
+                        releaseLock(seqName);
+                    }
                 }
-            } finally {
-                releaseLock(seqName);
+            } else {
+                writeSession.beginTransaction();
+                try {
+                    // preallocation size is 1 - just return the first (and only) element of the allocated vector.
+                    Object sequenceValue = sequence.getGeneratedVector(null, writeSession).firstElement();
+                    writeSession.commitTransaction();
+                    return sequenceValue;
+                } catch (RuntimeException ex) {
+                    try {
+                        // make sure to rollback the transaction we've begun
+                        writeSession.rollbackTransaction();
+                    } catch (Exception rollbackException) {
+                        // ignore rollback exception
+                    }
+                    
+                    // don't eat the original exception
+                    throw ex;
+                }
             }
         }
     }
@@ -549,34 +561,61 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     class Preallocation_Transaction_Accessor_State extends State {
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
-            Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
-            // First try to get the next sequence value without locking.
-            Object sequenceValue = sequencesForName.poll();
-            if (sequenceValue != null) {
-                return sequenceValue;
-            }
-            // Sequences are empty, so must lock and allocate next batch of sequences.
-            acquireLock(seqName);
-            try {
-                sequenceValue = sequencesForName.poll();
+            if(sequence.getPreallocationSize() > 1) {
+                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                // First try to get the next sequence value without locking.
+                Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
                     return sequenceValue;
                 }
+                // Sequences are empty, so must lock and allocate next batch of sequences.
+                acquireLock(seqName);
+                try {
+                    sequenceValue = sequencesForName.poll();
+                    if (sequenceValue != null) {
+                        return sequenceValue;
+                    }
+                    // note that accessor.getLogin().shouldUseExternalTransactionController()
+                    // should be set to false
+                    Accessor accessor = getConnectionHandler().acquireAccessor();
+                    try {
+                        accessor.beginTransaction(writeSession);
+                        try {
+                            Vector sequences = sequence.getGeneratedVector(accessor, writeSession);
+                            accessor.commitTransaction(writeSession);
+                            // Remove the first value before adding to the global cache to ensure this thread gets one.
+                            sequenceValue = sequences.remove(0);
+                            // copy remaining values to global cache.
+                            getPreallocationHandler().setPreallocated(seqName, sequences);
+                            logDebugPreallocation(seqName, sequenceValue, sequences);
+                        } catch (RuntimeException ex) {
+                            try {
+                                // make sure to rollback the transaction we've begun
+                                accessor.rollbackTransaction(writeSession);
+                            } catch (Exception rollbackException) {
+                                // ignore rollback exception
+                            }
+                            // don't eat the original exception
+                            throw ex;
+                        }
+                    } finally {
+                        getConnectionHandler().releaseAccessor(accessor);
+                    }
+                } finally {
+                    releaseLock(seqName);
+                }
+                return sequenceValue;
+            } else {
                 // note that accessor.getLogin().shouldUseExternalTransactionController()
                 // should be set to false
                 Accessor accessor = getConnectionHandler().acquireAccessor();
                 try {
                     accessor.beginTransaction(writeSession);
                     try {
-                        Vector sequences = sequence.getGeneratedVector(accessor, writeSession);
+                        // preallocation size is 1 - just return the first (and only) element of the allocated vector.
+                        Object sequenceValue = sequence.getGeneratedVector(accessor, writeSession).firstElement();
                         accessor.commitTransaction(writeSession);
-                        // Remove the first value before adding to the global cache to ensure this thread gets one.
-                        sequenceValue = sequences.remove(0);
-                        // If preallocation size is 1, no point trying to add to global cache.
-                        if (!sequences.isEmpty()) {
-                            getPreallocationHandler().setPreallocated(seqName, sequences);
-                            logDebugPreallocation(seqName, sequenceValue, sequences);
-                        }
+                        return sequenceValue;
                     } catch (RuntimeException ex) {
                         try {
                             // make sure to rollback the transaction we've begun
@@ -590,10 +629,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 } finally {
                     getConnectionHandler().releaseAccessor(accessor);
                 }
-            } finally {
-                releaseLock(seqName);
             }
-            return sequenceValue;
         }
     }
 
@@ -605,31 +641,34 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     class Preallocation_NoTransaction_State extends State {
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
-            Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
-            // First try to get the next sequence value without locking.
-            Object sequenceValue = sequencesForName.poll();
-            if (sequenceValue != null) {
-                return sequenceValue;
-            }
-            // Sequences are empty, so must lock and allocate next batch of sequences.
-            acquireLock(seqName);
-            try {
-                sequenceValue = sequencesForName.poll();
+            if(sequence.getPreallocationSize() > 1) {
+                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                // First try to get the next sequence value without locking.
+                Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
                     return sequenceValue;
                 }
-                Vector sequences = sequence.getGeneratedVector(null, writeSession);
-                // Remove the first value before adding to the global cache to ensure this thread gets one.
-                sequenceValue = sequences.remove(0);
-                // If preallocation size is 1, no point trying to add to global cache.
-                if (!sequences.isEmpty()) {
+                // Sequences are empty, so must lock and allocate next batch of sequences.
+                acquireLock(seqName);
+                try {
+                    sequenceValue = sequencesForName.poll();
+                    if (sequenceValue != null) {
+                        return sequenceValue;
+                    }
+                    Vector sequences = sequence.getGeneratedVector(null, writeSession);
+                    // Remove the first value before adding to the global cache to ensure this thread gets one.
+                    sequenceValue = sequences.remove(0);
+                    // copy remaining values to global cache.
                     getPreallocationHandler().setPreallocated(seqName, sequences);
                     logDebugPreallocation(seqName, sequenceValue, sequences);
+                } finally {
+                    releaseLock(seqName);
                 }
-            } finally {
-                releaseLock(seqName);
+                return sequenceValue;
+            } else {
+                // preallocation size is 1 - just return the first (and only) element of the allocated vector.
+                return sequence.getGeneratedVector(null, writeSession).firstElement();
             }
-            return sequenceValue;
         }
     }
 

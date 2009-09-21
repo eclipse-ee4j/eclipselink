@@ -16,10 +16,13 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.ClassLevelAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.composite.XmlAdapterCompositeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection.XmlAdapterCompositeCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.XmlAdapterCompositeDirectCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.PackageLevelAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.adapters.PackageLevelAdaptersTestCases;
 
 public class XmlAdapterTestSuite extends TestCase {
     public XmlAdapterTestSuite(String name) {
@@ -36,6 +39,9 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterCompositeCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterCompositeDirectCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterDirectTestCases.class);
+        suite.addTestSuite(PackageLevelAdapterTestCases.class);
+        suite.addTestSuite(PackageLevelAdaptersTestCases.class);
+        suite.addTestSuite(ClassLevelAdapterTestCases.class);
         return suite;
     }
 }

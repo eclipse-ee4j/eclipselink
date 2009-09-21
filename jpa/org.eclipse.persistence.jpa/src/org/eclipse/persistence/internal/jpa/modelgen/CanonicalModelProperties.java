@@ -22,23 +22,33 @@ import java.util.Map;
  * @since EclipseLink 1.2
  */
 public abstract class CanonicalModelProperties {
-    // TODO: all the naming needs to be finalized ...
-    // Some properties are temporary.
+    /**
+     * This optional property specifies the prefix that will be added to the 
+     * start of the class name of any canonical model class generated. 
+     * By default the prefix is not used.
+     */    
+    public static String CANONICAL_MODEL_PREFIX = "eclipselink.canonicalmodel.prefix";
+    public static String CANONICAL_MODEL_PREFIX_DEFAULT = "";
     
-    public enum LOCATION { CP, SP, APP, SO, PCP, CO };
-    public enum QUALIFIER_POSITION { PRE, POST }
-
-    public static String PERSISTENCE_XML_PACKAGE = "package";
-    public static String PERSISTENCE_XML_PACKAGE_DEFAULT = "";
-    public static String PERSISTENCE_XML_LOCATION = "std-location";
-    public static String PERSISTENCE_XML_LOCATION_DEFAULT = LOCATION.CO.name();
-    public static String PERSISTENCE_XML_FILE = "filename";
-    public static String PERSISTENCE_XML_FILE_DEFAULT = "META-INF/persistence.xml";
-
-    public static String CANONICAL_MODEL_QUALIFIER = "eclipselink.canonical-model.qualifier";
-    public static String CANONICAL_MODEL_QUALIFIER_DEFAULT = "_";
-    public static String CANONICAL_MODEL_QUALIFIER_POSITION = "eclipselink.canonical-model.qualifier-position";
-    public static String CANONICAL_MODEL_QUALIFIER_POSITION_DEFAULT = QUALIFIER_POSITION.POST.name();
+    /**
+     * This optional property specifies the suffix that will be added to the 
+     * end of the class name of any canonical model class generated. By default 
+     * the suffix value is "_". If this property is specified the value must be 
+     * a non-empty string that contains valid characters for use in a Java class 
+     * name.
+     */
+    public static String CANONICAL_MODEL_SUFFIX = "eclipselink.canonicalmodel.suffix";
+    public static String CANONICAL_MODEL_SUFFIX_DEFAULT = "_";
+    
+    /**
+     * This optional property specifies a sub-package name that can be used to 
+     * have the canonical model generator generate its classes in a sub-package 
+     * of the package where the corresponding entity class is located. By 
+     * default the canonical model classes are generated into the same package 
+     * as the entity classes. 
+     */
+    public static String CANONICAL_MODEL_SUB_PACKAGE = "eclipselink.canonicalmodel.subpackage";
+    public static String CANONICAL_MODEL_SUB_PACKAGE_DEFAULT = "";
     
     /**
      * INTERNAL:

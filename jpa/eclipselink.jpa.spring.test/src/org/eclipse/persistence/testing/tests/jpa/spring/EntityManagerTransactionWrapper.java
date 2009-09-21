@@ -40,7 +40,14 @@ public class EntityManagerTransactionWrapper extends EntityManagerWrapper {
     public void flush() {
         em.getTransaction().begin();
         em.flush();
-        em.getTransaction().commit();   
+        em.getTransaction().commit();
     }
 
+    
+    public int executeNativeQuery(String string) {
+        em.getTransaction().begin();
+        int count = em.createNativeQuery(string).executeUpdate();
+        em.getTransaction().commit();
+        return count;
+    }
 }

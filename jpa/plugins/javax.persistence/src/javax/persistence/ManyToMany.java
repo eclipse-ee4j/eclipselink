@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,8 +9,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -34,48 +34,61 @@ import static javax.persistence.FetchType.LAZY;
 
 /**
  * Defines a many-valued association with many-to-many multiplicity. 
- * If the Collection is defined using generics to specify the element 
- * type, the associated target entity class does not need to be 
- * specified; otherwise it must be specified.
  *
- * <p> Every many-to-many association has two sides, the owning 
- * side and the non-owning, or inverse, side.  The join table is 
- * specified on the owning side. If the association is bidirectional, 
- * either side may be designated as the owning side.
+ * <p> Every many-to-many association has two sides, the owning side
+ * and the non-owning, or inverse, side.  The join table is specified
+ * on the owning side. If the association is bidirectional, either
+ * side may be designated as the owning side.  If the relationship is
+ * bidirectional, the non-owning side must use the <code>mappedBy</code> element of
+ * the <code>ManyToMany</code> annotation to specify the relationship field or
+ * property of the owning side.
  *
- * <p> The same annotation elements for the {@link OneToMany} 
- * annotation apply to the <code>ManyToMany</code> annotation. 
+ * <p> The join table for the relationship, if not defaulted, is
+ * specified on the owning side.
+ *
+ * <p> The <code>ManyToMany</code> annotation may be used within an
+ * embeddable class contained within an entity class to specify a
+ * relationship to a collection of entities. If the relationship is
+ * bidirectional and the entity containing the embeddable class is the
+ * owner of the relationship, the non-owning side must use the
+ * <code>mappedBy</code> element of the <code>ManyToMany</code>
+ * annotation to specify the relationship field or property of the
+ * embeddable class. The dot (".") notation syntax must be used in the
+ * <code>mappedBy</code> element to indicate the relationship
+ * attribute within the embedded attribute.  The value of each
+ * identifier used with the dot notation is the name of the respective
+ * embedded field or property.
  *
  * <pre>
  *
  *    Example 1:
  *
- *    In Customer class:
+ *    // In Customer class:
  *
  *    &#064;ManyToMany
  *    &#064;JoinTable(name="CUST_PHONES")
- *    public Set<PhoneNumber> getPhones() { return phones; }
+ *    public Set&#060;PhoneNumber&#062; getPhones() { return phones; }
  *
- *    In PhoneNumber class:
+ *    // In PhoneNumber class:
  *
  *    &#064;ManyToMany(mappedBy="phones")
- *    public Set<Customer> getCustomers() { return customers; }
+ *    public Set&#060;Customer&#062; getCustomers() { return customers; }
  *
  *    Example 2:
  *
- *    In Customer class:
+ *    // In Customer class:
  *
  *    &#064;ManyToMany(targetEntity=com.acme.PhoneNumber.class)
  *    public Set getPhones() { return phones; }
  *
- *    In PhoneNumber class:
+ *    // In PhoneNumber class:
  *
  *    &#064;ManyToMany(targetEntity=com.acme.Customer.class, mappedBy="phones")
  *    public Set getCustomers() { return customers; }
  *
  *    Example 3:
  *
- *    In Customer class:
+ *    // In Customer class:
  *
  *    &#064;ManyToMany
  *    &#064;JoinTable(name="CUST_PHONE",
@@ -84,13 +97,15 @@ import static javax.persistence.FetchType.LAZY;
  *        inverseJoinColumns=
  *            &#064;JoinColumn(name="PHONE_ID", referencedColumnName="ID")
  *        )
- *    public Set<PhoneNumber> getPhones() { return phones; }
+ *    public Set&#060;PhoneNumber&#062; getPhones() { return phones; }
  *
- *    In PhoneNumberClass:
+ *    // In PhoneNumberClass:
  *
  *    &#064;ManyToMany(mappedBy="phones")
- *    public Set<Customer> getCustomers() { return customers; }
+ *    public Set&#060;Customer&#062; getCustomers() { return customers; }
  * </pre>
+ *
+ * @see JoinTable
  *
  * @since Java Persistence 1.0
  */
@@ -99,10 +114,10 @@ import static javax.persistence.FetchType.LAZY;
 public @interface ManyToMany {
 
     /**
-     * (Optional) The entity class that is the target
-     * of the association. Optional only if the collection
-     * property is defined using Java generics.
-     * Must be specified otherwise.
+     * (Optional) The entity class that is the target of the
+     * association. Optional only if the collection-valued
+     * relationship property is defined using Java generics.  Must be
+     * specified otherwise.
      *
      * <p> Defaults to the parameterized type of
      * the collection when defined using generics.
@@ -110,19 +125,22 @@ public @interface ManyToMany {
     Class targetEntity() default void.class;
 
     /** 
-     * (Optional) The operations that must be cascaded to 
-     * the target of the association.
+     * (Optional) The operations that must be cascaded to the target
+     * of the association.  
+     *
+     * <p> When the target collection is a {@link java.util.Map
+     * java.util.Map}, the <code>cascade</code> element applies to the
+     * map value.
+     *
      * <p> Defaults to no operations being cascaded.
      */
     CascadeType[] cascade() default {};
 
-    /** (Optional) Whether the association should be
-     * lazily loaded or must be eagerly fetched. The
-     * {@link FetchType#EAGER EAGER} strategy is a 
-     * requirement on the persistence provider runtime 
-     * that the associated entities must be eagerly fetched. 
-     * The {@link FetchType#LAZY LAZY} strategy is a hint 
-     * to the persistence provider runtime.
+    /** (Optional) Whether the association should be lazily loaded or
+     * must be eagerly fetched. The EAGER strategy is a requirement on
+     * the persistence provider runtime that the associated entities
+     * must be eagerly fetched.  The LAZY strategy is a hint to the
+     * persistence provider runtime.
      */
     FetchType fetch() default LAZY;
 

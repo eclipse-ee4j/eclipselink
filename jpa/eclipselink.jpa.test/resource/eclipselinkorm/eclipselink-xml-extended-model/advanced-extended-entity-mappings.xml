@@ -338,7 +338,7 @@
                 <column name="NAME"/>
             </id>
             <id name="role" >
-                <column name="ROLE"/>
+                <column name="DEPT_ROLE"/>
             </id>
             <id name="location" >
                 <column name="LOCATION"/>
@@ -369,7 +369,7 @@
             </id>
             <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.Department">
                 <join-column name="DEPT_NAME" referenced-column-name="NAME"/>
-                <join-column name="DEPT_ROLE" referenced-column-name="ROLE"/>
+                <join-column name="DEPT_ROLE" referenced-column-name="DEPT_ROLE"/>
                 <join-column name="DEPT_LOCATION" referenced-column-name="LOCATION"/>
             </many-to-one>
             <one-to-one name="cubicle" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.Cubicle">
@@ -402,7 +402,7 @@
         <attributes>
             <one-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.Department" id="true">
                 <join-column name="DEPT_NAME" referenced-column-name="NAME"/>
-                <join-column name="DEPT_ROLE" referenced-column-name="ROLE"/>
+                <join-column name="DEPT_ROLE" referenced-column-name="DEPT_ROLE"/>
                 <join-column name="DEPT_LOCATION" referenced-column-name="LOCATION"/>
             </one-to-one>
             <one-to-one name="admin" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.Administrator" id="true"/>

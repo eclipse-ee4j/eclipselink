@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -23,6 +24,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
@@ -83,13 +85,24 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            arguments to the constructor
      * @return selection item
      */
-    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections){
+    public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections){
         return new CompoundSelectionImpl(result, selections);
     }
     
 
-    public Selection<Tuple> tuple(Selection<?>... selections){
+    public CompoundSelection<Tuple> tuple(Selection<?>... selections){
         return construct(Tuple.class, selections);
+    }
+
+    /**
+     * Create an array-valued selection item
+     * @param selections  selection items
+     * @return array-valued compound selection
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
+     */
+    public CompoundSelection<Object[]> array(Selection<?>... selections){
+        return construct(ClassConstants.AOBJECT, selections);
     }
 
     /**
@@ -100,7 +113,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return ascending ordering corresponding to the expression
      */
     public Order asc(Expression<?> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         return new OrderImpl(x);
@@ -114,7 +127,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return descending ordering corresponding to the expression
      */
     public Order desc(Expression<?> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         OrderImpl order = new OrderImpl(x, false);
@@ -130,7 +143,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return avg expression
      */
     public <N extends Number> Expression<Double> avg(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().average());
+        return new FunctionExpressionImpl<Double>(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().average(), buildList(x),"AVG");
     }
 
     /**
@@ -141,7 +154,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum expression
      */
     public <N extends Number> Expression<N> sum(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().sum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
 
     /**
@@ -152,7 +165,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return max expression
      */
     public <N extends Number> Expression<N> max(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().maximum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().maximum(), buildList(x),"MAX");
     }
 
     /**
@@ -163,7 +176,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return min expression
      */
     public <N extends Number> Expression<N> min(Expression<N> x){
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().minimum());
+        return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().minimum(), buildList(x),"MIN");
     }
 
     /**
@@ -175,10 +188,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greatest expression
      */
     public <X extends Comparable<X>> Expression<X> greatest(Expression<X> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().maximum());
+        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().maximum());
     }
 
     /**
@@ -190,10 +203,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return least expression
      */
     public <X extends Comparable<X>> Expression<X> least(Expression<X> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().minimum());
+        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().minimum());
     }
 
     /**
@@ -204,10 +217,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return count expression
      */
     public Expression<Long> count(Expression<?> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().count());
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().count(), buildList(x),"COUNT");
     }
 
     /**
@@ -219,10 +232,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return count distinct expression
      */
     public Expression<Long> countDistinct(Expression<?> x){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, ClassConstants.DOUBLE,((ExpressionImpl)x).getCurrentNode().distinct().count());
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().distinct().count(), buildList(x),"COUNT");
     }
 
     // subqueries:
@@ -234,8 +247,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return exists predicate
      */
     public Predicate exists(Subquery<?> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
+        return new CompoundExpressionImpl(metamodel, new ExpressionBuilder().exists(((SubQueryImpl)subquery).subQuery), buildList(subquery), "exists");
     }
 
     /**
@@ -246,8 +258,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return all expression
      */
     public <Y> Expression<Y> all(Subquery<Y> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().all(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "all");
     }
 
     /**
@@ -258,8 +269,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return all expression
      */
     public <Y> Expression<Y> some(Subquery<Y> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().some(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "some");
     }
 
     /**
@@ -270,9 +280,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return any expression
      */
     public <Y> Expression<Y> any(Subquery<Y> subquery){
-        //TODO
-        throw new UnsupportedOperationException();
-    }
+        return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().any(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "any");
+   }
 
     // boolean functions:
     /**
@@ -290,12 +299,12 @@ public class QueryBuilderImpl implements QueryBuilder {
         
         
         //TODO determine if this is needed
-        if (((ExpressionImpl)x).isExpression()){
+        if (((InternalExpression)x).isExpression()){
             xp = (CompoundExpressionImpl)this.isTrue(x);
         }else{
             xp = (CompoundExpressionImpl)x;
         }
-        if (((ExpressionImpl)y).isExpression()){
+        if (((InternalExpression)y).isExpression()){
             yp = (CompoundExpressionImpl)this.isTrue(y);
         }else{
             yp = (CompoundExpressionImpl)y;
@@ -332,12 +341,12 @@ public class QueryBuilderImpl implements QueryBuilder {
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
         
-        if (((ExpressionImpl)x).isExpression()){
+        if (((InternalExpression)x).isExpression()){
             xp = (CompoundExpressionImpl)this.isTrue(x);
         }else{
             xp = (CompoundExpressionImpl)x;
         }
-        if (((ExpressionImpl)y).isExpression()){
+        if (((InternalExpression)y).isExpression()){
             yp = (CompoundExpressionImpl)this.isTrue(y);
         }else{
             yp = (CompoundExpressionImpl)y;
@@ -403,10 +412,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return not predicate
      */
     public Predicate not(Expression<Boolean> restriction){
-        if (((ExpressionImpl)restriction).isPredicate()){
+        if (((InternalExpression)restriction).isPredicate()){
             return ((PredicateImpl)restriction).negate();
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)restriction).currentNode.not(), buildList(restriction), BooleanOperator.NOT);
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)restriction).getCurrentNode().not(), buildList(restriction), "not");
     }
 
     /**
@@ -439,8 +448,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public Predicate isTrue(Expression<Boolean> x){
-        if (((ExpressionImpl)x).isPredicate()){
-            if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalExpression)x).isPredicate()){
+            if (((InternalSelection)x).getCurrentNode() == null){
                 return (Predicate)x;
             }else{
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
@@ -448,7 +457,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         List list = new ArrayList();
         list.add(x);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(true), list, "equals");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(true), list, "equals");
     }
 
     /**
@@ -459,7 +468,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public Predicate isFalse(Expression<Boolean> x){
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(false), buildList(x), "equals");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(false), buildList(x), "equals");
     }
     
     //null tests:
@@ -469,7 +478,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public Predicate isNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
     }
     
     /**
@@ -478,7 +487,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public Predicate isNotNull(Expression<?> x){
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
+        return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
     }
 
     // equality:
@@ -495,7 +504,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(((ExpressionImpl)y).getCurrentNode()), list, "equals");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(((InternalSelection)y).getCurrentNode()), list, "equals");
     }
 
     /**
@@ -508,13 +517,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return inequality predicate
      */
     public Predicate notEqual(Expression<?> x, Expression<?> y){
-        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(((ExpressionImpl)y).getCurrentNode()), list, "not equal");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(((InternalSelection)y).getCurrentNode()), list, "not equal");
     }
 
     /**
@@ -527,12 +536,12 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return equality predicate
      */
     public Predicate equal(Expression<?> x, Object y){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         List list = new ArrayList();
         list.add(x);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(y), list, "equal");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(y), list, "equal");
     }
 
     /**
@@ -545,12 +554,12 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return inequality predicate
      */
     public Predicate notEqual(Expression<?> x, Object y){
-        if (((ExpressionImpl)x).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         List list = new ArrayList();
         list.add(x);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(y), list, "not equal");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(y), list, "not equal");
     }
 
     // comparisons for generic (non-numeric) operands:
@@ -565,13 +574,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y){
-        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThan(((ExpressionImpl)y).getCurrentNode()), list, "greaterThan");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().greaterThan(((InternalSelection)y).getCurrentNode()), list, "greaterThan");
     }
 
     /**
@@ -585,13 +594,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y){
-        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+        if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThan(((ExpressionImpl)y).getCurrentNode()), list, "lessThan");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(((InternalSelection)y).getCurrentNode()), list, "lessThan");
     }
 
     /**
@@ -605,8 +614,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "greaterThanEqual");
     }
 
     /**
@@ -620,8 +634,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -637,8 +656,13 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return between predicate
      */
     public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -652,8 +676,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThan");
     }
 
     /**
@@ -667,8 +697,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThan");
     }
 
     /**
@@ -682,8 +718,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThanEqual");
     }
 
     /**
@@ -697,8 +739,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        Expression<Y> expressionY = this.literal(y);
+        if (((ExpressionImpl)x).getCurrentNode() == null ){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThanEqual");
     }
 
     /**
@@ -869,8 +917,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return absolute value
      */
     public <N extends Number> Expression<N> abs(Expression<N> x){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<N>(metamodel, (Class<N>) x.getJavaType(), ExpressionMath.abs(((InternalSelection)x).getCurrentNode()), buildList(x),"ABS");
     }
 
     /**
@@ -883,7 +930,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
-        //TODO
+        //TODO - this is addition, not just applying the EclipseLink sum expression.  
         return null;
     }
 
@@ -1191,6 +1238,16 @@ public class QueryBuilderImpl implements QueryBuilder {
         return new ExpressionImpl<T>(metamodel, (Class<T>) value.getClass(), new ConstantExpression(value, new ExpressionBuilder()), value);
     }
 
+    /**
+     * Create an expression for a null literal with the given type.
+     *
+     * @param resultClass  type of the null literal
+     * @return null expression literal
+     */
+    public <T> Expression<T> nullLiteral(Class<T> resultClass){
+        //TODO
+        return null;
+    }
     // parameters:
     /**
      * Create a parameter.

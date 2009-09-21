@@ -25,6 +25,8 @@ public class OutputParameterForCallableStatement extends BindCallCustomParameter
     protected int jdbcType;
     protected String typeName;
     protected boolean isTypeNameRequired;
+    
+    protected transient DatabasePlatform dbplatform = null;
 
     public OutputParameterForCallableStatement(DatabaseField field) {
         super(field);
@@ -77,7 +79,7 @@ public class OutputParameterForCallableStatement extends BindCallCustomParameter
     }
 
     public void prepare(AbstractSession session) {
-        DatabasePlatform dbplatform = session.getPlatform();
+        dbplatform = session.getPlatform();
         if (isCursor()) {
             jdbcType = dbplatform.getCursorCode();// Oracle code for cursors
         } else {
@@ -103,6 +105,6 @@ public class OutputParameterForCallableStatement extends BindCallCustomParameter
     }
 
     public String toString() {
-        return "=> " + getOutputField().getNameDelimited();
+        return "=> " + getOutputField().getNameDelimited(dbplatform);
     }
 }

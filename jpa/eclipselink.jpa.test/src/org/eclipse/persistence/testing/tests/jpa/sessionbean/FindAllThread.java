@@ -60,7 +60,7 @@ public class FindAllThread implements Runnable
     public EmployeeService getEmployeeService() throws Exception {
         if (service == null) {
             Properties properties = new Properties();
-            String url = System.getProperty("server-url");
+            String url = System.getProperty("server.url");
             if (url != null) {
                 properties.put("java.naming.provider.url", url);
             }
