@@ -296,7 +296,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     }
         
     public String resolveNamespacePrefix(XPathFragment frag, NamespaceResolver resolver) {
-        String resolved = super.resolveNamespacePrefix(frag, resolver);
+        String resolved = frag.getNamespaceURI();
         if (resolved == null) {
             return "";
         }

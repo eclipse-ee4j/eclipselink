@@ -54,7 +54,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
 
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         try {
-            String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+            String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 xmlEventWriter.add(xmlEventFactory.createAttribute(xPathFragment.getLocalName(), value));
             } else {
@@ -116,7 +116,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         try {
-            String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+            String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 XMLEvent startElement = this.xmlEventFactory.createStartElement("", "", xPathFragment.getLocalName());
                 xmlEventWriter.add(startElement);
@@ -164,7 +164,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
     }
     
     public void endElement(XPathFragment pathFragment, NamespaceResolver namespaceResolver) {
-        String namespaceURI = resolveNamespacePrefix(pathFragment, namespaceResolver);
+        String namespaceURI = pathFragment.getNamespaceURI();
         String prefix = pathFragment.getPrefix();
         if(prefix == null) {
             prefix = "";

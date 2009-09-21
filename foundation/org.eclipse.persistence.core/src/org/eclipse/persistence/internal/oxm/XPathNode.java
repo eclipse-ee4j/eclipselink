@@ -57,6 +57,7 @@ public class XPathNode {
     private XMLAnyAttributeMappingNodeValue anyAttributeNodeValue;
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
+    private XPathNode anyNode;
 
     public XPathFragment getXPathFragment() {
         return xPathFragment;
@@ -138,6 +139,14 @@ public class XPathNode {
 
     public XPathNode getAnyAttributeNode() {
         return this.anyAttributeNode;
+    }
+
+    public XPathNode getAnyNode() {
+        return this.anyNode;
+    }
+
+    public void setAnyNode(XPathNode xPathNode) {
+        this.anyNode = xPathNode;
     }
 
     public XPathNode getTextNode() {
@@ -244,19 +253,19 @@ public class XPathNode {
                 if(!children.contains(xPathNode)) {
                     children.add(xPathNode);
                 }
-                childrenMap.put(anXPathFragment, xPathNode);
+                setAnyNode(xPathNode);
             }
             return;
         }
         boolean isSelfFragment = XPathFragment.SELF_FRAGMENT.equals(anXPathFragment);
-      
+
         if(isSelfFragment){
             children.add(xPathNode);
             if (null == selfChildren) {
                 selfChildren = new ArrayList();
             }
             selfChildren.add(xPathNode);
-        }else{        
+        }else{
             int index = children.indexOf(xPathNode);
             if (index >= 0) {
                 xPathNode = (XPathNode)children.get(index);
@@ -264,11 +273,11 @@ public class XPathNode {
                 xPathNode.setParent(this);
                 if(!children.contains(xPathNode)) {
                     children.add(xPathNode);
-                }             
+                }
                 childrenMap.put(anXPathFragment, xPathNode);
             }
         }
-	               
+
         if (aNodeValue.isOwningNode(anXPathFragment)) {
             if(aNodeValue.isMarshalNodeValue()) {
                 xPathNode.setMarshalNodeValue(aNodeValue);
@@ -365,8 +374,9 @@ public class XPathNode {
         }
         return marshalNodeValue.marshalSelfAttributes(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
     }
-    
+
     public boolean isWhitespaceAware() {
         return this.getNodeValue().isWhitespaceAware();
     }
+
 }

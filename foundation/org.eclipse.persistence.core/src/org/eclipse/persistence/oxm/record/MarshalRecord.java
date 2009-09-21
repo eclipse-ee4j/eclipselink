@@ -287,37 +287,6 @@ public abstract class MarshalRecord extends XMLRecord {
      * namespace URI/prefix of the node
      */
     public abstract void node(Node node, NamespaceResolver resolver);
-    
-    /**
-     * INTERNAL:
-     * Return the namespace URI associated with the prefix held onto by
-     * the XPathFragment.
-     * @param xPathFragment The XPathFragment contains the name and prefix
-     * information about the XML element being ended.
-     * @param namespaceResolver The NamespaceResolver can be used to resolve the
-     * namespace URI for the namespace prefix held by the XPathFragment (if
-     * required).
-     * @return A namespace URI.
-    */
-    protected String resolveNamespacePrefix(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        String uri = xPathFragment.getNamespaceURI();
-        if (uri == null) {
-            if (null == namespaceResolver) {
-                if(null != xPathFragment.getPrefix()) {
-                    throw XMLMarshalException.namespaceResolverNotSpecified(xPathFragment.getShortName());
-                }
-            } else {
-                if(!xPathFragment.isAttribute() || xPathFragment.isAttribute() && xPathFragment.getPrefix() != null) {
-                    uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-                }
-            }
-            if (null == uri && null != xPathFragment.getPrefix()) {
-                throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
-            }
-            xPathFragment.setNamespaceURI(uri);
-        }
-        return uri;
-    }
 
     /**
      * INTERNAL:
@@ -363,7 +332,7 @@ public abstract class MarshalRecord extends XMLRecord {
                 start = index.intValue();
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
-                element(this.resolveNamespacePrefix(xPathFragment, namespaceResolver), xPathFragment.getLocalName(), xPathFragment.getShortName());
+                element(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
             }
             getPositionalNodes().put(xPathFragment.getShortName(), new Integer(xPathFragment.getIndexValue() + 1));
         }

@@ -59,7 +59,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
 
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         try {
-            String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+            String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 xmlStreamWriter.writeAttribute(xPathFragment.getLocalName(), value);
             } else {
@@ -118,7 +118,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         try {
-            String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+            String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 xmlStreamWriter.writeStartElement("", xPathFragment.getLocalName(), "");
                 String defaultNamespace = xmlStreamWriter.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);

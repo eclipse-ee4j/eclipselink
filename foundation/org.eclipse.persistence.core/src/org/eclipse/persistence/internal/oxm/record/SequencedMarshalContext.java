@@ -67,7 +67,7 @@ public class SequencedMarshalContext implements MarshalContext {
     public Object getNonAttributeChild(int index, XPathNode xPathNode) {
         Setting setting = settings.get(index);
         if(null == setting.getName()) {
-            return xPathNode.getNonAttributeChildrenMap().get(null);
+            return xPathNode.getAnyNode();
         } else {
             if (setting.getName().equals(XMLConstants.TEXT)) {
                 return xPathNode.getTextNode();

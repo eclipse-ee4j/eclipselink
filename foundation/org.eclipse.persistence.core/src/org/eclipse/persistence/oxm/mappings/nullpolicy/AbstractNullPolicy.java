@@ -167,6 +167,7 @@ public abstract class AbstractNullPolicy {
                 StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
                 qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
                 XPathFragment nilFragment = new XPathFragment(qName.toString());
+                nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -205,6 +206,7 @@ public abstract class AbstractNullPolicy {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
             XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
+            nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
             marshalRecord.closeStartElement();
             marshalRecord.endElement(xPathFragment, namespaceResolver);

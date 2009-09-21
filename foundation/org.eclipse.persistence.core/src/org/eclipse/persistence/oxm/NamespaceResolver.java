@@ -90,6 +90,8 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             return uri;
         } else if (XMLConstants.XML_NAMESPACE_PREFIX.equals(prefix)) {
             return XMLConstants.XML_NAMESPACE_URL;
+        } else if (XMLConstants.XMLNS.equals(prefix)) {
+            return XMLConstants.XMLNS_URL;
         }
         return null;
     }

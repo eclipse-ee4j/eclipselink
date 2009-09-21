@@ -296,7 +296,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             return record;
         }
         XMLDescriptor xmlDescriptor = (XMLDescriptor) this.getDescriptor();
-        XPathNode xPathNode;
         NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
         MarshalContext marshalContext = null;
         if(xmlDescriptor.isSequencedObject()) {
@@ -307,7 +306,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         }
         int size = marshalContext.getNonAttributeChildrenSize(getRootXPathNode());
         for (int x = 0; x < size; x++) {
-            xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, getRootXPathNode());
+            XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, getRootXPathNode());
             xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x));
         }
         return record;
@@ -315,32 +314,28 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session) {
         boolean hasValue = false;
+        NamespaceResolver namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
 
-        XPathNode attributeNode;
-        NamespaceResolver namespaceResolver;
-        if (rootXPathNode.getAttributeChildren() != null) {
-            int size = rootXPathNode.getAttributeChildren().size();
-            for (int x = 0; x < size; x++) {
-                attributeNode = (XPathNode)rootXPathNode.getAttributeChildren().get(x);
-                namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
+        List attributeChildren = rootXPathNode.getAttributeChildren();
+        if (null != attributeChildren) {
+            for (int x = 0, attributeChildrenSize=attributeChildren.size(); x < attributeChildrenSize; x++) {
+                XPathNode attributeNode = (XPathNode)rootXPathNode.getAttributeChildren().get(x);
                 hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
             }
         }
 
         if (rootXPathNode.getAnyAttributeNode() != null) {
-            namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
             hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
         }
-        
-        if (rootXPathNode.getSelfChildren() != null) {
-            XPathNode childNode;
-            for (int x = 0; x < rootXPathNode.getSelfChildren().size(); x++) {
-                childNode = (XPathNode)rootXPathNode.getSelfChildren().get(x);
-                namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
+
+        List selfChildren = rootXPathNode.getSelfChildren();
+        if (null != selfChildren) {
+            for (int x = 0, selfChildrenSize=selfChildren.size(); x < selfChildrenSize; x++) {
+                XPathNode childNode = (XPathNode)selfChildren.get(x);
                 childNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
             }
         }
-        
+
         return hasValue;
     }
 

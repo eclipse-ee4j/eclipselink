@@ -34,6 +34,7 @@ public class XPathFragment {
     public static final String SELF_XPATH = ".";
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
     public static final XPathFragment ANY_FRAGMENT = null;
+
     private XPathFragment nextFragment;
     private String xpath;
     private boolean hasAttribute = false;
@@ -255,7 +256,9 @@ public class XPathFragment {
 
     public boolean equals(Object object) {
         try {
-            if (this == object) {
+            if(null == object) {
+                return false;
+            } else if (this == object) {
                 return true;
             }
             XPathFragment xPathFragment = (XPathFragment)object;
@@ -276,15 +279,13 @@ public class XPathFragment {
             return false;
         }
     }
+
     public int hashCode() {
-    	 int hash = 217;
-    	 if(localName != null){
-            hash += localName.hashCode();
-    	 }
-    	 if(namespaceURI != null){
-            hash += namespaceURI.hashCode();
-    	 }
-        return hash;
+        if(null == localName) {
+            return 1;
+        } else {
+            return localName.hashCode();
+        }
     }
 
     public QName getLeafElementType() {
@@ -306,4 +307,5 @@ public class XPathFragment {
     public boolean isGeneratedPrefix() {
         return generatedPrefix;
     }
+
 }

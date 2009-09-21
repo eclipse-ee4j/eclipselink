@@ -327,6 +327,11 @@ public class XMLDescriptor extends ClassDescriptor {
         return addMapping(mapping);
     }
 
+    @Override
+    public void addPrimaryKeyFieldName(String fieldName) {
+        addPrimaryKeyField(new XMLField(fieldName));
+    }
+
     /**
      * INTERNAL:
      * Extract the direct values from the specified field value.
@@ -368,6 +373,7 @@ public class XMLDescriptor extends ClassDescriptor {
     public DatabaseField buildField(String fieldName) {
         XMLField xmlField = new XMLField(fieldName);
         xmlField.setNamespaceResolver(this.getNamespaceResolver());
+        //xmlField.initialize();
         return xmlField;
     }
 
@@ -379,6 +385,7 @@ public class XMLDescriptor extends ClassDescriptor {
         try {
             XMLField xmlField = (XMLField) field;
             xmlField.setNamespaceResolver(this.getNamespaceResolver());
+            xmlField.initialize();
         } catch (ClassCastException e) {
             // Assumes fields are always XML.
         }
@@ -523,6 +530,17 @@ public class XMLDescriptor extends ClassDescriptor {
     public void initialize(AbstractSession session) throws DescriptorException {
         if (this.hasInheritance()) {
             ((org.eclipse.persistence.internal.oxm.QNameInheritancePolicy) this.getInheritancePolicy()).setNamespaceResolver(this.getNamespaceResolver());
+        }
+
+        if(null != this.defaultRootElementField) {
+            defaultRootElementField.setNamespaceResolver(this.namespaceResolver);
+            defaultRootElementField.initialize();
+        }
+
+        for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
+            XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
+            pkField.setNamespaceResolver(this.namespaceResolver);
+            pkField.initialize();
         }
 
         // These cached settings on the project must be set even if descriptor is initialized.
