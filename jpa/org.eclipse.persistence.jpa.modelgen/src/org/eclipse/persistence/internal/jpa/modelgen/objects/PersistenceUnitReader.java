@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -95,6 +96,11 @@ public class PersistenceUnitReader {
      */
     protected void initPersistenceUnits(MetadataMirrorFactory factory) {
         ProcessingEnvironment processingEnv = factory.getProcessingEnvironment();
+        
+        for (String optionKey : processingEnv.getOptions().keySet()) {
+            processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));            
+        }
+        
         String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());        
         HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
         
