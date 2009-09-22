@@ -279,7 +279,7 @@
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
             <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
-        	<compilerarg value="-Aeclipselink.canonicalmodel.prefix=" compiler="javac1.6"/>
+        	<!-- compilerarg value="-Aeclipselink.canonicalmodel.prefix=_" compiler="javac1.6"/ -->
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
     </target>
@@ -292,8 +292,11 @@
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
         <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}' not found." unless="modelgen.jar.exist"/ -->
-        <copy todir="${jpatest.build.location}/${classes.dir}">
+        <!-- copy todir="${jpatest.build.location}/${classes.dir}">
             <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/persistence.xml"/>
+        </copy -->
+        <copy todir="${jpatest.build.location}/${classes.dir}/META-INF">
+            <fileset dir="${jpatest.build.location}/${resource.dir}/eclipselink-canonical-meta-model" includes="persistence.xml"/>
         </copy>
         <antcall target="model-compile" inheritRefs="true">
             <param name="SRC_PATH" value="${eclipselink.jpa.test}/${src.dir}"/>
@@ -302,7 +305,7 @@
             <param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/>
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
         </antcall>
-        <!-- delete dir="${jpatest.build.location}/${classes.dir}/eclipselink-canonical-meta-model"/ -->
+        <delete dir="${jpatest.build.location}/${classes.dir}/META-INF"/>
         <available file="${jpatest.build.location}/${classes.dir}/org/eclipse/persistence/testing/models/jpa/advanced/Address_.class" property="modelgen.created.classes.exist"/>
     </target>
 
