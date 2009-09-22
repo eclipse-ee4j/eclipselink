@@ -662,13 +662,12 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return between predicate
      */
     public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
-        if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
-        }
+        
         List list = new ArrayList();
+        list.add(v);
         list.add(x);
         list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)y).getCurrentNode()), list, "lessThanEqual");
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)v).getCurrentNode().between(((ExpressionImpl)x).getCurrentNode(), ((ExpressionImpl)y).getCurrentNode()), list, "between");
     }
 
     /**
@@ -768,8 +767,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return between predicate
      */
     public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Y x, Y y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(v);
+        list.add(this.literal(x));
+        list.add(this.literal(y));
+        return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)v).getCurrentNode().between(x, y), list, "between");
     }
     
     protected List<Expression<?>> buildList(Expression<?>... expressions){
@@ -964,8 +966,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return difference
      */
     public <N extends Number> Expression<N> diff(Expression<? extends N> x, Expression<? extends N> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
     }
 
     /**
@@ -1006,8 +1010,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return difference
      */
     public <N extends Number> Expression<N> diff(Expression<? extends N> x, N y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(this.literal(y));
+        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), y), list, "diff");
     }
 
     /**
@@ -1048,8 +1054,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return difference
      */
     public <N extends Number> Expression<N> diff(N x, Expression<? extends N> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        ExpressionImpl literal = (ExpressionImpl) this.literal(x);
+        list.add(literal);
+        list.add(y);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
     }
 
     /**
@@ -1617,8 +1626,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to concatenation
      */
     public Expression<String> concat(Expression<String> x, Expression<String> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
     }
 
     /**
@@ -1631,8 +1642,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to concatenation
      */
     public Expression<String> concat(Expression<String> x, String y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(this.literal(y));
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().concat(y), list, "concat");
+
     }
 
     /**
@@ -1645,8 +1659,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to concatenation
      */
     public Expression<String> concat(String x, Expression<String> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        ExpressionImpl literal = (ExpressionImpl) this.literal(x);
+        list.add(literal);
+        list.add(y);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)literal).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
     }
 
     /**
@@ -1914,8 +1931,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression for current date
      */
     public Expression<java.sql.Date> currentDate(){
-        //TODO
-        return null;
+        return new ExpressionImpl(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDate());
     }
 
     /**
@@ -1924,8 +1940,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression for current timestamp
      */
     public Expression<java.sql.Timestamp> currentTimestamp(){
-        //TODO
-        return null;
+        return new ExpressionImpl(metamodel, ClassConstants.TIMESTAMP, new ExpressionBuilder().currentTimeStamp());
     }
 
     /**
@@ -1934,8 +1949,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression for current time
      */
     public Expression<java.sql.Time> currentTime(){
-        //TODO
-        return null;
+        return new ExpressionImpl(metamodel, ClassConstants.TIME, new ExpressionBuilder().currentTime());
     }
 
     /**
@@ -2018,7 +2032,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return coalesce expression
      */
     public <T> Coalesce<T> coalesce(){
-        //TODO
+      //TODO
         return null;
     }
 

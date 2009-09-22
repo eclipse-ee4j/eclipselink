@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,8 +58,8 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected boolean distinct;
     protected List<Expression<?>> stupidImplicitDanglingJoins;
     protected Class queryType;
-    protected ExpressionImpl havingClause;
-    protected ExpressionImpl groupBy;
+    protected Expression<Boolean> havingClause;
+    protected List<Expression<?>> groupBy;
 
     protected enum ResultType{
         OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
@@ -165,7 +166,8 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> groupBy(List<Expression<?>> grouping){
-        throw new UnsupportedOperationException();
+        this.groupBy = grouping;
+        return this;
     }
 
 
@@ -180,7 +182,11 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> groupBy(Expression<?>... grouping){
-        throw new UnsupportedOperationException();
+        this.groupBy = new ArrayList<Expression<?>>();
+        for (Expression<?> exp : grouping){
+            this.groupBy.add(exp);
+        }
+        return this;
     }
 
     /**
@@ -192,7 +198,8 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> having(Expression<Boolean> restriction){
-        throw new UnsupportedOperationException();
+        this.havingClause = restriction;
+        return this;
     }
 
     /**
@@ -206,7 +213,14 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> having(Predicate... restrictions){
-        throw new UnsupportedOperationException();
+        if (restrictions != null && restrictions.length > 0) {
+            Predicate conjunction = this.queryBuilder.conjunction();
+            for (Predicate predicate : restrictions) {
+                conjunction = this.queryBuilder.and(conjunction, predicate);
+            }
+            this.havingClause = conjunction;
+        }
+        return this;
     }
     
     public abstract void addParameter(ParameterExpression<?> parameter);
@@ -242,8 +256,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the list of grouping expressions
      */
     public List<Expression<?>> getGroupList(){
-        //TODO
-        throw new UnsupportedOperationException();
+        return this.groupBy;
     }
     /**
      * Return the predicate that corresponds to the where clause restriction(s).

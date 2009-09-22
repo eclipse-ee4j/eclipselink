@@ -170,6 +170,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public Subquery<T> groupBy(Expression<?>... grouping){
         super.groupBy(grouping);
+        this.subQuery.getGroupByExpressions().clear();
         for (Expression groupby: grouping){
             this.subQuery.addGrouping(((InternalSelection)groupby).getCurrentNode());
         }
@@ -188,7 +189,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> groupBy(List<Expression<?>> grouping){
-        throw new UnsupportedOperationException();
+        super.groupBy(grouping);
+        this.subQuery.getGroupByExpressions().clear();
+        for (Expression groupby: grouping){
+            this.subQuery.addGrouping(((InternalSelection)groupby).getCurrentNode());
+        }
+        return this;
     }
 
     /**
@@ -202,7 +208,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public Subquery<T> having(Expression<Boolean> restriction){
         super.having(restriction);
-        this.subQuery.setHavingExpression(((InternalSelection)restriction).getCurrentNode());
+        if (restriction != null){
+            this.subQuery.setHavingExpression(((InternalSelection)restriction).getCurrentNode());
+        }else{
+            this.subQuery.setHavingExpression(null);
+        }
         return this;
     }
 
@@ -218,9 +228,13 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      *            zero or more restriction predicates
      * @return the modified query
      */
-    public Subquery<T> having(Predicate... restrictions){
+    public Subquery<T> having(Predicate... restrictions) {
         super.having(restrictions);
-        this.subQuery.setHavingExpression(((InternalSelection)this.havingClause).getCurrentNode());
+        if (this.havingClause != null){
+            this.subQuery.setHavingExpression(((InternalSelection) this.havingClause).getCurrentNode());
+        }else{
+            this.subQuery.setHavingExpression(null);
+        }
         return this;
     }
     
