@@ -49,6 +49,12 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 import static javax.lang.model.SourceVersion.RELEASE_6;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_UNITS;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+
 /**
  * The main APT processor to generate the JPA 2.0 Canonical model. 
  * 
@@ -57,7 +63,7 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
  */
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(RELEASE_6)
-@SupportedOptions(value = {"eclipselink.persistencexml, eclipselink.persistenceunits, eclipselink.canonicalmodel.prefix, eclipselink.canonicalmodel.suffix, eclipselink.canonicalmodel.subpackage"})
+//@SupportedOptions(value = {"eclipselink.persistencexml, eclipselink.persistenceunits, eclipselink.canonicalmodel.prefix, eclipselink.canonicalmodel.suffix, eclipselink.canonicalmodel.subpackage"})
 //@SupportedOptions(value = {CANONICAL_MODEL_PREFIX, CANONICAL_MODEL_SUFFIX, CANONICAL_MODEL_SUB_PACKAGE, ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_UNITS})
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }

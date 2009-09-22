@@ -27,7 +27,7 @@ public abstract class CanonicalModelProperties {
      * start of the class name of any canonical model class generated. 
      * By default the prefix is not used.
      */    
-    public static String CANONICAL_MODEL_PREFIX = "eclipselink.canonicalmodel.prefix";
+    public static final String CANONICAL_MODEL_PREFIX = "eclipselink.canonicalmodel.prefix";
     public static String CANONICAL_MODEL_PREFIX_DEFAULT = "";
     
     /**
@@ -37,7 +37,7 @@ public abstract class CanonicalModelProperties {
      * a non-empty string that contains valid characters for use in a Java class 
      * name.
      */
-    public static String CANONICAL_MODEL_SUFFIX = "eclipselink.canonicalmodel.suffix";
+    public static final String CANONICAL_MODEL_SUFFIX = "eclipselink.canonicalmodel.suffix";
     public static String CANONICAL_MODEL_SUFFIX_DEFAULT = "_";
     
     /**
@@ -47,7 +47,7 @@ public abstract class CanonicalModelProperties {
      * default the canonical model classes are generated into the same package 
      * as the entity classes. 
      */
-    public static String CANONICAL_MODEL_SUB_PACKAGE = "eclipselink.canonicalmodel.subpackage";
+    public static final String CANONICAL_MODEL_SUB_PACKAGE = "eclipselink.canonicalmodel.subpackage";
     public static String CANONICAL_MODEL_SUB_PACKAGE_DEFAULT = "";
     
     /**
