@@ -62,6 +62,9 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 if(prefix == null) {
                     xmlEventWriter.add(xmlEventFactory.createAttribute(xPathFragment.getPrefix(), namespaceURI, xPathFragment.getLocalName(), value));
                 } else {
+                    if(xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix) == null || !xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix).equals(namespaceURI)) {
+                        xmlEventWriter.add(xmlEventFactory.createNamespace(prefix, namespaceURI));
+                    }
                     xmlEventWriter.add(xmlEventFactory.createAttribute(prefix, namespaceURI, xPathFragment.getLocalName(), value));
                 }
             }
@@ -77,7 +80,11 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 if(localName.equals(XMLConstants.XMLNS)) {
                     xmlEventWriter.add(xmlEventFactory.createNamespace(value));
                 }  else {
-                    xmlEventWriter.add(xmlEventFactory.createNamespace(localName, value));
+                    String declaredNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(localName);
+                    //if this namespace is already declared to be the same URI in this context, don't add it again
+                    if(declaredNamespace == null || declaredNamespace.equals(namespaceURI)) {
+                        xmlEventWriter.add(xmlEventFactory.createNamespace(localName, value));
+                    }
                 }
             } else {
                 NamespaceContext ctx = xmlEventWriter.getNamespaceContext();
@@ -208,6 +215,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
     private void writePrefixMappings() {
         for(Map.Entry<String, String> entry:this.prefixMapping.entrySet()) {
             try {
+                //if(xmlEventWriter.getNamespaceContext().)
                 XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
                 xmlEventWriter.add(namespace);
             } catch(XMLStreamException e) {
