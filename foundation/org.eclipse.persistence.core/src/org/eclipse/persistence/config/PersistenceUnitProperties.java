@@ -446,8 +446,7 @@ public class PersistenceUnitProperties {
      * it can later be used as a system property for customizing weaving and 
      * application bootstrap usage.
      */
-    //public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
-    public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.canonical_model.persistence_xml";
+    public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
     public static final String ECLIPSELINK_PERSISTENCE_XML_DEFAULT = "META-INF/persistence.xml";
     
     /**
