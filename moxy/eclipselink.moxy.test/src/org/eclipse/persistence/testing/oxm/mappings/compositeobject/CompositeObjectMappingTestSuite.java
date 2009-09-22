@@ -52,6 +52,8 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Attribu
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributesOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.CompositeObjectSelfTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.defaultnamespace.SelfMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfComplexXsiTypeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfSimpleXsiTypeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.SelfNoRefClassKeepAsElementNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.SelfNoRefClassKeepAsElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLCallModelTestCases;
@@ -117,6 +119,9 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         
         suite.addTestSuite(SelfNoRefClassKeepAsElementTestCases.class);
         suite.addTestSuite(SelfNoRefClassKeepAsElementNSTestCases.class);
+        
+        suite.addTestSuite(CompositeObjectSelfComplexXsiTypeTestCases.class);
+        suite.addTestSuite(CompositeObjectSelfSimpleXsiTypeTestCases.class);
         
         return suite;
     }

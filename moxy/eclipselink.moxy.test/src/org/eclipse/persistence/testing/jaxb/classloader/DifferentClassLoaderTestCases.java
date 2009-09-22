@@ -37,7 +37,6 @@ public class DifferentClassLoaderTestCases extends JAXBTestCases {
 	 
 	    URL[] urls = new URL[1];	
 	    File f = new File("./org/eclipse/persistence/testing/jaxb/classloader/test.jar");
-	    System.out.println(f.getAbsolutePath());
 	    urls[0] = f.toURL();
 	    URLClassLoader classLoaderA = new URLClassLoader(urls);
 

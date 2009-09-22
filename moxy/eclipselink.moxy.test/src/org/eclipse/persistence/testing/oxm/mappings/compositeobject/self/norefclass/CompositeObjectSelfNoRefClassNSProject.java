@@ -15,14 +15,17 @@ package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefc
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.Project;
 
 public class CompositeObjectSelfNoRefClassNSProject extends Project {
     public CompositeObjectSelfNoRefClassNSProject() {
-        addDescriptor(getEmployeeDescriptor());        
+        addDescriptor(getRootDescriptor());        
+        addDescriptor(getAddressDescriptor());  
     }
 
-    protected XMLDescriptor getEmployeeDescriptor() {
+    protected XMLDescriptor getRootDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Root.class);
         descriptor.setDefaultRootElement("ns0:root");
@@ -35,6 +38,27 @@ public class CompositeObjectSelfNoRefClassNSProject extends Project {
         NamespaceResolver nr = new NamespaceResolver();
         nr.put("ns0", "namespace1");
         descriptor.setNamespaceResolver(nr);
+        return descriptor;
+    }
+    protected XMLDescriptor getAddressDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(Address.class);
+        descriptor.setDefaultRootElement("ns0:address");
+
+        XMLDirectMapping streetMapping = new XMLDirectMapping();
+        streetMapping.setAttributeName("street");
+        streetMapping.setXPath("ns0:street/text()");                
+        descriptor.addMapping(streetMapping);
+        
+        XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
+        schemaReference.setSchemaContext("/ns0:mailingAddressType");
+        schemaReference.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
+        descriptor.setSchemaReference(schemaReference);
+        
+        NamespaceResolver nr = new NamespaceResolver();
+        nr.put("ns0", "namespace1");
+        descriptor.setNamespaceResolver(nr);
+		
         return descriptor;
     }
 }
