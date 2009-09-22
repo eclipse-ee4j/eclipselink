@@ -686,6 +686,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
         int max = 0;
+        statement.setMaximumAliasLength(getMaxFieldNameSize()); 
         int firstRow = 0;
         if (statement.getQuery()!=null){
             max = statement.getQuery().getMaxRows();
