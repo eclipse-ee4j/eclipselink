@@ -134,6 +134,10 @@
         <contains string="${server.name}" substring="weblogic"/>
     </condition>
 
+    <!-- Define Spring jars needed for running JPA tests on Spring -->
+    <path id="spring.path">
+            <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
+    </path>
     <!-- This checks if the Apllication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
     <condition property="run.jpa.customfeatures.model">
         <and>
@@ -317,6 +321,25 @@
                 <path refid="compile.path"/>
             </classpath>
         </javac>
+        <antcall target="compile-springplatform" inheritRefs="true"/>
+    </target>
+
+    <target name="compile-springplatform" if="is.spring">
+        <javac srcdir="${eclipselink.jpa.spring.test}/${src.dir}"
+               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/framework/server/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+                <path refid="spring.path"/>
+            </classpath>
+        </javac>
     </target>
 
     <target name="compile-criteria" if="modelgen.created.classes.exist">
@@ -348,6 +371,33 @@
         </jar>
     </target>
 
+    <!-- Copy Spring specified ***spring.xml, appContext.properties and persistence.xml to default build location-->
+    <target name="prepare-spring-xmls" depends="init, config-trunk, config-flat" if="is.spring">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}">
+            <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="appContext.properties"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}" token='%%dbURL%%' value="${db.url}">
+            <include name="appContext.properties"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}" token='%%driverClass%%' value="${db.driver}">
+            <include name="appContext.properties"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}" token='%%dbUser%%' value="${db.user}">
+            <include name="appContext.properties"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}" token='%%dbPassword%%' value="${db.pwd}">
+            <include name="appContext.properties"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}" token='%%dbPlatform%%' value="${db.platform}">
+            <include name="appContext.properties"/>
+        </replace>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}/META-INF" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/${MODEL_NAME}/spring" includes="persistence.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}">
+            <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="**spring.xml"/>
+        </copy>
+    </target>
     <target name="package-annotation" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
@@ -364,6 +414,9 @@
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
+        <antcall target="prepare-spring-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.annotation.model}"/>
+        </antcall>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}">
             </fileset>
@@ -471,6 +524,9 @@
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**"/>
         </copy>
+        <antcall target="prepare-spring-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.advanced.field.access.model}"/>
+        </antcall>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
             </fileset>
@@ -933,6 +989,26 @@
         </java>
     </target>
 
+    <!-- Runs jpa srg test on Spring. -->
+    <target name="test-spring-srg" depends="clean-test, config-trunk, config-flat">
+        <antcall target="run-spring-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
+            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-spring-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
     <!-- Generic target for running tests. -->
     <target name="run-test" depends="config-trunk, config-flat">
         <echo>Running test on ${DB_URL}</echo>
@@ -959,6 +1035,41 @@
             <jvmarg value="${jvmarg.db.platform}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.jpa.test}/${report.dir}/${TEST_CLASS}-test-results">
+            </test>
+        </junit>
+    </target>
+
+    <!-- Generic target for running spring tests. -->
+    <target name="run-spring-test" depends="config-trunk, config-flat">
+        <echo>Running test on ${DB_URL}</echo>
+
+        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+            <isset property="db.platform"/>
+        </condition>
+        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+            <not>
+                <isset property="db.platform"/>
+            </not>
+        </condition>
+
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+            <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
+            <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
+            <jvmarg value="${TEST_AGENT}"/>
+            <jvmarg value="${TEST_WEAVING}"/>
+            <jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="${jvmarg.db.platform}"/>
+            <classpath>
+                <path refid="${RUN_PATH}"/>
+                <path refid="spring.path"/>
             </classpath>
             <formatter type="xml"/>
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.jpa.test}/${report.dir}/${TEST_CLASS}-test-results">
