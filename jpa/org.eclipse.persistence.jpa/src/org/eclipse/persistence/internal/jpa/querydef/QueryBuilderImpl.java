@@ -536,11 +536,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return equality predicate
      */
     public Predicate equal(Expression<?> x, Object y){
+        //parameter is not an expression.
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
+        if (y instanceof ParameterExpression) return this.equal(x, (ParameterExpression)y);
+        
         List list = new ArrayList();
         list.add(x);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(y), list, "equal");
     }
 
@@ -557,8 +561,10 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
+        if (y instanceof ParameterExpression) return this.notEqual(x, (ParameterExpression)y);
         List list = new ArrayList();
         list.add(x);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(y), list, "not equal");
     }
 
@@ -682,7 +688,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(y);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThan");
     }
 
@@ -703,7 +709,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(y);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThan");
     }
 
@@ -724,7 +730,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(y);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThanEqual");
     }
 
@@ -745,7 +751,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(y);
+        list.add(this.literal(y));
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThanEqual");
     }
 
@@ -1257,8 +1263,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return parameter expression
      */
     public <T> ParameterExpression<T> parameter(Class<T> paramClass){
-        //TODO
-        return null;
+        return new ParameterExpressionImpl<T>(metamodel, paramClass);
     }
 
     /**

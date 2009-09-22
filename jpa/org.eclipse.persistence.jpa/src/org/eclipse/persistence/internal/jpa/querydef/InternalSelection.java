@@ -14,6 +14,7 @@
 
 import java.util.Set;
 
+import javax.persistence.Parameter;
 import javax.persistence.criteria.Root;
 
 /**
@@ -32,7 +33,7 @@ import javax.persistence.criteria.Root;
  */
 public interface InternalSelection{
 
-    public void findRoot(Set<Root<?>> roots);
+    public void findRootAndParameters(AbstractQueryImpl criteriaQuery);
     
     public org.eclipse.persistence.expressions.Expression getCurrentNode();
     

@@ -391,11 +391,11 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             QueryBuilder qb = em.getQueryBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = cq.from(Employee.class);
-            ParameterExpression<Integer> param1 = qb.parameter(Integer.class, "param1");
+            ParameterExpression<Integer> param1 = qb.parameter(Integer.class);
             //need to cast to erase the type on the get("id") expression so it matches the type on param1
             cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
 
-            em.createQuery(cq).setParameter("param1", new Integer(1)).getResultList();
+            em.createQuery(cq).setParameter(param1, new Integer(1)).getResultList();
         } catch (Exception e) {
             exception = e;
         }

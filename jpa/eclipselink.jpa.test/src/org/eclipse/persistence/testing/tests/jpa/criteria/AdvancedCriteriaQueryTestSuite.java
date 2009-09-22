@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998,Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Parameter;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
@@ -103,6 +104,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimple"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleWhere"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSharedWhere"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testTupleQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheFirstCacheHits"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheOnlyCacheHits"));
@@ -170,6 +172,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testSharedWhere() {
+        EntityManager em = createEntityManager();
+        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+        QueryBuilder qb = em.getQueryBuilder();
+        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+
+        TypedQuery<Employee> tq = em.createQuery(cq);
+        List<Employee> result = tq.getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+        assertTrue("Employee had wrong firstname", ((Employee) result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+
+        CriteriaQuery<Employee> cq2 = em.getQueryBuilder().createQuery(Employee.class);
+        cq2.where(cq.getRestriction());
+        TypedQuery<Employee> tq2 = em.createQuery(cq);
+        List<Employee> result2 = tq.getResultList();
+        assertTrue("Employee's did not match with query with same where clause", comparer.compareObjects(result.get(0), result2.get(0)));
+    }
+
     public void testSimple(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -250,10 +273,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
             Root<Employee> from = cq.from(Employee.class);
             cq.multiselect(from, from.get("address"), from.get("id"));
-            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")),qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            Parameter<String> firstNameParam = qb.parameter(from.<String>get("firstName").getModel().getBindableJavaType(), "firstName");
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")),qb.equal(from.get("firstName"), firstNameParam)));
             query = em.createQuery(cq);
             query.setParameter("id", employee.getId());
-            query.setParameter("firstName", employee.getFirstName());
+            query.setParameter(firstNameParam, employee.getFirstName());
             Object[] arrayResult = (Object[])query.getSingleResult();
             if ((arrayResult.length != 3) && (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);

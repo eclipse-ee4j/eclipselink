@@ -17,9 +17,11 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Parameter;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -59,11 +61,13 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
     protected SelectionImpl<?> selection;
+    protected Set<ParameterExpression<?>> parameters;
     
     protected List<Order> orderBy;
     
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder){
         super(metamodel, queryResult, queryBuilder, result);
+        this.parameters = new HashSet<ParameterExpression<?>>();
     }
 
     /**
@@ -74,7 +78,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        validateRoot(selection);
+        integrateRoot(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
             if (!selection.getJavaType().equals(Tuple.class) && !this.queryResult.equals(ResultType.TUPLE) && !this.queryResult.equals(ResultType.OBJECT_ARRAY)) {
@@ -376,6 +380,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     
+    public void addParameter(ParameterExpression<?> parameter){
+        this.parameters.add(parameter);
+    }
+
     public boolean discoverResultType(Selection<?> ... selections){
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
@@ -436,7 +444,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the query parameters
      */
     public Set<ParameterExpression<?>> getParameters(){
-        throw new UnsupportedOperationException();
+        return this.parameters;
     }
     /**
      * Return the selection item of the query.  This will correspond to the query type.
@@ -451,7 +459,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Database Query.
      */
     public DatabaseQuery translate(){
-        //TODO fetch joins
+        //TODO fetch joins/dangling joins
         //find and translate subqueries.
         
         ObjectLevelReadQuery query = null;
@@ -501,6 +509,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
             query = reportQuery;
         }
+        for (ParameterExpression<?> parameter : getParameters()){
+            query.addArgument(parameter.getName(), parameter.getJavaType());
+        }
+        
         if (this.where != null){
             query.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
         }

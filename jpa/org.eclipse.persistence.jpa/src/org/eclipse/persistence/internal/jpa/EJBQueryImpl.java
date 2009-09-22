@@ -13,27 +13,56 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.LockTimeoutException;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Parameter;
+import javax.persistence.PersistenceException;
+import javax.persistence.PessimisticLockException;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
+import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
@@ -43,7 +72,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected DatabaseQuery databaseQuery = null;
     protected EntityManagerImpl entityManager = null;
     protected String queryName = null;
-    protected Map<String, Object> parameters = null;
+    protected Map<String, Object> parameterValues = null;
+    protected Map<Parameter<?>, Parameter<?>> parameters;
     protected int firstResultIndex = -1; // -1 indicates undefined
     protected int maxResults = -1; // -1 indicates undefined
 
@@ -59,7 +89,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
     protected EJBQueryImpl(EntityManagerImpl entityManager) {
-        this.parameters = new HashMap<String, Object>();
+        this.parameterValues = new HashMap<String, Object>();
         this.entityManager = entityManager;
         this.isShared = true;
     }
@@ -180,6 +210,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             }
             // Bug#4646580 Add arguments to query.
             parseTree.addParametersToQuery(databaseQuery);
+            
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 
             // GF#1324 eclipselink.refresh query hint does not cascade
@@ -709,7 +740,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
-            arguments = new ArrayList<String>(this.parameters.keySet());
+            
+            arguments = new ArrayList<String>(this.parameterValues.keySet());
             query.setArguments(arguments);
         }
         // now create parameterValues in the same order as the argument list
@@ -717,8 +749,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         List<Object> parameterValues = new ArrayList<Object>(size);
         for (int index = 0; index < size; index++) {
             String name = (String) arguments.get(index);
-            Object parameter = this.parameters.get(name);
-            if ((parameter != null) || this.parameters.containsKey(name)) {
+            Object parameter = this.parameterValues.get(name);
+            if ((parameter != null) || this.parameterValues.containsKey(name)) {
                 parameterValues.add(parameter);
             } else {
                 // Error: missing actual parameter value
@@ -823,8 +855,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return boolean indicating whether parameter has been bound
      */
     public boolean isBound(Parameter<?> param){
-        //TODO
-        throw new UnsupportedOperationException();
+        if (param == null) return false;
+        return this.parameterValues.containsKey(param.getName());
     }
 
     /**
@@ -1115,7 +1147,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 }
             }
         }
-        this.parameters.put(name, value);
+        this.parameterValues.put(name, value);
     }
 
     /**
@@ -1169,8 +1201,14 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public FlushModeType getFlushMode() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        try {
+            entityManager.verifyOpen();
+            if (getDatabaseQuery().getFlushOnExecute()) return FlushModeType.AUTO;
+            return FlushModeType.COMMIT;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -1187,8 +1225,20 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        try {
+            entityManager.verifyOpen();
+        Parameter param = (Parameter)this.parameters.get(name);
+        if (param == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+            
+        }if (!BasicTypeHelperImpl.getInstance().isAssignableFrom(param.getParameterType(), type)){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, type, param.getParameterType(),
+                    "" }));    }
+        return param;
+    } catch (RuntimeException e) {
+        setRollbackOnly();
+        throw e;
+    }
     }
 
     /**
@@ -1196,8 +1246,20 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        try {
+            entityManager.verifyOpen();
+        Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
+        if (param == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
+            
+        }if (!BasicTypeHelperImpl.getInstance().isAssignableFrom(param.getParameterType(), type)){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { position, type, param.getParameterType(),
+                    "" }));    }
+        return param;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -1205,8 +1267,17 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Parameter<?> getParameter(String name) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        try {
+            entityManager.verifyOpen();
+        Parameter param = (Parameter)this.parameters.get(name);
+        if (param == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+        }
+        return param;
+    } catch (RuntimeException e) {
+        setRollbackOnly();
+        throw e;
+    }
     }
 
     /**
@@ -1214,8 +1285,17 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Parameter<?> getParameter(int position) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        try {
+            entityManager.verifyOpen();
+        Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
+        if (param == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
+        }
+        return param;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -1223,8 +1303,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public <T> T getParameterValue(Parameter<T> param) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND_TODO"));
+        return (T) this.getParameterValue(param.getName());
     }
 
     /**
@@ -1235,8 +1315,21 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         been bound
      */
     public Object getParameterValue(String name){
-        return this.parameters.get(name);
-    }
+        try {
+            entityManager.verifyOpen();
+            if (! this.parameters.containsKey(new ParameterExpressionImpl(null, null, name))){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+            }
+            if (! this.parameterValues.containsKey(name)){ // must check for key.  get() would return negative for value == null.
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("NO_VALUE_BOUND_TODO"));
+            }
+            return this.parameterValues.get(name);
+            
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+        }
 
     /**
      * Return the value bound to the positional parameter.
@@ -1247,10 +1340,10 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     public Object getParameterValue(int position){
         String param = String.valueOf(position);
-        if (!this.parameters.containsKey(param)){
+        if (!this.parameterValues.containsKey(param)){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[]{position}));
         }
-        return this.parameters.get(param);
+        return this.parameterValues.get(param);
     }
     
     /**
@@ -1258,35 +1351,20 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Set<Parameter<?>> getParameters() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
-    }
+        if (this.parameters == null) {
+            DatabaseQuery query = getDatabaseQuery(); // Retrieve named query
+            int count = 0;
+            if (query.getArguments() != null && !query.getArguments().isEmpty()) {
+                this.parameters = new HashMap<Parameter<?>,Parameter<?>>();
+                for (String argName : query.getArguments()) {
+                    Parameter<?> param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
+                    this.parameters.put(param, param);
+                    ++count;
+                }
+            }
 
-    /**
-     * @see Query#getResultItem(String, Class)
-     * @since Java Persistence 2.0
-     */
-    public <T> TupleElement<T> getResultItem(String alias, Class<T> type) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
-    }
-
-    /**
-     * @see Query#getResultItem(int, Class)
-     * @since Java Persistence 2.0
-     */
-    public <T> TupleElement<T> getResultItem(int position, Class<T> type) {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
-    }
-
-    /**
-     * @see Query#getResultItems()
-     * @since Java Persistence 2.0
-     */
-    public List<TupleElement<?>> getResultItems() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        }
+        return this.parameters.keySet();
     }
 
     /**
@@ -1294,24 +1372,6 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Set<String> getSupportedHints() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
-    }
-
-    /**
-     * @see Query#getTypedResultList()
-     * @since Java Persistence 2.0
-     */
-    public List<Tuple> getTypedResultList() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
-    }
-
-    /**
-     * @see Query#getTypedSingleResult()
-     * @since Java Persistence 2.0
-     */
-    public Tuple getTypedSingleResult() {
         // TODO
         throw new PersistenceException("Not yet Implemented");
     }
@@ -1326,8 +1386,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         query
      */
     public <T> TypedQuery setParameter(Parameter<T> param, T value){
-        //TODO
-        throw new UnsupportedOperationException();
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        return this.setParameter(param.getName(), value);
     }
 
     /**
@@ -1340,8 +1400,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Date> param, Date value,  TemporalType temporalType){
-        //TODO
-        throw new UnsupportedOperationException();
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        return this.setParameter(param.getName(), value, temporalType);
     }
     
     /**
@@ -1354,8 +1414,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType){
-        //TODO
-        throw new UnsupportedOperationException();
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        return this.setParameter(param.getName(), value, temporalType);
     }
     
     /**
@@ -1376,5 +1436,5 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
 
         throw new PersistenceException("Could not unwrap query to: " + cls);
     }
-
+    
 }

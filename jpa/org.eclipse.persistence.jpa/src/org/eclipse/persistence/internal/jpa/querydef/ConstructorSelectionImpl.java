@@ -84,9 +84,9 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
 
     }
     
-    public void findRoot(Set<Root<?>> roots){
+    public void findRootAndParameters(AbstractQueryImpl query){
         for (Selection selection: getCompoundSelectionItems()){
-            ((InternalSelection)selection).findRoot(roots);
+            ((InternalSelection)selection).findRootAndParameters(query);
         }
     }
 

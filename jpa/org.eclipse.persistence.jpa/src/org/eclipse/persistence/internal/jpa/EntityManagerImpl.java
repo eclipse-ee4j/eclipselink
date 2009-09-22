@@ -38,6 +38,7 @@ import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -556,7 +557,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
             Class pkClass = policy.getPKClass();
-            if ((pkClass != null) && (pkClass != primaryKey.getClass()) && (!pkClass.isAssignableFrom(primaryKey.getClass()))) {
+            if ((pkClass != null) && (! BasicTypeHelperImpl.getInstance().isAssignableFrom(pkClass, primaryKey.getClass())) ) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
             }
             primaryKeyValues = policy.createPkVectorFromKey(primaryKey, session);

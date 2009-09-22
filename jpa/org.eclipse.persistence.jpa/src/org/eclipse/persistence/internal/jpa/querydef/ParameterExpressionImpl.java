@@ -4,6 +4,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
     
@@ -15,9 +16,20 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         this.name = name;
     }
 
+    public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType){
+        super(metamodel, javaType, null);
+        this.name = String.valueOf(System.identityHashCode(this));
+        this.currentNode = new ExpressionBuilder().getParameter(this.name);
+    }
+
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, Integer position){
         super(metamodel, javaType, new ExpressionBuilder().getParameter(position.toString()));
         this.position = position;
+        this.name = String.valueOf(position);
+    }
+
+    public void findRootAndParameters(AbstractQueryImpl query){
+        query.addParameter(this);
     }
 
     /**
@@ -56,5 +68,35 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
          return this.javaType;
      }
 
+    @Override
+    public int hashCode() {
+        if (this.name == null) this.name = "";
+        return this.name.hashCode();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (ClassConstants.STRING == obj.getClass()) {
+            return (this.name.equals(obj));
+        }
+        if (getClass() != obj.getClass())
+            return false;
+        ParameterExpressionImpl other = (ParameterExpressionImpl) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
 
 }

@@ -20,12 +20,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Parameter;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -86,7 +88,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> select(Expression<T> selection) {
-        validateRoot(selection);
+        integrateRoot(selection);
 
         this.selection = (SelectionImpl) selection;
         this.queryType = selection.getJavaType();
@@ -355,6 +357,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return this.correlatedJoins;
     }
 
+    public void addParameter(ParameterExpression<?> parameter){
+        ((AbstractQueryImpl)this.getParent()).addParameter(parameter);
+    }
     //Expression
     public <X> Expression<X> as(Class<X> type) {
         return (Expression<X>) this;
@@ -485,9 +490,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isLiteral(){
         return false;
     }
-    public void findRoot(Set<Root<?>> roots){
+    public void findRootAndParameters(AbstractQueryImpl query){
         for (Join join: this.correlatedJoins){
-            ((JoinImpl)join).findRoot(roots);
+            ((JoinImpl)join).findRootAndParameters(query);
         }
     }
 

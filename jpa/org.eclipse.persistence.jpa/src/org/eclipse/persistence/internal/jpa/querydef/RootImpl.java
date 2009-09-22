@@ -24,8 +24,10 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
         return (EntityType<X>)this.modelArtifact;
     }
     
-    public void findRoot(Set<Root<?>> roots){
-        roots.add(this);
+    public void findRootAndParameters(AbstractQueryImpl query){
+        if (query.getRoots().contains(this)){
+            query.getRoots().add(this);
+        }
     }
 
 

@@ -76,10 +76,10 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
         return false;
     }
 
-    public void findRoot(Set<Root<?>> roots){
+    public void findRootAndParameters(AbstractQueryImpl query){
         if (this.expressions != null){
             for (Object exp : this.expressions){
-                ((InternalSelection)exp).findRoot(roots);
+                ((InternalSelection)exp).findRootAndParameters(query);
             }   
         }
     }

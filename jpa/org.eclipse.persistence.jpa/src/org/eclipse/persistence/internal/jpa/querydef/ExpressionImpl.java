@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Parameter;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -133,7 +134,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isLiteral(){
         return this.isLiteral;
     }
-    public void findRoot(Set<Root<?>> roots){
+    public void findRootAndParameters(AbstractQueryImpl criteriaQuery){
         //no-op because an expression will have no root
     }
     

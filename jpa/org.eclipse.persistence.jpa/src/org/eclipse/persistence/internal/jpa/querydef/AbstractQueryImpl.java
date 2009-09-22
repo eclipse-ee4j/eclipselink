@@ -17,8 +17,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Parameter;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -44,7 +46,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class AbstractQueryImpl<T> implements AbstractQuery<T> {
+public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     
     
     protected Metamodel metamodel;
@@ -128,7 +130,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> where(Expression<Boolean> restriction){
-        validateRoot(restriction);
+        integrateRoot(restriction);
         this.where = restriction;
         return this;
     }
@@ -148,7 +150,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
             this.where = null;
         }
         Predicate predicate = this.queryBuilder.and(restrictions);
-        validateRoot(predicate);
+        integrateRoot(predicate);
         this.where = predicate;
         return this;
     }
@@ -207,6 +209,8 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
         throw new UnsupportedOperationException();
     }
     
+    public abstract void addParameter(ParameterExpression<?> parameter);
+
     /**
      * Specify whether duplicate query results will be eliminated. A true value
      * will cause duplicates to be eliminated. A false value will cause
@@ -247,8 +251,8 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return where clause predicate
      */
     public Predicate getRestriction(){
-        //TODO
-        throw new UnsupportedOperationException();
+        if (((ExpressionImpl)this.where).isPredicate()) return (Predicate)this.where;
+        return this.queryBuilder.isTrue(this.where);
     }
     
     /**
@@ -284,7 +288,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     /**
      *  Used to use a root from a different query.
      */
-    
+/*    
     protected void validateRoot(Expression<?> predicate) {
         Set<Root<?>> newRoots = new HashSet<Root<?>>();
         ((InternalSelection) predicate).findRoot(newRoots);
@@ -302,6 +306,33 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
             }
         }else{
             validateRoot((Expression)selection);
+        }
+    }
+    */
+    protected void integrateRoot(Expression<?> predicate) {
+        ((InternalSelection) predicate).findRootAndParameters(this);
+/*        if (this.roots.isEmpty()) {
+            this.roots.addAll(newRoots);
+        } else {
+            boolean found = false;
+            for (Root root : newRoots) {
+                if (this.roots.contains(root)) {
+                    this.roots.addAll(newRoots);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
+            }
+        }
+ */   }
+
+    protected void integrateRoot(Selection<?> selection) {
+        if (selection.isCompoundSelection()) {
+            for (Selection subSelection : selection.getCompoundSelectionItems()) {
+                integrateRoot(subSelection);
+            }
         }
     }
 }

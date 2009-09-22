@@ -68,9 +68,9 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         return (List<Selection<?>>)this.subSelections;
     }
     
-    public void findRoot(Set<Root<?>> roots){
+    public void findRootAndParameters(AbstractQueryImpl criteriaQuery){
         for (Selection selection: getCompoundSelectionItems()){
-            ((InternalSelection)selection).findRoot(roots);
+            ((InternalSelection)selection).findRootAndParameters(criteriaQuery);
         }
     }
 
