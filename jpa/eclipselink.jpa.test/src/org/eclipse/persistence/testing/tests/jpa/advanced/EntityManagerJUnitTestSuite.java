@@ -36,6 +36,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
@@ -43,6 +44,9 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
+import javax.persistence.spi.LoadState;
+import javax.persistence.spi.ProviderUtil;
+import javax.persistence.Persistence;
 
 import junit.framework.*;
 
@@ -138,6 +142,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
+        
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjects"));
@@ -316,6 +321,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUOWReferenceInExpressionCache"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedAttribute"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
+        
         return suite;
     }
 
@@ -8541,6 +8553,234 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             em.remove(emp);
             commitTransaction(em);
+        }
+    }
+    
+    public void testIsLoaded(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            em.persist(emp);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            emp = (Employee)em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testIsLoadedAttribute(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            
+            SmallProject project = new SmallProject();
+            project.setName("Utility Testing");
+            project.addTeamMember(emp);
+            emp.addProject(project);
+            em.persist(emp);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            emp = (Employee)em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
+            assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
+            emp.getPhoneNumbers().size();
+            assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
+            assertTrue("PersistenceUnitUtil says firstName is not loaded when it is", util.isLoaded(emp, "firstName"));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testGetIdentifier(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            em.persist(emp);
+            em.flush();
+            Integer id = emp.getId();
+            
+            em.clear();
+            clearCache();
+            
+            emp = (Employee)em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            Object retrievedId = util.getIdentifier(emp);
+            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testIsLoadedWithReference(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            
+            Employee manager = new Employee();
+            manager.addManagedEmployee(emp);
+            emp.setManager(manager);
+            
+            
+            em.persist(emp);
+            em.flush();
+            Integer id = emp.getId();
+            
+            em.clear();
+            clearCache();
+            
+            emp = em.find(Employee.class, emp.getId());
+            emp.getAddress().getCity();
+            emp.getPhoneNumbers().size();
+            
+            ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
+            assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
+            assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
+            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
+            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testIsLoadedWithoutReference(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            
+            Employee manager = new Employee();
+            manager.addManagedEmployee(emp);
+            emp.setManager(manager);
+            
+            em.persist(emp);
+            em.flush();
+            Integer id = emp.getId();
+            
+            em.clear();
+            clearCache();
+            
+            ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
+            assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
+            
+            emp = em.getReference(Employee.class, emp.getId());
+            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
+        
+            assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
+
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testIsLoadedWithoutReferenceAttribute(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            
+            Employee manager = new Employee();
+            manager.addManagedEmployee(emp);
+            emp.setManager(manager);
+            
+            em.persist(emp);
+            em.flush();
+            Integer id = emp.getId();
+            
+            em.clear();
+            clearCache();
+            
+            emp = em.find(Employee.class, emp.getId());
+            emp.getAddress().getCity();
+            emp.getPhoneNumbers().size();
+            
+            ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
+            assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
+            assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
+            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
+            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+            assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
+        } finally {
+            rollbackTransaction(em);
         }
     }
 }

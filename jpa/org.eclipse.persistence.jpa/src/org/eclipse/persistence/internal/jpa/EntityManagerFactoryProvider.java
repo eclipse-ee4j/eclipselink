@@ -207,6 +207,10 @@ public class EntityManagerFactoryProvider {
         return emSetupImpls.get(emName);
     }
 
+    public static Map<String, EntityManagerSetupImpl>getEmSetupImpls(){
+        return emSetupImpls;
+    }
+    
     /**
      * Return the setup class for a given entity manager name 
      * @param emName 

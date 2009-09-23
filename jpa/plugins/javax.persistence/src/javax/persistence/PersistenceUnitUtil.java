@@ -68,7 +68,7 @@ public interface PersistenceUnitUtil extends PersistenceUtil {
      *  Returns null if the entity does not yet have an id.
      *  @param entity  entity instance
      *  @return id of the entity
-     *  @throws IllegalStateException if the entity is found not 
+     *  @throws IllegalArgumentException if the entity is found not 
      *          to be an entity.
      */
     public Object getIdentifier(Object entity);

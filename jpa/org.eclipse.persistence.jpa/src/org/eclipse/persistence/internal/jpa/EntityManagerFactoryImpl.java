@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,14 +26,20 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.querydef.QueryBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -57,7 +65,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
  *     03/19/2009-2.0 Michael O'Brien  
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
-public class EntityManagerFactoryImpl implements EntityManagerFactory {
+public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil {
 	/** Reference to Cache Interface. */
 	protected Cache myCache;
 	/** Reference to the ServerSession for this deployment. */
@@ -351,8 +359,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
      * has been closed.
      */
     public PersistenceUnitUtil getPersistenceUnitUtil(){
-        //TODO
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     /**
@@ -514,13 +521,161 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
         metaModel = aMetamodel;
     }
     
-	/**
-	 * @see javax.persistence.EntityManagerFactory#getSupportedProperties()
-	 * @since Java Persistence API 2.0
-	 */
-	public Set<String> getSupportedProperties() {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    /**
+     * @see javax.persistence.EntityManagerFactory#getSupportedProperties()
+     * @since Java Persistence API 2.0
+     */
+    public Set<String> getSupportedProperties() {
+        // TODO
+        throw new PersistenceException("Not Yet Implemented");
+    }
+    
+    /**
+     * Determine the load state of a given persistent attribute
+     * of an entity belonging to the persistence unit.
+     * @param entity containing the attribute
+     * @param attributeName name of attribute whose load state is
+     *    to be determined
+     * @return false if entity's state has not been loaded or
+     *  if the attribute state has not been loaded, otherwise true
+     */
+    public boolean isLoaded(Object entity, String attributeName){
+        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, serverSession).equals(Boolean.valueOf(true))){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Determine the load state of an entity belonging to the
+     * persistence unit.
+     * This method can be used to determine the load state 
+     * of an entity passed as a reference.  An entity is
+     * considered loaded if all attributes for which FetchType
+     * EAGER has been specified have been loaded.
+     * The isLoaded(Object, String) method should be used to 
+     * determine the load state of an attribute.
+     * Not doing so might lead to unintended loading of state.
+     * @param entity whose load state is to be determined
+     * @return false if the entity has not been loaded, else true.
+     */
+    public boolean isLoaded(Object entity){
+        if (EntityManagerFactoryImpl.isLoaded(entity, serverSession).equals(Boolean.valueOf(true))){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     *  Returns the id of the entity.
+     *  A generated id is not guaranteed to be available until after
+     *  the database insert has occurred.
+     *  Returns null if the entity does not yet have an id
+     *  @param entity
+     *  @return id of the entity
+     *  @throws IllegalStateException if the entity is found not to be
+     *          an entity.
+     */
+    public Object getIdentifier(Object entity){
+        return EntityManagerFactoryImpl.getIdentifier(entity, serverSession);
+    }
+    
+    /**
+     * Determine the load state of a given persistent attribute
+     * of an entity belonging to the persistence unit.
+     * @param entity containing the attribute
+     * @param attributeName name of attribute whose load state is
+     *    to be determined
+     * @return false if entity's state has not been loaded or
+     *  if the attribute state has not been loaded, otherwise true
+     */
+    public static Boolean isLoaded(Object entity, String attributeName, AbstractSession session){
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null){
+            return null;
+        }
+        DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeName);
+        if (mapping == null){
+            return null;
+        }
+        return isLoaded(entity, attributeName, mapping);
+    }
+    
+    /**
+     * Check whether a named attribute on a given entity with a given mapping has been loaded.
+     * 
+     * This method will check the valueholder or indirect collection for LAZY ForeignReferenceMappings
+     * to see if has been instantiated and otherwise check the fetch group.
+     * @param entity
+     * @param attributeName
+     * @param mapping
+     * @return
+     */
+    public static boolean isLoaded(Object entity, String attributeName, DatabaseMapping mapping){
+        if (mapping.isForeignReferenceMapping()){
+            if (((ForeignReferenceMapping)mapping).isLazy()){
+                Object value = mapping.getAttributeValueFromObject(entity);
+                IndirectionPolicy policy = ((ForeignReferenceMapping)mapping).getIndirectionPolicy();
+                return policy.objectIsInstantiated(value);
+            }
+        }
+
+        if (entity instanceof FetchGroupTracker){
+            return ((FetchGroupTracker)entity)._persistence_isAttributeFetched(attributeName);
+        } else {
+            return true;
+        }
+    }
+    
+    /**
+     * Determine the load state of an entity belonging to the
+     * persistence unit.
+     * This method can be used to determine the load state 
+     * of an entity passed as a reference.  An entity is
+     * considered loaded if all attributes for which FetchType
+     * EAGER has been specified have been loaded.
+     * The isLoaded(Object, String) method should be used to 
+     * determine the load state of an attribute.
+     * Not doing so might lead to unintended loading of state.
+     * @param entity whose load state is to be determined
+     * @return false if the entity has not been loaded, else true.
+     */
+    public static Boolean isLoaded(Object entity, AbstractSession session){
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null){
+            return null;
+        }
+        List<DatabaseMapping> mappings = descriptor.getMappings();
+        Iterator<DatabaseMapping> i = mappings.iterator();
+        while (i.hasNext()){
+            DatabaseMapping mapping = i.next();
+            if (!mapping.isLazy() && !isLoaded(entity, mapping.getAttributeName(), mapping)){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     *  Returns the id of the entity.
+     *  A generated id is not guaranteed to be available until after
+     *  the database insert has occurred.
+     *  Returns null if the entity does not yet have an id
+     *  @param entity
+     *  @return id of the entity
+     *  @throws IllegalStateException if the entity is found not to be
+     *          an entity.
+     */
+    public static Object getIdentifier(Object entity, AbstractSession session){
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class ", new Object[]{entity}));
+        }
+        if (descriptor.getCMPPolicy() != null){
+            return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class ", new Object[]{entity}));
+        }
+    }
 
 }

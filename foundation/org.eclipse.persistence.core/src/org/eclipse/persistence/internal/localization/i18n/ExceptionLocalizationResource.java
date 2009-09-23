@@ -155,8 +155,10 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jaxb_helper_invalid_target_for_jaxbcontext", "The provided target Class [{0}] must be one of EclipseLink JAXBContext or EclipseLink XMLContext." },
                                            { "jaxb_helper_invalid_target_for_unmarshaller", "The provided target Class [{0}] must be one of EclipseLink JAXBUnmarshaller or EclipseLink XMLUnmarshaller." },
                                            { "jaxb_helper_invalid_target_for_marshaller", "The provided target Class [{0}] must be one of EclipseLink JAXBMarshaller or EclipseLink XMLMarshaller." },
-                                           { "jaxb_helper_invalid_target_for_binder", "The provided target Class [{0}] must be one of EclipseLink JAXBBinder or EclipseLink XMLBinder." }
-    };
+                                           { "jaxb_helper_invalid_target_for_binder", "The provided target Class [{0}] must be one of EclipseLink JAXBBinder or EclipseLink XMLBinder." },
+                                           { "jpa_persistence_util_non_persistent_class", "PersistenceUtil.getIdentifier(entity) was called with object [{0}] which is not a persistent object." }
+
+                                        };
 
     /**
      * Return the lookup table.

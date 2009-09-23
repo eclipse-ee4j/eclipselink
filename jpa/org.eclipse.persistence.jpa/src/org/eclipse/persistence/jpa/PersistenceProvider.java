@@ -18,6 +18,7 @@ package org.eclipse.persistence.jpa;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
@@ -33,13 +34,14 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitialization
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
  * This is the EclipseLink EJB 3.0 provider
  * 
  * This provider should be used by JavaEE and JavaSE users.
  */
-public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider {
+public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider, ProviderUtil {
 
     // provides environment-specific initialization for Java EE or OSGI
     protected PersistenceInitializationHelper initializationHelper = null;    
@@ -235,21 +237,6 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         return factory;
     }
 
-    
-    public LoadState isLoaded(Object entity) {
-        // TODO. Need to correctly implement this
-       return LoadState.UNKNOWN;
-    }
-
-    public LoadState isLoadedWithReference(Object entity, String attributeName) {
-        // TODO. Need to correctly implement this
-       return LoadState.UNKNOWN;
-    }
-
-    public LoadState isLoadedWithoutReference(Object entity, String attributeName) {
-        // TODO. Need to correctly implement this 
-        return LoadState.UNKNOWN;
-    }
     /**
      * Return the utility interface implemented by the persistence
      * provider.
@@ -257,7 +244,101 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *
      * @since Java Persistence 2.0
      */
-    public ProviderUtil getProviderUtil() {
-        return null;
+    public ProviderUtil getProviderUtil(){
+        return this;
     }
+
+
+    /**
+     * If the provider determines that the entity has been provided
+     * by itself and that the state of the specified attribute has
+     * been loaded, this method returns <code>LoadState.LOADED</code>.
+     * If the provider determines that the entity has been provided
+     * by itself and that either entity attributes with <code>FetchType.EAGER</code> 
+     * have not been loaded or that the state of the specified
+     * attribute has not been loaded, this methods returns
+     * <code>LoadState.NOT_LOADED</code>.
+     * If a provider cannot determine the load state, this method
+     * returns <code>LoadState.UNKNOWN</code>.
+     * The provider's implementation of this method must not obtain
+     * a reference to an attribute value, as this could trigger the
+     * loading of entity state if the entity has been provided by a
+     * different provider.
+     * @param entity
+     * @param attributeName  name of attribute whose load status is
+     *        to be determined
+     * @return load status of the attribute
+     */
+    public LoadState isLoadedWithoutReference(Object entity, String attributeName){
+        if (entity instanceof PersistenceWeaved){
+            return isLoadedWithReference(entity, attributeName);
+        }
+        return LoadState.UNKNOWN;
+     }
+    
+    /**
+     * If the provider determines that the entity has been provided
+     * by itself and that the state of the specified attribute has
+     * been loaded, this method returns <code>LoadState.LOADED</code>.
+     * If a provider determines that the entity has been provided
+     * by itself and that either the entity attributes with <code>FetchType.EAGER</code>
+     * have not been loaded or that the state of the specified
+     * attribute has not been loaded, this method returns
+     * return <code>LoadState.NOT_LOADED</code>.
+     * If the provider cannot determine the load state, this method
+     * returns <code>LoadState.UNKNOWN</code>.
+     * The provider's implementation of this method is permitted to
+     * obtain a reference to the attribute value.  (This access is
+     * safe because providers which might trigger the loading of the
+     * attribute state will have already been determined by
+     * <code>isLoadedWithoutReference</code>. )
+     *
+     * @param entity
+     * @param attributeName  name of attribute whose load status is
+     *        to be determined
+     * @return load status of the attribute
+     */
+    public LoadState isLoadedWithReference(Object entity, String attributeName){
+        Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.getEmSetupImpls().values().iterator();
+        while (setups.hasNext()){
+            EntityManagerSetupImpl setup = setups.next();
+            if (setup.isDeployed()){
+                Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
+                if (isLoaded != null){
+                    if (isLoaded.booleanValue() && attributeName != null){
+                        isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
+                    }
+                    if (isLoaded != null){
+                        return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                    }
+                }
+            }
+        }
+        return LoadState.UNKNOWN;
+     }
+    
+    /**
+     * If the provider determines that the entity has been provided
+     * by itself and that the state of all attributes for which
+     * <code>FetchType.EAGER</code> has been specified have been loaded, this 
+     * method returns <code>LoadState.LOADED</code>.
+     * If the provider determines that the entity has been provided
+     * by itself and that not all attributes with <code>FetchType.EAGER</code> 
+     * have been loaded, this method returns <code>LoadState.NOT_LOADED</code>.
+     * If the provider cannot determine if the entity has been
+     * provided by itself, this method returns <code>LoadState.UNKNOWN</code>.
+     * The provider's implementation of this method must not obtain
+     * a reference to any attribute value, as this could trigger the
+     * loading of entity state if the entity has been provided by a
+     * different provider.
+     * @param entity whose loaded status is to be determined
+     * @return load status of the entity
+     */
+    public LoadState isLoaded(Object entity){
+        if (entity instanceof PersistenceWeaved){
+            return isLoadedWithReference(entity, null);
+        }
+        return LoadState.UNKNOWN;
+     }
 }
+

@@ -16,6 +16,9 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
 import javax.persistence.EntityManager;
@@ -54,8 +57,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.PrivateId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.SecondLieutenant;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 
 public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     private static DepartmentPK m_departmentPK;
@@ -89,6 +94,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5a"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample6"));
+        
+        suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
         
         return suite;
     }
@@ -587,4 +594,25 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         SecondLieutenant refreshedSecondLieutenant = em.find(SecondLieutenant.class, secondLieutenant.getId());
         assertTrue("The second lieutenant read back did not match the original", getServerSession().compareObjects(secondLieutenant, refreshedSecondLieutenant));  
     }
+    
+    public void testGetIdentifier(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        beginTransaction(em);
+        try{
+            DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
+            Department department = new Department();
+            department.setName("DEPT B");
+            department.setRole("ROLE B");
+            department.setLocation("LOCATION B");
+            em.persist(department);
+            em.flush();
+            
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
 }

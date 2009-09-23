@@ -569,6 +569,10 @@ public class EntityManagerSetupImpl {
         }
     }
     
+    public ServerSession getSession(){
+        return session;
+    }
+    
     /**
      * This method will be used to validate the specified class and return it's instance.
      */

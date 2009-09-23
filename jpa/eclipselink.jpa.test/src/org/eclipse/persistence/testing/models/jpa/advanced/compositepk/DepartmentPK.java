@@ -18,6 +18,9 @@ public class DepartmentPK {
     public String role;
     public String location;
 
+    public DepartmentPK(){
+    }
+    
     public DepartmentPK(String name, String role, String location) {
         this.name = name;
         this.role = role;
