@@ -278,6 +278,7 @@
             deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
+            <!-- compilerarg value="-Xlint:unchecked" compiler="javac1.6"/ -->
             <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
@@ -286,13 +287,17 @@
     <!-- Compiles all tests. -->
     <target name="compile" description="compile EclipseLink testing"
             depends="init, config-trunk, config-flat,
-                     compile-with-modelgen, compile-standard, compile-criteria"/>
+                     compile-with-modelgen, compile-standard, compile-springplatform, compile-criteria"/>
 
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
         <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}' not found." unless="modelgen.jar.exist"/ -->
         <copy todir="${jpatest.build.location}/${classes.dir}">
             <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/persistence.xml"/>
+        </copy>
+        <!-- Copy to META-INF because IBM Compiler apparently is no longer recognizing -A (temporary) -->
+        <copy todir="${jpatest.build.location}/${classes.dir}/META-INF">
+            <fileset dir="${jpatest.build.location}/${resource.dir}/eclipselink-canonical-meta-model" includes="persistence.xml"/>
         </copy>
         <antcall target="model-compile" inheritRefs="true">
             <param name="SRC_PATH" value="${eclipselink.jpa.test}/${src.dir}"/>
@@ -301,7 +306,8 @@
             <param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/>
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
         </antcall>
-        <!-- delete dir="${jpatest.build.location}/${classes.dir}/eclipselink-canonical-meta-model"/ -->
+        <!-- This persistence.xml MUST be deleted because tests will pick it up otherwise and fail -->
+        <delete dir="${jpatest.build.location}/${classes.dir}/META-INF"/>
         <available file="${jpatest.build.location}/${classes.dir}/org/eclipse/persistence/testing/models/jpa/advanced/Address_.class" property="modelgen.created.classes.exist"/>
     </target>
 
@@ -321,7 +327,6 @@
                 <path refid="compile.path"/>
             </classpath>
         </javac>
-        <antcall target="compile-springplatform" inheritRefs="true"/>
     </target>
 
     <target name="compile-springplatform" if="is.spring">
