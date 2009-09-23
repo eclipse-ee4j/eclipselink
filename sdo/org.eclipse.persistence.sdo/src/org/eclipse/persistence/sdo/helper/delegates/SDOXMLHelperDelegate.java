@@ -626,6 +626,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             SDOType openSequencedType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
             topLinkProject.addDescriptor(openSequencedType.getXmlDescriptor());
             SDOTypeType typeType = (SDOTypeType)aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+            typeType.getXmlDescriptor().setNamespaceResolver(nr);
             if(!typeType.isInitialized()) {
                 typeType.initializeMappings();
             }
