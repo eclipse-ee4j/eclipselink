@@ -288,7 +288,7 @@
     <!-- Compiles all tests. -->
     <target name="compile" description="compile EclipseLink testing"
             depends="init, config-trunk, config-flat,
-                     compile-with-modelgen, compile-standard, compile-criteria"/>
+                     compile-with-modelgen, compile-standard, compile-springplatform, compile-criteria"/>
 
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
@@ -328,7 +328,6 @@
                 <path refid="compile.path"/>
             </classpath>
         </javac>
-        <antcall target="compile-springplatform" inheritRefs="true"/>
     </target>
 
     <target name="compile-springplatform" if="is.spring">
@@ -998,6 +997,8 @@
 
     <!-- Runs jpa srg test on Spring. -->
     <target name="test-spring-srg" depends="clean-test, config-trunk, config-flat">
+        <property name="is.spring" value="true"/>
+        <antcall target="all" inheritRefs="true"/>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
@@ -1015,6 +1016,7 @@
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
+        <antcall target="clean" inheritRefs="true"/>
     </target>
     <!-- Generic target for running tests. -->
     <target name="run-test" depends="config-trunk, config-flat">
