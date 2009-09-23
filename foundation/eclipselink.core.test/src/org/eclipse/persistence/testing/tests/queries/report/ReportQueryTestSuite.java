@@ -98,8 +98,11 @@ public class ReportQueryTestSuite extends TestSuite {
         
         addTest(new ClassForInheritanceTestCase());
 
-    // bug 3764121
-    addTest(new ReportQueryFunctionTypeTestCase());
+        // bug 3764121
+        addTest(new ReportQueryFunctionTypeTestCase());
+
+        // bug 290311: ReadAllQuery executed instead of ReportQuery 
+        addTest(new ReportQueryFunctionTypeTestCase(true));
 
         //bug 4942640
         addTest(new ReportQueryAndExistsSubQuery());
