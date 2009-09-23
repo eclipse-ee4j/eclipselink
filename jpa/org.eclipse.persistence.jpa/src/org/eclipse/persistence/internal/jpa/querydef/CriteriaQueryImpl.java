@@ -29,11 +29,13 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -490,7 +492,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             if (((SelectionImpl) nested).isCompoundSelection()) {
                                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
                             } else {
-                                reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode());
+                                reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
                             }
                         }
                     } else {
@@ -521,7 +523,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         if (this.where != null) {
-            query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
+            if (((InternalExpression)this.where).isPredicate()){
+                if (((Predicate)this.where).getOperator() == BooleanOperator.OR){
+                    query.setSelectionCriteria(new ConstantExpression(1, query.getExpressionBuilder()).equal(0));
+                }
+            }else{
+                query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
+            }
         }
         if (this.distinct) {
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);

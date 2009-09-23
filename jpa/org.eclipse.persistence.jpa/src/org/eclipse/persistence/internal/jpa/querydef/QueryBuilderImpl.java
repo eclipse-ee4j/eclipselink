@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CompoundSelection;
@@ -14,19 +15,26 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Predicate.BooleanOperator;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -794,8 +802,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than predicate
      */
     public Predicate gt(Expression<? extends Number> x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().greaterThan(((InternalSelection)y).getCurrentNode()), list, "gt");
     }
 
     /**
@@ -824,8 +834,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public Predicate ge(Expression<? extends Number> x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().greaterThanEqual(((InternalSelection)y).getCurrentNode()), list, "ge");
     }
 
     /**
@@ -839,8 +851,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public Predicate le(Expression<? extends Number> x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(y);
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThanEqual(((InternalSelection)y).getCurrentNode()), list, "le");
     }
 
     /**
@@ -854,8 +868,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than predicate
      */
     public Predicate gt(Expression<? extends Number> x, Number y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(literal(y));
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().greaterThan(y), list, "gt");
     }
 
     /**
@@ -884,8 +900,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return greater-than-or-equal predicate
      */
     public Predicate ge(Expression<? extends Number> x, Number y){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(literal(y));
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().greaterThanEqual(y), list, "ge");
     }
 
     /**
@@ -1296,8 +1314,14 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <C extends Collection<?>> Predicate isEmpty(Expression<C> collection){
-        //TODO
-        return null;
+        if (((InternalExpression)collection).isLiteral()){
+            if (((Collection)((ConstantExpression)((InternalSelection)collection).getCurrentNode()).getValue()).isEmpty()){
+                return conjunction();
+            }else{
+            return disjunction();
+            }
+        }
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER).equal(0), buildList(collection), "isEmpty");
     }
 
     /**
@@ -1308,8 +1332,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER).equal(0).not(), buildList(collection), "isNotEmpty");
     }
 
     /**
@@ -1319,8 +1342,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return size expression
      */
     public <C extends Collection<?>> Expression<Integer> size(C collection){
-        //TODO
-        return null;
+        return literal(collection.size());
     }
 
     /**
@@ -1346,6 +1368,26 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection){
+/*        Type type = metamodel.type(elem.getClass());
+        Expression currentNode;
+        if ( type != null && type.getPersistenceType() == PersistenceType.ENTITY){
+            EntityTypeImpl eti = (EntityTypeImpl)type;
+            if (!(eti).hasSingleIdAttribute()) {
+                currentNode = equal(((Path)collection).get(((EntityType) type).getId(Object.class)), eti.getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(elem, session)
+                this.selection = (SelectionImpl) ((Path) this.selection).get();
+                this.subQuery.addItem(selection.getAlias() + "ID", this.selection.getCurrentNode());
+            } else {
+                Expression[] expressions = new Expression[((EntityType<T>) type).getIdClassAttributes().size()];
+                int index = 0;
+                for (SingularAttribute<? super T, ?> attr : ((EntityType<T>) type).getIdClassAttributes()) {
+                    PathImpl path = (PathImpl) ((Path) selection).get(attr);
+                    expressions[index] = path;
+                    ++index;
+                    this.subQuery.addItem(selection.getAlias() + "ID" + index, path.getCurrentNode());
+                }
+                this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, expressions);
+            }
+        }*/
         //TODO
         return null;
     }
@@ -2070,7 +2112,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression
      */
     public <T> Expression<T> function(String name, Class<T> type, Expression<?>... args){
-        //TODO
-        return null;
+        if (args != null && args.length > 0){
+        Vector<org.eclipse.persistence.expressions.Expression> params = new Vector<org.eclipse.persistence.expressions.Expression>();
+        for (int index = 1; index < args.length; ++index){
+            params.add(((InternalSelection)args[index]).getCurrentNode());
+        }
+        
+        return new FunctionExpressionImpl<T>(metamodel, type, ((InternalSelection)args[0]).getCurrentNode().getFunctionWithArguments(name, params), buildList(args), name);
+        }else{
+            return new FunctionExpressionImpl<T>(metamodel, type, new ExpressionBuilder().getFunction(name), new ArrayList(0), name);
+        }
     }
 }
