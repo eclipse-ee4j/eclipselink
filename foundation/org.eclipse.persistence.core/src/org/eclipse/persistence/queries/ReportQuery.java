@@ -664,6 +664,16 @@ public class ReportQuery extends ReadAllQuery {
     
     /**
      * INTERNAL:
+     * Check to see if a custom query should be used for this query.
+     * This is done before the query is copied and prepared/executed.
+     * null means there is none.
+     */
+    protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
+        return null;
+    }
+
+    /**
+     * INTERNAL:
      * Clone the query.
      */
     public Object clone() {

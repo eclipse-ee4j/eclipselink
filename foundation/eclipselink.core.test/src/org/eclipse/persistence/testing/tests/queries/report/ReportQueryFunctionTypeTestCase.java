@@ -15,7 +15,9 @@ package org.eclipse.persistence.testing.tests.queries.report;
 import java.math.BigDecimal;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 
@@ -37,9 +39,18 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  */
 public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
     Vector<ReportQueryResult> results;
+    // shouldHaveReadAllQueryInDescriptor == true added for Bug 290311: ReadAllQuery executed instead of ReportQuery 
+    boolean shouldHaveReadAllQueryInDescriptor;
+    boolean hasSetReadAllQueryIntoDescriptor;
     
     public ReportQueryFunctionTypeTestCase() {
-        setDescription("Tests the result types of report query that uses functions.");
+        this(false);
+    }
+    public ReportQueryFunctionTypeTestCase(boolean shouldHaveReadAllQueryInDescriptor) {
+        this.shouldHaveReadAllQueryInDescriptor = shouldHaveReadAllQueryInDescriptor;
+        String suffix = shouldHaveReadAllQueryInDescriptor ? " ReadAllQuery in descriptor." : "";
+        setDescription("Tests the result types of report query that uses functions." + suffix);
+        setName(getName() + suffix);
     }
     
     public void test() {
@@ -74,6 +85,14 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
             reportQuery .addMinimum("id-min", builder.get("id"));
             reportQuery .addMaximum("id-max", builder.get("id")); 
         
+            if(this.shouldHaveReadAllQueryInDescriptor) {
+                ClassDescriptor desc = getSession().getDescriptor(Employee.class);
+                if(!desc.getQueryManager().hasReadAllQuery()) {
+                    desc.getQueryManager().setReadAllQuery(new ReadAllQuery());
+                    hasSetReadAllQueryIntoDescriptor = true;
+                }
+            }
+            
             results = (Vector<ReportQueryResult>) getSession().executeQuery(reportQuery); 
         }
     }
@@ -128,6 +147,15 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
                                                || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()
                                                || (value instanceof Long && getSession().getDatasourcePlatform().isPostgreSQL())))) {
                 throw new TestErrorException("Incorrect result type for max function of report query.");
+            }
+        }
+    }
+    
+    public void reset() {
+        if(this.hasSetReadAllQueryIntoDescriptor) {
+            ClassDescriptor desc = getSession().getDescriptor(Employee.class);
+            if(!desc.getQueryManager().hasReadAllQuery()) {
+                desc.getQueryManager().setReadAllQuery(null);
             }
         }
     }
