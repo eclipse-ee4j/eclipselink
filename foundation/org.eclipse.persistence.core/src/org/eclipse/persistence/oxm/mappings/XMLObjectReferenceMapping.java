@@ -300,9 +300,9 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         XMLDescriptor targetDescriptor = (XMLDescriptor) getReferenceDescriptor();
         for (int index = 0; index < sourceToTargetKeys.size(); index++) {
             XMLField sourceField = (XMLField) sourceToTargetKeys.get(index);
+            XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.remove(sourceField);
             sourceField = (XMLField) descriptor.buildField(sourceField);
             sourceToTargetKeys.set(index, sourceField);
-            XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.get(sourceField);
             targetField = (XMLField) targetDescriptor.buildField(targetField);
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
