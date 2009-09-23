@@ -247,19 +247,19 @@ genTestSummary() {
     return $returncode
 }
 
-unset cleanFailuresDir
-cleanFailuresDir() {
-    num_files=10
-
-    # leave only the last 10 failed build logs on the download server
-    index=0
-    for logs in `ls ${FailedNFSDir} | grep log | sort -t_ -k3 -r` ; do
-        index=`expr $index + 1`
-        if [ $index -gt $num_files ] ; then
-            rm -r $contentdir
-        fi
-    done
-}
+#unset cleanFailuresDir
+#cleanFailuresDir() {
+#    num_files=10
+#
+#    # leave only the last 10 failed build logs on the download server
+#    index=0
+#    for logs in `ls ${FailedNFSDir} | grep log | sort -t_ -k3 -r` ; do
+#        index=`expr $index + 1`
+#        if [ $index -gt $num_files ] ; then
+#            rm -r $logs
+#        fi
+#    done
+#}
 
 #--------- MAIN --------#
 
@@ -473,15 +473,21 @@ then
         fi
         touch ${TESTDATA_FILE}
 
+        ## postpend notification if signing failed
+        if [ ! "`cat ${DATED_LOG} | grep 'SigningAborted'`" = "" ]
+        then
+            CAVEAT_TXT=" Signing failed. P2 not generated!"
+        fi
+    
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
         if [ $? -eq 0  ]
         then
-            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete.${CAVEAT_TXT}"
             MAILLIST=${SUCC_MAILLIST}
         else
-            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!${CAVEAT_TXT}"
             BUILD_FAILED="true"
             TESTS_FAILED="true"
         fi
@@ -493,21 +499,27 @@ then
 
     if [ "${TESTS_FAILED}" = "true" ]
     then
+        echo "Build had Test issues that need to be resolved."
         if [ "${TARG_NM}" = "cb" ]
         then
             # Zip up test results and copy them to appropriate location
             ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
-        fi
+            echo "Command to zip and copy test results"
+            echo "   ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results"
+       fi
     fi
 
     if [ "${BUILD_FAILED}" = "true" ]
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGFILE_NAME}
-        cleanFailuresDir
-        chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
-        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
         MAILLIST=${FAIL_MAILLIST}
         echo "Build had issues to be resolved."
+    fi
+    
+    if [ \("${BUILD_FAILED}" = "true"\) -o \("${TESTS_FAILED}" = "true"\) ]
+    then
+        chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
     fi
 
     ## Build Body text of email
