@@ -996,6 +996,8 @@
 
     <!-- Runs jpa srg test on Spring. -->
     <target name="test-spring-srg" depends="clean-test, config-trunk, config-flat">
+        <property name="is.spring" value="true"/>
+        <antcall target="all" inheritRefs="true"/>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
@@ -1013,6 +1015,7 @@
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
+        <antcall target="clean" inheritRefs="true"/>
     </target>
     <!-- Generic target for running tests. -->
     <target name="run-test" depends="config-trunk, config-flat">
