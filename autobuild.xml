@@ -649,9 +649,8 @@
             <zipfileset dir="${build.root.dir}">
                 <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
                 <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
-                <include name="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
-                <include name="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
+                <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
+                <include name="${eclipselink.sdo.test}/${report.dir}/**/junit-noframes.html"/>
                 <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
                 <include name="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
             </zipfileset>
