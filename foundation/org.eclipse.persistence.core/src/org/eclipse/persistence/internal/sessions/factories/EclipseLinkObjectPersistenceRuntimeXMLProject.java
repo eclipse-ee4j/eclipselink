@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -56,7 +56,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     protected void buildNamespaceResolver() {
         ns = new NamespaceResolverWithPrefixes();
         ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-        ns.put("xsd", W3C_XML_SCHEMA_NS_URI); 
+        ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
         ns.put(ECLIPSELINK_PREFIX, getPrimaryNamespace());
         ns.setDefaultNamespaceURI(getPrimaryNamespace());
     }
@@ -64,7 +64,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     @Override
     public void buildDescriptors() {
         super.buildDescriptors();
-        // Any new mappings go after call to super.buildDescriptors();        
+        // Any new mappings go after call to super.buildDescriptors();
 
         addDescriptor(buildXMLListConverterDescriptor());
     }
@@ -91,9 +91,9 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
 
     @Override
     protected ClassDescriptor buildProjectDescriptor() {
-        XMLDescriptor descriptor = (XMLDescriptor)super.buildProjectDescriptor();        
+        XMLDescriptor descriptor = (XMLDescriptor)super.buildProjectDescriptor();
         descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + ECLIPSELINK_SCHEMA));
-        
+
         XMLCompositeCollectionMapping projectQueriesMapping = new XMLCompositeCollectionMapping();
         projectQueriesMapping.useCollectionClass(NonSynchronizedVector.class);
         projectQueriesMapping.setAttributeName("queries");
@@ -102,7 +102,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         projectQueriesMapping.setReferenceClass(DatabaseQuery.class);
         projectQueriesMapping.setXPath(getSecondaryNamespaceXPath() + "queries/" + getSecondaryNamespaceXPath() + "query");
         descriptor.addMapping(projectQueriesMapping);
-        
+
         return descriptor;
     }
 
@@ -110,25 +110,25 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
         return new ConstantTransformer(DatabaseLogin.getVersion());
     }
-    
+
     protected ClassDescriptor buildXMLChoiceFieldToClassAssociationDescriptor() {
         ClassDescriptor descriptor = super.buildXMLChoiceFieldToClassAssociationDescriptor();
-        
+
         XMLCompositeObjectMapping converterMapping = new XMLCompositeObjectMapping();
         converterMapping.setAttributeName("converter");
         converterMapping.setXPath(getPrimaryNamespacePrefix() + "value-converter");
         converterMapping.setReferenceClass(Converter.class);
-        
+
         descriptor.addMapping(converterMapping);
-        
+
         return descriptor;
     }
-    
+
     @Override
     protected ClassDescriptor buildXMLCompositeObjectMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLCompositeObjectMappingDescriptor();
         //Add container accessor mapping
-        
+
         XMLDirectMapping containerAttributeMapping = new XMLDirectMapping();
         containerAttributeMapping.setAttributeName("containerAttributeName");
         containerAttributeMapping.setGetMethodName("getContainerAttributeName");
@@ -136,7 +136,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerAttributeMapping.setXPath("container-attribute/text()");
         ((NullPolicy)containerAttributeMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerAttributeMapping);
-        
+
         XMLDirectMapping containerGetMethodMapping = new XMLDirectMapping();
         containerGetMethodMapping.setAttributeName("containerGetMethodName");
         containerGetMethodMapping.setGetMethodName("getContainerGetMethodName");
@@ -144,7 +144,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerGetMethodMapping.setXPath("container-get-method/text()");
         ((NullPolicy)containerGetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerGetMethodMapping);
-        
+
         XMLDirectMapping containerSetMethodMapping = new XMLDirectMapping();
         containerSetMethodMapping.setAttributeName("containerSetMethodName");
         containerSetMethodMapping.setGetMethodName("getContainerSetMethodName");
@@ -152,7 +152,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerSetMethodMapping.setXPath("container-set-method/text()");
         ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerSetMethodMapping);
-        
+
         XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
         keepAsElementMapping.setAttributeName("keepAsElementPolicy");
         keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
@@ -161,11 +161,11 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
         keepAsElementMapping.setConverter(converter);
         descriptor.addMapping(keepAsElementMapping);
-        
+
         return descriptor;
     }
-        
-    
+
+
     @Override
     protected ClassDescriptor buildXMLCompositeCollectionMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLCompositeCollectionMappingDescriptor();
@@ -178,7 +178,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerAttributeMapping.setXPath("container-attribute/text()");
         ((NullPolicy)containerAttributeMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerAttributeMapping);
-        
+
         XMLDirectMapping containerGetMethodMapping = new XMLDirectMapping();
         containerGetMethodMapping.setAttributeName("containerGetMethodName");
         containerGetMethodMapping.setGetMethodName("getContainerGetMethodName");
@@ -186,7 +186,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerGetMethodMapping.setXPath("container-get-method/text()");
         ((NullPolicy)containerGetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerGetMethodMapping);
-        
+
         XMLDirectMapping containerSetMethodMapping = new XMLDirectMapping();
         containerSetMethodMapping.setAttributeName("containerSetMethodName");
         containerSetMethodMapping.setGetMethodName("getContainerSetMethodName");
@@ -194,7 +194,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         containerSetMethodMapping.setXPath("container-set-method/text()");
         ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerSetMethodMapping);
-        
+
         XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
         keepAsElementMapping.setAttributeName("keepAsElementPolicy");
         keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
@@ -203,33 +203,49 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
         keepAsElementMapping.setConverter(converter);
         descriptor.addMapping(keepAsElementMapping);
-        
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
         return descriptor;
-    }   
-    
+    }
+
     protected ClassDescriptor buildXMLAnyAttributeMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLAnyAttributeMappingDescriptor();
-        
+
         XMLDirectMapping includeNamespaceDeclarationMapping = new XMLDirectMapping();
-        includeNamespaceDeclarationMapping.setAttributeName("isNamespaceDeclarationIncluded");        
+        includeNamespaceDeclarationMapping.setAttributeName("isNamespaceDeclarationIncluded");
         includeNamespaceDeclarationMapping.setGetMethodName("isNamespaceDeclarationIncluded");
         includeNamespaceDeclarationMapping.setSetMethodName("setNamespaceDeclarationIncluded");
         includeNamespaceDeclarationMapping.setXPath(getPrimaryNamespaceXPath() + "include-namespace-declaration/text()");
         descriptor.addMapping(includeNamespaceDeclarationMapping);
-     
+
         XMLDirectMapping includeSchemaInstanceMapping = new XMLDirectMapping();
-        includeSchemaInstanceMapping.setAttributeName("isSchemaInstanceIncluded");        
+        includeSchemaInstanceMapping.setAttributeName("isSchemaInstanceIncluded");
         includeSchemaInstanceMapping.setGetMethodName("isSchemaInstanceIncluded");
         includeSchemaInstanceMapping.setSetMethodName("setSchemaInstanceIncluded");
         includeSchemaInstanceMapping.setXPath(getPrimaryNamespaceXPath() + "include-schema-instance/text()");
         descriptor.addMapping(includeSchemaInstanceMapping);
-        
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
         return descriptor;
     }
-    
+
     protected ClassDescriptor buildXMLAnyObjectMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLAnyObjectMappingDescriptor();
-        
+
         XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
         keepAsElementMapping.setAttributeName("keepAsElementPolicy");
         keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
@@ -238,7 +254,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
         keepAsElementMapping.setConverter(converter);
         descriptor.addMapping(keepAsElementMapping);
-        
+
         return descriptor;
     }
 
@@ -266,15 +282,15 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
 
     protected ClassDescriptor buildOXXMLDescriptorDescriptor() {
     	ClassDescriptor descriptor = super.buildOXXMLDescriptorDescriptor();
-    	
+
     	XMLDirectMapping alwaysXMLRootMapping = new XMLDirectMapping();
-    	alwaysXMLRootMapping.setAttributeName("resultAlwaysXMLRoot");        
+    	alwaysXMLRootMapping.setAttributeName("resultAlwaysXMLRoot");
     	alwaysXMLRootMapping.setGetMethodName("isResultAlwaysXMLRoot");
     	alwaysXMLRootMapping.setSetMethodName("setResultAlwaysXMLRoot");
     	alwaysXMLRootMapping.setNullValue(Boolean.FALSE);
     	alwaysXMLRootMapping.setXPath(getPrimaryNamespaceXPath() + "result-always-xml-root/text()");
         descriptor.addMapping(alwaysXMLRootMapping);
-    	
+
         return descriptor;
     }
 
@@ -309,8 +325,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
-    
-    
     @Override
     protected ClassDescriptor buildXMLCompositeDirectCollectionMappingDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLCompositeDirectCollectionMappingDescriptor();
@@ -321,7 +335,15 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         aMapping.setXPath(getPrimaryNamespaceXPath() + "null-policy");
         ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
         descriptor.addMapping(aMapping);
-        
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
         return descriptor;
     }
 
@@ -338,6 +360,66 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         descriptor.addMapping(isRequiredMapping);
 
         return descriptor;
-    }    
-    
+    }
+
+    @Override
+    protected ClassDescriptor buildXMLAnyCollectionMappingDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLAnyCollectionMappingDescriptor();
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
+        return descriptor;
+    }
+
+    @Override
+    protected ClassDescriptor buildXMLChoiceCollectionMappingDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLChoiceCollectionMappingDescriptor();
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
+        return descriptor;
+    }
+
+    @Override
+    protected ClassDescriptor buildXMLCollectionReferenceMappingDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLCollectionReferenceMappingDescriptor();
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
+        return descriptor;
+    }
+
+    @Override
+    protected ClassDescriptor buildXMLFragmentCollectionMappingDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLFragmentCollectionMappingDescriptor();
+
+        XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();
+        reuseContainerMapping.setAttributeName("reuseContainer");
+        reuseContainerMapping.setGetMethodName("getReuseContainer");
+        reuseContainerMapping.setSetMethodName("setReuseContainer");
+        reuseContainerMapping.setXPath(getPrimaryNamespaceXPath() + "reuse-container/text()");
+        reuseContainerMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(reuseContainerMapping);
+
+        return descriptor;
+    }
+
 }
