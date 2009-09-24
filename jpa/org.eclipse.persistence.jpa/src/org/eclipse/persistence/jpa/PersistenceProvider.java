@@ -197,30 +197,31 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         
         EntityManagerSetupImpl emSetupImpl = null;
-            boolean isNew = false;
-            ClassTransformer transformer = null;
-        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-            String puName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
-            String esiName = puName;
-            if (nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
-                esiName = puName + nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME);
-            } else {
-                if (info.getProperties().get(PersistenceUnitProperties.SESSION_NAME) != null) {
-                    esiName = puName + info.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
-                }
+        boolean isNew = false;
+        ClassTransformer transformer = null;
+        String puName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
+        String esiName = puName;
+        if (nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
+            esiName = puName + nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME);
+        } else {
+            if (info.getProperties().get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                esiName = puName + info.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
             }
+        }
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
             emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(esiName);
             if (emSetupImpl == null){
                 emSetupImpl = new EntityManagerSetupImpl();
-                    isNew = true;
+                isNew = true;
                 emSetupImpl.setIsInContainerMode(true);        
-                    // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
-                    transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
+                transformer = emSetupImpl.predeploy(info, nonNullProperties);
                 EntityManagerFactoryProvider.addEntityManagerSetupImpl(esiName, emSetupImpl);
             }
         }
             
-            if(!isNew && !emSetupImpl.isDeployed()) {
+        if(!isNew) {
+            // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
             transformer = emSetupImpl.predeploy(info, nonNullProperties);
         }
         if (transformer != null){
