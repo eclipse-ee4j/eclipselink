@@ -408,6 +408,7 @@ then
     exit
 fi
 ##  ---------------------------------------- ####### ------------------------------------  ##
+echo "Post-build Processing Starting..."
 ## Post-build Processing
 ##
 MAIL_EXEC=/bin/mail
@@ -422,6 +423,7 @@ SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
 FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BUILD_FAILED="false"
+TESTS_FAILED="false"
 
 #set -x
 ## Verify Build Started before bothering with setting up for an email or post-processing
@@ -488,7 +490,6 @@ then
             MAILLIST=${SUCC_MAILLIST}
         else
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!${CAVEAT_TXT}"
-            BUILD_FAILED="true"
             TESTS_FAILED="true"
         fi
 
@@ -516,10 +517,11 @@ then
         echo "Build had issues to be resolved."
     fi
     
-    if [ \("${BUILD_FAILED}" = "true"\) -o \("${TESTS_FAILED}" = "true"\) ]
+    if [ \(" ${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
+        echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
-        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        ./${BRANCH_PATH}/buildsystem/buildFailureList.sh
     fi
 
     ## Build Body text of email
@@ -536,7 +538,7 @@ then
     fi
     echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
     echo "    ${DATED_LOG}" >> ${MAILBODY}
-    if [ "${BUILD_FAILED}" = "true" ]
+    if [ \(" ${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
         echo "or on the download server at:" >> ${MAILBODY}
         echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
@@ -557,6 +559,7 @@ then
        echo "     failed."
     fi
 else
+    echo "Build was aborted...   Post-Processing unecessary."
     if [ "`cat ${DATED_LOG} | grep -n  -m1 env.TARGET |  cut -d= -f2 | tr -d '\047' | tr -d ' '`" = "nightly" ]
     then
         if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
@@ -573,5 +576,6 @@ fi
 ## Remove tmp directory
 ##
 rm -rf $tmp
+echo "Post-build Processing Complete."
 
 CLASSPATH=${OLD_CLASSPATH}
