@@ -297,7 +297,7 @@ public class KeyMappingsTestSuite {
                  "<class>dbws.testing.keymappings.Phone</class>\n" +
                  "<alias>phone</alias>\n" +
                  "<primary-key>\n" +
-                    "<field name=\"@phone-id\" xsi:type=\"column\"/>\n" +
+                    "<field name=\"@phone-id\" xsi:type=\"node\"/>\n" +
                  "</primary-key>\n" +
                  "<events xsi:type=\"event-policy\"/>\n" +
                  "<querying xsi:type=\"query-policy\"/>\n" +
@@ -354,7 +354,7 @@ public class KeyMappingsTestSuite {
                  "<class>dbws.testing.keymappings.Address</class>\n" +
                  "<alias>address</alias>\n" +
                  "<primary-key>\n" +
-                    "<field name=\"@address-id\" xsi:type=\"column\"/>\n" +
+                    "<field name=\"@address-id\" xsi:type=\"node\"/>\n" +
                  "</primary-key>\n" +
                  "<events xsi:type=\"event-policy\"/>\n" +
                  "<querying xsi:type=\"query-policy\"/>\n" +
@@ -402,7 +402,7 @@ public class KeyMappingsTestSuite {
                  "<class>dbws.testing.keymappings.Employee</class>\n" +
                  "<alias>employee</alias>\n" +
                  "<primary-key>\n" +
-                    "<field name=\"@employee-id\" xsi:type=\"column\"/>\n" +
+                    "<field name=\"@employee-id\" xsi:type=\"node\"/>\n" +
                  "</primary-key>\n" +
                  "<events xsi:type=\"event-policy\"/>\n" +
                  "<querying xsi:type=\"query-policy\"/>\n" +
