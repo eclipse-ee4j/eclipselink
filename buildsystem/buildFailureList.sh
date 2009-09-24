@@ -3,6 +3,7 @@
 
 FailDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/recent-failure-logs"
 FailDisplayURL="http://download.eclipse.org/rt/eclipselink/recent-failure-logs"
+NightlyBuildyURL="http://www.eclipse.org/eclipselink/downloads/nightly.php"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
 
@@ -72,6 +73,17 @@ echo "          </tr>"                                                          
 
 for file in `ls | grep log | sort -t_ -k3 -r` ; do
     echo "          <tr>"   >> $tmp/index.xml
+    # Checks to determine failure and build types
+    if [ ! "`echo ${file} | grep TestFail`" = "" ] ; then
+        TESTFAIL=true
+        if [ ! "`echo ${file} | grep nightly`" = "" ] ; then
+            NIGHTLYTESTFAIL=true
+        fi
+    else
+        if [ "`echo ${file} | grep BuildFail`" = "" ] ; then
+            UNKNOWN_CAUSE=true
+        fi
+    fi
 
     # list all files in dir, reverse sort to put newer on top
     # and look for the first matching filename to generate html link
@@ -88,8 +100,21 @@ for file in `ls | grep log | sort -t_ -k3 -r` ; do
         echo "            <td align=\"center\"> ${zipfile} </td>"                                               >> $tmp/index.xml
         echo "            <td align=\"center\"> <a href=\"${FailDownloadURL}/${zipfile}\"> Download </a> </td>" >> $tmp/index.xml
     else
-        echo "            <td align=\"center\"> Not Available </td>"                                            >> $tmp/index.xml
-        echo "            <td align=\"center\"> N/A </td>"                                                         >> $tmp/index.xml
+        if [ "${TESTFAIL}" = "true" ] ; then
+            if [ "${NIGHTLYTESTFAIL}" = "true" ] ; then
+                echo "            <td align=\"center\"> <a href=\"${NightlyBuildyURL}\"> Results on Nightly Site </a> </td>" >> $tmp/index.xml
+                echo "            <td align=\"center\"> N/A </td>"                                                           >> $tmp/index.xml
+            else
+                # Red to indicate a problem 
+                echo "            <font color=\"#cc0000\">"                                                     >> $tmp/index.xml
+                echo "                <td align=\"center\"> Not Available </td>"                                >> $tmp/index.xml
+                echo "                <td align=\"center\"> N/A </td>"                                          >> $tmp/index.xml
+                echo "            </font>"                                                                      >> $tmp/index.xml
+            fi
+        else
+            echo "            <td align=\"center\"> Not Available </td>"                                        >> $tmp/index.xml
+            echo "            <td align=\"center\"> N/A </td>"                                                  >> $tmp/index.xml
+        fi
     fi
 
     echo "          </tr>"  >> $tmp/index.xml
