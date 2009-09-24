@@ -36,6 +36,7 @@ curdir=`pwd`
 for version in `ls -dr [0-9]*` ; do
     cd ${version}
     echo "      <p>                                                                    " >> $tmp/index.xml
+    echo "      <a name=\"${version}\"> </a>                                           " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
     echo "            <th colspan=\"11\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
