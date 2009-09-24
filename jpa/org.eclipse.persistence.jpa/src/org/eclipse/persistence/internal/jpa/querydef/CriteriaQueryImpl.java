@@ -523,8 +523,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         if (this.where != null) {
-            if (((InternalExpression)this.where).isPredicate()){
-                if (((Predicate)this.where).getOperator() == BooleanOperator.OR){
+            if (((InternalExpression)this.where).isPredicate() && ((InternalSelection)this.where).getCurrentNode() == null){
+                if (((PredicateImpl)this.where).getOperator() == BooleanOperator.OR){
                     query.setSelectionCriteria(new ConstantExpression(1, query.getExpressionBuilder()).equal(0));
                 }
             }else{

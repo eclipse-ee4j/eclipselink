@@ -3732,10 +3732,10 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC: A logical expression for the size of collection <code>attributeName</code>.
+     * PUBLIC: A logical expression for the size of collection expression.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.size("phoneNumbers")
+     *     TopLink: employee.size(Class returnType)
      *     Java: employee.getPhoneNumbers().size()
      *     SQL: SELECT ... FROM EMP t0 WHERE  ...
      *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID))
@@ -3744,12 +3744,15 @@ public abstract class Expression implements Serializable, Cloneable {
      * equally fast operation in SQL, requiring a correlated subselect.
      */
     public Expression size(Class returnType) {
-        // Create an anoymous subquery that will get its reference class
+        // Create an anonymous subquery that will get its reference class
         // set during SubSelectExpression.normalize.
         ReportQuery subQuery = new ReportQuery();
         subQuery.addCount("COUNT", subQuery.getExpressionBuilder(), returnType);
         subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(this));
-        return subQuery(subQuery);
+        if (((BaseExpression)this).getBaseExpression() == null){
+            return this.subQuery(subQuery);
+        }
+        return ((BaseExpression)this).getBaseExpression().subQuery(subQuery);
     }
 
     /**

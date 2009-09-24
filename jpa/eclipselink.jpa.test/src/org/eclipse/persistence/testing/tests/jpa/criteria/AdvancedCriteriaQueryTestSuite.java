@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 
@@ -111,6 +113,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheOnlyCacheHitsOnSession"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testCursors"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsEmpty"));
         
         return suite;
     }
@@ -202,6 +205,21 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
     }
 
+    public void testIsEmpty(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> emp = cq.from(Employee.class);
+        cq.where(qb.isEmpty(emp.<Collection<PhoneNumber>>get("phoneNumbers")));
+        List<Employee> result = em.createQuery(cq).getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        for (Employee e : result){
+            assertTrue("PhoneNumbers Found", e.getPhoneNumbers().isEmpty());
+            
+        }
+    }
+    
     public void testSimpleWhere(){
         EntityManager em = createEntityManager();
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
