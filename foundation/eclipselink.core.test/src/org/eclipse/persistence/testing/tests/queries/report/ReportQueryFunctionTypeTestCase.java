@@ -154,9 +154,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
     public void reset() {
         if(this.hasSetReadAllQueryIntoDescriptor) {
             ClassDescriptor desc = getSession().getDescriptor(Employee.class);
-            if(!desc.getQueryManager().hasReadAllQuery()) {
-                desc.getQueryManager().setReadAllQuery(null);
-            }
+            desc.getQueryManager().setReadAllQuery(null);
         }
     }
 }
