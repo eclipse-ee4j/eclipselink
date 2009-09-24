@@ -19,7 +19,6 @@ import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -180,15 +179,13 @@ public class UnmarshalXPathEngine {
 
     private Node selectSingleAttribute(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
         if (xPathFragment.hasNamespace()) {
-            Element contextElement = (Element)contextNode;
             String attributeNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-            return contextElement.getAttributeNodeNS(attributeNamespaceURI, xPathFragment.getLocalName());
+            return contextNode.getAttributes().getNamedItemNS(attributeNamespaceURI, xPathFragment.getLocalName());
         } else {
-            Element contextElement = (Element)contextNode;
-            return contextElement.getAttributeNode(xPathFragment.getShortName());
+            return contextNode.getAttributes().getNamedItem(xPathFragment.getShortName());
         }
     }
-
+    
     private NodeList selectAttributeNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
         XMLNodeList xmlNodeList = new XMLNodeList();
 
