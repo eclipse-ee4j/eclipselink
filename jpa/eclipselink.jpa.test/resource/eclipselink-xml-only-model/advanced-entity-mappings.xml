@@ -99,6 +99,9 @@
         <named-native-query name="findAllXMLAddresses" result-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
             <query>SELECT * FROM CMP3_XML_ADDRESS</query>
         </named-native-query>
+        <named-native-query name="findAllXMLAddressesTestNoResultSetMapping">
+            <query>SELECT * FROM CMP3_XML_ADDRESS</query>
+        </named-native-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>

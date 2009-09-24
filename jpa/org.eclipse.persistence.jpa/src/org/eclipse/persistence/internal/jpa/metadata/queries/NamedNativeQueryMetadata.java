@@ -101,6 +101,14 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     
     /**
      * INTERNAL:
+     * Return true is a result set mapping has been specified.
+     */
+    protected boolean hasResultSetMapping() {
+      return m_resultSetMapping != null && !m_resultSetMapping.equals("");
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
@@ -117,12 +125,12 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass == void.class) {
-            if (m_resultSetMapping.equals("")) {
-                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+        	if (hasResultSetMapping()) {
+        		session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader));
+        	} else {
+        		// Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
                 session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, loader));
-            } else {
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader));
-            }
+        	}
         } else { 
             session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints, loader));
         }
