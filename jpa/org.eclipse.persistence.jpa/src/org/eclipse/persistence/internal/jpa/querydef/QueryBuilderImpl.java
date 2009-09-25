@@ -1342,6 +1342,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection){
+        if (elem instanceof Expression) {
+            return isMember((Expression)elem, collection);
+        }
+
 /*        Type type = metamodel.type(elem.getClass());
         Expression currentNode;
         if ( type != null && type.getPersistenceType() == PersistenceType.ENTITY){
@@ -1377,6 +1381,9 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(E elem, Expression<C> collection){
+        if (elem instanceof Expression) {
+            return isNotMember((Expression)elem, collection);
+        }
         //TODO
         return null;
     }
@@ -1568,7 +1575,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = this.buildList(x, pattern, escapeChar);
 
         return new CompoundExpressionImpl(this.metamodel, 
-            ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode(), 
+            ((InternalSelection)x).getCurrentNode().notLike(((InternalSelection)pattern).getCurrentNode(), 
             ((InternalSelection)escapeChar).getCurrentNode()), list, "like");
     }
 
@@ -1652,7 +1659,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
     }
 
     /**
@@ -1668,7 +1675,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = new ArrayList();
         list.add(x);
         list.add(this.literal(y));
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().concat(y), list, "concat");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().concat(y), list, "concat");
 
     }
 
@@ -1686,7 +1693,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         ExpressionImpl literal = (ExpressionImpl) this.literal(x);
         list.add(literal);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)literal).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)literal).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
     }
 
     /**
@@ -1714,8 +1721,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to substring extraction
      */
     public Expression<String> substring(Expression<String> x, int from){
-        //TODO
-        return null;
+        return substring(x, this.literal(from));
+
     }
 
     /**
@@ -1759,7 +1766,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Expression<String> trim(Expression<String> x){
         List list = this.buildList(x);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().trim(), list, "trim");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().trim(), list, "trim");
     }
 
     /**
@@ -1775,11 +1782,11 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = this.buildList(x);
 
         if(ts == Trimspec.LEADING) {       
-            return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().leftTrim(), list, "leftTrim");
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().leftTrim(), list, "leftTrim");
         } else if(ts == Trimspec.TRAILING) {       
-            return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim(), list, "rightTrim");
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().rightTrim(), list, "rightTrim");
     }
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim().leftTrim(), list, "bothTrim");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().rightTrim().leftTrim(), list, "bothTrim");
 
     }
 
@@ -1794,7 +1801,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Expression<String> trim(Expression<Character> t, Expression<String> x){
         List list = this.buildList(x, t);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().trim(((InternalSelection)t).getCurrentNode()), list, "trim");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().trim(((InternalSelection)t).getCurrentNode()), list, "trim");
     }
 
     /**
@@ -1812,13 +1819,13 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = this.buildList(x, t);
 
         if(ts == Trimspec.LEADING) {       
-            return new FunctionExpressionImpl(this.metamodel, String.class, 
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
                 ((InternalSelection)x).getCurrentNode().leftTrim(((InternalSelection)t).getCurrentNode()), list, "leftTrim");
         } else if(ts == Trimspec.TRAILING) {       
-            return new FunctionExpressionImpl(this.metamodel, String.class, 
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
                 ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()), list, "rightTrim");
     }
-        return new FunctionExpressionImpl(this.metamodel, String.class, 
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
             ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()).leftTrim(((InternalSelection)t).getCurrentNode()), list, "bothTrim");
     }
 
@@ -1859,7 +1866,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Expression<String> lower(Expression<String> x){
         List list = this.buildList(x);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().toLowerCase(), list, "lower");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().toLowerCase(), list, "lower");
     }
 
     /**
@@ -1871,7 +1878,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Expression<String> upper(Expression<String> x){
         List list = this.buildList(x);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().toUpperCase(), list, "upper");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().toUpperCase(), list, "upper");
     }
 
     /**
