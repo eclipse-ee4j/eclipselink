@@ -46,7 +46,6 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
-import javax.persistence.Persistence;
 
 import junit.framework.*;
 
@@ -8570,6 +8569,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             em.persist(emp);
@@ -8600,6 +8600,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             
@@ -8639,6 +8640,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             em.persist(emp);
@@ -8671,6 +8673,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             
@@ -8714,6 +8717,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             
@@ -8755,6 +8759,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             PhoneNumber pn = new PhoneNumber();
             pn.setNumber("1234456");
+            pn.setType("Home");
             emp.addPhoneNumber(pn);
             pn.setOwner(emp);
             
