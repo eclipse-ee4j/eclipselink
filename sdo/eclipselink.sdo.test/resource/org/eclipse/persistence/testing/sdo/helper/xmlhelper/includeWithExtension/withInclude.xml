@@ -1,0 +1,6 @@
+<ns0:root xmlns:ns0="my.uri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:ChildType">
+   <ns0:aaa>aaaValue</ns0:aaa>
+   <ns0:bbb>bbbValue</ns0:bbb>
+   <ccc>cccValue</ccc>
+   <ddd>dddValue</ddd>
+</ns0:root>

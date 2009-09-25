@@ -85,6 +85,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.mixed.LoadAndSaveMixedContentTestCases.class));
 
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.staticclasses.LoadAndSaveStaticClassesTestCases.class));
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveIncludeWithExtensionTestCases.class));
         return suite;
     }
 }
