@@ -462,6 +462,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/ -->
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directtofield/converter/DirectToFieldConverterTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
