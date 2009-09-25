@@ -119,9 +119,9 @@ public class Enclosure implements java.io.Serializable{
     
     // The M:1 side is the owning side for "circuitBoards"
     @ManyToOne(fetch=EAGER)
-    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
+/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
             joinColumns = @JoinColumn(name="ENCLOSURE_ID"), 
-            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))   
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
     private Computer computer;
     
     public Enclosure() {}

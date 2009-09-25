@@ -64,9 +64,9 @@ public class Computer implements java.io.Serializable {
 
     // The M:1 side is the owning side for "computers"
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_COMPUTER", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_COMPUTER", 
             joinColumns = @JoinColumn(name="COMPUTER_ID"), 
-            inverseJoinColumns = @JoinColumn(name="PERSON_ID"))   
+            inverseJoinColumns = @JoinColumn(name="PERSON_ID"))*/   
     private Manufacturer manufacturer;
 
 /*    // The M:1 side is the owning side for "corporateComputers"

@@ -54,14 +54,8 @@ public abstract class Person {
     @OneToMany(fetch=EAGER, cascade=ALL)
     // Note: DI We do not check the values of the join column names - they can be anything
 /*    @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
-                joinColumns = {@JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"), 
-                    @JoinColumn(name="DESIGNER_ID", referencedColumnName="DESIGNER_ID")}, 
-                inverseJoinColumns = {@JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"),
-                    @JoinColumn(name="DESIGNER_ID", referencedColumnName="DESIGNER_ID")})
-*/   
-    @JoinTable(name="CMP3_MM_HIST_EMPLOY", 
                 joinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"), 
-                inverseJoinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"))   
+                inverseJoinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"))*/   
     //private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();
     private Collection<Manufacturer> historicalEmployers = new ArrayList<Manufacturer>();
     

@@ -64,9 +64,9 @@ public class Board implements java.io.Serializable{
 
     // The M:1 side is the owning side for "circuitBoards"
     @ManyToOne(fetch=EAGER)
-    @JoinTable(name="CMP3_MM_COMPUTER_MM_BOARD", 
+/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_BOARD", 
             joinColumns = @JoinColumn(name="BOARD_ID"), 
-            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))   
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
     private Computer computer;
     
     public Board() {}

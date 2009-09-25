@@ -50,9 +50,9 @@ public class Memory implements java.io.Serializable{
     
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_BOARD_MM_MEMORY", 
+/*    @JoinTable(name="CMP3_MM_BOARD_MM_MEMORY", 
             joinColumns = @JoinColumn(name="MEMORY_ID"), 
-            inverseJoinColumns =@JoinColumn(name="BOARD_ID"))   
+            inverseJoinColumns =@JoinColumn(name="BOARD_ID"))*/   
     private Board board;
     
     public Memory() {}

@@ -30,37 +30,37 @@ import javax.persistence.Version;
 public class HardwareDesigner extends Designer implements java.io.Serializable{
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDESIGNER", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDESIGNER", 
             joinColumns = @JoinColumn(name="DESIGNER_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer employer;
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAP", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAP", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployer;
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC1A", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC1A", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployerUC1a;
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC2", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC2", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployerUC2;
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC4", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC4", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployerUC4;
 
     // UC6 is invalid
@@ -73,16 +73,16 @@ public class HardwareDesigner extends Designer implements java.io.Serializable{
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC7", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC7", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployerUC7;
 
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)
-    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC8", 
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAPUC8", 
             joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedEmployerUC8;
     
     @Version

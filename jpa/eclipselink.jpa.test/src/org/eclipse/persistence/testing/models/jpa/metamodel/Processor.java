@@ -56,9 +56,9 @@ public class Processor {
     
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
-    @JoinTable(name="CMP3_MM_BOARD_MM_PROC", 
+/*    @JoinTable(name="CMP3_MM_BOARD_MM_PROC", 
             joinColumns = @JoinColumn(name="PROC_ID"), 
-            inverseJoinColumns =@JoinColumn(name="BOARD_ID"))   
+            inverseJoinColumns =@JoinColumn(name="BOARD_ID"))*/   
     private Board board;
 
     public Board getBoard() {
