@@ -15,10 +15,8 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import org.eclipse.persistence.expressions.Expression;

@@ -36,13 +36,10 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
+public class ConstructorSelectionImpl extends CompoundSelectionImpl {
     
-    protected List<Selection<?>> subSelections;
-    
-    public <T> ConstructorSelectionImpl(Class<X> javaType, Expression expressionNode){
-        super(javaType, expressionNode);
-        this.subSelections = new ArrayList<Selection<?>>();
+    public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
+        super(javaType, subSelections);
     }
 
     @Override
@@ -50,30 +47,10 @@ public class ConstructorSelectionImpl<X> extends SelectionImpl<X> {
         return true;
     }
     
-    public void setSelections(List<Selection<?>> selections){
-        this.subSelections = selections;
-    }
-    
-    public void setSelections(Selection<?>[] selections){
-        this.subSelections.clear();
-        for (Selection<?> selection : selections){
-            this.subSelections.add(selection);
-        }
-    }
-    
-    /**
-     * Return selection items composing a compound selection
-     * @return list of selection items
-     * @throws IllegalStateException if selection is not a compound
-     *           selection
-     */
-    public List<Selection<?>> getCompoundSelectionItems(){
-        return this.subSelections;
-    }
     public ConstructorReportItem translate(){
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
-        for(Selection selection : this.subSelections){
+        for(Selection selection : this.getCompoundSelectionItems()){
             if (((SelectionImpl)selection).isCompoundSelection()){
                 item.addItem(((ConstructorSelectionImpl)selection).translate());
             }else{

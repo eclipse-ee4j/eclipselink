@@ -31,6 +31,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -95,7 +96,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return selection item
      */
     public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections){
-        return new CompoundSelectionImpl(result, selections);
+        return new ConstructorSelectionImpl(result, selections);
     }
     
 
@@ -882,7 +883,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public Predicate lt(Expression<? extends Number> x, Number y){
-        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(y), buildList(x,literal(y)), "lessThan");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(y), buildList(x,literal(y)), "lt");
     }
 
     /**
@@ -979,7 +980,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
+        return new FunctionExpressionImpl(this.metamodel, x.getJavaType(), ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
     }
 
     /**
@@ -1021,7 +1022,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         List list = new ArrayList();
         list.add(x);
         list.add(this.literal(y));
-        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), y), list, "diff");
+        return new FunctionExpressionImpl(this.metamodel, y.getClass(), ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), y), list, "diff");
     }
 
     /**
@@ -1064,7 +1065,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         ExpressionImpl literal = (ExpressionImpl) this.literal(x);
         list.add(literal);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ExpressionMath.subtract(((InternalSelection)x).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
+        return new FunctionExpressionImpl(this.metamodel, literal.getJavaType(), ExpressionMath.subtract(((InternalSelection)literal).getCurrentNode(), ((InternalSelection)y).getCurrentNode()), list, "diff");
     }
 
     /**
