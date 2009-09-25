@@ -608,8 +608,10 @@ public class DescriptorEventManager implements Cloneable, Serializable {
         }
 
         // Step 4 - Notify internal listeners.
-        for(DescriptorEventListener listener : internalListeners) {
-            notifyListener(listener, event);
+        if (internalListeners != null){ //null from serialization
+            for(DescriptorEventListener listener : internalListeners) {
+                notifyListener(listener, event);
+            }
         }
     }
     
