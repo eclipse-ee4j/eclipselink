@@ -1804,8 +1804,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(Trimspec ts, Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x);
+
+        if(ts == Trimspec.LEADING) {       
+            return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().leftTrim(), list, "leftTrim");
+        } else if(ts == Trimspec.TRAILING) {       
+            return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim(), list, "rightTrim");
+        }
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim().leftTrim(), list, "bothTrim");
+
     }
 
     /**
@@ -1818,8 +1825,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(Expression<Character> t, Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x, t);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().trim(((InternalSelection)t).getCurrentNode()), list, "trim");
     }
 
     /**
@@ -1834,8 +1841,17 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(Trimspec ts, Expression<Character> t, Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x, t);
+
+        if(ts == Trimspec.LEADING) {       
+            return new FunctionExpressionImpl(this.metamodel, String.class, 
+                ((InternalSelection)x).getCurrentNode().leftTrim(((InternalSelection)t).getCurrentNode()), list, "leftTrim");
+        } else if(ts == Trimspec.TRAILING) {       
+            return new FunctionExpressionImpl(this.metamodel, String.class, 
+                ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()), list, "rightTrim");
+        }
+        return new FunctionExpressionImpl(this.metamodel, String.class, 
+            ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()).leftTrim(((InternalSelection)t).getCurrentNode()), list, "bothTrim");
     }
 
     /**
@@ -1848,8 +1864,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(char t, Expression<String> x){
-        //TODO
-        return null;
+        return trim(this.literal(t), x);
     }
 
     /**
@@ -1864,8 +1879,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(Trimspec ts, char t, Expression<String> x){
-        //TODO
-        return null;
+        return trim(ts, this.literal(t), x);
     }
 
     /**
