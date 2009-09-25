@@ -3371,6 +3371,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return notLike(new ConstantExpression(aString, this));
     }
 
+
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not like the other value.
@@ -3380,6 +3381,36 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression notLike(Expression arguments) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NotLike);
         return anOperator.expressionFor(this, arguments);
+    }
+    /**
+     * PUBLIC:
+     * Return an expression that compares if the receivers value is not like the other value.
+     * Equivalent to like negated.  
+     * @param value string to compare
+     * @param escapeSequence the escape character to use
+     * @see #like(String)
+     */
+    public Expression notLike(String value, String escapeSequence) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.NotLikeEscape);
+        Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        args.addElement(value);
+        args.addElement(escapeSequence);
+        return anOperator.expressionForArguments(this, args);
+    }
+    /**
+     * PUBLIC:
+     * Return an expression that compares if the receivers value is not like the other value.
+     * Equivalent to like negated.  
+     * @param value string to compare
+     * @param escapeSequence the escape character to use
+     * @see #like(String)
+     */
+    public Expression notLike(Expression value, Expression escapeSequence) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.NotLikeEscape);
+        Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        args.addElement(value);
+        args.addElement(escapeSequence);
+        return anOperator.expressionForArguments(this, args);
     }
 
     /**

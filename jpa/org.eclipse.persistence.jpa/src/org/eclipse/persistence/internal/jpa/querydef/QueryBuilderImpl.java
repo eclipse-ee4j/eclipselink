@@ -1473,8 +1473,9 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, Expression<String> pattern){
-        //TODO
-        return null;
+        List list = this.buildList(x, pattern);
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode()), list, "like");
     }
 
     /**
@@ -1490,8 +1491,9 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
-        //TODO
-        return null;
+        List list = this.buildList(x, pattern, escapeChar);
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode(), ((InternalSelection)escapeChar).getCurrentNode()), list, "like");
     }
 
     /**
@@ -1507,8 +1509,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, Expression<String> pattern, char escapeChar){
-        //TODO
-        return null;
+        
+        return this.like(x, pattern, this.literal(escapeChar));
     }
 
     /**
@@ -1522,8 +1524,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, String pattern){
-        //TODO
-        return null;
+        List list = this.buildList(x, this.literal(pattern));
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().like(pattern), list, "like");
     }
 
     /**
@@ -1539,8 +1541,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, String pattern, Expression<Character> escapeChar){
-        //TODO
-        return null;
+        return this.like(x, this.literal(pattern), escapeChar);
     }
 
     /**
@@ -1556,8 +1557,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, String pattern, char escapeChar){
-        //TODO
-        return null;
+        List list = this.buildList(x, this.literal(pattern), this.literal(escapeChar));
+        String escapeString = "" + escapeChar;
+
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().like(pattern, escapeString), list, "like");
     }
 
     /**
@@ -1571,8 +1575,10 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, Expression<String> pattern){
-        //TODO
-        return null;
+        List list = this.buildList(x, pattern);
+
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().notLike(((InternalSelection)pattern).getCurrentNode()), list, "notLike");
     }
 
     /**
@@ -1588,8 +1594,11 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
-        //TODO
-        return null;
+        List list = this.buildList(x, pattern, escapeChar);
+
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode(), 
+            ((InternalSelection)escapeChar).getCurrentNode()), list, "like");
     }
 
     /**
@@ -1605,8 +1614,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, Expression<String> pattern, char escapeChar){
-        //TODO
-        return null;
+        return this.notLike(x, pattern, this.literal(escapeChar));
     }
 
     /**
@@ -1620,8 +1628,12 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, String pattern){
-        //TODO
-        return null;
+        List list = new ArrayList();
+        list.add(x);
+        list.add(this.literal(pattern));
+
+        return new CompoundExpressionImpl(this.metamodel, 
+            ((InternalSelection)x).getCurrentNode().notLike(pattern), list, "notLike");
     }
 
     /**
@@ -1637,8 +1649,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, String pattern, Expression<Character> escapeChar){
-        //TODO
-        return null;
+        return this.notLike(x, this.literal(pattern), escapeChar);
     }
 
     /**
@@ -1654,8 +1665,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return like predicate
      */
     public Predicate notLike(Expression<String> x, String pattern, char escapeChar){
-        //TODO
-        return null;
+        return this.notLike(x, this.literal(pattern), this.literal(escapeChar));
     }
 
     /**
@@ -1780,8 +1790,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return trim expression
      */
     public Expression<String> trim(Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().trim(), list, "trim");
     }
 
     /**
@@ -1866,8 +1876,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression to convert to lowercase
      */
     public Expression<String> lower(Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().toLowerCase(), list, "lower");
     }
 
     /**
@@ -1878,8 +1888,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression to convert to uppercase
      */
     public Expression<String> upper(Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().toUpperCase(), list, "upper");
     }
 
     /**
@@ -1890,8 +1900,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return length expression
      */
     public Expression<Integer> length(Expression<String> x){
-        //TODO
-        return null;
+        List list = this.buildList(x);
+        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().length(), list, "length");
     }
 
     /**
@@ -2097,6 +2107,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public <R> Case<R> selectCase(){
         //TODO
+        //
         return null;
     }
 

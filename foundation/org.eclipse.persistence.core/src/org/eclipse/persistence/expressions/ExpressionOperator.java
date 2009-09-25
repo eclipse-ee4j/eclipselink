@@ -79,6 +79,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Exists = 86;
     public static final int NotExists = 88;
     public static final int LikeEscape = 89;
+    public static final int NotLikeEscape = 134; 
     public static final int Decode = 105;
     public static final int Case = 117;
     public static final int NullIf = 131;
@@ -1325,6 +1326,7 @@ public class ExpressionOperator implements Serializable {
         addOperator(like());
         addOperator(likeEscape());
         addOperator(notLike());
+        addOperator(notLikeEscape());
         addOperator(between());
 
         addOperator(exists());
@@ -1468,7 +1470,7 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     * Create the LIKE operator.
+     * Create the LIKE operator with ESCAPE.
      */
     public static ExpressionOperator likeEscape() {
         ExpressionOperator result = new ExpressionOperator();
@@ -1477,6 +1479,24 @@ public class ExpressionOperator implements Serializable {
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         v.addElement("(");
         v.addElement(" LIKE ");
+        v.addElement(" ESCAPE ");
+        v.addElement(")");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return result;
+    }
+    /**
+     * INTERNAL:
+     * Create the LIKE operator with ESCAPE.
+     */
+    public static ExpressionOperator notLikeEscape() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(NotLikeEscape);
+        result.setType(ComparisonOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement("(");
+        v.addElement(" NOT LIKE ");
         v.addElement(" ESCAPE ");
         v.addElement(")");
         result.printsAs(v);
