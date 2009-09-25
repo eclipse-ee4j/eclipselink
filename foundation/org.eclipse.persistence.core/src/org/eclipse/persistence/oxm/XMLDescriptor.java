@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -329,7 +330,33 @@ public class XMLDescriptor extends ClassDescriptor {
 
     @Override
     public void addPrimaryKeyFieldName(String fieldName) {
-        addPrimaryKeyField(new XMLField(fieldName));
+        super.addPrimaryKeyField(new XMLField(fieldName));
+    }
+
+    @Override
+    public void addPrimaryKeyField(DatabaseField field) {
+        if (!(field instanceof XMLField)) {
+            String fieldName = field.getName();
+            field = new XMLField(fieldName);
+        }
+        super.addPrimaryKeyField(field);
+    }
+
+    @Override
+    public void setPrimaryKeyFields(List<DatabaseField> thePrimaryKeyFields) {
+        List<DatabaseField> xmlFields = new ArrayList(thePrimaryKeyFields.size());
+        Iterator<DatabaseField> it = thePrimaryKeyFields.iterator();
+
+        while (it.hasNext()) {
+            DatabaseField field = it.next();
+            if (!(field instanceof XMLField)) {
+                String fieldName = field.getName();
+                field = new XMLField(fieldName);
+            }
+            xmlFields.add(field);
+        }
+
+        super.setPrimaryKeyFields(xmlFields);
     }
 
     /**
