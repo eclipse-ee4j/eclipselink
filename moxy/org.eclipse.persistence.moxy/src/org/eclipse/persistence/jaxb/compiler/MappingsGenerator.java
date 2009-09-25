@@ -304,17 +304,23 @@ public class MappingsGenerator {
             
             String uri = info.getIDProperty().getSchemaName().getNamespaceURI();
             String local = info.getIDProperty().getSchemaName().getLocalPart();
-            String resolvedUri = desc.getNamespaceResolver().resolveNamespaceURI(uri);
-            if (resolvedUri == null) {
-                resolvedUri = "";
+            String prefix = null;
+            if(uri != null && uri.length() != 0) {
+                prefix = desc.getNamespaceResolver().resolveNamespaceURI(uri);
+                if(prefix == null) {
+                    prefix = getPrefixForNamespace(uri, desc.getNamespaceResolver(), null, true);
+                }
+            }
+            if (prefix == null) {
+                prefix = "";
             } else {
-                resolvedUri += ":";
+                prefix += ":";
             }
             
             if (helper.isAnnotationPresent(info.getIDProperty().getElement(), XmlAttribute.class)) {
-                pkFieldName = ATT + resolvedUri + local;
+                pkFieldName = ATT + prefix + local;
             } else { // assume element
-                pkFieldName = resolvedUri + local + TXT;
+                pkFieldName = prefix + local + TXT;
             }
             desc.addPrimaryKeyFieldName(pkFieldName);
         }      
