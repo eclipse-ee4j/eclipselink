@@ -623,8 +623,15 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                      root.appendChild(importedCopy);
                  }
              }else{      
-                 XMLObjectBuilder objectBuilder = (XMLObjectBuilder) this.getReferenceDescriptor(attributeValue.getClass(), session).getObjectBuilder();
-                 objectBuilder.buildIntoNestedRow(record, attributeValue, session);
+            	 ClassDescriptor desc =  this.getReferenceDescriptor(attributeValue.getClass(), session);
+            	 if(desc != null){
+            		 XMLObjectBuilder objectBuilder = (XMLObjectBuilder)desc.getObjectBuilder();
+            		 boolean addXsiType = shouldAddXsiType((XMLRecord) record, desc);
+            		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, addXsiType);            		
+            	 }else{
+            		 //simple case 
+             		 record.put(this.getField(), attributeValue);
+            	 }
              }
         } else {
             Object fieldValue = null;

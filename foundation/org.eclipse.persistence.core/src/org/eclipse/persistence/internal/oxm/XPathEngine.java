@@ -745,7 +745,7 @@ public class XPathEngine {
     public NodeList replaceValue(XMLField xmlField, Node parent, Object value, AbstractSession session) throws XMLMarshalException {
         NodeList nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField));
         int numberOfNodes = nodes.getLength();
-
+        XMLNodeList createdElements = new XMLNodeList();
         for (int i = 0; i < numberOfNodes; i++) {
             Node node = nodes.item(i);
 
@@ -773,11 +773,18 @@ public class XPathEngine {
                     childFrag.setNamespaceURI(element.getNamespaceURI());
                     newElement = (Element)createElement(parentNode, childFrag, xmlField, valueToWrite, session);
 
+                    createdElements.add(newElement);
+                    
+                    
                     if (newElement != element) {
                         parentNode.replaceChild(newElement, element);
                     }
                 }
             }
+        }
+        if (xmlField.isTypedTextField()) {
+        	
+            addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, getNamespaceResolverForField(xmlField)));
         }
         return nodes;
     }
