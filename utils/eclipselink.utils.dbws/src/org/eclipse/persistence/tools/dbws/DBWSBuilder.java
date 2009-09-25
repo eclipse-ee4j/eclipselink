@@ -1335,7 +1335,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             for (OperationModel operation : operations) {
                 if (operation.isTableOperation()) {
                     TableOperationModel tableModel = (TableOperationModel)operation;
-                    if (tableModel.additionalOperations.size() > 0) {
+                    if (tableModel.additionalOperations != null && 
+                        tableModel.additionalOperations.size() > 0) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
                             additionalOperation.buildOperation(this);
                         }

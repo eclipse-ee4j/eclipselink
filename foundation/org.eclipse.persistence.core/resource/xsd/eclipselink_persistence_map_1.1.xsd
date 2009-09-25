@@ -58,17 +58,6 @@
           <xsd:documentation>By default they are assumed not to be changed directly (only replaced).</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element minOccurs="0" name="queries">
-        <xsd:annotation>
-          <xsd:documentation>A list of queries to be stored on the session.</xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element minOccurs="0" maxOccurs="unbounded" name="query" type="database-query">
-            </xsd:element>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
     </xsd:sequence>
     <xsd:attribute default="Eclipse Persistence Services - 1.1 (Build YYMMDD)" name="version" type="xsd:string" />
   </xsd:complexType>
@@ -2091,22 +2080,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:complexType name="xml-list-converter">
-    <xsd:annotation>
-      <xsd:documentation>List converter</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent mixed="false">
-      <xsd:extension base="value-converter">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="object-class-name" type="xsd:string">
-            <xsd:annotation>
-              <xsd:documentation>Specifies the fully qualified class name of the list's element type.</xsd:documentation>
-            </xsd:annotation>
-          </xsd:element>
-        </xsd:sequence>
-      </xsd:extension> 
-    </xsd:complexContent>
-  </xsd:complexType>
   <xsd:complexType name="typesafe-enumeration-converter">
     <xsd:annotation>
       <xsd:documentation>Typesafe Enumeration conversion</xsd:documentation>
@@ -3393,7 +3366,6 @@
             </xsd:annotation>
           </xsd:element>
           <xsd:element name="uses-single-node" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3425,8 +3397,6 @@
       <xsd:extension base="abstract-composite-direct-collection-mapping">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="is-cdata" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="null-policy" type="abstract-null-policy" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3464,12 +3434,10 @@
     <xsd:complexContent mixed="false">
       <xsd:extension base="abstract-composite-collection-mapping">
         <xsd:sequence>
-          <xsd:element name="container-attribute" minOccurs="0"/>
-          <xsd:element name="container-get-method" minOccurs="0"/>
-          <xsd:element name="container-set-method" minOccurs="0"/>
-          <xsd:element name="keep-as-element-policy" type="xsd:string" minOccurs="0"/>
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
-        </xsd:sequence>
+	  <xsd:element name="container-attribute" minOccurs="0"/>
+	  <xsd:element name="container-get-method" minOccurs="0"/>
+	  <xsd:element name="container-set-method" minOccurs="0"/>
+	</xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -3505,7 +3473,6 @@
       <xsd:extension base="abstract-composite-object-mapping">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="null-policy" type="abstract-null-policy" />
-          <xsd:element minOccurs="0" name="keep-as-element-policy" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3550,7 +3517,6 @@
               <xsd:documentation>The location of the XML Schema.</xsd:documentation>
             </xsd:annotation>
           </xsd:element>
-          <xsd:element minOccurs="0" default="false" name="result-always-xml-root" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3566,7 +3532,6 @@
           <xsd:element minOccurs="0" name="container" type="container-policy" />
           <xsd:element minOccurs="0" default="false" name="use-xml-root" type="xsd:boolean" />
           <xsd:element minOccurs="0" name="keep-as-element-policy" type="xsd:string" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3580,9 +3545,6 @@
         <xsd:sequence>
           <xsd:element minOccurs="0" name="field" type="field" />
           <xsd:element minOccurs="0" name="container" type="container-policy" />
-          <xsd:element minOccurs="0" name="include-namespace-declaration" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="include-schema-instance" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3596,7 +3558,6 @@
         <xsd:sequence>
           <xsd:element minOccurs="0" name="field" type="field" />
           <xsd:element minOccurs="0" default="false" name="use-xml-root" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="keep-as-element-policy" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3606,11 +3567,7 @@
       <xsd:documentation>Defines a mapping of a single Node to a fragment of an XML document</xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent mixed="false">
-      <xsd:extension base="xml-direct-mapping">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
-        </xsd:sequence>
-      </xsd:extension>
+      <xsd:extension base="xml-direct-mapping" />
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="xml-fragment-collection-mapping">
@@ -3631,21 +3588,6 @@
           <xsd:element minOccurs="0" name="is-swa-ref" type="xsd:boolean" />
           <xsd:element minOccurs="0" name="mime-type" type="xsd:string" />
           <xsd:element minOccurs="0" name="should-inline-data" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  <xsd:complexType name="xml-binary-data-collection-mapping">
-    <xsd:annotation>
-      <xsd:documentation>Defines a mapping of a binary object to base64 binary</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent mixed="false">
-      <xsd:extension base="xml-composite-direct-collection-mapping">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="is-swa-ref" type="xsd:boolean" />
-          <xsd:element minOccurs="0" name="mime-type" type="xsd:string" />
-          <xsd:element minOccurs="0" name="should-inline-data" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3659,7 +3601,6 @@
         <xsd:sequence>
           <xsd:element name="container-policy" type="container-policy" />
           <xsd:element maxOccurs="unbounded" name="field-to-class-association" type="xml-choice-field-to-class-association" />
-          <xsd:element minOccurs="0" name="reuse-container" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -3723,7 +3664,6 @@
             </xsd:annotation>
           </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="is-required" type="xsd:boolean"/>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
