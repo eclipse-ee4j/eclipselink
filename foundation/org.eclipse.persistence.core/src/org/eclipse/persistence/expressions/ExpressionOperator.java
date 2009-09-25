@@ -188,6 +188,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Multiply = 81;
     public static final int Atan2 = 91;
     public static final int Cot = 95;
+    public static final int Negate = 134;
 
     // Object-relational
     public static final int Deref = 82;
@@ -1662,6 +1663,14 @@ public class ExpressionOperator implements Serializable {
         Expression node = createNode();
         node.create(base, arguments, this);
         return node;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator negate() {
+        return simpleFunction(Negate, "-");
     }
 
     /**

@@ -33,6 +33,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
@@ -611,10 +612,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        List list = new ArrayList();
-        list.add(x);
-        list.add(y);
-        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(((InternalSelection)y).getCurrentNode()), list, "lessThan");
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(((InternalSelection)y).getCurrentNode()), buildList(x,y), "lessThan");
     }
 
     /**
@@ -819,8 +817,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public Predicate lt(Expression<? extends Number> x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(((InternalSelection)y).getCurrentNode()), buildList(x,y), "lessThan");
     }
 
     /**
@@ -885,8 +882,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than predicate
      */
     public Predicate lt(Expression<? extends Number> x, Number y){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(y), buildList(x,literal(y)), "lessThan");
     }
 
     /**
@@ -917,8 +913,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return less-than-or-equal predicate
      */
     public Predicate le(Expression<? extends Number> x, Number y){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThanEqual(y), buildList(x, literal(y)), "le");
     }
 
     // numerical operations:
@@ -931,8 +926,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return negated expression
      */
     public <N extends Number> Expression<N> neg(Expression<N> x){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
     }
 
     /**
@@ -956,8 +950,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
-        //TODO - this is addition, not just applying the EclipseLink sum expression.  
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getJavaType()), ExpressionMath.add(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "sum");
     }
 
     /**
@@ -970,8 +963,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return product
      */
     public <N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getJavaType()), ExpressionMath.multiply(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "prod");
     }
 
     /**
@@ -1000,8 +992,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, N y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.add(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "sum");
     }
 
     /**
@@ -1014,8 +1005,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return product
      */
     public <N extends Number> Expression<N> prod(Expression<? extends N> x, N y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.multiply(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "prod");
     }
 
     /**
@@ -1044,8 +1034,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return sum
      */
     public <N extends Number> Expression<N> sum(N x, Expression<? extends N> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getClass(), y.getJavaType()), ExpressionMath.add(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(literal(x),y), "sum");
     }
 
     /**
@@ -1058,8 +1047,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return product
      */
     public <N extends Number> Expression<N> prod(N x, Expression<? extends N> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getClass(), y.getJavaType()), ExpressionMath.multiply(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(literal(x),y), "prod");
     }
 
     /**
@@ -1089,8 +1077,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return quotient
      */
     public Expression<Number> quot(Expression<? extends Number> x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "quot");
     }
 
     /**
@@ -1103,8 +1090,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return quotient
      */
     public Expression<Number> quot(Expression<? extends Number> x, Number y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "quot");
     }
 
     /**
@@ -1117,8 +1103,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return quotient
      */
     public Expression<Number> quot(Number x, Expression<? extends Number> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(literal(x),y), "quot");
     }
 
     /**
@@ -1131,8 +1116,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return modulus
      */
     public Expression<Integer> mod(Expression<Integer> x, Expression<Integer> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "mod");
     }
 
     /**
@@ -1145,8 +1129,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return modulus
      */
     public Expression<Integer> mod(Expression<Integer> x, Integer y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "mod");
     }
 
     /**
@@ -1159,8 +1142,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return modulus
      */
     public Expression<Integer> mod(Integer x, Expression<Integer> y){
-        //TODO
-        return null;
+        Expression xExp = literal(x);
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)xExp).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(xExp,y), "mod");
     }
 
     /**
@@ -1171,8 +1154,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return modulus
      */
     public Expression<Double> sqrt(Expression<? extends Number> x){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE, ExpressionMath.sqrt(((InternalSelection)x).getCurrentNode()), buildList(x), "sqrt");
     }
 
     // typecasts:
@@ -1184,8 +1166,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<Long>
      */
     public Expression<Long> toLong(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<Long>) number;
     }
 
     /**
@@ -1196,8 +1177,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<Integer>
      */
     public Expression<Integer> toInteger(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<Integer>) number;
     }
 
     /**
@@ -1208,8 +1188,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<Float>
      */
     public Expression<Float> toFloat(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<Float>) number;
     }
 
     /**
@@ -1220,8 +1199,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<Double>
      */
     public Expression<Double> toDouble(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<Double>) number;
     }
 
     /**
@@ -1232,8 +1210,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<BigDecimal>
      */
     public Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<BigDecimal>) number;
     }
 
     /**
@@ -1244,8 +1221,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<BigInteger>
      */
     public Expression<BigInteger> toBigInteger(Expression<? extends Number> number){
-        //TODO
-        return null;
+        return (Expression<BigInteger>) number;
     }
 
     /**
@@ -1256,8 +1232,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return Expression<String>
      */
     public Expression<String> toString(Expression<Character> character){
-        //TODO
-        return null;
+        ExpressionImpl impl = (ExpressionImpl) character;
+        return impl;
     }
 
     // literals:
@@ -1268,7 +1244,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression literal
      */
     public <T> Expression<T> literal(T value){
-        return new ExpressionImpl<T>(metamodel, (Class<T>) value.getClass(), new ConstantExpression(value, new ExpressionBuilder()), value);
+        return new ExpressionImpl<T>(metamodel, (Class<T>) (value == null? null: value.getClass()), new ConstantExpression(value, new ExpressionBuilder()), value);
     }
 
     /**
@@ -1278,8 +1254,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return null expression literal
      */
     public <T> Expression<T> nullLiteral(Class<T> resultClass){
-        //TODO
-        return null;
+        return new ExpressionImpl<T>(metamodel, resultClass, new ConstantExpression(null, new ExpressionBuilder()), null);
     }
     // parameters:
     /**
@@ -1353,8 +1328,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return size expression
      */
     public <C extends java.util.Collection<?>> Expression<Integer> size(Expression<C> collection){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER), buildList(collection), "size");
     }
 
     /**
@@ -1418,8 +1392,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isMemeber");
     }
 
     /**
@@ -1433,8 +1406,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().notEqual(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isNotMemeber");
     }
 
     // get the values and keys collections of the Map, which may then
@@ -1457,8 +1429,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return set expression
      */
     public <K, M extends Map<K, ?>> Expression<Set<K>> keys(M map){
-        //TODO
-        return null;
+        return literal(map.keySet());
     }
 
     // string functions:
@@ -1728,9 +1699,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            start position expression
      * @return expression corresponding to substring extraction
      */
-    public Expression<String> substring(Expression<String> x, Expression<Integer> from){
-        //TODO
-        return null;
+    public Expression<String> substring(Expression<String> x, Expression<Integer> from) {
+        return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(((InternalSelection) from).getCurrentNode()), buildList(x, from), "subString");
     }
 
     /**
@@ -1761,8 +1731,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to substring extraction
      */
     public Expression<String> substring(Expression<String> x, Expression<Integer> from, Expression<Integer> len){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(((InternalSelection) from).getCurrentNode(), ((InternalSelection) len).getCurrentNode()), buildList(x, from, len), "subString");
     }
 
     /**
@@ -1778,8 +1747,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to substring extraction
      */
     public Expression<String> substring(Expression<String> x, int from, int len){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(from, len), buildList(x, literal(from), literal(len)), "subString");
     }
 
     /**
@@ -1810,7 +1778,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().leftTrim(), list, "leftTrim");
         } else if(ts == Trimspec.TRAILING) {       
             return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim(), list, "rightTrim");
-        }
+    }
         return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().rightTrim().leftTrim(), list, "bothTrim");
 
     }
@@ -1849,7 +1817,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         } else if(ts == Trimspec.TRAILING) {       
             return new FunctionExpressionImpl(this.metamodel, String.class, 
                 ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()), list, "rightTrim");
-        }
+    }
         return new FunctionExpressionImpl(this.metamodel, String.class, 
             ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()).leftTrim(((InternalSelection)t).getCurrentNode()), list, "bothTrim");
     }
@@ -1914,8 +1882,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return length expression
      */
     public Expression<Integer> length(Expression<String> x){
-        List list = this.buildList(x);
-        return new FunctionExpressionImpl(this.metamodel, String.class, ((InternalSelection)x).getCurrentNode().length(), list, "length");
+        return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().length(), buildList(x), "length");
     }
 
     /**
@@ -1931,8 +1898,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to position
      */
     public Expression<Integer> locate(Expression<String> x, Expression<String> pattern){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(((InternalSelection)pattern).getCurrentNode()), buildList(x, pattern),"locate");
     }
 
     /**
@@ -1950,8 +1916,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to position
      */
     public Expression<Integer> locate(Expression<String> x, Expression<String> pattern, Expression<Integer> from){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(((InternalSelection)pattern).getCurrentNode(), ((InternalSelection)from).getCurrentNode()), buildList(x, pattern, from),"locate");
     }
 
     /**
@@ -1967,8 +1932,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to position
      */
     public Expression<Integer> locate(Expression<String> x, String pattern){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(pattern), buildList(x, literal(pattern)),"locate");
     }
 
     /**
@@ -1986,8 +1950,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to position
      */
     public Expression<Integer> locate(Expression<String> x, String pattern, int from){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(pattern, from), buildList(x, literal(pattern), literal(from)),"locate");
     }
 
     // Date/time/timestamp functions:
@@ -2073,8 +2036,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to the given nullif expression
      */
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(metamodel, x.getJavaType(), ((InternalSelection)x).getCurrentNode().nullIf(((InternalSelection)y).getCurrentNode()), buildList(x, y), "nullIf");
     }
 
     /**
@@ -2088,8 +2050,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression corresponding to the given nullif expression
      */
     public <Y> Expression<Y> nullif(Expression<Y> x, Y y){
-        //TODO
-        return null;
+        return new FunctionExpressionImpl(metamodel, x.getJavaType(), ((InternalSelection)x).getCurrentNode().nullIf(y), buildList(x, literal(y)), "nullIf");
     }
 
     /**

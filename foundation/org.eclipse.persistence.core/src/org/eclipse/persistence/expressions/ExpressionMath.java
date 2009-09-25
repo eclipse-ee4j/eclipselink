@@ -298,6 +298,15 @@ public class ExpressionMath {
      * PUBLIC:
      * Return a new expression that applies the function to the given expression.
      */
+    public static Expression negate(Expression expression) {
+        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Negate);
+        return anOperator.expressionFor(expression);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a new expression that applies the function to the given expression.
+     */
     public static Expression power(Expression expression, int raised) {
         return power(expression, new Integer(raised));
     }
@@ -352,6 +361,15 @@ public class ExpressionMath {
      */
     public static Expression sinh(Expression expression) {
         ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sinh);
+        return anOperator.expressionFor(expression);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a new expression that applies the function to the given expression.
+     */
+    public static Expression sqrt(Expression expression) {
+        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sqrt);
         return anOperator.expressionFor(expression);
     }
 
