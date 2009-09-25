@@ -30,6 +30,8 @@
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *     09/24//2009-2.0 Michael O'Brien 
+ *       - 266912: In initIdClass() store IdClass names for use by the Metamodel API  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -340,6 +342,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Add the id class to the known list of id classes for this project.
         if (m_idClass != null && ! m_idClass.equals(void.class)) {
             getProject().addIdClass(m_idClass.getName());
+            // 266912: We store the IdClass (not an EmbeddableId) for use by the Metamodel API
+            getProject().getProject().addMetamodelIdClassMapEntry(
+                    this.getAccessibleObject().getName(), m_idClass.getName());
         }
     }
     

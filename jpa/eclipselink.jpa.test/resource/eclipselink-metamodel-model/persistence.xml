@@ -5,6 +5,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Board</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Computer</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Corporation</class>
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure</class>        
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition</class>        
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Location</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer</class>

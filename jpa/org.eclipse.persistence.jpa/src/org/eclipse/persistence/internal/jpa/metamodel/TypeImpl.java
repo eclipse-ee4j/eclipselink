@@ -54,7 +54,7 @@ public abstract class TypeImpl<X> implements Type<X> {
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
      * @return
      */
-    public abstract boolean isEntity();
+    protected abstract boolean isEntity();
     
     /**
      * INTERNAL:
@@ -62,7 +62,7 @@ public abstract class TypeImpl<X> implements Type<X> {
      * This would be EntityType and MappedSuperclassType
      * @return
      */
-    public abstract boolean isIdentifiableType();
+    protected abstract boolean isIdentifiableType();
 
     /**
      * INTERNAL:
@@ -70,14 +70,14 @@ public abstract class TypeImpl<X> implements Type<X> {
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
      * @return
      */
-    public abstract boolean isManagedType();
+    protected abstract boolean isManagedType();
     
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
      * @return
      */
-    public abstract boolean isMappedSuperclass();
+    protected abstract boolean isMappedSuperclass();
 
     /**
      * INTERNAL:

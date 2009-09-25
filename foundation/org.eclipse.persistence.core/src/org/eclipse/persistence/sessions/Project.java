@@ -18,7 +18,9 @@
  *       - 266912: change mappedSuperclassDescriptors Set to a Map
  *          keyed on MetadataClass - avoiding the use of a hashCode/equals
  *          override on RelationalDescriptor, but requiring a contains check prior to a put
- *     
+ *     09/23/2009-2.0 Michael O'Brien 
+ *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive 
+ *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API     
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -97,10 +99,19 @@ public class Project implements Serializable, Cloneable {
      * without creating a compile time dependency on JPA.
      * The descriptor values of this map must not be replaced by a put() so that the 
      * mappings on the initial descriptor are not overwritten.<p>
+     * These descriptors are only to be used by Metamodel generation.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     protected Map<Object, RelationalDescriptor> mappedSuperclassDescriptors;
-    
+
+    /**
+     * Store the IdClass Id attributes for exclusive use by the Metamodel API
+     * Keyed on the fully qualified accessible object owner class name.
+     * Value is a List of the fully qualified id class name or id attribute name.
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     */
+    protected Map<String, List<String>> metamodelIdClassMap;
+
     /**
      * PUBLIC:
      * Create a new project.
@@ -116,6 +127,7 @@ public class Project implements Serializable, Cloneable {
         this.jpqlParseCache = new ConcurrentFixedCache(200);
         this.queries = new ArrayList<DatabaseQuery>();
         this.mappedSuperclassDescriptors = new HashMap<Object, RelationalDescriptor>(2);
+        this.metamodelIdClassMap = new HashMap<String, List<String>>();
     }
 
     /**
@@ -990,9 +1002,10 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL:
      * Return whether there any mappings that are mapped superclasses.
      * @return
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
     public boolean hasMappedSuperclasses() {
-        return (null != this.mappedSuperclassDescriptors && this.mappedSuperclassDescriptors.size() > 0);
+        return (null != this.mappedSuperclassDescriptors && !this.mappedSuperclassDescriptors.isEmpty());
     }
     
     /**
@@ -1000,6 +1013,7 @@ public class Project implements Serializable, Cloneable {
      * 266912: Add a descriptor to the Map of mappedSuperclass descriptors
      * @param key (Metadata class) 
      * @param value (RelationalDescriptor)
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
     public void addMappedSuperclass(Object key, RelationalDescriptor value) {
         // Lazy initialization of the mappedSuperclassDescriptors field.
@@ -1018,6 +1032,7 @@ public class Project implements Serializable, Cloneable {
      * Descriptor from the Map of mappedSuperclass descriptors
      * @param key - theMetadata class
      * @return
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
     public RelationalDescriptor getMappedSuperclass(Object key) {
         // TODO: this implementation may have side effects when we have the same class 
@@ -1031,11 +1046,11 @@ public class Project implements Serializable, Cloneable {
         return this.mappedSuperclassDescriptors.get(key);
     }
 
-
     /**
      * INTERNAL:
      * Return the Map of RelationalDescriptor objects representing mapped superclass parents
-     * keyed by className of the metadata class
+     * keyed by className of the metadata class.
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      * @return Map
      */
     public Map<Object, RelationalDescriptor> getMappedSuperclassDescriptors() {        
@@ -1046,6 +1061,35 @@ public class Project implements Serializable, Cloneable {
         return this.mappedSuperclassDescriptors;
     }
     
+    /**
+     * INTERNAL:
+     * Add an IdClass entry to the map of ids for a particular owner
+     * This function is used exclusively by the Metamodel API. 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @param idMap
+     * @param ownerName
+     * @param name
+     */
+    public void addMetamodelIdClassMapEntry(String ownerName, String name) {        
+        // Add a possible composite key to the owner - this function will handle duplicates by overwriting the entry
+        if(this.metamodelIdClassMap.containsKey(ownerName)) {
+            // If we have a key entry then the list will always exist
+            this.metamodelIdClassMap.get(ownerName).add(name);
+        } else {
+            List<String> ownerList = new ArrayList<String>();
+            ownerList.add(name);
+            this.metamodelIdClassMap.put(ownerName, ownerList);    
+        }        
+    }
     
+    /**
+     * INTERNAL: 
+     * Return the Map of IdClass attribute lists keyed on owner class name.
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @return
+     */
+    public Map<String, List<String>> getMetamodelIdClassMap() {
+        return metamodelIdClassMap;
+    }
 }
 

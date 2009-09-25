@@ -54,7 +54,7 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
      * @return
      */
     @Override
-    public boolean isEntity() {
+    protected boolean isEntity() {
         return false;
     }
     
@@ -64,7 +64,7 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
      * @return
      */
     @Override
-    public boolean isMappedSuperclass() {
+    protected boolean isMappedSuperclass() {
         return isEntity();
     }
     

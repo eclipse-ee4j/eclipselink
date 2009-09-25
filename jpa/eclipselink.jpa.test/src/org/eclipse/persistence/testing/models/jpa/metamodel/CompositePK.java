@@ -32,5 +32,20 @@ public class CompositePK implements Serializable {
 
     public CompositePK() {
     }
+    
+    @Override
+    public boolean equals(Object aCompositePK) {
+        if (aCompositePK.getClass() != CompositePK.class) {
+            return false;
+        }        
+        CompositePK compositePK = (CompositePK) aCompositePK;        
+        return (compositePK.pk_field1 == this.pk_field1) && 
+                (compositePK.pk_field2 == this.pk_field2);
+    }
+
+    @Override
+    public int hashCode() {
+        return 9232 * pk_field1 * pk_field2;
+    }
 }
 

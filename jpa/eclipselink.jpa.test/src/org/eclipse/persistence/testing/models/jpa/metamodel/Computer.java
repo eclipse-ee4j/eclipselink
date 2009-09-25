@@ -20,6 +20,7 @@ import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -74,7 +76,6 @@ public class Computer implements java.io.Serializable {
             inverseJoinColumns =@JoinColumn(name="PERSON_ID"))   
     private Corporation corporation;*/
     
-    
     // Inverse side 
     @OneToMany(cascade=ALL, mappedBy="computer")
     // A Collection where the Collection type (Map, Set, List) is not defined at design time
@@ -82,7 +83,20 @@ public class Computer implements java.io.Serializable {
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
     private Collection<Board> circuitBoards;
 
-    public Computer() {}
+    @OneToMany(mappedBy="computer", cascade=ALL, fetch=EAGER)
+    @MapKey // key defaults to an instance of the composite pk class
+    //@MapKey(name="name")
+    private Map<EnclosureIdClassPK, Enclosure> enclosures;
+
+    public void addEnclosure(Enclosure enclosure) {
+        enclosure.setComputer(this);
+        enclosures.put(enclosure.buildPK(), enclosure);
+    }
+    
+    public Computer() {
+        super();
+        //enclosures = new Hashtable<EnclosureIdClassPK, Enclosure>();
+    }
 
     public Manufacturer getManufacturer() {
         return manufacturer;

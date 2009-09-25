@@ -19,6 +19,10 @@
  *     07/10/2009-2.0  mobrien - Adjust BasicType processing to handle non-Entity Java types
  *       - 266912: As part of Attribute.getType() and specifically SingularAttribute.getBindableJavaType 
  *         set the appropriate elementType based on the mapping type.
+ *     09/23/2009-2.0  mobrien - 266912: Implement hasSingleIdAttribute() and 
+ *       all other 6 remaining methods for Id and Version support.
+ *       DI 70 - 77 and 56
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -45,6 +49,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p>
@@ -131,8 +136,6 @@ public class MetamodelImpl implements Metamodel {
                     "metamodel_class_incorrect_type_instance", 
                     new Object[] { clazz, "EntityType", aType}));
         }
-        
-        
     }
     
     /**
@@ -183,10 +186,19 @@ public class MetamodelImpl implements Metamodel {
     
     /**
      * INTERNAL:
+     * Return the core API Project associated with the DatabaseSession 
+     * that is associated with this Metamodel
+     * @return
+     */
+    protected Project getProject() {
+        return this.getSession().getProject();
+    }
+    /**
+     * INTERNAL:
      * Return the DatabaseSession associated with this Metamodel
      * @return
      */
-    public DatabaseSession getSession() {
+    protected DatabaseSession getSession() {
         return this.session;
     }
 
@@ -236,7 +248,7 @@ public class MetamodelImpl implements Metamodel {
      * @param qualifiedClassNameKeyString
      * @return 
      */
-    public boolean hasMappedSuperclass(String qualifiedClassNameKeyString) {
+    protected boolean hasMappedSuperclass(String qualifiedClassNameKeyString) {
         /**
          * This function is used before the metamodel has populated its Set of mappedSuperclasses -
          * therefore we go directly to the descriptor source.
@@ -349,6 +361,13 @@ public class MetamodelImpl implements Metamodel {
          */
         for(ManagedTypeImpl<?> managedType : new ArrayList<ManagedTypeImpl<?>>(managedTypes.values())) {            
             managedType.initialize();
+        }
+        
+        // 3 - process all the Id attributes on each IdentifiableType
+        for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
+            if(potentialIdentifiableType.isIdentifiableType()) {
+                ((IdentifiableTypeImpl<?>)potentialIdentifiableType).initializeIdAttributes(); 
+            }
         }
     }
 

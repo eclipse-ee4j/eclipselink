@@ -156,7 +156,11 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jaxb_helper_invalid_target_for_unmarshaller", "The provided target Class [{0}] must be one of EclipseLink JAXBUnmarshaller or EclipseLink XMLUnmarshaller." },
                                            { "jaxb_helper_invalid_target_for_marshaller", "The provided target Class [{0}] must be one of EclipseLink JAXBMarshaller or EclipseLink XMLMarshaller." },
                                            { "jaxb_helper_invalid_target_for_binder", "The provided target Class [{0}] must be one of EclipseLink JAXBBinder or EclipseLink XMLBinder." },
-                                           { "jpa_persistence_util_non_persistent_class", "PersistenceUtil.getIdentifier(entity) was called with object [{0}] which is not a persistent object." }
+                                           { "jpa_persistence_util_non_persistent_class", "PersistenceUtil.getIdentifier(entity) was called with object [{0}] which is not a persistent object." },
+                                           { "metamodel_identifiable_type_has_no_idclass_attribute", "No @IdClass attributes exist on the IdentifiableType [{0}].  There still may be one or more @Id or an @EmbeddedId on type." },
+                                           { "metamodel_identifiable_no_version_attribute_present", "No @Version attribute exists on the identifiable type [{0}]." },
+                                           { "metamodel_identifiable_no_id_attribute_present", "No @Id attribute exists on the identifiable type [{0}]." },
+                                           { "metamodel_identifiable_id_attribute_is_incorrect_idclass", "The expected single @Id attribute for the identifiable type [{0}] is part of an unexpected @IdClass." }
 
                                         };
 

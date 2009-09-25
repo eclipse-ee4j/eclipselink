@@ -379,7 +379,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param descriptor
      * @return
      */
-    public static ManagedTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         // Get the ManagedType property on the descriptor if it exists
         ManagedTypeImpl<?> managedType = (ManagedTypeImpl<?>) descriptor.getProperty(ManagedTypeImpl.class.getName());
         // Create an Entity, Embeddable or MappedSuperclass
@@ -785,7 +785,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * Return the Map of AttributeImpl members keyed by String.
      * @return
      */
-    public java.util.Map<String, Attribute<X, ?>> getMembers() {
+    protected java.util.Map<String, Attribute<X, ?>> getMembers() {
         return this.members;
     }
 
@@ -794,7 +794,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * Return the Metamodel that this ManagedType is associated with.
      * @return
      */
-    public MetamodelImpl getMetamodel() {
+    protected MetamodelImpl getMetamodel() {
         return this.metamodel;
     }
 
@@ -1219,7 +1219,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param mapping
      * @return
      */
-    public Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
+    protected Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
         /**
          * In this block we have the following scenario:
          * 1) The access type is "method" or "field"
@@ -1316,7 +1316,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @return
      */
     @Override
-    public boolean isIdentifiableType() {
+    protected boolean isIdentifiableType() {
         return false;
     }
 
@@ -1327,7 +1327,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @return
      */
     @Override
-    public boolean isManagedType() {
+    protected boolean isManagedType() {
         return true;
     }
    

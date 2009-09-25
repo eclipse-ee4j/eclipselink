@@ -53,7 +53,7 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * @return
      */
     @Override
-    public boolean isEntity() {
+    protected boolean isEntity() {
         return false;
     }
     
@@ -64,7 +64,7 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * @return
      */
     @Override
-    public boolean isIdentifiableType() {
+    protected boolean isIdentifiableType() {
         return false;
     }
 
@@ -75,7 +75,7 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * @return
      */
     @Override
-    public boolean isManagedType() {
+    protected boolean isManagedType() {
         return false;
     }
     
@@ -85,7 +85,7 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      * @return
      */
     @Override
-    public boolean isMappedSuperclass() {
+    protected boolean isMappedSuperclass() {
         return isEntity();
     }
     

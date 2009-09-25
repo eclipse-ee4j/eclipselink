@@ -43,5 +43,20 @@ public class EmbeddedPK implements Serializable {
 
     public EmbeddedPK() {
     }
+    
+    @Override
+    public boolean equals(Object anEmbeddedPK) {
+        if (anEmbeddedPK.getClass() != EmbeddedPK.class) {
+            return false;
+        }        
+        EmbeddedPK embeddedPK = (EmbeddedPK) anEmbeddedPK;        
+        return ((EmbeddedPK)anEmbeddedPK).pk_part1 == this.pk_part1;                
+    }
+
+    @Override
+    public int hashCode() {
+        return 9232 * pk_part1;
+    }
+        
 }
 

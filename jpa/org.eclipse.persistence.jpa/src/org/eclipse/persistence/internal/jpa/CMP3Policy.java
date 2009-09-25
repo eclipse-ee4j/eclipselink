@@ -143,6 +143,7 @@ public class CMP3Policy extends CMPPolicy {
     
     /**
      * INTERNAL:
+     * Return the java Class representing the primary key class name 
      */
     public Class getPKClass() {
         if(this.pkClass == null && getPKClassName() == null) {

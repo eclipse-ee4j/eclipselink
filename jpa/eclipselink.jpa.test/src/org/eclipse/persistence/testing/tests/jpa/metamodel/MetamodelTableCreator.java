@@ -53,11 +53,13 @@ DROP TABLE CMP3_MM_GALACTIC
 DROP TABLE CMP3_MM_BOARD
 DROP TABLE CMP3_MM_SWDESIGNER
 DROP TABLE CMP3_MM_MANUF
+DROP TABLE CMP3_MM_ENCLOSURE
      */
     
     public MetamodelTableCreator() {
         setName("MetamodelProject");
 
+        addTableDefinition(buildENCLOSURETable());
         addTableDefinition(buildMANUFACTURERTable());
         addTableDefinition(buildHARDWAREDESIGNERTable());
         addTableDefinition(buildSOFTWAREDESIGNERTable());
@@ -712,7 +714,7 @@ DROP TABLE CMP3_MM_MANUF
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+        
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("BOARD_VERSION");
         field4.setTypeName("NUMERIC");
@@ -738,6 +740,56 @@ DROP TABLE CMP3_MM_MANUF
         return table;
     }
 
+    
+    public static TableDefinition buildENCLOSURETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_ENCLOSURE");
+        
+        FieldDefinition field13 = new FieldDefinition();
+        field13.setName("TYPE");
+        field13.setTypeName("VARCHAR");
+        field13.setSize(80);
+        field13.setShouldAllowNull(false);
+        field13.setIsPrimaryKey(true);
+        field13.setUnique(false);
+        field13.setIsIdentity(true);
+        table.addField(field13);
+
+        FieldDefinition field14 = new FieldDefinition();
+        field14.setName("LENGTH");
+        field14.setTypeName("VARCHAR");
+        field14.setSize(80);
+        field14.setShouldAllowNull(false);
+        field14.setIsPrimaryKey(true);
+        field14.setUnique(false);
+        field14.setIsIdentity(true);
+        table.addField(field14);
+
+        FieldDefinition field15 = new FieldDefinition();
+        field15.setName("WIDTH");
+        field15.setTypeName("VARCHAR");
+        field15.setSize(80);
+        field15.setShouldAllowNull(false);
+        field15.setIsPrimaryKey(true);
+        field15.setUnique(false);
+        field15.setIsIdentity(true);
+        table.addField(field15);
+
+        // 1:m does not require a JoinTable - only a JoinColumn
+        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("COMPUTER_COMPUTER_ID");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
+        table.addField(field6);        
+        
+        return table;
+    }
+    
     public static TableDefinition buildMEMORYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MEMORY");

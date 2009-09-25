@@ -106,6 +106,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * INTERNAL:
@@ -391,6 +392,7 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Add EmbeddedId and IdClass ids to the project
      */
     public void addIdClass(String idClassName) {
         m_idClasses.add(idClassName);
@@ -831,6 +833,16 @@ public class MetadataProject {
      */
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the core API Project associated with this MetadataProject.
+     * @return
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     */
+    public Project getProject() {
+        return m_session.getProject();
     }
     
     /**

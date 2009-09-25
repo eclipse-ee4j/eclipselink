@@ -53,7 +53,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
 
     /** The Type representing this Entity or Basic type **/
     protected Type<T> elementType;
-
+    
     /**
      * Create an instance of the Attribute
      * @param managedType
@@ -120,7 +120,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
         }        
-        elementType = (Type<T>)getMetamodel().getType(attributeClass);        
+        elementType = (Type<T>)getMetamodel().getType(attributeClass);
     }
 
     /**
@@ -141,7 +141,13 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  @return boolean indicating whether or not attribute is an id
      */
     public boolean isId() {
-        return getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(getMapping());
+        if(this.getManagedTypeImpl().isMappedSuperclass()) {
+            // The field on the mapping is the same field in the pkFields list on the descriptor
+            return (this.getDescriptor().getPrimaryKeyFields().contains(this.getMapping().getField()));
+        } else {
+            //return getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(getMapping());
+            return getMapping().isPrimaryKeyMapping();
+        }
     }
 
     /** 
@@ -153,6 +159,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         return getMapping().isOptional();
     }
 
+    
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular

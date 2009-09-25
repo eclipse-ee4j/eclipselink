@@ -185,8 +185,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             // Add any converters on this mapping accessor.
             accessor.addConverters();
             
-            // Add any embeddedid references to the list of id 'used' classes.
-            // That is @IdClass and @EmbeddedId reference classes.
+            // Add any embeddedid references to the list of 
+            // (@IdClass and @EmbeddedId reference classes) id 'used' classes.
             if (accessor.isEmbeddedId()) {
                 getProject().addIdClass(accessor.getReferenceClassName());
             }
@@ -232,7 +232,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Add the accessors from this class accessors java class to the descriptor
      * tied to this class accessor. This method is called for every class
      * accessor and is also called from parent class accessors to each of its
-     * subclasses of a TABLE_PER_CLASS inhertiance strategy.
+     * subclasses of a TABLE_PER_CLASS inheritance strategy.
      */
     public void addAccessors() {      
         if (m_attributes != null) {

@@ -11,13 +11,17 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/26/2009-2.0  mobrien - 266912: Add implementation of IdentifiableType 
  *       as EntityType inherits here instead of ManagedType as of rev# 4265 
+ *     09/23/2009-2.0  mobrien - 266912: Implement hasSingleIdAttribute() and 
+ *       all other 6 remaining methods for Id and Version support.
+ *       DI 70 - 77 and 56
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.SingularAttribute;
@@ -53,14 +57,44 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     protected IdentifiableType<? super X> superType;
     
+    /**
+     * The collection of SingularAttributes that are Id attributes. 
+     */
+    protected Set<SingularAttribute<? super X, ?>> idAttributes;
+    
+    /**
+     * The SingularAttribute if it exists that is a version attribute
+     */
+    protected SingularAttribute<? super X, ?> versionAttribute;
+    
     protected IdentifiableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
-        super(metamodel, descriptor);
+        super(metamodel, descriptor);        
         /* The superType field cannot be set until all ManagedType instances 
          * have been instantiated for this metamodel.
+         * This is required so that any references between attributes can be resolved.
          * This occurs later in MetamodelImpl.initialize()
+         * The idAttributes field is computed at the end of MetamodelImpl.initialize()
+         * The versionAttribute is lazy loaded.
          */
     }
 
+    /**
+     * INTERNAL:
+     * The idAttributes collection is computed at the end of MetamodelImpl.initialize()
+     */
+    protected void initializeIdAttributes() {
+        // initialize the set of id attributes directly from the mapping
+        idAttributes = new HashSet<SingularAttribute<? super X, ?>>();
+        for(Attribute attribute : this.getAttributes()) {
+            if(!((AttributeImpl)attribute).isPlural()) {
+                if(((SingularAttribute)attribute).isId()) {
+                    //idAttributes.put(((CMP3Policy)this.descriptor.getCMPPolicy()).getPKClass().getName(),
+                    idAttributes.add((SingularAttribute)attribute);
+                }
+            }
+        }
+    }
+    
     /**
      *  Return the attribute that corresponds to the id attribute 
      *  declared by the entity or mapped superclass.
@@ -71,8 +105,19 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          the identifiable type has an id class
      */
     public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-        // return the Id only if it is declared on this entity
-        throw new PersistenceException("Not Yet Implemented");
+        /**
+         * We throw an IAE in 3 cases
+         * 1) If the type is different from the javaType of the attribute
+         * 2) If the id is not declared on (this) type
+         * 3) If the id is not part of an IdClass (it is an EmbeddedId or just an Id)
+         * 4) If the id does not exist on the hierarchy - never happens
+         */
+        // No need to check if an id exists - on an IdentifiableType - there is always at least one
+        // This call will throw an IAE for 1) and 3)
+        SingularAttribute<? super X, Y> anId = this.getId(type);
+        // return the id only if it is declared on this IdentifableType
+        // We know that the attribute exists - so the an IAE will be thrown for 2) for us
+        return (SingularAttribute<X, Y>)getDeclaredAttribute(anId.getName());
     }
     
     /**
@@ -85,18 +130,40 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          type is not declared in the identifiable type
      */
     public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
-        throw new PersistenceException("Not Yet Implemented");
+        /**
+         * We throw an IAE in 3 cases
+         * 1) If the type is different from the javaType of the attribute
+         * 2) If the version is not declared on (this) type
+         * 3) If the version does not exist on the hierarchy
+         */
+        // This call will throw an IAE for 1) and 3)
+        SingularAttribute<? super X, Y> aVersion = this.getVersion(type);
+        // return the version only if it is declared on this IdentifableType
+        // We know that the attribute exists - so the an IAE will be thrown for 2) for us
+        return (SingularAttribute<X, Y>)getDeclaredAttribute(aVersion.getName());
     }
     
     /**
-     *   Return the attributes corresponding to the id class of the
-     *   identifiable type.
-     *   @return id attributes
-     *   @throws IllegalArgumentException if the identifiable type
-     *           does not have an id class
+     *  Return the attributes corresponding to the id class of the
+     *  identifiable type.   
+     *  @return id attributes
+     *  @throws IllegalArgumentException if the identifiable type
+     *          does not have an id class
      */
     public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
-        throw new PersistenceException("Not Yet Implemented");
+        // Get the list of IdClass attributes previously stored on the core project during metadata processing
+        List<String> idClassNamesList = getMetamodel().getProject().getMetamodelIdClassMap()
+            .get(getJavaType().getCanonicalName());
+        // Check for IdClass existence - either check is sufficient
+        if(!this.hasSingleIdAttribute() && (null != idClassNamesList)) {
+            // All Id attributes are part of an IdClass
+            return this.idAttributes;
+        } else {
+            // No IdClass attributes found - the IdentifiableType may still have a single @Id or an @EmbeddedId in this case
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_identifiable_type_has_no_idclass_attribute", 
+                    new Object[] {this}));
+        }        
     }
     
     /**
@@ -109,16 +176,28 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          the identifiable type has an id class
      */
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-        throw new PersistenceException("Not Yet Implemented");
-/*        SingularAttribute<? super X, Y> anAttribute = null;
-        Class<Y> realType = null;
-        //boolean isId = this.accessor.isId();
-        if(type != realType) {
+        // We assume that there is at most a single EmbeddedId
+        SingularAttribute<? super X, Y> idAttribute = null;
+        if(!hasSingleIdAttribute()) {
+            // Id is part of an IdClass
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_identifiable_id_attribute_type_incorrect", 
-                new Object[] { anAttribute, this, type, realType}));
+                    "metamodel_identifiable_id_attribute_is_incorrect_idclass", 
+                    new Object[] { this }));
+        } else {
+            // verify single id attribute type
+            for(SingularAttribute<? super X, ?> anAttribute : idAttributes) {
+                // Verify type is correct - relax restriction on null and Object.class (from same classLoader)
+                if(null == type || Object.class == type || 
+                        ((type != null) && (type.getCanonicalName().equals(anAttribute.getJavaType().getCanonicalName())))) {
+                    idAttribute = (SingularAttribute<? super X, Y>) anAttribute;
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_identifiable_id_attribute_type_incorrect", 
+                        new Object[] { anAttribute, this, type, anAttribute.getJavaType() }));
+                }
+            }
         }
-        return anAttribute;*/
+        return idAttribute;
     }
     
     /**
@@ -127,9 +206,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     public Type<?> getIdType() {
         // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
-        // descriptor.getPrimaryKeyPolicy().getIdClass();
         CMPPolicy cmpPolicy = getDescriptor().getCMPPolicy();
-
         if (null == cmpPolicy) {
             // Composite key support (IE: @EmbeddedId)            
             List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
@@ -143,8 +220,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                         Attribute anAttribute = this.getAttribute(attributeName);
                         if(anAttribute != null) {
                             return this.getMetamodel().getType(anAttribute.getJavaType());
-                        }
-                        
+                        }                        
                     }
                 }
             }
@@ -192,15 +268,39 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          given type is not present in the identifiable type
      */
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-        throw new PersistenceException("Not Yet Implemented");
-/*        SingularAttribute<? super X, Y> anAttribute = null;
-        Class<Y> realType = null;
-        if(type != realType) {
+        // Lazy load the version attribute if it exists
+        if(null == getVersion()) {
+            // No version exists - throw IAE
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_identifiable_version_attribute_type_incorrect", 
-                new Object[] { anAttribute, this, type, realType}));
+                "metamodel_identifiable_no_version_attribute_present", 
+                new Object[] { this }));
+        } else {
+            // Verify the type (Note: ClassLoaders do not have to be the same)
+            // Relax restriction on null and Object.class (from same classLoader)
+            if(null == type || Object.class == type || 
+                    ((type != null) && (type.getCanonicalName().equals(versionAttribute.getJavaType().getCanonicalName())))) {
+                return (SingularAttribute<? super X, Y>)versionAttribute;
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_identifiable_version_attribute_type_incorrect", 
+                    new Object[] { versionAttribute, this, type, versionAttribute.getJavaType()}));
+            }
         }
-        return anAttribute;*/
+    }
+
+    /**
+     * INTERNAL:
+     * Return the version attribute on this type.
+     * If no version attribute exists - return null.
+     * @param <Y>
+     * @return
+     */
+    private <Y> SingularAttribute<? super X, ?> getVersion() {
+        if(hasVersionAttribute()) {
+            return (SingularAttribute<? super X, ?>)versionAttribute;
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -211,17 +311,46 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *           type has a single id attribute
      */
     public boolean hasSingleIdAttribute() {
-        // Note: this function will return false both if an IdClass is present and if no type of Id is present
-/*        List<DatabaseField> pkFields = this.getDescriptor().getPrimaryKeyFields();
+        // The following section will return false for any multiple EmbeddableId as well as multiple Ids as part of an IdClass
+        // Note: there will always be at least 1 Id for an IdentifiableType
+        //return this.idAttributes.size() < 2;        
+
+        /**
+         * Since we are in IdentifiableType which involves only Entities and MappedSuperclasses,
+         * we are safe to assume that there will always be an Id of some sort - we are not in 
+         * Basic, Embeddable or transient types.
+         * Check the core API project for any IdClass matching this IdentifiableType
+         * after we check directly on the descriptor for an Id.
+         *  References: SubQueryImpl.select()
+         */
+        
+        // Note: this function will return false only if an IdClass is present
+        List<DatabaseField> pkFields = this.getDescriptor().getPrimaryKeyFields();
         // return false for no Id field types
         if(pkFields.isEmpty()) {
             return false;
         } else {
-            // Optional: Verify the mapping on the first field
-            ((CMP3Policy)this.getDescriptor().getCMPPolicy()).getPKClass();
+            // Optional: Verify the mapping on the each field and whether it is an IdClass
+            Class pkClass = null;
+            if(this.getDescriptor().hasCMPPolicy()) {
+                pkClass = ((CMP3Policy)this.getDescriptor().getCMPPolicy()).getPKClass();
+                if(null == pkClass) {
+                    return false;
+                }
+            } else {
+                // MappedSuperclass descriptors do not have a CMP policy
+                return pkFields.size() < 2;
+            }
+            List<String> idClasses = getMetamodel().getProject().getMetamodelIdClassMap().get(getJavaType().getCanonicalName());
+            if(null != idClasses) {            
+                for(String idClass : idClasses) {                
+                    if(idClass.equalsIgnoreCase(pkClass.getName())) {
+                        return false;
+                    }
+                }
+            }
         }
-        return true;*/
-        throw new PersistenceException("Not Yet Implemented");
+        return true;        
     }
     
     /**
@@ -230,7 +359,18 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *           type has a version attribute
      */
     public boolean hasVersionAttribute() {
-        throw new PersistenceException("Not Yet Implemented");
+        // The versionAttribute is lazy loaded
+        if(null != versionAttribute) {
+            return true;
+        } else {
+            for(Attribute attribute : this.getAttributes()) {
+                if(!((AttributeImpl)attribute).isPlural() && ((SingularAttribute)attribute).isVersion()) {
+                    versionAttribute = (SingularAttribute)attribute;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
@@ -240,7 +380,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * @return
      */
     @Override
-    public boolean isIdentifiableType() {
+    protected boolean isIdentifiableType() {
         return true;
     }
 

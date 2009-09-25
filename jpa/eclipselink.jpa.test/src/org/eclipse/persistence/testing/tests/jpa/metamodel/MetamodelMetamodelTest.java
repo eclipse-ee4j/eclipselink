@@ -71,6 +71,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
@@ -117,8 +118,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 94;
-    public static final int METAMODEL_ALL_TYPES = 37;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 99;//94;
+    public static final int METAMODEL_ALL_TYPES = 39;//37;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 26;    
     
     public MetamodelMetamodelTest() {
@@ -165,8 +166,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
+        suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));        
         suite.addTest(new MetamodelMetamodelTest("testMetamodelLazyInitialization"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodelFullImplementation"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));        
         return suite;
@@ -314,7 +315,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
      * The following large single test case contains signatures of all the spec functions.
      * Those that have a test are implemented, the missing ones may still be in development.
      */
-    public void testMetamodelFullImplementation() {
+    public void test_MetamodelFullImplementation() {
         if(!this.isJPA10()) {
         EntityManager em = null;
         Collection<Board> boardCollection = new HashSet<Board>();        
@@ -657,6 +658,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          the identifiable type has an id class
              */
             //<Y> SingularAttribute<? super X, Y> getId(Class<Y> type);
+            EntityType<Manufacturer> aManufacturerType = metamodel.entity(Manufacturer.class);
+            assertNotNull(aManufacturerType.getId(Integer.class));
+            // declared and valid
+            MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.type(Person.class);
+            assertNotNull(msPerson1_.getId(Integer.class));
 
             /**
              *  Return the attribute that corresponds to the version 
@@ -667,7 +673,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          given type is not present in the identifiable type
              */
             //<Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
-            //SingularAttribute<? super Manufacturer, Integer> versionAttribute = entityManufacturer.getVersion(Integer.class);
+//          EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
+//          assertNotNull(anEnclosureType.getVersion(Integer.class));
+            // declared and inherited
+            
+            // declared 
+            assertNotNull(aManufacturerType.getVersion(int.class));
+            // declared and valid
+            // TODO : require MS version
+//            assertNotNull(msPerson1_.getVersion(Integer.class));
+
             /**
              *  Return the attribute that corresponds to the id attribute 
              *  declared by the entity or mapped superclass.
@@ -678,6 +693,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          the identifiable type has an id class
              */
             //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
+            // Not declared  - invalid
+//            assertNotNull(aManufacturerType.getDeclaredId(Integer.class));
+            // declared and valid
+            
+            //*********************************************/
+            // Require a version on a MappedSuperclass
+            
+//            assertNotNull(msPerson1_.getDeclaredId(Integer.class));
 
             /**
              *  Return the attribute that corresponds to the version 
@@ -689,6 +712,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          type is not declared in the identifiable type
              */
             //<Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type);
+            // Does not exist
+//            EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
+//            assertNotNull(anEnclosureType.getDeclaredVersion(Integer.class));
+            // Is declared
+            assertNotNull(aManufacturerType.getDeclaredVersion(int.class));
+            
+            // TODO: need an undeclared subclass
+            // Is declared
+//            assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
+            
             
             /**
              *  Return the identifiable type that corresponds to the most
@@ -751,11 +784,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @return boolean indicating whether or not the identifiable
              *           type has a single id attribute
              */
-            // Not Implemented yet
-/*            
+            // We do not need to test Embeddable to Basic as they do not implement IdentifiableType
             //boolean hasSingleIdAttribute();
             // verify false for "no" type of Id attribute
-            // test normal path
+            // @Id - test normal path
             expectedIAExceptionThrown = false;
             boolean hasSingleIdAttribute = false;
             try {
@@ -768,11 +800,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse(expectedIAExceptionThrown);            
             assertTrue(hasSingleIdAttribute);
 
-            // test exception path
+            // @EmbeddedId
             expectedIAExceptionThrown = false;
             hasSingleIdAttribute = false;
             try {
-                EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
+                EntityType<GalacticPosition> aType = metamodel.entity(GalacticPosition.class);
                 hasSingleIdAttribute = aType.hasSingleIdAttribute();
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
@@ -781,14 +813,30 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse(expectedIAExceptionThrown);            
             assertTrue(hasSingleIdAttribute);
 
-*/
+            // @IdClass - test exception path
+            expectedIAExceptionThrown = false;
+            hasSingleIdAttribute = true;
+            try {
+                EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertFalse(hasSingleIdAttribute);
+            
+
             /**
              *  Whether or not the identifiable type has a version attribute.
              *  @return boolean indicating whether or not the identifiable
              *           type has a version attribute
              */
             //boolean hasVersionAttribute();
-
+            EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
+            assertFalse(anEnclosureType.hasVersionAttribute());
+            assertTrue(aManufacturerType.hasVersionAttribute());
+            
             /**
              *   Return the attributes corresponding to the id class of the
              *   identifiable type.
@@ -797,7 +845,27 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *           does not have an id class
              */
              //java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
+            // @IdClass - test normal path
+            expectedIAExceptionThrown = false;
+            hasSingleIdAttribute = true;
+            Set<SingularAttribute<? super Enclosure, ?>> idClassAttributes = null;
+            try {
+                EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+                // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
+                assertFalse(hasSingleIdAttribute);
+                idClassAttributes = aType.getIdClassAttributes();
+                 
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            assertFalse(hasSingleIdAttribute);
+            assertNotNull(idClassAttributes);
+            assertEquals(3, idClassAttributes.size());
 
+            // @EmbeddedId - test exception path
             /**
              *  Return the type that represents the type of the id.
              *  @return type of id

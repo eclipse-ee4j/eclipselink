@@ -47,6 +47,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
 
     /** The databaseMapping associated with this attribute **/
     private DatabaseMapping mapping;
+    
 
     /**
      * INTERNAL:
@@ -60,7 +61,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
         this.mapping.setProperty(getClass().getName(), this);
         this.managedType = managedType;
     }
-    
+
     /**
      *  Return the managed type representing the type in which 
      *  the attribute was declared.
@@ -116,7 +117,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
      * Return the databaseMapping that represents the type
      * @return
      */
-    public DatabaseMapping getMapping() {
+    protected DatabaseMapping getMapping() {
         return this.mapping;
     }
     
@@ -125,7 +126,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
      * Return the concrete metamodel that this attribute is associated with.
      * @return MetamodelImpl
      */
-    public MetamodelImpl getMetamodel() {
+    protected MetamodelImpl getMetamodel() {
         return this.managedType.getMetamodel();
     }
     

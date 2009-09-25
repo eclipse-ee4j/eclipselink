@@ -78,7 +78,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @param relationalDescriptor
      * @return
      */
-    public static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
+    protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
         /**
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
          * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
@@ -97,7 +97,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @param name
      * @return
      */
-    public AttributeImpl getMemberFromInheritingType(String name) {
+    protected AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
         // search the inheriting types map for an attribute matching the attribute name
         for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
@@ -123,7 +123,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @return
      */
     @Override
-    public boolean isEntity() {
+    protected boolean isEntity() {
         return false;
     }
    
@@ -133,7 +133,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @return
      */
     @Override
-    public boolean isMappedSuperclass() {
+    protected boolean isMappedSuperclass() {
         return !isEntity();
     }
 }
