@@ -75,6 +75,7 @@ import org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCriteriaQueryT
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
+import org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest;
 
 public class FullRegressionTestSuite extends TestSuite{
     
@@ -181,7 +182,7 @@ public class FullRegressionTestSuite extends TestSuite{
         // JPA Advanced Properties model
         fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
 
-        // DataTypes model    
+        // DataTypes model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
 
@@ -190,10 +191,10 @@ public class FullRegressionTestSuite extends TestSuite{
 
         // Lob model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
-        
+
         // Private owned model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase.suite());
-        
+
         // Orphan removal model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
 
@@ -217,6 +218,17 @@ public class FullRegressionTestSuite extends TestSuite{
         
         // JPA 2.0 Delimited Identifiers model
         fullSuite.addTest(DelimitedPUTestSuite.suite());
+
+        // JPA 2.0 BeanValidation integration
+        // Commented out till we can checkin a Bean Validation impl to the repository
+        // To run these test against Validation RI,
+        // -add refernce to following file from your workspace to run.classpath in build.xml
+        //  hibernate-validator-4.0.0.Beta2.jar
+        //  slf4j-jdk14.jar
+        //  slf4j-api-1.5.6.jar
+
+//        fullSuite.addTest(BeanValidationJunitTest.suite());
+
 
         return fullSuite;
     }
