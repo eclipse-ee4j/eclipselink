@@ -202,6 +202,7 @@
         <echo message=" org.eclipse.persistence.descriptors.changetracking;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.copying;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.invalidation;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.dynamic;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.eis;version=&quot;${version.string}&quot;,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.eis.adapters.jms;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.eis.adapters.xmlfile;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -217,6 +218,7 @@
         <echo message=" org.eclipse.persistence.internal.databaseaccess;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.descriptors;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.descriptors.changetracking;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.dynamic;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.dynamicpersist;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.jms;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.xmlfile;version=&quot;${version.string}&quot;,${line.separator}"                         file="${classes.dir}/MANIFEST.MF" append="true"/>
