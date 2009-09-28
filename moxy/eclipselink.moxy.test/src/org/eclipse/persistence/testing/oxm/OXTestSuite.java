@@ -16,6 +16,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.oxm.descriptor.primarykey.PrimaryKeyTestSuite;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.RootElementTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite;
@@ -69,7 +71,9 @@ public class OXTestSuite extends TestCase {
         suite.addTest(GenerateSchemaTestSuite.suite());
         
         suite.addTest(XMLContextByXPathTestSuite.suite());
-
+        
+        suite.addTest(PrimaryKeyTestSuite.suite());
+       
         //this suite does not include the JAXBDOM and JAXBSAX test suites as they need system properties set to run.     
         return suite;
     }
