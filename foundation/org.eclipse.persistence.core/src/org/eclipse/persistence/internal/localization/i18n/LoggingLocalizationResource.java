@@ -612,7 +612,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_processor_error_in_class_forname_weaving_disabled.MSGID", "TOP-50209"},
         { "entity_manager_sets_properties_while_context_is_active.MSGID", "TOP-50210"},
         { "osgi_initializer_failed.MSGID", "TOP-50211"},
-        { "osgi_initializer", "TOP-50212"},
+        { "osgi_initializer.MSGID", "TOP-50212"},
         { "entity_manager_ignores_nonjta_data_source.MSGID", "TOP-50213"},        
         { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"},
         { "problem_registering_mbean.MSGID", "TOP-50215}" },
