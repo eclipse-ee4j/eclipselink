@@ -13,5 +13,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.stream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.validation"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
