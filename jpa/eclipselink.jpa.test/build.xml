@@ -137,6 +137,7 @@
     <!-- Define Spring jars needed for running JPA tests on Spring -->
     <path id="spring.path">
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
+            <pathelement path="."/>
     </path>
     <!-- This checks if the Apllication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
     <condition property="run.jpa.customfeatures.model">
@@ -1041,7 +1042,7 @@
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
-            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -1049,7 +1050,7 @@
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
-            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
