@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.persistence.CacheRetrieveMode;
@@ -91,6 +92,8 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * @see PessimisticLock
  */
 public class QueryHintsHandler {
+    
+    public static final String QUERY_HINT_PROPERTY = "eclipselink.query.hints";
     
     /**
      * Verifies the hints.
@@ -190,6 +193,10 @@ public class QueryHintsHandler {
      */
     protected static boolean shouldUseDefault(Object hintValue) {
         return (hintValue != null) &&  (hintValue instanceof String) && (((String)hintValue).length() == 0);
+    }
+    
+    public static Set<String> getSupportedHints(){
+        return Hint.getSupportedHints();
     }
     
     /**
@@ -293,6 +300,13 @@ public class QueryHintsHandler {
                 return query;
             }
             
+            Map<String, Object> existingHints = (Map<String, Object>)query.getProperty(QUERY_HINT_PROPERTY);
+            if (existingHints == null){
+                existingHints = new HashMap<String, Object>();
+                query.setProperty(QUERY_HINT_PROPERTY, existingHints);
+            }
+            existingHints.put(hintName, hintValue);
+
             return hint.apply(hintValue, shouldUseDefault, query, loader);
         }
         
@@ -388,6 +402,10 @@ public class QueryHintsHandler {
         static void addHint(Hint hint) {
             hint.initialize();
             mainMap.put(hint.name, hint);
+        }
+        
+        static Set<String> getSupportedHints(){
+            return mainMap.keySet();
         }
     }
 

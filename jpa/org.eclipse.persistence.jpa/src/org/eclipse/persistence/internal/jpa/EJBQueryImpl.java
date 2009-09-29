@@ -1216,8 +1216,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Map<String, Object> getHints() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        return (Map<String, Object>)getDatabaseQuery().getProperty(QueryHintsHandler.QUERY_HINT_PROPERTY);
     }
 
     /**
@@ -1372,8 +1371,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Set<String> getSupportedHints() {
-        // TODO
-        throw new PersistenceException("Not yet Implemented");
+        return QueryHintsHandler.getSupportedHints();
     }
 
     /**

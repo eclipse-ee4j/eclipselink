@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -326,6 +328,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetSupportedHints"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
         
         return suite;
     }
@@ -8793,5 +8797,42 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
+    }
+    
+    public void testGetSupportedHints(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e");
+        Set<String> supportedHints = query.getSupportedHints();
+        
+        try{
+            Field[] hintFields = QueryHints.class.getFields();
+            Set<String> queryHints = new HashSet<String>(hintFields.length);
+            for (int i=0;i<hintFields.length;i++){
+                Field hintField = hintFields[i];
+                String hint = (String)hintField.get(null);
+                queryHints.add(hint);
+            }
+            assertTrue("The supported hints did not match our list of hints.", supportedHints.equals(queryHints));
+        } catch (Exception e){
+            fail("Exception retrieving hints: " + e);
+        }
+        
+    }
+    
+    public void testGetHints(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e");
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+        query.setHint(QueryHints.BIND_PARAMETERS, "");
+        Map<String, Object> hints = query.getHints();
+        assertTrue("Incorrect number of hints.", hints.size() == 2);
+        assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
+        assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
+        
+        query = em.createQuery("Select a from Address a");
+        hints = query.getHints();
+        assertTrue("Hints is not null when it should be.", hints == null);
     }
 }
