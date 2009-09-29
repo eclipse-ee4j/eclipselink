@@ -501,6 +501,7 @@ then
     if [ "${TESTS_FAILED}" = "true" ]
     then
         echo "Build had Test issues that need to be resolved."
+        LOGPREFIX=TestFail
         if [ "${TARG_NM}" = "cb" ]
         then
             # Zip up test results and copy them to appropriate location
@@ -512,13 +513,14 @@ then
 
     if [ "${BUILD_FAILED}" = "true" ]
     then
-        cp ${DATED_LOG} ${FailedNFSDir}/${LOGFILE_NAME}
-        MAILLIST=${FAIL_MAILLIST}
+        LOGPREFIX=BuildFail
         echo "Build had issues to be resolved."
     fi
     
     if [ \(" ${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
+        cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
         ./${BRANCH_PATH}/buildsystem/buildFailureList.sh

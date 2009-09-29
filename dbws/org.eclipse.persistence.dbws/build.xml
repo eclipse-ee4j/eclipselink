@@ -38,8 +38,6 @@
     </condition>
     <property name="dbws.2.common.plugins.dir" value="${dbws.2.base.dir}/plugins"/>
     <property name="dbws.2.buildsys.dir" value="${dbws.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
-    <property name="bnd.path" value="${dbws.2.buildsys.dir}/${bndtool.jar}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
@@ -47,32 +45,11 @@
     <property file="${user.home}/build.properties"/>
     <property file="${dbws.build.location}/build.properties"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type"            value="SNAPSHOT"/>
-    <property name="svn.revision"          value="NA"/>
-    <property name="version.qualifier"     value="qualifier"/>
-    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
-    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-    <property name="implementation.vendor" value="${specification.vendor}"/>
-
-    <!-- Set Compile Path-->
-    <path id="dbws.compile.path">
-        <pathelement path="${dbws.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <fileset
-            dir="${dbws.2.common.plugins.dir}"
-            includes="${dbws.common.dependencies}"/>
-    </path>
-    <available file="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, generate-manifest, package" description="build DBWS component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build DBWS component"/>
     <target name="bnd"   depends="clean, compile, bnd-package" description="build DBWS component using bnd"/>
 
     <!-- clean -->
@@ -83,9 +60,59 @@
         </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${dbws.2.base.dir}/../extension.lib.external"
+                                                    else="${dbws.build.location}">
+            <available file="${dbws.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="core.bundle.path"           value="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
+        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
+
+        <!-- Check for BND library -->
+        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.path" value="${dbws.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${dbws.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.path                     = '${bnd.path}'"/>
+
+        <!-- Set Compile Path-->
+        <path id="dbws.compile.path">
+            <pathelement path="${dbws.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${core.bundle.path}"/>
+            <fileset
+                dir="${dbws.2.common.plugins.dir}"
+                includes="${dbws.common.dependencies}"/>
+        </path>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink DBWS classes">
-        <fail message="Cannot find Core: '${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+    <target name="compile" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -104,7 +131,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" description="jar OSGI bundle">
+    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
         <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${dbws.2.base.dir}">
                 <include name="about.html"/>
@@ -146,7 +173,8 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+        <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -173,8 +201,7 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="bnd-package">
-        <echo message="bnd.path = ${bnd.path}"/>
+    <target name="bnd-package" if="bnd.path" depends="init" >
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
@@ -211,5 +238,4 @@
             </fileset>
         </jar>
     </target>
-
 </project>
