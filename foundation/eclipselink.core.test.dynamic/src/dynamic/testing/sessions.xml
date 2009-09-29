@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sessions version="1.0.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="server-session">
+      <name>dynamic-comics</name>
+      <event-listener-classes/>
+      <logging xsi:type="eclipselink-log">
+         <log-level>fine</log-level>
+         <logging-options>
+            <log-exception-stacktrace>false</log-exception-stacktrace>
+            <print-thread>false</print-thread>
+            <print-session>false</print-session>
+            <print-connection>false</print-connection>
+            <print-date>false</print-date>
+         </logging-options>
+      </logging>
+      <session-customizer-class>org.eclipse.persistence.dynamic.DynamicHelper$SessionCustomizer</session-customizer-class>
+      <primary-project xsi:type="xml">META-INF/dynamic-comics-map.xml</primary-project>
+      <login xsi:type="database-login">
+         <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+         <user-name>scott</user-name>
+         <password>tiger</password>
+         <sequencing>
+            <default-sequence xsi:type="table-sequence">
+               <name>Default</name>
+            </default-sequence>
+         </sequencing>
+         <driver-class>oracle.jdbc.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@localhost:1521:ORCL</connection-url>
+         <batch-writing>true</batch-writing>
+         <struct-converters/>
+      </login>
+      <connection-pools>
+         <read-connection-pool>
+            <name>ReadConnectionPool</name>
+            <min-connections>1</min-connections>
+            <exclusive>false</exclusive>
+         </read-connection-pool>
+         <write-connection-pool>
+            <name>default</name>
+            <min-connections>1</min-connections>
+         </write-connection-pool>
+      </connection-pools>
+      <connection-policy/>
+   </session>
+</sessions>
