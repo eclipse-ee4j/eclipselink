@@ -2818,24 +2818,7 @@ public class AnnotationsProcessor {
 
         return schemaInfo;
     }
-    
-    /**
-     * Convenience method to determine if a class exists in a given ArrayList.  The qualified names
-     * are compared via equals() method.
-     *  
-     * @param className
-     * @param existingClasses
-     * @return
-     */
-    public static boolean classExistsInArray(String className, ArrayList<JavaClass> existingClasses) {
-        for (JavaClass jClass : existingClasses) {
-            if (jClass.getQualifiedName().equals(className)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+       
     /**
      * Convenience method which class pre and postBuildTypeInfo for a given set
      * of JavaClasses.

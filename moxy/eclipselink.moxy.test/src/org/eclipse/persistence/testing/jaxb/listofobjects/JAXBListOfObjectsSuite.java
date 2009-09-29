@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
+import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBMultipleMapsTestCases;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -39,9 +41,10 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBListNameCollisionEmployee2TestCases.class);
 		suite.addTestSuite(JAXBEmployeesAndIntegersTestCases.class);
 		suite.addTestSuite(JAXBStringIntegerHashMapTestCases.class);
-		//suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
+		suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
 		suite.addTestSuite(JAXBListOfObjectsNonRootTestCases.class);
 		suite.addTestSuite(JAXBObjectCollectionsTestCases.class);
+		suite.addTestSuite(JAXBMultipleMapsTestCases.class);
 		return suite;
 	}
 }
