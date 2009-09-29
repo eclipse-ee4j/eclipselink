@@ -1771,7 +1771,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
                     
-                    HashMap properties = new HashMap();
+                    HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
@@ -1824,7 +1824,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
                     
-                    HashMap properties = new HashMap();
+                    HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
@@ -2567,7 +2567,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (! isJPA10()) {
             Employee employee = new Employee();
             employee.setFirstName("Marc");
-            HashMap queryhints=new  HashMap();
+            HashMap<String, Object> queryhints=new  HashMap<String, Object>();
             EntityManager em = createEntityManager();
             try {
               beginTransaction(em);
