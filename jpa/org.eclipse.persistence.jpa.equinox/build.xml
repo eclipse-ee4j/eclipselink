@@ -119,8 +119,8 @@
         </condition>
     </target>
 
-    <target name="dep-report" depends="pre-init, test-required-deps, no-equinox-dep, no-weaving-dep"/>
-    <target name="test-required-deps">
+    <target name="dep-report" depends="pre-init, verify-required-deps, no-equinox-dep, no-weaving-dep"/>
+    <target name="verify-required-deps">
         <fail message="Cannot find: '${persistence.bundle.path}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find: '${jpa.bundle.path}'"         unless="jpa.bundle.exist"/>
