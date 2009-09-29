@@ -205,9 +205,18 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Search for any declared or inherited field.
      */
     public MetadataField getField(String name) {
+        return getField(name, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the field with the name.
+     * Search for any declared or inherited field.
+     */
+    public MetadataField getField(String name, boolean checkSuperClass) {
         MetadataField field = m_fields.get(name);
         
-        if (field == null && getSuperclassName() != null) {
+        if (checkSuperClass && (field == null) && (getSuperclassName() != null)) {
             return getSuperclass().getField(name);
         }
         
@@ -253,11 +262,19 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return the method with the name and argument types (class names).
      */
     public MetadataMethod getMethod(String name, List<String> arguments) {
+        return getMethod(name, arguments, true);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the method with the name and argument types (class names).
+     */
+    public MetadataMethod getMethod(String name, List<String> arguments, boolean checkSuperClass) {
         MetadataMethod method = m_methods.get(name);
         while ((method != null) && !method.getParameters().equals(arguments)) {
             method = method.getNext();
         }
-        if ((method == null) && (getSuperclassName() != null)) {
+        if (checkSuperClass && (method == null) && (getSuperclassName() != null)) {
             return getSuperclass().getMethod(name, arguments);
         }
         return method;
@@ -322,6 +339,34 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public String getSuperclassName() {
         return m_superclass;
+    }
+    
+    /**
+     * Return the ASM type name.
+     */
+    public String getTypeName() {
+        if (isArray()) {
+            return getName().replace('.', '/');
+        } else if (isPrimitive()) {
+            if (getName().equals("int")) {
+                return "I";
+            } else if (getName().equals("long")) {
+                return "J";
+            } else if (getName().equals("short")) {
+                return "S";
+            } else if (getName().equals("boolean")) {
+                return "Z";
+            } else if (getName().equals("float")) {
+                return "F";
+            } else if (getName().equals("double")) {
+                return "D";
+            } else if (getName().equals("char")) {
+                return "C";
+            } else if (getName().equals("byte")) {
+                return "B";
+            }
+        }
+        return "L" + getName().replace('.', '/') + ";";
     }
     
     /**

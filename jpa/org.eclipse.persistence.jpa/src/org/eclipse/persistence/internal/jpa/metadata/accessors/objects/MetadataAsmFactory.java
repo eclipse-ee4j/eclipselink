@@ -178,7 +178,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             if (classMetadata.isJDK()) {
                 return;
             }
-            MetadataField field = new MetadataField(MetadataAsmFactory.this);
+            MetadataField field = new MetadataField(classMetadata);
             field.setName(name);
             field.setAttributeName(name);
             field.setGenericType(getGenericType(attrs));

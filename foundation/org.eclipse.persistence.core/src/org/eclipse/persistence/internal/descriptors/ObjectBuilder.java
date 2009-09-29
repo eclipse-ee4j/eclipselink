@@ -1197,15 +1197,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * INTERNAL:
      * Build just the primary key mappings into the object.
      */
-    public void buildPrimaryKeyAttributesIntoObject(Object original, AbstractRecord databaseRow, ObjectBuildingQuery query) throws DatabaseException, QueryException {
-        AbstractSession executionSession = query.getSession().getExecutionSession(query);
-
+    public void buildPrimaryKeyAttributesIntoObject(Object original, AbstractRecord databaseRow, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException, QueryException {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getPrimaryKeyMappings();
+        List mappings = this.primaryKeyMappings;
         int mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
-            mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
+            mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, session);
         }
     }
 

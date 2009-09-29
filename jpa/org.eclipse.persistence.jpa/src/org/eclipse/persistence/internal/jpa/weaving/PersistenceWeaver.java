@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.internal.weaving;
+package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
 import java.lang.instrument.*;

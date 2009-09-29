@@ -32,6 +32,13 @@ public class JEEPlatform implements ServerPlatform {
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
     public static EntityManagerFactory entityManagerFactory;
+
+    /**
+     * Nothing required in JEE.
+     */
+    public void initialize() {
+        
+    }
     
     /**
      * Return if the JTA transaction is active.

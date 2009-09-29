@@ -231,7 +231,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataField visitVariable(VariableElement variableElement, MetadataClass metadataClass) {
-        MetadataField field = new MetadataField(metadataClass.getMetadataFactory());
+        MetadataField field = new MetadataField(metadataClass);
         
         // Set the name.
         field.setName(variableElement.getSimpleName().toString());

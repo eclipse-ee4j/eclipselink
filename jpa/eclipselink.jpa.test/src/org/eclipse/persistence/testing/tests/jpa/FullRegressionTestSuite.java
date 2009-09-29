@@ -77,7 +77,7 @@ import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 import org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest;
 
-public class FullRegressionTestSuite extends TestSuite{
+public class FullRegressionTestSuite extends TestSuite {
     
     public static Test suite() {
         TestSuite fullSuite = new TestSuite();

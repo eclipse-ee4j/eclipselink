@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHa
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -82,7 +81,7 @@ public class PersistenceUnitProcessor {
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
             set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl()));
         }
-        set.addAll(buildPersistentClassSetFromXMLDocuments(persistenceUnitInfo, loader));        
+        // No longer need to add classes from XML, as temp class loader is only used for sessions.xml.
         return set;
     }
     
@@ -92,36 +91,15 @@ public class PersistenceUnitProcessor {
      * The list contains Classes specified in the PersistenceUnitInfo's class 
      * list and also files that are annotated with @Entity and @Embeddable in
      * the jar files provided in the persistence info. This list of classes will 
-     * used by TopLink to build a deployment project and to decide what classes 
+     * used to build a deployment project and to decide what classes 
      * to weave.
      */
-    public static Collection<Class> buildEntityList(MetadataProject project, ClassLoader loader) {
-        ArrayList<Class> entityList = new ArrayList<Class>();
-        for (String className : project.getWeavableClassNames()) {
-            try {
-                Class entityClass = loader.loadClass(className);
-                entityList.add(entityClass);
-            } catch (ClassNotFoundException exc) {
-                AbstractSessionLog.getLog().log(SessionLog.CONFIG, "exception_loading_entity_class", className, exc);
-            }
-        }
-        
+    public static Collection<MetadataClass> buildEntityList(MetadataProcessor processor, ClassLoader loader) {
+        ArrayList<MetadataClass> entityList = new ArrayList<MetadataClass>();
+        for (String className : processor.getProject().getWeavableClassNames()) {
+            entityList.add(processor.getMetadataFactory().getMetadataClass(className));
+        }        
         return entityList;
-    }
-
-    /**
-     * Return a Set<String> of the classnames represented in the mapping files 
-     * specified in info.
-     */
-    private static Set<String> buildPersistentClassSetFromXMLDocuments(PersistenceUnitInfo info, ClassLoader loader){
-        // Build a MetadataProcessor to search the mapped classes in orm xml 
-        // documents. We hand in a null session since none of the functionality 
-        // required uses a session. (At least we hope not)
-        MetadataProcessor processor = new MetadataProcessor(info, null, loader, false, false);
-        // Read the mapping files.
-        processor.loadMappingFiles(false);
-        // Return the class set.
-        return processor.getPersistenceUnitClassSetFromMappingFiles();
     }
 
     /**

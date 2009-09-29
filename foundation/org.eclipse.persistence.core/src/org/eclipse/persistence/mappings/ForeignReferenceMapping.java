@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.weaving.ClassWeaver;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -812,8 +811,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 if (usesMethodAccess) {
                     originalSetMethod = getSetMethodName();
                 }
-                setGetMethodName(ClassWeaver.getWeavedValueHolderGetMethodName(getAttributeName()));
-                setSetMethodName(ClassWeaver.getWeavedValueHolderSetMethodName(getAttributeName()));
+                setGetMethodName(Helper.getWeavedValueHolderGetMethodName(getAttributeName()));
+                setSetMethodName(Helper.getWeavedValueHolderSetMethodName(getAttributeName()));
                 if (usesMethodAccess) {
                     useWeavedIndirection(originalSetMethod);
                 }

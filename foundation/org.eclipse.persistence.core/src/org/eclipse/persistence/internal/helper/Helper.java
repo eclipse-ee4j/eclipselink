@@ -2164,17 +2164,31 @@ public class Helper implements Serializable {
             return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
         }
     }
+
+    /**
+     * Return the get method name weaved for a value-holder attribute.
+     */
+    public static String getWeavedValueHolderGetMethodName(String attributeName) {
+        return "_persistence_get" + attributeName + "_vh";
+    }
+    
+    /**
+     * Return the set method name weaved for a value-holder attribute.
+     */
+    public static String getWeavedValueHolderSetMethodName(String attributeName) {
+        return "_persistence_set" + attributeName + "_vh";
+    }
     
     /**
      * Close a closeable object, eating the exception
      */
     public static void close(Closeable c) {
-    	try {
-    		if (c != null) {
-    			c.close();
-    		}
-    	} catch (IOException exception) {
-    	}
+        try {
+            if (c != null) {
+                c.close();
+            }
+        } catch (IOException exception) {
+        }
     }
 
     /**

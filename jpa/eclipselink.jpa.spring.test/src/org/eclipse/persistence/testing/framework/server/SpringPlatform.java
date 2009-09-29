@@ -31,6 +31,18 @@ public class SpringPlatform implements ServerPlatform {
     TransactionStatus status;
     String persistenceUnit;
     Map<String, ClassPathXmlApplicationContext> contexts = new HashMap<String, ClassPathXmlApplicationContext>();
+
+    /**
+     * This is a hack to enable weaving in Spring tests.
+     * The Spring agent does not load persistence units in premain
+     * So it must be forced to do so before any domain classes are loaded,
+     * otherwise weaving will not work.
+     * TODO: Spring needs to fix this or something.
+     */
+    public void initialize() {
+        getContext("default");
+        getContext("fieldaccess");
+    }
     
     /**
      * Return if the Spring transaction is active.
@@ -148,10 +160,17 @@ public class SpringPlatform implements ServerPlatform {
      * Return the managed EntityManagerFactory for the persistence unit.
      */
     public ClassPathXmlApplicationContext getContext() {
-        ClassPathXmlApplicationContext context = this.contexts.get(this.persistenceUnit);
+        return getContext(this.persistenceUnit);
+    }
+    
+    /**
+     * Return the managed EntityManagerFactory for the persistence unit.
+     */
+    public ClassPathXmlApplicationContext getContext(String persistenceUnit) {
+        ClassPathXmlApplicationContext context = this.contexts.get(persistenceUnit);
         if (context == null) {
-            context = new ClassPathXmlApplicationContext(this.persistenceUnit + "-spring.xml");
-            this.contexts.put(this.persistenceUnit, context);            
+            context = new ClassPathXmlApplicationContext(persistenceUnit + "-spring.xml");
+            this.contexts.put(persistenceUnit, context);            
         }
         return context;
     }

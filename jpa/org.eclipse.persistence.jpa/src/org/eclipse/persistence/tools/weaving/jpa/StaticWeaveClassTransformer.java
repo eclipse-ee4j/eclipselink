@@ -40,7 +40,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.weaving.TransformerFactory;
+import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 
 /**
 * <p>
@@ -156,7 +156,7 @@ public class StaticWeaveClassTransformer {
         PersistenceUnitProcessor.processORMetadata(processor, false);
 
         //Collection entities = buildEntityList(persistenceUnitInfo, privateClassLoader);
-        Collection entities = PersistenceUnitProcessor.buildEntityList(processor.getProject(), privateClassLoader);
+        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
 
         boolean weaveLazy = true;
         String weaveL = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_LAZY);

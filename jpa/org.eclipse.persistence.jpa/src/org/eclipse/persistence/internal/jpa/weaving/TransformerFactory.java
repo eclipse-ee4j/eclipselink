@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,11 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.internal.weaving;
+package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -25,14 +22,12 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -54,8 +49,8 @@ public class TransformerFactory {
     public static final String CANNOT_WEAVE_CHANGETRACKING = "cannot_weave_changetracking";
     
     protected Session session;
-    protected Collection entityClasses;
-    protected Map classDetailsMap;
+    protected Collection<MetadataClass> entityClasses;
+    protected Map<String, ClassDetails> classDetailsMap;
     protected ClassLoader classLoader;
     protected boolean weaveChangeTracking;
     protected boolean weaveLazy;
@@ -63,7 +58,7 @@ public class TransformerFactory {
     protected boolean weaveInternal;
     
     public static PersistenceWeaver createTransformerAndModifyProject(
-            Session session, Collection entityClasses, ClassLoader classLoader,
+            Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader,
             boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         if (session == null) {
             throw new IllegalArgumentException("Weaver session cannot be null");
@@ -77,11 +72,11 @@ public class TransformerFactory {
         return tf.buildPersistenceWeaver();
     }
     
-    public TransformerFactory(Session session, Collection entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
+    public TransformerFactory(Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         this.session = session;
         this.entityClasses = entityClasses;
         this.classLoader = classLoader;
-        classDetailsMap = new HashMap();
+        this.classDetailsMap = new HashMap<String, ClassDetails>();
         this.weaveLazy = weaveLazy;
         this.weaveChangeTracking = weaveChangeTracking;
         this.weaveFetchGroups = weaveFetchGroups;
@@ -95,7 +90,7 @@ public class TransformerFactory {
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
-    public void addClassDetailsForMappedSuperClasses(Class clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
+    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
         // This class has inheritance to a mapped entity rather than a MappedSuperClass
         if (initialDescriptor.getInheritancePolicyOrNull() != null && initialDescriptor.getInheritancePolicyOrNull().getParentClass() != null){
             return;
@@ -105,8 +100,8 @@ public class TransformerFactory {
             return;
         }
         
-        Class superClz = clz.getSuperclass();
-        if (superClz == null || superClz == java.lang.Object.class){
+        MetadataClass superClz = clz.getSuperclass();
+        if (superClz == null || superClz.isObject()){
             return;
         }
        
@@ -136,29 +131,27 @@ public class TransformerFactory {
     public void buildClassDetailsAndModifyProject() {
         if (entityClasses != null && entityClasses.size() > 0) {
             // scan thru list building details of persistent classes
-            for (Iterator i = entityClasses.iterator(); i.hasNext();) {
-                Class clz = (Class)i.next();
-                
+            for (MetadataClass metaClass : entityClasses) {                
                 // check to ensure that class is present in project
-                ClassDescriptor descriptor = findDescriptor(session.getProject(), clz.getName());
+                ClassDescriptor descriptor = findDescriptor(session.getProject(), metaClass.getName());
                 if (descriptor == null) {
-                    log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{clz.getName()});
+                    log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
                 } else {
-                    log(SessionLog.FINER, WEAVER_PROCESSING_CLASS, new Object[]{clz.getName()});
+                    log(SessionLog.FINER, WEAVER_PROCESSING_CLASS, new Object[]{metaClass.getName()});
 
-                    boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(clz, descriptor.getMappings());
-                    boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, clz, weaveChangeTracking);
+                    boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(metaClass, descriptor.getMappings());
+                    boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
                     
-                    ClassDetails classDetails = createClassDetails(clz, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
+                    ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
                     if (descriptor.isAggregateDescriptor()) {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
                     }
-                    List unMappedAttributes = storeAttributeMappings(clz, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
+                    List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);
 
                     if (!unMappedAttributes.isEmpty()){
-                        addClassDetailsForMappedSuperClasses(clz, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
+                        addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
                     }
                     if (classDetails.getLazyMappings() != null){
                         Iterator iterator = classDetails.getLazyMappings().iterator();
@@ -174,11 +167,11 @@ public class TransformerFactory {
             // hookup superClassDetails
             for (Iterator i = classDetailsMap.values().iterator(); i.hasNext();) {
                 ClassDetails classDetails = (ClassDetails)i.next();
-                ClassDetails superClassDetails = (ClassDetails)classDetailsMap.get(classDetails.getSuperClassName());
+                ClassDetails superClassDetails = classDetailsMap.get(classDetails.getSuperClassName());
                 if (superClassDetails == null) {
                     ClassDescriptor descriptor = findDescriptor(session.getProject(), classDetails.getClassName());
                     if (descriptor != null && descriptor.hasInheritance()){
-                        superClassDetails = (ClassDetails)classDetailsMap.get(descriptor.getInheritancePolicy().getParentClassName());
+                        superClassDetails = classDetailsMap.get(descriptor.getInheritancePolicy().getParentClassName());
                     }
                 }
                 if (superClassDetails != null) {
@@ -200,7 +193,7 @@ public class TransformerFactory {
      * This could occur either if the class already has change tracking implemented or if the
      * class is capable of having change tracking woven based on the descriptor.
      */
-    protected boolean canChangeTrackingBeEnabled(ClassDescriptor descriptor, Class clz, boolean globalWeaveChangeTracking) {
+    protected boolean canChangeTrackingBeEnabled(ClassDescriptor descriptor, MetadataClass clz, boolean globalWeaveChangeTracking) {
         if (!globalWeaveChangeTracking) {
           return false;
         }
@@ -234,7 +227,7 @@ public class TransformerFactory {
     /**
      * Determine if value holders are required to be weaved into the class.
      */
-    protected boolean canWeaveValueHolders(Class clz, List mappings) {
+    protected boolean canWeaveValueHolders(MetadataClass clz, List mappings) {
         // we intend to change to fetch=LAZY 1:1 attributes to ValueHolders
         boolean weaveValueHolders = false; 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
@@ -242,9 +235,9 @@ public class TransformerFactory {
             String attributeName = mapping.getAttributeName();
             if (mapping.isForeignReferenceMapping()) {
                 ForeignReferenceMapping foreignReferenceMapping = (ForeignReferenceMapping)mapping;
-                Class typeClass = getAttributeTypeFromClass(clz, attributeName, foreignReferenceMapping, true);
+                MetadataClass typeClass = getAttributeTypeFromClass(clz, attributeName, foreignReferenceMapping, true);
                 if ((foreignReferenceMapping.getIndirectionPolicy() instanceof BasicIndirectionPolicy) &&
-                        (typeClass != null)  && (!ValueHolderInterface.class.isAssignableFrom(typeClass))) {
+                        (typeClass != null)  && (!typeClass.extendsInterface(ValueHolderInterface.class))) {
                     weaveValueHolders = true;
                  }
              }
@@ -252,30 +245,20 @@ public class TransformerFactory {
         return weaveValueHolders;
     }
 
-    private ClassDetails createClassDetails(Class clz, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
+    private ClassDetails createClassDetails(MetadataClass metadataClass, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         // compose className in JVM 'slash' format
         // instead of regular Java 'dotted' format
-        String className = Helper.toSlashedClassName(clz.getName());
-        String superClassName = Helper.toSlashedClassName(clz.getSuperclass().getName());
+        String className = Helper.toSlashedClassName(metadataClass.getName());
+        String superClassName = Helper.toSlashedClassName(metadataClass.getSuperclass().getName());
         ClassDetails classDetails = new ClassDetails();
-        classDetails.setDescribedClass(clz);
+        classDetails.setDescribedClass(metadataClass);
         classDetails.setClassName(className);
         classDetails.setSuperClassName(superClassName);
         classDetails.setShouldWeaveValueHolders(weaveValueHolders);
         classDetails.setShouldWeaveChangeTracking(weaveChangeTracking);
         classDetails.setShouldWeaveFetchGroups(weaveFetchGroups);
         classDetails.setShouldWeaveInternal(weaveInternal);
-        Method method = null;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    method = (Method)AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(clz, "clone", null));
-                } catch (PrivilegedActionException exception) {
-                }
-            } else {
-                method = PrivilegedAccessHelper.getDeclaredMethod(clz, "clone", null);
-            }
-        } catch (NoSuchMethodException e){}
+        MetadataMethod method = metadataClass.getMethod("clone", new ArrayList());
         classDetails.setImplementsCloneMethod(method != null);
         return classDetails;
     }
@@ -299,109 +282,38 @@ public class TransformerFactory {
     /**
      * Return if the class contains the field.
      */
-    protected boolean hasFieldInClass(Class clz, String attributeName){       
-        try {
-            Field field = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(clz, attributeName, false));
-                } catch (PrivilegedActionException ignore) { }
-            } else {
-                field = PrivilegedAccessHelper.getField(clz, attributeName, false);
-            }
-            return field != null;
-        }  catch (Exception ignore) { }
-
-        return false;
+    protected boolean hasFieldInClass(MetadataClass metadataClass, String attributeName) {       
+        return metadataClass.getField(attributeName) != null;
     }
     
     /**
      * Return the class which is the source of the attribute.
      * i.e. the class that defines the attribute in its class file.
      */
-    private Class getAttributeDeclaringClass(Class theClass, String attributeName) {       
-        try {
-            Field field = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(theClass, attributeName, false));
-                } catch (PrivilegedActionException exception) {
-                }
-            } else {
-                field = PrivilegedAccessHelper.getField(theClass, attributeName, false);
-            }
-            return field.getDeclaringClass();
-        }  catch (Exception e) {  }
-
-        return null;
+    private MetadataClass getAttributeDeclaringClass(MetadataClass metadataClass, String attributeName) {       
+        MetadataField field = metadataClass.getField(attributeName);
+        return field.getDeclaringClass();
     }
     
     /**
      * Use the database mapping for an attribute to find it's type.  The type returned will either be
      * the field type of the field in the object or the type returned by the getter method.
      */
-    private Class getAttributeTypeFromClass(Class clz, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
+    private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
         String getterMethod = mapping.getGetMethodName();
-        if (mapping != null && getterMethod != null){
-            try{
-                Method method = null;
-                if (checkSuperclass){
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            method = AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        method = PrivilegedAccessHelper.getMethod(clz, getterMethod, null, false);
-                    }
-                } else {
-                    method = null;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            method = (Method)AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(clz, getterMethod, null));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        method = PrivilegedAccessHelper.getDeclaredMethod(clz, getterMethod, null);
-                    }
-                }
-                if (method != null){
-                    return method.getReturnType();
-                }
-            }  catch (Exception e) {  }
+        if (mapping != null && getterMethod != null) {
+            MetadataMethod method = metadataClass.getMethod(getterMethod, new ArrayList(), checkSuperclass);
+            if (method == null) {
+                return null;
+            }
+            return method.getMetadataFactory().getMetadataClass(method.getReturnType());
         } else {
-            try {
-                Class typeClz = null;
-                if (checkSuperclass){
-                    Field field = null;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            field = (Field)AccessController.doPrivileged(new PrivilegedGetField(clz, attributeName, false));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        field = PrivilegedAccessHelper.getField(clz, attributeName, false);
-                    }
-                    typeClz = field.getType();                     
-                } else {
-                    Field field = null;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            field = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clz, attributeName, false));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        field = PrivilegedAccessHelper.getDeclaredField(clz, attributeName, false);
-                    }
-                    typeClz = field.getType();  
-                }
-                if (typeClz != null){
-                    return typeClz;
-                }
-            }  catch (Exception e) {  }
+            MetadataField field = metadataClass.getField(attributeName, checkSuperclass);
+            if (field == null) {
+                return null;
+            }
+            return field.getMetadataFactory().getMetadataClass(field.getType());
         }
-
-        return null;
     }
 
     /**
@@ -410,7 +322,7 @@ public class TransformerFactory {
      *  Return the list of mappings that is not specifically found on the given class.  These attributes will 
      *  be found on MappedSuperclasses.
      */
-    protected List storeAttributeMappings(Class clz, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
+    protected List storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
         List unMappedAttributes = new ArrayList();
         Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
@@ -423,7 +335,7 @@ public class TransformerFactory {
             AttributeDetails attributeDetails = new AttributeDetails(attribute, mapping);
             
             // Initial look for the type of this attribute.
-            Class typeClass = getAttributeTypeFromClass(clz, attribute, mapping, false);
+            MetadataClass typeClass = getAttributeTypeFromClass(metadataClass, attribute, mapping, false);
             if (typeClass == null) {
                 attributeDetails.setAttributeOnSuperClass(true);
                 unMappedAttributes.add(mapping);
@@ -444,14 +356,14 @@ public class TransformerFactory {
                 
                 // If the property has a matching field, then weave it instead (unless internal weaving is disabled).
                 if (this.weaveInternal) {
-                    attributeDetails.setHasField(hasFieldInClass(clz, attribute));
+                    attributeDetails.setHasField(hasFieldInClass(metadataClass, attribute));
                 }
             } else {
                 attributeDetails.setHasField(true);
             }
             // If the attribute has a field, then the weaver needs to know in which class it was defined.
             if (attributeDetails.hasField()) {
-                attributeDetails.setDeclaringType(Type.getType(getAttributeDeclaringClass(clz, attribute)));
+                attributeDetails.setDeclaringType(Type.getType(getAttributeDeclaringClass(metadataClass, attribute).getTypeName()));
             }
 
             // Check for lazy/value-holder indirection.
@@ -460,26 +372,17 @@ public class TransformerFactory {
                 
                 // repopulate the reference class with the target of this mapping
                 attributeDetails.setReferenceClassName(foreignReferenceMapping.getReferenceClassName());
-                Class referenceClass = null;
                 if (attributeDetails.getReferenceClassName() != null) {
-                    try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try {
-                                referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeDetails.getReferenceClassName(), true, classLoader));
-                            } catch (PrivilegedActionException exception) {}
-                        } else {
-                            referenceClass = PrivilegedAccessHelper.getClassForName(attributeDetails.getReferenceClassName(), true, classLoader);
-                        }
-                    } catch (ClassNotFoundException exception){}
-                    attributeDetails.setReferenceClassType(Type.getType(referenceClass));
+                    MetadataClass referenceClass = metadataClass.getMetadataFactory().getMetadataClass(attributeDetails.getReferenceClassName());
+                    attributeDetails.setReferenceClassType(Type.getType(referenceClass.getTypeName()));
                 }
                 
                 // This time, look up the type class and include the superclass so we can check for lazy.
                 if (typeClass == null){
-                    typeClass = getAttributeTypeFromClass(clz, attribute, foreignReferenceMapping, true);
+                    typeClass = getAttributeTypeFromClass(metadataClass, attribute, foreignReferenceMapping, true);
                 }
                 if (weaveValueHolders && (foreignReferenceMapping.getIndirectionPolicy() instanceof BasicIndirectionPolicy) &&
-                        (typeClass != null)  && (!ValueHolderInterface.class.isAssignableFrom(typeClass))) {
+                        (typeClass != null)  && (!typeClass.extendsInterface(ValueHolderInterface.class))) {
                     lazyMappings.add(foreignReferenceMapping);
                     attributeDetails.weaveVH(weaveValueHolders, foreignReferenceMapping);
                 }
@@ -487,12 +390,12 @@ public class TransformerFactory {
             
             if (attributeDetails.getReferenceClassType() == null){
                 if (typeClass == null){
-                    typeClass = getAttributeTypeFromClass(clz, attribute, mapping, true);
+                    typeClass = getAttributeTypeFromClass(metadataClass, attribute, mapping, true);
                 }
             }
             if (typeClass != null) {
                 attributeDetails.setReferenceClassName(typeClass.getName());
-                attributeDetails.setReferenceClassType(Type.getType(typeClass));
+                attributeDetails.setReferenceClassType(Type.getType(typeClass.getTypeName()));
             }
             attributesMap.put(attribute, attributeDetails);    
         }

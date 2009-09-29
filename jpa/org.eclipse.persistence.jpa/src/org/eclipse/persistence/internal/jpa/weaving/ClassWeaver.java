@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,10 +10,11 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.weaving;
+package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.util.*;
 
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.commons.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
@@ -145,14 +146,14 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Return the get method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderGetMethodName(String attributeName) {
-        return "_persistence_get" + attributeName + "_vh";
+        return Helper.getWeavedValueHolderGetMethodName(attributeName);
     }
     
     /**
      * Return the set method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderSetMethodName(String attributeName) {
-        return "_persistence_set" + attributeName + "_vh";
+        return Helper.getWeavedValueHolderSetMethodName(attributeName);
     }
     
     /**

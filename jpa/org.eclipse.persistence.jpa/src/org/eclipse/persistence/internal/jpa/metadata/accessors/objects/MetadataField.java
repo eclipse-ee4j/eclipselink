@@ -29,12 +29,15 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class MetadataField extends MetadataAnnotatedElement {    
+public class MetadataField extends MetadataAnnotatedElement {
+    protected MetadataClass declaringClass;
+    
     /**
      * INTERNAL:
      */
-    public MetadataField(MetadataFactory factory) {
-        super(factory);
+    public MetadataField(MetadataClass metadataClass) {
+        super(metadataClass.getMetadataFactory());
+        this.declaringClass = metadataClass;
     }
         
     /**
@@ -69,5 +72,13 @@ public class MetadataField extends MetadataAnnotatedElement {
         }
         
         return true;
+    }
+
+    public MetadataClass getDeclaringClass() {
+        return declaringClass;
+    }
+
+    public void setDeclaringClass(MetadataClass declaringClass) {
+        this.declaringClass = declaringClass;
     }
 }

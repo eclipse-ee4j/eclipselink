@@ -86,13 +86,13 @@ public abstract class JPAInitializer {
             if (emSetupImpl != null && !emSetupImpl.isUndeployed()){
                 return false;
             }
-            Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
             AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
             Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
             // Bug#4452468  When globalInstrumentation is null, there is no weaving
             checkWeaving(mergedProperties);
             
             if (persistenceUnitInfo instanceof SEPersistenceUnitInfo){
+                Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
                 // Create the temp loader that will not cache classes for entities in our persistence unit
                 ClassLoader tempLoader = createTempLoader(tempLoaderSet);
                 ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);

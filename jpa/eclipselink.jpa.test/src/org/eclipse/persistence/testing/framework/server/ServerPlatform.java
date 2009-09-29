@@ -18,6 +18,11 @@ import javax.persistence.EntityManagerFactory;
 public interface ServerPlatform {
 
     /**
+     * Allow for any initialization.
+     */
+    void initialize();
+    
+    /**
      * Return if the JTA transaction is active.
      */
     boolean isTransactionActive();

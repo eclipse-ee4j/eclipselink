@@ -68,12 +68,33 @@ public abstract class JUnitTestCase extends TestCase {
         emfNamedPersistenceUnits = new Hashtable();
     }
     
+    protected static boolean isInitialzied;
+    
+    /**
+     * This is a hack to enable weaving in Spring tests.
+     * The Spring agent does not load persistence units in premain
+     * So it must be forced to do so before any domain classes are loaded,
+     * otherwise weaving will not work.
+     */
+    static void initializePlatform() {
+        if (isInitialzied) {
+            return;
+        }
+        ServerPlatform platform = getServerPlatform();
+        if (platform != null) {
+            platform.initialize();
+        }
+        isInitialzied = true;
+    }
+    
     public JUnitTestCase() {
         super();
+        initializePlatform();
     }
 
     public JUnitTestCase(String name) {
         super(name);
+        initializePlatform();
     }
     
     /**

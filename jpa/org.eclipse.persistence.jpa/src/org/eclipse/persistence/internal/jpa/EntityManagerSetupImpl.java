@@ -37,8 +37,8 @@ import javax.persistence.PersistenceException;
 import javax.persistence.ValidationMode;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
-import org.eclipse.persistence.internal.weaving.TransformerFactory;
+import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
+import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -54,7 +54,9 @@ import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
@@ -761,7 +763,8 @@ public class EntityManagerSetupImpl {
                 // Bug 229634: If we switched to using the non-temporary classLoader then disable weaving
                 if(!privateClassLoaderHolder.isTempClassLoader()) {
                     // Disable dynamic weaving for the duration of this predeploy()
-                    enableWeaving = Boolean.FALSE;
+                    // Now leave weaving enabled, as there is no dependency on the temp class loader.
+                    //enableWeaving = Boolean.FALSE;
                 }
             }
             
@@ -861,7 +864,7 @@ public class EntityManagerSetupImpl {
                 // be returned if we we are mean to process these mappings
                 if (enableWeaving) {                
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                    Collection entities = PersistenceUnitProcessor.buildEntityList(processor.getProject(), privateClassLoader);
+                    Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
                     this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             } else {
@@ -870,7 +873,12 @@ public class EntityManagerSetupImpl {
                 if (enableWeaving) {
                     // If deploying from a sessions-xml it is still desirable to allow the classes to be weaved.                
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                    Collection persistenceClasses = new ArrayList(session.getProject().getDescriptors().keySet());
+                    Collection persistenceClasses = new ArrayList();
+
+                    MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(session), privateClassLoader);
+                    for (Iterator iterator = session.getProject().getDescriptors().keySet().iterator(); iterator.hasNext(); ) {
+                        persistenceClasses.add(factory.getMetadataClass(((Class)iterator.next()).getName()));
+                    }
                     this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             }

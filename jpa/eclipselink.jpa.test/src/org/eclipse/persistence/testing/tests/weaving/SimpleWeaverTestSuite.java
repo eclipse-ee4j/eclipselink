@@ -12,20 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.weaving;
 
-// J2SE imports
 import java.util.*;
 import java.io.*;
 
-// JUnit imports
 import junit.framework.*;
 
-// TopLink imports
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.models.weaving.SimpleObject;
 import org.eclipse.persistence.testing.models.weaving.SimpleProject;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.weaving.*;
+import org.eclipse.persistence.internal.jpa.weaving.*;
 
 public class SimpleWeaverTestSuite extends TestCase {
 	
@@ -119,7 +117,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 	public void nullSessionTest() {
 		boolean expectedFailure = false;
 		try {
-			PersistenceWeaver tw =	(PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(null, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
+			TransformerFactory.createTransformerAndModifyProject(null, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
 
 		}
 		catch (IllegalArgumentException iae) {
@@ -133,8 +131,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 	public void nullProjectTest(Session session) {
 		boolean expectedFailure = false;
 		try {
-			PersistenceWeaver tw =
-				(PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
+			TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
 		}
 		catch (IllegalArgumentException iae) {
 			expectedFailure = true;
@@ -146,8 +143,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 	
 	public void nullEntitiesTest(Session session) {
 		try {
-			PersistenceWeaver tw =
-				(PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
+			TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
 		}
 		catch (Exception e) {
 			fail(getName() + " failed: " + e.toString());
@@ -156,8 +152,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 	
 	public void emptyEntitiesTest(Session session) {
 		try {
-			PersistenceWeaver tw =
-				(PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, new ArrayList(), Thread.currentThread().getContextClassLoader(), true, false, true, true); 
+			TransformerFactory.createTransformerAndModifyProject(session, new ArrayList(), Thread.currentThread().getContextClassLoader(), true, false, true, true); 
 		}
 		catch (Exception e) {
 			fail(getName() + " failed: " + e.toString());
@@ -168,7 +163,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 
 		PersistenceWeaver tw = null;
 		try {
-			tw = (PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
+			tw = TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true); 
 		}
 		catch (Exception e) {
 			fail(getName() + " failed: " + e.toString());

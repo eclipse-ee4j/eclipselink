@@ -5741,7 +5741,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (primaryKey instanceof List) {
                     AbstractRecord row = descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(primaryKeyValues, this);
                     reference = descriptor.getObjectBuilder().buildNewInstance();
-                    descriptor.getObjectBuilder().buildPrimaryKeyAttributesIntoObject(reference, row, new ReadObjectQuery());
+                    descriptor.getObjectBuilder().buildPrimaryKeyAttributesIntoObject(reference, row, new ReadObjectQuery(), this);
                 } else {
                     reference = descriptor.getCMPPolicy().createBeanUsingKey(primaryKey, this);
                 }

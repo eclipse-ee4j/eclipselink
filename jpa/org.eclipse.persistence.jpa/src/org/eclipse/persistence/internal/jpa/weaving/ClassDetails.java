@@ -10,10 +10,11 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.weaving;
+package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.util.*;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -23,7 +24,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public class ClassDetails {
     
-    protected Class describedClass;    
+    protected MetadataClass describedClass;    
     /** Name of this class. */
     protected String className;
     /** Superclass' name. */
@@ -58,7 +59,7 @@ public class ClassDetails {
     public ClassDetails() {
     }
     
-    public Class getDescribedClass(){
+    public MetadataClass getDescribedClass(){
         return describedClass;
     }
     
@@ -66,7 +67,7 @@ public class ClassDetails {
         return className;
     }
     
-    public void setDescribedClass(Class describedClass){
+    public void setDescribedClass(MetadataClass describedClass){
         this.describedClass = describedClass;
     }
     
