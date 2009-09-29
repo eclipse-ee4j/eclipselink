@@ -289,7 +289,7 @@
     <!-- Compiles all tests. -->
     <target name="compile" description="compile EclipseLink testing"
             depends="init, config-trunk, config-flat,
-                     compile-with-modelgen, compile-standard, compile-springplatform, compile-criteria"/>
+                     compile-with-modelgen, compile-standard, compile-springplatform, compile-criteria, compile-fullregression"/>
 
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
@@ -325,6 +325,26 @@
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+    
+    <target name="compile-fullregression">
+        <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
+               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
+            <include name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
