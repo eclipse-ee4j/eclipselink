@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.queries.ReportQuery;
 
 public class QueryBuilderImpl implements QueryBuilder {
     
@@ -1342,33 +1343,9 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return predicate
      */
-    public <E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection){
-        if (elem instanceof Expression) {
-            return isMember((Expression)elem, collection);
-        }
 
-/*        Type type = metamodel.type(elem.getClass());
-        Expression currentNode;
-        if ( type != null && type.getPersistenceType() == PersistenceType.ENTITY){
-            EntityTypeImpl eti = (EntityTypeImpl)type;
-            if (!(eti).hasSingleIdAttribute()) {
-                currentNode = equal(((Path)collection).get(((EntityType) type).getId(Object.class)), eti.getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(elem, session)
-                this.selection = (SelectionImpl) ((Path) this.selection).get();
-                this.subQuery.addItem(selection.getAlias() + "ID", this.selection.getCurrentNode());
-            } else {
-                Expression[] expressions = new Expression[((EntityType<T>) type).getIdClassAttributes().size()];
-                int index = 0;
-                for (SingularAttribute<? super T, ?> attr : ((EntityType<T>) type).getIdClassAttributes()) {
-                    PathImpl path = (PathImpl) ((Path) selection).get(attr);
-                    expressions[index] = path;
-                    ++index;
-                    this.subQuery.addItem(selection.getAlias() + "ID" + index, path.getCurrentNode());
-                }
-                this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, expressions);
-            }
-        }*/
-        //TODO
-        return null;
+    public <E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection){
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(elem), buildList(collection, literal(elem)), "isMember");
     }
 
     /**
@@ -1382,11 +1359,8 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(E elem, Expression<C> collection){
-        if (elem instanceof Expression) {
-            return isNotMember((Expression)elem, collection);
-        }
-        //TODO
-        return null;
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().notEqual(elem), buildList(collection, literal(elem)), "isMember");
+
     }
 
     /**
@@ -1414,7 +1388,12 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
-        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().notEqual(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isNotMemeber");
+        ReportQuery subQuery = new ReportQuery();
+        subQuery.setReferenceClass(((ExpressionImpl)elem).getJavaType());
+        subQuery.setShouldRetrievePrimaryKeys(true);
+        subQuery.setSelectionCriteria( subQuery.getExpressionBuilder().equal( ((InternalSelection)collection).getCurrentNode() ) );
+
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)elem).getCurrentNode().notExists(subQuery), buildList(elem, collection), "isNotMemeber");
     }
 
     // get the values and keys collections of the Map, which may then
@@ -1426,8 +1405,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return collection expression
      */
     public <V, M extends Map<?, V>> Expression<Collection<V>> values(M map){
-        //TODO
-        return null;
+        return literal(map.values());
     }
 
     /**
@@ -1537,7 +1515,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Predicate like(Expression<String> x, String pattern, char escapeChar){
         List list = this.buildList(x, this.literal(pattern), this.literal(escapeChar));
-        String escapeString = "" + escapeChar;
+        String escapeString = String.valueOf(escapeChar);
 
         return new CompoundExpressionImpl(this.metamodel, 
             ((InternalSelection)x).getCurrentNode().like(pattern, escapeString), list, "like");
