@@ -237,8 +237,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
             assertNotNull(buyingDaysSingularAttribute);
             assertFalse(buyingDaysSingularAttribute.isCollection());
-/*        
-            // In mid-implementation in Design Issue 74
+        
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
             // Check for Id that exists
             boolean expectedIAExceptionThrown = false;
@@ -251,7 +250,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             assertFalse(expectedIAExceptionThrown);            
             assertTrue(hasSingleIdAttribute);
-*/
+
             // Verify that the BasicMap Buyer.creditCards is picked up properly
             //* @param <X> The type the represented Map belongs to
             //* @param <K> The type of the key of the represented Map

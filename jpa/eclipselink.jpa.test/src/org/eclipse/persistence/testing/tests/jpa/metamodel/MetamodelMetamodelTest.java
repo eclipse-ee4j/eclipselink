@@ -118,9 +118,9 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 99;//94;
-    public static final int METAMODEL_ALL_TYPES = 39;//37;
-    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 26;    
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 100;//94;
+    public static final int METAMODEL_ALL_TYPES = 40;//37;
+    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 27;    
     
     public MetamodelMetamodelTest() {
         super();
@@ -1368,7 +1368,60 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not present in the managed type
              */
             //<Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type);
+            // Test normal path
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, Double> aManufacturer_DoubleAttribute = null;            
+            try {
+                aManufacturer_DoubleAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", Double.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aManufacturer_DoubleAttribute);
+            
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aManufacturer_doubleAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aManufacturer_doubleAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", double.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aManufacturer_doubleAttribute);
 
+            // Test IAE handling on wrong type
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aManufacturer_wrong_intAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aManufacturer_wrong_intAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", int.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            assertNull(aManufacturer_wrong_intAttribute);
+
+            // Test IAE handling on wrong type
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aManufacturer_wrong_IntegerAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aManufacturer_wrong_IntegerAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", Integer.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            assertNull(aManufacturer_wrong_IntegerAttribute);
+            
             /**
              *  Return the declared single-valued attribute of the 
              *  managed type that corresponds to the specified name and Java 
@@ -1381,6 +1434,62 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not declared in the managed type
              */
             //<Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type);
+            // Test normal path
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, Double> aDeclaredManufacturer_DoubleAttribute = null;            
+            try {
+                aDeclaredManufacturer_DoubleAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", Double.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aDeclaredManufacturer_DoubleAttribute);
+            
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aDeclaredManufacturer_doubleAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aDeclaredManufacturer_doubleAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", double.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(aDeclaredManufacturer_doubleAttribute);
+
+            // Test IAE handling on wrong type
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aDeclaredManufacturer_wrong_intAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aDeclaredManufacturer_wrong_intAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", int.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            assertNull(aDeclaredManufacturer_wrong_intAttribute);
+
+            // Test IAE handling on wrong type
+            expectedIAExceptionThrown = false;
+            SingularAttribute<? super Manufacturer, ?> aDeclaredManufacturer_wrong_IntegerAttribute = null;
+            // Test autoboxed rules relax throwing an IAE
+            try {
+                aDeclaredManufacturer_wrong_IntegerAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", Integer.class);                
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            assertNull(aDeclaredManufacturer_wrong_IntegerAttribute);
+            
+            // Test wrong hierarchy IAE failures
+            
             
             /**
              *  Return the single-valued attributes of the managed type.

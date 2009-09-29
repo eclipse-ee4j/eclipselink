@@ -70,6 +70,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -861,6 +862,68 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     }
 
     /**
+     * INTERNAL:
+     * This function returns whether the Object class passed in can be autoboxed
+     * (a primitive wrapped in its' object type) or the reverse - an autoboxed object
+     * that wraps a primitive type).
+     * It answers the question of whether the two classes can be considered to be essentially the same<br>
+     * This function is used by the metamodel to determine whether the 
+     * IAE (IllegalArgumentException) type checking should be relaxed for SingleAttributes.
+     * 
+     * @param targetPrimitiveOrWrapperClass (the type we are verifying against)
+     * @param actualPrimitiveOrWrapperClass (the type that may be the autoboxed or primitive equal
+     * @return
+     */
+    private boolean isAutoboxedType(Class targetPrimitiveOrWrapperClass, Class actualPrimitiveOrWrapperClass) {
+        BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
+        if ((targetPrimitiveOrWrapperClass == null) || (actualPrimitiveOrWrapperClass == null)) {
+            return false;
+        }
+        // Check for the same class in the same classloader or different classloaders
+        if (targetPrimitiveOrWrapperClass == actualPrimitiveOrWrapperClass || 
+                targetPrimitiveOrWrapperClass.getCanonicalName().equals(actualPrimitiveOrWrapperClass.getCanonicalName())) {
+            return false;
+        }
+        
+        /**
+         * We return true for any of the following combinations.
+         * boolean:Boolean byte:Byte short:Short char:Character int:Integer long:Long float:Float double:Double
+         */
+        // Are we dealing with autoboxed wrappers Boolean, Byte, Short, Character, Integer, Long, Float, Double
+        // Or are we dealing with the primitives boolean, byte, short, char, int, long, float, double
+        // Note BigDecimal, BigInteger, Calendar, Timestamp, Time and Date are not wrappers for pimitives
+        if(typeHelper.isWrapperClass(targetPrimitiveOrWrapperClass) ||
+                targetPrimitiveOrWrapperClass.isPrimitive()) {
+            // Check each type (primitive or Class) against each Class type - the target and actual can both be primitives or Objects
+            if(typeHelper.isBooleanType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isBooleanType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isByteType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isByteType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isShortType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isShortType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isCharacterType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isCharacterType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isIntType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isIntType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isLongType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isLongType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isFloatType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isFloatType(actualPrimitiveOrWrapperClass); 
+            }
+            if(typeHelper.isDoubleType(targetPrimitiveOrWrapperClass)) {
+                return typeHelper.isDoubleType(actualPrimitiveOrWrapperClass); 
+            }
+        }
+        return false;
+    }
+    
+    /**
      *  Return the single-valued attribute of the managed 
      *  type that corresponds to the specified name and Java type 
      *  in the represented type.
@@ -873,7 +936,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         SingularAttribute<? super X, Y> anAttribute = (SingularAttribute<? super X, Y>)getSingularAttribute(name);
         Class<Y> aClass = anAttribute.getType().getJavaType();
-        if(type != aClass) {
+        // Determine whether to throw an IAE for the wrong type - Note: we relax the rules for autoboxed types
+        if(type != aClass && !isAutoboxedType(type, aClass)) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                 "metamodel_managed_type_attribute_type_incorrect", 
                 new Object[] { name, this, type, aClass }));

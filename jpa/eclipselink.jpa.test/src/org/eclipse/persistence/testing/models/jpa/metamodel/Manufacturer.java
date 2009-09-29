@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.CascadeType.ALL;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     private int version;
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    @OneToMany(cascade=ALL, mappedBy="manufacturer")
+    @OneToMany(cascade=ALL, mappedBy="manufacturer")    
     private Set<Computer> computers = new HashSet<Computer>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
@@ -92,10 +93,12 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     private Integer anIntegerObject;
     private Long aLongObject;
     private BigInteger aBigIntegerObject;    
+    private BigDecimal aBigDecimalObject;    
     private Float aFloatObject;
     private Double aDoubleObject;
     private Character aCharacterObject;
     //private Enum anEnum;
+    
     
     // Define lowercase primitive non-java.lang un-boxed Basic types
     private boolean aBoolean;
@@ -376,5 +379,12 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         this.aChar = aChar;
     }
 
+    public BigDecimal getaBigDecimalObject() {
+        return aBigDecimalObject;
+    }
+
+    public void setaBigDecimal(BigDecimal aBigDecimalObject) {
+        this.aBigDecimalObject = aBigDecimalObject;
+    }
     
 }

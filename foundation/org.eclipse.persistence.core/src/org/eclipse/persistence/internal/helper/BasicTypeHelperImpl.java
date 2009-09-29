@@ -315,6 +315,13 @@ public class BasicTypeHelperImpl {
     }
 
     /**
+     * Returns true if type is the int primitive type or the Integer wrapper class
+     */
+    public boolean isIntegerType(Object type) {
+        return isIntType(type);
+    }
+    
+    /**
      * Returns true if type is the long primitive type or the Long wrapper class
      */
     public boolean isLongType(Object type) {

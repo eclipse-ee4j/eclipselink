@@ -335,6 +335,18 @@ DROP TABLE CMP3_MM_COMPUTER
         field88.setIsIdentity(false);
         table.addField(field88);
   */      
+
+        //private BigInteger aBigIntegerObject;    
+        FieldDefinition field90 = new FieldDefinition();
+        field90.setName("ABIGDECIMALOBJECT");
+        field90.setTypeName("NUMERIC");
+        field90.setSize(31);
+        field90.setShouldAllowNull(true);
+        field90.setIsPrimaryKey(false);
+        field90.setUnique(false);
+        field90.setIsIdentity(false);
+        table.addField(field90);
+
         return table;
     }
 
@@ -497,8 +509,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
         table.addField(field8);        
-
-        
+ 
         return table;
     }
 
