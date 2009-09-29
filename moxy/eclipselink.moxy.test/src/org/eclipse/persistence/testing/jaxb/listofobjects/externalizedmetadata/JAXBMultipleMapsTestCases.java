@@ -40,6 +40,8 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 	
 	public Map<String, Integer> mapField1;	
 	
+	private Type[] types;
+	
 	public JAXBMultipleMapsTestCases(String name) throws Exception {
 		super(name);
 		init();
@@ -47,7 +49,7 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
-		Type[] types = new Type[2];
+		types = new Type[2];
 		types[0] = getTypeToUnmarshalTo();
 				  
 		Type mapType2 = new ParameterizedType() {
@@ -130,4 +132,13 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
         Document doc = parser.parse(new ByteArrayInputStream(oxm.getBytes()));        
         return new DOMSource(doc.getDocumentElement());
       }
+    
+	public void testTypeToSchemaTypeMap(){
+		HashMap<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();		
+		int mapSize = typesMap.size();
+		assertEquals(2, mapSize);
+		
+		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[0]));
+		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[1]));
+	}
 }

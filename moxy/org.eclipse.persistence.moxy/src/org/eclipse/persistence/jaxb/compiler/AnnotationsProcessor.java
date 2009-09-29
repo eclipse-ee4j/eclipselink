@@ -451,6 +451,7 @@ public class AnnotationsProcessor {
                     if (theType != null) {
                         Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
                         collectionClassesToGeneratedClasses.put(theType, generatedClass);
+                        generatedClassesToCollectionClasses.put(generatedClass, theType);
                         extraClasses.add(helper.getJavaClass(generatedClass));
                     }
                 }
