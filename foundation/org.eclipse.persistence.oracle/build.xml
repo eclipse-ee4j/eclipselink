@@ -205,7 +205,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="package.ok" depends="init" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
         <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <mkdir dir="${classes.dir}"/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
