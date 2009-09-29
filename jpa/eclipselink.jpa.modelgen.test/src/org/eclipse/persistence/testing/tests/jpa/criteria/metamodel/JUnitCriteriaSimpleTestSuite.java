@@ -671,8 +671,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Join phones = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).join(Employee_.phoneNumbers);
-        cq.where( qb.equal(phones, qb.parameter(PhoneNumber.class) ) );
-        List result = em.createQuery(cq).setParameter(1, phoneNumber).getResultList();
+        cq.where( qb.equal(phones, qb.parameter(PhoneNumber.class, "1") ) );
+        List result = em.createQuery(cq).setParameter("1", phoneNumber).getResultList();
 
         Assert.assertTrue("CollectionMemberIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
     }
@@ -688,8 +688,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.equal(root, qb.parameter(Employee.class) ) );
-        List result = em.createQuery(cq).setParameter(1, expectedResult).getResultList();
+        cq.where( qb.equal(root, qb.parameter(Employee.class, "1") ) );
+        List result = em.createQuery(cq).setParameter("1", expectedResult).getResultList();
 
         Assert.assertTrue("abstractSchemaIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
     }
@@ -709,8 +709,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.notEqual(root, qb.parameter(Employee.class) ) );
-        List result = em.createQuery(cq).setParameter(1, emp).getResultList();
+        cq.where( qb.notEqual(root, qb.parameter(Employee.class, "1") ) );
+        List result = em.createQuery(cq).setParameter("1", emp).getResultList();
 
         Assert.assertTrue("abstractSchemaIdentifierNotEqualsTest failed", comparer.compareObjects(result, expectedResult));
     }
@@ -866,9 +866,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.like( root.get(Employee_.firstName), qb.parameter(String.class)) );
+        cq.where( qb.like( root.get(Employee_.firstName), qb.parameter(String.class, "1")) );
 
-        List result = em.createQuery(cq).setParameter(1, partialFirstName).getResultList();
+        List result = em.createQuery(cq).setParameter("1", partialFirstName).getResultList();
 
         Assert.assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
     }
@@ -1161,11 +1161,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.equal(root.get(Employee_.firstName), qb.parameter(String.class)) );
+        cq.where( qb.equal(root.get(Employee_.firstName), qb.parameter(String.class, "1")) );
 
-        List firstResultSet = em.createQuery(cq).setParameter(1, firstParameters.get(0)).getResultList();
+        List firstResultSet = em.createQuery(cq).setParameter("1", firstParameters.get(0)).getResultList();
         clearCache();
-        List secondResultSet = em.createQuery(cq).setParameter(1, secondParameters.get(0)).getResultList();
+        List secondResultSet = em.createQuery(cq).setParameter("1", secondParameters.get(0)).getResultList();
         clearCache();
         Vector result = new Vector();
         result.addAll(firstResultSet);
@@ -1279,9 +1279,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.equal(qb.parameter(String.class), root.get(Employee_.firstName)) );
+        cq.where( qb.equal(qb.parameter(String.class, "1"), root.get(Employee_.firstName)) );
 
-        List result = em.createQuery(cq).setParameter(1, parameters.get(0)).getResultList();
+        List result = em.createQuery(cq).setParameter("1", parameters.get(0)).getResultList();
 
         Assert.assertTrue("Simple Reverse Parameter test failed", comparer.compareObjects(result, expectedResult));
     }
@@ -1479,7 +1479,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
-        cq.where( qb.equal(cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).get(Employee_.firstName), "Smith") );
+        cq.where( qb.equal(cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).get(Employee_.lastName), "Smith") );
         List result = em.createQuery(cq).getResultList();
 
         Assert.assertTrue("Distinct test failed", comparer.compareObjects(result, expectedResult));
@@ -1701,9 +1701,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(employee) FROM Employee employee WHERE ?1 NOT MEMBER OF employee.projects"
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        cq.where( qb.isNotMember(qb.parameter(Project.class), cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).get(Employee_.projects)) );
+        cq.where( qb.isNotMember(qb.parameter(Project.class, "1"), cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).get(Employee_.projects)) );
 
-        List result = em.createQuery(cq).setParameter(1, smallProject).getResultList();
+        List result = em.createQuery(cq).setParameter("1", smallProject).getResultList();
 
         Assert.assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
 
@@ -1909,12 +1909,12 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where(qb.isMember(qb.parameter(PhoneNumber.class), root.get(Employee_.phoneNumbers)));
+        cq.where(qb.isMember(qb.parameter(PhoneNumber.class, "1"), root.get(Employee_.phoneNumbers)));
 
         Vector parameters = new Vector();
         parameters.add(phone);
 
-        List result = em.createQuery(cq).setParameter(1, phone).getResultList();
+        List result = em.createQuery(cq).setParameter("1", phone).getResultList();
 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(phone);
@@ -1958,7 +1958,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector parameters = new Vector();
         parameters.add(phone);
 
-        List result = em.createQuery(cq).setParameter(1, phone).getResultList();
+        List result = em.createQuery(cq).setParameter("1", phone).getResultList();
 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(phone);
@@ -1990,9 +1990,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where(qb.between(root.get(Employee_.id).as(Comparable.class), qb.parameter(BigDecimal.class), qb.parameter(Integer.class)));
+        cq.where(qb.between(root.get(Employee_.id).as(Comparable.class), qb.parameter(BigDecimal.class, "1"), qb.parameter(Integer.class, "2")));
 
-        List result = em.createQuery(cq).setParameter(1, empId1).setParameter(2, emp2.getId()).getResultList();
+        List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
 
         Assert.assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2025,11 +2025,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         QueryBuilder.In inExp = qb.in(root.get(Employee_.id));
-        inExp.value(qb.parameter(BigDecimal.class));
-        inExp.value(qb.parameter(Integer.class));
+        inExp.value(qb.parameter(BigDecimal.class, "1"));
+        inExp.value(qb.parameter(Integer.class, "2"));
         cq.where(inExp);
 
-        List result = em.createQuery(cq).setParameter(1, empId1).setParameter(2, emp2.getId()).getResultList();
+        List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();
 
         Assert.assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
