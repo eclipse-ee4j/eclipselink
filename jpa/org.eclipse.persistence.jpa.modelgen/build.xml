@@ -36,44 +36,13 @@
         <contains string="${modelgen.build.location}" substring="jpa"/>
     </condition>
     <property name="modelgen.2.common.plugins.dir" value="${modelgen.2.base.dir}/plugins"/>
+    <property name="modelgen.2.jpa.plugins.dir" value="../plugins"/>
 
+    <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
     <property file="${modelgen.build.location}/build.properties"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type"            value="SNAPSHOT"/>
-    <property name="svn.revision"          value="NA"/>
-    <property name="version.qualifier"     value="qualifier"/>
-    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
-    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-    <property name="implementation.vendor" value="${specification.vendor}"/>
-
-    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
-
-    <!-- Set Compile Path-->
-    <path id="modelgen.compile.path">
-        <pathelement path="${modelgen.2.common.plugins.dir}/${antlr}"/>
-        <pathelement path="${modelgen.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-    	<pathelement path="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
-        <pathelement path="${modelgen.2.common.plugins.dir}/osgi.core.zip"/>
-        <fileset
-            dir="../${plugins.dir}"
-            includes="${eclipselink.jpa.depend}"/>
-        <pathelement path="${modelgen.2.common.plugins.dir}/${persistence.jar}"/>
-        <fileset
-            dir="${modelgen.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
-    </path>
-    <available file="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-
-    <!-- all -->
+    <!-- Primary Targets -->
     <target name="build" depends="clean, compile, package" description="build ModelGen component"/>
 
     <!-- clean -->
@@ -84,9 +53,59 @@
         </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Generate name for processor jar -->
+        <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
+
+        <!-- dependency properties -->
+        <property name="persistence.bundle.path"    value="${modelgen.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
+        <property name="core.bundle.path"           value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.bundle.path"            value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${persistence.bundle.path}" property="persistence.bundle.exist"/>
+        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
+        <available file="${jpa.bundle.path}"         property="jpa.bundle.exist"/>
+
+        <fail message="Cannot find: '${persistence.bundle.path}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${jpa.bundle.path}'"         unless="core.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="modelgen.compile.path">
+            <pathelement path="${modelgen.2.common.plugins.dir}/${antlr}"/>
+            <pathelement path="${modelgen.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${core.bundle.path}"/>
+            <pathelement path="${jpa.bundle.path}"/>
+            <pathelement path="${modelgen.2.common.plugins.dir}/osgi.core.zip"/>
+            <fileset
+                dir="../${plugins.dir}"
+                includes="${eclipselink.jpa.depend}"/>
+            <pathelement path="${persistence.bundle.path}"/>
+            <fileset
+                dir="${modelgen.2.common.plugins.dir}"
+                includes="${eclipselink.core.depend}"/>
+        </path>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink JPA ModelGen ">
-        <fail message="Cannot find Core: '${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+    <target name="compile" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"

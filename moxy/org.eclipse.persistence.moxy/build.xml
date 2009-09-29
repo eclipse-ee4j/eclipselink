@@ -37,60 +37,89 @@
     </condition>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
     <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
-    <property name="bnd.path" value="${moxy.2.buildsys.dir}/${bndtool.jar}"/>
 
+    <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
     <property file="${moxy.build.location}/build.properties"/>
+
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
-    <!-- Needed because this package is only included in JDK6 and beyond -->
-    <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
-        <contains string="${java.version}" substring="1.5"/>
-    </condition>
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type"            value="SNAPSHOT"/>
-    <property name="svn.revision"          value="NA"/>
-    <property name="version.qualifier"     value="qualifier"/>
-    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
-    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-    <property name="implementation.vendor" value="${specification.vendor}"/>
-
-    <!-- Set Compile Path-->
-    <path id="moxy.compile.path">
-        <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
-        <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <fileset
-            dir="${moxy.2.common.plugins.dir}"
-            includes="${moxy.global.depend}"/>
-    </path>
-    <available file="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-
-    <!-- all -->
-    <target name="build" depends="clean, compile, generate-manifest, package" description="build MOXy component"/>
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build MOXy component"/>
     <target name="bnd"   depends="clean, compile, bnd-package" description="build MOXy component using bnd"/>
 
     <!-- clean -->
-    <target name="clean" description="Clean the build">
+    <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
             <fileset dir="${moxy.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${moxy.2.base.dir}/../extension.lib.external"
+                                                    else="${moxy.build.location}">
+            <available file="${moxy.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="core.bundle.path"           value="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
+        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
+
+        <!-- Check for BND library -->
+        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.path" value="${moxy.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${moxy.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.path                     = '${bnd.path}'"/>
+
+        <!-- Needed because this package is only included in JDK6 and beyond -->
+        <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
+            <contains string="${java.version}" substring="1.5"/>
+        </condition>
+
+        <!-- Set Compile Path-->
+        <path id="moxy.compile.path">
+            <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
+            <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${core.bundle.path}"/>
+            <fileset
+                dir="${moxy.2.common.plugins.dir}"
+                includes="${moxy.global.depend}"/>
+        </path>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink MOXY">
-        <fail message="Cannot find Core: '${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+    <target name="compile" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -109,7 +138,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" description="jar OSGI bundle">
+    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
         <jar jarfile="${moxy.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${moxy.2.base.dir}">
                 <include name="about.html"/>
@@ -147,21 +176,22 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">                                                                                                               
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>                                                                                                                                                         
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>                                                   
+    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+        <echo message="Generate the OSGi bundle manifest before jarring..."/>
+        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Version: ${version.string}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>                                                    
-        <echo message="Bundle-Name: EclipseLink MOXy${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>                                                   
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink MOXy${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>              
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>              
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.internal.jaxb;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.jaxb;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.jaxb.attachment;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -183,8 +213,7 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="bnd-package">
-        <echo message="bnd.path = ${bnd.path}"/>
+    <target name="bnd-package" if="bnd.path" depends="init" >
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
@@ -217,5 +246,4 @@
             </fileset>
         </jar>
     </target>
-
 </project>

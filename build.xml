@@ -185,7 +185,14 @@
            allowing unchanged operation by developers and users to clean all built artifacts. -->
     <target name="clean-runtime-checkedin" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
-        <delete file="${eclipselink.jar.name}"/>
+        <echo message="${trunk.build.location}/${eclipselink.jar.name}*"/>
+        <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
+        <delete failonerror="false">
+            <fileset dir="${trunk.build.location}" includes="${eclipselink.jar.name}*"/>
+        </delete>
+         <delete failonerror="false">
+            <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
+        </delete>
     </target>
     <target name="clean-runtime-built" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
@@ -233,23 +240,6 @@
         <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
-    </target>
-
-    <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="bnd-core">
-        <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
-        <ant antfile="build.xml" dir="${jpa.prototype}"                target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"             target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="bnd-repackage"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="bnd"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="bnd"/>
     </target>
 
     <!-- Compiles all utils components. -->
@@ -368,7 +358,7 @@
                     javax/persistence/SelectItem.class,
                     javax/persistence/QueryBuilder.class,
                     javax/persistence/TypedQuery.class,
-					javax/persistence/ValidationMode.class,
+                    javax/persistence/ValidationMode.class,
                     javax/persistence/criteria/QueryBuilder$Trimspec.class,
                     javax/persistence/criteria/QueryBuilder$SimpleCase.class,
                     javax.persistence/criteria/QueryBuilder$Coalesce.class,
@@ -378,7 +368,10 @@
                     javax/persistence/PathExpression.class,
                     javax/persistence/PersistenceUtil.class,
                     javax/persistence/Tuple.class,
+                    javax/persistence/QueryTimeoutException.class,
                     javax/persistence/TupleElement.class,
+                    javax/persistence/SharedCacheMode.class,
+                    javax/persistence/spi/ProviderUtil.class,
                     javax/persistence/metamodel/Attribute.class,
                     javax/persistence/metamodel/Type$PersistenceType.class,
                     javax/persistence/criteria/Predicate$BooleanOperator.class,

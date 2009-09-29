@@ -24,7 +24,6 @@
 * Contributors:
 *     egwin - initial API and implementation
 #******************************************************************************/-->
-
 <project name="javax.persistence" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="jpaproto.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -32,56 +31,91 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="jpaproto.is.local"/>
 
     <dirname  property="jpaproto.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
-    <echo message="jpaproto.build.location = '${jpaproto.build.location}'"/>
-
     <condition property="jpaproto.2.base.dir" value="../../.." else="..">
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
     <property name="jpaproto.2.common.plugins.dir" value="${jpaproto.2.base.dir}/plugins"/>
     <property name="jpaproto.2.buildsys.dir" value="${jpaproto.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
-    <property name="bnd.path" value="${jpaproto.2.buildsys.dir}/${bndtool.jar}"/>
 
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    
-    <property name="jpaproto.qualifier"    value="v${build.date}${build.time}"/>
+    <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
+    <!-- Persistence Version properties -->
     <property name="jpaproto.spec.version" value="2.0 PFD"/>
     <property name="jpaproto.version"      value="1.99.6"/>
     <property name="jpaproto.bundle.name"  value="Java Persistence 2.0 - EARLY ACCESS"/>
-    <property name="jpaproto.jar"          value="${ant.project.name}_2.0_preview.jar"/>
-    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_2.0_preview.jar"/>
+    <!-- Compiler flag properties -->
+    <property name="javac.debug"           value="true"/>
+    <property name="javac.optimize"        value="off"/>
+    <property name="javac.deprecation"     value="off"/>
+    <property name="javac.version"         value="1.5"/>
+    <!-- Project infrastructure properties -->
     <property name="src.dir"               value="src"/>
     <property name="package.dir"           value=".."/>
     <property name="classes.dir"           value="classes"/>
     <property name="jpaproto.resource.dir" value="META-INF"/>
-    <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
-    <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
+    <property name="jpaproto.jar"          value="${ant.project.name}_2.0_preview.jar"/>
+    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_2.0_preview.jar"/>
 
-    <property name="javac.debug"       value="true"/>
-    <property name="javac.optimize"    value="off"/>
-    <property name="javac.deprecation" value="off"/>
-    <property name="javac.version"     value="1.5"/>
+    <echo message="Loading ${user.home}/build.properties..."/>
+    <property file="${user.home}/build.properties"/>
 
-    <path id="jpaproto.compile.path">
-        <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
-        <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
-    </path>
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
 
-    <!-- all -->
-    <target name="build" depends="clean, compile, generate-manifest, package" description="build JAXB 2.0 Prototype component"/>
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build JAXB 2.0 Prototype component"/>
     <target name="bnd"   depends="clean, compile, bnd-package" description="build JAXB 2.0 Prototype component using bnd"/>
 
-    <target name="clean" description="Clean the build">
-        <delete dir="${classes.dir}" includeEmptyDirs="true" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.jar}" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.src.jar}" quiet="true"/>
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete dir="${classes.dir}" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
+        <delete failonerror="false" quiet="true">
+            <fileset dir="${package.dir}" includes="${jpaproto.jar}*"/>
+        </delete>
+        <delete failonerror="false" quiet="true">
+            <fileset dir="${package.dir}" includes="${jpaproto.src.jar}*"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${jpaproto.2.base.dir}/../extension.lib.external"
+                                                    else="${jpaproto.build.location}">
+            <available file="${jpaproto.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="jpaproto.qualifier"    value="v${build.date}${build.time}"/>
+        <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
+        <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
+
+        <!-- Check for BND library -->
+        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.path" value="${jpaproto.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${jpaproto.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.path                     = '${bnd.path}'"/>
+
+        <!-- Set Compile Path-->
+        <path id="jpaproto.compile.path">
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+        </path>
     </target>
 
     <!-- compile -->
-    <target name="compile" description="compile ${ant.project.name}">
+    <target name="compile" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -102,7 +136,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" description="package ${ant.project.name}">
+    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
         <jar jarfile="${package.dir}/${jpaproto.jar}" duplicate="preserve" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${jpaproto.2.base.dir}">
                 <include name="about.html"/>
@@ -146,7 +180,8 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+        <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                           file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${jpaproto.spec.vendor}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -169,8 +204,7 @@
         <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="bnd-package">
-        <echo message="bnd.path = ${bnd.path}"/>
+    <target name="bnd-package" if="bnd.path" depends="init" >
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
@@ -206,5 +240,4 @@
             />
         </jar>
     </target>
-
 </project>

@@ -40,12 +40,14 @@
     <condition property="oracle.2.base.dir" value="../.." else="..">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
-    <property name="oracle.2.common.plugins.dir" value="${oracle.2.base.dir}/plugins"/>
+    <property name="oracle.2.common.plugins.dir"     value="${oracle.2.base.dir}/plugins"/>
+    <property name="oracle.2.foundation.plugins.dir" value="../plugins"/>
+    <condition property="oracle.2.jpa.plugins.dir"     value="${oracle.2.base.dir}/jpa/plugins" else="../plugins">
+        <available file="${oracle.2.base.dir}/jpa/plugins" type="dir"/>
+    </condition>
     <property name="oracle.2.buildsys.dir" value="${oracle.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
-    <property name="bnd.path" value="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
-    <property name="oracle.plugins.dir" value="../plugins"/>
 
+    <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
     <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
@@ -54,40 +56,11 @@
     </condition>
     <property file="${oracle.build.location}/build.properties"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.qualifier" value="qualifier"/>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
-    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-    <property name="implementation.vendor"  value="${specification.vendor}"/>
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
 
-    <!-- Set Compile Path-->
-    <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
-    <path id="oracle.compile.path">
-        <pathelement path="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <pathelement path="${oracle.2.common.plugins.dir}/${persistence.jar}"/>
-        <fileset
-            dir="${oracle.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
-        <fileset
-            dir="${oracle.extensions.depend.dir}"
-            includes="${oracle.extensions.depend.jars}"/>
-        <fileset
-            dir="${extensions.depend.dir}"
-            includes="${oracle.extensions.depend.jars}"/>
-    </path>
-    <available file="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-    <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
-
-    <!-- all -->
-    <target name="build" depends="clean, compile, generate-manifest, package" description="build oracle component"/>
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build oracle component"/>
     <target name="bnd"   depends="clean, compile, bnd-package" description="build Oracle component using bnd"/>
 
     <!-- clean -->
@@ -98,10 +71,85 @@
         </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${oracle.2.base.dir}/../extension.lib.external"
+                                                    else="${oracle.build.location}">
+            <available file="${oracle.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="persistence.bundle.path"    value="${oracle.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
+        <property name="core.bundle.path"           value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${persistence.bundle.path}"                 property="persistence.bundle.exist"/>
+        <available file="${core.bundle.path}"                        property="core.bundle.exist"/>
+        <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
+
+        <fail message="Cannot find: '${persistence.bundle.path}'"      unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.bundle.path}'"             unless="core.bundle.exist"/>
+
+        <!-- Check for BND library -->
+        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.path" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.path                     = '${bnd.path}'"/>
+
+        <!-- Check for Oracle compile dependencies -->
+        <condition property="package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <not>  <isset property="bnd.path"/> </not>
+            </and>
+        </condition>
+        <condition property="bnd-package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <isset property="bnd.path"/>
+            </and>
+        </condition>
+
+        <!-- Set Compile Path-->
+        <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
+        <path id="oracle.compile.path">
+            <pathelement path="${core.bundle.path}"/>
+            <pathelement path="${persistence.bundle.path}"/>
+            <fileset
+                dir="${oracle.2.common.plugins.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <fileset
+                dir="${oracle.extensions.depend.dir}"
+                includes="${oracle.extensions.depend.jars}"/>
+            <fileset
+                dir="${extensions.depend.dir}"
+                includes="${oracle.extensions.depend.jars}"/>
+        </path>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink Oracle extensions">
-        <fail message="Cannot find Core: '${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
-        <fail message="Cannot find Dependency dir:'${oracle.extensions.depend.dir}'." unless="oracle.depend.dir.exist"/>
+    <target name="compile" if="oracle.depend.dir.exist" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -119,8 +167,11 @@
         />
     </target>
 
-    <target name="package" description="jar OSGI bundles">
-        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
+    <!-- package -->
+    <target name="package" unless="package.ok" depends="init" description="jar OSGI bundle">
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -130,7 +181,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.source.jar">
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
@@ -154,7 +205,8 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="package.ok" depends="init" description="Generate the OSGi bundle manifest before jarring">
+        <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <mkdir dir="${classes.dir}"/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                                          file="${classes.dir}/MANIFEST.MF" append="false"/>
@@ -204,14 +256,16 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="repackage" unless="bnd.path" depends="clean, generate-manifest, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" quiet="true" failonerror="false"/>
         <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF" duplicate="preserve">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
-            <zipgroupfileset dir="${oracle.plugins.dir}">
+            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
                 <include name="${ant.project.name}.jar"/>
             </zipgroupfileset>
         </jar>
@@ -233,14 +287,15 @@
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
-            <zipgroupfileset dir="${oracle.plugins.dir}">
+            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
                 <include name="${ant.project.name}.source.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
 
-    <target name="bnd-package">
-        <echo message="bnd.path = ${bnd.path}"/>
+    <target name="bnd-package" unless="bnd-package.ok" depends="init">
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${classes.dir}"
@@ -249,8 +304,8 @@
             failok="false"
             exceptions="true"
             files="./org.eclipse.persistence.oracle.bnd"
-            output="${oracle.plugins.dir}/${ant.project.name}.jar"/>
-        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.source.jar">
+            output="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"/>
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
@@ -273,12 +328,13 @@
             </fileset>
         </jar>
     </target>
-    
-    <target name="bnd-repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <echo message="bnd.path = ${bnd.path}"/>
+
+    <target name="bnd-repackage" if="bnd.path" depends="clean, init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
-            classpath="${oracle.plugins.dir}/${ant.project.name}.jar"
+            classpath="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"
             eclipse="false"
             sourcepath="${src.dir}"
             failok="false"
@@ -303,7 +359,7 @@
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
-            <zipgroupfileset dir="${oracle.plugins.dir}">
+            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
                 <include name="${ant.project.name}.source.jar"/>
             </zipgroupfileset>
         </jar>
