@@ -107,7 +107,6 @@
 
         <fail message="Cannot find: '${persistence.bundle.path}'"      unless="persistence.bundle.exist"/>
         <fail message="Cannot find: '${core.bundle.path}'"             unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${oracle.extensions.depend.dir}'" unless="oracle.depend.dir.exist"/>
 
         <!-- Check for BND library -->
         <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
@@ -117,6 +116,20 @@
             <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
         <echo message="bnd.path                     = '${bnd.path}'"/>
+
+        <!-- Check for Oracle compile dependencies -->
+        <condition property="package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <not>  <isset property="bnd.path"/> </not>
+            </and>
+        </condition>
+        <condition property="bnd-package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <isset property="bnd.path"/>
+            </and>
+        </condition>
 
         <!-- Set Compile Path-->
         <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
@@ -136,7 +149,7 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init" description="Compile bundle code">
+    <target name="compile" if="oracle.depend.dir.exist" depends="init" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -155,7 +168,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
+    <target name="package" unless="package.ok" depends="init" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
         <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
@@ -192,7 +205,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="package.ok" depends="init" description="Generate the OSGi bundle manifest before jarring">
         <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <mkdir dir="${classes.dir}"/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
@@ -280,7 +293,7 @@
         </jar>
     </target>
 
-    <target name="bnd-package" if="bnd.path" depends="init">
+    <target name="bnd-package" unless="bnd-package.ok" depends="init">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
@@ -316,7 +329,7 @@
         </jar>
     </target>
 
-    <target name="bnd-repackage"  if="bnd.path" depends="clean, init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="bnd-repackage" if="bnd.path" depends="clean, init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
