@@ -68,8 +68,13 @@
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
         <delete dir="${classes.dir}" includeEmptyDirs="true" failonerror="false" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.jar}" failonerror="false" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.src.jar}" failonerror="false" quiet="true"/>
+        <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
+        <delete failonerror="false" quiet="true">
+            <fileset dir="${package.dir}" includes="${jpaproto.jar}*"/>
+        </delete>
+        <delete failonerror="false" quiet="true">
+            <fileset dir="${package.dir}" includes="${jpaproto.src.jar}*"/>
+        </delete>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
