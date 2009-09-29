@@ -74,6 +74,10 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         return this.name.hashCode();
     }
 
+    public boolean isParameter(){
+        return true;
+    }
+
     /*
      * (non-Javadoc)
      * 

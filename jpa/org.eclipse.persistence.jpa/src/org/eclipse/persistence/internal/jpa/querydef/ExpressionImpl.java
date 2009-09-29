@@ -134,6 +134,9 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isLiteral(){
         return this.isLiteral;
     }
+    public boolean isParameter(){
+        return false;
+    }
     public void findRootAndParameters(AbstractQueryImpl criteriaQuery){
         //no-op because an expression will have no root
     }

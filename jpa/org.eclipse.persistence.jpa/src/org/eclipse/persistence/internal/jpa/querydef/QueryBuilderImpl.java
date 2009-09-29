@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReportQuery;
 
 public class QueryBuilderImpl implements QueryBuilder {
@@ -1374,7 +1375,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection){
-        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isMemeber");
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isMember");
     }
 
     /**

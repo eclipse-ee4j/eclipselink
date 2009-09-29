@@ -371,6 +371,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-"));
         addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*"));
         addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/"));
+        addOperator(ExpressionOperator.negate());
 
         addOperator(ExpressionOperator.ceil());
         addOperator(ExpressionOperator.cos());

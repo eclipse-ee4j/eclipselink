@@ -116,7 +116,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
                     this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, expressions);
                 }
             } else {
-                this.subQuery.addItem(selection.getAlias(), ((InternalSelection) selection).getCurrentNode());
+                String itemName = selection.getAlias();
+                if (itemName == null){
+                    itemName = ((InternalSelection) selection).getCurrentNode().getName();
+                }
+                this.subQuery.addItem(itemName, ((InternalSelection) selection).getCurrentNode());
             }
         }
         this.queryResult = ResultType.OTHER;
@@ -459,11 +463,15 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
      */
-    public <X> Root<X> from(EntityType<X> entity){
-        if (this.roots.isEmpty()){
-            this.subQuery.setExpressionBuilder(new ExpressionBuilder(entity.getJavaType()));
+    public <X> Root<X> from(EntityType<X> entity) {
+        if (this.roots.isEmpty()) {
+            Root root = super.from(entity);
+            this.subQuery.setExpressionBuilder((ExpressionBuilder) ((InternalSelection) root).getCurrentNode());
+            this.subQuery.setReferenceClass(entity.getJavaType());
+            return root;
+        } else {
+            return super.from(entity);
         }
-        return super.from(entity);
     }
 
     public String getAlias() {
@@ -491,6 +499,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return false;
     }
     public boolean isPredicate(){
+        return false;
+    }
+
+    public boolean isParameter(){
         return false;
     }
 

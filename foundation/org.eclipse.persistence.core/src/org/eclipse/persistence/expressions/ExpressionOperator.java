@@ -188,7 +188,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Multiply = 81;
     public static final int Atan2 = 91;
     public static final int Cot = 95;
-    public static final int Negate = 134;
+    public static final int Negate = 135;
 
     // Object-relational
     public static final int Deref = 82;

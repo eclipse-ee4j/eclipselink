@@ -349,7 +349,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = collection.getBindableJavaType();
         CollectionJoin<X, Y> join = null;
-        if (jt.equals(JoinType.LEFT)) {
+        if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(collection.getName());
         } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
@@ -369,7 +369,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = set.getBindableJavaType();
         SetJoin<X, Y> join = null;
-        if (jt.equals(JoinType.LEFT)) {
+        if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(set.getName());
         } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
@@ -389,7 +389,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = list.getBindableJavaType();
         ListJoin<X, Y> join = null;
-        if (jt.equals(JoinType.LEFT)) {
+        if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(list.getName());
         } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
@@ -409,7 +409,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = map.getBindableJavaType();
         MapJoin<X, K, V> join = null;
-        if (jt.equals(JoinType.LEFT)) {
+        if (jt.equals(JoinType.INNER)) {
             node = this.currentNode.anyOf(map.getName());
         } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
@@ -433,7 +433,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
             org.eclipse.persistence.expressions.Expression node;
-            if (jt.equals(JoinType.LEFT)) {
+            if (jt.equals(JoinType.INNER)) {
                 node = this.currentNode.anyOf(((PluralAttribute) attribute).getName());
             } else if (jt.equals(JoinType.RIGHT)) {
                 throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
