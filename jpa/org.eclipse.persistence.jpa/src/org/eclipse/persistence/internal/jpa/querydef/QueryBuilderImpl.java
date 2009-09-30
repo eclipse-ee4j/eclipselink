@@ -1391,8 +1391,13 @@ public class QueryBuilderImpl implements QueryBuilder {
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
         ReportQuery subQuery = new ReportQuery();
         subQuery.setReferenceClass(((ExpressionImpl)elem).getJavaType());
-        subQuery.setShouldRetrievePrimaryKeys(true);
-        subQuery.setSelectionCriteria( subQuery.getExpressionBuilder().equal( ((InternalSelection)collection).getCurrentNode() ) );
+        org.eclipse.persistence.expressions.ExpressionBuilder elemBuilder = new org.eclipse.persistence.expressions.ExpressionBuilder();
+        org.eclipse.persistence.expressions.Expression collectionExp =((InternalSelection)collection).getCurrentNode();
+        org.eclipse.persistence.expressions.Expression elemExp =((InternalSelection)elem).getCurrentNode();
+
+        subQuery.setExpressionBuilder(elemBuilder);
+        subQuery.retrievePrimaryKeys();
+        subQuery.setSelectionCriteria(elemBuilder.equal(collectionExp).and(collectionExp.equal(elemExp)));
 
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)elem).getCurrentNode().notExists(subQuery), buildList(elem, collection), "isNotMemeber");
     }

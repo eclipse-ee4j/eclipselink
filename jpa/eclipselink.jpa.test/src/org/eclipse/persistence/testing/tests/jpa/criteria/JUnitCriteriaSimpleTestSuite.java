@@ -1852,7 +1852,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
         Subquery<Number> sq = cq.subquery(Number.class);
-        Root<PhoneNumber> subroot = cq.from(PhoneNumber.class);
+        Root<PhoneNumber> subroot = sq.from(PhoneNumber.class);
         sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
         
         Root<Employee> root = cq.from(Employee.class);
