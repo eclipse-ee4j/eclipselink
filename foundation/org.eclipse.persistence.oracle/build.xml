@@ -168,7 +168,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="package.ok" depends="init" description="jar OSGI bundle">
+    <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
         <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
@@ -293,7 +293,7 @@
         </jar>
     </target>
 
-    <target name="bnd-package" unless="bnd-package.ok" depends="init">
+    <target name="bnd-package" if="bnd-package.ok" depends="init">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
