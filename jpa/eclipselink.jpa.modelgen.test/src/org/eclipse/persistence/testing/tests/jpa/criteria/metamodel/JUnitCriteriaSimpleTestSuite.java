@@ -1121,9 +1121,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.equal(root.get(Employee_.firstName), qb.parameter(String.class)) );
+        cq.where( qb.equal(root.get(Employee_.firstName), qb.parameter(String.class,parameterName)) );
 
-        List result = em.createQuery(cq).getResultList();
+        List result = em.createQuery(cq).setParameter(parameterName, expectedResult.getFirstName()).getResultList();
 
         Assert.assertTrue("Simple Parameter Test failed", comparer.compareObjects(result, expectedResult));
     }
