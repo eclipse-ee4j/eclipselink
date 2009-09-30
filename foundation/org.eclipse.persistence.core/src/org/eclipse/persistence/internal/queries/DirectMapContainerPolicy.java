@@ -464,11 +464,7 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy implement
     public boolean removeFrom(Object key, Object element, Object container, AbstractSession session) {
         try {
             Object returnValue = null;
-            if (key != null) {
-                returnValue = ((Map)container).remove(key);
-            } else {
-                returnValue = ((Map)container).remove(keyFrom(element, session));
-            }
+            returnValue = ((Map)container).remove(key);
             if (returnValue == null) {
                 return false;
             } else {
