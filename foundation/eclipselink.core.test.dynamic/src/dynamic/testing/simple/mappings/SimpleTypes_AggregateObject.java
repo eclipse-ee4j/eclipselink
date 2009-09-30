@@ -32,7 +32,6 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -53,9 +52,6 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static dynamic.testing.DynamicTestingHelper.createSession;
-import static dynamic.testing.DynamicTestingHelper.password;
-import static dynamic.testing.DynamicTestingHelper.url;
-import static dynamic.testing.DynamicTestingHelper.username;
 
 public class SimpleTypes_AggregateObject {
 
@@ -65,29 +61,20 @@ public class SimpleTypes_AggregateObject {
 
     @BeforeClass
     public static void setUp() {
-        if (username == null) {
-            fail("error retrieving database username");
-        }
-        if (password == null) {
-            fail("error retrieving database password");
-        }
-        if (url == null) {
-            fail("error retrieving database url");
-        }
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
-        Class<?> simpleTypeB = dcl.createDynamicClass("model.SimpleB");
+        Class<?> simpleTypeB = dcl.createDynamicClass("simple.mappings.SimpleB");
         DynamicTypeBuilder bTypeBuilder = new DynamicTypeBuilder(simpleTypeB, null);
         bTypeBuilder.addDirectMapping("value2", boolean.class, "VAL_2");
         bTypeBuilder.addDirectMapping("value3", String.class, "VAL_3");
 
-        Class<?> simpleTypeC = dcl.createDynamicClass("model.SimpleC");
+        Class<?> simpleTypeC = dcl.createDynamicClass("simple.mappings.SimpleC");
         DynamicTypeBuilder cTypeBuilder = new DynamicTypeBuilder(simpleTypeC, null);
         cTypeBuilder.addDirectMapping("value4", double.class, "VAL_4");
         cTypeBuilder.addDirectMapping("value5", String.class, "VAL_5");
 
-        Class<?> simpleTypeA = dcl.createDynamicClass("model.SimpleA");
+        Class<?> simpleTypeA = dcl.createDynamicClass("simple.mappings.SimpleA");
         DynamicTypeBuilder aTypeBuilder = new DynamicTypeBuilder(simpleTypeA, null, "SIMPLE_TYPE_A");
         aTypeBuilder.setPrimaryKeyFields("SID");
         aTypeBuilder.addDirectMapping("id", int.class, "SID");

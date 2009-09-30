@@ -64,6 +64,16 @@ public class DynamicTestingHelper {
         Project project = new Project(new DatabaseLogin());
         return project.createDatabaseSession();
     }
+
+    public static DatabaseLogin createLogin() {
+        DatabaseLogin login = new DatabaseLogin();
+        login.setUserName(username);
+        login.setPassword(password);
+        login.setConnectionString(url);
+        login.setDriverClassName(driver);
+        login.setPlatformClassName(platform);
+        return login;
+    }
     
     public static DatabaseSession createSession() {
         if (username == null) {
@@ -75,13 +85,7 @@ public class DynamicTestingHelper {
         if (url == null) {
             fail("error retrieving database url");
         }
-        DatabaseLogin login = new DatabaseLogin();
-        login.setUserName(username);
-        login.setPassword(password);
-        login.setConnectionString(url);
-        login.setDriverClassName(driver);
-        login.setPlatformClassName(platform);
-        Project project = new Project (login);
+        Project project = new Project(createLogin());
         DatabaseSession session = project.createDatabaseSession();
         if (SessionLog.OFF == logLevel) {
             session.dontLogMessages();

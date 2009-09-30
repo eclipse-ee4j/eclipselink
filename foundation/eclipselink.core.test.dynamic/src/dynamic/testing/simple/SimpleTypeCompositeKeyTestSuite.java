@@ -31,7 +31,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -47,27 +46,15 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static dynamic.testing.DynamicTestingHelper.createSession;
-import static dynamic.testing.DynamicTestingHelper.password;
-import static dynamic.testing.DynamicTestingHelper.url;
-import static dynamic.testing.DynamicTestingHelper.username;
 
 public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
 
     @BeforeClass
     public static void setUp() {
-        if (username == null) {
-            fail("error retrieving database username");
-        }
-        if (password == null) {
-            fail("error retrieving database password");
-        }
-        if (url == null) {
-            fail("error retrieving database url");
-        }
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader(); 
-        Class<?> javaType = dcl.createDynamicClass("model.Simple");
+        Class<?> javaType = dcl.createDynamicClass("simple.Simple");
         DynamicTypeBuilder typeBuilder = new DynamicTypeBuilder(javaType, null, "SIMPLE_TYPE");
         typeBuilder.setPrimaryKeyFields("SID1", "SID2");
         typeBuilder.addDirectMapping("id1", int.class, "SID1");

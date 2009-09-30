@@ -31,7 +31,6 @@ import org.junit.Test;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -50,9 +49,6 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static dynamic.testing.DynamicTestingHelper.createSession;
-import static dynamic.testing.DynamicTestingHelper.password;
-import static dynamic.testing.DynamicTestingHelper.url;
-import static dynamic.testing.DynamicTestingHelper.username;
 
 public class SimpleTypes_OneToMany {
 
@@ -62,21 +58,12 @@ public class SimpleTypes_OneToMany {
     
     @BeforeClass
     public static void setUp() {
-        if (username == null) {
-            fail("error retrieving database username");
-        }
-        if (password == null) {
-            fail("error retrieving database password");
-        }
-        if (url == null) {
-            fail("error retrieving database url");
-        }
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
         // Create Dynamic Classes
-        Class<?> simpleTypeA = dcl.createDynamicClass("model.SimpleA");
-        Class<?> simpleTypeB = dcl.createDynamicClass("model.SimpleB");
+        Class<?> simpleTypeA = dcl.createDynamicClass("simple.mappings.SimpleA");
+        Class<?> simpleTypeB = dcl.createDynamicClass("simple.mappings.SimpleB");
 
         // Build dynamic types with mappings
         DynamicTypeBuilder aTypeBuilder = new DynamicTypeBuilder(simpleTypeA, null, "SIMPLE_TYPE_A");

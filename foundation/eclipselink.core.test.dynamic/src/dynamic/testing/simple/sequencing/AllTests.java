@@ -27,11 +27,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    //DefaultSequencing.class, 
-    //TableSequencing.class, 
-    //UnaryTableSequencing.class, 
-    //NativeSequencing.class 
+    DefaultSequencingTestSuite.class,
+    NativeSequencingTestSuite.class, 
+    TableSequencingTestSuite.class,
+    UnaryTableSequencingTestSuite.class
     }
 )
-public class AllTests {
-}
+public class AllTests {}

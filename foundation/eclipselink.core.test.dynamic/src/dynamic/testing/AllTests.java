@@ -31,8 +31,10 @@ import org.junit.runners.Suite.SuiteClasses;
     dynamic.testing.dynamichelper.DynamicHelperTestSuite.class,
     dynamic.testing.entitytype.AllTests.class,
     dynamic.testing.simple.AllTests.class,
-    dynamic.testing.simple.mappings.AllTests.class
-    //dynamic.testing.simple.sequencing.AllTests.class
+    dynamic.testing.simple.mappings.AllTests.class,
+    dynamic.testing.simple.sequencing.AllTests.class,
+    dynamic.testing.projectxml.AllTests.class,
+    dynamic.testing.employee.AllTests.class
     }
 )
 public class AllTests {}

@@ -21,6 +21,7 @@
 package dynamic.testing.entitytype;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -50,6 +51,16 @@ import static dynamic.testing.DynamicTestingHelper.createSession;
  */
 public class EntityTypeFromDescriptor {
 
+    static final String TABLE_NAME = "MY_ENTITY";
+    
+    @AfterClass
+    public static void tearDown() {
+        DatabaseSession ds = createSession();
+        ds.login();
+        ds.executeNonSelectingSQL("DROP TABLE " + TABLE_NAME);
+        ds.logout();
+    }
+    
     @Test
     public void entityTypeFromDescriptor() throws Exception {
         DatabaseSession session = createSession();
@@ -118,7 +129,7 @@ public class EntityTypeFromDescriptor {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
         descriptor.setJavaClass(MyEntity.class);
-        descriptor.setTableName("MY_ENTITY");
+        descriptor.setTableName(TABLE_NAME);
         descriptor.addPrimaryKeyFieldName("ID");
 
         AbstractDirectMapping mapping = (AbstractDirectMapping) descriptor.addDirectMapping("id", "ID");

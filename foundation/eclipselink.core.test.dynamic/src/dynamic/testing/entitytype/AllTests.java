@@ -31,5 +31,4 @@ import org.junit.runners.Suite.SuiteClasses;
     EntityTypeFromScratch.class
     }
 )
-public class AllTests {
-}
+public class AllTests {}

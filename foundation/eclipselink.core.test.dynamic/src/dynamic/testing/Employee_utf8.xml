@@ -110,7 +110,7 @@
 						</field-translation>
 					</field-translations>
 				</attribute-mapping>
-<!--  DirectCollection from XML does not work
+<!--  DirectCollection from XML does not (yet) work with Dynamic Persistence
 				<attribute-mapping xsi:type="direct-collection-mapping">
 					<attribute-name>responsibilitiesList</attribute-name>
 					<container xsi:type="list-container-policy">
@@ -291,6 +291,7 @@
 			<instantiation />
 			<copying xsi:type="instantiation-copy-policy" />
 		</class-mapping-descriptor>
+<!--  inheritance from XML does not (yet) work with Dynamic Peristence
 		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
 			<class>model.dynamic.employee.LargeProject</class>
 			<alias>LargeProject</alias>
@@ -319,6 +320,7 @@
 				<table name="DX_LPROJECT" />
 			</tables>
 		</class-mapping-descriptor>
+-->
 		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
 			<class>model.dynamic.employee.PhoneNumber</class>
 			<alias>PhoneNumber</alias>
@@ -409,6 +411,7 @@
 			<primary-key>
 				<field table="DX_PROJECT" name="PROJ_ID" xsi:type="column" />
 			</primary-key>
+<!--  inheritance from XML does not (yet) work with Dynamic Peristence
 			<inheritance xsi:type="inheritance-policy">
 				<class-indicator-field table="DX_PROJECT" name="PROJ_TYPE"
 					xsi:type="column" />
@@ -423,6 +426,7 @@
 					</class-indicator-mapping>
 				</class-indicator-mappings>
 			</inheritance>
+-->
 			<events xsi:type="event-policy" />
 			<querying xsi:type="query-policy" />
 			<attribute-mappings>
@@ -478,6 +482,7 @@
 				<table name="DX_PROJECT" />
 			</tables>
 		</class-mapping-descriptor>
+<!--  inheritance from XML does not (yet) work with Dynamic Peristence
 		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
 			<class>model.dynamic.employee.SmallProject</class>
 			<alias>SmallProject</alias>
@@ -496,5 +501,6 @@
 				<table name="DX_PROJECT" />
 			</tables>
 		</class-mapping-descriptor>
+-->
 	</class-mapping-descriptors>
 </object-persistence>

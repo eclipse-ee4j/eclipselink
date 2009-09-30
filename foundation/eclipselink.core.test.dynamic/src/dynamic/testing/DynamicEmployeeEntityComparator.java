@@ -18,8 +18,17 @@
  * may never be included in the product. Please provide feedback through mailing 
  * lists or the bug database.
  ******************************************************************************/
-package dynamic.testing.simple.sequencing;
+package dynamic.testing;
 
-public abstract class BaseSequencingTest  {
+//javase imports
+import java.util.Comparator;
 
+//EclipseLink imports
+import org.eclipse.persistence.dynamic.DynamicEntity;
+
+public class DynamicEmployeeEntityComparator implements Comparator<DynamicEntity> {
+
+    public int compare(DynamicEntity emp1, DynamicEntity emp2) {
+        return emp1.<Integer>get("id") - emp2.<Integer>get("id");
+    }
 }

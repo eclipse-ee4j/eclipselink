@@ -18,8 +18,19 @@
  * may never be included in the product. Please provide feedback through mailing 
  * lists or the bug database.
  ******************************************************************************/
-package dynamic.testing.simple.sequencing;
+package dynamic.testing.projectxml;
 
-public class UnaryTableSequencing extends BaseSequencingTest {
+//JUnit4 imports
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-}
+@RunWith(Suite.class)
+@SuiteClasses({
+    InvalidConfig.class,
+    SimpleMapProject.class,
+    SimpleMapProjectNoLogin.class,
+    EmployeeProjectTestSuite.class
+  }
+)
+public class AllTests {}

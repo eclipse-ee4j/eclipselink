@@ -31,5 +31,4 @@ import org.junit.runners.Suite.SuiteClasses;
     SimpleTypeCompositeKeyTestSuite.class
     }
 )
-public class AllTests {
-}
+public class AllTests {}

@@ -18,8 +18,16 @@
  * may never be included in the product. Please provide feedback through mailing 
  * lists or the bug database.
  ******************************************************************************/
-package dynamic.testing.simple.sequencing;
+package dynamic.testing.employee;
 
-public class NativeSequencing extends BaseSequencingTest {
+//JUnit4 imports
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-}
+@RunWith(Suite.class)
+@SuiteClasses({
+    EmployeeProjectTestSuite.class
+    }
+)
+public class AllTests {}

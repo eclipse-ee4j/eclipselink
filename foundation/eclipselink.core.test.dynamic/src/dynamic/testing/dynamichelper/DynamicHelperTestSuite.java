@@ -29,7 +29,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -45,9 +44,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) inmports
-import static dynamic.testing.DynamicTestingHelper.password;
-import static dynamic.testing.DynamicTestingHelper.url;
-import static dynamic.testing.DynamicTestingHelper.username;
 import static dynamic.testing.DynamicTestingHelper.createEmptySession;
 import static dynamic.testing.DynamicTestingHelper.createSession;
 
@@ -61,19 +57,10 @@ public class DynamicHelperTestSuite {
     static DynamicHelper dynamicHelper = null;
     @BeforeClass
     public static void setUp() {
-        if (username == null) {
-            fail("error retrieving database username");
-        }
-        if (password == null) {
-            fail("error retrieving database password");
-        }
-        if (url == null) {
-            fail("error retrieving database url");
-        }
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader(); 
-        Class<?> empClass = dcl.createDynamicClass("dynamic.testing.Employee");
+        Class<?> empClass = dcl.createDynamicClass("dynamichelper.Employee");
         DynamicTypeBuilder typeBuilder = new DynamicTypeBuilder(empClass, null, "D_EMPLOYEE");
         typeBuilder.setPrimaryKeyFields("EMP_ID");
         typeBuilder.addDirectMapping("id", int.class, "EMP_ID");
@@ -96,6 +83,7 @@ public class DynamicHelperTestSuite {
 
     @AfterClass
     public static void tearDown() {
+        session.executeNonSelectingSQL("DROP TABLE D_EMPLOYEE");
         session.logout();
         session = null;
         dynamicHelper = null;

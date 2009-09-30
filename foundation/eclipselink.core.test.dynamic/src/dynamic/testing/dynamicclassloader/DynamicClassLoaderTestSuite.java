@@ -46,6 +46,8 @@ import org.eclipse.persistence.internal.helper.SerializationHelper;
 
 public class DynamicClassLoaderTestSuite {
 
+    static final String MY_CLASSNAME = "dynamicclassloader.MyClass";
+    
     @Test
     public void nullParrent() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
@@ -62,7 +64,7 @@ public class DynamicClassLoaderTestSuite {
     @Test(expected=NoClassDefFoundError.class)
     public void noClass() {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
-        dcl.createDynamicClass("test.MyClass");
+        dcl.createDynamicClass(MY_CLASSNAME);
     }
 
     @SuppressWarnings("unchecked")
@@ -70,21 +72,21 @@ public class DynamicClassLoaderTestSuite {
     public void loadClass_DynamicEntityImpl() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        dcl.addClass("test.MyClass");
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertEquals("test.MyClass", dynamicClass.getName());
+        assertEquals(MY_CLASSNAME, dynamicClass.getName());
         assertSame(DynamicEntityImpl.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
         ConversionManager.setDefaultLoader(dcl);
         ConversionManager.getDefaultManager().setLoader(dcl);
 
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass("test.MyClass"));
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject("test.MyClass", Class.class));
-        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass("test.MyClass"));
-        assertSame(dynamicClass, ConversionManager.loadClass("test.MyClass"));
+        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass(MY_CLASSNAME));
+        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
+        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
+        assertSame(dynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
 
         InstantiationException instEx = null;
         try {
@@ -112,20 +114,20 @@ public class DynamicClassLoaderTestSuite {
     public void createDynamicClass_DynamicEntityImpl() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        Class<?> dynamicClass = dcl.createDynamicClass("test.MyClass");
+        Class<?> dynamicClass = dcl.createDynamicClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertEquals("test.MyClass", dynamicClass.getName());
+        assertEquals(MY_CLASSNAME, dynamicClass.getName());
         assertSame(DynamicEntityImpl.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
         ConversionManager.setDefaultLoader(dcl);
         ConversionManager.getDefaultManager().setLoader(dcl);
 
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass("test.MyClass"));
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject("test.MyClass", Class.class));
-        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass("test.MyClass"));
-        assertSame(dynamicClass, ConversionManager.loadClass("test.MyClass"));
+        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass(MY_CLASSNAME));
+        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
+        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
+        assertSame(dynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
 
         InstantiationException instEx = null;
         try {
@@ -153,20 +155,20 @@ public class DynamicClassLoaderTestSuite {
     public void createDynamicClass_Twice() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        assertNull(dcl.getClassWriter("test.MyClass"));
-        Class<?> dynamicClass = dcl.createDynamicClass("test.MyClass");
+        assertNull(dcl.getClassWriter(MY_CLASSNAME));
+        Class<?> dynamicClass = dcl.createDynamicClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertEquals("test.MyClass", dynamicClass.getName());
+        assertEquals(MY_CLASSNAME, dynamicClass.getName());
 
-        DynamicClassWriter writer = dcl.getClassWriter("test.MyClass");
+        DynamicClassWriter writer = dcl.getClassWriter(MY_CLASSNAME);
         assertNotNull(writer);
 
-        Class<?> dynamicClass2 = dcl.createDynamicClass("test.MyClass");
+        Class<?> dynamicClass2 = dcl.createDynamicClass(MY_CLASSNAME);
 
         assertSame(dynamicClass, dynamicClass2);
 
-        DynamicClassWriter writer2 = dcl.getClassWriter("test.MyClass");
+        DynamicClassWriter writer2 = dcl.getClassWriter(MY_CLASSNAME);
         assertNotNull(writer);
         assertSame(writer, writer2);
     }
@@ -182,11 +184,11 @@ public class DynamicClassLoaderTestSuite {
     public void loadClass_DefaultConstructor() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        dcl.addClass("test.MyClass", DefaultConstructor.class);
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
 
         DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
@@ -198,11 +200,11 @@ public class DynamicClassLoaderTestSuite {
     public void loadClass_StringConstructor() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        dcl.addClass("test.MyClass", StringConstructor.class);
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, StringConstructor.class);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(StringConstructor.class, dynamicClass.getSuperclass());
 
         InstantiationException instEx = null;
@@ -223,13 +225,13 @@ public class DynamicClassLoaderTestSuite {
     public void loadClass_WriteReplace() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        dcl.addClass("test.MyClass", WriteReplace.class);
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, WriteReplace.class);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertEquals("test.MyClass", dynamicClass.getName());
+        assertEquals(MY_CLASSNAME, dynamicClass.getName());
         assertSame(WriteReplace.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
         WriteReplace entity = (WriteReplace) dynamicClass.newInstance();
 
@@ -254,12 +256,12 @@ public class DynamicClassLoaderTestSuite {
     public void createDynamicClass_WriteReplace() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
 
-        Class<?> dynamicClass = dcl.createDynamicClass("test.MyClass", WriteReplace.class);
+        Class<?> dynamicClass = dcl.createDynamicClass(MY_CLASSNAME, WriteReplace.class);
 
         assertNotNull(dynamicClass);
-        assertEquals("test.MyClass", dynamicClass.getName());
+        assertEquals(MY_CLASSNAME, dynamicClass.getName());
         assertSame(WriteReplace.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
         WriteReplace entity = (WriteReplace) dynamicClass.newInstance();
 
@@ -284,21 +286,21 @@ public class DynamicClassLoaderTestSuite {
     public void duplicateAddClassWithSameParent() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
 
-        dcl.addClass("test.MyClass", DefaultConstructor.class);
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
-        DynamicClassWriter firstWriter = dcl.getClassWriter("test.MyClass");
+        DynamicClassWriter firstWriter = dcl.getClassWriter(MY_CLASSNAME);
 
         DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
 
         assertNotNull(entity);
-        assertNotNull("DCL does not contain expected writer", dcl.getClassWriter("test.MyClass"));
+        assertNotNull("DCL does not contain expected writer", dcl.getClassWriter(MY_CLASSNAME));
 
-        dcl.addClass("test.MyClass", DefaultConstructor.class);
-        DynamicClassWriter secondWriter = dcl.getClassWriter("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
+        DynamicClassWriter secondWriter = dcl.getClassWriter(MY_CLASSNAME);
 
         assertSame(firstWriter, secondWriter);
     }
@@ -311,20 +313,20 @@ public class DynamicClassLoaderTestSuite {
     public void duplicateAddClassWithDifferentParent() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
 
-        dcl.addClass("test.MyClass", DefaultConstructor.class);
-        Class<?> dynamicClass = dcl.loadClass("test.MyClass");
+        dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
+        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
 
         assertNotNull(dynamicClass);
-        assertSame(dynamicClass, dcl.loadClass("test.MyClass"));
+        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
 
         DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
 
         assertNotNull(entity);
-        assertNotNull("DCL does not contain expected writer", dcl.getClassWriter("test.MyClass"));
+        assertNotNull("DCL does not contain expected writer", dcl.getClassWriter(MY_CLASSNAME));
 
         try {
-            dcl.addClass("test.MyClass", WriteReplace.class);
+            dcl.addClass(MY_CLASSNAME, WriteReplace.class);
         } catch (DynamicException de) {
             String errorMessage = de.getMessage();
             int errorCode = de.getErrorCode();

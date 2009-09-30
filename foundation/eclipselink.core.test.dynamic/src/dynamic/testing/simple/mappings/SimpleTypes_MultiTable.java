@@ -30,7 +30,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -49,9 +48,6 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static dynamic.testing.DynamicTestingHelper.createSession;
-import static dynamic.testing.DynamicTestingHelper.password;
-import static dynamic.testing.DynamicTestingHelper.url;
-import static dynamic.testing.DynamicTestingHelper.username;
 
 public class SimpleTypes_MultiTable {
 
@@ -61,19 +57,10 @@ public class SimpleTypes_MultiTable {
     
     @BeforeClass
     public static void setUp() {
-        if (username == null) {
-            fail("error retrieving database username");
-        }
-        if (password == null) {
-            fail("error retrieving database password");
-        }
-        if (url == null) {
-            fail("error retrieving database url");
-        }
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
-        Class<?> simpleTypeA = dcl.createDynamicClass("model.SimpleA");
+        Class<?> simpleTypeA = dcl.createDynamicClass("simple.mappings.SimpleA");
         DynamicTypeBuilder typeBuilder = new DynamicTypeBuilder(simpleTypeA, null, "SIMPLE_TYPE_A", "SIMPLE_TYPE_B", "SIMPLE_TYPE_C");
         typeBuilder.setPrimaryKeyFields("SIMPLE_TYPE_A.SID");
         typeBuilder.addDirectMapping("id", int.class, "SIMPLE_TYPE_A.SID");

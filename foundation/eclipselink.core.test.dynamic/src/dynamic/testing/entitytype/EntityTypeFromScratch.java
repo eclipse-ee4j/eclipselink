@@ -21,6 +21,7 @@
 package dynamic.testing.entitytype;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
@@ -42,6 +43,16 @@ import static dynamic.testing.DynamicTestingHelper.createSession;
  */
 public class EntityTypeFromScratch {
 
+    static final String TABLE_NAME = "MY_ENTITY";
+    
+    @AfterClass
+    public static void tearDown() {
+        DatabaseSession ds = createSession();
+        ds.login();
+        ds.executeNonSelectingSQL("DROP TABLE " + TABLE_NAME);
+        ds.logout();
+    }
+    
     @Test
     public void entityTypeFromDescriptor() throws Exception {
         DynamicTypeImpl entityType = buildMyEntityType();

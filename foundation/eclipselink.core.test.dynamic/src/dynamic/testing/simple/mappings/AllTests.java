@@ -34,5 +34,4 @@ import org.junit.runners.Suite.SuiteClasses;
     SimpleTypes_ManyToMany.class
     }
 )
-public class AllTests {
-}
+public class AllTests {}

@@ -200,6 +200,8 @@
       <test name="dynamic.testing.simple.AllTests" />
       <test name="dynamic.testing.simple.mappings.AllTests" />
       <test name="dynamic.testing.simple.sequencing.AllTests" />
+      <test name="dynamic.testing.projectxml.AllTests" />
+      <test name="dynamic.testing.employee.AllTests" />
     </junit>
     <junitreport
       todir="${report.dir}"
