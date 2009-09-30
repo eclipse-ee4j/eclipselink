@@ -641,7 +641,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             Object returnValue = null;
             if (key != null) {
                 returnValue = ((Map)container).remove(key);
-            } else {
+            } else if (element != null) {
                 returnValue = ((Map)container).remove(keyFrom(element, session));
             }
             if (returnValue == null) {
