@@ -225,7 +225,7 @@
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core">
+    <target name="build-core" depends="clean-runtime-checkedin">
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
