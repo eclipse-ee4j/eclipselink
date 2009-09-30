@@ -17,13 +17,12 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -31,6 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
@@ -113,57 +113,24 @@ public class ManyToManyAccessor extends CollectionAccessor {
         ManyToManyMapping mapping = new ManyToManyMapping();
         process(mapping);
 
-        if (getMappedBy() == null || getMappedBy().equals("")) { 
-            // Processing the owning side of a M-M that is process a join table.
-            processJoinTable(mapping, getJoinTableMetadata());
-        } else {
-            // We are processing the a non-owning side of a M-M. Must set the
-            // mapping read-only.
-            mapping.setIsReadOnly(true);
-            
-            // Get the owning mapping from the reference descriptor metadata.
-            ManyToManyMapping ownerMapping = null;
-            if (getOwningMapping(getMappedBy()).isManyToManyMapping()){
-                ownerMapping = (ManyToManyMapping)getOwningMapping(getMappedBy());
+        if (hasMappedBy()) {
+            // We are processing the non-owning side of a M-M relationship. Get 
+            // the owning mapping from the reference descriptor metadata and
+            // process the keys from it.
+            DatabaseMapping owningMapping = getOwningMapping(getMappedBy());
+            if (owningMapping.isManyToManyMapping()){
+                ManyToManyMapping ownerMapping = (ManyToManyMapping) owningMapping;
+                processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
+                
+                // Set the mapping read-only.
+                mapping.setIsReadOnly(true);
             } else {
-                // If improper mapping encountered, throw an exception.
+                // Invalid owning mapping type, throw an exception.
                 throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
-
-            // Set the relation table name from the owner.
-            mapping.setRelationTable(ownerMapping.getRelationTable());
-                 
-            // In a table per class inheritance we need to update the target 
-            // keys before setting them to mapping's source key fields.
-            if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
-                // Update the target key fields.
-                Vector<DatabaseField> targetKeyFields = new Vector<DatabaseField>();
-                for (DatabaseField targetKeyField : ownerMapping.getTargetKeyFields()) {
-                    DatabaseField newTargetKeyField = (DatabaseField) targetKeyField.clone();
-                    newTargetKeyField.setTable(getDescriptor().getPrimaryTable());
-                    targetKeyFields.add(newTargetKeyField);
-                }
-                
-                mapping.setSourceKeyFields(targetKeyFields);
-                
-                // Update the targetRelationKeyFields.
-                Vector<DatabaseField> targetRelationKeyFields = new Vector<DatabaseField>();
-                for (DatabaseField targetRelationKeyField : ownerMapping.getTargetRelationKeyFields()) {
-                    DatabaseField newTargetRelationKeyField = (DatabaseField) targetRelationKeyField.clone();
-                    newTargetRelationKeyField.setTable(getDescriptor().getPrimaryTable());
-                    targetRelationKeyFields.add(newTargetRelationKeyField);
-                }
-                
-                mapping.setSourceRelationKeyFields(targetRelationKeyFields);
-            } else {
-                // Add all the source foreign keys we found on the owner.
-                mapping.setSourceKeyFields(ownerMapping.getTargetKeyFields());
-                mapping.setSourceRelationKeyFields(ownerMapping.getTargetRelationKeyFields()); 
-            }
-            
-            // Add all the target foreign keys we found on the owner.
-            mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
-            mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());
+        } else { 
+            // Processing the owning side of a M-M, process the join table.
+            processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata());
         }
     }
 }

@@ -35,6 +35,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel. 
  *          We handle undefined parameterized generic types for a MappedSuperclass defined
  *          Map field by returning Void in this case.
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -58,7 +60,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
@@ -344,7 +345,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     }
     
     /**
-     *  INTERNAL:
+     * INTERNAL:
      * Process column metadata details into a database field. This will set 
      * correct metadata and log defaulting messages to the user. It also looks 
      * for an attribute override.
@@ -375,16 +376,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
             defaultName += DEFAULT_MAP_KEY_COLUMN_SUFFIX;
         }
         
-           
-        field.setName(getName(field.getName(), defaultName, loggingCtx), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        setFieldName(field, defaultName, loggingCtx);
         
-        if(field.getTable() != null){
-            if (useDelimitedIdentifier()){
+        if (field.getTable() != null) {
+            if (useDelimitedIdentifier()) {
                 field.getTable().setUseDelimiters(useDelimitedIdentifier());
             }
-        }
-        if (useDelimitedIdentifier()){
-            field.setUseDelimiters(useDelimitedIdentifier());
         }
 
         return field;
@@ -1433,17 +1430,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN);
             pkField.setTable(defaultPKTable);
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(defaultFKTable);

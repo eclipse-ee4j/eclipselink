@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -39,8 +41,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
@@ -102,18 +104,16 @@ public class OneToManyAccessor extends CollectionAccessor {
     public void process() {
         super.process();
         
-        if (getMappedBy() == null || getMappedBy().equals("")) {    
-            if (getJoinColumns().isEmpty()) {
-                // No join columns and no mapped by value, default to
-                // unidirectional 1-M using a M-M mapping and a join table.
-                processManyToManyMapping();
-            } else {
-                // If we find join column(s) then process a uni-directional 1-M.
-                processUnidirectionalOneToManyMapping();
-            }
-        } else {
+        if (hasMappedBy()) {
             // Process a 1-M using the mapped by mapping values.
             processOneToManyMapping();
+        } else if (getJoinColumns().isEmpty()) {
+            // No join columns and no mapped by value, default to
+            // unidirectional 1-M using a M-M mapping and a join table.
+            processManyToManyMapping();
+        } else {
+            // If we find join column(s) then process a uni-directional 1-M.
+            processUnidirectionalOneToManyMapping();
         }
     }
     
@@ -151,7 +151,7 @@ public class OneToManyAccessor extends CollectionAccessor {
         process(mapping);
                 
         // Process the JoinTable metadata.
-        processJoinTable(mapping, getJoinTableMetadata());
+        processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata());
     }
     
     /**
@@ -159,36 +159,47 @@ public class OneToManyAccessor extends CollectionAccessor {
      * Process an one to many mapping for this accessor.
      */
     protected void processOneToManyMapping() {
-        // Create a 1-M mapping and process common collection mapping metadata
-        // first followed by specific metadata.
-       OneToManyMapping mapping = new OneToManyMapping();
-       process(mapping);
-            
        // Non-owning side, process the foreign keys from the owner.
-       OneToOneMapping ownerMapping = null;
-       if (getOwningMapping(getMappedBy()).isOneToOneMapping()){ 
-           ownerMapping = (OneToOneMapping) getOwningMapping(getMappedBy());
+       DatabaseMapping owningMapping = getOwningMapping(getMappedBy());
+       if (owningMapping.isOneToOneMapping()){ 
+           OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
+           
+           // If the owner uses a relation table mechanism we must map a M-M.
+           if (ownerMapping.hasRelationTableMechanism()) {
+              ManyToManyMapping mapping = new ManyToManyMapping();
+              // Process the common collection mapping. 
+              process(mapping);
+              // Process the mapped by relation table metadata.
+              processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
+              // Set the mapping to read only
+              mapping.setIsReadOnly(true);
+           } else {
+               // Create a 1-M mapping and process common collection mapping 
+               // metadata first followed by specific metadata.
+              OneToManyMapping mapping = new OneToManyMapping();
+              process(mapping);
+              
+               Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();
+               for (DatabaseField fkField : keys.keySet()) {
+                   DatabaseField pkField = keys.get(fkField);
+                    
+                   // If we are within a table per class strategy we have to update
+                   // the primary key field to point to our own database table. 
+                   // The extra table check is if the mapping is actually defined
+                   // on our java class (meaning we have the right table at this
+                   // point and can avoid the cloning)
+                   if (getDescriptor().usesTablePerClassInheritanceStrategy() && ! pkField.getTable().equals(getDescriptor().getPrimaryTable())) {
+                       // We need to update the pk field to be to our table.
+                       pkField = (DatabaseField) pkField.clone();
+                       pkField.setTable(getDescriptor().getPrimaryTable());
+                   }
+                
+                   mapping.addTargetForeignKeyField(fkField, pkField);
+               }
+           }
        } else {
            // If improper mapping encountered, throw an exception.
            throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass()); 
-       }
-                
-       Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();
-       for (DatabaseField fkField : keys.keySet()) {
-           DatabaseField pkField = keys.get(fkField);
-                
-           // If we are within a table per class strategy we have to update
-           // the primary key field to point to our own database table. 
-           // The extra table check is if the mapping is actually defined
-           // on our java class (meaning we have the right table at this
-           // point and can avoid the cloning)
-           if (getDescriptor().usesTablePerClassInheritanceStrategy() && ! pkField.getTable().equals(getDescriptor().getPrimaryTable())) {
-               // We need to update the pk field to be to our table.
-               pkField = (DatabaseField) pkField.clone();
-               pkField.setTable(getDescriptor().getPrimaryTable());
-           }
-            
-           mapping.addTargetForeignKeyField(fkField, pkField);
        }
     }
     
@@ -230,17 +241,12 @@ public class OneToManyAccessor extends CollectionAccessor {
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN);
             pkField.setTable(owningDescriptor.getPrimaryKeyTable());
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
+
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(getReferenceDescriptor().getPrimaryTable());

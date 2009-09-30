@@ -26,6 +26,12 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildCMP3_ITEMTable());
         addTableDefinition(buildCMP3_ISOLATEDITEMTable());
         addTableDefinition(buildCMP3_ORDERTable());
+        addTableDefinition(buildORDERCARDTable());
+        addTableDefinition(buildORDERLABELTable());
+        addTableDefinition(buildAUDITORTable());
+        addTableDefinition(buildORDER_AUDITORTable());
+        addTableDefinition(buildORDER_ORDERCARDTable());
+        addTableDefinition(buildORDER_ORDERLABELTable());
         addTableDefinition(buildCMP3_SALESPERSONTable());
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
         addTableDefinition(buildCMP3_ENTITYATable());
@@ -50,6 +56,172 @@ public class RelationshipsTableManager extends TableCreator {
             RelationshipsTableManager.tableCreator = new RelationshipsTableManager();
         }
         return RelationshipsTableManager.tableCreator;
+    }
+    
+    public static TableDefinition buildORDER_AUDITORTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("JPA_ORDER_AUDITOR");
+
+        FieldDefinition fieldORDERID = new FieldDefinition();
+        fieldORDERID.setName("ORDER_ID");
+        fieldORDERID.setTypeName("NUMERIC");
+        fieldORDERID.setSize(15);
+        fieldORDERID.setShouldAllowNull(false);
+        fieldORDERID.setIsPrimaryKey(false);
+        fieldORDERID.setUnique(false);
+        fieldORDERID.setIsIdentity(false);
+        fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
+        table.addField(fieldORDERID);
+        
+        FieldDefinition fieldAUDITORID = new FieldDefinition();
+        fieldAUDITORID.setName("AUDITOR_ID");
+        fieldAUDITORID.setTypeName("NUMERIC");
+        fieldAUDITORID.setSize(15);
+        fieldAUDITORID.setShouldAllowNull(false);
+        fieldAUDITORID.setIsPrimaryKey(false);
+        fieldAUDITORID.setUnique(false);
+        fieldAUDITORID.setIsIdentity(false);
+        fieldAUDITORID.setForeignKeyFieldName("JPA_AUDITOR.ID");
+        table.addField(fieldAUDITORID);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildORDER_ORDERCARDTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("JPA_ORDER_CARD_CMP3_ORDER");
+
+        FieldDefinition fieldORDERID = new FieldDefinition();
+        fieldORDERID.setName("order_ORDER_ID");
+        fieldORDERID.setTypeName("NUMERIC");
+        fieldORDERID.setSize(15);
+        fieldORDERID.setShouldAllowNull(false);
+        fieldORDERID.setIsPrimaryKey(false);
+        fieldORDERID.setUnique(false);
+        fieldORDERID.setIsIdentity(false);
+        fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
+        table.addField(fieldORDERID);
+        
+        FieldDefinition fieldAUDITORID = new FieldDefinition();
+        fieldAUDITORID.setName("OrderCard_ID");
+        fieldAUDITORID.setTypeName("NUMERIC");
+        fieldAUDITORID.setSize(15);
+        fieldAUDITORID.setShouldAllowNull(false);
+        fieldAUDITORID.setIsPrimaryKey(false);
+        fieldAUDITORID.setUnique(false);
+        fieldAUDITORID.setIsIdentity(false);
+        fieldAUDITORID.setForeignKeyFieldName("JPA_ORDER_CARD.ID");
+        table.addField(fieldAUDITORID);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildORDER_ORDERLABELTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("JPA_ORDER_ORDER_LABEL");
+
+        FieldDefinition fieldORDERID = new FieldDefinition();
+        fieldORDERID.setName("ORDER_ID");
+        fieldORDERID.setTypeName("NUMERIC");
+        fieldORDERID.setSize(15);
+        fieldORDERID.setShouldAllowNull(false);
+        fieldORDERID.setIsPrimaryKey(false);
+        fieldORDERID.setUnique(false);
+        fieldORDERID.setIsIdentity(false);
+        fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
+        table.addField(fieldORDERID);
+        
+        FieldDefinition fieldAUDITORID = new FieldDefinition();
+        fieldAUDITORID.setName("ORDER_LABEL_ID");
+        fieldAUDITORID.setTypeName("NUMERIC");
+        fieldAUDITORID.setSize(15);
+        fieldAUDITORID.setShouldAllowNull(false);
+        fieldAUDITORID.setIsPrimaryKey(false);
+        fieldAUDITORID.setUnique(false);
+        fieldAUDITORID.setIsIdentity(false);
+        fieldAUDITORID.setForeignKeyFieldName("JPA_ORDER_LABEL.ID");
+        table.addField(fieldAUDITORID);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildORDERCARDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_ORDER_CARD");
+
+        FieldDefinition fieldORDERLABEL_ID = new FieldDefinition();
+        fieldORDERLABEL_ID.setName("ID");
+        fieldORDERLABEL_ID.setTypeName("NUMBER");
+        fieldORDERLABEL_ID.setSize(15);
+        fieldORDERLABEL_ID.setSubSize(0);
+        fieldORDERLABEL_ID.setIsPrimaryKey(true);
+        fieldORDERLABEL_ID.setIsIdentity(false);
+        fieldORDERLABEL_ID.setUnique(false);
+        fieldORDERLABEL_ID.setShouldAllowNull(false);
+        table.addField(fieldORDERLABEL_ID);
+
+        return table;
+    }
+    
+    public static TableDefinition buildORDERLABELTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_ORDER_LABEL");
+
+        FieldDefinition fieldORDERLABEL_ID = new FieldDefinition();
+        fieldORDERLABEL_ID.setName("ID");
+        fieldORDERLABEL_ID.setTypeName("NUMBER");
+        fieldORDERLABEL_ID.setSize(15);
+        fieldORDERLABEL_ID.setSubSize(0);
+        fieldORDERLABEL_ID.setIsPrimaryKey(true);
+        fieldORDERLABEL_ID.setIsIdentity(false);
+        fieldORDERLABEL_ID.setUnique(false);
+        fieldORDERLABEL_ID.setShouldAllowNull(false);
+        table.addField(fieldORDERLABEL_ID);
+
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIP");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(80);
+        fieldDESCRIPTION.setSubSize(0);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+
+        return table;
+    }
+    
+    public static TableDefinition buildAUDITORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AUDITOR");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
     }
     
     public static TableDefinition buildCMP3_CUSTOMERTable() {

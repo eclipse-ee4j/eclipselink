@@ -21,9 +21,39 @@ public class Order implements java.io.Serializable {
 	private int quantity;
 	private String shippingAddress;
 	private Customer customer;
+    private Auditor auditor;
+    private OrderLabel orderLabel;
+    private OrderCard orderCard;
 	
 	public Order() {}
 
+    public Auditor getAuditor() {
+        return auditor;
+    }
+
+    public void setAuditor(Auditor auditor) {
+        this.auditor = auditor;
+    }
+    
+    public OrderLabel getOrderLabel() {
+        return orderLabel;
+    }
+
+    public void setOrderLabel(OrderLabel orderLabel) {
+        this.orderLabel = orderLabel;
+    }
+
+    public OrderCard getOrderCard() {
+        return orderCard;
+    }
+
+    public void setOrderCard(OrderCard orderCard) {
+        this.orderCard = orderCard;
+        if (this.orderCard != null) {
+            this.orderCard.setOrder(this);
+        }
+    }
+    
 	public Integer getOrderId() { 
         return orderId; 
     }

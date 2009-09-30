@@ -19,6 +19,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -33,7 +35,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 
 /**
  * A one to one relationship accessor. A OneToOne annotation currently is not
@@ -110,37 +114,45 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.
-            OneToOneMapping ownerMapping = null;
-            if (getOwningMapping(m_mappedBy).isOneToOneMapping()){
-                ownerMapping = (OneToOneMapping)getOwningMapping(m_mappedBy);
+            DatabaseMapping owningMapping = getOwningMapping(getMappedBy());
+            if (owningMapping.isOneToOneMapping()){
+                OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
+                
+                // If the owner uses a relation table, we need to map the keys
+                // as we would for a many-to-many mapping.
+                if (ownerMapping.hasRelationTableMechanism()) {
+                    // Put a relation table mechanism on our mapping.
+                    mapping.setRelationTableMechanism(new RelationTableMechanism());
+                    processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
+                } else {
+                    Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
+                    Map<DatabaseField, DatabaseField> sourceToTargetKeyFields;
+                    
+                    // If we are within a table per class strategy we have to update
+                    // the primary key field to point to our own database table. 
+                    if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
+                        targetToSourceKeyFields = new HashMap<DatabaseField, DatabaseField>();
+                        sourceToTargetKeyFields = new HashMap<DatabaseField, DatabaseField>();
+                        
+                        for (DatabaseField fkField : ownerMapping.getSourceToTargetKeyFields().keySet()) {
+                            // We need to update the pk field to be to our table.
+                            DatabaseField pkField = (DatabaseField) ownerMapping.getSourceToTargetKeyFields().get(fkField).clone();
+                            pkField.setTable(getDescriptor().getPrimaryTable());
+                            sourceToTargetKeyFields.put(fkField, pkField);
+                            targetToSourceKeyFields.put(pkField, fkField);
+                        }
+                    } else {
+                        targetToSourceKeyFields = ownerMapping.getTargetToSourceKeyFields();
+                        sourceToTargetKeyFields = ownerMapping.getSourceToTargetKeyFields();
+                    }
+                    
+                    mapping.setSourceToTargetKeyFields(targetToSourceKeyFields);
+                    mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);
+                }
             } else {
                 // If improper mapping encountered, throw an exception.
                 throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
-
-            Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
-            Map<DatabaseField, DatabaseField> sourceToTargetKeyFields;
-            
-            // If we are within a table per class strategy we have to update
-            // the primary key field to point to our own database table. 
-            if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
-                targetToSourceKeyFields = new HashMap<DatabaseField, DatabaseField>();
-                sourceToTargetKeyFields = new HashMap<DatabaseField, DatabaseField>();
-                
-                for (DatabaseField fkField : ownerMapping.getSourceToTargetKeyFields().keySet()) {
-                    // We need to update the pk field to be to our table.
-                    DatabaseField pkField = (DatabaseField) ownerMapping.getSourceToTargetKeyFields().get(fkField).clone();
-                    pkField.setTable(getDescriptor().getPrimaryTable());
-                    sourceToTargetKeyFields.put(fkField, pkField);
-                    targetToSourceKeyFields.put(pkField, fkField);
-                }
-            } else {
-                targetToSourceKeyFields = ownerMapping.getTargetToSourceKeyFields();
-                sourceToTargetKeyFields = ownerMapping.getSourceToTargetKeyFields();
-            }
-            
-            mapping.setSourceToTargetKeyFields(targetToSourceKeyFields);
-            mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);    
         } else if (hasMappedById()) {
             // Mapping is mapped by id.
             processMappedByIdKeys(mapping);

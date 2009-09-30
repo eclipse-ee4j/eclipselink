@@ -27,6 +27,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -58,12 +60,12 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 
 /**
  * INTERNAL:
@@ -481,19 +483,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             // The default primary key name is the primary key field name of the
             // referenced entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
             pkField.setTable(referenceDescriptor.getPrimaryTable());
             
             // The default foreign key name is the primary key of the
             // referencing entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getDescriptor().getPrimaryTable());
             
             // Add a source foreign key to the mapping.
@@ -512,6 +508,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected void processOwningMappingKeys(OneToOneMapping mapping) {
         if (isOneToOnePrimaryKeyRelationship()) {
             processOneToOnePrimaryKeyRelationship(mapping);
+        } else if (hasJoinTable()) {
+            mapping.setRelationTableMechanism(new RelationTableMechanism());
+            processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTable()); 
         } else {
             processOneToOneForeignKeyRelationship(mapping);
         }

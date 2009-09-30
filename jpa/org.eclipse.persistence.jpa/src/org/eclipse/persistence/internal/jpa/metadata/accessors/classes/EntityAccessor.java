@@ -43,6 +43,8 @@
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel. 
  *          processAccessType() is now public and is overridden in the superclass 
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -160,17 +162,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             String defaultPKFieldName = getDescriptor().getPrimaryKeyFieldName();
 
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, defaultPKFieldName, PK_CTX);
             pkField.setTable(sourceTable);
             
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, pkField.getName(), FK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, pkField.getName(), FK_CTX);
             fkField.setTable(targetTable);
 
             // Add the foreign key field to the descriptor.

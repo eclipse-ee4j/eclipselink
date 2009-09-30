@@ -25,6 +25,8 @@
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -52,7 +54,6 @@ import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -649,18 +650,12 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getReferenceDescriptor())) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
             pkField.setTable(getDescriptor().getPrimaryTable());
                 
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getDescriptor().getAlias() + "_" + getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, getDescriptor().getAlias() + "_" + getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getReferenceDatabaseTable());
                 
             if (mapping.isDirectCollectionMapping()) {

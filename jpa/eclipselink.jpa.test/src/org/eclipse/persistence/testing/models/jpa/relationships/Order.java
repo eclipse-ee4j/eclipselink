@@ -36,9 +36,52 @@ public class Order implements java.io.Serializable {
 	private Customer customer;
     private Customer billedCustomer;
     private SalesPerson salesPerson;
-	
-	public Order() {}
+    private Auditor auditor;
+    private OrderLabel orderLabel;
+    private OrderCard orderCard;
 
+    public Order() {}
+
+    @ManyToOne
+    @JoinTable(
+      name = "JPA_ORDER_AUDITOR",
+      joinColumns = @JoinColumn(name="ORDER_ID"),
+      inverseJoinColumns = @JoinColumn(name="AUDITOR_ID")
+    )
+    public Auditor getAuditor() {
+        return auditor;
+    }
+
+    public void setAuditor(Auditor auditor) {
+        this.auditor = auditor;
+    }
+    
+    @OneToOne(cascade=PERSIST)
+    @JoinTable(
+        name = "JPA_ORDER_ORDER_LABEL",
+        joinColumns = @JoinColumn(name="ORDER_ID"),
+        inverseJoinColumns = @JoinColumn(name="ORDER_LABEL_ID")
+    )
+    public OrderLabel getOrderLabel() {
+        return orderLabel;
+    }
+
+    public void setOrderLabel(OrderLabel orderLabel) {
+        this.orderLabel = orderLabel;
+    }
+
+    @OneToOne(mappedBy="order", cascade=PERSIST)
+    public OrderCard getOrderCard() {
+        return orderCard;
+    }
+
+    public void setOrderCard(OrderCard orderCard) {
+        this.orderCard = orderCard;
+        if (this.orderCard != null) {
+            this.orderCard.setOrder(this);
+        }
+    }
+    
 	@Id
     @GeneratedValue(strategy=TABLE, generator="ORDER_TABLE_GENERATOR")
 	@TableGenerator(

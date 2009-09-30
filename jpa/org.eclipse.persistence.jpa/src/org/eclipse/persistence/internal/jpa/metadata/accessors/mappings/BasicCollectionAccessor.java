@@ -19,6 +19,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -26,7 +28,6 @@ import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -175,18 +176,12 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getCollectionTable().getPrimaryKeyJoinColumns()))) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
             pkField.setTable(getDescriptor().getPrimaryTable());
             
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(fkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getReferenceDatabaseTable());
             
             // Add the reference key field for the direct collection mapping.

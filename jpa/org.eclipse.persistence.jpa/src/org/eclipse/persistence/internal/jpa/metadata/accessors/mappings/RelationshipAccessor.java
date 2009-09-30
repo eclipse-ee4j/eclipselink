@@ -21,11 +21,14 @@
  *       - 249033: JPA 2.0 Orphan removal
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
@@ -35,7 +38,7 @@ import javax.persistence.JoinTable;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -44,7 +47,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -135,7 +137,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * 
      * Add the relation key fields to a many to many mapping.
      */
-    protected void addManyToManyRelationKeyFields(List<JoinColumnMetadata> joinColumns, ManyToManyMapping mapping, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
+    protected void addJoinTableRelationKeyFields(List<JoinColumnMetadata> joinColumns, RelationTableMechanism mechanism, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
         // Set the right context level.
         String PK_CTX, FK_CTX;
         if (isSource) {
@@ -151,10 +153,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // defaults to the primary key of the referenced table.
             String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier()){
-                pkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+            setFieldName(pkField, defaultPKFieldName, PK_CTX);
             pkField.setTable(descriptor.getPrimaryKeyTable());
             
             // If the fk field (name) is not specified, it defaults to the 
@@ -167,19 +166,19 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // referenced primary key column.
             DatabaseField fkField = joinColumn.getForeignKeyField();
             String defaultFKFieldName = defaultFieldName + "_" + defaultPKFieldName;
-            fkField.setName(getName(fkField, defaultFKFieldName, FK_CTX));
-            fkField.setUseDelimiters(useDelimitedIdentifier());
+            setFieldName(fkField, defaultFKFieldName, FK_CTX);
+            
             // Target table name here is the join table name.
             // If the user had specified a different table name in the join
             // column, it is ignored. Perhaps an error or warning should be
             // fired off.
-            fkField.setTable(mapping.getRelationTable());
+            fkField.setTable(mechanism.getRelationTable());
             
             // Add a target relation key to the mapping.
             if (isSource) {
-                mapping.addSourceRelationKeyField(fkField, pkField);
+                mechanism.addSourceRelationKeyField(fkField, pkField);
             } else {
-                mapping.addTargetRelationKeyField(fkField, pkField);
+                mechanism.addTargetRelationKeyField(fkField, pkField);
             }
         }
     }
@@ -349,6 +348,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Return true if a join table has been explicitly set on this accessor.
+     */
+    protected boolean hasJoinTable() {
+        return m_joinTable != null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
@@ -418,6 +425,77 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (getDescriptor().isCascadePersist() && ! mapping.isCascadePersist()) {
             setCascadeType(CascadeType.PERSIST.name(), mapping);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a MetadataJoinTable.
+     */
+    protected void processJoinTable(ForeignReferenceMapping mapping, RelationTableMechanism mechanism, JoinTableMetadata joinTable) {
+        // Build the default table name
+        String defaultName = getOwningDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
+        
+        // Process any table defaults and log warning messages.
+        processTable(joinTable, defaultName);
+        
+        // Set the table on the mapping.
+        mechanism.setRelationTable(joinTable.getDatabaseTable());
+        
+        // Add all the joinColumns (source foreign keys) to the mapping.
+        String defaultSourceFieldName;
+        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
+            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
+        } else {
+            defaultSourceFieldName = getOwningDescriptor().getAlias();
+        }
+        addJoinTableRelationKeyFields(getJoinColumnsAndValidate(joinTable.getJoinColumns(), getOwningDescriptor()), mechanism, defaultSourceFieldName, getOwningDescriptor(), true);
+        
+        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
+        String defaultTargetFieldName = getAttributeName();
+        addJoinTableRelationKeyFields(getJoinColumnsAndValidate(joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mechanism, defaultTargetFieldName, getReferenceDescriptor(), false);
+    
+        // The spec. requires pessimistic lock to be extend-able to JoinTable.
+        mapping.setShouldExtendPessimisticLockScope(true);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void processMappedByRelationTable(RelationTableMechanism ownerMechanism, RelationTableMechanism mechanism) {
+        // Set the relation table name from the owner.
+        mechanism.setRelationTable(ownerMechanism.getRelationTable());
+             
+        // In a table per class inheritance we need to update the target 
+        // keys before setting them to mapping's source key fields.
+        if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
+            // Update the target key fields.
+            Vector<DatabaseField> targetKeyFields = new Vector<DatabaseField>();
+            for (DatabaseField targetKeyField : ownerMechanism.getTargetKeyFields()) {
+                DatabaseField newTargetKeyField = (DatabaseField) targetKeyField.clone();
+                newTargetKeyField.setTable(getDescriptor().getPrimaryTable());
+                targetKeyFields.add(newTargetKeyField);
+            }
+            
+            mechanism.setSourceKeyFields(targetKeyFields);
+            
+            // Update the targetRelationKeyFields.
+            Vector<DatabaseField> targetRelationKeyFields = new Vector<DatabaseField>();
+            for (DatabaseField targetRelationKeyField : ownerMechanism.getTargetRelationKeyFields()) {
+                DatabaseField newTargetRelationKeyField = (DatabaseField) targetRelationKeyField.clone();
+                newTargetRelationKeyField.setTable(getDescriptor().getPrimaryTable());
+                targetRelationKeyFields.add(newTargetRelationKeyField);
+            }
+            
+            mechanism.setSourceRelationKeyFields(targetRelationKeyFields);
+        } else {
+            // Add all the source foreign keys we found on the owner.
+            mechanism.setSourceKeyFields(ownerMechanism.getTargetKeyFields());
+            mechanism.setSourceRelationKeyFields(ownerMechanism.getTargetRelationKeyFields()); 
+        }
+        
+        // Add all the target foreign keys we found on the owner.
+        mechanism.setTargetKeyFields(ownerMechanism.getSourceKeyFields());
+        mechanism.setTargetRelationKeyFields(ownerMechanism.getSourceRelationKeyFields());
     }
     
     /**

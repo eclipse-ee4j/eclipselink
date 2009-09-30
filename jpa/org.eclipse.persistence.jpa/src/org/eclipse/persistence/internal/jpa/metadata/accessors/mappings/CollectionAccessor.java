@@ -31,6 +31,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -428,6 +430,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
+     * Return true if the mapped by has been specified.
+     */
+    protected boolean hasMappedBy() {
+        return m_mappedBy != null && ! m_mappedBy.equals("");
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor has temporal metadata.
      */
     @Override
@@ -544,7 +554,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             // Create an override mapping and process the join table to it.
             ManyToManyMapping overrideMapping = new ManyToManyMapping();
             overrideMapping.setAttributeName(getAttributeName());
-            processJoinTable(overrideMapping, joinTable);
+            processJoinTable(overrideMapping, overrideMapping.getRelationTableMechanism(), joinTable);
         
             // The override mapping will have the correct source, sourceRelation, 
             // target and targetRelation keys. Along with the correct relation table.
@@ -552,37 +562,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         } else {
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a MetadataJoinTable.
-     */
-    protected void processJoinTable(ManyToManyMapping mapping, JoinTableMetadata joinTable) {
-        // Build the default table name
-        String defaultName = getOwningDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
-        
-        // Process any table defaults and log warning messages.
-        processTable(joinTable, defaultName);
-        
-        // Set the table on the mapping.
-        mapping.setRelationTable(joinTable.getDatabaseTable());
-        
-        // Add all the joinColumns (source foreign keys) to the mapping.
-        String defaultSourceFieldName;
-        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
-            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
-        } else {
-            defaultSourceFieldName = getOwningDescriptor().getAlias();
-        }
-        addManyToManyRelationKeyFields(getJoinColumnsAndValidate(joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
-        
-        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
-        String defaultTargetFieldName = getAttributeName();
-        addManyToManyRelationKeyFields(getJoinColumnsAndValidate(joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
-        
-        // The spec. requires pessimistic lock to be extend-able to JoinTable.
-        mapping.setShouldExtendPessimisticLockScope(true);
     }
     
     /**

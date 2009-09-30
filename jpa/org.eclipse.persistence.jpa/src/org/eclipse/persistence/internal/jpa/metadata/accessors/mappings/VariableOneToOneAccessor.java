@@ -18,6 +18,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     05/1/2009-2.0 Guy Pelletier 
  *       - 249033: JPA 2.0 Orphan removal   
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -25,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -260,14 +261,12 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             String queryKeyName = getName(joinColumn.getReferencedColumnName(), DEFAULT_QUERY_KEY, MetadataLogger.QK_COLUMN);
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+            setFieldName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(getDescriptor().getPrimaryTable());
             }
-            if (useDelimitedIdentifier()){
-                fkField.setUseDelimiters(useDelimitedIdentifier());
-            }
+
             // Add the foreign query key to the mapping.
             mapping.addForeignQueryKeyName(fkField, queryKeyName);
             

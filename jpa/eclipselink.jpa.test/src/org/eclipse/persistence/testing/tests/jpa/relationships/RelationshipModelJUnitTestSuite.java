@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.relationships.Auditor;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerServiceRepresentative;
 import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
@@ -29,6 +30,8 @@ import org.eclipse.persistence.testing.models.jpa.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
 import org.eclipse.persistence.testing.models.jpa.relationships.MegaBrands;
 import org.eclipse.persistence.testing.models.jpa.relationships.Namco;
+import org.eclipse.persistence.testing.models.jpa.relationships.OrderCard;
+import org.eclipse.persistence.testing.models.jpa.relationships.OrderLabel;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall;
@@ -60,6 +63,8 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCollectionImplementation"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCustomerServiceRepMap"));
+        
+        suite.addTest(new RelationshipModelJUnitTestSuite("testOne2OneRelationTables"));
 
         return suite;
     }
@@ -230,5 +235,68 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         em.flush();
         
         rollbackTransaction(em);
+    }
+    
+    /**
+     * This tests a couple scenarios:
+     * - 1-M mapped by a M-1 using a JoinTable
+     * - 1-1 mapped using a JoinTable (uni-directional)
+     * - 1-1 mapped using a JoinTable (bi-directional)
+     */
+    public void testOne2OneRelationTables() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Order order1 = new Order();
+        Order order2 = new Order();
+        Auditor auditor = new Auditor();
+        
+        getServerSession().setLogLevel(0);
+        
+        try {
+            OrderCard order1Card = new OrderCard();
+            OrderLabel order1Label = new OrderLabel();
+            order1Label.setDescription("I describe order 1");
+            order1.setOrderLabel(order1Label);
+            order1.setOrderCard(order1Card);
+            em.persist(order1);
+            
+            OrderCard order2Card = new OrderCard();
+            OrderLabel order2Label = new OrderLabel();
+            order2Label.setDescription("I describe order 2");
+            order2.setOrderLabel(order2Label);
+            order2.setOrderCard(order2Card);
+            em.persist(order2);
+                
+            auditor.setName("Guillaume");
+            auditor.addOrder(order1);
+            auditor.addOrder(order2);
+            em.persist(auditor);
+
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        closeEntityManager(em);
+
+        
+        clearCache();
+        em = createEntityManager();
+        
+        Auditor refreshedAuditor = em.find(Auditor.class, auditor.getId());
+        Order refreshedOrder1 = em.find(Order.class, order1.getOrderId());
+        Order refreshedOrder2 = em.find(Order.class, order2.getOrderId());
+        
+        assertTrue("Auditor read back did not match the original", getServerSession().compareObjects(auditor, refreshedAuditor));
+        assertTrue("Order1 read back did not match the original", getServerSession().compareObjects(order1, refreshedOrder1));
+        assertTrue("Order2 read back did not match the original", getServerSession().compareObjects(order2, refreshedOrder2));
+        
+        closeEntityManager(em);
     }
 }

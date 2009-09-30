@@ -25,6 +25,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     09/29/2009-2.0 Guy Pelletier 
+ *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -600,6 +602,22 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Note: the order of calls in this method as important.
+     */
+    protected void setFieldName(DatabaseField field, String defaultName, String context) {
+        // This may set the use delimited identifier flag to true.
+        field.setName(getName(field, defaultName, context), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        
+        // The check is necessary to avoid overriding a true setting (set after 
+        // setting the name of the field). We don't want to override it at this
+        // point if the global flag is set to false. 
+        if (useDelimitedIdentifier()) {
+            field.setUseDelimiters(useDelimitedIdentifier());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setName(String name) {
@@ -645,9 +663,11 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_typeConverters = typeConverters;
     }
     
+    /**
+     * INTERNAL:
+     */
     protected boolean useDelimitedIdentifier() {
         return m_project.useDelimitedIdentifier();
-      }
-    
+    }
 }
 
