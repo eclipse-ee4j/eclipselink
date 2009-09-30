@@ -337,7 +337,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                 return yp;
             }
         }
-        return new PredicateImpl(this.metamodel, xp.getCurrentNode().and(yp.getCurrentNode()), buildList(xp,yp), BooleanOperator.AND);
+        org.eclipse.persistence.expressions.Expression currentNode = xp.getCurrentNode().and(yp.getCurrentNode());
+        xp.setParentNode(currentNode);
+        yp.setParentNode(currentNode);
+        return new PredicateImpl(this.metamodel, currentNode, buildList(xp,yp), BooleanOperator.AND);
     }
 
     /**
@@ -373,7 +376,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                 return yp;
             }
         }
-        return new PredicateImpl(this.metamodel, xp.getCurrentNode().or(yp.getCurrentNode()), buildList(xp,yp), BooleanOperator.OR);
+        org.eclipse.persistence.expressions.Expression parentNode = xp.getCurrentNode().or(yp.getCurrentNode());
+        xp.setParentNode(parentNode);
+        yp.setParentNode(parentNode);
+        return new PredicateImpl(this.metamodel, parentNode, buildList(xp,yp), BooleanOperator.OR);
     }
 
     /**
@@ -427,7 +433,11 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalExpression)restriction).isPredicate()){
             return ((PredicateImpl)restriction).negate();
         }
-        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)restriction).getCurrentNode().not(), buildList(restriction), "not");
+        org.eclipse.persistence.expressions.Expression parentNode = ((InternalSelection)restriction).getCurrentNode().not();
+        if (((InternalExpression)restriction).isCompoundExpression()){
+            ((CompoundExpressionImpl)restriction).setParentNode(parentNode);
+        }
+        return new CompoundExpressionImpl(this.metamodel, parentNode, buildList(restriction), "not");
     }
 
     /**
@@ -1982,8 +1992,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return in predicate
      */
     public <T> In<T> in(Expression<? extends T> expression){
-        //TODO
-        return null;
+        return new InImpl(metamodel, expression, buildList(expression));
     }
 
     // coalesce, nullif:
@@ -2101,4 +2110,5 @@ public class QueryBuilderImpl implements QueryBuilder {
             return new FunctionExpressionImpl<T>(metamodel, type, new ExpressionBuilder().getFunction(name), new ArrayList(0), name);
         }
     }
+    
 }

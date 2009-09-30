@@ -43,6 +43,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
 
@@ -88,7 +89,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return the modified query
      */
     public Subquery<T> select(Expression<T> selection) {
-        integrateRoot(selection);
+        findRootAndParameters(selection);
 
         this.selection = (SelectionImpl) selection;
         this.queryType = selection.getJavaType();
@@ -101,20 +102,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         } else {
             ManagedType<T> type = this.metamodel.type(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                if (!((EntityType<T>) type).hasSingleIdAttribute()) {
-                    this.selection = (SelectionImpl) ((Path) this.selection).get(((EntityType) type).getId(Object.class));
-                    this.subQuery.addItem(selection.getAlias() + "ID", this.selection.getCurrentNode());
-                } else {
-                    Expression[] expressions = new Expression[((EntityType<T>) type).getIdClassAttributes().size()];
-                    int index = 0;
-                    for (SingularAttribute<? super T, ?> attr : ((EntityType<T>) type).getIdClassAttributes()) {
-                        PathImpl path = (PathImpl) ((Path) selection).get(attr);
-                        expressions[index] = path;
-                        ++index;
-                        this.subQuery.addItem(selection.getAlias() + "ID" + index, path.getCurrentNode());
-                    }
-                    this.selection = (SelectionImpl<?>) queryBuilder.construct(ClassConstants.AOBJECT, expressions);
-                }
+                this.subQuery.setShouldRetrievePrimaryKeys(true);
             } else {
                 String itemName = selection.getAlias();
                 if (itemName == null){
@@ -504,6 +492,23 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     public boolean isParameter(){
         return false;
+    }
+
+    protected void integrateRoot(RootImpl root){
+        if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))) {
+            // this is the first root, set return type and selection and query
+            // type
+            if (this.selection == null){
+                this.selection = root;
+                this.queryResult = ResultType.ENTITY;
+            }
+            this.subQuery.setReferenceClass(root.getJavaType());
+            this.queryType = root.getJavaType();
+        }
+        if (!this.roots.contains(root)){
+            this.roots.add(root);
+        }
+        
     }
 
     public boolean isCompoundExpression(){

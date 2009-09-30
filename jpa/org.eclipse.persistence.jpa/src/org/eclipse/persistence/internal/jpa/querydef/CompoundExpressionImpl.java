@@ -99,4 +99,13 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public void setOperator(BooleanOperator operator) {
         //
     }
+    
+    /**
+     * This method is used to store what will be the parent EclipseLink expression in the case the tree needs to be altered.
+     * Currently used for In.
+     */
+    public void setParentNode(org.eclipse.persistence.expressions.Expression parentNode){
+        //no-op but can not be abstract as CompoundExpressionImpl is not abstract
+    }
+    
 }

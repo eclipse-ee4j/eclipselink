@@ -14,12 +14,9 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
 
 /**
@@ -43,7 +40,11 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
     
     protected <T> FunctionExpressionImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, resultClass, expressionNode);
-        this.expressions = new ArrayList(compoundExpressions);
+        if (compoundExpressions != null){
+            this.expressions = new ArrayList(compoundExpressions);
+        }else{
+            this.expressions = new ArrayList();
+        }
     }
 
     public <T> FunctionExpressionImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){

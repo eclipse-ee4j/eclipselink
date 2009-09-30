@@ -57,8 +57,9 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected QueryBuilderImpl queryBuilder;
     protected boolean distinct;
     protected List<Expression<?>> stupidImplicitDanglingJoins;
+    protected List<Expression<?>> fetchJoins;
     protected Class queryType;
-    protected Expression<Boolean> havingClause;
+    protected Predicate havingClause;
     protected List<Expression<?>> groupBy;
 
     protected enum ResultType{
@@ -131,7 +132,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> where(Expression<Boolean> restriction){
-        integrateRoot(restriction);
+        findRootAndParameters(restriction);
         this.where = restriction;
         return this;
     }
@@ -151,7 +152,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
             this.where = null;
         }
         Predicate predicate = this.queryBuilder.and(restrictions);
-        integrateRoot(predicate);
+        findRootAndParameters(predicate);
         this.where = predicate;
         return this;
     }
@@ -198,7 +199,12 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return the modified query
      */
     public AbstractQuery<T> having(Expression<Boolean> restriction){
-        this.havingClause = restriction;
+        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()){
+            this.havingClause = (Predicate) restriction;
+        }else{
+            this.havingClause = queryBuilder.isTrue(restriction);
+        }
+        
         return this;
     }
 
@@ -244,14 +250,6 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
 
     /**
-     * Return the selection of the query
-     * @return the item to be returned in the query result
-     */
-    public Selection<T> getSelection(){
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
      * Return a list of the grouping expressions
      * @return the list of grouping expressions
      */
@@ -275,7 +273,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return having clause predicate
      */
     public Predicate getGroupRestriction(){
-        throw new UnsupportedOperationException();
+        return this.havingClause;
     }
     
     /**
@@ -322,29 +320,16 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
         }
     }
     */
-    protected void integrateRoot(Expression<?> predicate) {
-        ((InternalSelection) predicate).findRootAndParameters(this);
-/*        if (this.roots.isEmpty()) {
-            this.roots.addAll(newRoots);
-        } else {
-            boolean found = false;
-            for (Root root : newRoots) {
-                if (this.roots.contains(root)) {
-                    this.roots.addAll(newRoots);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
-            }
-        }
- */   }
+    protected abstract void integrateRoot(RootImpl root);
 
-    protected void integrateRoot(Selection<?> selection) {
+    protected void findRootAndParameters(Expression<?> predicate) {
+        ((InternalSelection) predicate).findRootAndParameters(this);
+    }
+
+    protected void findRootAndParameters(Selection<?> selection) {
         if (selection.isCompoundSelection()) {
             for (Selection subSelection : selection.getCompoundSelectionItems()) {
-                integrateRoot(subSelection);
+                findRootAndParameters(subSelection);
             }
         }
     }
