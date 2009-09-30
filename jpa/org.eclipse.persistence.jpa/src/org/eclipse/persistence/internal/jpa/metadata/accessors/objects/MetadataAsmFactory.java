@@ -11,6 +11,8 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
  * Contributors:
  *     James Sutherland - initial impl 
  ******************************************************************************/  
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,13 +69,23 @@ public class MetadataAsmFactory extends MetadataFactory {
      */
     protected void buildClassMetadata(String className) {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor();
+        InputStream stream = null;
         try {
-            ClassReader reader = new ClassReader(m_loader.getResourceAsStream(className.replace('.', '/') + ".class"));
+            stream = m_loader.getResourceAsStream(className.replace('.', '/') + ".class");
+            ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
             reader.accept(visitor, attributes, false);
         } catch (Exception exception) {
             // Some basic types can't be found, so can just be registered (i.e. arrays).
             addMetadataClass(new MetadataClass(this, className));
+        } finally {
+            try {
+                if (stream != null) {
+                    stream.close();
+                }
+            } catch (IOException ignore) {
+                // Ignore.
+            }
         }
     }
     
@@ -118,6 +130,10 @@ public class MetadataAsmFactory extends MetadataFactory {
                 
                 for (int index = genericTypes.indexOf(parent.getName()) + 1; index < size; index++) {
                     String actualTypeArgument = genericTypes.get(index);
+                    // Ignore extra types on the end of the child, such as interface generics.
+                    if (parentIndex >= parentGenericTypes.size()) {
+                        break;
+                    }
                     String variable = parentGenericTypes.get(parentIndex);
                     parentIndex = parentIndex + 3;
                     
