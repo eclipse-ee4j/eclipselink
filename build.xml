@@ -185,7 +185,6 @@
            allowing unchanged operation by developers and users to clean all built artifacts. -->
     <target name="clean-runtime-checkedin" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
-        <echo message="${trunk.build.location}/${eclipselink.jar.name}*"/>
         <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
         <delete failonerror="false">
             <fileset dir="${trunk.build.location}" includes="${eclipselink.jar.name}*"/>
@@ -226,7 +225,7 @@
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core">
+    <target name="build-core" depends="clean-runtime-checkedin">
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
