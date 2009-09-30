@@ -280,7 +280,7 @@
         <sequential>
             <mkdir dir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
             <mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
-            <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+            <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
