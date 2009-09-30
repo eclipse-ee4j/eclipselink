@@ -1212,7 +1212,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                         this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
                         
                         //attempt to reconnect connection:
-                        if (this.isDatabaseSession()) {
+                        // only if it's a DatabaseSessionImpl, not ServerSession, not SessionBroker
+                        if (this.getClass().isAssignableFrom(DatabaseSessionImpl.class)) {
                             while (retryCount < getLogin().getQueryRetryAttemptCount()) {
                                 try {
                                     // if database session then re-establish

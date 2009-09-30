@@ -675,6 +675,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             if (exception instanceof DatabaseException) {
                 ((DatabaseException)exception).setCall(dbCall);
+                if(((DatabaseException)exception).getAccessor() == null) {
+                    ((DatabaseException)exception).setAccessor(this);
+                }
             }
             throw exception;
         }
