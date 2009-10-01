@@ -44,6 +44,9 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         super(javaType, null);
         this.subSelections = new ArrayList();
         for (Selection sel : subSelections){
+            if (((InternalSelection)sel).isFrom()){
+                ((FromImpl)sel).isLeaf = false;
+            }
             this.subSelections.add(sel);
         }
     }

@@ -90,5 +90,9 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     public boolean isCompoundSelection(){
         return false;
     }
+    
+    public boolean isFrom(){
+        return false;
+    }
 
 }

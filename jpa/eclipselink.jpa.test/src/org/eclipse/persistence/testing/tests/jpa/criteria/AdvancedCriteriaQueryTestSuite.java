@@ -13,6 +13,12 @@
 
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Writer;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,9 +38,12 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.QueryBuilder.In;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -58,12 +67,17 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
+
+import com.sun.corba.se.impl.orbutil.ObjectWriter;
 
 
 /**
@@ -103,6 +117,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInSubQuery"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInLiteral"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleJoin"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleFetch"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimple"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleWhere"));
@@ -114,6 +133,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testCursors"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsEmpty"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testNeg"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMember"));
         
         return suite;
     }
@@ -205,7 +226,38 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
     }
 
-    public void testIsEmpty(){
+    public void testInLiteral(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> emp = cq.from(Employee.class);
+        In<String> in = qb.in(emp.get("address").<String>get("city"));
+        in.value("Ottawa").value("Halifax").value("Toronto");
+        cq.where(in);
+        List<Employee> result = em.createQuery(cq).getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+    }
+
+        public void testInSubQuery(){
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Subquery<String> sq = cq.subquery(String.class);
+            Root<Address> sqEmp = sq.from(Address.class);
+            sq.select(sqEmp.<String>get("city"));
+            sq.where(qb.notLike(sqEmp.<String>get("city"), "5"));
+            In<String> in = qb.in(emp.get("address").<String>get("city"));
+            in.value(sq);
+            cq.where(in);
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+        }
+
+        
+        public void testIsEmpty(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
         QueryBuilder qb = em.getQueryBuilder();
@@ -220,6 +272,55 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testNeg(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> emp = cq.from(Employee.class);
+        cq.where(qb.lessThan(qb.neg(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers"))), 0));
+        List<Employee> result = em.createQuery(cq).getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        for (Employee e : result){
+            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+            
+        }
+    }
+
+    public void testNullIf(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> emp = cq.from(Employee.class);
+        cq.where(qb.isNull(qb.nullif(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers")), qb.parameter(Integer.class))));
+        List<Employee> result = em.createQuery(cq).getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        for (Employee e : result){
+            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+            
+        }
+    }
+
+    public void testIsMember(){
+       /* 
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> emp = cq.from(Employee.class);
+        cq.where(qb.isNotMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
+        Query query = em.createQuery(cq);
+        query.setParameter("1", "coffee");
+        List<Employee> result = query.getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        for (Employee e : result){
+            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+            
+        }
+        */
+    }
+
     public void testSimpleWhere(){
         EntityManager em = createEntityManager();
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
@@ -231,6 +332,66 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         assertFalse("No Employees were returned", result.isEmpty());
         assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
         assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+    }
+    
+    public void testSimpleJoin(){
+        EntityManager em = createEntityManager();
+        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+        QueryBuilder qb = em.getQueryBuilder();
+        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+        root.join("phoneNumbers");
+        cq.where(qb.isEmpty(root.<Collection<PhoneNumber>>get("phoneNumbers")));
+        TypedQuery<Employee> tq = em.createQuery(cq);
+        List<Employee> result = tq.getResultList();
+        assertTrue("Found employee but joins should have canceled isEmpty", result.isEmpty());
+    }
+
+    public void testSimpleFetch(){
+        EntityManager em = createEntityManager();
+        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+        QueryBuilder qb = em.getQueryBuilder();
+        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+        root.fetch("projects");
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+        TypedQuery<Employee> tq = em.createQuery(cq);
+        List<Employee> result = tq.getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        try {
+        ObjectOutputStream stream = new ObjectOutputStream(byteStream);
+
+            stream.writeObject(result.get(0));
+        stream.flush();
+        byte arr[] = byteStream.toByteArray();
+        ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
+        ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
+
+        Employee emp = (Employee) inObjStream.readObject();
+        assertTrue("Did not return Employee", emp.getClass().equals(Employee.class));
+        assertTrue("Employee had wrong firstname", emp.getFirstName().equalsIgnoreCase("bob"));
+        emp.getProjects().size(); //may cause exception
+        } catch (IOException e) {
+            fail("Failed during serialization");
+        } catch (ClassNotFoundException e) {
+            fail("Failed during serialization");
+        }
+        
+    }
+
+    public void testSubQuery(){
+        EntityManager em = createEntityManager();
+        QueryBuilder qbuilder = em.getQueryBuilder();
+        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+        Root<Employee> customer = cquery.from(Employee.class);
+        Join<Employee, Dealer> o = customer.join("dealers");
+        cquery.select(customer).distinct(true);
+        Subquery<Integer> sq = cquery.subquery(Integer.class);
+        Root<Dealer> sqo = sq.from(Dealer.class);
+        sq.select(qbuilder.min(sqo.<Integer>get("version")));
+        cquery.where(qbuilder.equal(o.get("version"), sq));
+        TypedQuery<Employee> tquery = em.createQuery(cquery);
+        List<Employee> result = tquery.getResultList();
+        // No assert as version is not actually a mapped field in dealer.
     }
 
     /**

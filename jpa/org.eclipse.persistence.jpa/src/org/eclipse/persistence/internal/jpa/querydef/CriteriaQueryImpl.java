@@ -171,6 +171,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 }
                 this.queryType = selections[0].getJavaType();
                 this.selection = (SelectionImpl) selections[0];
+                if (((InternalSelection)this.selection).isFrom()){
+                    ((FromImpl)this.selection).isLeaf = false;
+                }
             }
             return this;
         }
@@ -189,6 +192,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = (SelectionImpl) this.queryBuilder.construct(this.queryType, selections);
         } else {
             this.selection = (SelectionImpl) selections[0];
+            if (((InternalSelection)this.selection).isFrom()){
+                ((FromImpl)this.selection).isLeaf = false;
+            }
 
         }
         // TODO validate primitive return types but a multiselect
@@ -477,10 +483,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     public DatabaseQuery translate() {
-/*        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-  */      
+        
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)) {
             query = new ReadAllQuery(this.queryType);
@@ -517,19 +523,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             if (((SelectionImpl) nested).isCompoundSelection()) {
                                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
                             } else {
-                     //           if (((InternalExpression)nested).isFrom()){
-                    //                reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl)nested).findJoinFetches());
-                    //            }else{
+                                if (((InternalSelection)nested).isFrom()){
+                                    reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl)nested).findJoinFetches());
+                                }else{
                                     reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
-                     //           }
+                                }
                             }
                         }
                     } else {
-                //        if (((InternalExpression)selection).isFrom()){
-                //            reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl)selection).findJoinFetches());
-                //        }else{
+                        if (((InternalSelection)selection).isFrom()){
+                            reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl)selection).findJoinFetches());
+                        }else{
                             reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
-                //        }
+                        }
                                }
                 }
             }
@@ -564,12 +570,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
             }
         }
-/*        if (this.joins != null){
+        if (this.joins != null){
             for (FromImpl join : this.joins){
-                query.setSelectionCriteria(((InternalSelection)join).getCurrentNode().and(query.getSelectionCriteria()));
+                query.addNonFetchJoinedAttribute(((InternalSelection)join).getCurrentNode());
             }
         }
- */       if (this.distinct) {
+        if (this.distinct) {
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
         } else {
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);

@@ -408,7 +408,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void addItem(String itemName, Expression attributeExpression, List joinedExpressions) {
         ReportItem item = new ReportItem(itemName, attributeExpression);
-        if (joinedExpressions != null){
+        if (joinedExpressions != null && ! joinedExpressions.isEmpty()){
             item.getJoinedAttributeManager().setJoinedAttributeExpressions_(joinedExpressions);
         }
         addItem(item);

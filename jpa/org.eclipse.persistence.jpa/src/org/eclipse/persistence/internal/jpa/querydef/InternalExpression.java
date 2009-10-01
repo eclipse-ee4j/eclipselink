@@ -51,7 +51,4 @@ public interface InternalExpression{
     
     public boolean isParameter();
     
-    public boolean isFrom();
-
-    
 }

@@ -308,6 +308,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                     join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
                 }
             }
+            ((FromImpl)join).isLeaf = false;
         }else{
             Class clazz = ((SingularAttribute)attribute).getBindableJavaType();
             if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
