@@ -11,6 +11,7 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
         super((Path)null, managedType, metamodel, javaClass, expressionNode, modelArtifact);
+        this.isLeaf = false;
     }
 
     /**

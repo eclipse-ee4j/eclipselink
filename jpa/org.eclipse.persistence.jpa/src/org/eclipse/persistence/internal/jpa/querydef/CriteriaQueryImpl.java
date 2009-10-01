@@ -19,6 +19,7 @@ import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -476,8 +477,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     public DatabaseQuery translate() {
-        // TODO fetch joins/dangling joins
-        
+/*        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
+  */      
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)) {
             query = new ReadAllQuery(this.queryType);
@@ -514,19 +517,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             if (((SelectionImpl) nested).isCompoundSelection()) {
                                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
                             } else {
-                                if (((InternalExpression)nested).isFrom()){
-                                    reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl)nested).findJoinFetches());
-                                }else{
+                     //           if (((InternalExpression)nested).isFrom()){
+                    //                reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl)nested).findJoinFetches());
+                    //            }else{
                                     reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
-                                }
+                     //           }
                             }
                         }
                     } else {
-                        if (((InternalExpression)selection).isFrom()){
-                            reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl)selection).findJoinFetches());
-                        }else{
+                //        if (((InternalExpression)selection).isFrom()){
+                //            reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl)selection).findJoinFetches());
+                //        }else{
                             reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
-                        }
+                //        }
                                }
                 }
             }
@@ -561,12 +564,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
             }
         }
-        if (this.joins != null){
+/*        if (this.joins != null){
             for (FromImpl join : this.joins){
                 query.setSelectionCriteria(((InternalSelection)join).getCurrentNode().and(query.getSelectionCriteria()));
             }
         }
-        if (this.distinct) {
+ */       if (this.distinct) {
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
         } else {
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
