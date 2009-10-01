@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
@@ -19,11 +21,10 @@ import junit.framework.Test;
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
 public class FAServerTestSuite extends TestSuite {
-    
     public static Test suite() {
+        JUnitTestCase.initializePlatform();
         TestSuite suite = new TestSuite();
         suite.setName("Fieldaccess Advanced ServerTestSuite");
-        
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());

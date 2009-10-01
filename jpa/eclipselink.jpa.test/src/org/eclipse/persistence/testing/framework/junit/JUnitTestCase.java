@@ -76,7 +76,7 @@ public abstract class JUnitTestCase extends TestCase {
      * So it must be forced to do so before any domain classes are loaded,
      * otherwise weaving will not work.
      */
-    static void initializePlatform() {
+    public static void initializePlatform() {
         if (isInitialzied) {
             return;
         }
