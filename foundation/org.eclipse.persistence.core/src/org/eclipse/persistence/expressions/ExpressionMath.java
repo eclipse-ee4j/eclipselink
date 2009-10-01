@@ -28,7 +28,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      * <p>Example:
      * <pre><blockquote>
      *  Example: ExpressionMath.abs(builder.get("netWorth")).greaterThan(1000000);
@@ -41,7 +41,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression acos(Expression expression) {
         ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Acos);
@@ -50,7 +50,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression add(Expression left, int right) {
         return add(left, new Integer(right));
@@ -58,7 +58,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression add(Expression right, Object left) {
         ExpressionOperator anOperator = right.getOperator(ExpressionOperator.Add);
@@ -67,7 +67,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression asin(Expression expression) {
         ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Asin);
@@ -76,7 +76,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression atan(Expression expression) {
         ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Atan);
@@ -157,7 +157,7 @@ public class ExpressionMath {
 
     /**
      * PUBLIC:
-     * Return a new expression that aplies the function to the given expression.
+     * Return a new expression that applies the function to the given expression.
      */
     public static Expression divide(Expression left, int right) {
         return divide(left, new Integer(right));

@@ -1128,9 +1128,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
         DatabaseQuery query = getDatabaseQuery();
         int index = query.getArguments().indexOf(name);
-        if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non
-            // native
-            // queries
+        if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
             if (index == -1) {
                 if (isIndex) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
@@ -1139,12 +1137,9 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 }
             }
             Class type = query.getArgumentTypes().get(index);
-            // PERF: Only validate the type if known, and different.
-            if ((type != null) && (type != ClassConstants.OBJECT) && (value != null) && (type != value.getClass())) {
-                if (!isValidActualParameter(value, type)) {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index),
-                            query.getEJBQLString() }));
-                }
+            if (!isValidActualParameter(value, type)) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index),
+                        query.getEJBQLString() }));
             }
         }
         this.parameterValues.put(name, value);
@@ -1230,9 +1225,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if (param == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
             
-        }if (!BasicTypeHelperImpl.getInstance().isAssignableFrom(param.getParameterType(), type)){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, type, param.getParameterType(),
-                    "" }));    }
+        }
         return param;
     } catch (RuntimeException e) {
         setRollbackOnly();
@@ -1251,9 +1244,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if (param == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
             
-        }if (!BasicTypeHelperImpl.getInstance().isAssignableFrom(param.getParameterType(), type)){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { position, type, param.getParameterType(),
-                    "" }));    }
+        }
         return param;
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -1268,7 +1259,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public Parameter<?> getParameter(String name) {
         try {
             entityManager.verifyOpen();
-        Parameter param = (Parameter)this.parameters.get(name);
+            Parameter param = (Parameter)this.parameters.get(name);
         if (param == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
         }
@@ -1286,7 +1277,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public Parameter<?> getParameter(int position) {
         try {
             entityManager.verifyOpen();
-        Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
+            Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
         if (param == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
         }

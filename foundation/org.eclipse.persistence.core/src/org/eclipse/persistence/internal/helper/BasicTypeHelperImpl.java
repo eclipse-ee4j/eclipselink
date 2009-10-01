@@ -39,9 +39,9 @@ public class BasicTypeHelperImpl {
     /** Set of date classes. */
     private static Set dateClasses = new HashSet();
     /** Maps primtives types to their wrapper classes. */
-    private static Map primitiveToWrapper = new HashMap();
+    private static Map<Class, Class> primitiveToWrapper = new HashMap();
     /** Maps wrapper classes to their primitive types. */
-    private static Map wrapperToPrimitive = new HashMap();
+    private static Map<Class, Class> wrapperToPrimitive = new HashMap();
 
     static {
         // Initialize set of integral types plus their wrapper classes
@@ -368,7 +368,11 @@ public class BasicTypeHelperImpl {
             isDateClass(type) || isEnumType(type);
     }
 
-    /** */
+    /** 
+     * convenience method for java's isAssignableFrom that allows auto-boxing, taking java class or a descriptor as arguments. 
+     *  It will return true if both sides are in the same category (Numberic, Date or Boolean) otherwise it will use java's 
+     *  isAssignableFrom on the argument classes.    Returns true if either arguments is null.
+     */
     public boolean isAssignableFrom(Object left, Object right) {
         if ((left == null) || (right == null)) {
             return true;
@@ -394,6 +398,35 @@ public class BasicTypeHelperImpl {
         }
         // check for inheritance and implements
         return getJavaClass(left).isAssignableFrom(getJavaClass(right));
+    }
+    
+    /** 
+     * convenience method for java's isAssignableFrom that allows auto-boxing but follows more closely Java's 
+     * Class.isAssignableFrom method results, and returns true if either arguments is null.
+     */
+    public boolean isStrictlyAssignableFrom(Object left, Object right) {
+        if ((left == null) || (right == null)) {
+            return true;
+        }
+        // check for identical types
+        if (left == right) {
+            return true;
+        }
+        if (left == ClassConstants.OBJECT) {
+            return true;            
+        }
+        
+        Class leftClass = getJavaClass(left);
+        Class rightClass = getJavaClass(right);
+        if ( leftClass.isPrimitive() ){
+            leftClass = this.getWrapperClass(leftClass);
+        }
+        if ( rightClass.isPrimitive() ){
+            rightClass = this.getWrapperClass(rightClass);
+        }
+        
+        // check for inheritance and implements
+        return leftClass.isAssignableFrom(rightClass);
     }
 
     /** Implements binary numeric promotion as defined in JLS extended by
@@ -438,12 +471,12 @@ public class BasicTypeHelperImpl {
     // Helper methods
 
     /** Returns the primitive for the specified wrapper class. */
-    protected Object getPrimitiveType(Object wrapper) {
+    protected Class getPrimitiveType(Object wrapper) {
         return wrapperToPrimitive.get(wrapper);
     }
     
     /** Returns the wrapper class for the specified primitive. */
-    protected Object getWrapperClass(Object primitive) {
+    protected Class getWrapperClass(Object primitive) {
         return primitiveToWrapper.get(primitive);
     }
 
