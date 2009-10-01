@@ -14,8 +14,11 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.naming.OperationNotSupportedException;
 import javax.persistence.FetchType;
@@ -67,6 +70,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     protected ManagedType managedType;
     protected Set<Join<X, ?>> joins;
     protected Set<Fetch<X, ?>> fetches;
+    protected boolean isLeaf = true;
+    protected boolean isFetch = false;
 
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact) {
         super(parentPath, metamodel, javaClass, expressionNode, modelArtifact);
@@ -117,7 +122,9 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }else{
             join = new JoinImpl<X, Y>(this, this.metamodel.type(clazz), this.metamodel, clazz, this.currentNode.get(assoc.getName()), assoc, jt);
         }
+        this.isLeaf = false;
         this.fetches.add(join);
+        ((FromImpl)join).isFetch = true;
         return join;
     }
     /**
@@ -171,7 +178,9 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                 fetch = new MapJoinImpl(this, metamodel.type(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc);
             }
         }
+        this.isLeaf = false;
         this.fetches.add(fetch);
+        ((FromImpl)fetch).isFetch = true;
         return fetch;
     }
 
@@ -222,6 +231,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * @return path corresponding to the referenced attribute
      */
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
+        this.isLeaf = false;
         if (att.getPersistentAttributeType().equals(PersistentAttributeType.BASIC)){
             return new PathImpl<Y>(this, this.metamodel, att.getBindableJavaType(),this.currentNode.get(att.getName()), att);
         }else{
@@ -244,7 +254,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
         
         // This is a special Expression that represents just the collection for member of etc...
-        
+        this.isLeaf = false;
         return new ExpressionImpl<C>(this.metamodel, ClassConstants.Collection_Class ,this.currentNode.anyOf(collection.getName()));
     }
 
@@ -257,6 +267,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      */
     @Override
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
+        this.isLeaf = false;
         return new ExpressionImpl<M>(this.metamodel, ClassConstants.Map_Class ,this.currentNode.anyOf(map.getName()));
     }
     
@@ -272,6 +283,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     
     @Override
     public <Y> Path<Y> get(String attName) {
+        this.isLeaf = false;
         Attribute attribute = this.managedType.getAttribute(attName);
         Join join;
         if (attribute.isCollection()) {
@@ -325,6 +337,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }else{
             join = new JoinImpl<X, Y>(this, this.metamodel.type(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), attribute, jt);
         }
+        this.isLeaf = false;
         this.joins.add(join);
         return join;
     }
@@ -361,6 +374,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new CollectionJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) collection);
         }
+        this.isLeaf = false;
         this.joins.add(join);
         return join;
     }
@@ -381,6 +395,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new SetJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) set);
         }
+        this.isLeaf = false;
         this.joins.add(join);
         return join;
     }
@@ -401,6 +416,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new ListJoinImpl<X, Y>(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) list);
         }
+        this.isLeaf = false;
         this.joins.add(join);
         return join;
     }
@@ -421,6 +437,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new MapJoinImpl(this, metamodel.type(clazz), this.metamodel, clazz, node, (Bindable) map);
         }
+        this.isLeaf = false;
         this.joins.add(join);
         return join;
     }
@@ -430,6 +447,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
     public <X, Y> Join<X, Y> join(String attributeName, JoinType jt) {
+        this.isLeaf = false;
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
             org.eclipse.persistence.expressions.Expression node;
@@ -515,5 +533,35 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_set", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
+    }
+    
+    public void findJoins(AbstractQueryImpl query){
+        Stack stack = new Stack();
+        stack.push(this);
+        while(!stack.isEmpty()){
+            FromImpl currentJoin = (FromImpl) stack.pop();
+            stack.addAll(currentJoin.getJoins());
+            if (currentJoin.isLeaf){
+                    query.addJoin(currentJoin);
+                }
+        }
+    }
+
+    public List<org.eclipse.persistence.expressions.Expression> findJoinFetches(){
+        List<org.eclipse.persistence.expressions.Expression> fetches = new ArrayList<org.eclipse.persistence.expressions.Expression>();
+        Stack stack = new Stack();
+        stack.push(this);
+        while(!stack.isEmpty()){
+            FromImpl currentJoin = (FromImpl) stack.pop();
+            stack.addAll(currentJoin.getFetches());
+            if (currentJoin.isLeaf){
+                    fetches.add(currentJoin.getCurrentNode());
+                }
+        }
+        return fetches;
+    }
+    
+    public boolean isFrom(){
+        return true;
     }
 }

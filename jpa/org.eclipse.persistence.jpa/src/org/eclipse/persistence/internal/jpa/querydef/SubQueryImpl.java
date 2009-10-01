@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -70,6 +71,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     protected ReportQuery subQuery;
     protected Set<Join<?,?>> correlatedJoins;
     protected AbstractQuery parent;
+    protected Set<FromImpl> processedJoins;
         
 
 
@@ -90,9 +92,17 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public Subquery<T> select(Expression<T> selection) {
         findRootAndParameters(selection);
+        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
+        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
 
         this.selection = (SelectionImpl) selection;
         this.queryType = selection.getJavaType();
+
+        this.subQuery.getItems().clear();
 
         if (selection.isCompoundSelection()) {
             int count = 0;
@@ -128,6 +138,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public Subquery<T> where(Expression<Boolean> restriction){
         super.where(restriction);
         this.subQuery.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
+        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
+        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
         return this;
     }
 
@@ -146,6 +162,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public Subquery<T> where(Predicate... restrictions){
         super.where(restrictions);
         this.subQuery.setSelectionCriteria(((InternalSelection)this.where).getCurrentNode());
+        for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
+        for (Iterator iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+            findJoins((FromImpl)iterator.next());
+        }
         return this;
     }
 
@@ -366,6 +388,17 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public void addParameter(ParameterExpression<?> parameter){
         ((AbstractQueryImpl)this.getParent()).addParameter(parameter);
     }
+
+    public void addJoin(FromImpl join){
+        if (this.processedJoins == null ) {this.processedJoins = new HashSet<FromImpl>();}
+        if (! this.processedJoins.contains(join)){
+            this.processedJoins.add(join);
+        org.eclipse.persistence.expressions.Expression exp = this.subQuery.getSelectionCriteria();
+        exp = join.getCurrentNode().and(exp);
+        this.subQuery.setSelectionCriteria(exp);
+        }
+    }
+
     //Expression
     public <X> Expression<X> as(Class<X> type) {
         return (Expression<X>) this;
@@ -516,6 +549,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
     public boolean isExpression(){
         return true;
+    }
+    
+    public boolean isFrom(){
+        return false;
     }
     
     public boolean isLiteral(){

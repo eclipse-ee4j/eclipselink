@@ -56,8 +56,6 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected ResultType queryResult;
     protected QueryBuilderImpl queryBuilder;
     protected boolean distinct;
-    protected List<Expression<?>> stupidImplicitDanglingJoins;
-    protected List<Expression<?>> fetchJoins;
     protected Class queryType;
     protected Predicate havingClause;
     protected List<Expression<?>> groupBy;
@@ -230,6 +228,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     }
     
     public abstract void addParameter(ParameterExpression<?> parameter);
+    public abstract void addJoin(FromImpl join);
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -333,4 +332,9 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
             }
         }
     }
+
+    protected void findJoins(FromImpl root) {
+        root.findJoins(this);
+    }
+
 }

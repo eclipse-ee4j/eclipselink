@@ -17,8 +17,10 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Tuple;
@@ -38,6 +40,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -65,6 +68,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     protected Set<ParameterExpression<?>> parameters;
 
     protected List<Order> orderBy;
+    
+    protected List<FromImpl> joins;
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
@@ -81,7 +86,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        integrateRoot(selection);
+        findRootAndParameters(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
             if (!selection.getJavaType().equals(Tuple.class) && !this.queryResult.equals(ResultType.TUPLE) && !this.queryResult.equals(ResultType.OBJECT_ARRAY)) {
@@ -332,14 +337,18 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    protected void initialRoot(RootImpl root, EntityType entity) {
+    protected void integrateRoot(RootImpl root){
         if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))) {
             // this is the first root, set return type and selection and query
             // type
-            this.selection = root;
-            this.queryResult = ResultType.ENTITY;
-            this.queryType = entity.getJavaType();
+            if (this.selection == null){
+                this.selection = root;
+                this.queryResult = ResultType.ENTITY;
+            }
+            this.queryType = root.getJavaType();
         }
+        this.roots.add(root);
+        
     }
 
     /**
@@ -428,6 +437,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
+    public void addJoin(FromImpl from){
+        if (this.joins == null){
+            this.joins = new ArrayList<FromImpl>();
+        }
+        this.joins.add(from);
+    }
+    
     /**
      * Return the ordering expressions in order of precedence.
      * 
@@ -465,6 +481,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)) {
             query = new ReadAllQuery(this.queryType);
+            if (this.roots != null && !this.roots.isEmpty()){
+                List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl)this.roots.iterator().next()).findJoinFetches();
+                for (org.eclipse.persistence.expressions.Expression fetch: list){
+                    query.addJoinedAttribute(fetch);
+                }
+            }
         } else if (this.queryResult.equals(ResultType.PARTIAL)) {
             ReadAllQuery raq = new ReadAllQuery(this.queryType);
             for (Selection selection : this.selection.getCompoundSelectionItems()) {
@@ -492,12 +514,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             if (((SelectionImpl) nested).isCompoundSelection()) {
                                 reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
                             } else {
-                                reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
+                                if (((InternalExpression)nested).isFrom()){
+                                    reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl)nested).findJoinFetches());
+                                }else{
+                                    reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
+                                }
                             }
                         }
                     } else {
-                        reportQuery.addAttribute(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode(), ((SelectionImpl) this.selection).getJavaType());
-                    }
+                        if (((InternalExpression)selection).isFrom()){
+                            reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl)selection).findJoinFetches());
+                        }else{
+                            reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
+                        }
+                               }
                 }
             }
             if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null) {
@@ -529,6 +559,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 }
             }else{
                 query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
+            }
+        }
+        if (this.joins != null){
+            for (FromImpl join : this.joins){
+                query.setSelectionCriteria(((InternalSelection)join).getCurrentNode().and(query.getSelectionCriteria()));
             }
         }
         if (this.distinct) {

@@ -50,6 +50,8 @@ public interface InternalExpression{
     public boolean isLiteral();
     
     public boolean isParameter();
+    
+    public boolean isFrom();
 
     
 }

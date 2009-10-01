@@ -131,6 +131,10 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return true;
     }
     
+    public boolean isFrom(){
+        return false;
+    }
+    
     public boolean isLiteral(){
         return this.isLiteral;
     }
