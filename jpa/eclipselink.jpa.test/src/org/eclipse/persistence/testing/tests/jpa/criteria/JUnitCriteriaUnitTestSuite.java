@@ -192,6 +192,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.from(Employee.class).join("address");        
+        cq.distinct(true);
         int initialSize = em.createQuery(cq).getResultList().size();
         
         Employee emp = new Employee();
@@ -203,6 +204,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         qb = em.getQueryBuilder();
         cq = qb.createQuery(Employee.class);
         cq.from(Employee.class).join("address", JoinType.LEFT);  
+        cq.distinct(true);
         
         List result = em.createQuery(cq).getResultList();
         
