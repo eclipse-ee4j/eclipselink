@@ -363,6 +363,8 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
 
         addTest(new UnitOfWorkConformAcrossIndirectionTest());
         addTest(new UnitOfWorkConformWithOrderTest());
+        
+        addTest(new UnitOfWorkConformNewObjectTest());
     }
 
     public void addUOWConformWithoutRegisteringTests() {
