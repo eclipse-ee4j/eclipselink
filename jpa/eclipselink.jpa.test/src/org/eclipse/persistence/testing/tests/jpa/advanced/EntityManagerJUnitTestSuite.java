@@ -8566,106 +8566,115 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIsLoaded(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        beginTransaction(em);
-        try{
-            Employee emp = new Employee();
-            emp.setFirstName("Abe");
-            emp.setLastName("Jones");
-            Address addr = new Address();
-            addr.setCity("Palo Alto");
-            emp.setAddress(addr);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            beginTransaction(em);
+            try{
+                Employee emp = new Employee();
+                emp.setFirstName("Abe");
+                emp.setLastName("Jones");
+                Address addr = new Address();
+                addr.setCity("Palo Alto");
+                emp.setAddress(addr);
+                
+                PhoneNumber pn = new PhoneNumber();
+                pn.setNumber("1234456");
+                pn.setType("Home");
+                emp.addPhoneNumber(pn);
+                pn.setOwner(emp);
+                em.persist(emp);
+                em.flush();
+                
+                em.clear();
+                clearCache();
             
-            PhoneNumber pn = new PhoneNumber();
-            pn.setNumber("1234456");
-            pn.setType("Home");
-            emp.addPhoneNumber(pn);
-            pn.setOwner(emp);
-            em.persist(emp);
-            em.flush();
-            
-            em.clear();
-            clearCache();
-            
-            emp = (Employee)em.find(Employee.class, emp.getId());
-            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-            assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
-        } finally {
-            rollbackTransaction(em);
+                emp = (Employee)em.find(Employee.class, emp.getId());
+                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+                assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
+            } finally {
+                rollbackTransaction(em);
+            }
         }
     }
     
     public void testIsLoadedAttribute(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        beginTransaction(em);
-        try{
-            Employee emp = new Employee();
-            emp.setFirstName("Abe");
-            emp.setLastName("Jones");
-            Address addr = new Address();
-            addr.setCity("Palo Alto");
-            emp.setAddress(addr);
-            
-            PhoneNumber pn = new PhoneNumber();
-            pn.setNumber("1234456");
-            pn.setType("Home");
-            emp.addPhoneNumber(pn);
-            pn.setOwner(emp);
-            
-            SmallProject project = new SmallProject();
-            project.setName("Utility Testing");
-            project.addTeamMember(emp);
-            emp.addProject(project);
-            em.persist(emp);
-            em.flush();
-            
-            em.clear();
-            clearCache();
-            
-            emp = (Employee)em.find(Employee.class, emp.getId());
-            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-            assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
-            assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
-            emp.getPhoneNumbers().size();
-            assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
-            assertTrue("PersistenceUnitUtil says firstName is not loaded when it is", util.isLoaded(emp, "firstName"));
-        } finally {
-            rollbackTransaction(em);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            beginTransaction(em);
+            try{
+                Employee emp = new Employee();
+                emp.setFirstName("Abe");
+                emp.setLastName("Jones");
+                Address addr = new Address();
+                addr.setCity("Palo Alto");
+                emp.setAddress(addr);
+                
+                PhoneNumber pn = new PhoneNumber();
+                pn.setNumber("1234456");
+                pn.setType("Home");
+                emp.addPhoneNumber(pn);
+                pn.setOwner(emp);
+                
+                SmallProject project = new SmallProject();
+                project.setName("Utility Testing");
+                project.addTeamMember(emp);
+                emp.addProject(project);
+                em.persist(emp);
+                em.flush();
+                
+                em.clear();
+                clearCache();
+                
+                emp = (Employee)em.find(Employee.class, emp.getId());
+                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+                assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
+                assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
+                emp.getPhoneNumbers().size();
+                assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
+                assertTrue("PersistenceUnitUtil says firstName is not loaded when it is", util.isLoaded(emp, "firstName"));
+            } finally {
+                rollbackTransaction(em);
+            }
         }
     }
     
     public void testGetIdentifier(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        beginTransaction(em);
-        try{
-            Employee emp = new Employee();
-            emp.setFirstName("Abe");
-            emp.setLastName("Jones");
-            Address addr = new Address();
-            addr.setCity("Palo Alto");
-            emp.setAddress(addr);
-            
-            PhoneNumber pn = new PhoneNumber();
-            pn.setNumber("1234456");
-            pn.setType("Home");
-            emp.addPhoneNumber(pn);
-            pn.setOwner(emp);
-            em.persist(emp);
-            em.flush();
-            Integer id = emp.getId();
-            
-            em.clear();
-            clearCache();
-            
-            emp = (Employee)em.find(Employee.class, emp.getId());
-            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-            Object retrievedId = util.getIdentifier(emp);
-            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
-        } finally {
-            rollbackTransaction(em);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            beginTransaction(em);
+            try{
+                Employee emp = new Employee();
+                emp.setFirstName("Abe");
+                emp.setLastName("Jones");
+                Address addr = new Address();
+                addr.setCity("Palo Alto");
+                emp.setAddress(addr);
+                
+                PhoneNumber pn = new PhoneNumber();
+                pn.setNumber("1234456");
+                pn.setType("Home");
+                emp.addPhoneNumber(pn);
+                pn.setOwner(emp);
+                em.persist(emp);
+                em.flush();
+                Integer id = emp.getId();
+                
+                em.clear();
+                clearCache();
+                
+                emp = (Employee)em.find(Employee.class, emp.getId());
+                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+                Object retrievedId = util.getIdentifier(emp);
+                assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
+            } finally {
+                rollbackTransaction(em);
+            }
         }
     }
     
@@ -8800,39 +8809,44 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testGetSupportedHints(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        Query query = em.createQuery("Select e from Employee e");
-        Set<String> supportedHints = query.getSupportedHints();
-        
-        try{
-            Field[] hintFields = QueryHints.class.getFields();
-            Set<String> queryHints = new HashSet<String>(hintFields.length);
-            for (int i=0;i<hintFields.length;i++){
-                Field hintField = hintFields[i];
-                String hint = (String)hintField.get(null);
-                queryHints.add(hint);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            Query query = em.createQuery("Select e from Employee e");
+            Set<String> supportedHints = query.getSupportedHints();
+            
+            try{
+                Field[] hintFields = QueryHints.class.getFields();
+                Set<String> queryHints = new HashSet<String>(hintFields.length);
+                for (int i=0;i<hintFields.length;i++){
+                    Field hintField = hintFields[i];
+                    String hint = (String)hintField.get(null);
+                    queryHints.add(hint);
+                }
+                assertTrue("The supported hints did not match our list of hints.", supportedHints.equals(queryHints));
+            } catch (Exception e){
+                fail("Exception retrieving hints: " + e);
             }
-            assertTrue("The supported hints did not match our list of hints.", supportedHints.equals(queryHints));
-        } catch (Exception e){
-            fail("Exception retrieving hints: " + e);
         }
-        
     }
     
     public void testGetHints(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        Query query = em.createQuery("Select e from Employee e");
-        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-        query.setHint(QueryHints.BIND_PARAMETERS, "");
-        Map<String, Object> hints = query.getHints();
-        assertTrue("Incorrect number of hints.", hints.size() == 2);
-        assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
-        assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
-        
-        query = em.createQuery("Select a from Address a");
-        hints = query.getHints();
-        assertTrue("Hints is not null when it should be.", hints == null);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+            query.setHint(QueryHints.BIND_PARAMETERS, "");
+            Map<String, Object> hints = query.getHints();
+            assertTrue("Incorrect number of hints.", hints.size() == 2);
+            assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
+            assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
+            
+            query = em.createQuery("Select a from Address a");
+            hints = query.getHints();
+            assertTrue("Hints is not null when it should be.", hints == null);
+        }
     }
 }

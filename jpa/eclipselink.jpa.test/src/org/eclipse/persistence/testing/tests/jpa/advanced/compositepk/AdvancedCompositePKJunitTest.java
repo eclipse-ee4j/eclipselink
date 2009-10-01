@@ -596,22 +596,25 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     }
     
     public void testGetIdentifier(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-        beginTransaction(em);
-        try{
-            DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
-            Department department = new Department();
-            department.setName("DEPT B");
-            department.setRole("ROLE B");
-            department.setLocation("LOCATION B");
-            em.persist(department);
-            em.flush();
-            
-            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
-        } finally {
-            rollbackTransaction(em);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManagerFactory emf = getEntityManagerFactory();
+            EntityManager em = emf.createEntityManager();
+            beginTransaction(em);
+            try{
+                DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
+                Department department = new Department();
+                department.setName("DEPT B");
+                department.setRole("ROLE B");
+                department.setLocation("LOCATION B");
+                em.persist(department);
+                em.flush();
+                
+                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+                assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
+            } finally {
+                rollbackTransaction(em);
+            }
         }
     }
     
