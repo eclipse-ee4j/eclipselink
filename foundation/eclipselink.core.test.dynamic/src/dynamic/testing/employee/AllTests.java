@@ -27,7 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    EmployeeProjectTestSuite.class
+    MappingConfigTestSuite.class,
+    EmployeeQueriesTestSuite.class
     }
 )
 public class AllTests {}

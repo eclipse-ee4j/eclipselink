@@ -21,9 +21,10 @@ package org.eclipse.persistence.internal.dynamic;
 //javase imports
 import java.beans.PropertyChangeListener;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Vector;
 
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -174,18 +176,27 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
      * direct/basic and the mapping's type is primitive ensure the non-primitive
      * type is allowed.
      */
-    // TODO: Is this check a performance issue? Should it be optional?
+    // Is this check a performance issue? Should it be optional?
     protected void checkSetType(DatabaseMapping mapping, Object value) {
         if (value == null) {
-            if (mapping.getAttributeClassification().isPrimitive()) {
+            if (mapping.isCollectionMapping() || (mapping.getAttributeClassification() != null && mapping.getAttributeClassification().isPrimitive())) {
                 throw DynamicException.invalidSetPropertyType(mapping, value);
             }
             return;
         }
 
         Class<?> expectedType = mapping.getAttributeClassification();
+
         if (mapping.isForeignReferenceMapping()) {
-            expectedType = ((ForeignReferenceMapping) mapping).getReferenceClass();
+            if (mapping.isCollectionMapping()) {
+                if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
+                    expectedType = Map.class;
+                } else {
+                    expectedType = Collection.class;
+                }
+            } else {
+                expectedType = ((ForeignReferenceMapping) mapping).getReferenceClass();
+            }
         }
         if (expectedType != null && expectedType.isPrimitive() && !value.getClass().isPrimitive()) {
             expectedType = Helper.getObjectClass(expectedType);

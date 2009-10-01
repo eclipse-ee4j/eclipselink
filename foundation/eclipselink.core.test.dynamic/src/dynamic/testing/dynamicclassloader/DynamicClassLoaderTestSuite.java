@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
+import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
 
 public class DynamicClassLoaderTestSuite {
 
@@ -332,7 +333,7 @@ public class DynamicClassLoaderTestSuite {
             int errorCode = de.getErrorCode();
 
             assertTrue("Incorrect dynamic exception", errorMessage.startsWith("\r\nException Description: Duplicate addClass request with incompatible writer:"));
-            assertEquals("Unexpected error code", 0, errorCode);
+            assertEquals("Unexpected error code", INCOMPATIBLE_DYNAMIC_CLASSWRITERS, errorCode);
             return;
         }
         fail("No DynamicException thrown for duplicate addClass with different parent");
