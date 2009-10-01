@@ -12,18 +12,6 @@
  *
  ******************************************************************************/package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Predicate.BooleanOperator;
-import javax.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>
@@ -50,5 +38,7 @@ public interface InternalExpression{
     public boolean isLiteral();
     
     public boolean isParameter();
+    
+    public boolean isSubquery();
     
 }

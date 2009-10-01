@@ -73,15 +73,27 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<?>... values) {
-        List list = new ArrayList();
-        list.add(this);
-        for (Expression exp: values){
-            if (!((InternalExpression)exp).isLiteral()){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
+        if (values != null) {
+            List list = new ArrayList();
+            list.add(this);
+            if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
+                list.add(values[0]);
+                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl) values[0]).subQuery), list, "in");
+            } else {
+                List<Object> inValues = new ArrayList<Object>();
+                for (Expression exp : values) {
+                    if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
+                    } else {
+                        list.add(exp);
+                        inValues.add(((InternalSelection)exp).getCurrentNode());
+                    }
+                }
+
+                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(inValues), list, "in");
             }
         }
-        
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PASSED_TO_EXPRESSION_IN"));
     }
 
     /**
@@ -102,6 +114,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<Collection<?>> values) {
+        //TODO - collection attribute
         List list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
@@ -121,6 +134,9 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
     
     public boolean isPredicate(){
+        return false;
+    }
+    public boolean isSubquery(){
         return false;
     }
 

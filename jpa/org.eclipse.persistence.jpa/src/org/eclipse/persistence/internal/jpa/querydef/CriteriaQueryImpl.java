@@ -457,7 +457,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the list of ordering expressions
      */
     public List<Order> getOrderList() {
-        throw new UnsupportedOperationException();
+        return this.orderBy;
     }
 
     /**

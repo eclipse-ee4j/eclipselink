@@ -44,6 +44,9 @@ import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.QueryBuilder.In;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -72,6 +75,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -120,6 +124,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInLiteral"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInlineInParameter"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleJoin"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleFetch"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testObjectResultType"));
@@ -164,8 +169,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
      */
     public void testTupleQuery() {
         EntityManager em = createEntityManager();
-        beginTransaction(em);
         QuerySQLTracker counter = null;
+        em.getTransaction().begin();
         try {
             // Load an employee into the cache.
             QueryBuilder qb = em.getQueryBuilder();
@@ -219,16 +224,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
     public void testSimple(){
         EntityManager em = createEntityManager();
-        beginTransaction(em);
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
         List<Employee> result = em.createQuery(cq).getResultList();
         assertFalse("No Employees were returned", result.isEmpty());
         assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
     }
+    
+    public void testGroupByHaving(){
+        EntityManager em = createEntityManager();
+        Metamodel mm = em.getMetamodel();
+        QueryBuilder qbuilder = em.getQueryBuilder();
+        CriteriaQuery<Object> cquery = qbuilder.createQuery();
+        Root<Employee> customer = cquery.from(Employee.class);
+        EntityType<Employee> Customer_ = customer.getModel();
+        EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
+        cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))), 3));
+        List<Object> result = em.createQuery(cquery).getResultList();
+
+    }
 
     public void testInLiteral(){
         EntityManager em = createEntityManager();
-        beginTransaction(em);
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> emp = cq.from(Employee.class);
@@ -237,11 +253,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         cq.where(in);
         List<Employee> result = em.createQuery(cq).getResultList();
         assertFalse("No Employees were returned", result.isEmpty());
+        
     }
 
         public void testInSubQuery(){
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             QueryBuilder qb = em.getQueryBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
@@ -257,6 +273,18 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
 
         
+        public void testInlineInParameter(){
+            EntityManager em = createEntityManager();
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            cq.where(emp.get("address").<String>get("city").in(qb.parameter(String.class, "city")));
+            Query query = em.createQuery(cq);
+            query.setParameter("city", "Ottawa");
+            List<Employee> result = query.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+        }
+
         public void testIsEmpty(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

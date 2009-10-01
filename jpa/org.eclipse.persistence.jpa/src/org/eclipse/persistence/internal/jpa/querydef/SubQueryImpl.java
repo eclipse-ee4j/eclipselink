@@ -526,6 +526,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isParameter(){
         return false;
     }
+    
+    public boolean isSubquery(){
+        return true;
+    }
 
     protected void integrateRoot(RootImpl root){
         if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))) {
