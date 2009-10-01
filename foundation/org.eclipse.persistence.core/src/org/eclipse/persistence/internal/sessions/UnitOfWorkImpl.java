@@ -1884,12 +1884,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Used for in-memory querying.
      */
     public Vector getAllFromNewObjects(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy) {
-        //If new object are in the cache then they will have already been queried.
-        //bug 4585129: in findAll() case, (i.e. no selection criteria), we do not do the optimization query.
-        if (shouldNewObjectsBeCached() && (selectionCriteria != null)) {
-            return new Vector(1);
-        }
-
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return new Vector(1);
