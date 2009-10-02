@@ -5644,10 +5644,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Copy statements counts into UOW properties.
      */
     private void copyStatementsCountIntoProperties(){
-        if(getAccessor()!=null && getAccessor() instanceof DatasourceAccessor){
-            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getReadStatementsCount()));
-            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getWriteStatementsCount()));
-            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getStoredProcedureStatementsCount()));
+        try {
+            Accessor accessor = getAccessor();
+        } catch(DatabaseException exception){
+            //ignore for bug 290703
+        }
+        if(accessor!=null && accessor instanceof DatasourceAccessor){
+            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getReadStatementsCount()));
+            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getWriteStatementsCount()));
+            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getStoredProcedureStatementsCount()));
         }
     }
   
