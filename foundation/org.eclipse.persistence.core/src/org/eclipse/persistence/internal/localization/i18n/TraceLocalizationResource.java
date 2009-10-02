@@ -313,8 +313,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "metamodel_mapping_type_is_unsupported", "Metamodel processing: The mapping type [{0}] in the attribute [{1} is currently unsupported." },
                                             { "metamodel_descriptor_type_eis_or_xml_is_unsupported", "Metamodel processing: EIS or XML ClassDescriptor instances [{0}] are currently not supported." },
                                             { "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", "Metamodel processing: Unable to get the element type for the mapping [{0}] in the absence of generic parameters on mapping declaration." },
-                                            { "metamodel_canonical_model_classes_not_found", "No Canonical Metamodel classes found during initialization."},
-                                            { "metamodel_canonical_model_class_found", "Canonical Metamodel class [{0}] found and instantiated during initialization."}
+                                            { "metamodel_canonical_model_classes_not_found", "No Canonical Metamodel classes found during initialization."},  
+                                            { "metamodel_canonical_model_class_found", "Canonical Metamodel class [{0}] found and instantiated during initialization."}  
 
     };
 
