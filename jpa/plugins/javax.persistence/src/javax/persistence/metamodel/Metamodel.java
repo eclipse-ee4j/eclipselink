@@ -49,8 +49,8 @@ public interface Metamodel {
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
-    <X> ManagedType<X> type(Class<X> cls);
-
+    <X> ManagedType<X> managedType(Class<X> cls);
+    
     /**
      *  Return the metamodel embeddable type representing the
      *  embeddable class.

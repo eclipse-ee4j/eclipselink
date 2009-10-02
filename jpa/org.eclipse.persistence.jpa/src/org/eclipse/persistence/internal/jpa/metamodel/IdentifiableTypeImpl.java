@@ -13,7 +13,7 @@
  *       as EntityType inherits here instead of ManagedType as of rev# 4265 
  *     09/23/2009-2.0  mobrien - 266912: Implement hasSingleIdAttribute() and 
  *       all other 6 remaining methods for Id and Version support.
- *       DI 70 - 77 and 56
+ *       DI 71 - 77 and 56
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
@@ -88,7 +88,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         for(Attribute attribute : this.getAttributes()) {
             if(!((AttributeImpl)attribute).isPlural()) {
                 if(((SingularAttribute)attribute).isId()) {
-                    //idAttributes.put(((CMP3Policy)this.descriptor.getCMPPolicy()).getPKClass().getName(),
                     idAttributes.add((SingularAttribute)attribute);
                 }
             }
@@ -239,7 +238,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         
         // Single Key support using any Java class - built in or user defined
         // There already is an instance of the PKclass on the policy
-        if (cmpPolicy instanceof CMP3Policy) {
+        if (cmpPolicy.isCMP3Policy()) {
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
             return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
         }

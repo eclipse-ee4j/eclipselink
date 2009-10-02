@@ -70,7 +70,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         }else if (resultClass.isArray()){
             return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, resultClass, this);
         }else{
-            ManagedType type = this.metamodel.type(resultClass);
+            ManagedType type = this.metamodel.managedType(resultClass);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)){
                 return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, resultClass , this);
             } else {

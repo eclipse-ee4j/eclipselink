@@ -728,7 +728,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
         if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT) {
             // Get the managedType from the metamodel
-            aSuperType = (ManagedTypeImpl<?>)this.getMetamodel().type(aSuperClass);            
+            aSuperType = (ManagedTypeImpl<?>)this.getMetamodel().managedType(aSuperClass);            
         }
         return aSuperType;
     }

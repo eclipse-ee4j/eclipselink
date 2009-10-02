@@ -322,7 +322,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         getEntityManagerFactory().getMetamodel().getEntities();
-        getEntityManagerFactory().getMetamodel().type(Employee.class).getDeclaredSingularAttribute("manager", Employee.class).getType();
+        getEntityManagerFactory().getMetamodel().managedType(Employee.class).getDeclaredSingularAttribute("manager", Employee.class).getType();
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where(qb.equal( qb.abs(root.get(Employee_.salary)), expectedResult.getSalary()) );
         List result = em.createQuery(cq).getResultList();

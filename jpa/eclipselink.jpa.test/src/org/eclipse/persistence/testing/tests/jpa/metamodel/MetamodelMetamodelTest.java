@@ -661,7 +661,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             EntityType<Manufacturer> aManufacturerType = metamodel.entity(Manufacturer.class);
             assertNotNull(aManufacturerType.getId(Integer.class));
             // declared and valid
-            MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.type(Person.class);
+            MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
             assertNotNull(msPerson1_.getId(Integer.class));
 
             /**
@@ -929,9 +929,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // Test normal path for a [Basic] type
             expectedIAExceptionThrown = false;
             Type<?> personIdType = null;
-            MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.type(Person.class);
+            MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
             assertNotNull(msPerson_);
-            MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.type(Corporation.class);
+            MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
             assertNotNull(msCorporation_);
             
             try {
@@ -2245,7 +2245,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // test normal path (subtype = Embeddable)
             expectedIAExceptionThrown = false;            
             try {
-                Type<EmbeddedPK> aType = metamodel.type(EmbeddedPK.class);
+                Type<EmbeddedPK> aType = metamodel.managedType(EmbeddedPK.class);
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -2255,7 +2255,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // test normal path: (subtype = Entity)
             expectedIAExceptionThrown = false;            
             try {
-                Type<Manufacturer> aType = metamodel.type(Manufacturer.class);
+                Type<Manufacturer> aType = metamodel.managedType(Manufacturer.class);
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -2265,7 +2265,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // test normal path: (subtype = MappedSuperclass)
             expectedIAExceptionThrown = false;            
             try {
-                Type<Person> aType = metamodel.type(Person.class);
+                Type<Person> aType = metamodel.managedType(Person.class);
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -2275,9 +2275,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // test variant path: null does not cause an IAE in this case because its return type cannot be checked for isManagedType
             expectedIAExceptionThrown = false;
             // Set type to a temporary type - to verify that we get null and not confuse a return of null with an "unset" null.
-            Type<?> aTypeFromNullClass = metamodel.type(Manufacturer.class);
+            Type<?> aTypeFromNullClass = metamodel.managedType(Manufacturer.class);
             try {
-                aTypeFromNullClass = metamodel.type(null);
+                aTypeFromNullClass = metamodel.managedType(null);
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
                 expectedIAExceptionThrown = true;            

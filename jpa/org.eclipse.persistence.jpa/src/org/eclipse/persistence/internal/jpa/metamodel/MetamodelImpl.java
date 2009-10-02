@@ -378,7 +378,7 @@ public class MetamodelImpl implements Metamodel {
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
-    public <X> ManagedType<X> type(Class<X> clazz) {
+    public <X> ManagedType<X> managedType(Class<X> clazz) {
         Object aType = this.managedTypes.get(clazz);
         // Throw an IAE exception if the returned type is not a ManagedType
         // However in this case the type will usually be null - as no Basic types are in the managedTypes Map
@@ -412,40 +412,30 @@ public class MetamodelImpl implements Metamodel {
             aBuffer.append(this.types.size());
             aBuffer.append(" Types: ");
             //aBuffer.append(this.types.keySet());    
-        } else { 
-            aBuffer.append(" Types unitialized");
         }
         if(null != this.managedTypes) {
             aBuffer.append(", ");            
             aBuffer.append(this.managedTypes.size());
             aBuffer.append(" ManagedTypes: ");
             //aBuffer.append(this.managedTypes.keySet());    
-        } else { 
-            aBuffer.append(", ManagedTypes unitialized");
         }
         if(null != this.entities) {
             aBuffer.append(", ");            
             aBuffer.append(this.entities.size());
             aBuffer.append(" EntityTypes: ");
             //aBuffer.append(this.entities.keySet());    
-        } else { 
-            aBuffer.append(", EntityTypes unitialized");
         }
         if(null != this.mappedSuperclasses) {
             aBuffer.append(", ");            
             aBuffer.append(this.mappedSuperclasses.size());
             aBuffer.append(" MappedSuperclassTypes: ");
             //aBuffer.append(this.mappedSuperclasses);    
-        } else { 
-            aBuffer.append(", MappedSuperclassTypes unitialized");
         }
         if(null != this.embeddables) {
             aBuffer.append(", ");            
             aBuffer.append(this.embeddables.size());
             aBuffer.append(" EmbeddableTypes: ");
             //aBuffer.append(this.embeddables.keySet());    
-        } else { 
-            aBuffer.append(", EmbeddableTypes unitialized");
         }
         aBuffer.append("]");
         return aBuffer.toString();

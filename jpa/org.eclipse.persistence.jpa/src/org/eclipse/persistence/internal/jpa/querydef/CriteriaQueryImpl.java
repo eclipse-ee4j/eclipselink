@@ -104,7 +104,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         } else {
             this.queryType = selection.getJavaType();
-            ManagedType type = this.metamodel.type(this.queryType);
+            ManagedType type = this.metamodel.managedType(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 this.queryResult = ResultType.ENTITY;
             } else {
@@ -163,7 +163,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.selection = (SelectionImpl) this.queryBuilder.construct(ClassConstants.AOBJECT, selections);
                 this.queryResult = ResultType.OBJECT_ARRAY;
             } else {
-                ManagedType type = this.metamodel.type(selections[0].getJavaType());
+                ManagedType type = this.metamodel.managedType(selections[0].getJavaType());
                 if (type == null || (!type.getPersistenceType().equals(PersistenceType.ENTITY))) {
                     this.queryResult = ResultType.OTHER;
                 } else {
