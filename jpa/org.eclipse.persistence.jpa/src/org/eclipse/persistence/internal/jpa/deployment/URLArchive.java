@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Flaivio Stutz - bug fix for getEntryAsURL
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
