@@ -264,7 +264,8 @@
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
 		<!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
-        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="2048m" dir="${eclipselink.core.test}/${run.dir}">
+		<!-- Note: on a legacy XP OS with 2GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="1536m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
