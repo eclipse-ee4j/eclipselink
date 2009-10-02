@@ -842,9 +842,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (conforming) {
             if (cachedObject == null) {
                 if (selectionKey != null) {
-                    if (!uow.shouldNewObjectsBeCached()) {
-                        cachedObject = uow.getObjectFromNewObjects(query.getReferenceClass(), selectionKey);
-                    }
+                    cachedObject = uow.getObjectFromNewObjects(query.getReferenceClass(), selectionKey);
                 } else {
                     // PERF: 3639015 - cloning the expression no longer required
                     // when using the root session
