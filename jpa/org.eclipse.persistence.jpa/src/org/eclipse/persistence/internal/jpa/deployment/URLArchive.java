@@ -60,6 +60,9 @@ public class URLArchive implements Archive {
         URL subEntry = new URL(url, entryPath);
         try {
             InputStream is = subEntry.openStream();
+            if (is == null){
+            	return null;
+            }
             is.close();
         } catch (IOException ioe) {
             return null; // return null when entry does not exist
