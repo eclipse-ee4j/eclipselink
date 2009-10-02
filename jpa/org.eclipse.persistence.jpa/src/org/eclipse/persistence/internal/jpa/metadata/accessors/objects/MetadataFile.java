@@ -46,7 +46,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * reflect the new dependency).
      */
     public String getAttributeName() {
-        return m_entityMappings.getMappingFile().toString();
+        return m_entityMappings.getMappingFileOrURL().toString();
     }
     
     /**

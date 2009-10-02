@@ -33,10 +33,9 @@ public class XMLEntityMappingsWriter {
     /**
      * INTERNAL:
      */
-    public static void write(XMLEntityMappings entityMappings, URI uri) {
+    public static void write(XMLEntityMappings entityMappings, OutputStream outputStream) {
         Writer writer;
         try {
-            FileOutputStream outputStream = new FileOutputStream(new File(uri));
             writer = new OutputStreamWriter(outputStream, "UTF-8");
             write(entityMappings, writer);
             writer.close();

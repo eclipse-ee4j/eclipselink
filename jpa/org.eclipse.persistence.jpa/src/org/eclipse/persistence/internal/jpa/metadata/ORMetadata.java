@@ -480,7 +480,7 @@ public abstract class ORMetadata {
      */
     public void setEntityMappings(XMLEntityMappings entityMappings) {
         m_entityMappings = entityMappings;
-        m_location = entityMappings.getMappingFile();
+        m_location = entityMappings.getMappingFileOrURL();
     }
     
     /**

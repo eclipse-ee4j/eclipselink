@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm xsd/eclipselink_orm_1_0.xsd" version="1.0" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm xsd/eclipselink_orm_1_2.xsd" version="1.0" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Struct Converter Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.structconverter</package>
     <struct-converter name="DummyType" converter="org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructConverter"/>

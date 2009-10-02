@@ -52,7 +52,7 @@ public class XMLEntityMappingsReader {
     public static final String ORM_1_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ORM_2_0_XSD = "org/eclipse/persistence/jpa/orm_2_0.xsd";
     public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
-    public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_1.xsd";
+    public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_2.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
     private static XMLContext m_orm1_0Project;
@@ -62,11 +62,11 @@ public class XMLEntityMappingsReader {
     private static Schema m_orm1_0Schema;
     private static Schema m_orm2_0Schema;
     private static Schema m_eclipseLinkOrmSchema;
-
+    
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, ClassLoader classLoader, Properties properties) {
+    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, Reader reader3, ClassLoader classLoader, Properties properties) {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
@@ -97,11 +97,13 @@ public class XMLEntityMappingsReader {
                     }
                     xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
                 } catch (Exception eclipselinkError) {
-                    throw ValidationException.errorParsingMappingFile(mappingFileUrl, orm2Error, orm1Error, eclipselinkError);
+                    throw ValidationException.errorParsingMappingFile(mappingFile, orm2Error, orm1Error, eclipselinkError);
                 }
             }
         }
-        
+        if (xmlEntityMappings != null){
+        	xmlEntityMappings.setMappingFile(mappingFile);
+        }
         return xmlEntityMappings;
     }
    
@@ -118,7 +120,7 @@ public class XMLEntityMappingsReader {
     public static XMLEntityMappings read(URL url, ClassLoader classLoader) throws IOException {
         return read(url, classLoader, null);
     }    
-
+    
     /**
      * INTERNAL:
      * @param url
@@ -138,14 +140,10 @@ public class XMLEntityMappingsReader {
                 reader1 = getInputStreamReader(url);
                 reader2 = getInputStreamReader(url);
                 reader3 = getInputStreamReader(url);
+                return read(url.toString(), reader1, reader2, reader3, classLoader, properties);
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
-
-            XMLEntityMappings entityMappings = read(url, reader1, reader2, reader3, classLoader, properties);
-            // Setting the mapping file here is very important! Do not remove.
-            entityMappings.setMappingFile(url);
-            return entityMappings;
         } finally {
             try {
                 if (reader1 != null) {

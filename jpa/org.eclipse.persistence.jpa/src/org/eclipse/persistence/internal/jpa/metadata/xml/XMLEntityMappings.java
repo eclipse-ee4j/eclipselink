@@ -22,7 +22,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.Writer;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -97,7 +104,7 @@ public class XMLEntityMappings extends ORMetadata {
     private String m_schema;
     private String m_version;
     
-    private URL m_mappingFileURL;
+    private String m_mappingFileNameOrURL;
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
     
     /**
@@ -340,8 +347,8 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public URL getMappingFile() {
-        return m_mappingFileURL;
+    public String getMappingFileOrURL() {
+        return m_mappingFileNameOrURL;
     }
     
     /**
@@ -732,16 +739,38 @@ public class XMLEntityMappings extends ORMetadata {
      */
     @SuppressWarnings("deprecation")
     protected XMLEntityMappings reloadXMLEntityMappingsObject(XMLEntityMappings xmlEntityMappings) {
-        // Create a temp file, write it out, read it back in and delete.
+    	ByteArrayOutputStream outputStream = null;
+        StringReader reader1 = null;
+        StringReader reader2 = null;
+        StringReader reader3 = null;
         try {
-            File file = new File("tempToDelete.xml");
-            XMLEntityMappingsWriter.write(xmlEntityMappings, file.toURI());
-            XMLEntityMappings newXMLEntityMappings = XMLEntityMappingsReader.read(file.toURL(), m_loader);
-            file.delete();
+            outputStream = new ByteArrayOutputStream();
+            XMLEntityMappingsWriter.write(xmlEntityMappings, outputStream);
+            
+            reader1 = new StringReader(outputStream.toString());
+            reader2 = new StringReader(outputStream.toString());
+            reader3 = new StringReader(outputStream.toString());
+            XMLEntityMappings newXMLEntityMappings = XMLEntityMappingsReader.read("tempStream", reader1, reader2, reader3, m_loader, null);
             return newXMLEntityMappings;
         } catch (Exception e) {
             throw new RuntimeException(e);
             // TODO: Throw an EclipseLink exception.
+        } finally {
+            if (outputStream != null){
+                try{
+                    outputStream.close();
+                }catch (IOException ex){}
+            }   
+            if (reader1 != null) {
+                reader1.close();
+            }
+            
+            if (reader2 != null) {
+            	reader2.close();
+            }
+            if (reader3 != null) {
+               reader3.close();
+            }
         }
     }
     
@@ -818,8 +847,8 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setMappingFile(URL mappingFileURL) {
-        m_mappingFileURL = mappingFileURL;
+    public void setMappingFile(String mappingFileNameOrURL) {
+        m_mappingFileNameOrURL = mappingFileNameOrURL;
     }
     
     /**
