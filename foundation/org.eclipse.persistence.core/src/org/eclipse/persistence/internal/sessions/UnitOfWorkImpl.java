@@ -5644,8 +5644,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Copy statements counts into UOW properties.
      */
     private void copyStatementsCountIntoProperties(){
+        Accessor accessor = null;
         try {
-            Accessor accessor = getAccessor();
+            accessor = getAccessor();
         } catch(DatabaseException exception){
             //ignore for bug 290703
         }
