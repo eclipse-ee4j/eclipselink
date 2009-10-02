@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,31 +24,30 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class DirectNullPolicyElementSetNillableTestCases extends XMLMappingTestCases {
-	// TC UC 0-10 to 0-13, 2-0
+    // TC UC 0-10 to 0-13, 2-0
     private final static String XML_RESOURCE = //
-    "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyElementSetNillable.xml";
+        "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyElementSetNillable.xml";
 
     public DirectNullPolicyElementSetNillableTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(true);
-    	aNullPolicy.setNullRepresentedByXsiNil(true);  // no effect
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-        //((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        // Alter unmarshal policy state
+        aNullPolicy.setNullRepresentedByEmptyNode(false);
+        aNullPolicy.setNullRepresentedByXsiNil(true);
+        // Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         Project aProject = new DirectNodeNullPolicyProject(true);
-        
+
         // Add xsi namespace map entry to the resolver (we don't pick up the one on the xml instance doc)
         XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        employeeDescriptor.setNamespaceResolver(namespaceResolver);        
-        
-        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
-        .getMappingForAttributeName("firstName");
+        employeeDescriptor.setNamespaceResolver(namespaceResolver);
+
+        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class) //
+            .getMappingForAttributeName("firstName");
         aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
@@ -60,4 +59,5 @@ public class DirectNullPolicyElementSetNillableTestCases extends XMLMappingTestC
         anEmployee.setLastName("Doe");
         return anEmployee;
     }
+
 }

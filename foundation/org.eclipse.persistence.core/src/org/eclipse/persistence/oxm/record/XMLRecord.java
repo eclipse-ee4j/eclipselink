@@ -40,6 +40,21 @@ public abstract class XMLRecord extends AbstractRecord {
     protected AbstractSession session;
     private boolean isXOPPackage;
 
+    /**
+     * INTERNAL:
+     * Nil: This is used to indicate that this field represents xsi:nil="true"
+     */
+    public static final XMLRecord.Nil nil = new XMLRecord.Nil();
+
+    /**
+     * INTERNAL:
+     * Nil: This is used to indicate that this field represents xsi:nil="true"
+     */
+    public static class Nil {
+        private Nil() {
+        }
+    }
+
     public XMLRecord() {
         super(null, null);
         namespaceResolver = new NamespaceResolver();

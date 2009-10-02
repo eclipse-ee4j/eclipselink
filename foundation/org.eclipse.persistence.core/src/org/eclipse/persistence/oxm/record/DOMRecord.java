@@ -280,9 +280,14 @@ public class DOMRecord extends XMLRecord {
      * Given a DatabaseField return the corresponding value from the document
      */
     public Object getIndicatingNoEntry(DatabaseField key) {
-        return getIndicatingNoEntry(key, false);
+        return getIndicatingNoEntry(key, false, false);
     }
+
     public Object getIndicatingNoEntry(DatabaseField key, boolean shouldReturnNode) {
+        return getIndicatingNoEntry(key, shouldReturnNode, false);    
+    }
+    
+    public Object getIndicatingNoEntry(DatabaseField key, boolean shouldReturnNode, boolean checkForXsiNil) {
         XMLField field = convertToXMLField(key);
 
         // handle 'self' xpath
@@ -290,7 +295,7 @@ public class DOMRecord extends XMLRecord {
             return this;
         }
 
-        Object result = UnmarshalXPathEngine.getInstance().selectSingleNode(dom, field, field.getNamespaceResolver());
+        Object result = UnmarshalXPathEngine.getInstance().selectSingleNode(dom, field, field.getNamespaceResolver(), checkForXsiNil);
 
         if(result == noEntry) {
             if(shouldReturnNode) {
@@ -298,6 +303,11 @@ public class DOMRecord extends XMLRecord {
             }
             return noEntry;
         }
+
+        if (result == nil) {
+            return nil;
+        }
+
         Node node = (Node)result;
         if(shouldReturnNode) {
             return node;

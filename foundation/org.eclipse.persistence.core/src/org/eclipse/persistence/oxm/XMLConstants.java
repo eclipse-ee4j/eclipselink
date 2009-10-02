@@ -126,6 +126,9 @@ public class XMLConstants {
     // Schema Special values for Double and Float
     public static final String POSITIVE_INFINITY = "INF";
     public static final String NEGATIVE_INFINITY = "-INF";
+    
+    public static final String BOOLEAN_STRING_TRUE = "true";
+    public static final String BOOLEAN_STRING_FALSE = "false";
 
     public final static Class UUID = java.util.UUID.class;
 }

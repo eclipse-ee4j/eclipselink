@@ -24,6 +24,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -245,12 +246,13 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     	// Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
         boolean isNullRepresentedByEmptyNode = getNullPolicy().isNullRepresentedByEmptyNode();
+        boolean isNullRepresentedByXsiNil = getNullPolicy().isNullRepresentedByXsiNil();
         if (XMLConstants.EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
            fieldValue = null;
         } else if (null == fieldValue && !isNullRepresentedByEmptyNode) {
             fieldValue = XMLConstants.EMPTY_STRING;
         }
-        
+
         // PERF: Direct variable access.
         Object attributeValue = fieldValue;
         // If attribute is absent check the policy
@@ -262,7 +264,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
                 attributeValue = null;
             }
         }
-        
+
+        if (attributeValue == XMLRecord.nil && isNullRepresentedByXsiNil) {
+            fieldValue = null;
+            attributeValue = null;
+        }
+
         // Allow for user defined conversion to the object value.       
         if (hasConverter()) {
             if (getConverter() instanceof XMLConverter) {
@@ -286,7 +293,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
         return attributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Convert the attribute value to a field value.
@@ -338,7 +345,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // PERF: Direct variable access.
-        return getAttributeValue(row.getIndicatingNoEntry(this.field), executionSession, (XMLRecord)row);
+        boolean shouldCheckForXsiNil = getNullPolicy().isNullRepresentedByXsiNil();
+        return getAttributeValue(((DOMRecord)row).getIndicatingNoEntry(this.field, false, shouldCheckForXsiNil), executionSession, (XMLRecord)row);
     }
 
     /**

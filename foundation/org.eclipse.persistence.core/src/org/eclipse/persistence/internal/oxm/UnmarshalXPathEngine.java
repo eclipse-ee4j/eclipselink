@@ -13,12 +13,14 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -59,7 +61,7 @@ public class UnmarshalXPathEngine {
      * @return the first node located matching the XPath statement
      * @throws XMLPlatformException
      */
-    public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+    public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) throws XMLMarshalException {
         try {
             if (contextNode == null) {
                 return null;
@@ -71,7 +73,7 @@ public class UnmarshalXPathEngine {
             if (xPathFragment.shouldExecuteSelectNodes()) {
                 return xmlPlatform.selectSingleNodeAdvanced(contextNode, xmlField.getXPath(), xmlNamespaceResolver);
             }
-            Object result = selectSingleNode(contextNode, xPathFragment, xmlNamespaceResolver);
+            Object result = selectSingleNode(contextNode, xPathFragment, xmlNamespaceResolver, checkForXsiNil);
             if(result == XMLRecord.noEntry) {
                 if(xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
                     return result;
@@ -85,10 +87,24 @@ public class UnmarshalXPathEngine {
         }
     }
 
-    private Object selectSingleNode(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
+    public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+        return this.selectSingleNode(contextNode, xmlField, xmlNamespaceResolver, false);
+    }
+    
+    private Object selectSingleNode(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) {
         Node resultNode = getSingleNode(contextNode, xPathFragment, xmlNamespaceResolver);
         
         if (resultNode == null) {
+
+            if (checkForXsiNil) {
+                // Check for presence of xsi:nil="true"
+                String nil = ((Element) contextNode).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+    
+                if (nil.equals(XMLConstants.BOOLEAN_STRING_TRUE)) {
+                    return XMLRecord.nil;
+                }
+            }
+
             if(!xPathFragment.nameIsText()) {
                 return XMLRecord.noEntry;
             }
@@ -98,7 +114,7 @@ public class UnmarshalXPathEngine {
             return resultNode;
         }
 
-        return selectSingleNode(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver);
+        return selectSingleNode(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, checkForXsiNil);
     }
 
     /**
