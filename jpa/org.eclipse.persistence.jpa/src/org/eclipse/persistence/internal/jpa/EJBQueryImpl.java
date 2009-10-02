@@ -33,8 +33,6 @@ import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
@@ -1002,6 +1000,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
+        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -1014,6 +1013,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -1044,6 +1044,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
+        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -1056,6 +1057,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
