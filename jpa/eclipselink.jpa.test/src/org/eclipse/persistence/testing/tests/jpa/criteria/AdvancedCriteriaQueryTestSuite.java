@@ -81,9 +81,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
-import com.sun.corba.se.impl.orbutil.ObjectWriter;
-
-
 /**
  * <p>
  * <b>Purpose</b>: Test advanced JPA Query functionality.
