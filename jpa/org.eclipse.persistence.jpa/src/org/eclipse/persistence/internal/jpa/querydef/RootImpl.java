@@ -24,12 +24,7 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
     }
     
     public void findRootAndParameters(AbstractQueryImpl query){
-        if (query.getRoots().isEmpty()){
-            query.integrateRoot(this);
-        }
-        if (query.getRoots().contains(this)){
-            query.getRoots().add(this);
-        }
+        query.integrateRoot(this);
     }
 
 

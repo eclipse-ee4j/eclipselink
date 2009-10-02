@@ -33,7 +33,9 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
@@ -433,11 +435,20 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((InternalExpression)restriction).isPredicate()){
             return ((PredicateImpl)restriction).negate();
         }
-        org.eclipse.persistence.expressions.Expression parentNode = ((InternalSelection)restriction).getCurrentNode().not();
+        org.eclipse.persistence.expressions.Expression parentNode = null;
+        String name = "not";
+        if (((InternalExpression)restriction).isCompoundExpression() && ((CompoundExpressionImpl)restriction).getOperation().equals("exists")){
+            FunctionExpression exp = (FunctionExpression) ((InternalSelection)restriction).getCurrentNode();
+            SubSelectExpression sub = (SubSelectExpression) exp.getChildren().get(0);
+            parentNode = new ExpressionBuilder().notExists(sub.getSubQuery());
+            name = "notExists";
+        }else{
+            parentNode = ((InternalSelection)restriction).getCurrentNode().not();
+        }
         if (((InternalExpression)restriction).isCompoundExpression()){
             ((CompoundExpressionImpl)restriction).setParentNode(parentNode);
         }
-        return new CompoundExpressionImpl(this.metamodel, parentNode, buildList(restriction), "not");
+        return new CompoundExpressionImpl(this.metamodel, parentNode, buildList(restriction), name);
     }
 
     /**
@@ -1992,7 +2003,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return expression for current date
      */
     public Expression<java.sql.Date> currentDate(){
-        return new ExpressionImpl(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDate());
+        return new ExpressionImpl(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDateDate());
     }
 
     /**

@@ -121,6 +121,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
+    //    suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInLiteral"));
@@ -232,13 +234,16 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
+        
+ //       em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
+        
         Metamodel mm = em.getMetamodel();
         QueryBuilder qbuilder = em.getQueryBuilder();
         CriteriaQuery<Object> cquery = qbuilder.createQuery();
         Root<Employee> customer = cquery.from(Employee.class);
         EntityType<Employee> Customer_ = customer.getModel();
         EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
-        cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))), 3));
+        cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("address", Address.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("address", Address.class))), 3));
         List<Object> result = em.createQuery(cquery).getResultList();
 
     }
@@ -420,6 +425,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TypedQuery<Employee> tquery = em.createQuery(cquery);
         List<Employee> result = tquery.getResultList();
         // No assert as version is not actually a mapped field in dealer.
+    }
+    
+    public void testSubqueryExists(){
+        EntityManager em = createEntityManager();
+        em.createQuery("SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
+        QueryBuilder qbuilder = em.getQueryBuilder();
+        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+        Root<Employee> customer = cquery.from(Employee.class);
+        cquery.select(customer).distinct(true);
+        // create correlated subquery
+        Subquery<Project> sq = cquery.subquery(Project.class);
+        Root<Employee> sqc = sq.correlate(customer);
+        Path<Project> sqo = sqc.join("projects");
+        sq.select(sqo);
+        cquery.where(qbuilder.not(qbuilder.exists(sq)));
+        TypedQuery<Employee> tquery = em.createQuery(cquery);
+        List<Employee> result = tquery.getResultList();
+        for (Employee emp : result){
+            assertTrue("Found someone not from Ottawa", emp.getProjects().isEmpty());
+        }
+
     }
 
     /**

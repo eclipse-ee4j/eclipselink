@@ -42,6 +42,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
@@ -92,6 +93,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public Subquery<T> select(Expression<T> selection) {
         findRootAndParameters(selection);
+        if (((InternalSelection)selection).isFrom()){
+            ((FromImpl)selection).isLeaf = false;
+        }
+        
         for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
@@ -110,9 +115,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
                 this.subQuery.addItem(String.valueOf(count), ((InternalSelection) select).getCurrentNode());
             }
         } else {
-            ManagedType<T> type = this.metamodel.managedType(this.queryType);
+            ManagedType type = this.metamodel.managedType(selection.getJavaType());
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                this.subQuery.setShouldRetrievePrimaryKeys(true);
+                this.subQuery.addAttribute("", new ConstantExpression(1, ((InternalSelection)selection).getCurrentNode().getBuilder()));
+                this.subQuery.addNonFetchJoinedAttribute(((InternalSelection)selection).getCurrentNode());
             } else {
                 String itemName = selection.getAlias();
                 if (itemName == null){
@@ -121,7 +127,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
                 this.subQuery.addItem(itemName, ((InternalSelection) selection).getCurrentNode());
             }
         }
-        this.queryResult = ResultType.OTHER;
         return this;
     }
     // override the return type only:
@@ -261,7 +266,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return subquery root
      */
     public <Y> Root<Y> correlate(Root<Y> parentRoot){
-        return from(parentRoot.getModel());
+        RootImpl root = new RootImpl(parentRoot.getModel(), metamodel, parentRoot.getJavaType(), ((InternalSelection)parentRoot).getCurrentNode(), parentRoot.getModel());
+        integrateRoot(root);
+        return root;
     }
 
     /**
@@ -274,7 +281,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, Y> Join<X, Y> correlate(Join<X, Y> parentJoin){
         this.correlatedJoins.add(parentJoin);
-        return new JoinImpl(parentJoin.getParentPath(), metamodel.managedType(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), ((InternalSelection)parentJoin).getCurrentNode(), parentJoin.getModel(), parentJoin.getJoinType());
+        JoinImpl join = new JoinImpl(parentJoin.getParentPath(), metamodel.managedType(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), ((InternalSelection)parentJoin).getCurrentNode(), parentJoin.getModel(), parentJoin.getJoinType());
+        join.findRootAndParameters(this);
+        return join;
         
     }
     /**
@@ -393,9 +402,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         if (this.processedJoins == null ) {this.processedJoins = new HashSet<FromImpl>();}
         if (! this.processedJoins.contains(join)){
             this.processedJoins.add(join);
-        org.eclipse.persistence.expressions.Expression exp = this.subQuery.getSelectionCriteria();
-        exp = join.getCurrentNode().and(exp);
-        this.subQuery.setSelectionCriteria(exp);
+        this.subQuery.addNonFetchJoinedAttribute(join.getCurrentNode());
         }
     }
 
@@ -485,14 +492,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return query root corresponding to the given entity
      */
     public <X> Root<X> from(EntityType<X> entity) {
-        if (this.roots.isEmpty()) {
-            Root root = super.from(entity);
-            this.subQuery.setExpressionBuilder((ExpressionBuilder) ((InternalSelection) root).getCurrentNode());
-            this.subQuery.setReferenceClass(entity.getJavaType());
+        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+            integrateRoot(root);
             return root;
-        } else {
-            return super.from(entity);
-        }
     }
 
     public String getAlias() {
@@ -531,21 +533,28 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return true;
     }
 
-    protected void integrateRoot(RootImpl root){
-        if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))) {
-            // this is the first root, set return type and selection and query
-            // type
-            if (this.selection == null){
-                this.selection = root;
-                this.queryResult = ResultType.ENTITY;
+    protected void integrateRoot(RootImpl root) {
+        if (this.roots.isEmpty()) {
+            ManagedType type = this.metamodel.managedType(this.queryType);
+            if ((type != null && type.getPersistenceType() == PersistenceType.ENTITY) || queryType.equals(ClassConstants.OBJECT)) {
+                // this is the first root, set return type and selection and
+                // query
+                // type
+                if (this.selection == null) {
+                    this.selection = root;
+                    this.subQuery.getItems().clear();
+                    this.subQuery.addAttribute("", new ConstantExpression(1, root.getCurrentNode().getBuilder()));
+                    this.queryResult = ResultType.ENTITY;
+                }
             }
             this.subQuery.setReferenceClass(root.getJavaType());
+            this.subQuery.setExpressionBuilder(root.getCurrentNode().getBuilder());
             this.queryType = root.getJavaType();
         }
-        if (!this.roots.contains(root)){
+        if (!this.roots.contains(root)) {
             this.roots.add(root);
         }
-        
+
     }
 
     public boolean isCompoundExpression(){

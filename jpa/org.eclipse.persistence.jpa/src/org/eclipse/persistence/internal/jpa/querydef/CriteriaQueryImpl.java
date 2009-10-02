@@ -354,7 +354,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
             this.queryType = root.getJavaType();
         }
-        this.roots.add(root);
+        if (!this.roots.contains(root)){
+            this.roots.add(root);
+        }
         
     }
 
