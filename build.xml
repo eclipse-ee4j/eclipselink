@@ -431,7 +431,7 @@
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
-                <exclude name="javax.persistence_1.0.0.jar"/>
+                <exclude name="javax.persistence*1.0.0*.jar"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
@@ -608,6 +608,7 @@
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <copy tofile="${build.dir}/javax.persistence_1.0.0.jar" file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
@@ -647,7 +648,8 @@
                 <include name="readme.html"/>
             </zipfileset>
             <!-- jpa persistence jar -->
-            <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
+            <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/ -->
+            <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 prototype jar -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
