@@ -92,7 +92,7 @@ public class DynamicClassWriter {
      *      String)
      */
     public DynamicClassWriter(String parentClassName) {
-        if (parentClassName == null || parentClassName.lenth() == 0) {
+        if (parentClassName == null || parentClassName.length() == 0) {
             throw DynamicException.illegalParentClassName(parentClassName);
         }
         this.parentClassName = parentClassName;
