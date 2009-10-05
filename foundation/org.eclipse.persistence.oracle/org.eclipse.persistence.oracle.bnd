@@ -18,6 +18,7 @@ Import-Package:                                        \
  javax.sql.*;resolution:=optional,                     \
  javax.xml.*;resolution:=optional,                     \
  oracle.*;resolution:=optional,                        \
+ oracle.xml.util;resolution:=optional,                 \
  org.eclipse.persistence.*;version="${version.string}",\
  org.w3c.*;resolution:=optional,                       \
  org.xml.*;resolution:=optional, *
