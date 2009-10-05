@@ -23,7 +23,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
-import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
@@ -86,6 +85,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public void setContentHandler (ContentHandler handler) {
         reader.setContentHandler(handler);
     }
+    
 
     public ContentHandler getContentHandler () {
         return reader.getContentHandler();
@@ -103,10 +103,6 @@ public class XMLReader implements org.xml.sax.XMLReader {
         reader.parse(input);
     }
 
-    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws IOException, SAXException {
-        saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
-        reader.parse(input);
-    }
 
     public void parse (String systemId) throws IOException, SAXException {
         reader.parse(systemId);

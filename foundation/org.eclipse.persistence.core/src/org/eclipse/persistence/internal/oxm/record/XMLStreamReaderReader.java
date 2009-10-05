@@ -19,8 +19,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -39,18 +41,24 @@ public class XMLStreamReaderReader extends XMLReader {
     private LexicalHandler lexicalHandler;
     private ErrorHandler errorHandler;
     private int depth = 0;
-
+    private UnmarshalNamespaceContext unmarshalNamespaceContext;
+    
     public XMLStreamReaderReader() {
+        unmarshalNamespaceContext = new UnmarshalNamespaceContext();
     }
 
     @Override
     public ContentHandler getContentHandler() {
         return contentHandler;
     }
-
     @Override
-    public void setContentHandler(ContentHandler aContentHandler) {
-        this.contentHandler = aContentHandler;
+    public void setContentHandler (ContentHandler handler) {    
+        this.contentHandler = handler;
+        if(handler.getClass() == UnmarshalRecord.class){
+            ((UnmarshalRecord)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
+        }else if(handler.getClass() == SAXUnmarshallerHandler.class){
+            ((SAXUnmarshallerHandler)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
+        }
     }
 
     @Override
@@ -74,15 +82,7 @@ public class XMLStreamReaderReader extends XMLReader {
     public void parse(InputSource input) throws SAXException {
         if(input instanceof XMLStreamReaderInputSource) {
             XMLStreamReader xmlStreamReader = ((XMLStreamReaderInputSource) input).getXmlStreamReader();
-            parse(xmlStreamReader);
-        }
-    }
-
-    @Override
-    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws SAXException {
-        if(input instanceof XMLStreamReaderInputSource) {
-            XMLStreamReader xmlStreamReader = ((XMLStreamReaderInputSource) input).getXmlStreamReader();
-            saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new UnmarshalNamespaceContext(xmlStreamReader));
+            unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
             parse(xmlStreamReader);
         }
     }

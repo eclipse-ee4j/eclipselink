@@ -15,7 +15,6 @@ package org.eclipse.persistence.jaxb;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
@@ -242,13 +240,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public JAXBElement unmarshal(Source source, Class javaClass) throws JAXBException {    	
-        Class classToUnmarshalTo = javaClass;
-        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
-            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
-            if(generatedClass != null){
-                classToUnmarshalTo = generatedClass;
-            }
-        }
+        Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+        
         return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), javaClass);
     }
     
@@ -266,7 +259,15 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public JAXBElement unmarshal(Source source, Type type) throws JAXBException {   
     	Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
     	if(unmarshalClass != null){
-    		return  unmarshal(source, unmarshalClass, Object.class);
+    		JAXBElement unmarshalled =  unmarshal(source, unmarshalClass, Object.class);
+    		Class declaredClass = null;
+    		if(type instanceof Class){
+    			declaredClass = (Class)type;
+    		}else{
+    			declaredClass = Object.class;
+    		}
+    		JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), unmarshalled.getValue());    		
+    		return returnVal;
     	}else if(type instanceof Class){
     		return  unmarshal(source, (Class)type, Object.class);
     	}
@@ -274,24 +275,35 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
-        Class classToUnmarshalTo = javaClass;
-        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
-            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
-            if(generatedClass != null){
-                classToUnmarshalTo = generatedClass;
-            }
-        }
+    	
+    	Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
         XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
         staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
         XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
-        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+        JAXBElement unmarshalled = buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+        
+        if(classToUnmarshalTo != javaClass){
+    	    JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());    		
+	        return returnVal;
+        }
+        return unmarshalled;
     	 
     }
 
     public JAXBElement unmarshal(XMLStreamReader streamReader, Type type) throws JAXBException {
         Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
         if(unmarshalClass != null){
-            return  unmarshal(streamReader, unmarshalClass);
+        	JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
+    		Class declaredClass = null;
+    		if(type instanceof Class){
+    			declaredClass = (Class)type;
+    		}else{
+    			declaredClass = Object.class;
+    		}
+    		JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), unmarshalled.getValue());    		
+    		return returnVal;
+        	
+        	
         }else if(type instanceof Class){
             return  unmarshal(streamReader, (Class)type);
         }
@@ -307,23 +319,35 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public JAXBElement unmarshal(XMLEventReader eventReader, Class javaClass) throws JAXBException {
-        Class classToUnmarshalTo = javaClass;
-        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
-            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
-            if(generatedClass != null){
-                classToUnmarshalTo = generatedClass;
-            }
-        }
+    	Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
         XMLEventReaderReader staxReader = new XMLEventReaderReader();
         staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
         XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
-        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+        JAXBElement unmarshalled =  buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+        
+        if(classToUnmarshalTo != javaClass){
+            JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());
+            return returnVal;
+        }
+        return unmarshalled;
     }
     
     public JAXBElement unmarshal(XMLEventReader eventReader, Type type) throws JAXBException {
         Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
         if(unmarshalClass != null){
-            return  unmarshal(eventReader, unmarshalClass);
+        	
+        	JAXBElement unmarshalled = unmarshal(eventReader, unmarshalClass);
+    		Class declaredClass = null;
+    		if(type instanceof Class){
+    			declaredClass = (Class)type;
+    		}else{
+    			declaredClass = Object.class;
+    		}
+    		JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), unmarshalled.getValue());    		
+    		return returnVal;
+        	
+        	
+        	
         }else if(type instanceof Class){
             return  unmarshal(eventReader, (Class)type);
         }
@@ -498,5 +522,22 @@ public class JAXBUnmarshaller implements Unmarshaller {
 	public void setJaxbContext(JAXBContext jaxbContext) {
 		this.jaxbContext = jaxbContext;
 	}
-
+    
+    private Class getClassToUnmarshalTo(Class originalClass){
+	Class classToUnmarshalTo = originalClass;
+        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
+            Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(originalClass.getCanonicalName());
+            if(generatedClass != null){
+                classToUnmarshalTo = generatedClass;
+            }
+        }
+        if(jaxbContext.getCollectionClassesToGeneratedClasses() != null){
+            Class generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(originalClass);
+            if(generatedClass != null){
+                classToUnmarshalTo = generatedClass;
+            }
+        }
+        return classToUnmarshalTo;
+		
+	}
 }

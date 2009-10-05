@@ -107,18 +107,14 @@ public class DOMReader extends XMLReader {
     public void parse(InputSource input) throws SAXException {
         if(input instanceof DOMInputSource) {
             Node node = ((DOMInputSource) input).getNode();
+            if(contentHandler != null && contentHandler.getClass() == SAXUnmarshallerHandler.class){
+            	((SAXUnmarshallerHandler)contentHandler).setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
+            }
+            
             parse(node);
         }
     }
 
-    @Override
-    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws SAXException {
-        if(input instanceof DOMInputSource) {
-            Node node = ((DOMInputSource) input).getNode();
-            saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
-            parse(node);
-        }
-    }
 
     public void parse(String systemId) {}
  

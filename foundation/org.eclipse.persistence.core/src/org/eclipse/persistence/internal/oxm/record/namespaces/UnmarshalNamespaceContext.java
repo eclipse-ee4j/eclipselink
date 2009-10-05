@@ -28,6 +28,10 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
     private XMLStreamReader xmlStreamReader;
     private Set<String> prefixes;
 
+    public UnmarshalNamespaceContext() {        
+        this.prefixes = new HashSet();
+    }
+    
     public UnmarshalNamespaceContext(XMLStreamReader anXMLStreamReader) {
         this.xmlStreamReader = anXMLStreamReader;
         this.prefixes = new HashSet();
@@ -64,6 +68,14 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
     
     public Set<String> getPrefixes() {
         return prefixes;
+    }
+
+    public XMLStreamReader getXmlStreamReader() {
+        return xmlStreamReader;
+    }
+
+    public void setXmlStreamReader(XMLStreamReader xmlStreamReader) {
+        this.xmlStreamReader = xmlStreamReader;
     }
 
 }

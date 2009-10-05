@@ -90,14 +90,6 @@ public class XMLEventReaderReader extends XMLReader {
         }
     }
 
-    @Override
-    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws SAXException {
-        if(input instanceof XMLEventReaderInputSource) {
-            XMLEventReader xmlEventReader = ((XMLEventReaderInputSource) input).getXmlEventReader();
-            //saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new UnmarshalNamespaceContext(xmlEventReader));
-            parse(xmlEventReader);
-        }
-    }
 
     public void parse(String systemId) throws SAXException {}
 

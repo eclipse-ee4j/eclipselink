@@ -89,6 +89,32 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
              xmlToObjectTest(testObject);
          } 
      } 
+    
+    public void testXMLToObjectFromXMLStreamReaderWithType() throws Exception { 
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getTypeToUnmarshalTo());
+            instream.close();
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(testObject, newControlObj);                      
+        } 
+    } 
+    
+    public void testXMLToObjectFromXMLStreamReaderWithClass() throws Exception { 
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getClassForDeclaredTypeOnUnmarshal());
+            instream.close();
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(testObject, newControlObj);                      
+        } 
+    } 
   
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
@@ -98,7 +124,31 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             this.xmlToObjectTest(obj);
         }
     }
+    
+    public void testXMLToObjectFromXMLEventReaderWithType() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getTypeToUnmarshalTo());
 
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(obj, newControlObj);    
+        }
+    }   
+    
+    public void testXMLToObjectFromXMLEventReaderWithClass() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getClassForDeclaredTypeOnUnmarshal());
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(obj, newControlObj);    
+        }
+    } 
+    
 	public void testObjectToXMLStreamWriter() throws Exception {
 		if (System.getProperty("java.version").contains("1.6")) {
 			StringWriter writer = new StringWriter();
@@ -200,6 +250,16 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		Object obj = getJAXBUnmarshaller().unmarshal(source);
 		this.xmlToObjectTest(obj);
 	}
+	
+	public void testXMLToObjectFromStreamSourceWithClass() throws Exception {
+		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+		StreamSource source = new StreamSource();
+		source.setInputStream(instream);
+		Object obj = getJAXBUnmarshaller().unmarshal(source, getClassForDeclaredTypeOnUnmarshal());
+		JAXBElement controlObj = (JAXBElement)getControlObject();            
+		JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+                xmlToObjectTest(obj, newControlObj);  
+	}
 
 	public abstract Map<String, InputStream> getControlSchemaFiles();
 	
@@ -223,13 +283,32 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 			fail(e.getMessage());
 		}
 		return null;
+
+	}
+	
+	private Class getClassForDeclaredTypeOnUnmarshal() throws Exception{
+		Type typeToUse = getTypeToUnmarshalTo();
+		if(typeToUse instanceof Class){
+			return (Class)typeToUse;
+		}
+		return Object.class;		
 	}
 
 	protected abstract Type getTypeToUnmarshalTo() throws Exception;
 
 	protected abstract String getNoXsiTypeControlResourceName();
 	
-	
+	public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
+            log("\n**xmlToObjectTest**");
+            log("Expected:");
+            log(controlObject.toString());
+            log("Actual:");
+            log(testObject.toString());
+
+            JAXBElement controlObj = (JAXBElement)controlObject;
+            JAXBElement testObj = (JAXBElement)testObject;
+            compareJAXBElementObjects(controlObj, testObj);
+    }
 	
 
 }

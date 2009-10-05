@@ -287,7 +287,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);
-                xmlReader.parse(inputSource, saxUnmarshallerHandler);
+                xmlReader.parse(inputSource);
             
                 // resolve any mapping references
                 saxUnmarshallerHandler.resolveReferences();
@@ -636,7 +636,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             saxUnmarshallerHandler.setXMLReader(extendedXMLReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
             extendedXMLReader.setContentHandler(saxUnmarshallerHandler);
-            extendedXMLReader.parse(inputSource, saxUnmarshallerHandler);
+            extendedXMLReader.parse(inputSource);
 
             // resolve any mapping references
             saxUnmarshallerHandler.resolveReferences();
@@ -677,7 +677,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);
-                ((XMLReader)xmlReader).parse(inputSource, saxUnmarshallerHandler);
+                xmlReader.parse(inputSource);
 
                 // resolve any mapping references
                 saxUnmarshallerHandler.resolveReferences();
