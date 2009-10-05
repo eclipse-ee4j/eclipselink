@@ -142,7 +142,7 @@ public class MetadataProject {
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
 
     // A linked map of all the entity mappings (XML file representation)
-    private HashMap<URL, XMLEntityMappings> m_entityMappings;
+    private HashMap<String, XMLEntityMappings> m_entityMappings;
     
     // Map of mapped-superclasses found in XML for this project/persistence unit.
     private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
@@ -223,7 +223,7 @@ public class MetadataProject {
         m_weaveEager = weaveEager;
         
         // Using linked collections since their ordering needs to be preserved.
-        m_entityMappings = new LinkedHashMap<URL, XMLEntityMappings>();
+        m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
         m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>();
 
         m_queries = new HashMap<String, NamedQueryMetadata>();
@@ -380,7 +380,7 @@ public class MetadataProject {
      */
     public void addEntityMappings(XMLEntityMappings entityMappings) {
         // Add the new entity mappings file to the list.
-        m_entityMappings.put(entityMappings.getMappingFile(), entityMappings);
+        m_entityMappings.put(entityMappings.getMappingFileOrURL(), entityMappings);
     }
     
     /**

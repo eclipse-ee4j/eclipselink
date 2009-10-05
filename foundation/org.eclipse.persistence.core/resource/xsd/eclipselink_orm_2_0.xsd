@@ -11,6 +11,7 @@
 
  Contributors:
      Oracle - initial API and implementation from Oracle TopLink
+     tware - update version number to 2.0
 *****************************************************************************/
 -->
 
@@ -20,11 +21,11 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   attributeFormDefault="unqualified" 
-  version="1.1">
+  version="2.0">
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)eclipselink_orm_1_1.xsd 1.0  February 1 2008
+      @(#)eclipselink_orm_2_0.xsd 2.0  October 5 2008
     </xsd:documentation>
   </xsd:annotation>
   <xsd:annotation>
@@ -44,8 +45,8 @@
        <entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm 
-       eclipselink_orm_1_1.xsd
-       version="1.1">
+       eclipselink_orm_2_0.xsd
+       version="2.0">
        ...
        </entity-mappings>
 
@@ -507,7 +508,7 @@
         <xsd:element name="entity" type="orm:entity" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="embeddable" type="orm:embeddable" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:versionType" fixed="1.1" use="required"/>
+      <xsd:attribute name="version" type="orm:versionType" fixed="2.0" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
