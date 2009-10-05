@@ -454,7 +454,7 @@ then
 
     ## Generate transaction log for this revision
     ##
-    svn log -r ${CUR_REV}${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${SVN_LOG_FILE}
+    svn log -r ${CUR_REV}${PREV_REV} -q -v  svn+ssh://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${SVN_LOG_FILE}
 
     ## Verify Compile complete before bothering with post-build processing for test results
     ## if [ not build failed ]
