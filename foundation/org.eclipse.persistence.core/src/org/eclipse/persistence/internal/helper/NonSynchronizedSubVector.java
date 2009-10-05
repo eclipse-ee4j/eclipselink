@@ -18,11 +18,11 @@ import java.util.*;
  * SubList that implements Vector.
  */
 public class NonSynchronizedSubVector extends NonSynchronizedVector {
-    private AbstractList l;
+    private Vector l;
     private int offset;
     private int size;
 
-    public NonSynchronizedSubVector(AbstractList list, int fromIndex, int toIndex) {
+    public NonSynchronizedSubVector(Vector list, int fromIndex, int toIndex) {
         super(0);
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
@@ -149,6 +149,25 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         };
     }
         
+    public Object[] toArray() {
+        Object[] result = new Object[size];
+        System.arraycopy(l.toArray(), offset, result, 0, size);
+        return result;
+    }
+
+    public Object[] toArray(Object a[]) {
+        if (a.length < size)
+            a = (Object[])java.lang.reflect.Array.newInstance(
+                                a.getClass().getComponentType(), size);
+        
+        System.arraycopy(l.toArray(), offset, a, 0, size);
+
+        if (a.length > size)
+            a[size] = null;
+
+        return a;
+    }
+
     public Iterator iterator() {
         return listIterator();
     }
