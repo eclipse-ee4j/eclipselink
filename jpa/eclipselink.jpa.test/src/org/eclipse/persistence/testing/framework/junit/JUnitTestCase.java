@@ -22,6 +22,7 @@ import javax.rmi.PortableRemoteObject;
 import javax.persistence.*;
 import junit.framework.*;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.logging.SessionLog;
@@ -69,6 +70,9 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     protected static boolean isInitialzied;
+    
+    /** Allow OSGi specific behavior. */
+    public static boolean isOSGi = false;
     
     /**
      * This is a hack to enable weaving in Spring tests.
@@ -344,6 +348,14 @@ public abstract class JUnitTestCase extends TestCase {
         if (isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
+            // Set class loader for OSGi testing.
+            if (isOSGi && (properties.get(PersistenceUnitProperties.CLASSLOADER) == null)) {
+                try {
+                    properties.put(PersistenceUnitProperties.CLASSLOADER, JUnitTestCase.class.getClassLoader());
+                } catch (Exception ignore) {
+                    System.out.println(ignore);
+                }
+            }
             EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
             if (emfNamedPersistenceUnit == null){
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);

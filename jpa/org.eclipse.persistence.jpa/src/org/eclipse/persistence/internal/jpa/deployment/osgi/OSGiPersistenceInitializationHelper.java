@@ -37,7 +37,6 @@ import org.osgi.framework.BundleContext;
  * 
  * @author tware
  * @author shsmith
- *
  */
 public class OSGiPersistenceInitializationHelper extends PersistenceInitializationHelper {
 
@@ -84,6 +83,7 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
     public OSGiPersistenceInitializationHelper(String initializerClassName){
         this.initializerClassName = initializerClassName;
     }
+    
     /**
      * Answer the ClassLoader to use to create an EntityManager. 
      * The result is a CompositeClassLoader capable of loading 
@@ -166,28 +166,29 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
     /**
      * Get the initializer class
      * Here we will attempt to build an EquinoxInitializer.  It will only be available if the org.eclipse.persistence.jpa.equinox
-     * fragment is available.  Else, we will return a standard OSGi initializer
-     * 
+     * fragment is available.  Else, we will return a standard OSGi initializer.
      */
     public JPAInitializer getInitializer(ClassLoader classLoader, Map m){
-        if (initializerClassName != null){
-            try{
+        if (this.initializerClassName != null) {
+            try {
                 // try to build the passed-in initializer.  If it is available, we will build it otherwise
                 // we will assume generic OSGI
-                Class initializerClass = Class.forName(initializerClassName);
+                Class initializerClass = Class.forName(this.initializerClassName);
                 Class[] argTypes = new Class[]{ClassLoader.class, Map.class, PersistenceInitializationHelper.class};
                 Object[] args = new Object[]{classLoader, m, this};
                 JPAInitializer initializer = (JPAInitializer)initializerClass.getConstructor(argTypes).newInstance(args);
                 return initializer;
-            } catch (Exception e){
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, LoggingLocalization.buildMessage("osgi_initializer_failed", new Object[]{initializerClassName, e}));
-            };
+            } catch (Exception exception) {
+                AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                        LoggingLocalization.buildMessage("osgi_initializer_failed", new Object[]{this.initializerClassName, exception}));
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, exception);
+            }
         }
         return new OSGiInitializer(classLoader);
     }
 
-	public static boolean includesBundle(Bundle bundle) {
-		return bundleToPUs.containsKey(bundle);
-	}
+    public static boolean includesBundle(Bundle bundle) {
+        return bundleToPUs.containsKey(bundle);
+    }
 
 }

@@ -29,9 +29,12 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /**
  * Activator for JPA OSGi service.
  * @author tware
- *
  */
 public class Activator implements BundleActivator, SynchronousBundleListener {
+    public static final String MANIFEST_PU_LABEL = "JPA-PersistenceUnits";    
+    public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PersistenceProvider";
+    public static final String ECLIPSELINK_OSGI_PROVIDER = "org.eclipse.persistence.jpa.osgi.PersistenceProviderOSGi";
+    
     private static BundleContext context;
     
     /**
@@ -86,29 +89,36 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     }
 
     /**
-     * Store a reference to a bundle as it is started so the bundle 
-     * can be accessed later
-     * @param bundle
+     * Store a reference to a bundle as it is started so the bundle can be
+     * accessed later.
      */
     private void registerBundle(Bundle bundle) {
         if ((bundle.getState() & (Bundle.STARTING | Bundle.RESOLVED | Bundle.ACTIVE)) != 0) {
-        	if (!OSGiPersistenceInitializationHelper.includesBundle(bundle)) {
-	            try {
-	                String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
-	                if (persistenceUnitNames != null) {
-	                    OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
-	                }
-	            } catch (Exception e) {
-	                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
-	            }
-        	}
+            if (!OSGiPersistenceInitializationHelper.includesBundle(bundle)) {
+                try {
+                    String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
+                    if (persistenceUnitNames != null) {
+                        OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
+                    }
+                } catch (Exception e) {
+                    AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
+                }
+            }
         }
     }
     
+    /**
+     * Extract the list of persistence unit names from the OSGi manifest.
+     */
     private String[] getPersistenceUnitNames(Bundle bundle) {
-        String names = (String) bundle.getHeaders().get("JPA-PersistenceUnits");
+        String names = (String) bundle.getHeaders().get(MANIFEST_PU_LABEL);
         if (names != null) {
-            return names.split(",");
+            String[] values = names.split(",");
+            // Must trim spaces.
+            for (int index = 0; index < values.length; index++) {
+                values[index] = values[index].trim();
+            }
+            return values;
         } else {
             return null;
         }
@@ -126,9 +136,6 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     public static BundleContext getContext() {
         return Activator.context;
     }
-    
-    public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PersistenceProvider";
-    public static final String ECLIPSELINK_OSGI_PROVIDER = "org.eclipse.persistence.jpa.osgi.PersistenceProviderOSGi";
     
     /**
      * Our service provider provides the javax.persistence.spi.PersistenceProvider service.

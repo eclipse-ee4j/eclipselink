@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -80,7 +81,7 @@ public class DefaultConnector implements Connector {
      */
     public Connection connect(Properties properties, Session session) throws DatabaseException {
         // if driver class name is given, ensure the driver has been loaded and registered
-        if(this.driverClassName != null && this.driverClass == null) {
+        if (this.driverClassName != null && this.driverClass == null) {
              this.loadDriverClass(session);
         }
          
@@ -92,18 +93,19 @@ public class DefaultConnector implements Connector {
         }
         
         SQLException driverManagerException = null;
-        if(this.shouldUseDriverManager(properties, session)) {
+        if (this.shouldUseDriverManager(properties, session)) {
             try {
                 return DriverManager.getConnection(this.getConnectionString(), properties);
             } catch (SQLException sqlException) {
                 driverManagerException = sqlException;
-                if(session != null) {
-                    ((org.eclipse.persistence.internal.sessions.AbstractSession)session).logThrowable(SessionLog.FINER, SessionLog.CONNECTION, sqlException);
+                if (session != null) {
+                    ((AbstractSession)session).log(SessionLog.FINER, SessionLog.CONNECTION, "connect_drivermanager_fail");
+                    ((AbstractSession)session).logThrowable(SessionLog.FINER, SessionLog.CONNECTION, sqlException);
                 }
             }
         }
         
-        if(this.driverClass == null) {
+        if (this.driverClass == null) {
             throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
         }
         
@@ -133,7 +135,7 @@ public class DefaultConnector implements Connector {
 			return directConnection;
 		} catch (DatabaseException directConnectException) {
 			if (driverManagerException != null && !wrongDriverExceptionOccurred) {
-                throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
+                throw DatabaseException.sqlException(driverManagerException, (AbstractSession) session, true);
             } else {
                 throw directConnectException;
             }

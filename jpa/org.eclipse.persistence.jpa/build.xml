@@ -237,10 +237,14 @@
         <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.validation;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.validation.groups;resolution:=optional${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.validation;resolution:=optional,${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.validation.groups;resolution:=optional${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 

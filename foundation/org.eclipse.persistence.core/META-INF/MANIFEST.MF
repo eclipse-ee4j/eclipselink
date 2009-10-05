@@ -164,7 +164,17 @@ Import-Package: javax.activation;vendor=sun;resolution:=optional,
  javax.resource;version="1.5.0";resolution:=optional,
  javax.resource.cci;version="1.5.0";resolution:=optional,
  javax.transaction;version="1.1.0";resolution:=optional,
+ javax.xml.parsers;resolution:=optional,
  javax.xml.stream;resolution:=optional,
+ javax.xml.datatype;resolution:=optional,
+ javax.xml.namespace;resolution:=optional,
+ javax.xml.transform;resolution:=optional,
+ javax.xml.transform.dom;resolution:=optional,
+ javax.xml.transform.sax;resolution:=optional,
+ org.xml.sax;resolution:=optional,
+ org.xml.sax.ext;resolution:=optional,
+ javax.xml.xpath;resolution:=optional,
+ javax.naming;resolution:=optional,
  org.w3c.dom
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
 Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent

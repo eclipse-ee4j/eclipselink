@@ -399,20 +399,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
     /**
      * INTERNAL:
-     * return the type indicator hashtable
+     * Return the type indicators.
      */
     public Map getTypeIndicatorTranslation() {
-        if (typeIndicatorTranslation.isEmpty() && !typeIndicatorNameTranslation.isEmpty()) {
-            Iterator keysEnum = typeIndicatorNameTranslation.keySet().iterator();
-            Iterator valuesEnum = typeIndicatorNameTranslation.values().iterator();
-            while (keysEnum.hasNext()) {
-                Object key = keysEnum.next();
-                Object value = valuesEnum.next();
-                Class theClass = (Class)ConversionManager.getDefaultManager().convertObject(key, ClassConstants.CLASS);
-                typeIndicatorTranslation.put(theClass, value);
-                typeIndicatorTranslation.put(value, theClass);
-            }
-        }
         return typeIndicatorTranslation;
     }
 

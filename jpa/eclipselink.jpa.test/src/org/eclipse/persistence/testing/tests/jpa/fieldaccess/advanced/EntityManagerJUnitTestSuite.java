@@ -4511,7 +4511,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         //    fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
         //}
         String seqName = ss.getDescriptor(Employee.class).getSequenceNumberName();
-        Sequence sequence = getServerSession().getLogin().getSequence(seqName);
+        Sequence sequence = getServerSession("fieldaccess").getLogin().getSequence(seqName);
         if(sequence.getPreallocationSize() < 2) {
             fail("setup failure: the test requires sequence preallocation size greater than 1");
         }
@@ -4522,7 +4522,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("setup failure: the test requires sequence that uses transaction, like TableSequence");
         }
         // clear all already allocated sequencing values for seqName
-        getServerSession().getSequencingControl().initializePreallocated(seqName);
+        getServerSession("fieldaccess").getSequencingControl().initializePreallocated(seqName);
         
         // test
         EntityManager em = createEntityManager("fieldaccess");
