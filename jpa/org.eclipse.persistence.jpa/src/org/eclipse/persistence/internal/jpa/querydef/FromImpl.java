@@ -70,7 +70,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     protected ManagedType managedType;
     protected Set<Join<X, ?>> joins;
     protected Set<Fetch<X, ?>> fetches;
-    protected boolean isLeaf = true;
+    protected boolean isLeaf = true; // used to track dangling joins.
     protected boolean isFetch = false;
 
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact) {

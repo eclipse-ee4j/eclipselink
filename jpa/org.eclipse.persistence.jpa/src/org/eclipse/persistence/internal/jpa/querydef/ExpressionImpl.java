@@ -136,6 +136,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isPredicate(){
         return false;
     }
+    
     public boolean isSubquery(){
         return false;
     }

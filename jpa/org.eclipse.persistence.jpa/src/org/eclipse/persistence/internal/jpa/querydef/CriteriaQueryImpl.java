@@ -38,6 +38,7 @@ import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -71,6 +72,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     protected List<Order> orderBy;
     
     protected List<FromImpl> joins;
+    
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
@@ -97,6 +99,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     params[0] = this.queryType;
                     int count = 0;
                     for (Selection select : selection.getCompoundSelectionItems()) {
+                        if (((InternalSelection)select).isFrom()){
+                            ((FromImpl)select).isLeaf = false;
+                        }
                         params[++count] = select.getJavaType();
                     }
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
@@ -107,6 +112,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             ManagedType type = this.metamodel.managedType(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 this.queryResult = ResultType.ENTITY;
+                ((FromImpl)selection).isLeaf = false; //this will be a selection item in a report query
             } else {
                 this.queryResult = ResultType.OTHER;
             }
@@ -168,12 +174,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     this.queryResult = ResultType.OTHER;
                 } else {
                     this.queryResult = ResultType.ENTITY;
+                    ((FromImpl)selections[0]).isLeaf = false; // will be item on report query.
                 }
                 this.queryType = selections[0].getJavaType();
                 this.selection = (SelectionImpl) selections[0];
-                if (((InternalSelection)this.selection).isFrom()){
-                    ((FromImpl)this.selection).isLeaf = false;
-                }
             }
             return this;
         }
@@ -192,9 +196,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = (SelectionImpl) this.queryBuilder.construct(this.queryType, selections);
         } else {
             this.selection = (SelectionImpl) selections[0];
-            if (((InternalSelection)this.selection).isFrom()){
+            ManagedType type = this.metamodel.managedType(this.selection.getJavaType());
+            if (type == null || (type.getPersistenceType().equals(PersistenceType.ENTITY))) {
                 ((FromImpl)this.selection).isLeaf = false;
             }
+
 
         }
         // TODO validate primitive return types but a multiselect
@@ -344,20 +350,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    protected void integrateRoot(RootImpl root){
+    protected void integrateRoot(RootImpl root) {
         if (this.roots.isEmpty() && (this.queryResult.equals(ResultType.ENTITY) || this.queryType.equals(ClassConstants.Object_Class))) {
             // this is the first root, set return type and selection and query
             // type
-            if (this.selection == null){
+            if (this.selection == null) {
                 this.selection = root;
-                this.queryResult = ResultType.ENTITY;
             }
+            this.queryResult = ResultType.ENTITY;
             this.queryType = root.getJavaType();
         }
-        if (!this.roots.contains(root)){
+        if (!this.roots.contains(root)) {
             this.roots.add(root);
         }
-        
+
     }
 
     /**
@@ -491,11 +497,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         
         ObjectLevelReadQuery query = null;
         if (this.queryResult.equals(ResultType.ENTITY)) {
-            query = new ReadAllQuery(this.queryType);
-            if (this.roots != null && !this.roots.isEmpty()){
-                List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl)this.roots.iterator().next()).findJoinFetches();
-                for (org.eclipse.persistence.expressions.Expression fetch: list){
-                    query.addJoinedAttribute(fetch);
+            
+            if (this.selection != null && (!((InternalSelection)this.selection).isRoot() || this.selection.getJavaType() != this.queryType)){
+                query = new ReportQuery();
+                query.setReferenceClass(this.queryType);
+                ((ReportQuery)query).addItem(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode(), ((FromImpl)this.selection).findJoinFetches());
+                ((ReportQuery)query).setShouldReturnSingleAttribute(true);
+            }else{
+                query = new ReadAllQuery(this.queryType);
+                if (this.roots != null && !this.roots.isEmpty()){
+                    List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl)this.roots.iterator().next()).findJoinFetches();
+                    for (org.eclipse.persistence.expressions.Expression fetch: list){
+                        query.addJoinedAttribute(fetch);
+                    }
                 }
             }
         } else if (this.queryResult.equals(ResultType.PARTIAL)) {

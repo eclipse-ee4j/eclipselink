@@ -1631,6 +1631,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         DatabaseQueryMechanism mech = getQueryMechanism();
         if (mech.isExpressionQueryMechanism() && ((ExpressionQueryMechanism)mech).getExpressionBuilder() != null) {
             this.defaultBuilder = ((ExpressionQueryMechanism)mech).getExpressionBuilder();
+            if (this.defaultBuilder.getQueryClass() != null && !this.defaultBuilder.getQueryClass().equals(this.referenceClass)){
+                this.defaultBuilder = new ExpressionBuilder();
+            }
             return;
         }
         this.defaultBuilder = new ExpressionBuilder();

@@ -94,5 +94,8 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     public boolean isFrom(){
         return false;
     }
+    public boolean isRoot(){
+        return false;
+    }
 
 }

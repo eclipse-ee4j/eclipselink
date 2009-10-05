@@ -81,8 +81,8 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
      * @return query root corresponding to the given entity
      */
     public <X> Root<X> from(EntityType<X> entity){
-        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-        this.roots.add(root);
+        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+       integrateRoot(root);
         return root;
     }
 

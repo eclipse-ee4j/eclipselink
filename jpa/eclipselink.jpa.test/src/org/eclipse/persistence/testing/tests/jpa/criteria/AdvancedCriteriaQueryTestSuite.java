@@ -18,27 +18,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Writer;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Parameter;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
+import javax.persistence.Parameter;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
@@ -48,7 +38,6 @@ import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -58,25 +47,19 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
-
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
@@ -119,6 +102,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
     //    suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInSubQuery"));
@@ -129,6 +113,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimple"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleWhere"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSimpleWhereObject"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSharedWhere"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testTupleQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheFirstCacheHits"));
@@ -163,6 +148,20 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     }
     
 
+    
+    public void testAlternateSelection() {
+        EntityManager em = createEntityManager();
+em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
+        Metamodel mm = em.getMetamodel();
+        QueryBuilder qbuilder = em.getQueryBuilder();
+        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+        Root<Project> spouse = cquery.from(Project.class);
+        cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.<Employee> get("teamLeader"));
+        TypedQuery<Employee> tquery = em.createQuery(cquery);
+        assertTrue("Did not find the correct leaders of Project Swirly Dirly.", tquery.getResultList().size() > 1);
+
+    }
+    
     /**
      * Test that a cache hit will occur on a primary key query.
      */
@@ -351,18 +350,6 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         */
     }
 
-    public void testSimpleWhere(){
-        EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
-    }
     
     public void testSimpleJoin(){
         EntityManager em = createEntityManager();
@@ -376,6 +363,30 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         assertTrue("Found employee but joins should have canceled isEmpty", result.isEmpty());
     }
 
+    public void testSimpleWhere(){
+        EntityManager em = createEntityManager();
+        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+        QueryBuilder qb = em.getQueryBuilder();
+        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+        TypedQuery<Employee> tq = em.createQuery(cq);
+        List<Employee> result = tq.getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+    }
+    public void testSimpleWhereObject(){
+        EntityManager em = createEntityManager();
+        CriteriaQuery cq = em.getQueryBuilder().createQuery();
+        QueryBuilder qb = em.getQueryBuilder();
+        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+        TypedQuery<Employee> tq = em.createQuery(cq);
+        List<Employee> result = tq.getResultList();
+        assertFalse("No Employees were returned", result.isEmpty());
+        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+    }
     public void testSimpleFetch(){
         EntityManager em = createEntityManager();
         CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);

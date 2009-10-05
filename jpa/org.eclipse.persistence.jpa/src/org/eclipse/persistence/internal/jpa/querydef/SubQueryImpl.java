@@ -483,20 +483,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return this;
     }
 
-    /**
-     * Add a query root corresponding to the given entity, forming a cartesian
-     * product with any existing roots.
-     * 
-     * @param entity
-     *            metamodel entity representing the entity of type X
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(EntityType<X> entity) {
-        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-            integrateRoot(root);
-            return root;
-    }
-
     public String getAlias() {
         return this.alias;
     }
@@ -529,6 +515,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return false;
     }
     
+    public boolean isRoot(){
+        return false;
+    }
+
     public boolean isSubquery(){
         return true;
     }

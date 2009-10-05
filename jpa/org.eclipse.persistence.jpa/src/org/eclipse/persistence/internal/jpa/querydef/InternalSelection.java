@@ -38,5 +38,6 @@ public interface InternalSelection{
     public org.eclipse.persistence.expressions.Expression getCurrentNode();
     
     public boolean isFrom();
+    public boolean isRoot();
 
 }
