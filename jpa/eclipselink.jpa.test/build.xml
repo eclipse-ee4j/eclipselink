@@ -1667,6 +1667,8 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
+        <!-- criteria api server tests need the server supports jpa 2.0--> 
+        <!--antcall target="server-test-criteria" inheritRefs="true"/-->
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
@@ -1718,6 +1720,19 @@
             <param name="TEST_NAME" value="eclipselink-cascadedeletes-model"/>
             <param name="EAR_NAME" value="eclipselink-cascadedeletes-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-criteria">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-model-criteria"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/criteria"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-model-criteria"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-model-criteria"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.criteria.CriteriaServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

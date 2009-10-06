@@ -158,31 +158,38 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         }
         return attributes;
     }
-    
+
     public void testFirstResult(){
         EntityManager em = createEntityManager();
-        clearCache();
-
-        //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root from = cq.from(Employee.class);
-        cq.where(qb.equal(from.get("firstName"), qb.parameter(String.class, "firstname")));
-        Query query = em.createQuery(cq);
-        
-        List initialList = query.setParameter("firstname", "Nancy").setFirstResult(0).getResultList();
-        
-        List secondList = query.setParameter("firstname", "Nancy").setFirstResult(1).getResultList();
-
-        Iterator i = initialList.iterator();
-        while (i.hasNext()){
-            assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
-        }
-        i = secondList.iterator();
-        while (i.hasNext()){
-            assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+        beginTransaction(em);
+        try{
+            clearCache();
+	
+            //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root from = cq.from(Employee.class);
+            cq.where(qb.equal(from.get("firstName"), qb.parameter(String.class, "firstname")));
+            Query query = em.createQuery(cq);
+	    
+            List initialList = query.setParameter("firstname", "Nancy").setFirstResult(0).getResultList();
+	    
+            List secondList = query.setParameter("firstname", "Nancy").setFirstResult(1).getResultList();
+	
+            Iterator i = initialList.iterator();
+            while (i.hasNext()){
+                assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+            }
+            i = secondList.iterator();
+            while (i.hasNext()){
+                assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
+
     //done upto here
     public void testOuterJoinOnOneToOne(){
         EntityManager em = createEntityManager();
@@ -215,14 +222,20 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
 
     public void testOuterJoinPolymorphic(){
         EntityManager em = createEntityManager();
-        clearCache();
-        List resultList = null;
+        beginTransaction(em);
         try{
-            resultList = em.createQuery(em.getQueryBuilder().createQuery(Project.class)).getResultList();
-        } catch (Exception exception){
-            fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());            
+            clearCache();
+            List resultList = null;
+            try{
+                resultList = em.createQuery(em.getQueryBuilder().createQuery(Project.class)).getResultList();
+            } catch (Exception exception){
+                fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());            
+            }
+            assertTrue("Incorrect number of projects returned.", resultList.size() == 15);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-        assertTrue("Incorrect number of projects returned.", resultList.size() == 15);
     }
 
   //This test case demonstrates the bug 4616218
@@ -239,149 +252,169 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         rq.setReferenceClass(Employee.class);    
         rq.dontUseDistinct(); // distinct no longer used on joins in JPQL for gf bug 1395
         EntityManager em = createEntityManager();
-        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
+        beginTransaction(em);
+        try{
+            Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
+            clearCache();
         
-        clearCache();
-        
-        //List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-        //    "WHERE phone.areaCode = \"613\"").getResultList();
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<String> cq = qb.createQuery(String.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join phone = root.join("phoneNumbers");
-        cq.select(phone.get("areaCode"));
-        cq.where(qb.equal(phone.get("areaCode"), "613"));
-        List result = em.createQuery(cq).getResultList();
+           //List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+           //    "WHERE phone.areaCode = \"613\"").getResultList();
+           QueryBuilder qb = em.getQueryBuilder();
+           CriteriaQuery<String> cq = qb.createQuery(String.class);
+           Root<Employee> root = cq.from(Employee.class);
+           Join phone = root.join("phoneNumbers");
+           cq.select(phone.get("areaCode"));
+           cq.where(qb.equal(phone.get("areaCode"), "613"));
+           List result = em.createQuery(cq).getResultList();
       
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));        
+           Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));  
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
   }
   
   
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
         EntityManager em = createEntityManager();
-        ExpressionBuilder employees = new ExpressionBuilder();
-        Expression exp = employees.get("firstName").equal("Bob");
-        exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
+        beginTransaction(em);
+        try{
+            ExpressionBuilder employees = new ExpressionBuilder();
+            Expression exp = employees.get("firstName").equal("Bob");
+            exp = exp.and(employees.get("lastName").equal("Smith"));
+            Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
-        PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
-        String areaCode = phone.getAreaCode();
-        String firstName = emp.getFirstName();
-
-        ExpressionBuilder employeeBuilder = new ExpressionBuilder();
-        Expression phones = employeeBuilder.anyOf("phoneNumbers");
-        Expression whereClause = phones.get("areaCode").equal(areaCode).and(
-        phones.get("owner").get("firstName").equal(firstName));
+            PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
+            String areaCode = phone.getAreaCode();
+            String firstName = emp.getFirstName();
+   
+            ExpressionBuilder employeeBuilder = new ExpressionBuilder();
+            Expression phones = employeeBuilder.anyOf("phoneNumbers");
+            Expression whereClause = phones.get("areaCode").equal(areaCode).and(
+            phones.get("owner").get("firstName").equal(firstName));
             
-        ReportQuery rq = new ReportQuery();
-        rq.setSelectionCriteria(whereClause);
-        rq.addAttribute("areaCode", phones.get("areaCode"));
-        rq.setReferenceClass(Employee.class);
-        rq.dontMaintainCache();
+            ReportQuery rq = new ReportQuery();
+            rq.setSelectionCriteria(whereClause);
+            rq.addAttribute("areaCode", phones.get("areaCode"));
+            rq.setReferenceClass(Employee.class);
+            rq.dontMaintainCache();
         
-        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);       
+            Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);       
         
-        clearCache();
+            clearCache();
     
-        //"SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-        //    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<String> cq = qb.createQuery(String.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join joinedPhone = root.join("phoneNumbers");
-        cq.select(joinedPhone.get("areaCode"));
-        cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
-        List result = em.createQuery(cq).getResultList();
-        
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-        
+            //"SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+            //    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<String> cq = qb.createQuery(String.class);
+            Root<Employee> root = cq.from(Employee.class);
+            Join joinedPhone = root.join("phoneNumbers");
+            cq.select(joinedPhone.get("areaCode"));
+            cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
+            List result = em.createQuery(cq).getResultList();
+         
+            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }       
     }
     
     public void testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin()
     {
         EntityManager em = createEntityManager();
-        ExpressionBuilder employees = new ExpressionBuilder();
-        Expression exp = employees.get("firstName").equal("Bob");
-        exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
+        beginTransaction(em);
+        try{
+            ExpressionBuilder employees = new ExpressionBuilder();
+            Expression exp = employees.get("firstName").equal("Bob");
+            exp = exp.and(employees.get("lastName").equal("Smith"));
+            Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
-        PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
-        String areaCode = phone.getAreaCode();
-        String firstName = emp.getFirstName();
+            PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
+            String areaCode = phone.getAreaCode();
+            String firstName = emp.getFirstName();
         
-        ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
-        Expression phones = employeeBuilder.anyOf("phoneNumbers");
-        Expression whereClause = phones.get("areaCode").equal(areaCode).and(
-            phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
-                employeeBuilder.get("firstName").equal(firstName)));
+            ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
+            Expression phones = employeeBuilder.anyOf("phoneNumbers");
+            Expression whereClause = phones.get("areaCode").equal(areaCode).and(
+                phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
+                    employeeBuilder.get("firstName").equal(firstName)));
 
         
-        ReportQuery rq = new ReportQuery();
-        rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
-        rq.setSelectionCriteria(whereClause);
-        rq.setReferenceClass(Employee.class);
+            ReportQuery rq = new ReportQuery();
+            rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
+            rq.setSelectionCriteria(whereClause);
+            rq.setReferenceClass(Employee.class);
         
-        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
+            Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
         
-        clearCache();        
+            clearCache();        
     
-        //"SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-        //    "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<String> cq = qb.createQuery(String.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join joinedPhone = root.join("phoneNumbers");
-        cq.select(joinedPhone.get("number"));
-        //cq.where(qb.equal(joinedPhone.get("areaCode"), areaCode).add(qb.equal(joinedPhone.get("owner").get("id"), root.get("id"))).add(qb.equal(root.get("firstName"), firstName)));
-        Predicate firstAnd = qb.and(qb.equal(joinedPhone.get("areaCode"), areaCode), qb.equal(joinedPhone.get("owner").get("id"), root.get("id")));
-        cq.where(qb.and( firstAnd, qb.equal(root.get("firstName"), firstName)));
-        List result = em.createQuery(cq).getResultList();
+            //"SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+            //    "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<String> cq = qb.createQuery(String.class);
+            Root<Employee> root = cq.from(Employee.class);
+            Join joinedPhone = root.join("phoneNumbers");
+            cq.select(joinedPhone.get("number"));
+            //cq.where(qb.equal(joinedPhone.get("areaCode"), areaCode).add(qb.equal(joinedPhone.get("owner").get("id"), root.get("id"))).add(qb.equal(root.get("firstName"), firstName)));
+            Predicate firstAnd = qb.and(qb.equal(joinedPhone.get("areaCode"), areaCode), qb.equal(joinedPhone.get("owner").get("id"), root.get("id")));
+            cq.where(qb.and( firstAnd, qb.equal(root.get("firstName"), firstName)));
+            List result = em.createQuery(cq).getResultList();
 
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-
+            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } 
     }
     
     public void testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst()
     {
         EntityManager em = createEntityManager();
-        ExpressionBuilder employees = new ExpressionBuilder();
-        Expression exp = employees.get("firstName").equal("Bob");
-        exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
+        beginTransaction(em);
+        try{
+            ExpressionBuilder employees = new ExpressionBuilder();
+            Expression exp = employees.get("firstName").equal("Bob");
+            exp = exp.and(employees.get("lastName").equal("Smith"));
+            Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
-        PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
-        String areaCode = phone.getAreaCode();
-        String firstName = emp.getFirstName();
+            PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
+            String areaCode = phone.getAreaCode();
+            String firstName = emp.getFirstName();
         
-        ExpressionBuilder employeeBuilder = new ExpressionBuilder();
-        Expression phones = employeeBuilder.anyOf("phoneNumbers");
-        Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
+            ExpressionBuilder employeeBuilder = new ExpressionBuilder();
+            Expression phones = employeeBuilder.anyOf("phoneNumbers");
+            Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
                 phones.get("areaCode").equal(areaCode));
         
-        ReportQuery rq = new ReportQuery();
-        rq.setSelectionCriteria(whereClause);
-        rq.addAttribute("number", phones.get("number"));
-        rq.setReferenceClass(Employee.class);
+            ReportQuery rq = new ReportQuery();
+            rq.setSelectionCriteria(whereClause);
+            rq.addAttribute("number", phones.get("number"));
+            rq.setReferenceClass(Employee.class);
         
-        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);    
+            Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);    
         
-        clearCache();
+            clearCache();
         
-        //"SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
-        //    "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<String> cq = qb.createQuery(String.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join joinedPhone = root.join("phoneNumbers");
-        cq.select(joinedPhone.get("number"));
-        Predicate firstNameEquality = qb.equal(joinedPhone.get("owner").get("firstName"), firstName);
-        Predicate areaCodeEquality =qb.equal(joinedPhone.get("areaCode"), areaCode);
-        cq.where( qb.and(firstNameEquality, areaCodeEquality) );
-        List result = em.createQuery(cq).getResultList();
+            //"SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
+            //    "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<String> cq = qb.createQuery(String.class);
+            Root<Employee> root = cq.from(Employee.class);
+            Join joinedPhone = root.join("phoneNumbers");
+            cq.select(joinedPhone.get("number"));
+            Predicate firstNameEquality = qb.equal(joinedPhone.get("owner").get("firstName"), firstName);
+            Predicate areaCodeEquality =qb.equal(joinedPhone.get("areaCode"), areaCode);
+            cq.where( qb.and(firstNameEquality, areaCodeEquality) );
+            List result = em.createQuery(cq).getResultList();
         
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-
+            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
     public void testSelectEmployeeWithSameParameterUsedMultipleTimes() {
@@ -389,15 +422,21 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         
         try {
             EntityManager em = createEntityManager();
-            //"SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
-            QueryBuilder qb = em.getQueryBuilder();
-            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-            Root<Employee> root = cq.from(Employee.class);
-            ParameterExpression<Integer> param1 = qb.parameter(Integer.class);
-            //need to cast to erase the type on the get("id") expression so it matches the type on param1
-            cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
+            beginTransaction(em);
+            try{
+                //"SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
+                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+                Root<Employee> root = cq.from(Employee.class);
+                ParameterExpression<Integer> param1 = qb.parameter(Integer.class);
+                //need to cast to erase the type on the get("id") expression so it matches the type on param1
+                cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
 
-            em.createQuery(cq).setParameter(param1, new Integer(1)).getResultList();
+                em.createQuery(cq).setParameter(param1, new Integer(1)).getResultList();
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
         } catch (Exception e) {
             exception = e;
         }
@@ -413,15 +452,21 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         Exception exception = null;
         try {
             EntityManager em = createEntityManager();
-            //"SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'"
-            QueryBuilder qb = em.getQueryBuilder();
-            CriteriaQuery<Tuple> cq = qb.createTupleQuery();
-            Root<Employee> rootEmp = cq.from(Employee.class);
-            Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
-            cq.multiselect(rootEmp, rootPhone);
-            cq.where(qb.and( qb.equal(rootPhone.get("id"), rootEmp.get("id")), qb.equal(rootEmp.get("firstName"), "Bob")) );
+            beginTransaction(em);
+            try{
+                //"SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'"
+                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaQuery<Tuple> cq = qb.createTupleQuery();
+                Root<Employee> rootEmp = cq.from(Employee.class);
+                Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
+                cq.multiselect(rootEmp, rootPhone);
+                cq.where(qb.and( qb.equal(rootPhone.get("id"), rootEmp.get("id")), qb.equal(rootEmp.get("firstName"), "Bob")) );
             
-            List result = em.createQuery(cq).getResultList();
+                List result = em.createQuery(cq).getResultList();
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }			
         } catch (Exception e) {
             logThrowable(exception);
             exception = e;
@@ -435,28 +480,34 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQuery(){
-        EntityManager em = createEntityManager();
         Exception exception = null;
         List resultList = null;
-        clearCache();
-        //"SELECT e.id, m.id FROM Employee e LEFT OUTER JOIN e.manager m"
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Tuple> cq = qb.createTupleQuery();
-        Root<Employee> rootEmp = cq.from(Employee.class);
-        Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
-        cq.multiselect(rootEmp.get("id"), joinedManager.get("id"));
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            clearCache();
+            //"SELECT e.id, m.id FROM Employee e LEFT OUTER JOIN e.manager m"
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Tuple> cq = qb.createTupleQuery();
+            Root<Employee> rootEmp = cq.from(Employee.class);
+            Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            cq.multiselect(rootEmp.get("id"), joinedManager.get("id"));
         
-        Query query = em.createQuery(cq);
-        try {
-            query.setFirstResult(1);
-            query.setMaxResults(1);
-            resultList = query.getResultList();
-        } catch (Exception e) {
-            logThrowable(exception);
-            exception = e;
+            Query query = em.createQuery(cq);
+            try {
+                query.setFirstResult(1);
+                query.setMaxResults(1);
+                resultList = query.getResultList();
+            } catch (Exception e) {
+                logThrowable(exception);
+                exception = e;
+            }
+            Assert.assertNull("Exception was caught.", exception);
+            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-        Assert.assertNull("Exception was caught.", exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
     
     /**
@@ -464,28 +515,34 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQueryWithGroupBy() {
-        EntityManager em = createEntityManager();
         Exception exception = null;
         List resultList = null;
-        clearCache();
-        //"SELECT e.id FROM Employee e group by e.id"
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery cq = qb.createQuery(Integer.class);
-        Root<Employee> rootEmp = cq.from(Employee.class);
-        Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
-        cq.select(rootEmp.get("id"));
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            clearCache();
+            //"SELECT e.id FROM Employee e group by e.id"
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery cq = qb.createQuery(Integer.class);
+            Root<Employee> rootEmp = cq.from(Employee.class);
+            Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            cq.select(rootEmp.get("id"));
         
-        Query query = em.createQuery(cq);
-        try {
-            query.setFirstResult(1);
-            query.setMaxResults(1);
-            resultList = query.getResultList();
-        } catch (Exception e) {
-            logThrowable(exception);
-            exception = e;
+            Query query = em.createQuery(cq);
+            try {
+                query.setFirstResult(1);
+                query.setMaxResults(1);
+                resultList = query.getResultList();
+            } catch (Exception e) {
+                logThrowable(exception);
+                exception = e;
+            }
+            Assert.assertNull("Exception was caught.", exception);
+            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-        Assert.assertNull("Exception was caught.", exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
     
     /**
@@ -493,25 +550,31 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
      * the correct number of results on an inheritance root class.
      */
     public void testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot() {
-        EntityManager em = createEntityManager();
         Exception exception = null;
         List resultList = null;
-        clearCache();
-        //"SELECT p FROM Project p"
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Project> cq = qb.createQuery(Project.class);
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            clearCache();
+            //"SELECT p FROM Project p"
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Project> cq = qb.createQuery(Project.class);
         
-        Query query = em.createQuery(cq);
-        try {
-            query.setFirstResult(6);
-            query.setMaxResults(1);
-            resultList = query.getResultList();
-        } catch (Exception e) {
-            exception = e;
-            logThrowable(exception);
+            Query query = em.createQuery(cq);
+            try {
+                query.setFirstResult(6);
+                query.setMaxResults(1);
+                resultList = query.getResultList();
+            } catch (Exception e) {
+                exception = e;
+                logThrowable(exception);
+            }
+            Assert.assertNull("Exception was caught.", exception);
+            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-        Assert.assertNull("Exception was caught.", exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
     
     /**
@@ -522,15 +585,21 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         Exception exception = null;
         try {
             EntityManager em = createEntityManager();
-            //"select e, a from Employee e, Address a where a.city = 'Ottawa' and e.address.country = a.country"
-            QueryBuilder qb = em.getQueryBuilder();
-            CriteriaQuery<Tuple> cq = qb.createTupleQuery();
-            Root<Employee> rootEmp = cq.from(Employee.class);
-            Root<Address> rootAddress = cq.from(Address.class);
-            cq.multiselect(rootEmp, rootAddress);
-            cq.where(qb.and( qb.equal(rootAddress.get("city"), "Ottawa"), qb.equal(rootEmp.get("address").get("country"), rootAddress.get("country"))));
+            beginTransaction(em);
+            try{
+                //"select e, a from Employee e, Address a where a.city = 'Ottawa' and e.address.country = a.country"
+                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaQuery<Tuple> cq = qb.createTupleQuery();
+                Root<Employee> rootEmp = cq.from(Employee.class);
+                Root<Address> rootAddress = cq.from(Address.class);
+                cq.multiselect(rootEmp, rootAddress);
+                cq.where(qb.and( qb.equal(rootAddress.get("city"), "Ottawa"), qb.equal(rootEmp.get("address").get("country"), rootAddress.get("country"))));
             
-            List resultList =  em.createQuery(cq).getResultList();
+                List resultList =  em.createQuery(cq).getResultList();
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }	
         } catch (Exception e) {
             logThrowable(e);
             exception = e;
@@ -557,7 +626,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<Employee> rootEmp = cq.from(Employee.class);
             cq.select(rootEmp.get("address"));
             cq.distinct(true);
-            
+          
             List resultList =  em.createQuery(cq).getResultList();
         }finally{
             rollbackTransaction(em);

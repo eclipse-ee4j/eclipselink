@@ -76,6 +76,7 @@ import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUni
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 import org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite;
 
 public class FullRegressionTestSuite extends TestSuite {
     
@@ -208,9 +209,10 @@ public class FullRegressionTestSuite extends TestSuite {
         suite = new TestSuite();
         suite.setName("Criteria");
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaUnitTestSuite.suite());
-     //   suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
+        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCriteriaQueryTestSuite.suite());
-     //   suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
+        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
+        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
         fullSuite.addTest(suite);
         
         // JPA 2.0 Cacheable model

@@ -151,15 +151,20 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     
     public void testAlternateSelection() {
         EntityManager em = createEntityManager();
-em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
-        Metamodel mm = em.getMetamodel();
-        QueryBuilder qbuilder = em.getQueryBuilder();
-        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
-        Root<Project> spouse = cquery.from(Project.class);
-        cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.<Employee> get("teamLeader"));
-        TypedQuery<Employee> tquery = em.createQuery(cquery);
-        assertTrue("Did not find the correct leaders of Project Swirly Dirly.", tquery.getResultList().size() > 1);
-
+        beginTransaction(em);
+        try {        
+            em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
+            Metamodel mm = em.getMetamodel();
+            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Project> spouse = cquery.from(Project.class);
+            cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.<Employee> get("teamLeader"));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            assertTrue("Did not find the correct leaders of Project Swirly Dirly.", tquery.getResultList().size() > 1);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     /**
@@ -168,7 +173,7 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
     public void testTupleQuery() {
         EntityManager em = createEntityManager();
         QuerySQLTracker counter = null;
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             // Load an employee into the cache.
             QueryBuilder qb = em.getQueryBuilder();
@@ -201,64 +206,87 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
     
     public void testSharedWhere() {
         EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            QueryBuilder qb = em.getQueryBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
 
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+            cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
 
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", ((Employee) result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+            assertTrue("Employee had wrong firstname", ((Employee) result.get(0)).getFirstName().equalsIgnoreCase("bob"));
 
-        CriteriaQuery<Employee> cq2 = em.getQueryBuilder().createQuery(Employee.class);
-        cq2.where(cq.getRestriction());
-        TypedQuery<Employee> tq2 = em.createQuery(cq);
-        List<Employee> result2 = tq.getResultList();
-        assertTrue("Employee's did not match with query with same where clause", comparer.compareObjects(result.get(0), result2.get(0)));
+            CriteriaQuery<Employee> cq2 = em.getQueryBuilder().createQuery(Employee.class);
+            cq2.where(cq.getRestriction());
+            TypedQuery<Employee> tq2 = em.createQuery(cq);
+            List<Employee> result2 = tq.getResultList();
+            assertTrue("Employee's did not match with query with same where clause", comparer.compareObjects(result.get(0), result2.get(0)));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }		
     }
 
     public void testSimple(){
         EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        List<Employee> result = em.createQuery(cq).getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+        beginTransaction(em);
+        try {
+            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
         
  //       em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
-        
-        Metamodel mm = em.getMetamodel();
-        QueryBuilder qbuilder = em.getQueryBuilder();
-        CriteriaQuery<Object> cquery = qbuilder.createQuery();
-        Root<Employee> customer = cquery.from(Employee.class);
-        EntityType<Employee> Customer_ = customer.getModel();
-        EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
-        cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("address", Address.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("address", Address.class))), 3));
-        List<Object> result = em.createQuery(cquery).getResultList();
-
+        beginTransaction(em);
+        try {        
+            Metamodel mm = em.getMetamodel();
+            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaQuery<Object> cquery = qbuilder.createQuery();
+            Root<Employee> customer = cquery.from(Employee.class);
+            EntityType<Employee> Customer_ = customer.getModel();
+            EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
+            cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("address", Address.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("address", Address.class))), 3));
+            List<Object> result = em.createQuery(cquery).getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
     public void testInLiteral(){
         EntityManager em = createEntityManager();
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> emp = cq.from(Employee.class);
-        In<String> in = qb.in(emp.get("address").<String>get("city"));
-        in.value("Ottawa").value("Halifax").value("Toronto");
-        cq.where(in);
-        List<Employee> result = em.createQuery(cq).getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        
+        beginTransaction(em);
+        try {
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            In<String> in = qb.in(emp.get("address").<String>get("city"));
+            in.value("Ottawa").value("Halifax").value("Toronto");
+            cq.where(in);
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }        
     }
 
-        public void testInSubQuery(){
-            EntityManager em = createEntityManager();
+    public void testInSubQuery(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
             QueryBuilder qb = em.getQueryBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
@@ -271,11 +299,16 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
             cq.where(in);
             List<Employee> result = em.createQuery(cq).getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
-        }
-
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } 
+    }
         
-        public void testInlineInParameter(){
-            EntityManager em = createEntityManager();
+    public void testInlineInParameter(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
             QueryBuilder qb = em.getQueryBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
@@ -284,50 +317,66 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
             query.setParameter("city", "Ottawa");
             List<Employee> result = query.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
-        }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } 
+    }
 
-        public void testIsEmpty(){
+    public void testIsEmpty(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> emp = cq.from(Employee.class);
-        cq.where(qb.isEmpty(emp.<Collection<PhoneNumber>>get("phoneNumbers")));
-        List<Employee> result = em.createQuery(cq).getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        for (Employee e : result){
-            assertTrue("PhoneNumbers Found", e.getPhoneNumbers().isEmpty());
-            
+        try{
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            cq.where(qb.isEmpty(emp.<Collection<PhoneNumber>>get("phoneNumbers")));
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            for (Employee e : result){
+                assertTrue("PhoneNumbers Found", e.getPhoneNumbers().isEmpty());
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
     
     public void testNeg(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> emp = cq.from(Employee.class);
-        cq.where(qb.lessThan(qb.neg(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers"))), 0));
-        List<Employee> result = em.createQuery(cq).getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        for (Employee e : result){
-            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
-            
+        try{
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            cq.where(qb.lessThan(qb.neg(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers"))), 0));
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            for (Employee e : result){
+                assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 
     public void testNullIf(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> emp = cq.from(Employee.class);
-        cq.where(qb.isNull(qb.nullif(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers")), qb.parameter(Integer.class))));
-        List<Employee> result = em.createQuery(cq).getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        for (Employee e : result){
-            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
-            
+        try{
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            cq.where(qb.isNull(qb.nullif(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers")), qb.parameter(Integer.class))));
+            List<Employee> result = em.createQuery(cq).getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            for (Employee e : result){
+                assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 
@@ -335,17 +384,22 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
        /* 
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        QueryBuilder qb = em.getQueryBuilder();
-        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> emp = cq.from(Employee.class);
-        cq.where(qb.isNotMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
-        Query query = em.createQuery(cq);
-        query.setParameter("1", "coffee");
-        List<Employee> result = query.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        for (Employee e : result){
-            assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+        try{
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            cq.where(qb.isNotMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
+            Query query = em.createQuery(cq);
+            query.setParameter("1", "coffee");
+            List<Employee> result = query.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            for (Employee e : result){
+                assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
             
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
         */
     }
@@ -353,107 +407,144 @@ em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporti
     
     public void testSimpleJoin(){
         EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        root.join("phoneNumbers");
-        cq.where(qb.isEmpty(root.<Collection<PhoneNumber>>get("phoneNumbers")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertTrue("Found employee but joins should have canceled isEmpty", result.isEmpty());
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            QueryBuilder qb = em.getQueryBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            root.join("phoneNumbers");
+            cq.where(qb.isEmpty(root.<Collection<PhoneNumber>>get("phoneNumbers")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Found employee but joins should have canceled isEmpty", result.isEmpty());
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
     public void testSimpleWhere(){
         EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            QueryBuilder qb = em.getQueryBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+            assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
+
     public void testSimpleWhereObject(){
         EntityManager em = createEntityManager();
-        CriteriaQuery cq = em.getQueryBuilder().createQuery();
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+        beginTransaction(em);
+        try{
+            CriteriaQuery cq = em.getQueryBuilder().createQuery();
+            QueryBuilder qb = em.getQueryBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
+            assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
+
     public void testSimpleFetch(){
         EntityManager em = createEntityManager();
-        CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-        QueryBuilder qb = em.getQueryBuilder();
-        Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
-        root.fetch("projects");
-        cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
-        TypedQuery<Employee> tq = em.createQuery(cq);
-        List<Employee> result = tq.getResultList();
-        assertFalse("No Employees were returned", result.isEmpty());
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        try {
-        ObjectOutputStream stream = new ObjectOutputStream(byteStream);
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            QueryBuilder qb = em.getQueryBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            root.fetch("projects");
+            cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            try {
+                ObjectOutputStream stream = new ObjectOutputStream(byteStream);
 
-            stream.writeObject(result.get(0));
-        stream.flush();
-        byte arr[] = byteStream.toByteArray();
-        ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
-        ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
+                stream.writeObject(result.get(0));
+                stream.flush();
+                byte arr[] = byteStream.toByteArray();
+                ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
+                ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
 
-        Employee emp = (Employee) inObjStream.readObject();
-        assertTrue("Did not return Employee", emp.getClass().equals(Employee.class));
-        assertTrue("Employee had wrong firstname", emp.getFirstName().equalsIgnoreCase("bob"));
-        emp.getProjects().size(); //may cause exception
-        } catch (IOException e) {
-            fail("Failed during serialization");
-        } catch (ClassNotFoundException e) {
-            fail("Failed during serialization");
+                Employee emp = (Employee) inObjStream.readObject();
+                assertTrue("Did not return Employee", emp.getClass().equals(Employee.class));
+                assertTrue("Employee had wrong firstname", emp.getFirstName().equalsIgnoreCase("bob"));
+                emp.getProjects().size(); //may cause exception
+            } catch (IOException e) {
+                fail("Failed during serialization");
+            } catch (ClassNotFoundException e) {
+                fail("Failed during serialization");
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
         
     }
 
     public void testSubQuery(){
         EntityManager em = createEntityManager();
-        QueryBuilder qbuilder = em.getQueryBuilder();
-        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
-        Root<Employee> customer = cquery.from(Employee.class);
-        Join<Employee, Dealer> o = customer.join("dealers");
-        cquery.select(customer).distinct(true);
-        Subquery<Integer> sq = cquery.subquery(Integer.class);
-        Root<Dealer> sqo = sq.from(Dealer.class);
-        sq.select(qbuilder.min(sqo.<Integer>get("version")));
-        cquery.where(qbuilder.equal(o.get("version"), sq));
-        TypedQuery<Employee> tquery = em.createQuery(cquery);
-        List<Employee> result = tquery.getResultList();
+        beginTransaction(em);
+        try{
+            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            Join<Employee, Dealer> o = customer.join("dealers");
+            cquery.select(customer).distinct(true);
+            Subquery<Integer> sq = cquery.subquery(Integer.class);
+            Root<Dealer> sqo = sq.from(Dealer.class);
+            sq.select(qbuilder.min(sqo.<Integer>get("version")));
+            cquery.where(qbuilder.equal(o.get("version"), sq));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            List<Employee> result = tquery.getResultList();
         // No assert as version is not actually a mapped field in dealer.
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void testSubqueryExists(){
         EntityManager em = createEntityManager();
-        em.createQuery("SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
-        QueryBuilder qbuilder = em.getQueryBuilder();
-        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
-        Root<Employee> customer = cquery.from(Employee.class);
-        cquery.select(customer).distinct(true);
+        beginTransaction(em);
+        try{
+            em.createQuery("SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
+            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            cquery.select(customer).distinct(true);
         // create correlated subquery
-        Subquery<Project> sq = cquery.subquery(Project.class);
-        Root<Employee> sqc = sq.correlate(customer);
-        Path<Project> sqo = sqc.join("projects");
-        sq.select(sqo);
-        cquery.where(qbuilder.not(qbuilder.exists(sq)));
-        TypedQuery<Employee> tquery = em.createQuery(cquery);
-        List<Employee> result = tquery.getResultList();
-        for (Employee emp : result){
-            assertTrue("Found someone not from Ottawa", emp.getProjects().isEmpty());
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            cquery.where(qbuilder.not(qbuilder.exists(sq)));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            List<Employee> result = tquery.getResultList();
+            for (Employee emp : result){
+                assertTrue("Found someone not from Ottawa", emp.getProjects().isEmpty());
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-
     }
 
     /**
