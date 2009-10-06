@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

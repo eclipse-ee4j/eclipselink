@@ -18,7 +18,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
