@@ -45,9 +45,12 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.Employee;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerNoDefaultRootTestProject;
 import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
@@ -60,6 +63,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
     protected static String tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
     protected static String EMPTY_NAMESPACE = "";
+    JAXBContext jaxbContext;
+    protected DocumentBuilder parser;
+    protected XMLComparer xmlComparer;
 
     /**
      * This is the preferred (and only) constructor.
@@ -70,6 +76,25 @@ public class ExternalizedMetadataTestCases extends TestCase {
         super(name);
     }
     
+    public void setUp() throws Exception {
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        builderFactory.setIgnoringElementContentWhitespace(true);
+        parser = builderFactory.newDocumentBuilder();
+        xmlComparer = new XMLComparer();
+    }
+    
+    /**
+     * Convenience method that will return the JAXBContext instance created during 
+     * the last generateSchema call.
+     * 
+     * Assumes a prior call to generateSchema has been made.
+     * 
+     * @return
+     */
+    public JAXBContext getJAXBContext() {
+        return jaxbContext;
+    }
 
     /**
      * Generate the schema(s) for a given set of classes.  Any eclipselink-oxm.xml file(s)
@@ -131,6 +156,24 @@ public class ExternalizedMetadataTestCases extends TestCase {
         assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
+    }
+
+    /**
+     * Generate the schema(s) for a given set of classes, and apply the eclipselink-oxm.xml 
+     * file found on the path.  The eclipselink-oxm.xml will be stored in the property map 
+     * using the contextPath as a key (maps package name to xml metadata file).
+     * 
+     * @param classes
+     * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
+     * @param metadataFileStream eclipselink-oxm.xml file as a stream
+     * @param expectedSchemaCount
+     */
+    public MySchemaOutputResolver generateSchema(String contextPath, InputStream iStream, int expectedSchemaCount) {
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(contextPath, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        return generateSchema(contextPath, properties, expectedSchemaCount);
     }
 
     /**
@@ -231,7 +274,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
-        JAXBContext jaxbContext;
+        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader, properties);
             jaxbContext.generateSchema(outputResolver);
@@ -247,7 +290,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver) throws Exception {
-        JAXBContext jaxbContext;
+        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader);
             jaxbContext.generateSchema(outputResolver);
@@ -266,7 +309,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param classLoader
      */
     protected void generateSchema(Class[] classesToBeBound, java.util.Map properties, MySchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
-        JAXBContext jaxbContext;
+        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -285,7 +328,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param classLoader
      */
     protected void generateSchema(Type[] typesToBeBound, java.util.Map properties, MySchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
-        JAXBContext jaxbContext;
+        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(typesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -320,12 +363,10 @@ public class ExternalizedMetadataTestCases extends TestCase {
     }
 
     /**
-     * Compare two schemas for equality.  If they are not equal, a message is returned,
-     * otherwise an empty string is returned.
+     * Compare two schemas for equality.  
      * 
      * @param testSchema
      * @param controlSchema
-     * @return empty string if successful, message otherwise
      */
     public void compareSchemas(File testSchema, File controlSchema) {
         if (testSchema == null || controlSchema == null) {
@@ -398,5 +439,16 @@ public class ExternalizedMetadataTestCases extends TestCase {
             fail("XmlContext creation failed");
         }
         return null;
+    }
+    
+    protected Document getControlDocument(String xmlResource) throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
+        Document document = parser.parse(inputStream);
+        OXTestCase.removeEmptyTextNodes(document);
+        return document;
+    }
+    
+    protected boolean compareDocuments(Document ctrlDoc, Document testDoc) {
+        return xmlComparer.isNodeEqual(ctrlDoc, testDoc);
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="www.someothernamespace.com">
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element ref="ns0:my-overridden-digits" />
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

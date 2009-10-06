@@ -25,12 +25,21 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlInlineBinaryData;
+import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlMixed;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.config.DescriptorCustomizer;
@@ -1550,9 +1559,9 @@ public class MappingsGenerator {
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
         String xPath = "";
         XMLField xmlField = null;
-        if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
-            XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(property.getElement(), XmlElementWrapper.class);
-            String namespace = wrapper.namespace();
+        if (property.isSetXmlElementWrapper()) {
+            XmlElementWrapper wrapper = property.getXmlElementWrapper();
+            String namespace = wrapper.getNamespace();
             if (namespace.equals("##default")) {
                 if (namespaceInfo.isElementFormQualified()) {
                     namespace = namespaceInfo.getNamespace();
@@ -1561,9 +1570,9 @@ public class MappingsGenerator {
                 }
             }
             if (namespace.equals("")) {
-                xPath += (wrapper.name() + "/");
+                xPath += (wrapper.getName() + "/");
             } else {
-                xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + wrapper.name() + "/");
+                xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + wrapper.getName() + "/");
             }
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {

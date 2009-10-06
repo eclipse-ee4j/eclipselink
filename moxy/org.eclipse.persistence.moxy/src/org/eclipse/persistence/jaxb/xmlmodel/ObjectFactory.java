@@ -46,6 +46,7 @@ public class ObjectFactory {
     private final static QName _XmlAnyElement_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-any-element");
     private final static QName _XmlSeeAlso_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-see-also");
     private final static QName _XmlValue_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-value");
+    private final static QName _XmlElementWrapper_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-wrapper");
     private final static QName _XmlElements_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-elements");
     private final static QName _XmlAnyAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-any-attribute");
 
@@ -281,6 +282,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-element", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
     public JAXBElement<XmlElement> createXmlElement(XmlElement value) {
         return new JAXBElement<XmlElement>(_XmlElement_QNAME, XmlElement.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlElementWrapper }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-element-wrapper", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlElementWrapper> createXmlElementWrapper(XmlElementWrapper value) {
+        return new JAXBElement<XmlElementWrapper>(_XmlElementWrapper_QNAME, XmlElementWrapper.class, null, value);
     }
 
     /**

@@ -19,6 +19,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 
 /**
@@ -63,6 +64,7 @@ public class Property {
     private JavaClass originalType;
     
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
+    private XmlElementWrapper xmlElementWrapper;
     
     public Property() {
     	xmlElementType = false;
@@ -369,5 +371,33 @@ public class Property {
         this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
         // set the adapter class
         setAdapterClass(helper.getJavaClass(xmlJavaTypeAdapter.getValue()));
+    }
+    
+    /**
+     * Indicates if an XmlElementWrapper has been set, i.e. the
+     * xmlElementWrapper property is non-null.
+
+     * @return true if xmlElementWrapper is non-null, false otherwise
+     */
+    public boolean isSetXmlElementWrapper() {
+        return getXmlElementWrapper() != null;
+    }
+    
+    /**
+     * Return the XmlElementWrapper set on this property.
+     * 
+     * @return XmlElementWrapper instance if non-null, null otherwise
+     */
+    public XmlElementWrapper getXmlElementWrapper() {
+        return xmlElementWrapper;
+    }
+
+    /**
+     * Set the XmlElementWrapper for this property.
+     * 
+     * @param xmlElementWrapper
+     */
+    public void setXmlElementWrapper(XmlElementWrapper xmlElementWrapper) {
+        this.xmlElementWrapper = xmlElementWrapper;
     }
 }

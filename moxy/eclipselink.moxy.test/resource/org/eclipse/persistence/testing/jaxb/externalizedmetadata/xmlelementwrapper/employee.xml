@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+  <my-overridden-digits>
+    <digits>666</digits>
+    <digits>999</digits>
+  </my-overridden-digits>
+</employee>

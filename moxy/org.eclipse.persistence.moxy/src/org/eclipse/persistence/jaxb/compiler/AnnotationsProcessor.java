@@ -1202,6 +1202,13 @@ public class AnnotationsProcessor {
             if (!isCollectionType(property) && !property.getType().isArray()) {
                 throw JAXBException.invalidElementWrapper(property.getPropertyName());
             }
+            XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(property.getElement(), XmlElementWrapper.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper xmlEltWrapper = new org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper();
+            xmlEltWrapper.setName(wrapper.name());
+            xmlEltWrapper.setNamespace(wrapper.namespace());
+            xmlEltWrapper.setNillable(wrapper.nillable());
+            xmlEltWrapper.setRequired(wrapper.required());
+            property.setXmlElementWrapper(xmlEltWrapper);
         }
 
         // Make sure XmlList annotation is on a collection or array

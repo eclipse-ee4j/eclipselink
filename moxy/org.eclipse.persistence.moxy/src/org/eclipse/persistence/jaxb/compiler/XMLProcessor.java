@@ -32,6 +32,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
@@ -263,6 +264,8 @@ public class XMLProcessor {
             return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, nsInfo);
         } else if (javaAttribute instanceof XmlElement) {
             return processXmlElement((XmlElement) javaAttribute, oldProperty, nsInfo);
+        } else if (javaAttribute instanceof XmlElementWrapper) {
+            return processXmlElementWrapper((XmlElementWrapper) javaAttribute, oldProperty, nsInfo);
         } else if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlElementRef) {
@@ -385,6 +388,20 @@ public class XMLProcessor {
             oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
         }
 
+        return oldProperty;
+    }
+
+    /**
+     * Process an XmlElementWrapper.  The wrapper instance is simply set on the property.  It will be used
+     * during schema generation.
+     * 
+     * @param xmlElementWrapper
+     * @param oldProperty
+     * @param nsInfo
+     * @return
+     */
+    private Property processXmlElementWrapper(XmlElementWrapper xmlElementWrapper, Property oldProperty, NamespaceInfo nsInfo) {
+        oldProperty.setXmlElementWrapper(xmlElementWrapper);
         return oldProperty;
     }
 
