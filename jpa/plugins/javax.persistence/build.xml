@@ -59,7 +59,7 @@
     <property file="${user.home}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build JAXB 2.0 Prototype component"/>
