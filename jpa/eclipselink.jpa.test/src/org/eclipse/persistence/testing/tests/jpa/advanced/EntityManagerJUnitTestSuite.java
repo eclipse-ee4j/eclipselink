@@ -8548,10 +8548,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testTemporalOnClosedEm(){
+        if (isOnServer()) {
+            // Don't run this test on server.
+            return;
+        }
+
         EntityManager em = createEntityManager();
         Query numericParameterQuery = em.createQuery("Select e from Employee e where e.period.startDate = ?1");
         Query namedParameterQuery = em.createQuery("Select e from Employee e where e.period.startDate = :date");
-        em.close();
+        closeEntityManager(em);
         Exception caughtException = null;
         try{
             numericParameterQuery.setParameter(1, new Date(System.currentTimeMillis()), TemporalType.DATE);
