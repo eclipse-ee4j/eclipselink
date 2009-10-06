@@ -44,7 +44,7 @@
     <property file="${weaving.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
     <property name="equinox.jar" value="org.eclipse.osgi_3.5.0.v20090520.jar"/>
 
     <!-- Primary Targets -->

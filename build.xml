@@ -433,12 +433,12 @@
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
-                <exclude name="javax.persistence_1.0.0.jar"/>
+                <exclude name="javax.persistence*1.0.0.jar"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
                 <exclude name="${eclipselink.modelgen.processor.prefix}_*.jar"/>
-                <exclude name="${eclipselink.modelgen.prefix}_*.jar"/>
+                <exclude name="${eclipselink.modelgen.prefix}*_*.jar"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>

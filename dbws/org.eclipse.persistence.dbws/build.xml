@@ -46,7 +46,7 @@
     <property file="${dbws.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.351.jar"/>
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build DBWS component"/>

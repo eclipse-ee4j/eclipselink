@@ -23,7 +23,6 @@
 * Contributors:
 *     egwin - initial API and implementation
 #******************************************************************************/-->
-
 <project name="org.eclipse.persistence.asm" default="build">
     <available file="../${ant.project.name}" type="dir" property="asm.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -32,34 +31,27 @@
 
     <dirname  property="asm.build.location" file="${ant.file.org.eclipse.persistence.asm}"/>
     <echo message="asm.build.location = '${asm.build.location}'"/>
-    <property name="asm.2.common.plugins.dir" value=".."/>
     <property name="asm.2.base.dir" value="../.."/>
+    <property name="asm.2.common.plugins.dir" value=".."/>
     <property name="asm.2.buildsys.dir" value="${asm.2.base.dir}/buildsystem"/>
-    <property name="bndtool.jar" value="bnd-0.0.337.jar"/>
-    <property name="bnd.path" value="${asm.2.buildsys.dir}/${bndtool.jar}"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="release.version"       value="2.0.0"/>
-    <property name="build.type"            value="SNAPSHOT"/>
-    <property name="svn.revision"          value="NA"/>
-    <property name="version.qualifier"     value="qualifier"/>
-    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
-    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-    <property name="implementation.vendor" value="${specification.vendor}"/>
-
-    <property name="eclipselink.asm.bndl.prefix" value="${ant.project.name}"/>
-    <property name="src.dir"                     value="src"/>
+    <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
+    <!-- Version properties -->
+    <property name="release.version"               value="1.2.0"/>
+    <!-- Project infrastructure properties -->
+    <property name="src.dir"                       value="src"/>
     <property name="asm.classes.dir"             value="."/>
     <property name="temp.dir"                    value="${asm.classes.dir}/tmp"/>
+    <property name="eclipselink.asm.bndl.prefix" value="${ant.project.name}"/>
 
-    <!-- build -->
-    <target name="build" depends="clean, generate-manifest, package" description="build asm"/>
+    <echo message="Loading ${user.home}/build.properties..."/>
+    <property file="${user.home}/build.properties"/>
+
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
+
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, generate-manifest, package, bnd-package" description="build ASM"/>
     <target name="bnd"   depends="clean, bnd-package" description="build ASM component using bnd"/>
 
     <!-- clean -->
@@ -70,8 +62,43 @@
        </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${asm.2.base.dir}/../extension.lib.external"
+                                                    else="${asm.build.location}">
+            <available file="${asm.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Check for BND library -->
+        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.path" value="${asm.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${asm.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.path                     = '${bnd.path}'"/>
+    </target>
+
     <!-- package -->
-    <target name="package" description="jar OSGI bundle">
+    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
         <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
             <fileset dir="${asm.2.base.dir}">
                 <include name="about.html"/>
@@ -106,7 +133,8 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+        <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <delete file="${temp.dir}/MANIFEST.MF" quiet="true"/>
         <mkdir dir="${temp.dir}"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                                 file="${temp.dir}/MANIFEST.MF" append="false"/>
@@ -131,9 +159,8 @@
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                           file="${temp.dir}/MANIFEST.MF" append="true"/>
     </target>
-    
-    <target name="bnd-package">
-        <echo message="bnd.path = ${bnd.path}"/>
+
+    <target name="bnd-package" if="bnd.path" depends="init" >
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
         <bnd
             classpath="${asm.classes.dir}"
@@ -143,6 +170,27 @@
             exceptions="true"
             files="./org.eclipse.persistence.asm.bnd"
             output="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink ASM Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${asm.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
     </target>
-
 </project>
