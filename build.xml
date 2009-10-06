@@ -272,10 +272,10 @@
     <target name="build-core-test" depends="build-all-core-except-dbws-test, build-dbws-test"/>
 
     <target name="build-all-core-except-dbws-test">
-        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo.test}" target="compile-sdo-tests"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"  target="compile-sdo-tests"/>
     </target>
 
     <target name="build-dbws-test" unless="java_is_v5">
