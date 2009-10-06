@@ -15,7 +15,7 @@ Include-Resource:\
  ${moxy.2.base.dir}/license.html
 Import-Package:                                                         \
  javax.activation;resolution:=optional;version="1.1.0",                 \
- javax.mail;resolution:=optional;version="1.4.0",                       \
+ javax.mail.*;resolution:=optional,                                     \
  javax.xml.*;resolution:=optional;version="2.0.0",                      \
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.eclipse.persistence.*;version="${version.string}",                 \
