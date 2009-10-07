@@ -31,10 +31,10 @@ import org.w3c.dom.Node;
  */
 public abstract class XMLRecord extends AbstractRecord {
     private XMLMarshaller marshaller;
-    private XMLUnmarshaller unmarshaller;
+    protected XMLUnmarshaller unmarshaller;
     private DocumentPreservationPolicy docPresPolicy;
     private Object owningObject;
-    private Object currentObject;
+    protected Object currentObject;
     private QName leafElementType;
     private NamespaceResolver namespaceResolver;
     protected AbstractSession session;
