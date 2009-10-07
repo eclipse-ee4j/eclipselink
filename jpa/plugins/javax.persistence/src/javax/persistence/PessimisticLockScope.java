@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -59,9 +50,15 @@ public enum PessimisticLockScope {
      * In addition to the behavior for
      * <code>PessimisticLockScope.NORMAL</code>, element collections
      * and relationships owned by the entity that are contained in
-     * join tables will be locked if the <code>javax.persistence.lock.scope</code>
-     * property is specified with a value of
-     * <code>PessimisticLockScope.EXTENDED</code>.
+     * join tables will be locked if the
+     * <code>javax.persistence.lock.scope</code> property is specified
+     * with a value of <code>PessimisticLockScope.EXTENDED</code>.
+     * The state of entities referenced by such relationships will not
+     * be locked (unless those entities are explicitly locked).
+     * Locking such a relationship or element collection generally locks only
+     * the rows in the join table or collection table for that
+     * relationship or collection.  This means that phantoms will be
+     * possible.
      */
     EXTENDED
 }

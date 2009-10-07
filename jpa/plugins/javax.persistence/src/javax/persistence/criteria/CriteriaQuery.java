@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.criteria;
 
@@ -31,7 +22,7 @@ import java.util.Set;
  * The <code>CriteriaQuery</code> interface defines functionality that is specific 
  * to top-level queries.
  *
- * @param <T>  the type of the result
+ * @param <T>  the type of the defined result
  *
  * @since Java Persistence 2.0
  */
@@ -44,14 +35,16 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * <p> Note: Applications using the string-based API may need to
      * specify the type of the select item when it results from
      * a get or join operation and the query result type is 
-     * specified. For example:
+     * specified. 
      *
      * <pre>
-     *     CriteriaQuery&#060;String&#062; q = qb.createQuery(String.class);
+     *     For example:
+     *
+     *     CriteriaQuery&#060;String&#062; q = cb.createQuery(String.class);
      *     Root&#060;Order&#062; order = q.from(Order.class);
      *     q.select(order.get("shippingAddress").&#060;String&#062;get("state"));
      * 
-     *     CriteriaQuery&#060;Product&#062; q2 = qb.createQuery(Product.class);
+     *     CriteriaQuery&#060;Product&#062; q2 = cb.createQuery(Product.class);
      *     q2.select(q2.from(Order.class)
      *                 .join("items")
      *                 .&#060;Item,Product&#062;join("product"));
@@ -77,15 +70,18 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * <p> An argument to the multiselect method must not be a tuple-
      * or array-valued compound selection item. 
      *
-     * <p>The semantics of this method are as follows:
-     * <ul>
-     * <li> If the type of the criteria query is <code>CriteriaQuery&#060;Tuple&#062;</code>
-     * (i.e., a criteria query object created by either the 
-     * <code>createTupleQuery</code> method or by passing a <code>Tuple</code> class argument 
-     * to the <code>createQuery</code> method), a <code>Tuple</code> object corresponding to 
-     * the arguments of the <code>multiselect</code> method will be instantiated 
-     * and returned for each row that results from the query 
-     * execution.
+     * <p>The semantics of this method are as follows: 
+     * <ul> 
+     * <li> 
+     * If the type of the criteria query is
+     * <code>CriteriaQuery&#060;Tuple&#062;</code> (i.e., a criteria
+     * query object created by either the
+     * <code>createTupleQuery</code> method or by passing a
+     * <code>Tuple</code> class argument to the
+     * <code>createQuery</code> method), a <code>Tuple</code> object
+     * corresponding to the arguments of the <code>multiselect</code>
+     * method, in the specified order, will be instantiated and
+     * returned for each row that results from the query execution.
      *
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;X&#062;</code> for
      * some user-defined class X (i.e., a criteria query object
@@ -97,7 +93,8 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;X[]&#062;</code> for
      * some class X, an instance of type X[] will be returned for 
      * each row.   The elements of the array will correspond to the 
-     * arguments of the <code>multiselect</code> method.  
+     * arguments of the <code>multiselect</code> method, in the
+     * specified order.  
      *
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;Object&#062;</code>
      * or if the criteria query was created without specifying a 
@@ -110,7 +107,8 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * type, and more than one argument is passed to the <code>multiselect</code>
      * method, an instance of type <code>Object[]</code> will be instantiated 
      * and returned for each row.  The elements of the array will 
-     * correspond to the arguments to the <code> multiselect</code>  method.
+     * correspond to the arguments to the <code> multiselect</code>  method,
+     * in the specified order.
      * </ul>
      *
      * @param selections  selection items corresponding to the
@@ -140,9 +138,9 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * (i.e., a criteria query object created by either the 
      * <code>createTupleQuery</code> method or by passing a <code>Tuple</code> class argument 
      * to the <code>createQuery</code> method), a <code>Tuple</code> object corresponding to 
-     * the elements of the list passed to the <code>multiselect</code> method 
-     * will be instantiated and returned for each row that results 
-     * from the query execution.
+     * the elements of the list passed to the <code>multiselect</code> method, 
+     * in the specified order, will be instantiated and returned for each 
+     * row that results from the query execution.
      *
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;X&#062;</code> for
      * some user-defined class X (i.e., a criteria query object
@@ -154,7 +152,8 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;X[]&#062;</code> for
      * some class X, an instance of type X[] will be returned for 
      * each row.   The elements of the array will correspond to the 
-     * elements of the list passed to the <code>multiselect</code> method.  
+     * elements of the list passed to the <code>multiselect</code> method,
+     * in the specified order.  
      *
      * <li> If the type of the criteria query is <code>CriteriaQuery&#060;Object&#062;</code>
      * or if the criteria query was created without specifying a 
@@ -168,7 +167,7 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
      * more than one element, an instance of type <code>Object[]</code> will be 
      * instantiated and returned for each row.  The elements of the 
      * array will correspond to the elements of the list passed to
-     * the <code>multiselect</code> method.
+     * the <code>multiselect</code> method, in the specified order.
      * </ul>
      *
      * @param selectionList  list of selection items corresponding 

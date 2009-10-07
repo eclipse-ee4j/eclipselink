@@ -75,7 +75,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         beginTransaction(em);
         try {
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Scientist> cq = qb.createQuery(Scientist.class);
             Subquery sq = cq.subquery(Scientist.class);
             Root<Scientist> from_scientist = cq.from(Scientist.class);
@@ -86,7 +86,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             List<Scientist> results1 = query1.getResultList();
 
             //Query query2 = em.createQuery("SELECT s FROM Scientist s WHERE s = ALL (SELECT s2 FROM Scientist s2)");
-            qb = em.getQueryBuilder();
+            qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Scientist.class);
             sq = cq.subquery(Scientist.class);
             from_scientist = cq.from(Scientist.class);
@@ -96,7 +96,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             List<Scientist> results2 = query2.getResultList();
 
             //Query query3 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ALL (SELECT DISTINCT d FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A')");
-            qb = em.getQueryBuilder();
+            qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Scientist.class);
             sq = cq.subquery(Department.class);
             sq.distinct(true);
@@ -110,7 +110,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             List<Scientist> results3 = query3.getResultList();
 
             //Query query4 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ANY (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G')");
-            qb = em.getQueryBuilder();
+            qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Scientist.class);
             sq = cq.subquery(Department.class);
             sq.distinct(true);
@@ -126,7 +126,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             // control queries
             
             //Query controlQuery1 = em.createQuery("SELECT s FROM Scientist s");
-            Query controlQuery1 = em.createQuery(em.getQueryBuilder().createQuery(Scientist.class));
+            Query controlQuery1 = em.createQuery(em.getCriteriaBuilder().createQuery(Scientist.class));
             List<Scientist> controlResults1 = controlQuery1.getResultList();
             
             List<Scientist> controlResults2;
@@ -137,7 +137,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             }
 
             //Query controlQuery3 = em.createQuery("SELECT s FROM Scientist s JOIN s.department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'");
-            qb = em.getQueryBuilder();
+            qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Scientist.class);
             from_scientist = cq.from(Scientist.class);
             Join d = from_scientist.join("department");
@@ -147,7 +147,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             List<Scientist> controlResults3 = controlQuery3.getResultList();
             
             //Query controlQuery4 = em.createQuery("SELECT s FROM Scientist s WHERE EXISTS (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
-            qb = em.getQueryBuilder();
+            qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Scientist.class);
             
             sq = cq.subquery(Department.class);
@@ -217,7 +217,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         em = createEntityManager();
         
         //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.sargeant.sargeantId = sargeant.getSargeantId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<MasterCorporal> cq = qb.createQuery(MasterCorporal.class);
         Root<MasterCorporal> from = cq.from(MasterCorporal.class);
         cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("sargeant").get("sargeantId"), sargeant.getSargeantId()) ) );
@@ -225,7 +225,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         Query query1 = em.createQuery(cq);        
         MasterCorporal results1 = (MasterCorporal)query1.getSingleResult();
       //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.id.sargeantPK = sargeant.getSargeantId()
-        qb = em.getQueryBuilder();
+        qb = em.getCriteriaBuilder();
         cq = qb.createQuery(MasterCorporal.class);
         from = cq.from(MasterCorporal.class);
         cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("id").get("sargeantPK"), sargeant.getSargeantId()) ) );

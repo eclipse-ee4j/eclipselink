@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -32,7 +23,7 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to override a mapping for an entity relationship.
+ * Used to override a mapping for an entity relationship.
  *
  * <p> May be applied to an entity that extends a mapped superclass to
  * override a relationship mapping defined by the mapped
@@ -86,7 +77,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    &#064;Entity 
  *        &#064;AssociationOverride(name="address", 
  *                             joinColumns=&#064;JoinColumn(name="ADDR_ID"))
- *        // address field mapping overridden to ADDR_ID fk
+ *        // address field mapping overridden to ADDR_ID foreign key
  *    public class PartTimeEmployee extends Employee {
  *        ...
  *    }
@@ -101,9 +92,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *        &#064;AssociationOverride(
  *          name="phoneNumbers",
  *          joinTable=&#064;JoinTable(
- *          name="EMPPHONES",
- *          joinColumns=&#064;JoinColumn(name="EMP"),
- *          inverseJoinColumns=&#064;JoinColumn(name="PHONE")
+ *             name="EMPPHONES",
+ *             joinColumns=&#064;JoinColumn(name="EMP"),
+ *             inverseJoinColumns=&#064;JoinColumn(name="PHONE")
  *          )
  *        )
  *        &#064;Embedded ContactInfo contactInfo;

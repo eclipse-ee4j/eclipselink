@@ -9,7 +9,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)orm_2_0.xsd 2.0  August 31 2009
+      @(#)orm_2_0.xsd 2.0  October 1 2009
     </xsd:documentation>
   </xsd:annotation>
 
@@ -26,19 +26,9 @@
   http://www.eclipse.org/org/documents/edl-v10.php.
   
   Contributors:
-      Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+      Linda DeMichiel - Java Persistence 2.0, Version 2.0 (October 1, 2009)
       Specification available from http://jcp.org/en/jsr/detail?id=317
- 
-  Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
-  This is an implementation of an early-draft specification developed under the 
-  Java Community Process (JCP).  The code is untested and presumed not to be a  
-  compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
-  We encourage you to migrate to an implementation of the Java(TM) Persistence 
-  API, Version 2.0 Specification that has been tested and verified to be compatible 
-  as soon as such an implementation is available, and we encourage you to retain 
-  this notice in any implementation of Java(TM) Persistence API, Version 2.0 
-  Specification that you distribute.
- 
+  
     </xsd:documentation>
   </xsd:annotation>
 
@@ -86,7 +76,7 @@
       <xsd:annotation>
         <xsd:documentation>
 
-        The entity-mappings element is the root element of an mapping
+        The entity-mappings element is the root element of a mapping
         file. It contains the following four types of elements:
 
         1. The persistence-unit-metadata element contains metadata
@@ -185,12 +175,12 @@
         unless they are overridden by local annotation or XML 
         element settings. 
         
-        schema - Used as the schema for all tables, secondary tables,
-            collection tables, sequence generators, and table generators
-            that apply to the persistence unit
-        catalog - Used as the catalog for all tables, secondary tables, 
-            collection tables, sequence generators, and table generators
-            that apply to the persistence unit
+        schema - Used as the schema for all tables, secondary tables, join
+            tables, collection tables, sequence generators, and table 
+            generators that apply to the persistence unit
+        catalog - Used as the catalog for all tables, secondary tables, join
+            tables, collection tables, sequence generators, and table 
+            generators that apply to the persistence unit
         delimited-identifiers - Used to treat database identifiers as
             delimited identifiers.
         access - Used as the access type for all managed classes in
@@ -1075,6 +1065,7 @@
   </xsd:complexType>
 
 <!-- **************************************************** -->
+
   <xsd:complexType name="lob">
     <xsd:annotation>
       <xsd:documentation>
@@ -1105,6 +1096,7 @@
       <xsd:enumeration value="PESSIMISTIC_WRITE"/>
       <xsd:enumeration value="PESSIMISTIC_FORCE_INCREMENT"/>
       <xsd:enumeration value="NONE"/>
+
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -1200,7 +1192,7 @@
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
     <xsd:attribute name="optional" type="xsd:boolean"/>
     <xsd:attribute name="access" type="orm:access-type"/>
-    <xsd:attribute name="mapped-by-id" type="xsd:string"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
     <xsd:attribute name="id" type="xsd:boolean"/>
   </xsd:complexType>
 
@@ -1501,7 +1493,7 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="mapped-by" type="xsd:string"/>
     <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
-    <xsd:attribute name="mapped-by-id" type="xsd:string"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
     <xsd:attribute name="id" type="xsd:boolean"/>
 </xsd:complexType>
 

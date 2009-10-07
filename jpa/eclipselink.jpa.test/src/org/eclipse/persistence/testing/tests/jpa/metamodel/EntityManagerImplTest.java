@@ -89,7 +89,7 @@ public class EntityManagerImplTest extends MetamodelTest {
      * The following functions from Ch 5 of the 17 Mar 2009 JSR-317 JPA 2.0 API PFD are tested here.
      * 
 EntityManagerImpl
-    public QueryBuilder getQueryBuilder() {
+    public CriteriaBuilder getCriteriaBuilder() {
     public Metamodel getMetamodel() {
     */
 }

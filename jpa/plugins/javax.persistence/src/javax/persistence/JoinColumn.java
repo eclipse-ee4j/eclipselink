@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -31,10 +22,10 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to specify a mapped column for joining an entity
- * association or element collection.  If the <code>JoinColumn</code>
- * annotation itself is defaulted, a single join column is assumed and
- * the default values apply.
+ * Specifies a column for joining an entity association or element
+ * collection.  If the <code>JoinColumn</code> annotation itself is
+ * defaulted, a single join column is assumed and the default values
+ * apply.
  *
  * <pre>
  *   Example:
@@ -172,7 +163,7 @@ public @interface JoinColumn {
      * <li> If the join is for a ManyToMany mapping or
      * for a OneToOne or bidirectional ManyToOne/OneToMany mapping
      * using a join table, the name of the join table. 
-     * If the join is for an element collection, the name of the collection table.
+     * <li> If the join is for an element collection, the name of the collection table.
      * </ul>
      */
     String table() default "";

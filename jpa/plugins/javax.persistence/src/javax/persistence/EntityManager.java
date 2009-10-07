@@ -9,25 +9,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
 import java.util.Set;
 import java.util.Map;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 /**
@@ -37,9 +28,8 @@ import javax.persistence.criteria.CriteriaQuery;
  * a persistence context. A persistence context is a set of entity 
  * instances in which for any persistent entity identity there is 
  * a unique entity instance. Within the persistence context, the 
- * entity instances and their lifecycle are managed. This interface 
- * defines the methods that are used to interact with the 
- * persistence context. The <code>EntityManager</code> API is used 
+ * entity instances and their lifecycle are managed. 
+ * The <code>EntityManager</code> API is used 
  * to create and remove persistent entity instances, to find entities 
  * by their primary key, and to query over entities.
  *
@@ -71,7 +61,7 @@ public interface EntityManager {
      * @throws TransactionRequiredException if invoked on a
      *         container-managed entity manager of type 
      *         <code>PersistenceContextType.TRANSACTION</code> and there is 
-     *         no transaction.
+     *         no transaction
      */
     public void persist(Object entity);
     
@@ -85,29 +75,29 @@ public interface EntityManager {
      * @throws TransactionRequiredException if invoked on a
      *         container-managed entity manager of type 
      *         <code>PersistenceContextType.TRANSACTION</code> and there is 
-     *         no transaction.
+     *         no transaction
      */    
     public <T> T merge(T entity);
     
     /**
      * Remove the entity instance.
-     * @param entity
+     * @param entity  entity instance
      * @throws IllegalArgumentException if the instance is not an
      *         entity or is a detached entity
      * @throws TransactionRequiredException if invoked on a
      *         container-managed entity manager of type 
      *         <code>PersistenceContextType.TRANSACTION</code> and there is 
-     *         no transaction.
+     *         no transaction
      */    
     public void remove(Object entity);
     
     /**
      * Find by primary key.
      * Search for an entity of the specified class and primary key.
-     * If the entity instance is contained in the persistence context
+     * If the entity instance is contained in the persistence context,
      * it is returned from there.
-     * @param entityClass
-     * @param primaryKey
+     * @param entityClass  entity class
+     * @param primaryKey  primary key
      * @return the found entity instance or null if the entity does
      *         not exist
      * @throws IllegalArgumentException if the first argument does
@@ -121,12 +111,13 @@ public interface EntityManager {
      * Find by primary key, using the specified properties. 
      * Search for an entity of the specified class and primary key. 
      * If the entity instance is contained in the persistence 
-     * context it is returned from there. 
+     * context, it is returned from there. 
      * If a vendor-specific property or hint is not recognized, 
      * it is silently ignored. 
-     * @param entityClass 
-     * @param primaryKey 
+     * @param entityClass  entity class
+     * @param primaryKey   primary key
      * @param properties  standard and vendor-specific properties 
+     *        and hints
      * @return the found entity instance or null if the entity does
      *         not exist 
      * @throws IllegalArgumentException if the first argument does 
@@ -142,7 +133,7 @@ public interface EntityManager {
      * Find by primary key and lock.
      * Search for an entity of the specified class and primary key
      * and lock it with respect to the specified lock type.
-     * If the entity instance is contained in the persistence context
+     * If the entity instance is contained in the persistence context,
      * it is returned from there, and the effect of this method is
      * the same as if the lock method had been called on the entity.
      * <p> If the entity is found within the persistence context and the
@@ -158,9 +149,9 @@ public interface EntityManager {
      * <li> the <code>LockTimeoutException</code> will be thrown if the database
      *    locking failure causes only statement-level rollback
      * </ul>
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
+     * @param entityClass  entity class
+     * @param primaryKey  primary key
+     * @param lockMode  lock mode
      * @return the found entity instance or null if the entity does
      *         not exist
      * @throws IllegalArgumentException if the first argument does
@@ -187,7 +178,7 @@ public interface EntityManager {
      * Find by primary key and lock, using the specified properties. 
      * Search for an entity of the specified class and primary key
      * and lock it with respect to the specified lock type.
-     * If the entity instance is contained in the persistence context
+     * If the entity instance is contained in the persistence context,
      * it is returned from there.  
      * <p> If the entity is found
      * within the persistence context and the lock mode type
@@ -209,9 +200,9 @@ public interface EntityManager {
      * hint. Depending on the database in use and the locking
      * mechanisms used by the provider, the hint may or may not
      * be observed.
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
+     * @param entityClass  entity class
+     * @param primaryKey  primary key
+     * @param lockMode  lock mode
      * @param properties  standard and vendor-specific properties
      *        and hints
      * @return the found entity instance or null if the entity does
@@ -247,8 +238,8 @@ public interface EntityManager {
      * The application should not expect that the instance state will
      * be available upon detachment, unless it was accessed by the
      * application while the entity manager was open.
-     * @param entityClass
-     * @param primaryKey
+     * @param entityClass  entity class
+     * @param primaryKey  primary key
      * @return the found entity instance
      * @throws IllegalArgumentException if the first argument does
      *         not denote an entity type or the second argument is
@@ -272,7 +263,7 @@ public interface EntityManager {
     /**
      * Set the flush mode that applies to all objects contained
      * in the persistence context. 
-     * @param flushMode
+     * @param flushMode  flush mode
      */
     public void setFlushMode(FlushModeType flushMode);
 
@@ -299,8 +290,8 @@ public interface EntityManager {
      * <li> the <code>LockTimeoutException</code> will be thrown if the database
      *    locking failure causes only statement-level rollback
      * </ul>
-     * @param entity
-     * @param lockMode
+     * @param entity  entity instance
+     * @param lockMode  lock mode
      * @throws IllegalArgumentException if the instance is not an
      *         entity or is a detached entity
      * @throws TransactionRequiredException if there is no 
@@ -342,8 +333,8 @@ public interface EntityManager {
      * hint. Depending on the database in use and the locking
      * mechanisms used by the provider, the hint may or may not
      * be observed.
-     * @param entity
-     * @param lockMode
+     * @param entity  entity instance
+     * @param lockMode  lock mode
      * @param properties  standard and vendor-specific properties
      *        and hints
      * @throws IllegalArgumentException if the instance is not an
@@ -369,13 +360,13 @@ public interface EntityManager {
     /**
      * Refresh the state of the instance from the database, 
      * overwriting changes made to the entity, if any. 
-     * @param entity
+     * @param entity  entity instance
      * @throws IllegalArgumentException if the instance is not
      *         an entity or the entity is not managed
      * @throws TransactionRequiredException if invoked on a
      *         container-managed entity manager of type 
      *         <code>PersistenceContextType.TRANSACTION</code> and there is 
-     *         no transaction.
+     *         no transaction
      * @throws EntityNotFoundException if the entity no longer
      *         exists in the database
      */    
@@ -385,16 +376,17 @@ public interface EntityManager {
      * Refresh the state of the instance from the database, using 
      * the specified properties, and overwriting changes made to
      * the entity, if any. 
-     * If a vendor-specific property or hint is not recognized, 
+     * <p> If a vendor-specific property or hint is not recognized, 
      * it is silently ignored. 
-     * @param entity 
+     * @param entity  entity instance
      * @param properties  standard and vendor-specific properties 
+     *        and hints
      * @throws IllegalArgumentException if the instance is not 
      *         an entity or the entity is not managed 
      * @throws TransactionRequiredException if invoked on a 
      *         container-managed entity manager of type
      *         <code>PersistenceContextType.TRANSACTION</code> and there is
-     *         no transaction. 
+     *         no transaction 
      * @throws EntityNotFoundException if the entity no longer 
      *         exists in the database 
      * @since Java Persistence 2.0
@@ -415,15 +407,15 @@ public interface EntityManager {
      *    database locking failure causes only statement-level 
      *    rollback.
      * </ul>
-     * @param entity
-     * @param lockMode
+     * @param entity  entity instance
+     * @param lockMode  lock mode
      * @throws IllegalArgumentException if the instance is not
      *         an entity or the entity is not managed
      * @throws TransactionRequiredException if there is no 
      *         transaction and if invoked on a container-managed
      *         <code>EntityManager</code> instance with
      *         <code>PersistenceContextType.TRANSACTION</code> or with a lock mode 
-     *         other than <code>NONE</code>.
+     *         other than <code>NONE</code>
      * @throws EntityNotFoundException if the entity no longer exists
      *         in the database
      * @throws PessimisticLockException if pessimistic locking fails
@@ -455,8 +447,8 @@ public interface EntityManager {
      * hint. Depending on the database in use and the locking
      * mechanisms used by the provider, the hint may or may not
      * be observed.
-     * @param entity
-     * @param lockMode
+     * @param entity  entity instance
+     * @param lockMode  lock mode
      * @param properties  standard and vendor-specific properties
      *        and hints
      * @throws IllegalArgumentException if the instance is not
@@ -465,7 +457,7 @@ public interface EntityManager {
      *         transaction and if invoked on a container-managed
      *         <code>EntityManager</code> instance with
      *         <code>PersistenceContextType.TRANSACTION</code> or with a lock mode 
-     *         other than <code>NONE</code>.
+     *         other than <code>NONE</code>
      * @throws EntityNotFoundException if the entity no longer exists
      *         in the database
      * @throws PessimisticLockException if pessimistic locking fails
@@ -494,7 +486,7 @@ public interface EntityManager {
      * will not be synchronized to the database.  Entities which 
      * previously referenced the detached entity will continue to
      * reference it.
-     * @param entity 
+     * @param entity  entity instance
      * @throws IllegalArgumentException if the instance is not an 
      *         entity 
      * @since Java Persistence 2.0
@@ -504,7 +496,7 @@ public interface EntityManager {
     /**
      * Check if the instance is a managed entity instance belonging
      * to the current persistence context.
-     * @param entity
+     * @param entity  entity instance
      * @return boolean indicating if entity is in persistence context
      * @throws IllegalArgumentException if not an entity
      */    
@@ -512,7 +504,7 @@ public interface EntityManager {
 
     /**
      * Get the current lock mode for the entity instance.
-     * @param entity
+     * @param entity  entity instance
      * @return lock mode
      * @throws TransactionRequiredException if there is no 
      *         transaction
@@ -523,11 +515,11 @@ public interface EntityManager {
     public LockModeType getLockMode(Object entity);
 
     /** 
-     * Set an entity manager property. 
-     * If a vendor-specific property is not recognized, it is
+     * Set an entity manager property or hint. 
+     * If a vendor-specific property or hint is not recognized, it is
      * silently ignored. 
-     * @param propertyName 
-     * @param value 
+     * @param propertyName name of property or hint
+     * @param value  value for property or hint
      * @throws IllegalArgumentException if the second argument is 
      *         not valid for the implementation 
      * @since Java Persistence 2.0
@@ -535,25 +527,25 @@ public interface EntityManager {
     public void setProperty(String propertyName, Object value);
 
     /**
-     * Get the properties and associated values that are in effect 
+     * Get the properties and hints and associated values that are in effect 
      * for the entity manager. Changing the contents of the map does 
      * not change the configuration in effect.
-     * @return map of properties in effect for entity manager
+     * @return map of properties and hints in effect for entity manager
      * @since Java Persistence 2.0
      */
     public Map<String, Object> getProperties();
 
     /**
-     * Get the names of the properties that are supported for use 
+     * Get the names of the properties and hints that are supported for use 
      * with the entity manager.
      * These correspond to properties and hints that may be passed 
      * to the methods of the <code>EntityManager</code> interface that take a 
      * properties argument or used with the <code>PersistenceContext</code> 
      * annotation. These properties include all standard entity
-     * manager hints and properties as well as vendor-specific ones
-     * supported by the provider. These properties may or may not 
+     * manager properties and hints as well as vendor-specific ones
+     * supported by the provider. These properties and hints may or may not 
      * currently be in effect.
-     * @return property names
+     * @return names of properties and hints
      * @since Java Persistence 2.0
      */
     public Set<String> getSupportedProperties();
@@ -590,7 +582,7 @@ public interface EntityManager {
      * @return the new query instance
      * @throws IllegalArgumentException if the query string is found
      *         to be invalid or if the query result is found to
-     *         not be assignable to the specified type.
+     *         not be assignable to the specified type
      * @since Java Persistence 2.0
      */
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass);
@@ -618,7 +610,7 @@ public interface EntityManager {
      * @throws IllegalArgumentException if a query has not been
      *         defined with the given name or if the query string is
      *         found to be invalid or if the query result is found to
-     *         not be assignable to the specified type.
+     *         not be assignable to the specified type
      * @since Java Persistence 2.0
      */
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass);
@@ -656,7 +648,7 @@ public interface EntityManager {
      * of the active transaction to associate it with the current
      * JTA transaction.
      * @throws TransactionRequiredException if there is
-     *         no transaction.
+     *         no transaction
      */
     public void joinTransaction();
 
@@ -670,7 +662,7 @@ public interface EntityManager {
      * class or an interface that it implements.
      * @return an instance of the specified class
      * @throws PersistenceException if the provider does not 
-     *         support the call. 
+     *         support the call 
      * @since Java Persistence 2.0
      */
     public <T> T unwrap(Class<T> cls); 
@@ -678,7 +670,7 @@ public interface EntityManager {
     /**
      * Return the underlying provider object for the <code>EntityManager</code>,
      * if available. The result of this method is implementation
-     * specific. The unwrap method is to be preferred for new 
+     * specific. The <code>unwrap</code> method is to be preferred for new 
      * applications.
      * @return underlying provider object for EntityManager
      */
@@ -696,13 +688,13 @@ public interface EntityManager {
      * associated with an active transaction, the persistence
      * context remains managed until the transaction completes. 
      * @throws IllegalStateException if the entity manager
-     *         is container-managed.
+     *         is container-managed
      */
     public void close();
 
     /**
      * Determine whether the entity manager is open. 
-     * @return true until the entity manager has been closed.
+     * @return true until the entity manager has been closed
      */
     public boolean isOpen();
 
@@ -712,7 +704,7 @@ public interface EntityManager {
      * begin and commit multiple transactions.
      * @return EntityTransaction instance
      * @throws IllegalStateException if invoked on a JTA
-     *         entity manager.
+     *         entity manager
      */
     public EntityTransaction getTransaction();
 
@@ -720,27 +712,27 @@ public interface EntityManager {
      * Return the entity manager factory for the entity manager.
      * @return EntityManagerFactory instance
      * @throws IllegalStateException if the entity manager has 
-     *         been closed.
+     *         been closed
      * @since Java Persistence 2.0
      */
     public EntityManagerFactory getEntityManagerFactory();
 
     /**
-     * Return an instance of <code>QueryBuilder</code> for the creation of
+     * Return an instance of <code>CriteriaBuilder</code> for the creation of
      * <code>CriteriaQuery</code> objects.
-     * @return QueryBuilder instance
+     * @return CriteriaBuilder instance
      * @throws IllegalStateException if the entity manager has
-     *         been closed.
+     *         been closed
      * @since Java Persistence 2.0
      */
-    public QueryBuilder getQueryBuilder();
+    public CriteriaBuilder getCriteriaBuilder();
 
     /**
      * Return an instance of <code>Metamodel</code> interface for access to the
      * metamodel of the persistence unit.
      * @return Metamodel instance
      * @throws IllegalStateException if the entity manager has
-     *         been closed.
+     *         been closed
      * @since Java Persistence 2.0
      */
     public Metamodel getMetamodel();

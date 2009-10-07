@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -31,27 +22,52 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is applied to a persistent field or property of an entity 
+ * Applied to a persistent field or property of an entity 
  * class or mapped superclass to denote a composite primary 
  * key that is an embeddable class. The embeddable class 
  * must be annotated as {@link Embeddable}. 
  *
- * <p> Relationship mappings defined within an embedded id class are not supported.
- * 
- * <p> The {@link AttributeOverride} annotation may be used to override
- * the column mappings declared within the embeddable class.
- *
  * <p> There must be only one <code>EmbeddedId</code> annotation and
  * no <code>Id</code> annotation when the <code>EmbeddedId</code> annotation is used.
  *
- * The {@link MapsId} annotation may be used in conjunction
+ * <p> The {@link AttributeOverride} annotation may be used to override
+ * the column mappings declared within the embeddable class.
+ * 
+ * <p> The {@link MapsId} annotation may be used in conjunction
  * with the <code>EmbeddedId</code> annotation to specify a derived
  * primary key.
+ *
+ * <p> If the entity has a derived primary key, the
+ * <code>AttributeOverride</code> annotation may only be used to
+ * override those attributes of the embedded id that do not correspond
+ * to the relationship to the parent entity.
+ *
+ * <p> Relationship mappings defined within an embedded id class are not supported.
+ *
  * <pre>
- *    Example:
+ *    Example 1:
  *
  *    &#064;EmbeddedId
  *    protected EmployeePK empPK;
+ *
+ *
+ *    Example 2:
+ *
+ *    &#064;Embeddable
+ *    public class DependentId {
+ *       String name;
+ *       EmployeeId empPK;   // corresponds to primary key type of Employee
+ *    }
+ *
+ *    &#064;Entity
+ *    public class Dependent {
+ *       // default column name for "name" attribute is overridden
+ *       &#064;AttributeOverride(name="name", &#064;Column(name="dep_name"))
+ *       &#064;EmbeddedId DependentId id;
+ *       ...
+ *       &#064;MapsId("empPK")
+ *       &#064;ManyToOne Employee emp;
+ *    }
  * </pre>
  *
  * @see Embeddable

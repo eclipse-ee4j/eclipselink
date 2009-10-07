@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -47,13 +38,17 @@ public interface Query {
      * @throws IllegalStateException if called for a Java
      *         Persistence query language UPDATE or DELETE statement
      * @throws QueryTimeoutException if the query execution exceeds
-     *         the query timeout value set
+     *         the query timeout value set and only the statement is
+     *         rolled back
      * @throws TransactionRequiredException if a lock mode has
      *         been set and there is no transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
      *         fails and only the statement is rolled back
+     * @throws PersistenceException if the query execution exceeds 
+     *         the query timeout value set and the transaction 
+     *         is rolled back 
      */
     List getResultList();
 
@@ -65,13 +60,17 @@ public interface Query {
      * @throws IllegalStateException if called for a Java
      *         Persistence query language UPDATE or DELETE statement
      * @throws QueryTimeoutException if the query execution exceeds
-     *         the query timeout value set
+     *         the query timeout value set and only the statement is
+     *         rolled back
      * @throws TransactionRequiredException if a lock mode has
      *         been set and there is no transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
      *         fails and only the statement is rolled back
+     * @throws PersistenceException if the query execution exceeds 
+     *         the query timeout value set and the transaction 
+     *         is rolled back 
      */
     Object getSingleResult();
 
@@ -84,13 +83,17 @@ public interface Query {
      * @throws TransactionRequiredException if there is 
      *         no transaction
      * @throws QueryTimeoutException if the statement execution 
-     *         exceeds the query timeout value set
+     *         exceeds the query timeout value set and only 
+     *         the statement is rolled back
+     * @throws PersistenceException if the query execution exceeds 
+     *         the query timeout value set and the transaction 
+     *         is rolled back 
      */
     int executeUpdate();
 
     /**
      * Set the maximum number of results to retrieve.
-     * @param maxResult
+     * @param maxResult  maximum number of results to retrieve
      * @return the same query instance
      * @throws IllegalArgumentException if the argument is negative
      */
@@ -124,13 +127,16 @@ public interface Query {
     int getFirstResult();
 
     /**
-     * Set a query hint. If a vendor-specific hint is not 
-     * recognized, it is silently ignored.  Portable applications 
-     * should not rely on the standard timeout hint. Depending on 
-     * the database in use and the locking mechanisms used by the 
-     * provider, the hint may or may not be observed.
-     * @param hintName
-     * @param value
+     * Set a query property or hint. The hints elements may be used 
+     * to specify query properties and hints. Properties defined by
+     * this specification must be observed by the provider. 
+     * Vendor-specific hints that are not recognized by a provider
+     * must be silently ignored. Portable applications should not
+     * rely on the standard timeout hint. Depending on the database
+     * in use and the locking mechanisms used by the provider,
+     * this hint may or may not be observed.
+     * @param hintName  name of the property or hint
+     * @param value  value for the property or hint
      * @return the same query instance
      * @throws IllegalArgumentException if the second argument is not
      *         valid for the implementation
@@ -138,22 +144,23 @@ public interface Query {
     Query setHint(String hintName, Object value);
 
     /**
-     * Get the hints and associated values that are in effect for 
-     * the query instance.
-     * @return query hints
+     * Get the properties and hints and associated values that are 
+     * in effect for the query instance.
+     * @return query properties and hints
      * @since Java Persistence 2.0
      */
     Map<String, Object> getHints();
 
     /**
-     * Get the names of the hints that are supported for query 
-     * objects. These hints correspond to hints that may be passed 
-     * to the methods of the <code>Query</code> interface that take hints as 
-     * arguments or used with the <code>NamedQuery</code> and <code>NamedNativeQuery</code>
-     * annotations. These include all standard query hints as well as
-     * vendor-specific hints supported by the provider. These hints
-     * may or may not currently be in effect.
-     * @return hints
+     * Get the names of the properties and hints that are supported for query 
+     * objects. These correspond to properties and hints that may be passed 
+     * to the methods of the <code>Query</code> interface that take 
+     * properties or hints as arguments or used with the 
+     * <code>NamedQuery</code> and <code>NamedNativeQuery</code>
+     * annotations. These include all standard query properties and
+     * hints as well as vendor-specific ones supported by the provider. These
+     * properties and hints may or may not currently be in effect.
+     * @return supported properties and hints
      * @since Java Persistence 2.0
      */
     Set<String> getSupportedHints();
@@ -173,8 +180,8 @@ public interface Query {
     /**
      * Bind an instance of <code>java.util.Calendar</code> to a <code>Parameter</code> object.
      * @param param parameter object
-     * @param value
-     * @param temporalType
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not
      *         correspond to a parameter of the query
@@ -186,8 +193,8 @@ public interface Query {
     /**
      * Bind an instance of <code>java.util.Date</code> to a <code>Parameter</code> object.
      * @param param parameter object
-     * @param value
-     * @param temporalType
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not
      *         correspond to a parameter of the query
@@ -198,8 +205,8 @@ public interface Query {
 
     /**
      * Bind an argument to a named parameter.
-     * @param name  the parameter name
-     * @param value
+     * @param name  parameter name
+     * @param value  parameter value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does 
      *         not correspond to a parameter of the query or if
@@ -209,9 +216,9 @@ public interface Query {
 
     /**
      * Bind an instance of <code>java.util.Calendar</code> to a named parameter.
-     * @param name  the parameter name
-     * @param value
-     * @param temporalType
+     * @param name  parameter name
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does 
      *         not correspond to a parameter of the query or if
@@ -222,9 +229,9 @@ public interface Query {
 
     /**
      * Bind an instance of <code>java.util.Date</code> to a named parameter.
-     * @param name  the parameter name
-     * @param value
-     * @param temporalType
+     * @param name  parameter name
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does 
      *         not correspond to a parameter of the query or if
@@ -235,8 +242,8 @@ public interface Query {
 
     /**
      * Bind an argument to a positional parameter.
-     * @param position
-     * @param value
+     * @param position  position
+     * @param value  parameter value
      * @return the same query instance
      * @throws IllegalArgumentException if position does not
      *         correspond to a positional parameter of the
@@ -247,9 +254,9 @@ public interface Query {
     /**
      * Bind an instance of <code>java.util.Calendar</code> to a positional
      * parameter.
-     * @param position
-     * @param value
-     * @param temporalType
+     * @param position  position
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if position does not
      *         correspond to a positional parameter of the query or
@@ -260,9 +267,9 @@ public interface Query {
 
     /**
      * Bind an instance of <code>java.util.Date</code> to a positional parameter.
-     * @param position
-     * @param value
-     * @param temporalType
+     * @param position  position
+     * @param value  parameter value
+     * @param temporalType  temporal type
      * @return the same query instance
      * @throws IllegalArgumentException if position does not
      *         correspond to a positional parameter of the query or
@@ -290,7 +297,7 @@ public interface Query {
      * parameter of the given name.
      * This method is not required to be supported for native
      * queries.
-     * @param name 
+     * @param name  parameter name
      * @return parameter object
      * @throws IllegalArgumentException if the parameter of the
      *         specified name does not exist
@@ -306,8 +313,8 @@ public interface Query {
      * parameter of the given name and type.
      * This method is required to be supported for criteria queries
      * only.
-     * @param name 
-     * @param type
+     * @param name  parameter name
+     * @param type  type
      * @return parameter object
      * @throws IllegalArgumentException if the parameter of the
      *         specified name does not exist or is not assignable
@@ -324,7 +331,7 @@ public interface Query {
      * positional parameter with the given position.
      * This method is not required to be supported for native
      * queries.
-     * @param position
+     * @param position  position
      * @return parameter object
      * @throws IllegalArgumentException if the parameter with the
      *         specified position does not exist
@@ -339,8 +346,8 @@ public interface Query {
      * Get the parameter object corresponding to the declared
      * positional parameter with the given position and type.
      * This method is not required to be supported by the provider.
-     * @param position 
-     * @param type
+     * @param position  position
+     * @param type  type
      * @return parameter object
      * @throws IllegalArgumentException if the parameter with the
      *         specified position does not exist or is not assignable
@@ -375,7 +382,7 @@ public interface Query {
 
     /**
      * Return the value bound to the named parameter.
-     * @param name
+     * @param name  parameter name
      * @return parameter value
      * @throws IllegalStateException if the parameter has not been
      *         been bound
@@ -387,7 +394,7 @@ public interface Query {
 
     /**
      * Return the value bound to the positional parameter.
-     * @param position
+     * @param position  position
      * @return parameter value
      * @throws IllegalStateException if the parameter has not been
      *         been bound
@@ -401,7 +408,7 @@ public interface Query {
      * Set the flush mode type to be used for the query execution.
      * The flush mode type applies to the query regardless of the
      * flush mode type in use for the entity manager.
-     * @param flushMode
+     * @param flushMode  flush mode
      * @return the same query instance
      */
     Query setFlushMode(FlushModeType flushMode);
@@ -417,7 +424,7 @@ public interface Query {
 
     /**
      * Set the lock mode type to be used for the query execution.
-     * @param lockMode
+     * @param lockMode  lock mode
      * @return the same query instance
      * @throws IllegalStateException if the query is found not to be 
      *         a Java Persistence query language SELECT query
@@ -447,7 +454,7 @@ public interface Query {
      *             implements.
      * @return an instance of the specified class
      * @throws PersistenceException if the provider does not support
-     *         the call.
+     *         the call
      * @since Java Persistence 2.0
      */
     <T> T unwrap(Class<T> cls);

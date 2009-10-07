@@ -11,16 +11,6 @@
  * Contributors:
  *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
- *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -32,11 +22,11 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to designate a <code>ManyToOne</code> or
- * <code>OneToOne</code> relationship attribute that corresponds to an
- * {@link EmbeddedId} primary key, an attribute within an
- * <code>EmbeddedId</code> primary key, or a simple primary key of the
- * parent entity. The <code>value</code> element specifies the
+ * Designates a <code>ManyToOne</code> or
+ * <code>OneToOne</code> relationship attribute that provides the
+ * mapping for an {@link EmbeddedId} primary key, an attribute within
+ * an <code>EmbeddedId</code> primary key, or a simple primary key of
+ * the parent entity. The <code>value</code> element specifies the
  * attribute within a composite key to which the relationship
  * attribute corresponds. If the entity's primary key is of the same
  * Java type as the primary key of the entity referenced by the
@@ -59,14 +49,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    &#064;Embeddable
  *    public class DependentId {
  *       String name;
- *       long empid;   // corresponds to PK type of Employee
+ *       long empid;   // corresponds to primary key type of Employee
  *    }
  *
  *    &#064;Entity
  *    public class Dependent {
  *       &#064;EmbeddedId DependentId id;
  *        ...
- *       &#064;MapsId("empid")  //  maps to empid attribute of embedded id
+ *       &#064;MapsId("empid")  //  maps the empid attribute of embedded id
  *       &#064;ManyToOne Employee emp;
  *    }
  * </pre>
@@ -80,7 +70,7 @@ public @interface MapsId {
     /**
      * (Optional) The name of the attribute within the composite key
      * to which the relationship attribute corresponds.  If not
-     * supplied, the relationship is mapped by the entity’s primary
+     * supplied, the relationship maps the entity’s primary
      * key.
      */
    String value() default ""; }

@@ -17,7 +17,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Predicate.BooleanOperator;
@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class QueryBuilderImpl implements QueryBuilder {
+public class QueryBuilderImpl implements CriteriaBuilder {
     
     protected Metamodel metamodel;
     
@@ -201,7 +201,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression representing input value to greatest operation
      * @return greatest expression
      */
-    public <X extends Comparable<X>> Expression<X> greatest(Expression<X> x){
+    public <X extends Comparable<? super X>> Expression<X> greatest(Expression<X> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -216,7 +216,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression representing input value to least operation
      * @return least expression
      */
-    public <X extends Comparable<X>> Expression<X> least(Expression<X> x){
+    public <X extends Comparable<? super X>> Expression<X> least(Expression<X> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -433,7 +433,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Predicate not(Expression<Boolean> restriction){
         if (((InternalExpression)restriction).isPredicate()){
-            return ((PredicateImpl)restriction).negate();
+            return ((PredicateImpl)restriction).not();
         }
         org.eclipse.persistence.expressions.Expression parentNode = null;
         String name = "not";
@@ -636,7 +636,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return greater-than predicate
      */
-    public <Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y){
+    public <Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -656,7 +656,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return less-than predicate
      */
-    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y){
+    public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -673,7 +673,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return greater-than-or-equal predicate
      */
-    public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
+    public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -693,7 +693,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return less-than-or-equal predicate
      */
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
+    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -715,7 +715,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            expression
      * @return between predicate
      */
-    public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
+    public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
         
         List list = new ArrayList();
         list.add(v);
@@ -734,7 +734,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            value
      * @return greater-than predicate
      */
-    public <Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Y y){
+    public <Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.literal(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -755,7 +755,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            value
      * @return less-than predicate
      */
-    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y){
+    public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.literal(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -776,7 +776,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            value
      * @return greater-than-or-equal predicate
      */
-    public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y){
+    public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.literal(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -797,7 +797,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            value
      * @return less-than-or-equal predicate
      */
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y){
+    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.literal(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -820,7 +820,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *            value
      * @return between predicate
      */
-    public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Y x, Y y){
+    public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Y x, Y y){
         List list = new ArrayList();
         list.add(v);
         list.add(this.literal(x));
@@ -1000,7 +1000,25 @@ public class QueryBuilderImpl implements QueryBuilder {
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getJavaType()), ExpressionMath.add(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "sum");
     }
+    /**
+     * Create an aggregate expression applying the sum operation to an
+     * Integer-valued expression, returning a Long result.
+     * @param x  expression representing input value to sum operation
+     * @return sum expression
+     */
+    public Expression<Long> sumAsLong(Expression<Integer> x) {
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
+    }
 
+    /**
+     * Create an aggregate expression applying the sum operation to a
+     * Float-valued expression, returning a Double result.
+     * @param x  expression representing input value to sum operation
+     * @return sum expression
+     */
+    public Expression<Double> sumAsDouble(Expression<Float> x){
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE, ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
+    }
     /**
      * Create an expression that returns the product of its arguments.
      * 

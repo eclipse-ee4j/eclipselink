@@ -78,7 +78,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * 
      * @return the negated predicate
      */
-    public Predicate negate(){
+    public Predicate not(){
         if (this.currentNode == null){
             return new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
         }

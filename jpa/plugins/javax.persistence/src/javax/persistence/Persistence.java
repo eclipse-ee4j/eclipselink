@@ -9,41 +9,41 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
- * *   dclarke - EclipseLink implementation of Persistence and PersistenceUtil 
+ *     Oracle committers - EclipseLink implementation of Persistence and PersistenceUtil 
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.persistence.spi.LoadState;
+import java.util.HashSet;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
+import javax.persistence.spi.LoadState;
 
 /**
- * Bootstrap class that is used to obtain an {@link EntityManagerFactory}.
+ * Bootstrap class that is used to obtain an {@link EntityManagerFactory}
+ * in Java SE environments.  
  * 
+ * <p> The <code>Persistence</code> class is available in a Java EE
+ * container environment as well; however, support for the Java SE
+ * bootstrapping APIs is not required in container environments.
+ * 
+ * <p> The <code>Persistence</code> class is used to obtain a {@link
+ * javax.persistence.PersistenceUtil PersistenceUtil} instance in both
+ * Java EE and Java SE environments.
+ *
  * @since Java Persistence 1.0
  */
 public class Persistence {
     
     /**
-     * Create and return an EntityManagerFactory for the named persistence unit.
+     * Create and return an EntityManagerFactory for the named
+     * persistence unit.
      * 
      * @param persistenceUnitName
      *            the name of the persistence unit
@@ -88,46 +88,44 @@ public class Persistence {
 
     /**
      * Return the PersistenceUtil instance
-     * 
      * @return PersistenceUtil instance
      * @since Java Persistence 2.0
      */
     public static PersistenceUtil getPersistenceUtil() {
-        return new PersistenceUtilImpl();
+       return new PersistenceUtilImpl();
     }
 
+    
     /**
      * Implementation of PersistenceUtil interface
-     * 
      * @since Java Persistence 2.0
      */
     private static class PersistenceUtilImpl implements PersistenceUtil {
-
         public boolean isLoaded(Object entity, String attributeName) {
             PersistenceProviderResolver resolver = PersistenceProviderResolverHolder.getPersistenceProviderResolver();
+
             List<PersistenceProvider> providers = resolver.getPersistenceProviders();
 
             for (PersistenceProvider provider : providers) {
                 LoadState loadstate = provider.getProviderUtil().isLoadedWithoutReference(entity, attributeName);
-                if (loadstate == LoadState.LOADED) {
+                if(loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
 
-            // None of the providers could determine the load state try
-            // isLoadedWithReference
+            //None of the providers could determine the load state try isLoadedWithReference
             for (PersistenceProvider provider : providers) {
                 LoadState loadstate = provider.getProviderUtil().isLoadedWithReference(entity, attributeName);
-                if (loadstate == LoadState.LOADED) {
+                if(loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
 
-            // None of the providers could determine the load state.
+            //None of the providers could determine the load state.
             return true;
         }
 
@@ -138,31 +136,27 @@ public class Persistence {
 
             for (PersistenceProvider provider : providers) {
                 LoadState loadstate = provider.getProviderUtil().isLoaded(entity);
-                if (loadstate == LoadState.LOADED) {
+                if(loadstate == LoadState.LOADED) {
                     return true;
                 } else if (loadstate == LoadState.NOT_LOADED) {
                     return false;
                 } // else continue
             }
-            // None of the providers could determine the load state
+            //None of the providers could determine the load state
             return true;
         }
     }
 
     /**
-     * This final String is deprecated and should be removed and is only here
-     * for TCK backward compatibility
-     * 
+     * This final String is deprecated and should be removed and is only here for TCK backward compatibility
      * @since Java Persistence 1.0
      * @deprecated
      */
     @Deprecated
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
-
+    
     /**
-     * This instance variable is deprecated and should be removed and is only
-     * here for TCK backward compatibility
-     * 
+     * This instance variable is deprecated and should be removed and is only here for TCK backward compatibility
      * @since Java Persistence 1.0
      * @deprecated
      */

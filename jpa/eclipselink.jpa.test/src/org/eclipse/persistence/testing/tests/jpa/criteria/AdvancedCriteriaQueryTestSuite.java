@@ -30,10 +30,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.QueryBuilder.In;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
@@ -155,7 +155,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         try {        
             em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
             Metamodel mm = em.getMetamodel();
-            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Project> spouse = cquery.from(Project.class);
             cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.<Employee> get("teamLeader"));
@@ -176,9 +176,9 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
 
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
 
@@ -208,8 +208,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
 
             cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
@@ -220,7 +220,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
             assertTrue("Employee had wrong firstname", ((Employee) result.get(0)).getFirstName().equalsIgnoreCase("bob"));
 
-            CriteriaQuery<Employee> cq2 = em.getQueryBuilder().createQuery(Employee.class);
+            CriteriaQuery<Employee> cq2 = em.getCriteriaBuilder().createQuery(Employee.class);
             cq2.where(cq.getRestriction());
             TypedQuery<Employee> tq2 = em.createQuery(cq);
             List<Employee> result2 = tq.getResultList();
@@ -235,7 +235,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
             List<Employee> result = em.createQuery(cq).getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
             assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
@@ -252,7 +252,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {        
             Metamodel mm = em.getMetamodel();
-            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Object> cquery = qbuilder.createQuery();
             Root<Employee> customer = cquery.from(Employee.class);
             EntityType<Employee> Customer_ = customer.getModel();
@@ -269,7 +269,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             In<String> in = qb.in(emp.get("address").<String>get("city"));
@@ -287,7 +287,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             Subquery<String> sq = cq.subquery(String.class);
@@ -309,7 +309,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             cq.where(emp.get("address").<String>get("city").in(qb.parameter(String.class, "city")));
@@ -327,7 +327,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             cq.where(qb.isEmpty(emp.<Collection<PhoneNumber>>get("phoneNumbers")));
@@ -346,7 +346,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             cq.where(qb.lessThan(qb.neg(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers"))), 0));
@@ -365,7 +365,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             cq.where(qb.isNull(qb.nullif(qb.size(emp.<Collection<PhoneNumber>>get("phoneNumbers")), qb.parameter(Integer.class))));
@@ -385,7 +385,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
             cq.where(qb.isNotMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
@@ -409,8 +409,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             root.join("phoneNumbers");
             cq.where(qb.isEmpty(root.<Collection<PhoneNumber>>get("phoneNumbers")));
@@ -427,8 +427,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
             TypedQuery<Employee> tq = em.createQuery(cq);
@@ -446,8 +446,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            CriteriaQuery cq = em.getQueryBuilder().createQuery();
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
             TypedQuery<Employee> tq = em.createQuery(cq);
@@ -465,8 +465,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            CriteriaQuery<Employee> cq = em.getQueryBuilder().createQuery(Employee.class);
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             root.fetch("projects");
             cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
@@ -503,7 +503,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);
             Join<Employee, Dealer> o = customer.join("dealers");
@@ -526,7 +526,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try{
             em.createQuery("SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
-            QueryBuilder qbuilder = em.getQueryBuilder();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);
             cquery.select(customer).distinct(true);
@@ -555,7 +555,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             // Test cusored stream.
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             query.setHint(QueryHints.CURSOR, true);
             query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);
             query.setHint(QueryHints.CURSOR_PAGE_SIZE, 5);
@@ -566,7 +566,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             cursor.close();
             
             // Test cursor result API.
-            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.CURSOR, true);
             cursor = jpaQuery.getResultCursor();
             cursor.nextElement();
@@ -574,7 +574,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             cursor.close();
             
             // Test scrollable cursor.
-            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
             jpaQuery.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
             jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.DEFAULT);
@@ -596,11 +596,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             // Load an employee into the cache.  
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
             
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             // Test multi object, as an array.
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
             Root<Employee> from = cq.from(Employee.class);
@@ -755,7 +755,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.  
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -794,7 +794,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.  
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -833,7 +833,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -870,7 +870,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();

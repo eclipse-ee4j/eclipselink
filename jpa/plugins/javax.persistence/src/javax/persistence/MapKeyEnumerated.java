@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -51,11 +42,11 @@ import static javax.persistence.EnumType.ORDINAL;
  *
  *   &#064;Entity public class Employee {
  *       &#064;ManyToMany
- *       public Projects<ProjectStatus, Project> getProjects() {...}
+ *       public Projects&#060;ProjectStatus, Project&#062; getProjects() {...}
  *       
  *       &#064;OneToMany
  *       &#064;MapKeyEnumerated(STRING)
- *       public Map<SalaryRate, Employee> getEmployees() {...}
+ *       public Map&#060;SalaryRate, Employee&#062; getEmployees() {...}
  *       ...
  *   }
  * </pre>

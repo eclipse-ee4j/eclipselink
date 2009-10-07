@@ -25,6 +25,7 @@ import javax.persistence.FetchType;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
@@ -88,6 +89,31 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     public java.util.Set<Fetch<X, ?>> getFetches(){
         return this.fetches;
     }
+    /**
+     *  Whether the <code>From</code> object has been obtained as a result of
+     *  correlation (use of a <code>Subquery</code> <code>correlate</code> 
+     *  method).
+     *  @return boolean indicating whether the object has been
+     *          obtained through correlation
+     */
+    public boolean isCorrelated(){
+        //TODO
+        return false;
+    }
+
+    /**
+     *  Returns the parent <code>From</code> object from which the correlated
+     *  <code>From</code> object has been obtained through correlation (use
+     *  of a <code>Subquery</code> <code>correlate</code> method).
+     *  @return  the parent of the correlated From object
+     *  @throws IllegalStateException if the From object has
+     *          not been obtained through correlation 
+     */
+    public From<Z, X> getCorrelationParent() {
+        //TODO
+        return null;
+    }
+
 
     /**
      * Fetch join to the specified attribute using an inner join.

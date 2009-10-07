@@ -20,7 +20,7 @@ import java.util.Set;
 import java.security.AccessController;
 import java.lang.reflect.Field;
 import javax.persistence.*;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
@@ -80,8 +80,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
 	/** Reference to the Metamodel for this deployment. */
     protected Metamodel metaModel;     
-    /** Reference to the QueryBuilder for this deployment. */    
-    protected QueryBuilder queryBuilder; 	
+    /** Reference to the CriteriaBuilder for this deployment. */    
+    protected CriteriaBuilder CriteriaBuilder; 	
 
 	/**
 	 * Default join existing transaction property, allows reading through write
@@ -437,10 +437,10 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 	}
 
 	/**
-	 * @see javax.persistence.EntityManagerFactory#getQueryBuilder()
+	 * @see javax.persistence.EntityManagerFactory#getCriteriaBuilder()
 	 * @since Java Persistence 2.0
 	 */
-	public QueryBuilder getQueryBuilder() {
+	public CriteriaBuilder getCriteriaBuilder() {
         return new QueryBuilderImpl(this.getMetamodel());
 	}
 

@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -31,7 +22,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Is used to specify the mapping for the key column of a map whose
+ * Specifies the mapping for the key column of a map whose
  * map key is a basic type. If the <code>name</code> element is not specified, it
  * defaults to the concatenation of the following: the name of the
  * referencing relationship field or property; "_"; "KEY".
@@ -127,7 +118,9 @@ public @interface MapKeyColumn {
 
 	/**
 	 * (Optional) The precision for a decimal (exact numeric) column. (Applies
-	 * only if a decimal column is used.)
+	 * only if a decimal column is used.)  
+         *
+         *<p> Default: 0. (The value must be set by the developer.)
 	 */
 	int precision() default 0; // decimal precision
 

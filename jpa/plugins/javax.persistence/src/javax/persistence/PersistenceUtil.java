@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -43,7 +34,7 @@ public interface PersistenceUtil {
      * @param attributeName name of attribute whose load state is
      *        to be determined
      * @return false if entity's state has not been loaded or
-     *  if the attribute state has not been loaded, else true.
+     *  if the attribute state has not been loaded, else true
      */
     public boolean isLoaded(Object entity, String attributeName);
 
@@ -53,11 +44,11 @@ public interface PersistenceUtil {
      * of an entity passed as a reference.  An entity is
      * considered loaded if all attributes for which 
      * <code>FetchType.EAGER</code> has been specified have been loaded.
-     * The <code>isLoaded(Object, String)</code> method should be used to 
+     * <p> The <code>isLoaded(Object, String)</code> method should be used to 
      * determine the load state of an attribute.
      * Not doing so might lead to unintended loading of state.
      * @param entity whose load state is to be determined
-     * @return false if the entity has not been loaded, else true.
+     * @return false if the entity has not been loaded, else true
      */
     public boolean isLoaded(Object entity);
 }

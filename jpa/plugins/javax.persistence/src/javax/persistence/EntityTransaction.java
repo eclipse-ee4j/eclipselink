@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -37,23 +28,23 @@ public interface EntityTransaction {
 
      /**
       * Start a resource transaction. 
-      * @throws IllegalStateException if <code>isActive()</code> is true.
+      * @throws IllegalStateException if <code>isActive()</code> is true
       */
      public void begin();
 
      /**
       * Commit the current resource transaction, writing any 
       * unflushed changes to the database.  
-      * @throws IllegalStateException if <code>isActive()</code> is false.
-      * @throws RollbackException if the commit fails.
+      * @throws IllegalStateException if <code>isActive()</code> is false
+      * @throws RollbackException if the commit fails
       */
      public void commit();
 
      /**
       * Roll back the current resource transaction. 
-      * @throws IllegalStateException if <code>isActive()</code> is false.
+      * @throws IllegalStateException if <code>isActive()</code> is false
       * @throws PersistenceException if an unexpected error 
-      *         condition is encountered.
+      *         condition is encountered
       */
      public void rollback();
 
@@ -61,7 +52,7 @@ public interface EntityTransaction {
       * Mark the current resource transaction so that the only 
       * possible outcome of the transaction is for the transaction 
       * to be rolled back. 
-      * @throws IllegalStateException if isActive() is false.
+      * @throws IllegalStateException if <code>isActive()</code> is false
       */
      public void setRollbackOnly();
 
@@ -70,7 +61,7 @@ public interface EntityTransaction {
       * marked for rollback.
       * @return boolean indicating whether the transaction has been
       *         marked for rollback
-      * @throws IllegalStateException if <code>isActive()</code> is false.
+      * @throws IllegalStateException if <code>isActive()</code> is false
       */
      public boolean getRollbackOnly();
 
@@ -79,7 +70,7 @@ public interface EntityTransaction {
       * @return boolean indicating whether transaction is
       *         in progress
       * @throws PersistenceException if an unexpected error 
-      *         condition is encountered.
+      *         condition is encountered
       */
      public boolean isActive();
 }

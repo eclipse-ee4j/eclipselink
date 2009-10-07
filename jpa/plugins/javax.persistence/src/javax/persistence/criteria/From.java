@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.criteria;
 
@@ -29,12 +20,13 @@ import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.SetAttribute;
+import java.util.Set;
 
 /**
  * Represents a bound type, usually an entity that appears in
  * the from clause, but may also be an embeddable belonging to
  * an entity in the from clause. 
- * <p> Serves as a factory for Joins of associations, embeddables and 
+ * <p> Serves as a factory for Joins of associations, embeddables, and 
  * collections belonging to the type, and for Paths of attributes 
  * belonging to the type.
  *
@@ -43,6 +35,7 @@ import javax.persistence.metamodel.SetAttribute;
  *
  * @since Java Persistence 2.0
  */
+@SuppressWarnings("hiding")
 public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
 
     /**
@@ -52,8 +45,27 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  Modifications to the set do not affect the query.
      *  @return joins made from this type
      */
-    java.util.Set<Join<X, ?>> getJoins();
+    Set<Join<X, ?>> getJoins();
 	
+    /**
+     *  Whether the <code>From</code> object has been obtained as a result of
+     *  correlation (use of a <code>Subquery</code> <code>correlate</code> 
+     *  method).
+     *  @return boolean indicating whether the object has been
+     *          obtained through correlation
+     */
+    boolean isCorrelated();
+
+    /**
+     *  Returns the parent <code>From</code> object from which the correlated
+     *  <code>From</code> object has been obtained through correlation (use
+     *  of a <code>Subquery</code> <code>correlate</code> method).
+     *  @return  the parent of the correlated From object
+     *  @throws IllegalStateException if the From object has
+     *          not been obtained through correlation 
+     */
+    From<Z, X> getCorrelationParent();
+
     /**
      *  Create an inner join to the specified single-valued 
      *  attribute.

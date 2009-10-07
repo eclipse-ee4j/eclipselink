@@ -34,7 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -197,7 +197,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             //"SELECT e FROM Employee e"
             Query query = em.createQuery(qb.createQuery(Employee.class));            
             List<Employee> emps = query.getResultList();
@@ -272,7 +272,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT e FROM Employee e LEFT JOIN FETCH e.phoneNumbers"
 
         //use the cache
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         root.fetch("phoneNumbers", JoinType.LEFT);
@@ -345,7 +345,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp"
-        List result = em.createQuery(em.getQueryBuilder().createQuery(Employee.class)).getResultList();
+        List result = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class)).getResultList();
 
         Assert.assertTrue("Base Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
@@ -360,7 +360,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE ABS(emp.salary) = " + expectedResult.getSalary();
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.equal( qb.abs(root.<Number>get("salary")), expectedResult.getSalary()) );
@@ -389,7 +389,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN " + empId + "AND " + employee.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         //Cast to Expression<Comparable> since empId is BigDec and getId is Integer.  between requires Comparable types; Number is not comparable
@@ -414,7 +414,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         partTwo = expectedResult.getFirstName().substring(2);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", \"" + partTwo + "\")"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.equal(root.get("firstName"), qb.concat(qb.literal(partOne), qb.literal(partTwo))) );
@@ -435,7 +435,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         String partTwo = expectedResult.getFirstName().substring(2);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT( :partOne, :partTwo )"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.equal(root.get("firstName"), qb.concat(qb.parameter(String.class, "partOne"), qb.parameter(String.class, "partTwo"))) );
@@ -469,7 +469,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE CONCAT(emp.firstName,\"Smith\") LIKE \"" + partOne + "Smith\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.like(qb.concat(root.<String>get("firstName"), qb.literal("Smith") ), partOne+"Smith") );
@@ -493,7 +493,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo 
         //      + "\", \"" + partThree + "\") )"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.equal( root.get("firstName"), qb.concat(qb.literal(partOne), qb.concat( qb.literal(partTwo), qb.literal(partThree)) ) ) );
@@ -506,7 +506,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleDistinctTest() {
         EntityManager em = createEntityManager();
         //"SELECT DISTINCT e FROM Employee e JOIN FETCH e.phoneNumbers "
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
         cq.from(Employee.class).join("phoneNumbers");
@@ -538,7 +538,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         }
         try {
             //"SELECT DISTINCT e.firstName FROM Employee e WHERE e.lastName = '" + emp.getLastName() + "'"
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             cq.distinct(true);
             Root<Employee> root = cq.from(Employee.class);
@@ -567,7 +567,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleDistinctMultipleResultTest() {
         EntityManager em = createEntityManager();
         //"SELECT DISTINCT e, e.firstName FROM Employee e JOIN FETCH e.phoneNumbers "
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = qb.createTupleQuery();
         Root<Employee> root = cq.from(Employee.class);
         root.join("phoneNumbers");
@@ -606,7 +606,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp3);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + "OR emp.id = " + emp2.getId() + "OR emp.id = " + emp3.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         Predicate firstOr = qb.or(qb.equal(root.get("id"), emp1.getId()), qb.equal(root.get("id"), emp2.getId()));
@@ -626,7 +626,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"" + expectedResult.getFirstName() + "\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.equal(root.get("firstName"), expectedResult.getFirstName() ) );
@@ -648,7 +648,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp, IN(emp.managedEmployees) managedEmployees " + "WHERE managedEmployees.address.city = 'Ottawa'"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Join managedEmp = cq.from(Employee.class).join("managedEmployees");
         cq.where( qb.equal(managedEmp.get("address").get("city"), "Ottawa" ) );
@@ -670,7 +670,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         PhoneNumber phoneNumber = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
         //"SELECT OBJECT(emp) FROM Employee emp, IN (emp.phoneNumbers) phone " + "WHERE phone = ?1"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Join phones = cq.from(Employee.class).join("phoneNumbers");
         cq.where( qb.equal(phones, qb.parameter(PhoneNumber.class, "1") ) );
@@ -687,7 +687,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp = ?1"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.equal(root, qb.parameter(Employee.class, "1") ) );
@@ -708,7 +708,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.removeElementAt(0);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp <> ?1";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.notEqual(root, qb.parameter(Employee.class, "1") ) );
@@ -739,7 +739,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" 
         //      + "AND emp.firstName = \"" + expectedResult.getFirstName() + "\"" + "AND emp.lastName = \"" + expectedResult.getLastName() + "\""
         
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
@@ -755,7 +755,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         //"Select AVG(emp.salary)from Employee emp"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Double> cq = qb.createQuery(Double.class);
         Root<Employee> root = cq.from(Employee.class);
         //casting types again.  Avg takes a number, so Path<Object> won't compile
@@ -773,7 +773,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN (" + expectedResult.getId().toString() + ")"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.in(cq.from(Employee.class).get("id")).value(expectedResult.getId()) );
         List result = em.createQuery(cq).getResultList();
@@ -792,7 +792,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         //passing a collection to IN might not be supported in criteria api
         cq.where( qb.in(cq.from(Employee.class).get("id")).value(qb.parameter(List.class, "result")) );
@@ -812,7 +812,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         String ejbqlString;
         //"SELECT OBJECT(emp) FROM Employee emp WHERE LENGTH ( emp.firstName     ) = " + expectedResult.getFirstName().length();
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         //casting required, length takes only Expression<String>
@@ -833,7 +833,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         String partialFirstName = expectedResult.getFirstName().substring(0, 3) + "%";
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         //casting required, like takes only Expression<String>
@@ -865,7 +865,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE ?1"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.like( root.<String>get("firstName"), qb.parameter(String.class, "1")) );
@@ -893,7 +893,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         //test the apostrophe
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE :pattern ESCAPE :esc"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Address> cq = qb.createQuery(Address.class);
         Root<Address> root = cq.from(Address.class);
         cq.where( qb.like( root.<String>get("street"), qb.parameter(String.class, "pattern"), qb.parameter(Character.class, "esc")) );
@@ -933,7 +933,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT BETWEEN " + emp1.getId() + " AND "+ emp2.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.not(qb.between(root.<Integer>get("id"), emp1.getId(), emp2.getId())) );
@@ -956,7 +956,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.removeElementAt(0);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id <> " + emp.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.notEqual(cq.from(Employee.class).get("id"), emp.getId()) );
 
@@ -986,7 +986,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT IN (" + emp.getId().toString() + ")"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.not(qb.in(root.get("id")).value(emp.getId())) );
@@ -1015,7 +1015,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where( qb.notLike(root.<String>get("firstName"), partialFirstName ) );
@@ -1036,7 +1036,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp1);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + " OR emp.id = " + emp2.getId() + " AND emp.id = " + emp3.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         Predicate andOpp = qb.and(qb.equal(root.get("id"), emp2.getId()), qb.equal(root.get("id"), emp3.getId()));
@@ -1063,7 +1063,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"John\" OR emp.firstName = \"Bob\" AND emp.lastName = \"Smith\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         javax.persistence.criteria.Expression empFName = root.get("firstName");
@@ -1086,7 +1086,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp2);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + "OR emp.id = " + emp2.getId()
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression empId = cq.from(Employee.class).get("id");
         cq.where( qb.or( qb.equal(empId, emp1.getId()), qb.equal(empId, emp2.getId()) ) );
@@ -1119,7 +1119,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE " + "emp.firstName = ?1 "
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(cq.from(Employee.class).get("firstName"), qb.parameter(String.class,parameterName)) );
 
@@ -1158,7 +1158,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult.addAll(secondEmployees);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE " + "emp.firstName = ?1 "
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(cq.from(Employee.class).get("firstName"), qb.parameter(String.class, "1")) );
 
@@ -1181,7 +1181,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE " + expectedResult.getSalary() + " = ABS(emp.salary)"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         //equal can't take an int as the first argument, it must be an expression
         cq.where( qb.equal(qb.literal(expectedResult.getSalary()), qb.abs(cq.from(Employee.class).<Number>get("salary"))) );
@@ -1203,7 +1203,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         String partTwo = expectedResult.getFirstName().substring(2);
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE CONCAT(\""+ partOne + "\", \""+ partTwo + "\") = emp.firstName";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         //One argument to concat must be an expression
         cq.where( qb.equal(qb.concat(partOne, qb.literal(partTwo)), cq.from(Employee.class).<String>get("firstName")) );
@@ -1221,7 +1221,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE \"" + expectedResult.getFirstName() + "\" = emp.firstName"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(qb.literal(expectedResult.getFirstName()), cq.from(Employee.class).get("firstName")) );
 
@@ -1237,7 +1237,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
         //"SELECT OBJECT(emp) FROM Employee emp WHERE " + expectedResult.getFirstName().length() + " = LENGTH(emp.firstName)"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression<Integer> length = qb.length(cq.from(Employee.class).<String>get("firstName"));
         cq.where( qb.equal(qb.literal(expectedResult.getFirstName().length()), length) );
@@ -1271,7 +1271,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE ?1 = emp.firstName "
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(qb.parameter(String.class, "1"), cq.from(Employee.class).get("firstName")) );
 
@@ -1296,7 +1296,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE "+ salarySquareRoot + " = SQRT(emp.salary)"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression<Double> sqrt = qb.sqrt(cq.from(Employee.class).<Number>get("salary"));
         cq.where( qb.equal(qb.literal(salarySquareRoot), sqrt) );
@@ -1319,7 +1319,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         firstNamePart = expectedResult.getFirstName().substring(0, 2);
         //"SELECT OBJECT(emp) FROM Employee emp WHERE \"" + firstNamePart + "\" = SUBSTRING(emp.firstName, 1, 2)";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression<String> substring = qb.substring(cq.from(Employee.class).<String>get("firstName"), 1, 2);
         cq.where( qb.equal(qb.literal(firstNamePart), substring) );
@@ -1347,7 +1347,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE SQRT(emp.salary) = "+ salarySquareRoot
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(qb.sqrt(cq.from(Employee.class).<Integer>get("salary")), salarySquareRoot) );
 
@@ -1366,7 +1366,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         String firstNamePart = expectedResult.getFirstName().substring(0, 2);
         //"SELECT OBJECT(emp) FROM Employee emp WHERE SUBSTRING(emp.firstName, 1, 2) = \"" + firstNamePart + "\""
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression<String> substring = qb.substring(cq.from(Employee.class).<String>get("firstName"), 1, 2);
         cq.where( qb.equal(substring, firstNamePart) );
@@ -1400,7 +1400,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NULL"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isNull(cq.from(Employee.class).get("firstName")) );
 
@@ -1438,7 +1438,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NOT NULL"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isNotNull(cq.from(Employee.class).<String>get("firstName")) );
         List result = em.createQuery(cq).getResultList();
@@ -1466,7 +1466,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT DISTINCT OBJECT(emp) FROM Employee emp WHERE emp.lastName = \'Smith\'"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
         cq.where( qb.equal(cq.from(Employee.class).<String>get("lastName"), "Smith") );
@@ -1479,7 +1479,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //bug 5279859
         EntityManager em = createEntityManager();
         //"SELECT e FROM Employee e where e.address.postalCode = :postalCode"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.equal(cq.from(Employee.class).get("address").get("postalCode"), qb.parameter(String.class, "postalCode")) );
         Query query = em.createQuery(cq);
@@ -1527,7 +1527,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE MOD(emp.salary, 2) > 0"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.gt(qb.mod(cq.from(Employee.class).<Integer>get("salary"), 2), 0) );
 
@@ -1541,7 +1541,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
         
         //"SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0"
-        qb = em.getQueryBuilder();
+        qb = em.getCriteriaBuilder();
         cq = qb.createQuery(Employee.class);
         javax.persistence.criteria.Expression<Integer> salaryExp = cq.from(Employee.class).<Integer>get("salary");
         cq.where( qb.equal(qb.mod(salaryExp, salaryExp), 0) );
@@ -1566,7 +1566,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS EMPTY"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isEmpty(cq.from(Employee.class).<Collection>get("phoneNumbers")) );
 
@@ -1590,7 +1590,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS NOT EMPTY"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isNotEmpty(cq.from(Employee.class).<Collection>get("phoneNumbers")) );
 
@@ -1628,7 +1628,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } else {
             escapeChar = '\\';
         }
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Address> cq = qb.createQuery(Address.class);
         cq.where( qb.like(cq.from(Address.class).<String>get("street"), "234 Wandering "+escapeChar+"_Way", escapeChar) );
 
@@ -1651,7 +1651,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(employee) FROM Employee employee, SmallProject sp WHERE sp MEMBER OF employee.projects";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isMember(cq.<Project>from(Project.class), cq.from(Employee.class).<Collection<Project>>get("projects")) );
 
@@ -1682,7 +1682,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)getServerSession().executeQuery(query, arguments);
 
         //"SELECT OBJECT(employee) FROM Employee employee WHERE ?1 NOT MEMBER OF employee.projects"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where( qb.isNotMember(qb.<Project>parameter(Project.class, "1"), cq.from(Employee.class).<Collection<Project>>get("projects")) );
 
@@ -1710,7 +1710,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT COUNT(DISTINCT phone.owner) FROM PhoneNumber phone";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
         cq.select(qb.countDistinct(cq.from(PhoneNumber.class).get("owner")));
 
@@ -1734,7 +1734,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT DISTINCT employee.address FROM Employee employee WHERE employee.lastName LIKE '%Way%'"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Address> cq = qb.createQuery(Address.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.distinct(true);
@@ -1765,7 +1765,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"Select Distinct Object(p) from Employee emp, IN(emp.phoneNumbers) p WHERE p.number IS NOT NULL ORDER BY p.number, p.areaCode";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<PhoneNumber> cq = qb.createQuery(PhoneNumber.class);
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
@@ -1808,7 +1808,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"Select Distinct Object(emp) from Employee emp, IN(emp.phoneNumbers) p WHERE p.number = ALL (Select MIN(pp.number) FROM PhoneNumber pp)";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
         Subquery<Number> sq = cq.subquery(Number.class);
@@ -1848,7 +1848,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"Select Distinct Object(emp) from Employee emp, IN(emp.phoneNumbers) p WHERE p.number = ALL (Select MIN(pp.number) FROM PhoneNumber pp)";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.distinct(true);
         Subquery<Number> sq = cq.subquery(Number.class);
@@ -1890,7 +1890,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
 
         //"SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 MEMBER OF emp.phoneNumbers";
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.isMember(qb.parameter(PhoneNumber.class, "1"), root.<Collection<PhoneNumber>>get("phoneNumbers")));
@@ -1934,7 +1934,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
 
         //"SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 NOT MEMBER OF emp.phoneNumbers"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.isNotMember(qb.parameter(PhoneNumber.class, "1"), root.<Collection<PhoneNumber>>get("phoneNumbers")));
@@ -1971,7 +1971,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN ?1 AND ?2"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.between(root.<Comparable>get("id"), qb.parameter(BigDecimal.class, "1"), qb.parameter(Integer.class, "2")));
@@ -2005,10 +2005,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN (?1, ?2)"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        QueryBuilder.In inExp = qb.in(root.<Comparable>get("id"));
+        CriteriaBuilder.In inExp = qb.in(root.<Comparable>get("id"));
         inExp.value(qb.parameter(BigDecimal.class, "1"));
         inExp.value(qb.parameter(Integer.class, "2"));
         cq.where(inExp);
@@ -2026,7 +2026,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         String ejbqlString;
 
         //"SELECT emp FROM Employee emp WHERE emp.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where(qb.equal(cq.from(Employee.class).get("status"), org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME));
         List result = em.createQuery(cq).getResultList();
@@ -2040,7 +2040,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Project> cq = qb.createQuery(Project.class);
         cq.where(qb.equal(cq.from(Project.class).type(), org.eclipse.persistence.testing.models.jpa.advanced.LargeProject.class));
 
@@ -2065,7 +2065,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //"SELECT e.firstName as firstName FROM Employee e ORDER BY firstName"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<String> cq = qb.createQuery(String.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.select(root.<String>get("firstName"));

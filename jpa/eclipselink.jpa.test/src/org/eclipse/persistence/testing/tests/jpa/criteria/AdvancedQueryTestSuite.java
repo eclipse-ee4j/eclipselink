@@ -22,7 +22,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
 import junit.framework.Test;
@@ -140,7 +140,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.  
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -181,9 +181,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
 
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
 
@@ -217,7 +217,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             // Test cusored stream.
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             query.setHint(QueryHints.CURSOR, true);
             query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);
             query.setHint(QueryHints.CURSOR_PAGE_SIZE, 5);
@@ -228,7 +228,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.close();
             
             // Test cursor result API.
-            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.CURSOR, true);
             cursor = jpaQuery.getResultCursor();
             cursor.nextElement();
@@ -236,7 +236,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.close();
             
             // Test scrollable cursor.
-            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
             jpaQuery.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
             jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.DEFAULT);
@@ -258,11 +258,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             // Load an employee into the cache.  
-            Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
+            Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
             
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             // Test multi object, as an array.
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
             Root<Employee> from = cq.from(Employee.class);
@@ -416,7 +416,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.  
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -455,7 +455,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.  
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -494,7 +494,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
@@ -531,7 +531,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             // Load an employee into the cache.
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();

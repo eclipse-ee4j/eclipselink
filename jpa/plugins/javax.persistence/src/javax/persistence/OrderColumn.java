@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -33,9 +24,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Specifies a column that is used to maintain the persistent order of
  * a list. The persistence provider is responsible for maintaining the
- * order upon retrieval and in the database and for updating the
- * ordering upon flushing to the database to reflect any insertion,
- * deletion, or reordering affecting the list.
+ * order upon retrieval and in the database.  The persistence provider
+ * is responsible for updating the ordering upon flushing to the
+ * database to reflect any insertion, deletion, or reordering
+ * affecting the list.
  *
  * <p> The <code>OrderColumn</code> annotation is specified on a
  * OneToMany or ManyToMany relationship or on an element
@@ -44,11 +36,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * to be ordered. The order column is not visible as part of the state
  * of the entity or embeddable class.
  *
- * <p> The {@link OrderBy} annotation
- * should be used for ordering that is visible as persistent state and
- * maintained by the application. The <code>OrderBy</code> annotation is not used
- * when <code>OrderColumn</code> is specified.
+ * <p> The {@link OrderBy} annotation should be used for ordering that
+ * is visible as persistent state and maintained by the
+ * application. The <code>OrderBy</code> annotation is not used when
+ * <code>OrderColumn</code> is specified.
  * 
+ * <p> The order column must be of integral type.  The persistence
+ * provider maintains a contiguous (non-sparse) ordering of the values
+ * of the order column when updating the association or element collection.
+ * The order column value for the first element is 0.
+ *
  * <pre>
  *
  *    Example:

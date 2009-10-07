@@ -29,7 +29,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import javax.sql.DataSource;
 
@@ -1975,20 +1975,20 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Return an instance of QueryBuilder for the creation of
+     * Return an instance of CriteriaBuilder for the creation of
      * Criteria API Query objects.
-     * @return QueryBuilder instance
+     * @return CriteriaBuilder instance
      * @throws IllegalStateException if the entity manager has
      * been closed.
-     * @see javax.persistence.EntityManager#getQueryBuilder()
+     * @see javax.persistence.EntityManager#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
-    public QueryBuilder getQueryBuilder() {
+    public CriteriaBuilder getCriteriaBuilder() {
         // defer to the parent entityManagerFactory
         if(!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
         }
-        return this.factory.getQueryBuilder();
+        return this.factory.getCriteriaBuilder();
     }
     
     /**

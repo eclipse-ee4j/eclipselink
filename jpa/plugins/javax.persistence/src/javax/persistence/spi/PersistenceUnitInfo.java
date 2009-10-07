@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.spi;
 
@@ -42,7 +33,7 @@ public interface PersistenceUnitInfo {
     /**
      * Returns the name of the persistence unit. Corresponds to the
      * <code>name</code> attribute in the <code>persistence.xml<code> file.
-     * @return  the name of the persistence unit. 
+     * @return  the name of the persistence unit 
      */
     public String getPersistenceUnitName();
 
@@ -51,7 +42,7 @@ public interface PersistenceUnitInfo {
      * implementation class. Corresponds to the <code>provider</code> element in
      * the <code>persistence.xml</code> file.
      * @return  the fully qualified name of the persistence provider 
-     * implementation class.
+     * implementation class
      */
     public String getPersistenceProviderClassName();
 
@@ -60,7 +51,7 @@ public interface PersistenceUnitInfo {
      * the <code>EntityManagerFactory</code>. The transaction type corresponds to
      * the <code>transaction-type</code> attribute in the <code>persistence.xml</code> file.
      * @return  transaction type of the entity managers created
-     * by the EntityManagerFactory.
+     * by the EntityManagerFactory
      */
     public PersistenceUnitTransactionType getTransactionType();
 
@@ -70,7 +61,7 @@ public interface PersistenceUnitInfo {
      * <code>jta-data-source</code> element in the <code>persistence.xml</code> file or is
      * provided at deployment or by the container.
      * @return the JTA-enabled data source to be used by the 
-     * persistence provider.
+     * persistence provider
      */
     public DataSource getJtaDataSource();
 
@@ -82,7 +73,7 @@ public interface PersistenceUnitInfo {
      * provided at deployment or by the container.
      * @return the non-JTA-enabled data source to be used by the 
      * persistence provider for accessing data outside a JTA 
-     * transaction.
+     * transaction
      */
     public DataSource getNonJtaDataSource();
 
@@ -96,7 +87,7 @@ public interface PersistenceUnitInfo {
      * <code>persistence.xml</code> file.
      * @return the list of mapping file names that the persistence
      * provider must load to determine the mappings for the entity
-     * classes. 
+     * classes 
      */
     public List<String> getMappingFileNames();
 
@@ -110,7 +101,7 @@ public interface PersistenceUnitInfo {
      * that contains an exploded jar file, or some other URL from
      * which an InputStream in jar format can be obtained.
      * @return a list of URL objects referring to jar files or
-     * directories. 
+     * directories 
      */
     public List<URL> getJarFileUrls();
 
@@ -123,7 +114,7 @@ public interface PersistenceUnitInfo {
      * or referring to a directory that contains an exploded jar
      * file, or some other URL from which an InputStream in jar
      * format can be obtained.
-     * @return a URL referring to a jar file or directory.
+     * @return a URL referring to a jar file or directory
      */
     public URL getPersistenceUnitRootUrl();
 
@@ -134,7 +125,7 @@ public interface PersistenceUnitInfo {
      * <code>persistence.xml</code> file.
      * @return the list of the names of the classes that the 
      * persistence provider must add to its set of managed 
-     * classes. 
+     * classes 
      */
     public List<String> getManagedClassNames();
 
@@ -145,7 +136,7 @@ public interface PersistenceUnitInfo {
      * <code>exclude-unlisted-classes</code> element in the <code>persistence.xml</code> file.
      * @return whether classes in the root of the persistence
      * unit that have not been explicitly listed are to be
-     * included in the set of managed classes.
+     * included in the set of managed classes
      */
     public boolean excludeUnlistedClasses();
 
@@ -167,7 +158,7 @@ public interface PersistenceUnitInfo {
      * corresponds to the <code>validation-mode</code> element in the
      * <code>persistence.xml</code> file.
      * @return the validation mode to be used by the 
-     * persistence provider for the persistence unit.
+     * persistence provider for the persistence unit
      * 
      * @since Java Persistence 2.0
      */
@@ -176,7 +167,7 @@ public interface PersistenceUnitInfo {
     /**
      * Returns a properties object. Each property corresponds to a
      * <code>property</code> element in the <code>persistence.xml</code> file.
-     * @return Properties object. 
+     * @return Properties object 
      */
     public Properties getProperties();
     
@@ -192,7 +183,7 @@ public interface PersistenceUnitInfo {
      * Returns ClassLoader that the provider may use to load any
      * classes, resources, or open URLs.
      * @return ClassLoader that the provider may use to load any 
-     * classes, resources, or open URLs. 
+     * classes, resources, or open URLs 
      */
     public ClassLoader getClassLoader();
 

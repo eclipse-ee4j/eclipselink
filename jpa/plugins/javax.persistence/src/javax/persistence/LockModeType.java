@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -28,7 +19,8 @@ package javax.persistence;
  * Lock modes can be specified by means of passing a <code>LockModeType</code>
  * argument to one of the {@link javax.persistence.EntityManager} methods that take locks
  * (<code>lock</code>, <code>find</code>, or <code>refresh</code>) or
- * to the {@link Query#setLockMode Query.setLockMode()} method.
+ * to the {@link Query#setLockMode Query.setLockMode()} or
+ * {@link TypedQuery#setLockMode TypedQuery.setLockMode()} method.
  * 
  * <p> Lock modes can be used to specify either optimistic or pessimistic locks.
  *
@@ -36,7 +28,8 @@ package javax.persistence;
  * LockModeType#OPTIMISTIC LockModeType.OPTIMISTIC} and {@link
  * LockModeType#OPTIMISTIC_FORCE_INCREMENT
  * LockModeType.OPTIMISTIC_FORCE_INCREMENT}.  The lock mode type
- * values {@link LockModeType#READ} and {@link LockModeType#WRITE} are
+ * values {@link LockModeType#READ LockModeType.READ} and 
+ * {@link LockModeType#WRITE LockModeType.WRITE} are
  * synonyms of <code>OPTIMISTIC</code> and
  * <code>OPTIMISTIC_FORCE_INCREMENT</code> respectively.  The latter
  * are to be preferred for new applications.

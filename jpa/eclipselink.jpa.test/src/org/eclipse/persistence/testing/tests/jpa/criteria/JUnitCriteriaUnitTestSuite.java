@@ -29,7 +29,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -166,7 +166,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             clearCache();
 	
             //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("firstName"), qb.parameter(String.class, "firstname")));
@@ -196,7 +196,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         clearCache();
         beginTransaction(em);
         //"SELECT e from Employee e JOIN e.address a"
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.from(Employee.class).join("address");        
         cq.distinct(true);
@@ -208,7 +208,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         em.persist(emp);
         em.flush();
         //"SELECT e from Employee e LEFT OUTER JOIN e.address a"
-        qb = em.getQueryBuilder();
+        qb = em.getCriteriaBuilder();
         cq = qb.createQuery(Employee.class);
         cq.from(Employee.class).join("address", JoinType.LEFT);  
         cq.distinct(true);
@@ -227,7 +227,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             clearCache();
             List resultList = null;
             try{
-                resultList = em.createQuery(em.getQueryBuilder().createQuery(Project.class)).getResultList();
+                resultList = em.createQuery(em.getCriteriaBuilder().createQuery(Project.class)).getResultList();
             } catch (Exception exception){
                 fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());            
             }
@@ -259,7 +259,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         
            //List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
            //    "WHERE phone.areaCode = \"613\"").getResultList();
-           QueryBuilder qb = em.getQueryBuilder();
+           CriteriaBuilder qb = em.getCriteriaBuilder();
            CriteriaQuery<String> cq = qb.createQuery(String.class);
            Root<Employee> root = cq.from(Employee.class);
            Join phone = root.join("phoneNumbers");
@@ -306,7 +306,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     
             //"SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
             //    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
             Join joinedPhone = root.join("phoneNumbers");
@@ -353,7 +353,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     
             //"SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
             //    "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
             Join joinedPhone = root.join("phoneNumbers");
@@ -400,7 +400,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         
             //"SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
             //    "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
             Join joinedPhone = root.join("phoneNumbers");
@@ -425,7 +425,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             beginTransaction(em);
             try{
                 //"SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
-                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaBuilder qb = em.getCriteriaBuilder();
                 CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
                 Root<Employee> root = cq.from(Employee.class);
                 ParameterExpression<Integer> param1 = qb.parameter(Integer.class);
@@ -455,7 +455,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             beginTransaction(em);
             try{
                 //"SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'"
-                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaBuilder qb = em.getCriteriaBuilder();
                 CriteriaQuery<Tuple> cq = qb.createTupleQuery();
                 Root<Employee> rootEmp = cq.from(Employee.class);
                 Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
@@ -487,7 +487,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         try{
             clearCache();
             //"SELECT e.id, m.id FROM Employee e LEFT OUTER JOIN e.manager m"
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = qb.createTupleQuery();
             Root<Employee> rootEmp = cq.from(Employee.class);
             Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
@@ -522,7 +522,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         try{
             clearCache();
             //"SELECT e.id FROM Employee e group by e.id"
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Integer.class);
             Root<Employee> rootEmp = cq.from(Employee.class);
             Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
@@ -557,7 +557,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         try{
             clearCache();
             //"SELECT p FROM Project p"
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Project> cq = qb.createQuery(Project.class);
         
             Query query = em.createQuery(cq);
@@ -588,7 +588,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             beginTransaction(em);
             try{
                 //"select e, a from Employee e, Address a where a.city = 'Ottawa' and e.address.country = a.country"
-                QueryBuilder qb = em.getQueryBuilder();
+                CriteriaBuilder qb = em.getCriteriaBuilder();
                 CriteriaQuery<Tuple> cq = qb.createTupleQuery();
                 Root<Employee> rootEmp = cq.from(Employee.class);
                 Root<Address> rootAddress = cq.from(Address.class);
@@ -621,7 +621,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             em.persist(emp);
             em.flush();
             //"SELECT DISTINCT e.address FROM Employee e"
-            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery();
             Root<Employee> rootEmp = cq.from(Employee.class);
             cq.select(rootEmp.get("address"));

@@ -88,7 +88,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      * 
      * @return the negated predicate
      */
-    public Predicate negate(){
+    public Predicate not(){
         List<Expression<?>> list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");

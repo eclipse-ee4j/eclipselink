@@ -30,7 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
@@ -503,10 +503,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Criteria queries (use the Metamodel)
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            QueryBuilder qb = null;
+            CriteriaBuilder qb = null;
             List results = null;
             try {
-                qb = em.getQueryBuilder();
+                qb = em.getCriteriaBuilder();
                 //CriteriaQuery<String> cq = qb.createQuery(String.class);
                 CriteriaQuery<Computer> criteriaQuery = qb.createQuery(Computer.class);
                 Expression expression = new ClassTypeExpression(); // probably not the right expression impl
@@ -528,10 +528,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
             }
 
-            /* uncomment when the QueryBuilderImpl function below is implemented
+            /* uncomment when the CriteriaBuilderImpl function below is implemented
              * public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name){
             try {
-                qb = em.getQueryBuilder();
+                qb = em.getCriteriaBuilder();
                 CriteriaQuery<Computer> cq = qb.createQuery(Computer.class);
                 Root from = cq.from(Computer.class);
                 Path c = from.get("name");
@@ -2600,11 +2600,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             boolean iae1thrown = false;
             
             // A Criteria API query that is expected to fail with an IAE
-            QueryBuilder qbForExceptions = null;
+            CriteriaBuilder qbForExceptions = null;
             
             iae1thrown = false;
             try {
-                qbForExceptions = em.getQueryBuilder();
+                qbForExceptions = em.getCriteriaBuilder();
                 CriteriaQuery<Computer> cq = qbForExceptions.createQuery(Computer.class);
                 Root from = cq.from(Computer.class);
                 Path invalidPath = from.get("____unknown_attribute_name_should_fail_with_IAE_____");

@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.spi;
 
@@ -38,18 +29,18 @@ public interface ProviderUtil {
      * If the provider determines that the entity has been provided
      * by itself and that the state of the specified attribute has
      * been loaded, this method returns <code>LoadState.LOADED</code>.
-     * If the provider determines that the entity has been provided
+     * <p> If the provider determines that the entity has been provided
      * by itself and that either entity attributes with <code>FetchType.EAGER</code> 
      * have not been loaded or that the state of the specified
      * attribute has not been loaded, this methods returns
      * <code>LoadState.NOT_LOADED</code>.
-     * If a provider cannot determine the load state, this method
+     * <p> If a provider cannot determine the load state, this method
      * returns <code>LoadState.UNKNOWN</code>.
-     * The provider's implementation of this method must not obtain
+     * <p> The provider's implementation of this method must not obtain
      * a reference to an attribute value, as this could trigger the
      * loading of entity state if the entity has been provided by a
      * different provider.
-     * @param entity
+     * @param entity  entity instance
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
@@ -60,20 +51,20 @@ public interface ProviderUtil {
      * If the provider determines that the entity has been provided
      * by itself and that the state of the specified attribute has
      * been loaded, this method returns <code>LoadState.LOADED</code>.
-     * If a provider determines that the entity has been provided
+     * <p> If a provider determines that the entity has been provided
      * by itself and that either the entity attributes with <code>FetchType.EAGER</code>
      * have not been loaded or that the state of the specified
      * attribute has not been loaded, this method returns
      * return <code>LoadState.NOT_LOADED</code>.
-     * If the provider cannot determine the load state, this method
+     * <p> If the provider cannot determine the load state, this method
      * returns <code>LoadState.UNKNOWN</code>.
-     * The provider's implementation of this method is permitted to
+     * <p> The provider's implementation of this method is permitted to
      * obtain a reference to the attribute value.  (This access is
      * safe because providers which might trigger the loading of the
      * attribute state will have already been determined by
      * <code>isLoadedWithoutReference</code>. )
      *
-     * @param entity
+     * @param entity  entity instance
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
@@ -85,12 +76,12 @@ public interface ProviderUtil {
      * by itself and that the state of all attributes for which
      * <code>FetchType.EAGER</code> has been specified have been loaded, this 
      * method returns <code>LoadState.LOADED</code>.
-     * If the provider determines that the entity has been provided
+     * <p> If the provider determines that the entity has been provided
      * by itself and that not all attributes with <code>FetchType.EAGER</code> 
      * have been loaded, this method returns <code>LoadState.NOT_LOADED</code>.
-     * If the provider cannot determine if the entity has been
+     * <p> If the provider cannot determine if the entity has been
      * provided by itself, this method returns <code>LoadState.UNKNOWN</code>.
-     * The provider's implementation of this method must not obtain
+     * <p> The provider's implementation of this method must not obtain
      * a reference to any attribute value, as this could trigger the
      * loading of entity state if the entity has been provided by a
      * different provider.

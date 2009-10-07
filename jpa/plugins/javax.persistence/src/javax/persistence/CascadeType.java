@@ -9,18 +9,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence;
 
@@ -28,7 +19,7 @@ package javax.persistence;
  * Defines the set of cascadable operations that are propagated 
  * to the associated entity.
  * The value <code>cascade=ALL</code> is equivalent to 
- * <code>cascade={PERSIST, MERGE, REMOVE, REFRESH}</code>.
+ * <code>cascade={PERSIST, MERGE, REMOVE, REFRESH, DETACH}</code>.
  *
  * @since Java Persistence 1.0
  */
@@ -54,6 +45,6 @@ public enum CascadeType {
      *
      * @since Java Persistence 2.0
      * 
-    */   
+     */   
     DETACH
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems, Oracle Corporation. All rights reserved. 
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -9,19 +9,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
  * Contributors:
- *     Linda DeMichiel -Java Persistence 2.0 - Proposed Final Draft, Version 2.0 (August 31, 2009)
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
  *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *     dclarke - EclipseLink implementation and default resolver
  *
- * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP).  The code is untested and presumed not to be a  
- * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
- * We encourage you to migrate to an implementation of the Java(TM) Persistence 
- * API, Version 2.0 Specification that has been tested and verified to be compatible 
- * as soon as such an implementation is available, and we encourage you to retain 
- * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
- * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.spi;
 
@@ -67,8 +58,7 @@ public class PersistenceProviderResolverHolder {
     /**
      * Defines the persistence provider resolver used.
      * 
-     * @param resolver
-     *            persistence provider resolver to be used.
+     * @param resolver persistence provider resolver to be used.
      */
     public static void setPersistenceProviderResolver(PersistenceProviderResolver resolver) {
         if (resolver == null) {
@@ -83,7 +73,7 @@ public class PersistenceProviderResolverHolder {
      * 
      * Uses the META-INF/services approach as described in the Java Persistence
      * specification. A getResources() call is made on the current context
-     * class-loader to find the service provider files on the class-path. Any
+     * classloader to find the service provider files on the classpath. Any
      * service files found are then read to obtain the classes that implement
      * the persistence provider interface.
      */
