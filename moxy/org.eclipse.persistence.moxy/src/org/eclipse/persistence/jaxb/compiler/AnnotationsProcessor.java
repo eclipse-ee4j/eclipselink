@@ -2116,12 +2116,15 @@ public class AnnotationsProcessor {
 
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass){
     	
-    	NamespaceInfo combinedNamespaceInfo = new NamespaceInfo();
+    	NamespaceInfo combinedNamespaceInfo = null;
 		NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
 		String combinedNamespaceInfoNamespace = null;
 		NamespaceInfo nsForMapClass = packageToNamespaceMappings.get(mapClass.getPackageName());
 		if(nsForMapClass != null){
+			combinedNamespaceInfo = nsForMapClass;
 			combinedNamespaceInfoNamespace = nsForMapClass.getNamespace();
+		}else{
+			combinedNamespaceInfo = new NamespaceInfo();
 		}
 		String packageName = "jaxb.dev.java.net";
     	if(!helper.isBuiltInJavaType(keyClass)){
@@ -2534,7 +2537,28 @@ public class AnnotationsProcessor {
             componentClass = helper.getJavaClass(Object.class);
         }
 
-        NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass);
+        NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
+        NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass); 
+        if(namespaceInfo == null){
+            namespaceInfo = componentNamespaceInfo;
+			
+            TypeInfo componentTypeInfo = getTypeInfo().get(componentClass.getQualifiedName()); 
+            if (componentTypeInfo == null && shouldGenerateTypeInfo(componentClass)) {
+                JavaClass[] jClassArray = new JavaClass[] { componentClass };
+                buildNewTypeInfo(jClassArray);
+                componentTypeInfo = getTypeInfo().get(componentClass.getQualifiedName());
+            }
+            if(componentTypeInfo != null){
+                namespaceInfo.setNamespace(componentTypeInfo.getClassNamespace());
+            }
+			
+        }else{		
+             java.util.Vector<Namespace> namespaces= componentNamespaceInfo.getNamespaceResolver().getNamespaces();
+            for(Namespace n:namespaces){
+                namespaceInfo.getNamespaceResolver().put(n.getPrefix(), n.getNamespaceURI());	
+            } 
+
+        }
         String packageName = componentClass.getPackageName();
         packageName = "jaxb.dev.java.net." + packageName;
         if (namespaceInfo != null) {

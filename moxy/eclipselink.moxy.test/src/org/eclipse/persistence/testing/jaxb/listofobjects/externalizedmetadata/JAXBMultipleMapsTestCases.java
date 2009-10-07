@@ -49,7 +49,7 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
-		types = new Type[3];
+		types = new Type[5];
 		types[0] = getTypeToUnmarshalTo();
 				  
 		Type mapType2 = new ParameterizedType() {
@@ -67,6 +67,22 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 			 public Type getRawType() { return Map.class; }      
 			};
 			types[2] = mapType3;
+
+			Type listType = new ParameterizedType() {
+				Type[] typeArgs = { Person.class};
+				 public Type[] getActualTypeArguments() { return typeArgs;}
+				 public Type getOwnerType() { return null; }
+				 public Type getRawType() { return List.class; }      
+				};
+				types[3] = listType;
+				
+			Type listType2 = new ParameterizedType() {
+				Type[] typeArgs = { String.class};
+				 public Type[] getActualTypeArguments() { return typeArgs;}
+				 public Type getOwnerType() { return null; }
+				 public Type getRawType() { return List.class; }      
+				};
+			types[4] = listType2;					
 		
 		setTypes(types);
 	}
@@ -126,11 +142,13 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 	public void testTypeToSchemaTypeMap(){
 		HashMap<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();		
 		int mapSize = typesMap.size();
-		assertEquals(5, mapSize);
+		assertEquals(7, mapSize);
 		
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[0]));
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[1]));
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[2]));
+		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[3]));
+		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[4]));		
 	}
 
 }
