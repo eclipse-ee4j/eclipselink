@@ -98,7 +98,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     protected boolean isDerivedIdMapping = false;
     
     /**
-     * Guy comment
+     * A mapsId value.
      */
     protected String mappedByIdValue;
 
@@ -540,7 +540,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: Guy
+     * ADVANCED:
      * Set the mapped by id value  
      */
     public boolean hasMappedByIdValue() {
@@ -548,7 +548,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
     
     /**
-     * ADVANCED: Guy
+     * ADVANCED:
      * Set the mapped by id value  
      */
     public String getMappedByIdValue() {
@@ -882,7 +882,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     
     /**
      * ADVANCED:
-     * Used to indicate the mapping references a JPA ID or MappedById attribute 
+     * Used to indicate the mapping references a JPA ID or MapsId attribute 
      * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
      * This is different from isPrimaryKeyMapping, as an ID mapping is user 
      * specified and can be read only, as long as another writable mapping for 

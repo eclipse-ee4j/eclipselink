@@ -346,7 +346,7 @@
                     javax/persistence/TrimSpec.class,
                     javax/persistence/CollectionTable.class,
                     javax/persistence/MapKeyJoinColumns.class,
-                    javax/persistence/MappedById.class,
+                    javax/persistence/MapsId.class,
                     javax/persistence/MapKeyJoinColumn.class,
                     javax/persistence/DomainObject.class,
                     javax/persistence/Predicate.class,

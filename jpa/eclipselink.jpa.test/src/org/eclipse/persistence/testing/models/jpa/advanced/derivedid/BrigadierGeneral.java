@@ -15,20 +15,31 @@ package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.MappedById;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import static javax.persistence.CascadeType.PERSIST;
 
+/**
+ * This model tests Example #5 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_BRIGADIER_GENERAL")
 public class BrigadierGeneral {
     @EmbeddedId 
     GeneralId id;
     
-    @OneToOne(cascade=PERSIST) 
-    @MappedById
+    @OneToOne(cascade=PERSIST)
+    @JoinColumns({
+        @JoinColumn(name="FIRST_NAME", referencedColumnName="F_NAME"),
+        @JoinColumn(name="LAST_NAME", referencedColumnName="L_NAME")
+    })
+    @MapsId
     MajorGeneral majorGeneral;
     
     public GeneralId getId() {

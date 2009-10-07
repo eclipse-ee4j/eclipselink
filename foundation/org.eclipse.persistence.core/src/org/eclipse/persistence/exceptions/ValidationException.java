@@ -15,7 +15,6 @@ package org.eclipse.persistence.exceptions;
 import java.util.HashSet;
 import java.util.Vector;
 import java.lang.reflect.*;
-import java.net.URL;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
 import org.eclipse.persistence.internal.queries.*;
@@ -385,6 +384,10 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ASSOCIATION_OVERRIDE = 7319;
     public static final int INVALID_ATTRIBUTE_TYPE_FOR_ORDER_COLUMN = 7320;
+    
+    public static final int INVALID_DERIVED_ID_PRIMARY_KEY_FIELD = 7321;
+    
+    public static final int INVALID_ASSOCIATION_OVERRIDE_REFERENCE_COLUMN_NAME = 7322;
     
     /**
      * INTERNAL:
@@ -976,7 +979,15 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION);
         return validationException;
     }
-    
+
+    public static ValidationException invalidAssociationOverrideReferenceColumnName(String referenceColumnName, String associationOverrideName, String attributeName, String className) {
+        Object[] args = { referenceColumnName, associationOverrideName, attributeName, className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ASSOCIATION_OVERRIDE_REFERENCE_COLUMN_NAME, args));
+        validationException.setErrorCode(INVALID_ASSOCIATION_OVERRIDE_REFERENCE_COLUMN_NAME);
+        return validationException;
+    }
+
     /**
      * PUBLIC:
      * Possible cause:  A mapping for the attribute name specified in the attribute-override cannot be found 
@@ -1138,6 +1149,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_DATA_SOURCE_NAME, args), exception);
         validationException.setErrorCode(INVALID_DATA_SOURCE_NAME);
+        return validationException;
+    }
+
+    public static ValidationException invalidDerivedIdPrimaryKeyField(String referenceClassName, String primaryKeyFieldName, String attributeName, String cls) {
+        Object[] args = { referenceClassName, primaryKeyFieldName, attributeName, cls };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_DERIVED_ID_PRIMARY_KEY_FIELD, args));
+        validationException.setErrorCode(INVALID_DERIVED_ID_PRIMARY_KEY_FIELD);
         return validationException;
     }
 

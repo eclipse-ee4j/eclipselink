@@ -153,9 +153,6 @@ public class OneToOneAccessor extends ObjectAccessor {
                 // If improper mapping encountered, throw an exception.
                 throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
-        } else if (hasMappedById()) {
-            // Mapping is mapped by id.
-            processMappedByIdKeys(mapping);
         } else {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(mapping);

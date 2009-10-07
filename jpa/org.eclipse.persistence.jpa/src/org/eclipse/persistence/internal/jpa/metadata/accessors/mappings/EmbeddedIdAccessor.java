@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
@@ -53,7 +52,6 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     protected HashMap<String, DatabaseField> m_idFields = new HashMap<String, DatabaseField>();
     protected HashMap<DatabaseField, MappingAccessor> m_idAccessors = new HashMap<DatabaseField, MappingAccessor>();
     
-
     /**
      * INTERNAL:
      * Default constructor.
@@ -69,20 +67,19 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         super(embeddedId, accessibleObject, classAccessor);
     }
     
-    
     /**
      * INTERNAL:
      * Process an attribute override for an embedded object, that is, an 
      * aggregate object mapping in EclipseLink.
      */
     @Override
-    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, DatabaseMapping aggregatesMapping) {
-       super.addFieldNameTranslation(embeddableMapping, overrideName, overrideField, aggregatesMapping);
+    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, MappingAccessor mappingAccessor) {
+       super.addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mappingAccessor);
        
        // Update our primary key field with the attribute override field.
        // The super class will ensure the correct field is on the metadata
        // column.
-       m_idFields.put(aggregatesMapping.getAttributeName(), overrideField);
+       m_idFields.put(mappingAccessor.getAttributeName(), overrideField);
     }
     
     /**
@@ -147,7 +144,6 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             // make up the composite primary key.
             for (MappingAccessor accessor : getReferenceAccessors()) {
                 if (accessor.isBasic()) {
-                    accessor.getMapping().setIsDerivedIdMapping(true);
                     addIdFieldFromAccessor(accessor);
                 } else if (accessor.isDerivedIdClass()) {
                     for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
@@ -164,7 +160,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             // Add all the fields from the embeddable as primary keys on the 
             // owning metadata descriptor.
             for (DatabaseField field : m_idFields.values()) {
-                if (!getOwningDescriptor().getPrimaryKeyFieldNames().contains(field.getName())) {
+                if (! getOwningDescriptor().getPrimaryKeyFieldNames().contains(field.getName())) {
                     // Set a table if one is not specified. Because embeddables 
                     // can be re-used we must deal with clones and not change 
                     // the original fields.

@@ -38,7 +38,7 @@ import java.util.List;
 
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
@@ -62,6 +62,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -78,7 +80,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     private Boolean m_id;
     private Boolean m_isOptional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    private String m_mappedById;
+    private String m_mapsId;
     
     /**
      * INTERNAL:
@@ -114,11 +116,11 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         }
         
         // Set the mapped by id if one is present.
-        if (isAnnotationPresent(MappedById.class)) {
+        if (isAnnotationPresent(MapsId.class)) {
             // Call getAttributeString in this case because we rely on the
-            // mappedById not being null and it's value of "" means we need to
-            // default. getAttribute returns null which kills (hasMappedById())
-            m_mappedById = (String) getAnnotation(MappedById.class).getAttributeString("value");
+            // mapsId not being null and it's value of "" means we need to
+            // default. getAttribute returns null which kills (hasMapsId())
+            m_mapsId = (String) getAnnotation(MapsId.class).getAttributeString("value");
         }
         
         // Set the derived id if one is specified.
@@ -144,8 +146,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getMappedById(){
-        return m_mappedById;
+    public String getMapsId(){
+        return m_mapsId;
     }
     
     /**
@@ -206,8 +208,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      */
-    protected boolean hasMappedById() {
-        return m_mappedById != null;
+    protected boolean hasMapsId() {
+        return m_mapsId != null;
     }
     
     /**
@@ -285,7 +287,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     @Override
     protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, MetadataDescriptor owningDescriptor) {
         if (getMapping().isOneToOneMapping()) {
-            processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor.getPrimaryTable());
+            processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor.getPrimaryTable(), owningDescriptor);
         } else {
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
@@ -297,18 +299,21 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * or a map mapping (element-collection, 1-M and M-M) containing an
      * embeddable object as the value or key. 
      */
-    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseTable defaultTable) {
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseTable defaultTable, MetadataDescriptor owningDescriptor) {
         // Process and use the association override's joinColumns. Avoid calling 
         // getJoinColumns since, by default, that method looks for an association
         // override on the descriptor. In this case that has already been taken 
         // care of for use before calling this method.
         for (JoinColumnMetadata joinColumn : getJoinColumnsAndValidate(associationOverride.getJoinColumns(), getReferenceDescriptor())) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
+            // This will default the reference column name in the single primary
+            // key case (when the user does not specify it).
+            setFieldName(pkField, getReferenceDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
             pkField.setTable(getReferenceDescriptor().getPrimaryKeyTable());
             DatabaseField fkField = ((OneToOneMapping) getMapping()).getTargetToSourceKeyFields().get(pkField);
                 
             if (fkField == null) {
-                // TODO: user specified an invalid pk, throw an exception.
+                throw ValidationException.invalidAssociationOverrideReferenceColumnName(pkField.getName(), associationOverride.getName(), embeddableMapping.getAttributeName(), owningDescriptor.getJavaClassName());
             } else {
                 // Make sure we have a table set on the association override 
                 // field, otherwise use the default table provided.
@@ -404,43 +409,102 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process the mapping keys from the mapped by id field.
+     * Process the mapping keys from the maps id value.
      */
-    protected void processMappedByIdKeys(OneToOneMapping mapping) {
-        if (m_mappedById.equals("")) {
-            if (getReferenceDescriptor().hasCompositePrimaryKey()) {
-                // We must have an embeddedid mapping that maps to the parents 
-                // idclass or embedded id class directly.
-                // Case 5: parent uses id class but dependant uses embeddedid
-                // Case 6: both use embeddedid
-                getDescriptor().getEmbeddedIdAccessor().processDerivedIdFields(mapping, getReferenceDescriptor());
-            } else {
-                // case 4: simple id association.
-                DatabaseField dependentField = getDescriptor().getPrimaryKeyField();
-                DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
-                mapping.addForeignKeyField(dependentField, parentField);
-            }
+    protected void processMapsId(OneToOneMapping oneToOneMapping) {
+        EmbeddedIdAccessor embeddedIdAccessor = getDescriptor().getEmbeddedIdAccessor();
+        
+        if (embeddedIdAccessor == null) {
+            // Case #4: a simple id association
+            MappingAccessor idAccessor = getDescriptor().getAccessorFor(getDescriptor().getIdAttributeName());
+            DatabaseMapping primaryKeyMapping = idAccessor.getMapping();
+                        
+            // Grab the foreign key field and set it as the descriptor's id field.
+            DatabaseField foreignKeyField = oneToOneMapping.getForeignKeyFields().elementAt(0);
+            updatePrimaryKeyField(idAccessor, foreignKeyField);
+            
+            // Update the field on the mapping.
+            ((DirectToFieldMapping) primaryKeyMapping).setField(foreignKeyField);
+            
+            // Set the primary key mapping as read only.
+            primaryKeyMapping.setIsReadOnly(true);
+        } else if (embeddedIdAccessor.getReferenceClassName().equals(getReferenceDescriptor().getPKClassName())) {
+            // Embedded id class is the same as the parents parents id class.
+            // Case #5: Parent uses id class == to dependent's embedded id class
+            // Case #6: Both parent and dependent use same embedded id class.            
+            processMapsIdFields(oneToOneMapping, embeddedIdAccessor, null);
         } else {
-            MappingAccessor mappingAccessor = getDescriptor().getAccessorFor(m_mappedById);
+            if (m_mapsId.equals("")) {
+                // User didn't specify a mapsId value. By default the attribute name from this object accessor is used.
+                m_mapsId = getAttributeName();
+            }
+                
+            MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getAccessorFor(m_mapsId);
         
             if (mappingAccessor == null) {
-                throw ValidationException.invalidMappedByIdValue(m_mappedById, getAnnotatedElementName(), getDescriptor().getEmbeddedIdAccessor().getReferenceClass());
+                throw ValidationException.invalidMappedByIdValue(m_mapsId, getAnnotatedElementName(), embeddedIdAccessor.getReferenceClass());
             } else if (mappingAccessor.isBasic()) {
-                // Case 1: basic mapping from embedded id to parent entity.
-                DatabaseField dependentField = mappingAccessor.getMapping().getField();
-                DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
-                mapping.addForeignKeyField(dependentField, parentField);
+                // Case #1: basic mapping from embedded id to parent entity.
+                processMapsIdFields(oneToOneMapping, embeddedIdAccessor, mappingAccessor);
             } else if (mappingAccessor.isDerivedIdClass()) {
-                // Case 2 and case 3 (@IdClass or @EmbeddedId used as the derived id)
-                ((DerivedIdClassAccessor) mappingAccessor).processDerivedIdFields(mapping, getReferenceDescriptor());
+                // Case #2 and case #3 (Id class or embedded id used as the derived id)
+                processMapsIdFields(oneToOneMapping, (DerivedIdClassAccessor) mappingAccessor, null);
             }
             
             // This will also set the isDerivedIdMapping flag to true.
-            mapping.setMappedByIdValue(m_mappedById);
+            oneToOneMapping.setMappedByIdValue(m_mapsId);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * We're going to field name translations where necessary. If the user
+     * specified (erroneously that is) attribute overrides this will override
+     * them.
+     * The embedded accessor passed in is either the root embedded id accessor
+     * or the derived (embedded accessor) within the embedded id accessor.
+     */
+    protected void processMapsIdFields(OneToOneMapping oneToOneMapping, EmbeddedAccessor embeddedAccessor, MappingAccessor basicAccessor) { 
+        // At this point we have a one to one mapping to the reference class 
+        // with specified join columns or defaulted ones. The foreign key
+        // fields are the fields we want to use to map our id fields.
+        for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
+            MappingAccessor idAccessor = null;
+            DatabaseMapping idMapping = null;
+            
+            // If we were not given an basic accessor we need to look it up on
+            // our derived id accessor.
+            if (basicAccessor == null) {
+                // Step 1 - for this foreign key relation, get the primary key
+                // accessor from the reference descriptor.
+                DatabaseField referencePKField = oneToOneMapping.getSourceToTargetKeyFields().get(fkField);
+                MappingAccessor referencePKAccessor = getReferenceDescriptor().getPrimaryKeyAccessorForField(referencePKField);
         
-        
-        mapping.setIsReadOnly(true);
+                // If there is no primary key accessor then the user must have
+                // specified an incorrect reference column name. Throw an exception.
+                if (referencePKAccessor == null) {
+                    throw ValidationException.invalidDerivedIdPrimaryKeyField(getReferenceClassName(), referencePKField.getQualifiedName(), getAttributeName(), getJavaClassName());
+                }
+            
+                // The reference primary key accessor will tell us which attribute
+                // accessor we need to map a field name translation for.
+                idAccessor = embeddedAccessor.getReferenceDescriptor().getAccessorFor(referencePKAccessor.getAttributeName());
+                idMapping = idAccessor.getMapping();
+                
+                if (idAccessor == referencePKAccessor) {
+                    embeddedAccessor.getMapping().setIsReadOnly(true);
+                } else {
+                    idMapping.setIsReadOnly(true);
+                }
+            } else {
+                idAccessor = basicAccessor;
+                idMapping = idAccessor.getMapping();
+                idMapping.setIsReadOnly(true);
+            }
+            
+            // Add a field name translation to the mapping.
+            embeddedAccessor.updateDerivedIdField((EmbeddableMapping) embeddedAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);
+        }
     }
     
     /**
@@ -502,11 +566,17 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process the the correct metadata join column for the owning side of a 
-     * one to one mapping.
+     * Process the the correct metadata for the owning side of a one to one 
+     * mapping. Note, the order of checking is important, that is, check for
+     * a mapsId first.
      */
     protected void processOwningMappingKeys(OneToOneMapping mapping) {
-        if (isOneToOnePrimaryKeyRelationship()) {
+        if (hasMapsId()) {
+            // We need to process the join columns as we normally would.
+            // Then we must update the fields from our derived id accessor.
+            processOneToOneForeignKeyRelationship(mapping);
+            processMapsId(mapping);
+        } else if (isOneToOnePrimaryKeyRelationship()) {
             processOneToOnePrimaryKeyRelationship(mapping);
         } else if (hasJoinTable()) {
             mapping.setRelationTableMechanism(new RelationTableMechanism());
@@ -528,8 +598,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setMappedById(String mappedById){
-        m_mappedById = mappedById;
+    public void setMapsId(String mapsId){
+        m_mapsId = mapsId;
     }
     
     /**

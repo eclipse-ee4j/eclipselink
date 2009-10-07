@@ -57,10 +57,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.PrivateId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.SecondLieutenant;
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 
 public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     private static DepartmentPK m_departmentPK;
@@ -87,13 +85,13 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testDepartmentAdmin")); 
       
         // MappedById tests (see spec page 30 for more info)
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample1"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample2"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample3"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample4"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5a"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample6"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample1"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample2"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample3"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample4"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample5"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample5a"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
         
@@ -324,7 +322,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         }
     }
     
-    public void testMappedByIdExample1() {
+    public void testMapsIdExample1() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -361,7 +359,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
     }
     
-    public void testMappedByIdExample2() {
+    public void testMapsIdExample2() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -401,7 +399,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The captain read back did not match the original", getServerSession().compareObjects(captain, refreshedCaptain));  
     }
     
-    public void testMappedByIdExample3() {
+    public void testMapsIdExample3() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -441,7 +439,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The private read back did not match the original", getServerSession().compareObjects(aPrivate, refreshedPrivate));  
     }
     
-    public void testMappedByIdExample4() {
+    public void testMapsIdExample4() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -474,7 +472,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The lieutenant general read back did not match the original", getServerSession().compareObjects(lieutenantGeneral, refreshedLieutenantGeneral));  
     }
 
-    public void testMappedByIdExample5() {
+    public void testMapsIdExample5() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -509,7 +507,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The brigadier general read back did not match the original", getServerSession().compareObjects(brigadierGeneral, refreshedBrigadierGeneral));  
     }
     
-    public void testMappedByIdExample5a() {
+    public void testMapsIdExample5a() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -558,7 +556,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The LackeyCrewMember read back did not match the original", getServerSession().compareObjects(lcm, refreshedLCM));  
     }
     
-    public void testMappedByIdExample6() {
+    public void testMapsIdExample6() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         

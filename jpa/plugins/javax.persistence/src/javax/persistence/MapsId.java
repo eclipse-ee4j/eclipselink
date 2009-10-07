@@ -66,7 +66,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    public class Dependent {
  *       &#064;EmbeddedId DependentId id;
  *        ...
- *       &#064;MappedById("empid")  //  maps to empid attribute of embedded id
+ *       &#064;MapsId("empid")  //  maps to empid attribute of embedded id
  *       &#064;ManyToOne Employee emp;
  *    }
  * </pre>
@@ -75,7 +75,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target( { METHOD, FIELD })
 @Retention(RUNTIME)
-public @interface MappedById {
+public @interface MapsId {
 
     /**
      * (Optional) The name of the attribute within the composite key

@@ -21,6 +21,7 @@ public class MasterCorporalId {
     @Column(name="NAME")
     String name;
     
+    // This should be ignored!
     @Column(name="SARGEANTPK")
     long sargeantPK;
     

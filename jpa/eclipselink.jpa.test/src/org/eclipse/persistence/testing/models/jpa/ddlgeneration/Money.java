@@ -8,31 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     04/24/2009-2.0 Guy Pelletier 
- *       - 270011: JPA 2.0 MappedById support
+ *     07/17/2009 - tware - added tests for DDL generation of maps
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Embeddable;
+import java.math.BigDecimal;
 
-@Embeddable
-public class PrivateId {
-    String name;
-    CorporalId corporalPK;
+public class Money {
+    private BigDecimal amount;
+    private Currency currency;
+
+    public Money() {}
     
-    public String getName() {
-        return name;
-    }
-    
-    public CorporalId getCorporalPK() {
-        return corporalPK;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public void setCorporalPK(CorporalId corporalPK) {
-        this.corporalPK = corporalPK;
+    public Money(BigDecimal amount, Currency currency) {
+        super();
+        this.amount = amount;
+        this.currency = currency;
     }
 }

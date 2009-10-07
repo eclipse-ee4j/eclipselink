@@ -740,7 +740,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     overrideField.setTable(getReferenceDatabaseTable());
                 }
                 
-                addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mapping);
+                addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mappingAccessor);
             } else if (mapping.isOneToOneMapping()) {
                 OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
                 
@@ -754,7 +754,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                             embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
                         }
                     } else {
-                        ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable());
+                        ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable(), getDescriptor());
                     }
                 } else {
                     // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 

@@ -1200,7 +1200,7 @@
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
     <xsd:attribute name="optional" type="xsd:boolean"/>
     <xsd:attribute name="access" type="orm:access-type"/>
-    <xsd:attribute name="mapped-by-id" type="xsd:string"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
     <xsd:attribute name="id" type="xsd:boolean"/>
   </xsd:complexType>
 
@@ -1501,7 +1501,7 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="mapped-by" type="xsd:string"/>
     <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
-    <xsd:attribute name="mapped-by-id" type="xsd:string"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
     <xsd:attribute name="id" type="xsd:boolean"/>
 </xsd:complexType>
 

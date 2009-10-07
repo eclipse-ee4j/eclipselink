@@ -113,7 +113,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_BRIGADIER_GENERAL");
         
         FieldDefinition fieldF_NAME = new FieldDefinition();
-        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setName("FIRST_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
         fieldF_NAME.setSize(40);
         fieldF_NAME.setShouldAllowNull(false);
@@ -123,7 +123,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldF_NAME);
         
         FieldDefinition fieldL_NAME = new FieldDefinition();
-        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setName("LAST_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
         fieldL_NAME.setSize(40);
         fieldL_NAME.setShouldAllowNull(false);
@@ -140,7 +140,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_CAPTAIN");
         
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
+        fieldNAME.setName("someOtherName");
         fieldNAME.setTypeName("VARCHAR");
         fieldNAME.setSize(40);
         fieldNAME.setShouldAllowNull(false);
@@ -150,7 +150,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldNAME);
         
         FieldDefinition fieldF_NAME = new FieldDefinition();
-        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setName("FK1");
         fieldF_NAME.setTypeName("VARCHAR");
         fieldF_NAME.setSize(40);
         fieldF_NAME.setShouldAllowNull(false);
@@ -160,7 +160,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldF_NAME);
         
         FieldDefinition fieldL_NAME = new FieldDefinition();
-        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setName("FK2");
         fieldL_NAME.setTypeName("VARCHAR");
         fieldL_NAME.setSize(40);
         fieldL_NAME.setShouldAllowNull(false);
@@ -439,7 +439,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_LIEUTENANT_GENERAL");
         
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("ID");
+        fieldID.setName("GENERAL_GENERAL_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
@@ -511,7 +511,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_MASTER_CORPORAL");
         
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("SARGEANTPK");
+        fieldID.setName("SARGEANT_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
@@ -538,7 +538,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_PRIVATE");
         
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
+        fieldNAME.setName("PRIVATE_NAME");
         fieldNAME.setTypeName("VARCHAR");
         fieldNAME.setSize(40);
         fieldNAME.setShouldAllowNull(false);
@@ -548,7 +548,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldNAME);
         
         FieldDefinition fieldF_NAME = new FieldDefinition();
-        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
         fieldF_NAME.setSize(40);
         fieldF_NAME.setShouldAllowNull(false);
@@ -558,7 +558,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldF_NAME);
         
         FieldDefinition fieldL_NAME = new FieldDefinition();
-        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
         fieldL_NAME.setSize(40);
         fieldL_NAME.setShouldAllowNull(false);
@@ -720,7 +720,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.setName("JPA_SECOND_LIEUTENANT");
         
         FieldDefinition fieldF_NAME = new FieldDefinition();
-        fieldF_NAME.setName("FIRST_NAME");
+        fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
         fieldF_NAME.setSize(40);
         fieldF_NAME.setShouldAllowNull(false);
@@ -730,7 +730,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldF_NAME);
         
         FieldDefinition fieldL_NAME = new FieldDefinition();
-        fieldL_NAME.setName("LAST_NAME");
+        fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
         fieldL_NAME.setSize(40);
         fieldL_NAME.setShouldAllowNull(false);

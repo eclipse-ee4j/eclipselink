@@ -18,23 +18,23 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class CaptainId {
-    @Column(name="NAME")
+    @Column(name="IGNORED")
     String name;
-    MajorId majorPK;
+    MajorId major;
     
     public String getName() {
         return name;
     }
     
-    public MajorId getMajorPK() {
-        return majorPK;
+    public MajorId getMajor() {
+        return major;
     }
     
     public void setName(String name) {
         this.name = name;
     }
     
-    public void setMajorPK(MajorId majorPK) {
-        this.majorPK = majorPK;
+    public void setMajor(MajorId major) {
+        this.major = major;
     }
 }

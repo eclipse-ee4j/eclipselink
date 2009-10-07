@@ -1416,7 +1416,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
-        descriptor.addMapping(getMappedByIdAttributeMapping());
+        descriptor.addMapping(getMapsIdAttributeMapping());
         descriptor.addMapping(getIdAttributeMapping());
         
         return descriptor;
@@ -1632,7 +1632,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
         descriptor.addMapping(getOrphanRemovalAttributeMapping());
-        descriptor.addMapping(getMappedByIdAttributeMapping());
+        descriptor.addMapping(getMapsIdAttributeMapping());
         descriptor.addMapping(getIdAttributeMapping());
         
         return descriptor;
@@ -3072,12 +3072,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getMappedByIdAttributeMapping() {
+    protected XMLDirectMapping getMapsIdAttributeMapping() {
         XMLDirectMapping mappedByMapping = new XMLDirectMapping();
-        mappedByMapping.setAttributeName("m_mappedById");
-        mappedByMapping.setGetMethodName("getMappedById");
-        mappedByMapping.setSetMethodName("setMappedById");
-        mappedByMapping.setXPath("@mapped-by-id");
+        mappedByMapping.setAttributeName("m_mapsId");
+        mappedByMapping.setGetMethodName("getMapsId");
+        mappedByMapping.setSetMethodName("setMapsId");
+        mappedByMapping.setXPath("@maps-id");
         return mappedByMapping;
     }
     

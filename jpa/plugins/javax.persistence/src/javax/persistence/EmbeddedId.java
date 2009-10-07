@@ -44,7 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p> There must be only one <code>EmbeddedId</code> annotation and
  * no <code>Id</code> annotation when the <code>EmbeddedId</code> annotation is used.
  *
- * The {@link MappedById} annotation may be used in conjunction
+ * The {@link MapsId} annotation may be used in conjunction
  * with the <code>EmbeddedId</code> annotation to specify a derived
  * primary key.
  * <pre>
@@ -55,7 +55,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </pre>
  *
  * @see Embeddable
- * @see MappedById
+ * @see MapsId
  *
  * @since Java Persistence 1.0
  */

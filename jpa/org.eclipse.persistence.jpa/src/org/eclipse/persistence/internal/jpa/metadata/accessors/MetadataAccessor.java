@@ -338,10 +338,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * defaulting.
      */
     protected String getDefaultAttributeName() {
-        if (m_project != null && m_project.getPersistenceUnitMetadata() != null && m_project.getPersistenceUnitMetadata().isDelimitedIdentifiers()){
-            return getAttributeName();
-        }
-        return getAttributeName().toUpperCase();
+        return (m_project.useDelimitedIdentifier()) ? getAttributeName() : getAttributeName().toUpperCase();
     }
     
     /**
@@ -602,7 +599,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Note: the order of calls in this method as important.
+     * Note: the order of calls in this method are important.
      */
     protected void setFieldName(DatabaseField field, String defaultName, String context) {
         // This may set the use delimited identifier flag to true.

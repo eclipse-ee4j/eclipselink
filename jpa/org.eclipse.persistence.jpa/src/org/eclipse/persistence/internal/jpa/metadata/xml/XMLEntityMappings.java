@@ -22,15 +22,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
- import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.Writer;
-import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -737,7 +731,6 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      */
-    @SuppressWarnings("deprecation")
     protected XMLEntityMappings reloadXMLEntityMappingsObject(XMLEntityMappings xmlEntityMappings) {
         ByteArrayOutputStream outputStream = null;
         StringReader reader1 = null;

@@ -13,27 +13,25 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #6 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_SECOND_LIEUTENANT")
 public class SecondLieutenant {
     @EmbeddedId
-    @AttributeOverrides({
-        @AttributeOverride(name="firstName", column=@Column(name="FIRST_NAME")),
-        @AttributeOverride(name="lastName", column=@Column(name="LAST_NAME"))
-    })
     LieutenantId id;
     
     @OneToOne 
-    @MappedById
+    @MapsId
     Lieutenant lieutenant;
     
     public LieutenantId getId() {

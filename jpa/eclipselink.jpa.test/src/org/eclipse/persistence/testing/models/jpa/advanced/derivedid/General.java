@@ -22,6 +22,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
+/**
+ * This model tests Example #4 of the mapsId cases (mapped from LieutenantGeneral)
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_GENERAL")
 public class General { 

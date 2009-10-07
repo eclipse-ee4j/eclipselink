@@ -41,7 +41,6 @@
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -18,10 +18,10 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class CorporalId {
-    @Column(name="FIRSTNAME")
+    @Column(name="F_NAME")
     String firstName;
     
-    @Column(name="LASTNAME")
+    @Column(name="L_NAME")
     String lastName;
     
     public String getFirstName() {

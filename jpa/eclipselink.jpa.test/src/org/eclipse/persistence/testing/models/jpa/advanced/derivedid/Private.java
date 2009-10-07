@@ -13,24 +13,34 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #3 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_PRIVATE")
 public class Private {
     @EmbeddedId 
-    PrivateId id;
+    @AttributeOverride(name="name", column=@Column(name="PRIVATE_NAME"))
+    PrivateId privateId;
     
     @ManyToOne 
-    @MappedById("corporalPK")
+    // Default the join columns. Since it is to a composite primary key
+    // the default pks's are the same as the pk's of the referenced entity.
+    @MapsId("corporalPK")
     Corporal corporal;
     
     public PrivateId getId() {
-        return id;
+        return privateId;
     }
     
     public Corporal getCorporal() {
@@ -38,11 +48,11 @@ public class Private {
     }
     
     public void setId(PrivateId id) {
-        this.id = id;
+        this.privateId = id;
     }
 
     public void setCorporal(Corporal corporal) {
         this.corporal = corporal;
-        id.setCorporalPK(corporal.getCorporalId());
+        privateId.setCorporalPK(corporal.getCorporalId());
     }
 }

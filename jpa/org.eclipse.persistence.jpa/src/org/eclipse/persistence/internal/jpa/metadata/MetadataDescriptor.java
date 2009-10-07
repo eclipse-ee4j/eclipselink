@@ -323,10 +323,6 @@ public class MetadataDescriptor {
         m_descriptor.addForeignKeyFieldForMultipleTable(fkField, pkField);
         m_pkJoinColumnAssociations.put(fkField.getName(), pkField.getName());
     }
-    
-    public Map getGenericTypes() {
-        return m_genericTypes;
-    }
 
     /**
      * INTERNAL:
@@ -438,8 +434,8 @@ public class MetadataDescriptor {
             // We didn't find an accessor on our descriptor (or a parent descriptor), 
             // check our aggregate descriptors now.
             for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-                // If the attribute name employs the dot notation, rip off the first 
-                // bit (up to the first dot and keep burying down the embeddables)
+              // If the attribute name employs the dot notation, rip off the first 
+              // bit (up to the first dot and keep burying down the embeddables)
                 String subAttributeName = new String(fieldOrPropertyName);
                 if (subAttributeName.contains(".")) {
                     subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
@@ -604,6 +600,13 @@ public class MetadataDescriptor {
      */
     public String getGenericType(String genericName) {
        return m_genericTypes.get(genericName); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map getGenericTypes() {
+        return m_genericTypes;
     }
     
     /**
@@ -1207,29 +1210,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Method to check if the given field is part of the primary key for
-     * this descriptor. It will check against actual field instances and
-     * not rely on the equals code logic from DatabaseField since it works
-     * as follows:
-     *  - ID and ID - returns true
-     *  - EMPLOYEE.ID and ID - returns true
-     *  - ID and ADDRESS.ID - returns true
-     *  - EMPLOYEE.ID and ADDRESS.ID - returns false
-     *  Performing a list contains check could incorrectly return a true value
-     *  indicating the field is part of the primary key when it actually is not.
-     */
-    public boolean isPrimaryKeyField(DatabaseField field) {
-        for (DatabaseField idField : getPrimaryKeyFields()) {
-            if (field == idField) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public boolean pkClassWasNotValidated() {
         return ! m_pkClassIDs.isEmpty();
@@ -1304,6 +1284,9 @@ public class MetadataDescriptor {
      */
     public void removePrimaryKeyField(DatabaseField field) {
         getPrimaryKeyFields().remove(field);
+        
+        // Remove the primary key accessor.
+        m_primaryKeyAccessors.remove(field.getName());
     }
     
     /**

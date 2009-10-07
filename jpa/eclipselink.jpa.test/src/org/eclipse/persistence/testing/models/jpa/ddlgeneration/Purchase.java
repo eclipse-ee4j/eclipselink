@@ -8,38 +8,43 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     04/24/2009-2.0 Guy Pelletier 
- *       - 270011: JPA 2.0 MappedById support
+ *     07/17/2009 - tware - added tests for DDL generation of maps
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
+import javax.persistence.AssociationOverride;
 import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
-/**
- * This model tests Example #6 of the mapsId cases (mapped from Second Lieutenant).
- * 
- * @author gpelleti
- */
 @Entity
-@Table(name="JPA_LIEUTENANT")
-public class Lieutenant {
-    @EmbeddedId
-    @AttributeOverrides({
-        @AttributeOverride(name="firstName", column=@Column(name="F_NAME")),
-        @AttributeOverride(name="lastName", column=@Column(name="L_NAME"))
-    })
-    LieutenantId id;
+public class Purchase {
+    @Id
+    @GeneratedValue
+    private int id;
     
-    public LieutenantId getId() {
+    @AttributeOverride(
+            name="amount", 
+            column=@Column(name="FEE_AMOUNT"))
+    @AssociationOverride(
+            name="currency",
+            joinColumns=@JoinColumn(name="FEE_ID"))
+    @Embedded
+    private Money fee;
+    
+    public int getId() {
         return id;
     }
     
-    public void setId(LieutenantId id) {
-        this.id = id;
+    public Money getFee() {
+        return fee;
+    }
+    
+    public void setFee(Money fee) {
+        this.fee = fee;
     }
 }

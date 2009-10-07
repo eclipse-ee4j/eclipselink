@@ -35,7 +35,6 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -45,7 +44,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMe
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -196,43 +195,6 @@ public class EmbeddedAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * The reference descriptor in this case is the descriptor for the one to
-     * one mapping's reference class. This method is called when processing a 
-     * derived mapped by id case. This embedded accessor (aka the derived id
-     * class accessor) is either directly on the dependent entity or nested 
-     * within the dependent's embedded id. In either case it does not affect 
-     * processing details of the dependent field and we must always take an 
-     * attribute override setting into consideration.
-     */
-    public void processDerivedIdFields(OneToOneMapping mapping, MetadataDescriptor referenceDescriptor) {
-        EmbeddedIdAccessor referenceEmbeddedIdAccessor = referenceDescriptor.getEmbeddedIdAccessor();
-        
-        for (MappingAccessor basicAccessor : getReferenceAccessors()) {
-            String defaultFieldName = ((BasicAccessor) basicAccessor).getField().getName();
-            // Get field will look for an attribute override setting.
-            DatabaseField dependentField = getField(defaultFieldName);
-            
-            DatabaseField parentField;
-            if (referenceEmbeddedIdAccessor == null) {
-                // The reference descriptor does not use an embedded id but an 
-                // id class so we use the field directly without worrying about 
-                // an attribute override since it would already be taken care of 
-                // at this point. The field on the reference descriptor's 
-                // accessor is the field we want.
-                parentField = referenceDescriptor.getAccessorFor(basicAccessor.getAttributeName()).getMapping().getField();
-            } else {
-                // The reference descriptor uses an embedded id therefore we 
-                // need to gather the parent field taking into consideration an 
-                // attribute override.
-                parentField = referenceEmbeddedIdAccessor.getField(defaultFieldName);
-            }
-            
-            mapping.addForeignKeyField(dependentField, parentField);
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
@@ -245,5 +207,22 @@ public class EmbeddedAccessor extends MappingAccessor {
      */
     public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
         m_attributeOverrides = attributeOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Called when process the mapsId metadata. The id fields for this owning
+     * descriptor must have it's id fields update to those from the one to one
+     * accessor that maps them. We process embedded and embedded id mappings
+     * first, so by default they get mapped and processed as they normally
+     * would. When we go through the relationship accessors and discover a
+     * mapsId we then need to make some updates to our list of primary key
+     * fields.
+     */
+    protected void updateDerivedIdField(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, MappingAccessor mappingAccessor) {
+       addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mappingAccessor);
+       
+       // Update the primary key field.
+       updatePrimaryKeyField(mappingAccessor, overrideField);
     }
 }

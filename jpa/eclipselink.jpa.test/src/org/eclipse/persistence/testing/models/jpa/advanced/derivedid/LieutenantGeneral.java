@@ -15,10 +15,15 @@ package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #4 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_LIEUTENANT_GENERAL")
 public class LieutenantGeneral {
@@ -26,7 +31,8 @@ public class LieutenantGeneral {
     Integer id;
 
     @OneToOne
-    @MappedById
+    // join columns will default as general_general_id
+    @MapsId
     General general;
     
     public General getGeneral() {

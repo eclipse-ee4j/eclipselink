@@ -34,7 +34,9 @@ public class DerivedIdClassAccessor extends EmbeddedAccessor {
     
     /**
      * INTERNAL:
-     * Return true if this accessor is an id class accessor.
+     * Return true if this accessor is a derived id class accessor. That is,
+     * an EmbeddedId that has a portion of its accessors mapped through an
+     * owning entities ManyToOne relationship using a MapsId.
      */
     @Override
     public boolean isDerivedIdClass(){

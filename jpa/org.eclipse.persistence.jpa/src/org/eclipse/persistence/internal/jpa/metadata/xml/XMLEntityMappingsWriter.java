@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.*;
-import java.net.URI;
 
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;

@@ -13,21 +13,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #3 of the mapsId cases (mapped from Private)
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_CORPORAL")
 public class Corporal {
     @EmbeddedId
-    @AttributeOverrides({
-        @AttributeOverride(name="firstName", column=@Column(name="F_NAME")),
-        @AttributeOverride(name="lastName", column=@Column(name="L_NAME"))
-    })
     CorporalId corporalId;
     
     public CorporalId getCorporalId() {

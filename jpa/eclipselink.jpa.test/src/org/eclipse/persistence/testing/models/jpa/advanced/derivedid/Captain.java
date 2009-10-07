@@ -13,20 +13,34 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #2 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_CAPTAIN")
 public class Captain {
     @EmbeddedId 
+    @AttributeOverride(name="name", column=@Column(name="someOtherName"))
     CaptainId id;
     
     @ManyToOne 
-    @MappedById("majorPK")
+    @JoinColumns({
+        @JoinColumn(name="FK1", referencedColumnName="F_NAME"),
+        @JoinColumn(name="FK2", referencedColumnName="L_NAME")
+    })
+    @MapsId // use the default value of major to look up the id field.
     Major major;
     
     public CaptainId getId() {
@@ -43,6 +57,6 @@ public class Captain {
 
     public void setMajor(Major major) {
         this.major = major;
-        id.setMajorPK(major.getPK());
+        id.setMajor(major.getPK());
     }
 }

@@ -140,22 +140,21 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected MappingAccessor(String xmlElement) {
         super(xmlElement);
     }
-
+    
     /**
      * INTERNAL:
      * Process an attribute override for either an embedded object mapping, or
      * an element collection mapping containing embeddable objects.
      */
-    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, DatabaseMapping aggregatesMapping) {
+    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, MappingAccessor aggregatesAccessor) {
+        DatabaseMapping aggregatesMapping = aggregatesAccessor.getMapping();
         DatabaseField aggregatesMappingField = aggregatesMapping.getField();
         
-        // If the override field is to an id field, we need to update the 
-        // list of primary keys on the owning descriptor. Embeddables can be 
-        // shared and different owners may want to override the attribute 
-        // with a different column.
-        if (getOwningDescriptor().isPrimaryKeyField(aggregatesMappingField)) {
-            getOwningDescriptor().removePrimaryKeyField(aggregatesMappingField);
-            getOwningDescriptor().addPrimaryKeyField(overrideField, getOwningDescriptor().getPrimaryKeyAccessorForField(aggregatesMappingField));
+        // If we are specifying an attribute override to an id field that is
+        // within the embeddable we must update the primary key field on the
+        // owning descriptor.
+        if (aggregatesAccessor.isId()) {
+            updatePrimaryKeyField(aggregatesAccessor, overrideField);
         }
         
         if (overrideName.indexOf(".") > -1) {
@@ -1128,14 +1127,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // The getMappingForAttributeName call will take care of any sub dot 
             // notation attribute names when looking for the mapping. It will
             // traverse the embeddable chain. 
-            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(attributeName);
+            MappingAccessor mappingAccessor = embeddableDescriptor.getAccessorFor(attributeName);
                 
-            if (mapping == null) {
+            if (mappingAccessor == null) {
                 throw ValidationException.embeddableAttributeOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-            } else if (! mapping.isDirectToFieldMapping()) {
+            } else if (! mappingAccessor.isBasic()) {
                 throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else {
-                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mapping);
+                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mappingAccessor);
             }
         }
     }
@@ -1672,6 +1671,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
     @Override
     public String toString() {
         return getAnnotatedElementName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Update the primary key field on the owning descriptor the override field
+     * given.
+     */
+    protected void updatePrimaryKeyField(MappingAccessor idAccessor, DatabaseField overrideField) {
+        getOwningDescriptor().removePrimaryKeyField(idAccessor.getMapping().getField());
+        getOwningDescriptor().addPrimaryKeyField(overrideField, idAccessor);
     }
     
     /**

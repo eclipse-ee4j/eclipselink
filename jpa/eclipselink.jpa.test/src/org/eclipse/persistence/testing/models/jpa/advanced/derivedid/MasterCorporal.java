@@ -16,17 +16,22 @@ package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+/**
+ * This model tests Example #1 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
 @Entity
 @Table(name="JPA_MASTER_CORPORAL")
 public class MasterCorporal {
     @EmbeddedId 
     MasterCorporalId id;
     
-    @ManyToOne 
-    @MappedById("sargeantPK")
+    @ManyToOne // join column default to SARGEANT_ID
+    @MapsId("sargeantPK")
     Sargeant sargeant;
     
     public MasterCorporalId getId() {

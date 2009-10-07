@@ -27,6 +27,18 @@
         </attributes>
     </entity>
 	<entity class="Comment"/>
-    
+	<entity class="Purchase"/>
+    <entity class="Currency">
+		<attributes>
+			<id name="id">
+				<generated-value />
+			</id>
+		</attributes>
+	</entity>
+	<embeddable class="Money">
+		<attributes>
+			<many-to-one name="currency"></many-to-one>
+		</attributes>
+	</embeddable>
     <embeddable class="ThreadInfo"/>
 </entity-mappings>

@@ -89,12 +89,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
         OneToOneMapping mapping = initOneToOneMapping();
         setMapping(mapping);
         
-        if (hasMappedById()) {
-            // Mapping is mapped by id.
-            processMappedByIdKeys(mapping);
-        } else {
-            // Process the JoinColumns (if there are any) for this mapping.
-            processOwningMappingKeys(mapping);
-        }
+        // Process the owning keys for this mapping.
+        processOwningMappingKeys(mapping);
     }
 }

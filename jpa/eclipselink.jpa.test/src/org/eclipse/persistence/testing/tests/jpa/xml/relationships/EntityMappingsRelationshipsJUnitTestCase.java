@@ -89,8 +89,6 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testOne2OneRelationTables"));
-        
         if (persistenceUnit.equals("extended-relationships")) {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testExcludeDefaultMappings", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
@@ -99,6 +97,8 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCopyPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCloneCopyPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testInstantiationCopyPolicy", persistenceUnit));
+        } else {
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testOne2OneRelationTables", persistenceUnit));
         }
         
         return suite;
@@ -473,14 +473,12 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
      * - 1-1 mapped using a JoinTable (bi-directional)
      */
     public void testOne2OneRelationTables() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         
         Order order1 = new Order();
         Order order2 = new Order();
         Auditor auditor = new Auditor();
-        
-        getServerSession().setLogLevel(0);
         
         try {
             OrderCard order1Card = new OrderCard();
@@ -515,16 +513,16 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
 
         
-        clearCache();
-        em = createEntityManager();
+        clearCache(m_persistenceUnit);
+        em = createEntityManager(m_persistenceUnit);
         
         Auditor refreshedAuditor = em.find(Auditor.class, auditor.getId());
         Order refreshedOrder1 = em.find(Order.class, order1.getOrderId());
         Order refreshedOrder2 = em.find(Order.class, order2.getOrderId());
         
-        assertTrue("Auditor read back did not match the original", getServerSession().compareObjects(auditor, refreshedAuditor));
-        assertTrue("Order1 read back did not match the original", getServerSession().compareObjects(order1, refreshedOrder1));
-        assertTrue("Order2 read back did not match the original", getServerSession().compareObjects(order2, refreshedOrder2));
+        assertTrue("Auditor read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(auditor, refreshedAuditor));
+        assertTrue("Order1 read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(order1, refreshedOrder1));
+        assertTrue("Order2 read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(order2, refreshedOrder2));
         
         closeEntityManager(em);
     }
