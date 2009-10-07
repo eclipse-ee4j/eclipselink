@@ -1162,8 +1162,13 @@ public class ReportQuery extends ReadAllQuery {
                         // now need to find out if it is a direct to field or something else.
                         DatabaseMapping mapping = getLeafMappingFor(baseExp, getDescriptor());
                         if ((mapping != null) && !mapping.isDirectToFieldMapping()) {
-                            newDescriptor = mapping.getReferenceDescriptor();
                             outerJoin = ((QueryKeyExpression)baseExp).shouldUseOuterJoin();
+                            if (mapping.isAggregateMapping()){
+                                newDescriptor = mapping.getDescriptor();
+                                baseExp = ((QueryKeyExpression)baseExp).getBaseExpression();
+                            } else {
+                                newDescriptor = mapping.getReferenceDescriptor();
+                            }
                         }
                     } else if (baseExp.isExpressionBuilder()) {
                         newDescriptor = getSession().getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
