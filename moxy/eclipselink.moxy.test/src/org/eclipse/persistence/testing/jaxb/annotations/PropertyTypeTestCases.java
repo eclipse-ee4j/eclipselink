@@ -105,8 +105,9 @@ public class PropertyTypeTestCases extends JAXBTestCases {
 
     public void testSchemaGen() throws Exception {
     	InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/propertyType.xsd");
-    	Map<String, InputStream> controlSchemas = new HashMap<String, InputStream>();
-    	controlSchemas.put("", controlInputStream);
+    	
+    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
+    	controlSchemas.add(controlInputStream);
     	testSchemaGen(controlSchemas);
     }    
 }

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -56,9 +57,7 @@ public class JAXBElementBase64TestCases  extends JAXBElementTestCases {
 	}
 	
 	public void testSchemaGen() throws Exception{
-		Map<String,InputStream> controlSchemas = new java.util.HashMap<String,InputStream>();	
-		super.testSchemaGen(controlSchemas);
-
+		super.testSchemaGen(new ArrayList<InputStream>());
 	}
 
 }

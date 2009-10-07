@@ -61,13 +61,14 @@ public class JAXBInheritanceTestCases extends JAXBTestCases {
 	public void testSchemaGen() throws Exception {
 		testSchemaGen(getControlSchemaFiles());
 	}
-	
-    public  Map<String, InputStream> getControlSchemaFiles(){
-	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/inheritance/schema0.xsd");
-				
-		Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-		controlSchema.put("",instream);
-		return controlSchema;
-	}
+		
+    public  List<InputStream> getControlSchemaFiles(){
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+
+    	InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/inheritance/schema0.xsd");
+    	 		
+ 		controlSchema.add(instream1);
+ 		return controlSchema;
+    }    
 	
 }

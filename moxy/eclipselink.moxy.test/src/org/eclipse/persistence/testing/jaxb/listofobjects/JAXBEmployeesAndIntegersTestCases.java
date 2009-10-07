@@ -62,22 +62,23 @@ public class JAXBEmployeesAndIntegersTestCases extends
 		}
 		return null;
 	}
-
-	 public  Map<String, InputStream> getControlSchemaFiles(){
-			
+	
+	public List< InputStream> getControlSchemaFiles(){		
 		  InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers2.xsd");					
 			
 			InputStream instream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
 			
 			InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
+			List<InputStream> controlSchema= new ArrayList<InputStream>();
 			
-			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
-			controlSchema.put("",instream2);
-			controlSchema.put("http://jaxb.dev.java.net/array",instream3);
-			controlSchema.put("listOfObjectsNamespace",instream1);
+			controlSchema.add(instream1);
+			controlSchema.add(instream2);			
+			controlSchema.add(instream3);
+			
 			return controlSchema;
-		}
-	
+	}
+	 
+	 
 	protected Object getControlObject() {
 		List<Integer> integers = new ArrayList<Integer>();
 		integers.add(new Integer("10"));

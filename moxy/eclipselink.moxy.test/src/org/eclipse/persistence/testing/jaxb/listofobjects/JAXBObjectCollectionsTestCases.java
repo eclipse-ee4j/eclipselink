@@ -55,18 +55,16 @@ public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
 		setTypes(types);
 	}
 
-	
-	   public  Map<String, InputStream> getControlSchemaFiles(){
-			
-		   InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xsd");
-			InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections2.xsd");
-			
-			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
-			controlSchema.put("http://jaxb.dev.java.net/array",instream1);
-			controlSchema.put("",instream2);
-			return controlSchema;
-		}
-
+	public List< InputStream> getControlSchemaFiles(){		
+	    InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xsd");
+		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections2.xsd");
+		List<InputStream> controlSchema= new ArrayList<InputStream>();
+		
+		controlSchema.add(instream1);
+		controlSchema.add(instream2);
+		return controlSchema;
+		
+	}	
 	
 	protected Object getControlObject() {
 		

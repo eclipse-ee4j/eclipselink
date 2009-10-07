@@ -81,14 +81,14 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 	}
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception { 
-         if(null != XML_INPUT_FACTORY) {
-             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
-             instream.close();
-             xmlToObjectTest(testObject);
-         } 
-     } 
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);            
+            instream.close();
+            xmlToObjectTest(testObject);                      
+        } 
+    }   
     
     public void testXMLToObjectFromXMLStreamReaderWithType() throws Exception { 
         if(null != XML_INPUT_FACTORY) {
@@ -115,6 +115,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject, newControlObj);                      
         } 
     } 
+    
   
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
@@ -261,8 +262,8 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
                 xmlToObjectTest(obj, newControlObj);  
 	}
 
-	public abstract Map<String, InputStream> getControlSchemaFiles();
-	
+	public abstract List<InputStream> getControlSchemaFiles();
+		
 	public void testSchemaGen() throws Exception {
 		testSchemaGen(getControlSchemaFiles());
 	}

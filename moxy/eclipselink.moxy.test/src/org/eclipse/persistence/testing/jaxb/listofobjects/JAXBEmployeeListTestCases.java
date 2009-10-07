@@ -52,12 +52,12 @@ public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
 		return fld.getGenericType();
 	}
 	
-    public  Map<String, InputStream> getControlSchemaFiles(){
+    public  List<InputStream> getControlSchemaFiles(){
 		
-	InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee.xsd");
+	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee.xsd");
 			
-	Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-		controlSchema.put("listOfObjectsNamespace",instream);
+	    List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
 		return controlSchema;
 	}
 

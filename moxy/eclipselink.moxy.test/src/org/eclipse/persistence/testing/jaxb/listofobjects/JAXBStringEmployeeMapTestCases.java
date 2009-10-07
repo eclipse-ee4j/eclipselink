@@ -55,18 +55,18 @@ public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
 	public void tearDown(){
 		super.tearDown();
 		getXMLComparer().setIgnoreOrder(false);
-	}
-	
-   public  Map<String, InputStream> getControlSchemaFiles(){
-				
+	}	 
+   
+	public List< InputStream> getControlSchemaFiles(){		
 		InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap.xsd");
 		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap2.xsd");
-		
-		Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
-		controlSchema.put("listOfObjectsNamespace",instream1);
-		controlSchema.put("",instream2);
-		return controlSchema;
-	}
+		List<InputStream> controlSchema= new ArrayList<InputStream>();
+				
+		controlSchema.add(instream1);
+		controlSchema.add(instream2);
+				
+        return controlSchema;
+    }	
 
 protected Object getControlObject() {
 	ArrayList responsibilities = new ArrayList();

@@ -61,14 +61,14 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		setClasses(classes);
 	}
 		
-	   public  Map<String, InputStream> getControlSchemaFiles(){
+	   public  List<InputStream> getControlSchemaFiles(){
 			
 		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
 			
-		   Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-				controlSchema.put("listOfObjectsNamespace",instream);				
-				return controlSchema;
-		}
+			List<InputStream> controlSchema = new ArrayList<InputStream>();		
+			controlSchema.add(instream);				
+			return controlSchema;
+		}	  
 
 	protected Object getControlObject() {
 		ListofObjects listofObjects = new ListofObjects();

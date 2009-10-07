@@ -60,12 +60,12 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 		return jaxbElement;
 	}
 	
-	public  Map<String, InputStream> getControlSchemaFiles(){
+	public  List<InputStream> getControlSchemaFiles(){
 		
 		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
 			
-			Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-			controlSchema.put("",instream);
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+			controlSchema.add(instream);
 			return controlSchema;
 		}
 		

@@ -103,18 +103,19 @@ public class JAXBListNameCollisionEmployee2TestCases extends
 
 		return jaxbElement;
 	}
-	   public  Map<String, InputStream> getControlSchemaFiles(){
-			
+
+	   public List< InputStream> getControlSchemaFiles(){		
 		   InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
 		   InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
-			
-		   Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-				controlSchema.put("listOfObjectsNamespace",instream1);
-				controlSchema.put("examplenamespace",instream2);
-				return controlSchema;
+		    List<InputStream> controlSchema= new ArrayList<InputStream>();
+				
+			controlSchema.add(instream1);
+			controlSchema.add(instream2);
+				
+			return controlSchema;
 		}
-
-	
+	   
+	   
 	protected Type getTypeToUnmarshalTo() {
 		return org.eclipse.persistence.testing.jaxb.employee.Employee[].class;
 	}

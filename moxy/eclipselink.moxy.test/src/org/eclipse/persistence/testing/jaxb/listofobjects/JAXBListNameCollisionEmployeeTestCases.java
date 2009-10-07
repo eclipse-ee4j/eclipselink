@@ -93,17 +93,17 @@ public class JAXBListNameCollisionEmployeeTestCases extends
 		return jaxbElement;
 	}
 
-	
-	public  Map<String, InputStream> getControlSchemaFiles(){
+	public List< InputStream> getControlSchemaFiles(){		
+        InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
+	    InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
+		List<InputStream> controlSchema= new ArrayList<InputStream>();
 		
-		   InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
-		   InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
-			
-		   Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-				controlSchema.put("listOfObjectsNamespace",instream1);
-				controlSchema.put("examplenamespace",instream2);
-				return controlSchema;
-		}
+		controlSchema.add(instream1);
+		controlSchema.add(instream2);
+		
+		return controlSchema;
+	}	
+	
 	protected Type getTypeToUnmarshalTo() throws Exception {
 		Field fld = ListofObjects.class.getField("empList");	
 		return fld.getGenericType();

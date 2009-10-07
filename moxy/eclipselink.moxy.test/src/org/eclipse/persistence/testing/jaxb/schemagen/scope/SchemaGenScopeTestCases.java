@@ -13,7 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.schemagen.scope;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -38,16 +40,18 @@ public class SchemaGenScopeTestCases extends JAXBTestCases{
 		setClasses(classes);
 	}
 
-	public  Map<String, InputStream> getControlSchemaFiles(){		
+	public  List<InputStream> getControlSchemaFiles(){		
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/scope/scope.xsd");		
-        Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-        controlSchema.put("",instream);
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
         return controlSchema;
     }
+	
  
 	public void testSchemaGen() throws Exception {
 		testSchemaGen(getControlSchemaFiles());
 	}
+	
 	protected Object getControlObject() {
 		ClassA classA = new ClassA();
 		classA.setSomeValue("value");

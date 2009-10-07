@@ -60,7 +60,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
 		assertEquals("A Schema was generated but should not have been", 0, outputResolver.getSchemaFiles().size()); 
 	}
 	
-	public Map<String, InputStream> getControlSchemaFiles() {
+	public java.util.List<InputStream> getControlSchemaFiles() {
 		//not applicable for this test since we override testSchemaGen
 		return null;  		
 	}

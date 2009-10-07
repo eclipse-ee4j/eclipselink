@@ -39,15 +39,15 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
 		setClasses(classes);
 	}
 
-public Map<String,InputStream> getControlSchemaFiles(){
-		
+
+    public List< InputStream> getControlSchemaFiles(){			 		   
 		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xsd");
 		
-		Map<String, InputStream> controlSchema = new HashMap<String,InputStream>();
-		controlSchema.put("http://jaxb.dev.java.net/array",instream);
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
 		return controlSchema;
 	}
-	
+
 	protected Type getTypeToUnmarshalTo() {
 		return boolean[].class;
 	}

@@ -68,17 +68,15 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCase
 
 		return jaxbElement;
 	}
-
 	
-	   public  Map<String, InputStream> getControlSchemaFiles(){
-			
-		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
-			
-			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
-			controlSchema.put("",instream);			
-			return controlSchema;
-		}
-
+	public List< InputStream> getControlSchemaFiles(){			 		   
+	   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
+				
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
+		return controlSchema;
+	}
+		
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}

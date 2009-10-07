@@ -59,16 +59,15 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
 		return jaxbElement;
 	}
 
-	
-    public  Map<String, InputStream> getControlSchemaFiles(){
+	    
+    public List< InputStream> getControlSchemaFiles(){	
+	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xsd");
 		
-	InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xsd");
-		
-		Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-		controlSchema.put("http://jaxb.dev.java.net/array",instream);
+	    List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
 		return controlSchema;
 	}
-	
+    
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}

@@ -469,20 +469,19 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
     }
 
-    public void testSchemaGen(Map<String,InputStream> controlSchemas) throws Exception {
-		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+    public void testSchemaGen(List<InputStream> controlSchemas) throws Exception {
+    	MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 		getJAXBContext().generateSchema(outputResolver);
 		
-		Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();		
-		
+		List<File> generatedSchemas = outputResolver.getSchemaFiles();
 		assertEquals(controlSchemas.size(), generatedSchemas.size());
-		
-		Iterator<String> keyIter = controlSchemas.keySet().iterator();
-		while(keyIter.hasNext()){
-			String nextKey = keyIter.next();
-			InputStream nextControlValue = controlSchemas.get(nextKey);
-			File nextGeneratedValue =generatedSchemas.get(nextKey);
-			assertNotNull("Generated Schema for namespace not found:" + nextKey, nextGeneratedValue);
+
+		for(int i=0;i<controlSchemas.size(); i++){
+			InputStream nextControlValue = controlSchemas.get(i);						
+			File nextGeneratedValue =generatedSchemas.get(i);
+			
+			assertNotNull("Generated Schema not found.", nextGeneratedValue);
+			
 			Document control = parser.parse(nextControlValue);
 			Document test = parser.parse(nextGeneratedValue);
 			
@@ -494,28 +493,27 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 			}
 			assertTrue("generated schema did not match control schema", isEqual);
 		}
-	}
+    }
     
     public class MySchemaOutputResolver extends SchemaOutputResolver {
 		// keep a list of processed schemas for the validation phase of the
 		// test(s)
-		public Map<String, File> schemaFiles;
+		public List<File> schemaFiles;
 
 		public MySchemaOutputResolver() {
-			schemaFiles = new java.util.HashMap<String, File>();
+			schemaFiles = new ArrayList<File>();
 		}
 
-		public Result createOutput(String namespaceURI, String suggestedFileName)
-				throws IOException {
+		public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
 			File schemaFile = new File(suggestedFileName);
 			if(namespaceURI == null){
 				namespaceURI ="";
 			}
-			schemaFiles.put(namespaceURI, schemaFile);
+			schemaFiles.add(schemaFile);
 			return new StreamResult(schemaFile);
-		}
-
-		public Map<String,File> getSchemaFiles() {
+		}		
+		
+		public List<File> getSchemaFiles() {
 			return schemaFiles;
 		}
 	}

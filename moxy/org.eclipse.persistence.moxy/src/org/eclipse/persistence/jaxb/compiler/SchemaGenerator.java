@@ -59,6 +59,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
  */
 public class SchemaGenerator {
     private HashMap<String, Schema> schemaForNamespace;
+    private java.util.List<Schema> allSchemas;
     private Schema schema;
     private int schemaCount;
     private Helper helper;
@@ -579,7 +580,6 @@ public class SchemaGenerator {
                         }
                 	}
                 } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
-                    //if (!isXmlElementWrapper) {
                         Element element = new Element();
                         // Set minOccurs based on the 'required' flag
                         if (!(parentCompositor instanceof All)) {
@@ -693,6 +693,12 @@ public class SchemaGenerator {
                             }
                             QName keySchemaType = getSchemaTypeFor(keyType);                                            
                             if (keySchemaType != null) {
+                       	    TypeInfo targetInfo = this.typeInfo.get(keyType.getQualifiedName());
+                            if(targetInfo != null) {
+                        	Schema keyElementSchema = this.getSchemaForNamespace(keySchemaType.getNamespaceURI());
+                         	//add an import here
+	                        addImportIfRequired(schema, keyElementSchema, keySchemaType.getNamespaceURI());
+                            }
                             	String prefix;
                             	if (keySchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                                     prefix = XMLConstants.SCHEMA_PREFIX;
@@ -704,15 +710,8 @@ public class SchemaGenerator {
                             	} else {
                             		typeName = keySchemaType.getLocalPart();
                             	}
-                            	keyElement.setType(typeName);
-                            	
-                            	TypeInfo targetInfo = this.typeInfo.get(keyType.getQualifiedName());
-                                if (targetInfo != null) {
-    	                        	Schema keyElementSchema = this.getSchemaForNamespace(keySchemaType.getNamespaceURI());
-    	                        	//add an import here
-    	                            addImportIfRequired(schema, keyElementSchema, keySchemaType.getNamespaceURI());
-                                }
-                            }
+                        	keyElement.setType(typeName);
+                        }
                                                 	
                         	entrySequence.addElement(keyElement);                    	
                         	
@@ -721,6 +720,12 @@ public class SchemaGenerator {
                         	valueElement.setMinOccurs(Occurs.ZERO);
                         	QName valueSchemaType = getSchemaTypeFor(valueType);                                            
                             if (valueSchemaType != null) {
+                            TypeInfo targetInfo = this.typeInfo.get(valueType.getQualifiedName());
+                            if(targetInfo != null) {
+                            	Schema valueElementSchema = this.getSchemaForNamespace(valueSchemaType.getNamespaceURI());
+                            	//add an import here
+                                addImportIfRequired(schema, valueElementSchema, valueSchemaType.getNamespaceURI());	
+                            }
                             	String prefix;
                             	if (valueSchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                                     prefix = XMLConstants.SCHEMA_PREFIX;
@@ -733,15 +738,8 @@ public class SchemaGenerator {
                             		typeName = valueSchemaType.getLocalPart();
                             	}
                             	
-                            	valueElement.setType(typeName);
-                            	
-                            	TypeInfo targetInfo = this.typeInfo.get(valueType.getQualifiedName());
-                                if (targetInfo != null) {
-                                	Schema valueElementSchema = this.getSchemaForNamespace(valueSchemaType.getNamespaceURI());
-                                	//add an import here
-                                    addImportIfRequired(schema, valueElementSchema, valueSchemaType.getNamespaceURI());	
-                                }
-                            }
+                        	valueElement.setType(typeName);
+                        }
                         	                    	               	
                         	entrySequence.addElement(valueElement);
                         	entryComplexType.setSequence(entrySequence);
@@ -807,7 +805,6 @@ public class SchemaGenerator {
                             parentCompositor.addElement(element);
                         }
                     }
-                //}
             }
         }
     }
@@ -889,6 +886,7 @@ public class SchemaGenerator {
     private Schema getSchemaForNamespace(String namespace) {
         if(schemaForNamespace == null) {
             schemaForNamespace = new HashMap<String, Schema>();
+            allSchemas = new ArrayList<Schema>();
         }
         Schema schema = schemaForNamespace.get(namespace);
         if (schema == null) {        	        	
@@ -927,15 +925,16 @@ public class SchemaGenerator {
                 schema.setElementFormDefault(namespaceInfo.isElementFormQualified());
             }
             schemaForNamespace.put(namespace, schema);
+            allSchemas.add(schema);
         }
         return schema;
     }
     
     public Collection<Schema> getAllSchemas() {
-        if(schemaForNamespace == null) {
-            schemaForNamespace = new HashMap<String, Schema>();
+        if(allSchemas == null) {
+        	allSchemas = new ArrayList<Schema>();
         }
-        return schemaForNamespace.values();
+        return allSchemas;       
     }
     
     public NamespaceInfo getNamespaceInfoForNamespace(String namespace) {

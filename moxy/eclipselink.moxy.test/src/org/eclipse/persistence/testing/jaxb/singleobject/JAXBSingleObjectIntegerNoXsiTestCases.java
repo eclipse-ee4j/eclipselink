@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -57,9 +58,8 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBTestCases {
 
 		assertEquals("A Schema was generated but should not have been", 0, outputResolver.getSchemaFiles().size()); 
 	}
-	
-	
-	public Map<String, InputStream> getControlSchemaFiles() {
+		
+	public List<InputStream> getControlSchemaFiles() {
 		//not applicable for this test since we override testSchemaGen
 		return null;  		
 	}

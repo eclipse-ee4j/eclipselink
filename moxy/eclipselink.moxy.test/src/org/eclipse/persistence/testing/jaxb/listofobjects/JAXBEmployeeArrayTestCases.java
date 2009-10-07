@@ -58,15 +58,14 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases {
 		setClasses(classes);
 	}
 
-	   public  Map<String, InputStream> getControlSchemaFiles(){
+	public List< InputStream> getControlSchemaFiles(){			 		   
+		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xsd");
 			
-		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xsd");
-				
-				Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-				controlSchema.put("listOfObjectsNamespace",instream);
-				return controlSchema;
-			}
-	
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
+		return controlSchema;
+	}
+	   
 	protected Object getControlObject() {
 		ArrayList responsibilities = new ArrayList();
 		responsibilities.add(CONTROL_RESPONSIBILITY1);

@@ -28,14 +28,15 @@ public class JAXBEmployeeArrayListTestCases extends JAXBEmployeeListTestCases {
 		super(name);
 	}
 
-	public  Map<String, InputStream> getControlSchemaFiles(){
+	public List<InputStream> getControlSchemaFiles(){
 		
 		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/arrayListEmployee.xsd");
 			
-		Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
-			controlSchema.put("listOfObjectsNamespace",instream);
-			return controlSchema;
-		}
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+		controlSchema.add(instream);
+		return controlSchema;
+	}
+		
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
