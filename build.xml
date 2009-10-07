@@ -264,7 +264,7 @@
     </target>
 
     <target name="build-oracle-extension-test">
-        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
@@ -691,14 +691,14 @@
 
     <!-- Run core LRG. -->
     <target name="test-core" description="run the core tests">
-        <ant antfile="${eclipselink.core.test}/build.xml" target="test"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="test"/>
     </target>
      <target name="test-browser" description="run the core testing browser">
-        <ant antfile="${eclipselink.core.test}/build.xml" target="test-browser"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="test-browser"/>
     </target>
     <!-- Run core SRG. -->
     <target name="test-core-srg" description="run the core srg tests">
-        <ant antfile="${eclipselink.core.test}/build.xml" target="test-srg"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="test-srg"/>
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">

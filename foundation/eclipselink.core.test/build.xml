@@ -206,8 +206,8 @@
 
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink core tests">
-        <fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/>
-        <fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${persistence.jar.testing}'." unless="persistence.jar.exist"/>
+        <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
+        <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${persistence.jar.testing}'." unless="persistence.jar.exist"/ -->
         <mkdir dir="${core_test.classes.dir}"/>
         <javac srcdir="${core_test.src.dir}"
                destdir="${core_test.classes.dir}"
@@ -237,8 +237,8 @@
 
     <!-- Translates the login information in the resources into the run directory. -->
     <target name="process-resource">
-        <fail message="Cannot find jdbc driver: '${jdbc.driver.jar}'." unless="jdbc.jar.exist"/>
-        <fail message="Cannot find tools library: '${tools.lib}'." unless="tools.jar.exist"/>
+        <!-- fail message="Cannot find jdbc driver: '${jdbc.driver.jar}'." unless="jdbc.jar.exist"/ -->
+        <!-- fail message="Cannot find tools library: '${tools.lib}'." unless="tools.jar.exist"/ -->
         <mkdir dir="${core_test.run.dir}"/>
         <filter token="dbUser" value="${db.user}"/>
         <filter token="dbPassword" value="${db.pwd}"/>
