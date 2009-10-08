@@ -63,6 +63,7 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 	
 	@Override
 	protected void initialize(Node parent) {
+		// TODO Auto-generated method stub
 		super.initialize(parent);
 		this.insertQuery = new MWInsertQuery(this);
 		this.deleteQuery = new MWDeleteQuery(this);
@@ -71,6 +72,16 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		this.readAllQuery = new MWCustomReadAllQuery(this);
 	}
 
+//	@Override
+//	protected void initialize() {
+//		super.initialize();
+//		this.insertQuery = new MWInsertQuery(this);
+//		this.deleteQuery = new MWDeleteQuery(this);
+//		this.updateQuery = new MWUpdateQuery(this);
+//		this.readObjectQuery = new MWCustomReadObjectQuery(this);
+//		this.readAllQuery = new MWCustomReadAllQuery(this);
+//	}
+	
 	@Override
 	protected void addChildrenTo(List children) {
 		super.addChildrenTo(children);
@@ -268,32 +279,41 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 	//TopLink use only
 	private void setInsertQueryForTopLink(MWInsertQuery query) {
-		this.insertQuery = query;
+//		if (query != null) {
+			this.insertQuery = query;
+//		}
 	}
 
 	//TopLink use only
 	private void setDeleteQueryForTopLink(MWDeleteQuery query) {
-		this.deleteQuery = query;
+//		if (query != null) {
+			this.deleteQuery = query;
+//		}
 	}
 
 	//TopLink use only
 	private void setUpdateQueryForTopLink(MWUpdateQuery query) {
-		this.updateQuery = query;
+//		if (query != null) {
+			this.updateQuery = query;
+//		}
 	}
 
 	//TopLink use only
 	private void setReadObjectQueryForTopLink(MWCustomReadObjectQuery query) {
-		this.readObjectQuery = query;
+//		if (query != null) {
+			this.readObjectQuery = query;
+//		}
 	}
 
 	//TopLink use only
 	private void setReadAllQueryForTopLink(MWCustomReadAllQuery query) {
-		this.readAllQuery = query;
+//		if (query != null) {
+			this.readAllQuery = query;
+//		}
 	}
 	
 	@Override
 	protected void legacy60PostBuild(DescriptorEvent event) {
-		// TODO Auto-generated method stub
 		super.legacy60PostBuild(event);
 
 		// Checks null since in cases where sql was specified,
