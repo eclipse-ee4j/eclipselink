@@ -62,25 +62,14 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 	}
 	
 	@Override
-	protected void initialize(Node parent) {
-		// TODO Auto-generated method stub
-		super.initialize(parent);
+	protected void initialize() {
+		super.initialize();
 		this.insertQuery = new MWInsertQuery(this);
 		this.deleteQuery = new MWDeleteQuery(this);
 		this.updateQuery = new MWUpdateQuery(this);
 		this.readObjectQuery = new MWCustomReadObjectQuery(this);
 		this.readAllQuery = new MWCustomReadAllQuery(this);
 	}
-
-//	@Override
-//	protected void initialize() {
-//		super.initialize();
-//		this.insertQuery = new MWInsertQuery(this);
-//		this.deleteQuery = new MWDeleteQuery(this);
-//		this.updateQuery = new MWUpdateQuery(this);
-//		this.readObjectQuery = new MWCustomReadObjectQuery(this);
-//		this.readAllQuery = new MWCustomReadAllQuery(this);
-//	}
 	
 	@Override
 	protected void addChildrenTo(List children) {
@@ -279,37 +268,37 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 	//TopLink use only
 	private void setInsertQueryForTopLink(MWInsertQuery query) {
-//		if (query != null) {
+		if (query != null) {
 			this.insertQuery = query;
-//		}
+		}
 	}
 
 	//TopLink use only
 	private void setDeleteQueryForTopLink(MWDeleteQuery query) {
-//		if (query != null) {
+		if (query != null) {
 			this.deleteQuery = query;
-//		}
+		}
 	}
 
 	//TopLink use only
 	private void setUpdateQueryForTopLink(MWUpdateQuery query) {
-//		if (query != null) {
+		if (query != null) {
 			this.updateQuery = query;
-//		}
+		}
 	}
 
 	//TopLink use only
 	private void setReadObjectQueryForTopLink(MWCustomReadObjectQuery query) {
-//		if (query != null) {
+		if (query != null) {
 			this.readObjectQuery = query;
-//		}
+		}
 	}
 
 	//TopLink use only
 	private void setReadAllQueryForTopLink(MWCustomReadAllQuery query) {
-//		if (query != null) {
+		if (query != null) {
 			this.readAllQuery = query;
-//		}
+		}
 	}
 	
 	@Override
