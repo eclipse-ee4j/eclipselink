@@ -12,6 +12,6 @@ Include-Resource:\
  ${weaving.2.base.dir}/readme.html,\
  ${weaving.2.base.dir}/license.html,\
  ./hookconfigurators.properties
-Import-Package: org.osgi.*, org.eclipse.osgi.*, * 
+Import-Package: !*
 Specification-Version: ${release.version}
 
