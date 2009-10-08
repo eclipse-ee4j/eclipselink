@@ -434,7 +434,8 @@ then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
-    echo "Generating summary email for ${VERSION} build."
+    BUILD_STR=`cat ${DATED_LOG} | grep -m1 version.string | cut -d= -f2 | tr -d '\047`
+    echo "Generating summary email for ${VERSION} build (${BUILD_STR})."
 
     ## find the current revision
     ##
@@ -517,7 +518,7 @@ then
         echo "Build had issues to be resolved."
     fi
     
-    if [ \(" ${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
+    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
         MAILLIST=${FAIL_MAILLIST}
@@ -529,9 +530,11 @@ then
     ## Build Body text of email
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
+    echo "Build summary for ${BUILD_STR}" > ${MAILBODY}
+    echo "-----------------------------------" >> ${MAILBODY}
     if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
     then
-        cp ${TESTDATA_FILE} ${MAILBODY}
+        cat ${TESTDATA_FILE} >> ${MAILBODY}
         echo "-----------------------------------" >> ${MAILBODY}
         echo "" >> ${MAILBODY}
         rm ${TESTDATA_FILE}
@@ -540,7 +543,7 @@ then
     fi
     echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
     echo "    ${DATED_LOG}" >> ${MAILBODY}
-    if [ \(" ${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
+    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
         echo "or on the download server at:" >> ${MAILBODY}
         echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
