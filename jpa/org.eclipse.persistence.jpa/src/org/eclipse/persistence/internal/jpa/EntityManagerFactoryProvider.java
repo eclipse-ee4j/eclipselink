@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.jpa;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -256,6 +258,45 @@ public class EntityManagerFactoryProvider {
             map.putAll(target);
         }
         return map;
+    }
+    
+    /**
+     * Copies source into target, removes from target all keysToBeRemoved. 
+     * @param source 
+     * @param keysToBeRemoved 
+     * @return the target object
+     */
+    public static Map removeSpecifiedProperties(Map source, Collection keysToBeRemoved){
+        Map target = new HashMap();
+        if (source != null){
+            target.putAll(source);
+            Iterator it = keysToBeRemoved.iterator();
+            while(it.hasNext()) {
+                target.remove(it.next());
+            }
+        }
+        return target;
+    }
+    
+    /**
+     * target contains the entries from source with keysToBeKept. 
+     * @param source 
+     * @param keysToBeKept 
+     * @return the target object
+     */
+    public static Map keepSpecifiedProperties(Map source, Collection keysToBeKept){
+        Map target = new HashMap();
+        if (source != null){
+            target.putAll(source);
+            Iterator<Map.Entry> it = source.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = it.next();
+                if(keysToBeKept.contains(entry.getKey())) {
+                    target.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return target;
     }
     
     /**

@@ -13,8 +13,11 @@
 package org.eclipse.persistence.config;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * The class defines EclipseLink properties' names.
@@ -613,7 +616,7 @@ public class PersistenceUnitProperties {
      * return an exception. Valid values are Integer or Strings that can be 
      * parsed to int values.
      */
-    public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+    public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
 
     public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
     
@@ -845,5 +848,27 @@ public class PersistenceUnitProperties {
     public static String getOverriddenLogStringForProperty(String propertyName){
         return PROPERTY_LOG_OVERRIDES.get(propertyName);
     }    
+
+    /** 
+     * INTERNAL: 
+     * The following properties passed to createEMF cached and processed on the emf directly. 
+     * None of these properties processed during predeploy or deploy. 
+     **/
+    private static final Set<String> supportedNonServerSessionProperties = new HashSet<String>() {
+        {
+            add(JOIN_EXISTING_TRANSACTION);
+            add(PERSISTENCE_CONTEXT_REFERENCE_MODE);
+            add(PERSISTENCE_CONTEXT_FLUSH_MODE);
+            add(PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
+            add(PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
+            add(PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
+            add(VALIDATE_EXISTENCE);
+            add(FLUSH_CLEAR_CACHE);
+        }
+    };
+
+    public static Set<String> getSupportedNonServerSessionProperties() {
+        return Collections.unmodifiableSet(supportedNonServerSessionProperties);
+    }
 
 }

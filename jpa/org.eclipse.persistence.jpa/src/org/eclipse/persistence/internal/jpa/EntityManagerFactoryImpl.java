@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.querydef.QueryBuilderImpl;
@@ -74,9 +76,16 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 	protected EntityManagerSetupImpl setupImpl;
 	/** Stores if closed has been called. */
 	protected boolean isOpen = true;
-	/** Persistence unit properties from persistence.xml or from create factory. */
+	/** Persistence unit properties from create factory. */
 	protected Map properties;
 
+    /** 
+     * INTERNAL: 
+     * The following properties passed to createEMF cached and processed on the emf directly. 
+     * None of these properties processed during predeploy or deploy. 
+     **/
+	protected static final Set<String> supportedNonServerSessionProperties = PersistenceUnitProperties.getSupportedNonServerSessionProperties();
+    
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
 	/** Reference to the Metamodel for this deployment. */
     protected Metamodel metaModel;     
@@ -117,7 +126,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
 	/** Default to determine if does-exist should be performed on persist. */
 	protected boolean shouldValidateExistence;
-        protected boolean commitWithoutPersistRules;
+	protected boolean commitWithoutPersistRules;
 
 	/**
 	 * Will return an instance of the Factory. Should only be called by
@@ -152,7 +161,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 					// the call top setupImpl.deploy() finishes the session
 					// creation
 					ServerSession tempServerSession = setupImpl.deploy(realLoader, properties);
-					processProperties(tempServerSession.getProperties());
+					// discard all but non server session properties.
+					properties = EntityManagerFactoryProvider.keepSpecifiedProperties(properties, supportedNonServerSessionProperties);
+					// properties override server session properties
+					Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(tempServerSession.getProperties(), properties);
+					processProperties(propertiesToProcess);
 					this.serverSession = tempServerSession;
 				}
 			}
@@ -237,6 +250,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 		if (name == null) {
 			return null;
 		}
+		if(properties != null) {
+		    Object value = properties.get(name);
+		    if(value != null) {
+		        return value;
+		    }
+		}
 		return getServerSession().getProperty(name);
 	}
 
@@ -247,6 +266,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 	 * these properties each time an EntityManager is created, which can add
 	 * considerable overhead to both performance and concurrency as System
 	 * properties are a Hashtable and synchronized.
+	 * ATTENTION: 
+	 * If you add a new property to be processed in this method please also add
+	 * the property's name to PersistenceUnitProperties.supportedNonServerSessionProperties
 	 */
 	protected void processProperties(Map properties) {
 		String beginEarlyTransactionProperty = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, properties, this.serverSession, true);
@@ -431,9 +453,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 	 * @see javax.persistence.EntityManagerFactory#getProperties()
 	 * @since Java Persistence API 2.0
 	 */
-	public Map getProperties() {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
+	public Map<String, Object> getProperties() {
+	    if(!this.isOpen()) {
+	        throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
+	    }
+	    return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, this.getServerSession().getProperties()));
 	}
 
 	/**
