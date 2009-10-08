@@ -1031,13 +1031,13 @@ public class MappingsModelTestTools {
 					}
 					
 					private Diff bonusDiff(Object object1, Object object2) {
-						Vector argumentTypes = ((DatabaseQuery) object1).getArgumentTypes();
+						List<Class> argumentTypes = ((DatabaseQuery) object1).getArgumentTypes();
 						Vector argumentTypeNames1 = new Vector();
 						for (int i = 0; i < argumentTypes.size(); i++) {
 							argumentTypeNames1.add(((Class) argumentTypes.get(i)).getName());
 						}
 						
-						Vector argumentTypeNames2 = ((DatabaseQuery) object1).getArgumentTypeNames();
+						List<String> argumentTypeNames2 = ((DatabaseQuery) object1).getArgumentTypeNames();
 						return EqualityDifferentiator.instance().diff(argumentTypeNames1, argumentTypeNames2);
 					}
 				});
