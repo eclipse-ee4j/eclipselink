@@ -590,34 +590,53 @@ public abstract class Expression implements Serializable, Cloneable {
          * an invalid operator exception for any platform.  (Even the ones that do not support
          * case)
          */
-        ExpressionOperator anOperator = new ExpressionOperator();
-        anOperator.setSelector(ExpressionOperator.Case);
-        anOperator.setNodeClass(FunctionExpression.class);
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        anOperator.bePrefix();
-
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(caseItems.size()*2 + 3);
-        v.addElement("CASE ");
-
-        FunctionExpression expression = new FunctionExpression();
-        expression.setBaseExpression(this);
+        FunctionExpression expression = caseStatement();
         expression.addChild(this);
         Iterator iterator = caseItems.keySet().iterator();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             expression.addChild(Expression.from(key, this));
             expression.addChild(Expression.from(caseItems.get(key), this));
-            v.addElement(" WHEN ");
-            v.addElement(" THEN ");
         }
-        v.addElement(" ELSE ");
         expression.addChild(Expression.from(defaultItem, this));
-        v.addElement(" END");
-        anOperator.printsAs(v);
-        expression.setOperator(anOperator);
         return expression;
     }
 
+    /**
+     * INTERNAL:
+     * Creates an ArgumentListFunctionExpression that is capable of creating a case statement of the form:
+     * <pre><blockquote>
+     * SQL: CASE name WHEN "Robert" THEN "Bob"
+     *     WHEN "Susan" THEN "Sue"
+     *  ELSE "No-Nickname"
+     * </blockquote></pre>
+     * 
+     * This expression must be manipulated to successfully build a case statement by adding appropriate 
+     * children to it.
+     * 
+     * A child must be added for the "case expression" (name above), a pair of children must be added for 
+     * each "when then" expression and a child must be added for the else.
+     * 
+     * @see ArgumentListFunctionExpression
+     */
+    public ArgumentListFunctionExpression caseStatement() {
+        ListExpressionOperator anOperator = new ListExpressionOperator();
+        anOperator.setSelector(ExpressionOperator.Case);
+        anOperator.setNodeClass(FunctionExpression.class);
+        anOperator.setType(ExpressionOperator.FunctionOperator);
+        anOperator.bePrefix();
+
+        anOperator.setStartString("Case ");
+        anOperator.setSeparators(new String[]{" WHEN ", " THEN "});
+        anOperator.setTerminationStrings(new String[]{" ELSE ", " END"});
+
+        ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
+        expression.setBaseExpression(this);
+
+        expression.setOperator(anOperator);
+        return expression;
+    }
+    
     /**
      * PUBLIC:
      * Function Convert values returned by the query to values
@@ -643,7 +662,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * Map match
      */
     public Expression caseConditionStatement(Map<Expression, Object> caseConditions, Object defaultItem) {
-
         /**
          * case (like decode) works differently than most of the functionality in the expression
          * framework. It takes a variable number of arguments and as a result, the printed strings
@@ -653,36 +671,54 @@ public abstract class Expression implements Serializable, Cloneable {
          * an invalid operator exception for any platform.  (Even the ones that do not support
          * case)
          */
-        ExpressionOperator anOperator = new ExpressionOperator();
+        FunctionExpression expression = caseConditionStatement();
+        Iterator<Expression> iterator = caseConditions.keySet().iterator();
+        if (iterator.hasNext()){
+            Expression key = iterator.next();
+            expression.addChild(key);
+            expression.setBaseExpression(key);//base needs to be the same as the first child for reportQuery items. 
+            expression.addChild(Expression.from(caseConditions.get(key), this));
+            
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                expression.addChild(key);
+                expression.addChild(Expression.from(caseConditions.get(key), this));
+            }
+        }
+        expression.addChild(Expression.from(defaultItem, this));
+        return expression;
+    }
+    
+    /**
+     * INTERNAL:
+     * Creates an ArgumentListFunctionExpression that is capable of creating a case statement of the form:
+     * <pre><blockquote>
+     * SQL: CASE WHEN name = "Robert" THEN "Bob"
+     *     WHEN name = "Susan" THEN "Sue"
+     *  ELSE "No-Nickname" 
+     * </blockquote></pre>
+     * 
+     * This expression must be manipulated to successfully build a case statement by adding appropriate 
+     * children to it.
+     * 
+     * A pair of children must be added for  each "when then" expression and a child must be added for the else.
+     * 
+     * @see ArgumentListFunctionExpression
+     */
+    public ArgumentListFunctionExpression caseConditionStatement() {
+        ListExpressionOperator anOperator = new ListExpressionOperator();
         anOperator.setSelector(ExpressionOperator.Case);
         anOperator.setNodeClass(FunctionExpression.class);
         anOperator.setType(ExpressionOperator.FunctionOperator);
         anOperator.bePrefix();
 
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(caseConditions.size()*2 + 2);
-        FunctionExpression expression = new FunctionExpression();
+        anOperator.setStartStrings(new String[]{"CASE WHEN ", " THEN "});
+        anOperator.setSeparators(new String[]{" WHEN ", " THEN "});
+        anOperator.setTerminationStrings(new String[]{" ELSE ", " END "});
+
+        ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
-        Iterator<Expression> iterator = caseConditions.keySet().iterator();
-        if (iterator.hasNext()){
-            v.addElement("CASE WHEN ");
-            Expression key = iterator.next();
-            expression.addChild(key);
-            expression.setBaseExpression(key);//base needs to be the same as the first child for reportQuery items. 
-            v.addElement(" THEN ");
-            expression.addChild(Expression.from(caseConditions.get(key), this));
-            
-            while (iterator.hasNext()) {
-                v.addElement(" WHEN ");
-                key = iterator.next();
-                expression.addChild(key);
-                v.addElement(" THEN ");
-                expression.addChild(Expression.from(caseConditions.get(key), this));
-            }
-        }
-        v.addElement(" ELSE ");
-        expression.addChild(Expression.from(defaultItem, this));
-        v.addElement(" END");
-        anOperator.printsAs(v);
+
         expression.setOperator(anOperator);
         return expression;
     }
@@ -724,10 +760,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * @param caseItems java.util.Collection
      * A Collection containing the items to check if null
      */
-    public Expression coalesce(Collection expressions) {
-
+    public ArgumentListFunctionExpression coalesce(Collection expressions) {
         /**
-         * case (like decode) works differently than most of the functionality in the expression
+         * coalesce (like decode) works differently than most of the functionality in the expression
          * framework. It takes a variable number of arguments and as a result, the printed strings
          * for a case call have to be built when the number of arguments are known.
          * As a result, we do not look up case in the ExpressionOperator.  Instead we build
@@ -735,29 +770,33 @@ public abstract class Expression implements Serializable, Cloneable {
          * an invalid operator exception for any platform.  (Even the ones that do not support
          * case)
          */
-        ExpressionOperator anOperator = new ExpressionOperator();
-        anOperator.setSelector(ExpressionOperator.Coalesce);
-        anOperator.setNodeClass(FunctionExpression.class);
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        anOperator.bePrefix();
-
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(expressions.size() + 1);
-        v.addElement("COALESCE(");
-
-        FunctionExpression expression = new FunctionExpression();
-        expression.setBaseExpression(this);
+        ArgumentListFunctionExpression expression = coalesce();
         Iterator iterator = expressions.iterator();
         if (iterator.hasNext()){
             Expression base = Expression.from(iterator.next(), this);
             expression.addChild(base);
             expression.setBaseExpression(base);//base needs to be the same as the first child for reportQuery items. 
             while (iterator.hasNext()) {
-                v.addElement(", ");
                 expression.addChild(Expression.from(iterator.next(), this));
             }
         }
-        v.addElement(" )");
-        anOperator.printsAs(v);
+        return expression;
+    }
+    
+    public ArgumentListFunctionExpression coalesce() {
+        ListExpressionOperator anOperator = new ListExpressionOperator();
+        anOperator.setSelector(ExpressionOperator.Coalesce);
+        anOperator.setNodeClass(FunctionExpression.class);
+        anOperator.setType(ExpressionOperator.FunctionOperator);
+        anOperator.bePrefix();
+
+        anOperator.setStartString("COALESCE(");
+        anOperator.setSeparator(",");
+        anOperator.setTerminationString(" )");
+
+        ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
+        expression.setBaseExpression(this);
+
         expression.setOperator(anOperator);
         return expression;
     }

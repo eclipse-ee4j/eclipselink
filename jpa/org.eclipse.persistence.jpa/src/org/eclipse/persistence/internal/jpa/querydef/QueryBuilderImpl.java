@@ -28,6 +28,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -2060,8 +2061,10 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      * @return expression corresponding to the given coalesce expression
      */
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y){
-        //TODO
-        return null;
+        ArgumentListFunctionExpression coalesce = ((InternalSelection)x).getCurrentNode().coalesce();
+        coalesce.addChild(((InternalSelection)x).getCurrentNode());
+        coalesce.addChild(((InternalSelection)y).getCurrentNode());
+        return new CoalesceImpl(metamodel, x.getJavaType(), coalesce,  buildList(x, y), "coalesce");
     }
 
     /**
@@ -2075,8 +2078,10 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      * @return coalesce expression
      */
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y){
-        //TODO
-        return null;
+        ArgumentListFunctionExpression coalesce = ((InternalSelection)x).getCurrentNode().coalesce();
+        coalesce.addChild(((InternalSelection)x).getCurrentNode());
+        coalesce.addChild(((InternalSelection)y).getCurrentNode());
+        return new CoalesceImpl(metamodel, x.getJavaType(), coalesce, buildList(x, literal(y)), "coalesce");
     }
 
     /**
@@ -2113,8 +2118,8 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      * @return coalesce expression
      */
     public <T> Coalesce<T> coalesce(){
-      //TODO
-        return null;
+        ArgumentListFunctionExpression coalesce = new ExpressionBuilder().coalesce();
+        return new CoalesceImpl(metamodel, Object.class, coalesce, new ArrayList());
     }
 
     /**
@@ -2125,8 +2130,8 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      * @return simple case expression
      */
     public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression){
-        //TODO
-        return null;
+        ArgumentListFunctionExpression caseStatement = new ExpressionBuilder().caseStatement();
+        return new SimpleCaseImpl(metamodel, Object.class, caseStatement, new ArrayList(), expression);
     }
 
     /**
@@ -2135,9 +2140,8 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      * @return general case expression
      */
     public <R> Case<R> selectCase(){
-        //TODO
-        //
-        return null;
+        ArgumentListFunctionExpression caseStatement = new ExpressionBuilder().caseConditionStatement();
+        return new CaseImpl(metamodel, Object.class, caseStatement, new ArrayList());
     }
 
     /**
@@ -2168,4 +2172,203 @@ public class QueryBuilderImpl implements CriteriaBuilder {
         }
     }
     
+    /**
+     *  Interface used to build coalesce expressions.  
+     *   
+     * A coalesce expression is equivalent to a case expression
+     * that returns null if all its arguments evaluate to null,
+     * and the value of its first non-null argument otherwise.
+     */
+    public static class CoalesceImpl<X> extends FunctionExpressionImpl<X> implements Coalesce<X>{
+
+        protected <T> CoalesceImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
+            super(metamodel, resultClass, expressionNode, compoundExpressions);
+        }
+
+        protected <T> CoalesceImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
+            super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
+        }
+        
+         /**
+          * Add an argument to the coalesce expression.
+          * @param value  value
+          * @return coalesce expression
+          */
+         public Coalesce<X> value(X value){
+             org.eclipse.persistence.expressions.Expression exp = org.eclipse.persistence.expressions.Expression.from(value, new ExpressionBuilder());
+             ((FunctionExpression)currentNode).addChild(exp);
+             return this;
+         }
+
+         /**
+          * Add an argument to the coalesce expression.
+          * @param value expression
+          * @return coalesce expression
+          */
+         public Coalesce<X> value(Expression<? extends X> value){
+             org.eclipse.persistence.expressions.Expression exp = ((InternalSelection)value).getCurrentNode();
+             exp = org.eclipse.persistence.expressions.Expression.from(exp, currentNode);
+             ((FunctionExpression)currentNode).addChild(exp);
+             return this;
+         }
+    }
+    
+    /**
+     * Implementation of Case interface from Criteria Builder
+     * @author tware
+     *
+     * @param <R>
+     */
+    public static class CaseImpl<R> extends FunctionExpressionImpl<R> implements Case<R>{
+
+        protected <T> CaseImpl (Metamodel metamodel, Class<R> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
+            super(metamodel, resultClass, expressionNode, compoundExpressions);
+        }
+
+        protected <T> CaseImpl (Metamodel metamodel, Class<R> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
+            super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
+        }
+        
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result value
+         * @return general case expression
+         */
+        public Case<R> when(Expression<Boolean> condition, R result){
+            org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
+            conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result expression
+         * @return general case expression
+         */
+        public Case<R> when(Expression<Boolean> condition, Expression<? extends R> result){
+            org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
+            conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)condition).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add an "else" clause to the case expression.
+         * @param result  "else" result
+         * @return expression
+         */
+        public Expression<R> otherwise(R result){
+              org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
+            ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add an "else" clause to the case expression.
+         * @param result  "else" result expression
+         * @return expression
+         */
+        public Expression<R> otherwise(Expression<? extends R> result){
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            return this;
+        }
+    }
+    
+    /**
+     * Implementation of SimpleCase interface from CriteriaBuilder
+     * @author tware
+     *
+     * @param <C>
+     * @param <R>
+     */
+    public static class SimpleCaseImpl<C,R> extends FunctionExpressionImpl<R> implements SimpleCase<C, R>{
+
+        private Expression<C> expression;
+
+        protected <T> SimpleCaseImpl (Metamodel metamodel, Class<R> resultClass, FunctionExpression expressionNode, List<Expression<?>> compoundExpressions, Expression<C> expression){
+            super(metamodel, resultClass, expressionNode, compoundExpressions);
+            this.expression = expression;
+            expressionNode.addChild(((InternalSelection)expression).getCurrentNode());
+        }
+
+        protected <T> SimpleCaseImpl (Metamodel metamodel, Class<R> resultClass, FunctionExpression expressionNode, List<Expression<?>> compoundExpressions, String operator, Expression<C> expression){
+            super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
+            this.expression = expression;
+            expressionNode.addChild(((InternalSelection)expression).getCurrentNode());
+        }
+        
+        /**
+         * Returns the expression to be tested against the
+         * conditions.
+         * @return expression
+         */
+        public Expression<C> getExpression(){
+            return expression;
+        }
+
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result value
+         * @return simple case expression
+         */
+        public SimpleCase<C, R> when(C condition, R result){
+            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add a when/then clause to the case expression.
+         * @param condition  "when" condition
+         * @param result  "then" result expression
+         * @return simple case expression
+         */
+        public SimpleCase<C, R> when(C condition, Expression<? extends R> result){
+            org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
+            ((FunctionExpression)currentNode).addChild(conditionExp);
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((FunctionExpression)currentNode).addChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add an "else" clause to the case expression.
+         * @param result  "else" result
+         * @return expression
+         */
+        public Expression<R> otherwise(R result){
+            org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
+            ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            return this;
+        }
+
+        /**
+         * Add an "else" clause to the case expression.
+         * @param result  "else" result expression
+         * @return expression
+         */
+        public Expression<R> otherwise(Expression<? extends R> result){
+            
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
+            resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
+            ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            return this;
+        }
+    }
+    
 }
+

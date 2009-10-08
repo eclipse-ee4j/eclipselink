@@ -482,7 +482,7 @@ public class ExpressionOperator implements Serializable {
      * @see Expression#caseStatement(Map, String)
      */
     public static ExpressionOperator caseStatement() {
-        ExpressionOperator exOperator = new ExpressionOperator();
+        ListExpressionOperator exOperator = new ListExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Case);
         exOperator.bePrefix();
@@ -522,6 +522,24 @@ public class ExpressionOperator implements Serializable {
         return simpleFunction(Chr, "CHR");
     }
 
+    /**
+     * INTERNAL:
+     * Build operator.
+     * Note: This operator works differently from other operators.
+     * @see Expression#caseStatement(Map, String)
+     */
+    public static ExpressionOperator coalesce() {
+        ListExpressionOperator exOperator = new ListExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Coalesce);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(FunctionExpression.class);
+        exOperator.setStartString("COALESCE(");
+        exOperator.setSeparator(",");
+        exOperator.setTerminationString(" )");
+        return exOperator;
+    }
+    
     /**
      * INTERNAL:
      * Build operator.
@@ -599,6 +617,17 @@ public class ExpressionOperator implements Serializable {
         return true;
     }
 
+    public void copyTo(ExpressionOperator operator){
+        operator.selector = selector;
+        operator.isPrefix = isPrefix;
+        operator.isRepeating = isRepeating;
+        operator.nodeClass = nodeClass;
+        operator.type = type;
+        operator.databaseStrings = databaseStrings == null ? null : Arrays.copyOf(databaseStrings, databaseStrings.length);
+        operator.argumentIndices = argumentIndices == null ? null : Arrays.copyOf(argumentIndices, argumentIndices.length);
+        operator.javaStrings = javaStrings == null ? null : Arrays.copyOf(javaStrings, javaStrings.length);
+    }
+    
     /**
      * INTERNAL:
      * Build operator.
@@ -1174,6 +1203,8 @@ public class ExpressionOperator implements Serializable {
         addOperator(inSubQuery());
         addOperator(notIn());
         addOperator(notInSubQuery());
+        addOperator(coalesce());
+        addOperator(caseStatement());
     }
 
     /**

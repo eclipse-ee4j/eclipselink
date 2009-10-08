@@ -404,6 +404,9 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.ref());
         addOperator(ExpressionOperator.refToHex());
         addOperator(ExpressionOperator.value());
+        
+        addOperator(ExpressionOperator.coalesce());
+        addOperator(ExpressionOperator.caseStatement());
     }
 
     public boolean isAccess() {

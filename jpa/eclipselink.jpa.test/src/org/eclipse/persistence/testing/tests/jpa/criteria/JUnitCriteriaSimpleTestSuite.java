@@ -37,6 +37,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.CriteriaBuilder.Case;
+import javax.persistence.criteria.CriteriaBuilder.Coalesce;
+import javax.persistence.criteria.CriteriaBuilder.SimpleCase;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -160,6 +163,12 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testOneEqualsOne"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleAsOrderByTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInWhereTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInSelectTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("caseConditionInWhereTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("caseConditionInSelectTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCoalesceInWhereTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCoalesceInSelectTest"));
         
         return suite;
     }
@@ -2074,6 +2083,119 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         List result = em.createQuery(cq).getResultList();
 
         Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+    }
+
+    public void simpleCoalesceInWhereTest(){
+        EntityManager em = createEntityManager();
+        //select e from Employee e where coalesce(e.firstName, e.lastName) = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        cq.where(qb.equal(qb.coalesce(root.get("firstName"),root.get("lastName")), "Bob"));
+
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+        
+        
+
+    }
+    
+    public void simpleCoalesceInSelectTest(){
+        EntityManager em = createEntityManager();
+        //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Object> cq = qb.createQuery(Object.class);
+        Root<Employee> root = cq.from(Employee.class);
+        Coalesce<String> coalesce = qb.coalesce();
+        coalesce.value(root.<String>get("firstName"));
+        coalesce.value(root.<String>get("lastName"));
+        coalesce.value("Bobby");
+        cq.select(coalesce);
+
+        cq.where(qb.equal(root.get("firstName"), "Bob"));
+
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((String)result.get(0)).equals("Bob"));
+
+    }
+    
+    public void caseConditionInWhereTest(){
+        EntityManager em = createEntityManager();
+        //select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Rob' then 'Robbie' else 'Not Bob' = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        Case<String> selectCase = qb.selectCase();
+        selectCase.when(qb.equal(root.get("firstName"), "Bob"), "Robert");
+        selectCase.when(qb.equal(root.get("firstName"), "Rob"), "Robbie");
+        selectCase.otherwise("Not Bob");
+        cq.where(qb.equal(selectCase, "Robert"));
+
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+    }
+    
+    public void caseConditionInSelectTest(){
+        EntityManager em = createEntityManager();
+        //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Object> cq = qb.createQuery(Object.class);
+        Root<Employee> root = cq.from(Employee.class);
+        Case<String> selectCase = qb.selectCase();
+        selectCase.when(qb.equal(root.get("firstName"), "Bob"), "Robert");
+        selectCase.when(qb.equal(root.get("firstName"), "Rob"), "Robbie");
+        selectCase.otherwise("Not Bob");
+        cq.select(selectCase);
+
+        cq.where(qb.equal(root.get("firstName"), "Bob"));
+
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((String)result.get(0)).equals("Robert"));
+    }
+    
+    public void simpleCaseInWhereTest(){
+        EntityManager em = createEntityManager();
+        //select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Rob' then 'Robbie' else 'Not Bob' = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        SimpleCase<Object, String> selectCase = qb.selectCase(root.get("firstName"));
+        selectCase.otherwise("Not Bob");
+        selectCase.when("Bob", "Robert");
+        selectCase.when("Rob", "Robbie");
+        cq.where(qb.equal(selectCase, "Robert"));
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
+    }
+    
+    public void simpleCaseInSelectTest(){
+        EntityManager em = createEntityManager();
+        //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Object> cq = qb.createQuery(Object.class);
+        Root<Employee> root = cq.from(Employee.class);
+        SimpleCase<Object, String> selectCase = qb.selectCase(root.get("firstName"));
+        selectCase.when("Bob", "Robert");
+        selectCase.when("Rob", "Robbie");
+        selectCase.otherwise("Not Bob");
+        cq.select(selectCase);
+
+        cq.where(qb.equal(root.get("firstName"), "Bob"));
+
+        List result = em.createQuery(cq).getResultList();
+
+        assertTrue("Incorrect number of results returned.", result.size() == 1);
+        assertTrue("Incorrect Employee returned", ((String)result.get(0)).equals("Robert"));
     }
 }
 
