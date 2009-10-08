@@ -279,7 +279,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      */
     public Vector getDefaultEventListeners() {
         if (defaultEventListeners == null) {
-            defaultEventListeners = new Vector();
+            defaultEventListeners = new NonSynchronizedVector();
         }
         
         return defaultEventListeners;
@@ -541,8 +541,8 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      * once.
      */
     protected void initializeEJB30EventManagers() {
-        entityEventManagers = new Vector();
-        entityListenerEventManagers = new Vector();
+        entityEventManagers = new NonSynchronizedVector();
+        entityListenerEventManagers = new NonSynchronizedVector();
              
         if (hasEntityEventListener()) {
             entityEventManagers.add(this);
@@ -586,22 +586,22 @@ public class DescriptorEventManager implements Cloneable, Serializable {
                 notifyListener(listener, event);
             }
         }
-             
+
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
             Vector entityListenerEventListeners = ((DescriptorEventManager) entityListenerEventManagers.get(index)).getEntityListenerEventListeners();
                  
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
-                notifyListener(listener, event);        
+                notifyListener(listener, event);
             }
         }
-             
-        // Step 3 - Notify the Entity event listeners. top -> down, unless 
+
+        // Step 3 - Notify the Entity event listeners. top -> down, unless
         // they are overridden in a subclass.
         for (int index = entityEventManagers.size() - 1; index >= 0; index--) {
-            DescriptorEventListener entityEventListener = ((DescriptorEventManager) entityEventManagers.get(index)).getEntityEventListener();     
-            
+            DescriptorEventListener entityEventListener = ((DescriptorEventManager) entityEventManagers.get(index)).getEntityEventListener();
+
             if (! entityEventListener.isOverriddenEvent(event, entityEventManagers)) {
                 notifyListener(entityEventListener, event);
             }
