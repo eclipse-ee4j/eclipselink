@@ -286,9 +286,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 5 - public Map getTasks() => null
      * 6 - public Collection<byte[]> getAudio() => byte[].class
      * 7 - public Map<X,Y> on a MappedSuperclass where Y is defined in the Entity superclass<T> => Void.class (in all bug 266912 cases)
-     * TODO: we don't handle multiple levels of generics too well (or at all really :-( )
      */
     public MetadataClass getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
+        // TODO: investigate multiple levels of generics. 
         if (isGenericCollectionType()) {
             // TODO: This is guessing, need to be more logical.
             // Collection<String> -> [Collection, String], get element class.

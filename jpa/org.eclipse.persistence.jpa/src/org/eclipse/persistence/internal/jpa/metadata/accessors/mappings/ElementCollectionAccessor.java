@@ -768,7 +768,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 MappingAccessor accessor = embeddableDescriptor.getAccessorFor(mapping.getAttributeName());
                 processMappingsFromEmbeddable(accessor.getReferenceDescriptor(), (AggregateObjectMapping) mapping, embeddableMapping, attributeOverrides, associationOverrides, overrideName);
             } else {
-                // TODO: mapping.isAggregateCollectionMapping. We could handle this case.
+                // TODO: mapping.isAggregateCollectionMapping. We could handle 
+                // this case however not obligated by the spec.
                 // See comment above about section 2.6
                 throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
             }

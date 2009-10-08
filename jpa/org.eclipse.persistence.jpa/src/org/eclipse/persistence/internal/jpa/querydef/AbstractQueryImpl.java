@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Parameter;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.ParameterExpression;
@@ -30,7 +29,6 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>

@@ -383,7 +383,6 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Process a ReturnInsert annotation. NOTE: This is currently only
      * supported using annotations.
-     * TODO: Add to the eclipselink-orm.xsd
      */
     @Override
     protected void processReturnInsert() {
@@ -404,7 +403,6 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Process a return update setting.  NOTE: This is currently only
      * supported using annotations.
-     * TODO: Add to the eclipselink-orm.xsd
      */
     @Override
     protected void processReturnUpdate() {

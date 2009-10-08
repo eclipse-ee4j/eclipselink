@@ -15,16 +15,12 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
-
 
 /**
  * <p>

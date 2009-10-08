@@ -17,11 +17,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Tuple;
@@ -33,16 +31,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Predicate.BooleanOperator;
-import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;

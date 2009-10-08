@@ -87,7 +87,7 @@ public class TransformationAccessor extends BasicAccessor {
             m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
         }
         
-        //TODO: ReturningPolicy
+        // TODO: ReturningPolicy
     }
     
     /**

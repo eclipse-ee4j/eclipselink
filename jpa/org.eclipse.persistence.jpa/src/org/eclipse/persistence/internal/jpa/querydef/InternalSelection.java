@@ -10,12 +10,8 @@
  * Contributors:
  *     Gordon Yorke - Initial development
  *
- ******************************************************************************/package org.eclipse.persistence.internal.jpa.querydef;
-
-import java.util.Set;
-
-import javax.persistence.Parameter;
-import javax.persistence.criteria.Root;
+ ******************************************************************************/
+package org.eclipse.persistence.internal.jpa.querydef;
 
 /**
  * <p>

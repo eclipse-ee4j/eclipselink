@@ -78,7 +78,8 @@ public abstract class MetadataConverter extends ORMetadata {
         } else if (mapping.isDirectCollectionMapping()) {
             ((DirectCollectionMapping) mapping).setValueConverter(converter);
         } else if (mapping.isAggregateCollectionMapping()) {
-            // TODO: Future support converters on AggregateCollections keys
+            // TODO: Be nice to support converters on AggregateCollections keys.
+            // For now they are silently ignored.
         } else if (mapping.isDirectToFieldMapping()) {
             ((DirectToFieldMapping) mapping).setConverter(converter);
         }
@@ -93,7 +94,8 @@ public abstract class MetadataConverter extends ORMetadata {
         } else if (mapping.isDirectCollectionMapping()) {
             ((DirectCollectionMapping) mapping).setValueConverterClassName(converterClassName);
         } else if (mapping.isAggregateCollectionMapping()) {
-            // TODO: Future support converters on AggregateCollections keys
+            // TODO: Be nice to support converters on AggregateCollections keys.
+            // For now they are silently ignored.
         } else if (mapping.isDirectToFieldMapping()) {
             ((DirectToFieldMapping) mapping).setConverterClassName(converterClassName);    
         }

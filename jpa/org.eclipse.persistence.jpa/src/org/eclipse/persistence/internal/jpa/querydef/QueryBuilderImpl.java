@@ -15,33 +15,24 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Predicate.BooleanOperator;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
-import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
-import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReportQuery;
 
 public class QueryBuilderImpl implements CriteriaBuilder {

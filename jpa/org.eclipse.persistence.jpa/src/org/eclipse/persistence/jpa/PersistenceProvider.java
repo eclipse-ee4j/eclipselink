@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
 import javax.persistence.spi.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;

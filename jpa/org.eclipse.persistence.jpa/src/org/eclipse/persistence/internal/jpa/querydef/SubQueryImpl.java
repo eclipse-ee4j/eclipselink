@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Parameter;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
@@ -29,23 +28,19 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
 

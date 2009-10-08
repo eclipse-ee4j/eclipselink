@@ -191,8 +191,8 @@ public class EmbeddableAccessor extends ClassAccessor {
                 }
             }
             
-            // TODO: We also need to do more processing here for shared
-            // embeddables. Primary key settings etc...
+            // TODO: Bug 247511: We need to do more processing here for shared
+            // embeddables (primary keys and generated values).
         } else {
             // Need to set the owning descriptor on the embeddable class before 
             // we proceed any further in the processing.

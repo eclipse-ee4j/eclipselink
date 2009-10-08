@@ -276,7 +276,6 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     protected void processCollectionTable(CollectionMapping mapping) {
         // Check that we loaded a collection table otherwise default one.        
         if (m_collectionTable == null) {
-            // TODO: Log a defaulting message.
             m_collectionTable = new CollectionTableMetadata(getAccessibleObject());
         }
         

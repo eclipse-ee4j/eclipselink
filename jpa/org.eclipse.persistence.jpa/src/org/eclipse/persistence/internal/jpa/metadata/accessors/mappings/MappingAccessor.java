@@ -185,9 +185,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process the list of association overrides into a map, merging and 
      * overriding any association overrides where necessary with descriptor
      * level association overrides.
-     * TODO: This code should look for duplicates within the same list.
      */
     protected Map<String, AssociationOverrideMetadata> getAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
+        // TODO: Be nice to look for duplicates within the same list.
         Map<String, AssociationOverrideMetadata> associationOverridesMap = new HashMap<String, AssociationOverrideMetadata>();
         
         for (AssociationOverrideMetadata associationOverride : associationOverrides) {
@@ -272,9 +272,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process the list of attribute overrides into a map, merging and 
      * overriding any attribute overrides where necessary with descriptor
      * level attribute overrides.
-     * TODO: This code should look for duplicates within the same list.
      */
     protected Map<String, AttributeOverrideMetadata> getAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
+        // TODO: Be nice to look for duplicates within the same list.
         HashMap<String, AttributeOverrideMetadata> attributeOverridesMap = new HashMap<String, AttributeOverrideMetadata>();
         
         for (AttributeOverrideMetadata attributeOverride : attributeOverrides) {
@@ -1151,8 +1151,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
             MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
             MetadataClass mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
             if (mapKeyClass != null && (getProject().hasEntity(mapKeyClass) || getProject().hasEmbeddable(mapKeyClass) || mapKeyMapAccessor.getMapKeyColumn() != null)) {
-            // TODO: if map key is specified we should throw an exception.
-               processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
+                // TODO: If the map key is specified throw an exception? For now it is silently ignored.
+                processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
             } else {
                 // Set the indirection policy on the mapping
                 setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
@@ -1277,7 +1277,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (enumerated == null) {
-            // TODO: Log a defaulting message
             enumerated = new EnumeratedMetadata(getAccessibleObject());
         }
         

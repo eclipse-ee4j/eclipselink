@@ -19,8 +19,6 @@ import java.util.List;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
-import org.eclipse.persistence.expressions.Expression;
-
 /**
  * <p>
  * <b>Purpose</b>: Contains the implementation of the Selection interface of the JPA

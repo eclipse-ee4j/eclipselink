@@ -456,9 +456,8 @@ public abstract class ORMetadata {
      */
     protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
         if (getEntityMappings() == null) {
-            // TODO: Just changing the descriptor on the mapped superclass should
-            // work .. in theory .. since we are just going to go through its
-            // accessor list.
+            // Changing the descriptor on the mapped superclass should work in 
+            // theory, since we are just going to go through its accessor list.
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclass.getAnnotation(), mappedSuperclass.getJavaClass(), descriptor);
             return mappedSuperclassAccessor;
         } else {
