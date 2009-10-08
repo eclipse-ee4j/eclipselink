@@ -434,7 +434,7 @@ then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
-    BUILD_STR=`cat ${DATED_LOG} | grep -m1 version.string | cut -d= -f2 | tr -d '\047`
+    BUILD_STR=`cat ${DATED_LOG} | grep -m1 version.string | cut -d= -f2 | tr -d '\047'`
     echo "Generating summary email for ${VERSION} build (${BUILD_STR})."
 
     ## find the current revision
