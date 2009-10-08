@@ -44,6 +44,9 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  */ 
 public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
     
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = 3770722221322920646L;
+    
     /** 
      * INTERNAL:
      * The map of Identifiable types that inherit from this MappedSuperclass.

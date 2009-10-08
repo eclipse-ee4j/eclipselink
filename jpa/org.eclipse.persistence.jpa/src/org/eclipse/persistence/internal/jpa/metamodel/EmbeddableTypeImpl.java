@@ -36,6 +36,9 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  */ 
 public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements EmbeddableType<X> {
 
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = 8089664013641473274L;
+
     protected EmbeddableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
     }

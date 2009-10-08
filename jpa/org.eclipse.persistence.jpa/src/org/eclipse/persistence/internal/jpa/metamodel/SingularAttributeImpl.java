@@ -51,6 +51,9 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
  */
 public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements SingularAttribute<X, T> {
 
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = 3928292425281232234L;
+    
     /** The Type representing this Entity or Basic type **/
     protected Type<T> elementType;
     
@@ -120,14 +123,15 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
         }        
-        elementType = (Type<T>)getMetamodel().getType(attributeClass);
+        elementType = getMetamodel().getType(attributeClass);
     }
 
     /**
      * Return the Java type of the represented object.
-     * If the bindable type of the object is PLURAL_ATTRIBUTE,
+     * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
      * the Java element type is returned. If the bindable type is
-     * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+     * the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
      */
@@ -145,7 +149,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             // The field on the mapping is the same field in the pkFields list on the descriptor
             return (this.getDescriptor().getPrimaryKeyFields().contains(this.getMapping().getField()));
         } else {
-            //return getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(getMapping());
             return getMapping().isPrimaryKeyMapping();
         }
     }
@@ -195,7 +198,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     @Override
     public Class<T> getJavaType() {
         if(null == elementType) {
-            Class aJavaType = getMapping().getAttributeClassification(); // returns null for OneToManyMapping
+            Class aJavaType = getMapping().getAttributeClassification();
             if(null == aJavaType) {
                 aJavaType = getMapping().getField().getType();
                 if(null == aJavaType) {
@@ -208,10 +211,9 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                         return aJavaType;
                     } catch (NoSuchFieldException nsfe) {
                         // This exception will be warned about below
-                        //nsfe.printStackTrace();
                         if(null == aJavaType) {
                             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);
-                            return (Class<T>)MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+                            return MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
                     }                    
                 }

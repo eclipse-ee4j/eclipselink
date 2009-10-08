@@ -38,6 +38,9 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  */ 
 public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.List<V>, V> implements ListAttribute<X, V> {
 
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = 6941222731228388279L;
+
     /**
      * INTERNAL:
      * @param managedType

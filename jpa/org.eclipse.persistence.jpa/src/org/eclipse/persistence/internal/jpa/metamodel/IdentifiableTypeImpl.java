@@ -116,7 +116,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         SingularAttribute<? super X, Y> anId = this.getId(type);
         // return the id only if it is declared on this IdentifableType
         // We know that the attribute exists - so the an IAE will be thrown for 2) for us
-        return (SingularAttribute<X, Y>)getDeclaredAttribute(anId.getName());
+        return (SingularAttribute<X, Y>)getDeclaredAttribute(anId.getName(), true);
     }
     
     /**
@@ -139,7 +139,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         SingularAttribute<? super X, Y> aVersion = this.getVersion(type);
         // return the version only if it is declared on this IdentifableType
         // We know that the attribute exists - so the an IAE will be thrown for 2) for us
-        return (SingularAttribute<X, Y>)getDeclaredAttribute(aVersion.getName());
+        return (SingularAttribute<X, Y>)getDeclaredAttribute(aVersion.getName(), true);
     }
     
     /**
@@ -210,7 +210,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             // Composite key support (IE: @EmbeddedId)            
             List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
             // Check the primaryKeyFields on the descriptor - for MappedSuperclass pseudo-Descriptors
-            if(pkMappings.size() == 0) {
+            if(pkMappings.isEmpty()) {
                 // Search the mappings for Id mappings
                 for(DatabaseMapping aMapping : getDescriptor().getMappings()) {                    
                     if(aMapping.isDerivedIdMapping()) {
@@ -226,10 +226,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             
             if (pkMappings.size() == 1) {
                 Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
-                if(null == aClass) {
-                    aClass = Object.class;
-                    // TODO: expand on variant use case
-                }
                 // lookup class in our types map
                 Type<?> aType = this.metamodel.getType(aClass);
                 return aType;
@@ -296,7 +292,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     private <Y> SingularAttribute<? super X, ?> getVersion() {
         if(hasVersionAttribute()) {
-            return (SingularAttribute<? super X, ?>)versionAttribute;
+            return versionAttribute;
         } else {
             return null;
         }
@@ -312,7 +308,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
     public boolean hasSingleIdAttribute() {
         // The following section will return false for any multiple EmbeddableId as well as multiple Ids as part of an IdClass
         // Note: there will always be at least 1 Id for an IdentifiableType
-        //return this.idAttributes.size() < 2;        
 
         /**
          * Since we are in IdentifiableType which involves only Entities and MappedSuperclasses,

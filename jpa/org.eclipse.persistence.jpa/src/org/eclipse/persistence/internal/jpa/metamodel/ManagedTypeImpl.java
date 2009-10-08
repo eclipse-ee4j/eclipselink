@@ -220,14 +220,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     }
 
     /**
+     *  INTERNAL:
      *  Return the declared attribute of the managed
      *  type that corresponds to the specified name.
      *  @param name  the name of the represented attribute
+     *  @param calledDirectlyOnTarget true if the function was called from the target leaf element
      *  @return attribute with given name
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
-    public Attribute<X, ?> getDeclaredAttribute(String name){
+    protected Attribute<X, ?> getDeclaredAttribute(String name, boolean calledDirectlyOnTarget){
         // get the attribute parameterized by <Owning type, return Type> - throw an IAE if not found (no need to check hierarchy)
         // Handles UC1 and UC2
         Attribute<X, ?> anAttribute = getAttribute(name);
@@ -237,19 +239,48 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         if(null == aManagedSuperType) {
             return anAttribute;
         } else {
-            // keep checking the hierarchy but skip this level
-            if(aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name)) {
-                // Handles UC4 and UC5 - throw an IAE if the class is declared above
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+           boolean isDeclaredAboveLeaf = false;
+           // keep checking the hierarchy but skip this level and go directly to the superType
+            if(calledDirectlyOnTarget) {
+                isDeclaredAboveLeaf = aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name, anAttribute); 
+            } else {
+               isDeclaredAboveLeaf = aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name);
+            }
+            if(calledDirectlyOnTarget) {
+                if(!isDeclaredAboveLeaf) {
+                    // Handles UC4 and UC5 - throw an IAE if the class is declared above
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
                         new Object[] { name, this }));
+                } else {
+                    // Handles UC3 (normal case - attribute is not declared on a superclass)
+                    return anAttribute;
+                }
             } else {
-                // Handles UC3 (normal case - attribute is not declared on a superclass)
-                return anAttribute;
+                if(isDeclaredAboveLeaf) {
+                    // Handles UC4 and UC5 - throw an IAE if the class is declared above
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
+                        new Object[] { name, this }));
+                } else {
+                    // Handles UC3 (normal case - attribute is not declared on a superclass)
+                    return anAttribute;
+                }
             }
         }
     }
 
+    /**
+     *  Return the declared attribute of the managed
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return attribute with given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
+    public Attribute<X, ?> getDeclaredAttribute(String name){
+        return getDeclaredAttribute(name, false);
+    }
     
     /**
      * All getDeclared*(name, *) function calls require navigation up the superclass tree
@@ -401,7 +432,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     // AGGREGATE:2 == EMBEDDABLE
                     managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
                 } else if (descriptor.isAggregateCollectionDescriptor()) {
-                    // TODO: Embeddable Collection handling is in progress
                     // AGGREGATE_COLLECTION:3 can be an embeddable or entity type depending on ?
                     managedType = new EmbeddableTypeImpl(metamodel, descriptor);
                 }
@@ -638,11 +668,16 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     
     /**
      * INTERNAL:
-     * @param name
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
      * @param performNullCheck - flag on whether we should be doing an IAException check
+     *  @return ListAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      * @return
      */
-    protected ListAttribute<? super X, ?> getList(String name, boolean performNullCheck) {
+    private ListAttribute<? super X, ?> getList(String name, boolean performNullCheck) {
         /*
          * Note: We do not perform type checking on the get(name)
          * If the type is not of the correct Attribute implementation class then
@@ -1036,7 +1071,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 if(null != anAttribute && anAttribute == firstLevelAttribute) {
                     return true;
                 } else {
-                    return false; // TODO: verify use case
+                    return false; 
                 }
             }
         } else {            
@@ -1060,8 +1095,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                    }
                }
            }
-           // TODO: verify handling of XML mapped non-Entity (plain Java Class) inherited mappings
-           // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_53:_20090729:_Verify_that_inheritied_non-JPA_class_mappings_are_handled_by_the_Metamodel
         }
     }
     
@@ -1143,6 +1176,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                 // get inheriting subtype member (without handling @override annotations)
                                 MappedSuperclassTypeImpl aMappedSuperclass = ((MappedSuperclassTypeImpl)this);
                                 AttributeImpl inheritingTypeMember = aMappedSuperclass.getMemberFromInheritingType(colMapping.getAttributeName());
+                                // Verify we have an attributeAccessor
                                 aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
                             }
                         }

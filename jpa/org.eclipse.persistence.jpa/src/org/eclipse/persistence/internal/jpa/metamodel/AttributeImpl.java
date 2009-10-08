@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serializable;
+
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 
@@ -40,7 +42,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @param <T> The type of the represented attribute
  *  
  */ 
-public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
+public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializable {
 
     /** the ManagedType associated with this attribute **/
     private ManagedTypeImpl<X> managedType;

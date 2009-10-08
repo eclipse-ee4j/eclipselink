@@ -35,6 +35,9 @@ import javax.persistence.metamodel.BasicType;
  */ 
 public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
 
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = -4235705513407442769L;
+
     protected BasicTypeImpl(Class<X> javaClass) {
         super(javaClass);
     }

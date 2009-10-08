@@ -36,7 +36,11 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * @param <V> The element type of the represented Collection
  *  
  */ 
-public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Collection<V>, V> implements CollectionAttribute<X, V> {
+public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Collection<V>, V>
+    implements CollectionAttribute<X, V> {
+
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = -4981779656175076241L;
 
     /**
      * INTERNAL:

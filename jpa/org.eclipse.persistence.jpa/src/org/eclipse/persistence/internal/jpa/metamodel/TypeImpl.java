@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serializable;
+
 import javax.persistence.metamodel.Type;
 
 /**
@@ -32,7 +34,7 @@ import javax.persistence.metamodel.Type;
  *  
  * @param <X>  The type of the represented object or attribute  
  */ 
-public abstract class TypeImpl<X> implements Type<X> {
+public abstract class TypeImpl<X> implements Type<X>, Serializable {
     
     /** The Java Class in use that this Type represents */
     private Class<X> javaClass;

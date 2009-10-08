@@ -26,6 +26,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -45,6 +46,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -65,7 +67,10 @@ import org.eclipse.persistence.sessions.Project;
  * @since EclipseLink 1.2 - JPA 2.0
  *  
  */ 
-public class MetamodelImpl implements Metamodel {
+public class MetamodelImpl implements Metamodel, Serializable {
+
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = -7352420189248464690L;
 
     /** The EclipseLink Session associated with this Metamodel implementation that contains all our descriptors with mappings **/
     protected DatabaseSession session;
@@ -103,6 +108,15 @@ public class MetamodelImpl implements Metamodel {
         this(JpaHelper.getServerSession(emf));
     }
 
+    /**
+     * INTERNAL:
+     * @param emSetupImpl
+     */
+    public MetamodelImpl(EntityManagerSetupImpl emSetupImpl) {
+        // Create a new Metamodel using the EclipseLink session on the EM
+        this(emSetupImpl.getSession());
+    }
+    
     /**
      *  Return the metamodel embeddable type representing the
      *  embeddable class.

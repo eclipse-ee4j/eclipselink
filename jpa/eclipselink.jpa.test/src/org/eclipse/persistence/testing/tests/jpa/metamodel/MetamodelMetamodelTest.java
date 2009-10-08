@@ -166,10 +166,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
-        suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));        
+        suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));
         suite.addTest(new MetamodelMetamodelTest("testMetamodelLazyInitialization"));
+        // Not implemented yet
+        //suite.addTest(new MetamodelMetamodelTest("testObscureInvalidStateUnitTests"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
-        suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));        
+        suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         return suite;
     }
 
@@ -197,6 +203,41 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
     
     private void privateTestTeardown() {        
+    }
+    
+    /**
+     * These tests are for states that should never be reached by API implementors.
+     */
+    public void testObscureInvalidStateUnitTests() {
+        if(!this.isJPA10()) {
+            boolean exceptionThrown = false;
+            EntityManager em = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                
+                // Test toString() for a Type without a javaType attribute
+                //Type invalidType = new BasicTypeImpl(null);
+                
+                
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
     }
     
     public void testMetamodelLazyInitialization() {
@@ -296,6 +337,103 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             } catch (Exception e) {
                 // we enter here on a failed commit() - for example if the table schema is incorrectly defined
                 e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
+    }
+
+    public void testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                ManagedType<Manufacturer> entityManufacturer_ = metamodel.managedType(Manufacturer.class);                
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());                
+
+                /**
+                 *  Return the attribute that corresponds to the id attribute 
+                 *  declared by the entity or mapped superclass.
+                 *  @param type  the type of the represented declared id attribute
+                 *  @return declared id attribute
+                 *  @throws IllegalArgumentException if id attribute of the given
+                 *          type is not declared in the identifiable type or if
+                 *          the identifiable type has an id class
+                 */
+                //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
+                // Not declared  - invalid - IAE thrown (actually declared 2 levels above in "Person")
+                Attribute idAttribute = ((IdentifiableType)entityManufacturer_).getDeclaredId(Integer.class);                
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertTrue("non-declared attribute should throw an IAE", exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
+    }
+    
+    public void testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all() {
+    }
+    
+    public void testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                ManagedType<Person> msPerson = metamodel.managedType(Person.class);                
+                assertNotNull(msPerson);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());                
+
+                /**
+                 *  Return the attribute that corresponds to the id attribute 
+                 *  declared by the entity or mapped superclass.
+                 *  @param type  the type of the represented declared id attribute
+                 *  @return declared id attribute
+                 *  @throws IllegalArgumentException if id attribute of the given
+                 *          type is not declared in the identifiable type or if
+                 *          the identifiable type has an id class
+                 */
+                //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
+                // declared  - valid
+                Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);                
+                assertNotNull(idAttribute);
+                assertEquals(Integer.class, idAttribute.getJavaType());
+                // declared and valid
+                
+                //*********************************************/
+                // Require a version on a MappedSuperclass
+                
+                //assertNotNull(msPerson1_.getDeclaredId(Integer.class));
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 assertFalse(exceptionThrown);
@@ -619,7 +757,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(1, entityArrayProcessorDeclaredAttributes.size());
             // verify getting the attribute directly
             Attribute<ArrayProcessor, ?> entityArrayProcessorDeclaredAttribute = entityArrayProcessor_.getDeclaredAttribute("speed");
-            // verify we get an IAE on an non-declared type
+            // verify we do get an IAE on declared type above
             try {
                 Attribute<ArrayProcessor, ?> entityArrayProcessorDeclaredAttributeThatIsNonExistent = entityArrayProcessor_.getDeclaredAttribute("non-existent");
             } catch (IllegalArgumentException iae) {
@@ -629,7 +767,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertTrue(expectedIAExceptionThrown);
 
-            // Verify we get an IAE on a type declared avove
+            // Verify we get an IAE on a type declared above
             try {
                 Attribute<ArrayProcessor, ?> entityArrayProcessorDeclaredAttributeThatIsDeclaredAbove = entityArrayProcessor_.getDeclaredAttribute("id");
             } catch (IllegalArgumentException iae) {
@@ -1768,10 +1906,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(expectedIAExceptionThrown);
 */            
             
+            //     private Collection<Computer> corporateComputers = new HashSet<Computer>();
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_91:_20091008:_ManagedType.getDeclaredAttribute.28.29_does_not_throw_expected_IAE_for_Entity.28target.29-MappedSuperclass-MappedSuperclass.28attribute.29_Hierarchy
             expectedIAExceptionThrown = false;            
             try {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
-                // UC4 - the attribute is on the immediate superclass but it is the wrong return type of LIST instead of COLLECTION
+                // UC4 - the attribute is on the immediate superclass and is the correct COLLECTION - we still get an IAE
                 CollectionAttribute<Manufacturer, Computer> anAttribute = 
                     entityManufacturer_.getDeclaredCollection("corporateComputers", entityComputer_.getJavaType());
             } catch (IllegalArgumentException iae) {
@@ -1848,13 +1988,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertFalse(expectedIAExceptionThrown);            
             
+            //     private Collection<Computer> corporateComputers = new HashSet<Computer>();
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_91:_20091008:_ManagedType.getDeclaredAttribute.28.29_does_not_throw_expected_IAE_for_Entity.28target.29-MappedSuperclass-MappedSuperclass.28attribute.29_Hierarchy
             expectedIAExceptionThrown = false;            
             try {
                 //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                 // UC4 - the attribute is on the immediate superclass
                 CollectionAttribute<Manufacturer, Computer> anAttribute = 
                     entityManufacturer_.getDeclaredCollection("corporateComputers", entityComputer_.getJavaType());
-                //System.out.println("entityManufacturer.getDeclaredList(corporateComputers) " + anAttribute);
             } catch (IllegalArgumentException iae) {
                 // expecting
                 // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
@@ -2583,16 +2724,38 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @return bindable type
              */ 
             //BindableType getBindableType();
+            // EntityTypeImpl
+            assertEquals(Bindable.BindableType.ENTITY_TYPE, entityManufacturer_.getBindableType());
+            // SingularAttributeImpl
+            SingularAttribute<Manufacturer, Boolean> manufacturer_booleanObject 
+                = entityManufacturer_.getDeclaredSingularAttribute("aBooleanObject", Boolean.class);
+            assertNotNull(manufacturer_booleanObject);
+            assertEquals(Bindable.BindableType.SINGULAR_ATTRIBUTE, manufacturer_booleanObject.getBindableType());
+            // PluralAttributeImpl
+            ListAttribute<Manufacturer, HardwareDesigner> manufacturer_hardwareDesignersList 
+                = entityManufacturer_.getDeclaredList("hardwareDesigners", HardwareDesigner.class);
+            assertNotNull(manufacturer_hardwareDesignersList);
+            assertEquals(Bindable.BindableType.PLURAL_ATTRIBUTE, manufacturer_hardwareDesignersList.getBindableType());
             
             /**
              * Return the Java type of the represented object.
-             * If the bindable type of the object is PLURAL_ATTRIBUTE,
+             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
              * the Java element type is returned. If the bindable type is
-             * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+             * the Java type of the
              * represented entity or attribute is returned.
              * @return Java type
              */
             //Class<T> getBindableJavaType();
+            // EntityTypeImpl
+            assertEquals(entityManufacturer_.getJavaType(), entityManufacturer_.getBindableJavaType());
+            // SingularAttribute
+            assertEquals(manufacturer_booleanObject.getJavaType(), manufacturer_booleanObject.getBindableJavaType());
+            // PluralAttribute
+            Type<HardwareDesigner> manufacturer_hardwareDesignersType = manufacturer_hardwareDesignersList.getElementType();
+            assertNotNull(manufacturer_hardwareDesignersType);
+            assertNotNull(manufacturer_hardwareDesignersType.getJavaType());
+            assertEquals(manufacturer_hardwareDesignersType.getJavaType(), manufacturer_hardwareDesignersList.getBindableJavaType());
             
             
             // Variant use cases

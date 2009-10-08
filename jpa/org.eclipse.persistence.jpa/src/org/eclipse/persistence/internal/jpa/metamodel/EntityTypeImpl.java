@@ -44,6 +44,9 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  */ 
 public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X> {    
    
+    /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    private static final long serialVersionUID = 7970950485096018114L;
+
     protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
@@ -59,9 +62,10 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     
     /**
      * Return the Java type of the represented object.
-     * If the bindable type of the object is PLURAL_ATTRIBUTE,
+     * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
      * the Java element type is returned. If the bindable type is
-     * SINGLE_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+     * the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
      */

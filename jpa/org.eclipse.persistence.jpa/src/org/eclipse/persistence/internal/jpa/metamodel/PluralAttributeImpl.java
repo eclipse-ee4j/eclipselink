@@ -52,7 +52,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     
     /** The type representing this collection type **/
     protected Type<V> elementType;
-    
 
     /**
      * INTERNAL:
@@ -74,9 +73,9 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         } else {
             // See CollectionContainerPolicy
             Class attributeClass = null;
-            // TODO: handle AggregateCollectionMapping
+            // TODO: handle AggregateCollectionMapping and verify isAbstractDirectMapping
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping() 
-                    || mapping.isDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
+                    || mapping.isDirectCollectionMapping()) {
                 /**
                  * The Map Value parameter was set during metadata processing in DirectCollectionMapping.convertClassNamesToClasses() for example.
                  * The attributeClassification is set from the valueField.typeName String instead of the type Class because of the
@@ -84,7 +83,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                  */
                 attributeClass = mapping.getAttributeClassification();
                 /**
-                 * TODO: REFACTOR
+                 * REFACTOR
                  * We were unable to get the type because it is not declared as a generic parameter on the method level attribute.
                  * It may be declared on the field.
                  * See design issue 65 - we need a way to parse the signature of the declaration on the java class - if it exists.
@@ -130,9 +129,10 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
 
     /**
      * Return the Java type of the represented object.
-     * If the bindable type of the object is PLURAL_ATTRIBUTE,
+     * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
      * the Java element type is returned. If the bindable type is
-     * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+     * the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
      */
@@ -141,10 +141,19 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         return elementType.getJavaType();
     }
     
+    /**
+     *  Return the bindable type of the represented object.
+     *  @return bindable type
+     */ 
     public BindableType getBindableType() {
     	return Bindable.BindableType.PLURAL_ATTRIBUTE;
     }
     
+    /**
+     * INTERNAL:
+     * Return the mapping associated with this PluralAttribute.
+     * @return
+     */
     public CollectionMapping getCollectionMapping() {
         return (CollectionMapping) getMapping();
     }
