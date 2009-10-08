@@ -14,11 +14,7 @@ package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.CascadeType;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-
 
 @Entity(name="CMP3_BV_PROJECT")
 public class Project {

@@ -31,7 +31,6 @@ import org.eclipse.persistence.testing.models.jpa.cascadedeletes.PersistentIdent
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.RootA;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.ThreadInfo;
 
-@SuppressWarnings("deprecation")
 public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
     private static Integer m_Id;
 

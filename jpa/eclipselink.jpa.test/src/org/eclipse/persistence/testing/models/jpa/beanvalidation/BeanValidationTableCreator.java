@@ -13,10 +13,6 @@ package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import org.eclipse.persistence.tools.schemaframework.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.util.Collection;
-
 public class BeanValidationTableCreator extends TableCreator {
     public BeanValidationTableCreator() {
         setName("BeanValidationEmployeeProject");

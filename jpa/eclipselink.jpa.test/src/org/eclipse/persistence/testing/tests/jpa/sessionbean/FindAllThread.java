@@ -12,7 +12,6 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
-import java.util.Random;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -21,13 +20,7 @@ import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.rmi.PortableRemoteObject;
 
-import junit.framework.*;
-
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**

@@ -11,15 +11,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import java.sql.Time;
-
-import java.sql.Timestamp;
-
 import java.util.*;
-
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.models.jpa.datetime.DateTime;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;

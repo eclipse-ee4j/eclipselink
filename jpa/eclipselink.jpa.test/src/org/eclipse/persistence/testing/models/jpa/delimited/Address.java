@@ -17,7 +17,6 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.GenerationType.TABLE;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee

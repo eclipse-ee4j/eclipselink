@@ -20,13 +20,7 @@ import oracle.eclipselink.coherence.integrated.querying.ReadObjectFromCoherence;
 import oracle.eclipselink.coherence.integrated.querying.UpdateObjectToCoherence;*/
 
 import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 
 public class CacheCoordinationSessionCustomizer implements SessionCustomizer {
 
