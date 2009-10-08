@@ -1,5 +1,6 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultTyp
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class QueryBuilderImpl implements CriteriaBuilder {
+public class QueryBuilderImpl implements CriteriaBuilder, Serializable {
     
     protected Metamodel metamodel;
     
@@ -49,28 +50,40 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      *  @return query object
      */
     public CriteriaQuery<Object> createQuery(){
-        return new CriteriaQueryImpl(this.metamodel, ResultType.OTHER, ClassConstants.OBJECT, this);
+        return new CriteriaQueryImpl(this.metamodel, ResultType.UNKNOWN, ClassConstants.OBJECT, this);
     }
 
     /**
      *  Create a Criteria query object.
      *  @return query object
      */
-    public <T> CriteriaQuery<T> createQuery(Class<T> resultClass){
-        if (resultClass.equals(Tuple.class)){
+    public <T> CriteriaQuery<T> createQuery(Class<T> resultClass) {
+        if (resultClass == null) {
+            return (CriteriaQuery<T>) this.createQuery();
+        }
+        if (resultClass.equals(Tuple.class)) {
             return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, resultClass, this);
-        }else if(resultClass.equals(ClassConstants.AOBJECT)){
+        } else if (resultClass.equals(ClassConstants.AOBJECT)) {
             return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, resultClass, this);
-        }else if (resultClass.isArray()){
+        } else if (resultClass.isArray()) {
             return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, resultClass, this);
-        }else{
-            ManagedType type = this.metamodel.managedType(resultClass);
-            if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)){
-                return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, resultClass , this);
+        } else {
+            if (resultClass.equals(ClassConstants.OBJECT)) {
+                return (CriteriaQuery<T>) this.createQuery();
             } else {
-                return new CriteriaQueryImpl(this.metamodel, ResultType.OTHER, resultClass, this);
+                if (resultClass.isPrimitive() || resultClass.equals(ClassConstants.STRING)|| BasicTypeHelperImpl.getInstance().isWrapperClass(resultClass) || BasicTypeHelperImpl.getInstance().isDateClass(resultClass)) {
+                    return new CriteriaQueryImpl<T>(metamodel, ResultType.OTHER, resultClass, this);
+                } else {
+                    ManagedType type = this.metamodel.managedType(resultClass);
+                    if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+                        return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, resultClass, this);
+                    } else {
+                        return new CriteriaQueryImpl(this.metamodel, ResultType.CONSTRUCTOR, resultClass, this);
+                    }
+                }
             }
         }
+
     }
 
     /**
@@ -97,7 +110,7 @@ public class QueryBuilderImpl implements CriteriaBuilder {
     
 
     public CompoundSelection<Tuple> tuple(Selection<?>... selections){
-        return construct(Tuple.class, selections);
+        return new CompoundSelectionImpl(Tuple.class, selections);
     }
 
     /**
@@ -108,7 +121,7 @@ public class QueryBuilderImpl implements CriteriaBuilder {
      *          array-valued selection item
      */
     public CompoundSelection<Object[]> array(Selection<?>... selections){
-        return construct(ClassConstants.AOBJECT, selections);
+        return new CompoundSelectionImpl(ClassConstants.AOBJECT, selections);
     }
 
     /**

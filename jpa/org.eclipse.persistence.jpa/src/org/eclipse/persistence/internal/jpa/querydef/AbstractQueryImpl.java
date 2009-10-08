@@ -59,7 +59,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected List<Expression<?>> groupBy;
 
     protected enum ResultType{
-        OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
+        UNKNOWN, OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
     
     public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder, Class<T> resultType){

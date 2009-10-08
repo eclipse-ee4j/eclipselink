@@ -502,6 +502,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isCompoundSelection(){
         return false;
     }
+    public boolean isConstructor(){
+        return false;
+    }
     public boolean isPredicate(){
         return false;
     }

@@ -35,5 +35,6 @@ public interface InternalSelection{
     
     public boolean isFrom();
     public boolean isRoot();
+    public boolean isConstructor();
 
 }

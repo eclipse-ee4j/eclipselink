@@ -101,7 +101,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
-    //    suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
@@ -248,7 +248,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
         
- //       em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
+        em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
         beginTransaction(em);
         try {        
             Metamodel mm = em.getMetamodel();

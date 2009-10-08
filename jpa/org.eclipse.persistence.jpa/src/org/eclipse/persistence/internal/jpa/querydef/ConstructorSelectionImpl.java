@@ -36,11 +36,6 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
         super(javaType, subSelections);
     }
 
-    @Override
-    public boolean isCompoundSelection(){
-        return true;
-    }
-    
     public ConstructorReportItem translate(){
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
@@ -54,6 +49,11 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
         return item;
 
     }
+    
+    public boolean isConstructor(){
+        return true;
+    }
+    
     
     public void findRootAndParameters(AbstractQueryImpl query){
         for (Selection selection: getCompoundSelectionItems()){

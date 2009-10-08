@@ -1171,7 +1171,11 @@ public class ReportQuery extends ReadAllQuery {
                             }
                         }
                     } else if (baseExp.isExpressionBuilder()) {
-                        newDescriptor = getSession().getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
+                        if (((ExpressionBuilder)baseExp).getQueryClass() == null){
+                            item.setResultType(ClassConstants.INTEGER);
+                        }else{
+                            newDescriptor = getSession().getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
+                        }
                     }
                     
                     if (newDescriptor != null) {
