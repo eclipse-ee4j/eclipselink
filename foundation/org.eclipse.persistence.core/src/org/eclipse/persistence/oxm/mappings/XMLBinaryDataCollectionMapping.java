@@ -355,15 +355,35 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
 
         Object fieldValue = row.getValues(this.getField());
         if (fieldValue == null) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
         Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
-        Object result = cp.containerInstance(fieldValues.size());
+        Object result = null;
+        if (reuseContainer) {
+            Object currentObject = ((XMLRecord) row).getCurrentObject();
+            Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            result = container != null ? container : cp.containerInstance();
+        } else {
+            result = cp.containerInstance(fieldValues.size());
+        }
+
         for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
             Object element = stream.nextElement();
 

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -221,7 +221,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isCDATA;
     private boolean isWriteOnly;
     private AbstractNullPolicy nullPolicy;
-    private boolean reuseContainer;
+    protected boolean reuseContainer;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -289,15 +289,35 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
         Object fieldValue = row.getValues(this.getField());
         if (fieldValue == null) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
         Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
-        Object result = cp.containerInstance(fieldValues.size());
+        Object result = null;
+        if (reuseContainer) {
+            Object currentObject = ((XMLRecord) row).getCurrentObject();
+            Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            result = container != null ? container : cp.containerInstance();
+        } else {
+            result = cp.containerInstance(fieldValues.size());
+        }
+
         for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
             Object element = stream.nextElement();
             if (hasValueConverter()) {
@@ -369,22 +389,22 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public boolean isCDATA() {
         return isCDATA;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -400,18 +420,18 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;

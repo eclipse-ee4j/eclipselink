@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -152,7 +152,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     AbstractNullPolicy nullPolicy;
     private AttributeAccessor containerAccessor;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
-    
+
     private boolean isWriteOnly;
     private boolean reuseContainer = false;
 
@@ -165,29 +165,29 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     /**
      * Gets the AttributeAccessor that is used to get and set the value of the
      * container on the target object.
-     */    
+     */
     public AttributeAccessor getContainerAccessor() {
         return this.containerAccessor;
     }
-    
+
     /**
-     * Sets the AttributeAccessor that is used to get and set the value of the 
+     * Sets the AttributeAccessor that is used to get and set the value of the
      * container on the target object.
-     * 
+     *
      * @param anAttributeAccessor - the accessor to be used.
-     */    
+     */
     public void setContainerAccessor(AttributeAccessor anAttributeAccessor) {
         this.containerAccessor = anAttributeAccessor;
     }
-    
+
     /**
-     * Sets the name of the backpointer attribute on the target object. Used to 
+     * Sets the name of the backpointer attribute on the target object. Used to
      * populate the backpointer. If the specified attribute doesn't exist on the
      * reference class of this mapping, a DescriptorException will be thrown
      * during initialize.
-     * 
+     *
      * @param attributeName - the name of the backpointer attribute to be populated
-     */    
+     */
     public void setContainerAttributeName(String attributeName) {
         if(attributeName != null) {
             if(this.getContainerAccessor() == null) {
@@ -196,10 +196,10 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             this.getContainerAccessor().setAttributeName(attributeName);
         }
     }
-    
+
     /**
-     * Gets the name of the backpointer attribute on the target object. 
-     */        
+     * Gets the name of the backpointer attribute on the target object.
+     */
     public String getContainerAttributeName() {
         if(this.getContainerAccessor() == null) {
             return null;
@@ -208,13 +208,13 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     /**
-     * Sets the method name to be used when accessing the value of the back pointer 
+     * Sets the method name to be used when accessing the value of the back pointer
      * on the target object of this mapping. If the specified method isn't declared
      * on the reference class of this mapping, a DescriptorException will be thrown
      * during initialize.
-     * 
+     *
      * @param methodName - the name of the getter method to be used.
-     */    
+     */
     public void setContainerGetMethodName(String methodName) {
         if (methodName == null) {
             return;
@@ -223,31 +223,31 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         if(getContainerAccessor() == null) {
             this.containerAccessor = new MethodAttributeAccessor();
         }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor 
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
             getContainerAccessor().setAttributeName(attributeName);
         }
 
-        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);     
+        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);
     }
- 
+
     /**
-     * Gets the name of the method to be used when accessing the value of the 
+     * Gets the name of the method to be used when accessing the value of the
      * back pointer on the target object of this mapping.
-     */      
+     */
     public String getContainerGetMethodName() {
         if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
             return null;
         }
         return ((MethodAttributeAccessor)getContainerAccessor()).getGetMethodName();
     }
-    
+
     /**
-     * Gets the name of the method to be used when setting the value of the 
+     * Gets the name of the method to be used when setting the value of the
      * back pointer on the target object of this mapping.
-     */       
+     */
     public String getContainerSetMethodName() {
         if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
             return null;
@@ -256,13 +256,13 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     /**
-     * Sets the name of the method to be used when setting the value of the back pointer 
+     * Sets the name of the method to be used when setting the value of the back pointer
      * on the target object of this mapping. If the specified method isn't declared on
      * the reference class of this mapping, a DescriptorException will be
      * raised during initialize.
-     * 
+     *
      * @param methodName - the name of the setter method to be used.
-     */    
+     */
     public void setContainerSetMethodName(String methodName) {
         if (methodName == null) {
             return;
@@ -271,7 +271,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         if(getContainerAccessor() == null) {
             this.containerAccessor = new MethodAttributeAccessor();
         }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor     
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
@@ -324,8 +324,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         if(null != containerAccessor) {
             containerAccessor.initializeAttributes(this.referenceClass);
-        }    
-        
+        }
+
     }
 
     /**
@@ -363,10 +363,10 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
         }
         XMLRecord parent = (XMLRecord) parentRow;
-        
+
         if (classDesc != null) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
-                    
+
             boolean addXsiType = shouldAddXsiType((XMLRecord) parentRow, classDesc);
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
             child.setNamespaceResolver(parent.getNamespaceResolver());
@@ -378,8 +378,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }else{
                 Node newNode = XPathEngine.getInstance().create((XMLField)getField(), parent.getDOM(), attributeValue, session);
                 DOMRecord newRow = new DOMRecord(newNode);
-                return newRow;       
-            }                                          
+                return newRow;
+            }
         }
     }
 
@@ -427,25 +427,45 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
         // BUG#2667762 there could be whitespace in the row instead of null
         if ((fieldValue == null) || (fieldValue instanceof String)) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
         Vector nestedRows = this.getDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
         if (nestedRows == null) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
 
-        Object result = cp.containerInstance(nestedRows.size());
+        Object result = null;
+        if (reuseContainer) {
+            Object currentObject = ((XMLRecord) row).getCurrentObject();
+            Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            result = container != null ? container : cp.containerInstance();
+        } else {
+            result = cp.containerInstance(nestedRows.size());
+        }
+
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
             Object objectToAdd = null;
             ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
-            
-            if(aDescriptor == null){    
+
+            if(aDescriptor == null){
                 if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                     XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
                     objectToAdd = ((DOMRecord)nestedRow).getDOM();
-                    if (getConverter() != null) {     
+                    if (getConverter() != null) {
                         if (getConverter() instanceof XMLConverter) {
                             objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
                         } else {
@@ -460,11 +480,11 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         Node nextNode = children.item(i);
                         if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
                             //complex child
-                            throw XMLMarshalException.noDescriptorFound(this);                              
+                            throw XMLMarshalException.noDescriptorFound(this);
                         }
                     }
                      //simple case
-                     objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);       
+                     objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
                 }
             }
             else{
@@ -485,7 +505,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     if (newElementClass != null) {
                         aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
                     } else {
-                        // since there is no xsi:type attribute or leaf element type set, 
+                        // since there is no xsi:type attribute or leaf element type set,
                         // use the reference descriptor -  make sure it is non-abstract
                         if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                             // throw an exception
@@ -493,8 +513,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         }
                     }
                 }
-    
-                //Object element 
+
+                //Object element
                 objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
                 if (hasConverter()) {
                     if (getConverter() instanceof XMLConverter) {
@@ -504,7 +524,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     }
                 }
             }
-            
+
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != containerAccessor) {
                 containerAccessor.setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
@@ -515,34 +535,34 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     private Object convertToSimpleTypeIfPresent(Object objectToAdd, AbstractRecord nestedRow, AbstractSession executionSession){
         String stringValue = null;
-    	
+
         Element theElement = ((Element) ((DOMRecord)nestedRow).getDOM());
         Node textchild = theElement.getFirstChild();
-        
+
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
             stringValue = ((Text) textchild).getNodeValue();
             if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
-                objectToAdd = stringValue; 
+                objectToAdd = stringValue;
             }
         }
         if ((stringValue == null) || stringValue.length() == 0 ) {
             return objectToAdd;
         }
-        
+
         String type = theElement.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         if ((null != type) && type.length() > 0) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
-            typeFragment.setNamespaceURI(namespaceURI);                         
+            typeFragment.setNamespaceURI(namespaceURI);
             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
             if (theClass != null) {
                 objectToAdd = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(stringValue, theClass, schemaTypeQName);
             }
-        }           
+        }
         return objectToAdd;
     }
-    
+
     public ClassDescriptor getReferenceDescriptor(DOMRecord xmlRecord) {
         ClassDescriptor returnDescriptor = referenceDescriptor;
 
@@ -577,7 +597,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 }
             }
         }
-       
+
         return returnDescriptor;
 
     }
@@ -634,7 +654,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record);
         record.add(getField(), nestedRow);
     }
-    
+
     /**
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
@@ -654,7 +674,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public AbstractNullPolicy getNullPolicy() {
         return nullPolicy;
     }
-    
+
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
     }
@@ -662,7 +682,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
         this.keepAsElementPolicy = keepAsElementPolicy;
     }
-    
+
     protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
         if (rootQName == null) {
             rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
@@ -680,37 +700,37 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }    
+    }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -55,17 +55,17 @@ import org.w3c.dom.Node;
 
 /**
  * <p><b>Purpose</b>:The XMLAnyAttributeMapping is used to map to an attribute in an object to any xml attributes contained
- * on a specific element in the XML Document. The attribute in the object will contain a map of attribute values keyed 
+ * on a specific element in the XML Document. The attribute in the object will contain a map of attribute values keyed
  * on QName. In the case that one or more of the attributes found on the specified element is already mapped to another
- * attribute in the object, that attribute will be ignored during the unmarshal operation.  
- * 
+ * attribute in the object, that attribute will be ignored during the unmarshal operation.
+ *
  * <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
  * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
  * The XPath may contain node type, path, and positional information.  The XPath is specified on the
  * mapping using the <code>setXPath</code> method.  Note that for XML Any Attribute Mappings the XPath
- * is optional. Not setting the xpath, will cause the mapping to look for any attribute children directly owned by the 
+ * is optional. Not setting the xpath, will cause the mapping to look for any attribute children directly owned by the
  * current Element.
- * 
+ *
  */
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping {
     private XMLField field;
@@ -237,7 +237,16 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         //This DOMRecord represents the root node of the AnyType instance
         //Grab ALL children to populate the collection.
         DirectMapContainerPolicy cp = (DirectMapContainerPolicy) getContainerPolicy();
-        Object container = cp.containerInstance();
+
+        Object container = null;
+        if (reuseContainer) {
+            Object currentObject = record.getCurrentObject();
+            Object value = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            container = value != null ? value : cp.containerInstance();
+        } else {
+            container = cp.containerInstance();
+        }
+
         org.w3c.dom.Element root = (Element) record.getDOM();
         NamedNodeMap attributes = root.getAttributes();
         Attr next;
@@ -251,17 +260,17 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             }
             String namespaceURI = next.getNamespaceURI();
             boolean includeAttribute = true;
-            if(!isNamespaceDeclarationIncluded && XMLConstants.XMLNS_URL.equals(namespaceURI)){
-            	includeAttribute = false;            	
-            }else if(!isSchemaInstanceIncluded && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
-            	includeAttribute = false;            	
-            }                       
-                        
-            if(includeAttribute){
-            	String value = next.getValue();
-            	QName key = new QName(namespaceURI, localName);                        	
-            	cp.addInto(key, value, container, session);
-            }         
+            if (!isNamespaceDeclarationIncluded && XMLConstants.XMLNS_URL.equals(namespaceURI)){
+                includeAttribute = false;
+            } else if (!isSchemaInstanceIncluded && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
+                includeAttribute = false;
+            }
+
+            if (includeAttribute){
+                String value = next.getValue();
+                QName key = new QName(namespaceURI, localName);
+                cp.addInto(key, value, container, session);
+            }
         }
         return container;
     }
@@ -322,7 +331,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         if (field != null) {
             root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root, session);
             recordToModify = new DOMRecord(root);
-        }        
+        }
 
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = recordToModify.getNamespaceResolver();
@@ -354,22 +363,22 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 }
             }
         }
-        
+
         ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, recordToModify);
         ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(recordToModify, extraNamespaces, session);
     }
 
     /**
      * INTERNAL:
-     * Indicates the Map class to be used.  
-     *  
+     * Indicates the Map class to be used.
+     *
      * @param concreteMapClass
      */
 
     /**
      * INTERNAL:
-     * Indicates the name of the Map class to be used.  
-     *  
+     * Indicates the name of the Map class to be used.
+     *
      * @param concreteMapClassName
      */
     public void useMapClassName(String concreteMapClassName) {
@@ -392,15 +401,15 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded) {
         this.isSchemaInstanceIncluded = isSchemaInstanceIncluded;
     }
-    
+
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -408,7 +417,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         super.setAttributeValueInObject(object, value);
     }
 
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -416,18 +425,18 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;

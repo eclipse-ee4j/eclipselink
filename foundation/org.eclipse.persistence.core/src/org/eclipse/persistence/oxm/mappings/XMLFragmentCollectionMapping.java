@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
@@ -88,12 +88,27 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
             nestedRows = (Vector)fieldValue;
         }
         if ((nestedRows == null) || nestedRows.isEmpty()) {
-            return cp.containerInstance();
+            if (reuseContainer) {
+                Object currentObject = ((XMLRecord) row).getCurrentObject();
+                Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                return container != null ? container : cp.containerInstance();
+            } else {
+                return cp.containerInstance();
+            }
         }
-        Object result = cp.containerInstance(nestedRows.size());
+
+        Object result = null;
+        if (reuseContainer) {
+            Object currentObject = ((XMLRecord) row).getCurrentObject();
+            Object container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            result = container != null ? container : cp.containerInstance();
+        } else {
+            result = cp.containerInstance();
+        }
+
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             Object next = stream.nextElement();
-            if (next instanceof Element) {                
+            if (next instanceof Element) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
             }
             cp.addInto(next, result, executionSession);
@@ -148,21 +163,21 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         }
         row.put(getField(), attributeValue);
     }
-    
+
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -171,18 +186,18 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -323,8 +323,17 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         //Grab ALL children to populate the collection.
         Node root = record.getDOM();
         NodeList children = root.getChildNodes();
+
         ContainerPolicy cp = getContainerPolicy();
-        Object container = cp.containerInstance();
+        Object container = null;
+        if (reuseContainer) {
+            Object currentObject = record.getCurrentObject();
+            Object value = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+            container = value != null ? value : cp.containerInstance();
+        } else {
+            container = cp.containerInstance();
+        }
+
         int length = children.getLength();
         Node next = null;
         if(length > 0) {
@@ -338,14 +347,14 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                         objectValue = next.getNodeValue();
                         if(getConverter() != null) {
                             objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                        }                       
+                        }
                         cp.addInto(objectValue, container, session);
                     }
                 } else if (next.getNodeType() == Node.ELEMENT_NODE) {
                     ClassDescriptor referenceDescriptor = null;
 
                     //In this case it must be an element so we need to dig up the descriptor
-                    //make a nested record and build an object from it.                
+                    //make a nested record and build an object from it.
                     DOMRecord nestedRecord = (DOMRecord) record.buildNestedRow((Element) next);
 
                     if (!useXMLRoot) {
@@ -387,29 +396,29 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                         } else {
                             Node textchild = ((Element) next).getFirstChild();
                             if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                            	String stringValue = ((Text) textchild).getNodeValue();
-                            	
-                            	 if ((stringValue != null) && stringValue.length() > 0) {
-                                 	Object convertedValue = stringValue;
-                                     if (schemaTypeQName != null) {
-                                         Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                                         if (theClass != null) {
-                                        	 convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
-                                         }
-                                     }
-                                     if(getConverter() != null) {
-                                    	 convertedValue = getConverter().convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
-                                     }                       
+                                String stringValue = ((Text) textchild).getNodeValue();
 
-                                     XMLRoot rootValue = new XMLRoot();
-                                     rootValue.setLocalName(next.getLocalName());
-                                     rootValue.setSchemaType(schemaTypeQName);
-                                     rootValue.setNamespaceURI(next.getNamespaceURI());
-                                     rootValue.setObject(convertedValue);
-                                     cp.addInto(rootValue, container, session);
-                                 }
-                            	
-                            }                           
+                                if ((stringValue != null) && stringValue.length() > 0) {
+                                    Object convertedValue = stringValue;
+                                    if (schemaTypeQName != null) {
+                                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                                        if (theClass != null) {
+                                            convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
+                                        }
+                                    }
+                                    if (getConverter() != null) {
+                                        convertedValue = getConverter().convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
+                                    }
+
+                                    XMLRoot rootValue = new XMLRoot();
+                                    rootValue.setLocalName(next.getLocalName());
+                                    rootValue.setSchemaType(schemaTypeQName);
+                                    rootValue.setNamespaceURI(next.getNamespaceURI());
+                                    rootValue.setObject(convertedValue);
+                                    cp.addInto(rootValue, container, session);
+                                }
+
+                            }
                         }
                     }
                 }
@@ -613,13 +622,13 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
             QName qname = ((XMLRoot) originalObject).getSchemaType();
             if(qname != null){
-                if(!qname.equals(XMLConstants.STRING_QNAME)){                   
+                if(!qname.equals(XMLConstants.STRING_QNAME)){
                     xmlRootField.setSchemaType(qname);
                     xmlRootField.setIsTypedTextField(true);
                     xmlRootField.addJavaConversion(((XMLRoot) originalObject).getObject().getClass(), qname);
                 }
             }
-           Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element, session);            
+           Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element, session);
         } else {
             Text textNode = doc.createTextNode((String) element);
             root.appendChild(textNode);
@@ -768,47 +777,47 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         }
         return unmappedNodes;
     }
-   
+
     public boolean isCollectionMapping() {
         return true;
     }
-    
+
     public void setConverter(XMLConverter conv) {
         this.valueConverter = conv;
     }
-    
+
     public XMLConverter getConverter() {
         return this.valueConverter;
     }
-    
+
     /**
-     * Setting this to true indicates that text nodes containing *only* whitespaces should still be 
+     * Setting this to true indicates that text nodes containing *only* whitespaces should still be
      * added to the collection as strings for mixed content.
-     * 
+     *
      * If mixedContent is false, this setting has no effect.
      * @return
      */
     public boolean isWhitespacePreservedForMixedContent() {
         return this.isWhitespacePreservedForMixedContent;
     }
-    
+
     public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace) {
         this.isWhitespacePreservedForMixedContent = preserveWhitespace;
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
