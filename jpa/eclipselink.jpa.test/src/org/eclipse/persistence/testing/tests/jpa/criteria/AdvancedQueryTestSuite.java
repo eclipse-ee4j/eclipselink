@@ -303,7 +303,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             // Test multi object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
-            cq.multiselect(from, from.get("address"), from.get("id"));
+            cq.multiselect(from.alias("employee"), from.get("address").alias("address"), from.get("id").alias("id"));
             cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -322,7 +322,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             // Test single object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
-            cq.multiselect(from.get("id"));
+            cq.multiselect(from.get("id").alias("id"));
             cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
