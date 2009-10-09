@@ -152,20 +152,6 @@ public interface Query {
     Map<String, Object> getHints();
 
     /**
-     * Get the names of the properties and hints that are supported for query 
-     * objects. These correspond to properties and hints that may be passed 
-     * to the methods of the <code>Query</code> interface that take 
-     * properties or hints as arguments or used with the 
-     * <code>NamedQuery</code> and <code>NamedNativeQuery</code>
-     * annotations. These include all standard query properties and
-     * hints as well as vendor-specific ones supported by the provider. These
-     * properties and hints may or may not currently be in effect.
-     * @return supported properties and hints
-     * @since Java Persistence 2.0
-     */
-    Set<String> getSupportedHints();
-
-    /**
      * Bind the value of a <code>Parameter</code> object.
      * @param param  parameter object
      * @param value  parameter value

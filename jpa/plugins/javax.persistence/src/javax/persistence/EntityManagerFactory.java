@@ -112,22 +112,6 @@ public interface EntityManagerFactory {
     public Map<String, Object> getProperties();
 
     /**
-     * Get the names of the properties and hints that are supported for use 
-     * with the entity manager factory.  These correspond to 
-     * properties and hints that may be passed to the methods of the 
-     * <code>EntityManagerFactory</code> interface that take a properties 
-     * argument. These include all standard properties and hints as well as 
-     * vendor-specific ones supported by the provider. These 
-     * properties and hints may or may not currently be in effect.
-     * @return properties and hints
-     * @throws IllegalStateException if the entity manager factory 
-     * has been closed
-     *
-     * @since Java Persistence 2.0
-     */
-    public Set<String> getSupportedProperties();
-
-    /**
      * Access the cache that is associated with the entity manager 
      * factory (the "second level cache").
      * @return instance of the <code>Cache</code> interface

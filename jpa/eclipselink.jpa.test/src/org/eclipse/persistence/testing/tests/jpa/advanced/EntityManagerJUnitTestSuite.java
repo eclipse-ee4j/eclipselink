@@ -330,7 +330,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetSupportedHints"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTemporalOnClosedEm"));
         
@@ -8808,29 +8807,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
         } finally {
             rollbackTransaction(em);
-        }
-    }
-    
-    public void testGetSupportedHints(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
-            Query query = em.createQuery("Select e from Employee e");
-            Set<String> supportedHints = query.getSupportedHints();
-            
-            try{
-                Field[] hintFields = QueryHints.class.getFields();
-                Set<String> queryHints = new HashSet<String>(hintFields.length);
-                for (int i=0;i<hintFields.length;i++){
-                    Field hintField = hintFields[i];
-                    String hint = (String)hintField.get(null);
-                    queryHints.add(hint);
-                }
-                assertTrue("The supported hints did not match our list of hints.", supportedHints.equals(queryHints));
-            } catch (Exception e){
-                fail("Exception retrieving hints: " + e);
-            }
         }
     }
     

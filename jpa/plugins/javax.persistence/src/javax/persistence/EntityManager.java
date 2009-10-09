@@ -536,21 +536,6 @@ public interface EntityManager {
     public Map<String, Object> getProperties();
 
     /**
-     * Get the names of the properties and hints that are supported for use 
-     * with the entity manager.
-     * These correspond to properties and hints that may be passed 
-     * to the methods of the <code>EntityManager</code> interface that take a 
-     * properties argument or used with the <code>PersistenceContext</code> 
-     * annotation. These properties include all standard entity
-     * manager properties and hints as well as vendor-specific ones
-     * supported by the provider. These properties and hints may or may not 
-     * currently be in effect.
-     * @return names of properties and hints
-     * @since Java Persistence 2.0
-     */
-    public Set<String> getSupportedProperties();
-
-    /**
      * Create an instance of <code>Query</code> for executing a
      * Java Persistence query language statement.
      * @param qlString a Java Persistence query string
@@ -682,7 +667,7 @@ public interface EntityManager {
      * on the <code>EntityManager</code> instance and any 
      * <code>Query</code> and <code>TypedQuery</code>
      * objects obtained from it will throw the <code>IllegalStateException</code>
-     * except for <code>getProperties</code>, <code>getSupportedProperties</code>,
+     * except for <code>getProperties</code>, 
      * <code>getTransaction</code>, and <code>isOpen</code> (which will return false).
      * If this method is called when the entity manager is
      * associated with an active transaction, the persistence
