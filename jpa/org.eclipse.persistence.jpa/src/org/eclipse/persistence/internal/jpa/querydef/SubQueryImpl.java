@@ -71,7 +71,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         
 
 
-    public SubQueryImpl(Metamodel metamodel, Class result, QueryBuilderImpl queryBuilder, AbstractQuery parent){
+    public SubQueryImpl(Metamodel metamodel, Class result, CriteriaBuilderImpl queryBuilder, AbstractQuery parent){
         super(metamodel, ResultType.OTHER, queryBuilder, result);
         this.subQuery = new ReportQuery();
         this.correlatedJoins = new HashSet();
@@ -261,7 +261,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * @return subquery root
      */
     public <Y> Root<Y> correlate(Root<Y> parentRoot){
-        RootImpl root = new RootImpl(parentRoot.getModel(), metamodel, parentRoot.getJavaType(), ((InternalSelection)parentRoot).getCurrentNode(), parentRoot.getModel());
+        RootImpl root = new RootImpl(parentRoot.getModel(), metamodel, parentRoot.getJavaType(), ((InternalSelection)parentRoot).getCurrentNode(), parentRoot.getModel(), (FromImpl) parentRoot);
         integrateRoot(root);
         return root;
     }
@@ -276,7 +276,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, Y> Join<X, Y> correlate(Join<X, Y> parentJoin){
         this.correlatedJoins.add(parentJoin);
-        JoinImpl join = new JoinImpl(parentJoin.getParentPath(), metamodel.managedType(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), ((InternalSelection)parentJoin).getCurrentNode(), parentJoin.getModel(), parentJoin.getJoinType());
+        JoinImpl join = new JoinImpl(parentJoin.getParentPath(), metamodel.managedType(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), ((InternalSelection)parentJoin).getCurrentNode(), parentJoin.getModel(), parentJoin.getJoinType(), (FromImpl) parentJoin);
         join.findRootAndParameters(this);
         return join;
         
@@ -292,7 +292,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, Y> CollectionJoin<X, Y> correlate(CollectionJoin<X, Y> parentCollection){
         this.correlatedJoins.add(parentCollection);
-        return new CollectionJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
+        return new CollectionJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
     
     /**
@@ -306,7 +306,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, Y> SetJoin<X, Y> correlate(SetJoin<X, Y> parentCollection){
         this.correlatedJoins.add(parentCollection);
-        return new SetJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
+        return new SetJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
     
     
@@ -321,7 +321,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, Y> ListJoin<X, Y> correlate(ListJoin<X, Y> parentCollection){
         this.correlatedJoins.add(parentCollection);
-        return new ListJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
+        return new ListJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
     
     /**
@@ -335,7 +335,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      */
     public <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentCollection){
         this.correlatedJoins.add(parentCollection);
-        return new MapJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType());
+        return new MapJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
     
     /**

@@ -1,9 +1,11 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 
-public class OrderImpl implements Order {
+public class OrderImpl implements Order, Serializable{
     
     protected Expression expression;
     protected boolean isAscending;

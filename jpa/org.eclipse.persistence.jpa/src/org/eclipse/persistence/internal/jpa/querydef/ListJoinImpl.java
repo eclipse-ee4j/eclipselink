@@ -48,6 +48,10 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
         super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType);
     }
 
+    public <T> ListJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType, FromImpl correlatedParent){
+        super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType, correlatedParent);
+    }
+
     /**
     * Return the metamodel representation for the collection.
     * @return metamodel type representing the Collection that is

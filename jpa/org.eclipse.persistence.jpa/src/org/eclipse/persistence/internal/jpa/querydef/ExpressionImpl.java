@@ -53,7 +53,6 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
 
     public <X> Expression<X> as(Class<X> type) {
-        // TODO Auto-generated method stub
         return (Expression<X>) this;
     }
     
@@ -111,10 +110,13 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<Collection<?>> values) {
-        //TODO - collection attribute
+        if (((InternalSelection)this).isFrom()){
+            ((FromImpl)this).isLeaf = false;
+        }
         List list = new ArrayList();
+        list.add(values);
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
+        return new CompoundExpressionImpl(metamodel, ((InternalSelection)values).getCurrentNode().equal(((InternalSelection)this).getCurrentNode()), list, "in");
     }
     
     public Predicate isNotNull() {

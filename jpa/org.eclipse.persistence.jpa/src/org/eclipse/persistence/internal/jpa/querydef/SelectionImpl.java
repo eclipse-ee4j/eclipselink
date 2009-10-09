@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.criteria.Selection;
@@ -33,7 +34,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public abstract class SelectionImpl<X> implements Selection<X>, InternalSelection{
+public abstract class SelectionImpl<X> implements Selection<X>, InternalSelection, Serializable{
     
     protected Class<X> javaType;
     protected Expression currentNode;

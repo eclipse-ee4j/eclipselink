@@ -68,6 +68,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     protected Set<Fetch<X, ?>> fetches;
     protected boolean isLeaf = true; // used to track dangling joins.
     protected boolean isFetch = false;
+    protected FromImpl correlatedParent;
 
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact) {
         super(parentPath, metamodel, javaClass, expressionNode, modelArtifact);
@@ -76,6 +77,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         this.fetches = new HashSet<Fetch<X, ?>>();
     }
 
+    public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, FromImpl correlatedParent) {
+        this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact);
+        this.correlatedParent = correlatedParent;
+        
+    }
     /**
      * Return the fetch joins that have been made from this type.
      * 
@@ -92,8 +98,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *          obtained through correlation
      */
     public boolean isCorrelated(){
-        //TODO
-        return false;
+        return this.correlatedParent != null;
     }
 
     /**
@@ -105,8 +110,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *          not been obtained through correlation 
      */
     public From<Z, X> getCorrelationParent() {
-        //TODO
-        return null;
+        return this.correlatedParent;
     }
 
 

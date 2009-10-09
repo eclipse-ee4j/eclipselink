@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,14 +46,14 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
+public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializable{
     
     
     protected Metamodel metamodel;
     protected Set<Root<?>> roots;
     protected Expression<Boolean> where; 
     protected ResultType queryResult;
-    protected QueryBuilderImpl queryBuilder;
+    protected CriteriaBuilderImpl queryBuilder;
     protected boolean distinct;
     protected Class queryType;
     protected Predicate havingClause;
@@ -62,7 +63,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T> {
         UNKNOWN, OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
     
-    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder, Class<T> resultType){
+    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
         this.roots = new HashSet<Root<?>>();
         this.metamodel = metamodel;
         this.queryResult = queryResult;

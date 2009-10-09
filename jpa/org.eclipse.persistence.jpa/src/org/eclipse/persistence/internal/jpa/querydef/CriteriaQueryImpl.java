@@ -14,7 +14,6 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -62,7 +60,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T>, Serializable{
+public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T>{
 
     protected SelectionImpl<?> selection;
     protected Set<ParameterExpression<?>> parameters;
@@ -71,7 +69,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     protected List<FromImpl> joins;
 
-    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, QueryBuilderImpl queryBuilder) {
+    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
         this.parameters = new HashSet<ParameterExpression<?>>();
     }

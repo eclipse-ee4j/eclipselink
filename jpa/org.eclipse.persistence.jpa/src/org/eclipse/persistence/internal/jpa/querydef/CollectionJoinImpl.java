@@ -46,6 +46,9 @@ public class CollectionJoinImpl<Z, X>  extends JoinImpl<Z, X> implements Collect
         super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType);
     }
 
+    public <T> CollectionJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType, FromImpl correlatedParent){
+        super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType, correlatedParent);
+    }
 
     /**
     * Return the metamodel representation for the collection.

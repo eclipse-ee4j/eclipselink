@@ -23,6 +23,7 @@ import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
@@ -53,6 +54,9 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
         super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType);
     }
 
+    public <T> MapJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<V> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType, FromImpl correlatedParent){
+        super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType, correlatedParent);
+    }
 
     /**
     * Return the metamodel representation for the collection.
@@ -79,12 +83,10 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     }
 
     public Path<K> key() {
-        // TODO Auto-generated method stub
-        return null;
+        return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), null);
     }
 
     public Path<V> value() {
-        // TODO Auto-generated method stub
-        return null;
+        return this;
     }
 }

@@ -1,5 +1,6 @@
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Tuple;
@@ -8,7 +9,7 @@ import javax.persistence.criteria.Selection;
 
 import org.eclipse.persistence.queries.ReportQueryResult;
 
-public class TupleImpl implements Tuple {
+public class TupleImpl implements Tuple, Serializable{
     protected List<? super Selection<?>> selections;
     protected ReportQueryResult rqr;
     

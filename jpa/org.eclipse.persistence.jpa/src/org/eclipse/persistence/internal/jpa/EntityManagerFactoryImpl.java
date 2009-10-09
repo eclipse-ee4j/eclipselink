@@ -30,7 +30,7 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
-import org.eclipse.persistence.internal.jpa.querydef.QueryBuilderImpl;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
@@ -465,7 +465,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 	 * @since Java Persistence 2.0
 	 */
 	public CriteriaBuilder getCriteriaBuilder() {
-        return new QueryBuilderImpl(this.getMetamodel());
+        return new CriteriaBuilderImpl(this.getMetamodel());
 	}
 
     /**

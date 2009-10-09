@@ -35,7 +35,7 @@ import javax.persistence.metamodel.Metamodel;
  * @since EclipseLink 1.2
  */
 
-public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X> {
+public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     
     public <T> SetJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
@@ -43,6 +43,10 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X> 
 
     public <T> SetJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType){
         super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType);
+    }
+
+    public <T> SetJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType, FromImpl correlatedParent){
+        super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, joinType, correlatedParent);
     }
 
     /**

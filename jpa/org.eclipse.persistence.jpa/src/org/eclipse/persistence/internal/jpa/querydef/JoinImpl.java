@@ -51,6 +51,11 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
         this.joinType = joinType;
     }
 
+    public <T> JoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, JoinType joinType, FromImpl correlatedParent){
+        super(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact, correlatedParent);
+        this.joinType = joinType;
+    }
+
     /**
      * Return the metamodel Attribute corresponding to the join.
      * 

@@ -37,11 +37,11 @@ import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultTyp
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class QueryBuilderImpl implements CriteriaBuilder, Serializable {
+public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
     
     protected Metamodel metamodel;
     
-    public QueryBuilderImpl(Metamodel metamodel){
+    public CriteriaBuilderImpl(Metamodel metamodel){
         this.metamodel = metamodel;
     }
 
@@ -317,7 +317,6 @@ public class QueryBuilderImpl implements CriteriaBuilder, Serializable {
         CompoundExpressionImpl yp = null;
         
         
-        //TODO determine if this is needed
         if (((InternalExpression)x).isExpression()){
             xp = (CompoundExpressionImpl)this.isTrue(x);
         }else{

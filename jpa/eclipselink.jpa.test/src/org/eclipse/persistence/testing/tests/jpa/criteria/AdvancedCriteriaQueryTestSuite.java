@@ -28,6 +28,7 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -101,6 +102,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
+  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
+  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
@@ -305,6 +308,41 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } 
     }
         
+    public void testInCollectionEntity(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Root<PhoneNumber> phone = cq.from(PhoneNumber.class);
+            cq.where(qb.and(qb.equal(phone.get("areaCode"), "613"), phone.in(emp.<Collection<?>>get("phoneNumbers"))));
+            Query query = em.createQuery(cq);
+            List<Employee> result = query.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } 
+    }
+    public void testInCollectionPrimitives(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.createQuery("select e from Employee e where '613' in e.responsibilities").getResultList();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Root<PhoneNumber> phone = cq.from(PhoneNumber.class);
+            cq.where(qb.literal("Bug fixes").in(emp.<Collection<?>>get("responsibilities")));
+            Query query = em.createQuery(cq);
+            List<Employee> result = query.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } 
+    }
     public void testInlineInParameter(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
