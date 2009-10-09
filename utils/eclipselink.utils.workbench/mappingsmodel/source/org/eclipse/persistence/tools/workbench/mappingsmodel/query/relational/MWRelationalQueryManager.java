@@ -131,6 +131,12 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		readAllQueryMapping.setXPath("read-all-query");
 		descriptor.addMapping(readAllQueryMapping);
 
+		descriptor.addDirectMapping("insertSQLString", "legacyGetInsertSQLString", "legacySetInsertSQLString", "insert-string/text()");
+		descriptor.addDirectMapping("updateSQLString", "legacyGetUpdateSQLString", "legacySetUpdateSQLString", "update-string/text()");
+		descriptor.addDirectMapping("deleteSQLString", "legacyGetDeleteSQLString", "legacySetDeleteSQLString", "delete-string/text()");
+		descriptor.addDirectMapping("readObjectSQLString", "legacyGetReadObjectSQLString", "legacySetReadObjectSQLString", "read-object-string/text()");
+		descriptor.addDirectMapping("readAllSQLString", "legacyGetReadAllSQLString", "legacySetReadAllSQLString", "read-all-string/text()");
+
 		return descriptor;
 	}
 	
@@ -328,32 +334,27 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 	//for legacy TopLink use only
 	private String legacyGetInsertSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetUpdateSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetDeleteSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetReadObjectSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetReadAllSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
