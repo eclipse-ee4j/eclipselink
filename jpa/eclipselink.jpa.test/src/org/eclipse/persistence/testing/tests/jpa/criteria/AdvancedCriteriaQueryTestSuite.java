@@ -260,7 +260,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             Root<Employee> customer = cquery.from(Employee.class);
             EntityType<Employee> Customer_ = customer.getModel();
             EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
-            cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("address", Address.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("address", Address.class))), 3));
+            cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))), 3));
             List<Object> result = em.createQuery(cquery).getResultList();
         } finally {
             rollbackTransaction(em);
