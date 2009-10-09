@@ -572,6 +572,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
                     }
+                    if (!list.isEmpty()){
+                        query.setShouldFilterDuplicates(false);
+                    }
                 } else if (this.roots == null || this.roots.isEmpty()) {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
                 }
@@ -584,6 +587,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
+                    }
+                    if (!list.isEmpty()){
+                        query.setShouldFilterDuplicates(false);
                     }
                 } else {
                     query = new ReportQuery();
@@ -603,6 +609,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 query = new ReadAllQuery(this.queryType);
                 if (this.roots != null && !this.roots.isEmpty()) {
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
+                    if (! list.isEmpty() && this.where == null){
+
+                            query.setShouldFilterDuplicates(false);
+                        query.setExpressionBuilder(list.get(0).getBuilder());  //set the builder to one of the fetches bases.
+                    }
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
                     }
@@ -671,7 +682,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
             }
         }
-        if (this.joins != null) {
+        if (this.joins != null && !joins.isEmpty()) {
+            query.setShouldFilterDuplicates(false);
             for (FromImpl join : this.joins) {
                 query.addNonFetchJoinedAttribute(((InternalSelection) join).getCurrentNode());
             }

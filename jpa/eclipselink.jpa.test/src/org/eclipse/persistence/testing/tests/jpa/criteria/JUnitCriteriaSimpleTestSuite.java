@@ -280,6 +280,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleJoinFetchTest(org.eclipse.persistence.jpa.JpaEntityManager em) throws Exception {
         //"SELECT e FROM Employee e LEFT JOIN FETCH e.phoneNumbers"
 
+        em.createQuery("select e from Employee e left join fetch e.phoneNumbers").getResultList();
         //use the cache
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -1662,7 +1663,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(employee) FROM Employee employee, SmallProject sp WHERE sp MEMBER OF employee.projects";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        cq.where( qb.isMember(cq.<Project>from(Project.class), cq.from(Employee.class).<Collection<Project>>get("projects")) );
+        cq.where( qb.isMember(cq.<SmallProject>from(SmallProject.class), cq.from(Employee.class).<Collection<SmallProject>>get("projects")) );
 
         List result = em.createQuery(cq).getResultList();
 
@@ -1778,6 +1779,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaQuery<PhoneNumber> cq = qb.createQuery(PhoneNumber.class);
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
+        cq.select(phone);
         cq.where(qb.isNotNull(phone.get("number")));
         cq.orderBy(qb.asc(phone.get("number")), qb.asc(phone.get("areaCode")));
 
