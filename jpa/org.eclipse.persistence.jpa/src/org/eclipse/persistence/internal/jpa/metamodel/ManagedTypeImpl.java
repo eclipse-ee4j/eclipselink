@@ -246,26 +246,15 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             } else {
                isDeclaredAboveLeaf = aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name);
             }
-            if(calledDirectlyOnTarget) {
-                if(!isDeclaredAboveLeaf) {
-                    // Handles UC4 and UC5 - throw an IAE if the class is declared above
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                        "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
-                        new Object[] { name, this }));
-                } else {
-                    // Handles UC3 (normal case - attribute is not declared on a superclass)
-                    return anAttribute;
-                }
+            // Cases 10 and 01 throw an IAE, cases 00 and 11 are normal
+            if((calledDirectlyOnTarget && !isDeclaredAboveLeaf) || (!calledDirectlyOnTarget && isDeclaredAboveLeaf)) {
+                // Handles UC4 and UC5 - throw an IAE if the class is declared above
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
+                    new Object[] { name, this }));
             } else {
-                if(isDeclaredAboveLeaf) {
-                    // Handles UC4 and UC5 - throw an IAE if the class is declared above
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                        "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
-                        new Object[] { name, this }));
-                } else {
-                    // Handles UC3 (normal case - attribute is not declared on a superclass)
-                    return anAttribute;
-                }
+                // Handles UC3 (normal case - attribute is not declared on a superclass)
+                return anAttribute;
             }
         }
     }
