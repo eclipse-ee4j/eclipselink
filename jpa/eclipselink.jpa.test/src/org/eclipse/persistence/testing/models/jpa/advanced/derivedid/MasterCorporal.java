@@ -48,7 +48,7 @@ public class MasterCorporal {
 
     public void setSargeant(Sargeant sargeant) {
         this.sargeant = sargeant;
-        //id.setSargeantPK(sargeant.getSargeantId());
+        id.setSargeantPK(sargeant.getSargeantId());
     }
 }
 
