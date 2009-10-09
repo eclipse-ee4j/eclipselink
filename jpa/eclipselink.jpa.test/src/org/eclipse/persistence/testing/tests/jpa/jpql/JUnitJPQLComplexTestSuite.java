@@ -175,6 +175,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapEntryInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinOneTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinManyTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexIndexOfInSelectClauseTest"));
@@ -2090,6 +2092,72 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).setParameter("celebration", 25).getResultList();
 
         Assert.assertTrue("mappedKeyMapContainerPolicyElementCollctionSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest(){
+        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Becks becks = new Becks();
+        becks.setAlcoholContent(5.0);
+        BecksTag tag = new BecksTag();
+        tag.setCallNumber("123");
+        consumer.addBecksBeerToConsume(becks, tag);
+        em.persist(becks);
+        em.persist(tag);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add("123");
+        
+        clearCache();
+        String ejbqlString = "SELECT KEY(becks).callNumber from BeerConsumer bc join bc.becksBeersToConsume becks where bc.name = 'Marvin Monroe'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest(){
+        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Corona corona = new Corona();
+        corona.setAlcoholContent(5.0);
+        CoronaTag tag = new CoronaTag();
+        tag.setCode("123");
+        tag.setNumber(123);
+        consumer.addCoronaBeerToConsume(corona, tag);
+        em.persist(corona);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add("123");
+
+        clearCache();
+        String ejbqlString = "SELECT KEY(c).code from BeerConsumer bc join bc.coronaBeersToConsume c where bc.name = 'Marvin Monroe'";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest failed", comparer.compareObjects(result, expectedResult));                 
 
         rollbackTransaction(em);
         closeEntityManager(em);

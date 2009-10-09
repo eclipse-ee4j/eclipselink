@@ -1299,6 +1299,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         Expression baseExpression = qkExpression.getBaseExpression();
 
         ClassDescriptor descriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
+        if (descriptor == null){
+            return null;
+        }
         return descriptor.getObjectBuilder().getMappingForAttributeName(qkExpression.getName());
     }
 
@@ -1323,6 +1326,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         Expression baseExpression = ((QueryKeyExpression)expression).getBaseExpression();
         ClassDescriptor baseDescriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
+        
+        if (expression.isMapEntryExpression()){
+            // get the expression that owns the mapping for the table entry
+            Expression owningExpression = ((QueryKeyExpression)baseExpression).getBaseExpression();
+            ClassDescriptor owningDescriptor = getLeafDescriptorFor(owningExpression, rootDescriptor);
+            
+            // Get the mapping that owns the table
+            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
+            
+            return ((MapContainerPolicy)mapping.getContainerPolicy()).getDescriptorForMapKey();
+        }
+
         ClassDescriptor descriptor = null;
         String attributeName = expression.getName();
 

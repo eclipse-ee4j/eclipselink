@@ -856,7 +856,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     /**
      * INTERNAL:
      * Return whether data for a map key must be included on a Delete datamodification event
-     * If the keyMapping is privateOwned, that data sould b
+     * If the keyMapping is privateOwned, that data should be
      * 
      * @return
      */
