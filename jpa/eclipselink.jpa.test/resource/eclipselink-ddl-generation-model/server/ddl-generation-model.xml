@@ -6,8 +6,9 @@
     <entity class="CKeyEntityB"/>
     <entity class="CKeyEntityB2"/>
     <entity class="CKeyEntityC"/>
-
+    <entity class="MachineState"/>
     <entity class="UniqueConstraintsEntity1"/>
+    
     <entity class="UniqueConstraintsEntity2">
         <table name="DDL_UCENTITY2">
             <unique-constraint>
@@ -25,5 +26,19 @@
             <basic name="column32"><column nullable="false"/></basic>
         </attributes>
     </entity>
-    
+	<entity class="Comment"/>
+	<entity class="Purchase"/>
+    <entity class="Currency">
+		<attributes>
+			<id name="id">
+				<generated-value />
+			</id>
+		</attributes>
+	</entity>
+	<embeddable class="Money">
+		<attributes>
+			<many-to-one name="currency"></many-to-one>
+		</attributes>
+	</embeddable>
+    <embeddable class="ThreadInfo"/>
 </entity-mappings>
