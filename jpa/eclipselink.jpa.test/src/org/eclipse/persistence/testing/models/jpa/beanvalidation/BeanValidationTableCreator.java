@@ -33,7 +33,6 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
-        fieldID.setUnique(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
 
@@ -61,7 +60,6 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(true);
-        fieldID.setUnique(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
 
