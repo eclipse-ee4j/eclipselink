@@ -59,7 +59,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         //
         //  preInsert can be used to work around above issue. Howerver, the JPA spec does not itent it.
         //  This might be corrected in next iteration of spec
-        validateOnCallbackEvent(event, "prePersit", groupPrePersit);
+        validateOnCallbackEvent(event, "prePersist", groupPrePersit);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
             // TODO need to I18N this.
             throw new ConstraintViolationException(
                     "Bean Validation constraint(s) violated while executing Automatic Bean Validation on callback event:'" +
-                            callbackEventName + ". Please refer to embedded ConstraintViolations for details.",
+                            callbackEventName + "'. Please refer to embedded ConstraintViolations for details.",
                     (Set <ConstraintViolation<?>>)(Object)constraintViolations); //TODO The cast looks like an issue with BV API.
 
         }
