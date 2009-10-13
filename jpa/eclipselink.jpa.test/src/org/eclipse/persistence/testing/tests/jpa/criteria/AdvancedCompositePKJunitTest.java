@@ -215,28 +215,32 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         //clearCache();
         em = createEntityManager();
-        
-        //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.sargeant.sargeantId = sargeant.getSargeantId()
-        CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaQuery<MasterCorporal> cq = qb.createQuery(MasterCorporal.class);
-        Root<MasterCorporal> from = cq.from(MasterCorporal.class);
-        cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("sargeant").get("sargeantId"), sargeant.getSargeantId()) ) );
+        beginTransaction(em);
+        try {  		
+            //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.sargeant.sargeantId = sargeant.getSargeantId()
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<MasterCorporal> cq = qb.createQuery(MasterCorporal.class);
+            Root<MasterCorporal> from = cq.from(MasterCorporal.class);
+            cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("sargeant").get("sargeantId"), sargeant.getSargeantId()) ) );
+            Query query1 = em.createQuery(cq);        
+            MasterCorporal results1 = (MasterCorporal)query1.getSingleResult();
+            //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.id.sargeantPK = sargeant.getSargeantId()
+            qb = em.getCriteriaBuilder();
+            cq = qb.createQuery(MasterCorporal.class);
+            from = cq.from(MasterCorporal.class);
+            cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("id").get("sargeantPK"), sargeant.getSargeantId()) ) );
 
-        Query query1 = em.createQuery(cq);        
-        MasterCorporal results1 = (MasterCorporal)query1.getSingleResult();
-      //SELECT d FROM MasterCorporal d WHERE d.id.name = 'Joe' AND d.id.sargeantPK = sargeant.getSargeantId()
-        qb = em.getCriteriaBuilder();
-        cq = qb.createQuery(MasterCorporal.class);
-        from = cq.from(MasterCorporal.class);
-        cq.where(qb.and(qb.equal(from.get("id").get("name"), "Corpie"), qb.equal(from.get("id").get("sargeantPK"), sargeant.getSargeantId()) ) );
+            Query query2 = em.createQuery(cq);        
+            MasterCorporal results2 = (MasterCorporal)query2.getSingleResult();
 
-        Query query2 = em.createQuery(cq);        
-        MasterCorporal results2 = (MasterCorporal)query2.getSingleResult();
-
-        MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporalId);
-        assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
-        assertTrue("The master corporal read using criteria expression1 is not the same instance as returned by the finder", refreshedMasterCorporal==results1);
-        assertTrue("The master corporal read using criteria expression2 is not the same instance as returned by the finder", refreshedMasterCorporal==results2);
+            MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporalId);
+            assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
+            assertTrue("The master corporal read using criteria expression1 is not the same instance as returned by the finder", refreshedMasterCorporal==results1);
+            assertTrue("The master corporal read using criteria expression2 is not the same instance as returned by the finder", refreshedMasterCorporal==results2);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
 }
