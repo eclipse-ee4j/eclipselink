@@ -19,6 +19,8 @@ import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 import static javax.persistence.InheritanceType.JOINED;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +37,7 @@ import javax.persistence.Version;
 @Entity(name="ProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
 @Inheritance(strategy=JOINED)
-public class Processor {
+public class Processor implements Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="PROC_MM_TABLE_GENERATOR")
     @TableGenerator(

@@ -22,7 +22,10 @@ import javax.persistence.Version;
 
 @Entity(name="SoftwareDesignerMetamodel")
 @Table(name="CMP3_MM_SWDESIGNER")
-public class SoftwareDesigner extends Designer implements java.io.Serializable{
+public class SoftwareDesigner extends Designer {
+    
+    private static final long serialVersionUID = -6424921774260902782L;
+    
     @Version
     @Column(name="SWDESIGNER_VERSION")
     private int version;

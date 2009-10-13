@@ -224,12 +224,12 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  Return the declared attribute of the managed
      *  type that corresponds to the specified name.
      *  @param name  the name of the represented attribute
-     *  @param calledDirectlyOnTarget true if the function was called from the target leaf element
+     *  @param attributeKnownToExistOnLeafTarget true if we already know the attribute exists on the leaf
      *  @return attribute with given name
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
-    protected Attribute<X, ?> getDeclaredAttribute(String name, boolean calledDirectlyOnTarget){
+    protected Attribute<X, ?> getDeclaredAttribute(String name, boolean attributeKnownToExistOnLeafTarget){
         // get the attribute parameterized by <Owning type, return Type> - throw an IAE if not found (no need to check hierarchy)
         // Handles UC1 and UC2
         Attribute<X, ?> anAttribute = getAttribute(name);
@@ -241,13 +241,13 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         } else {
            boolean isDeclaredAboveLeaf = false;
            // keep checking the hierarchy but skip this level and go directly to the superType
-            if(calledDirectlyOnTarget) {
+            if(attributeKnownToExistOnLeafTarget) {
                 isDeclaredAboveLeaf = aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name, anAttribute); 
             } else {
                isDeclaredAboveLeaf = aManagedSuperType.isAttributeDeclaredOnlyInLeafType(name);
             }
-            // Cases 10 and 01 throw an IAE, cases 00 and 11 are normal
-            if((calledDirectlyOnTarget && !isDeclaredAboveLeaf) || (!calledDirectlyOnTarget && isDeclaredAboveLeaf)) {
+            // Cases 10 and 01 throw an IAE, cases 00 and 11 are normal - an Exclusive OR (EOR)
+            if((attributeKnownToExistOnLeafTarget && !isDeclaredAboveLeaf) || (!attributeKnownToExistOnLeafTarget && isDeclaredAboveLeaf)) {
                 // Handles UC4 and UC5 - throw an IAE if the class is declared above
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass",
@@ -1428,7 +1428,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         aBuffer.append(this.getDescriptor());
         if(null != this.getDescriptor()) {
             aBuffer.append(", mappings: ");
-            aBuffer.append(this.getDescriptor().getMappings());
+            aBuffer.append(this.getDescriptor().getMappings().size());
         }
     }
 }

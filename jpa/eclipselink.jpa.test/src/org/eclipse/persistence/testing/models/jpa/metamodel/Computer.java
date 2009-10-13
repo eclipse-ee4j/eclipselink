@@ -38,6 +38,9 @@ import javax.persistence.Version;
 @Entity(name="ComputerMetamodel")
 @Table(name="CMP3_MM_COMPUTER")
 public class Computer implements java.io.Serializable {
+    
+    private static final long serialVersionUID = -8396759932330865145L;
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="COMPUTER_MM_TABLE_GENERATOR")
     @TableGenerator(

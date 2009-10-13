@@ -22,7 +22,9 @@ import javax.persistence.Version;
 
 @Entity(name="UserMetamodel")
 @Table(name="CMP3_MM_USER")
-public class User extends Person implements java.io.Serializable{
+public class User extends Person {
+    
+    private static final long serialVersionUID = -1421643624357753266L;
     @Version
     @Column(name="USER_VERSION")
     private int version;

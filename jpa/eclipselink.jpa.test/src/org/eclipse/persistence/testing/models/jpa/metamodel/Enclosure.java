@@ -27,6 +27,8 @@ import javax.persistence.Table;
 @IdClass(org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK.class)
 public class Enclosure implements java.io.Serializable{
 
+    private static final long serialVersionUID = -8761221910595496687L;
+    
     @Id
     @Column(name="TYPE")
     public String type;

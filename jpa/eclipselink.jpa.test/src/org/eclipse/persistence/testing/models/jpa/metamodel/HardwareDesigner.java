@@ -25,7 +25,10 @@ import javax.persistence.Version;
 
 @Entity(name="HardwareDesignerMetamodel")
 @Table(name="CMP3_MM_HWDESIGNER")
-public class HardwareDesigner extends Designer implements java.io.Serializable{
+public class HardwareDesigner extends Designer {
+    
+    private static final long serialVersionUID = -6424921774260902781L;
+
     // The M:1 side is the owning side
     @ManyToOne(fetch=EAGER)//LAZY)
 /*    @JoinTable(name="CMP3_MM_MANUF_MM_HWDESIGNER", 

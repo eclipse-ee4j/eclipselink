@@ -20,6 +20,9 @@ import javax.persistence.Table;
 
 @Entity(name="VectorProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
-public class VectorProcessor extends Processor implements java.io.Serializable{
+public class VectorProcessor extends Processor {
+
+    private static final long serialVersionUID = -8152429622530834747L;
+
     public VectorProcessor() {}
 }

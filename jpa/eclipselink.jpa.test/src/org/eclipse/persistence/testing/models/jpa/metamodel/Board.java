@@ -36,6 +36,9 @@ import javax.persistence.Version;
 @Entity(name="BoardMetamodel")
 @Table(name="CMP3_MM_BOARD")
 public class Board implements java.io.Serializable{
+
+    private static final long serialVersionUID = 791539954634456200L;
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="BOARD_MM_TABLE_GENERATOR")
     @TableGenerator(

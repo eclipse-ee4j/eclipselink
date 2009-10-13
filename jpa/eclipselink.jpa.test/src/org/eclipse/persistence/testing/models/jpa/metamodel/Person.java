@@ -19,6 +19,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,7 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.TableGenerator;
 
 @MappedSuperclass
-public abstract class Person {
+public abstract class Person implements Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="PERSON_MM_TABLE_GENERATOR")
     @TableGenerator(

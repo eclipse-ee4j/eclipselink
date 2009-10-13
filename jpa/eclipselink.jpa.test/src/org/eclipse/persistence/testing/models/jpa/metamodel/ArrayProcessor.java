@@ -20,7 +20,10 @@ import javax.persistence.Table;
 
 @Entity(name="ArrayProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
-public class ArrayProcessor extends Processor implements java.io.Serializable{    
+public class ArrayProcessor extends Processor {
+    
+    private static final long serialVersionUID = -5324917445417350353L;
+
     public ArrayProcessor() {}
     
     /**
