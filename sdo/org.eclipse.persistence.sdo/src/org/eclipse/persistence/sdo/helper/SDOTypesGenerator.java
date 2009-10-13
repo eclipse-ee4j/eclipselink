@@ -876,10 +876,14 @@ public class SDOTypesGenerator {
             if(baseType != null && !baseType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
                 if(baseType.isDataType()) {
                     SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
-                    processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
+                    if(baseSimpleType != null){
+                        processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
+                    }
                 } else {
                     ComplexType baseComplexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
-                    processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
+                    if(baseComplexType != null){
+                        processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
+                    }
                 }
             } 
             if (qualifiedType != null) {
