@@ -295,7 +295,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         if (null == getRootXPathNode().getNonAttributeChildren()) {
             return record;
         }
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) this.getDescriptor();
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) this.descriptor;
         NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
         MarshalContext marshalContext = null;
         if(xmlDescriptor.isSequencedObject()) {
@@ -304,8 +304,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         } else {
             marshalContext = ObjectMarshalContext.getInstance();
         }
-        int size = marshalContext.getNonAttributeChildrenSize(getRootXPathNode());
-        for (int x = 0; x < size; x++) {
+        for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(getRootXPathNode()); x < size; x++) {
             XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, getRootXPathNode());
             xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x));
         }
@@ -320,12 +319,12 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         if (null != attributeChildren) {
             for (int x = 0, attributeChildrenSize=attributeChildren.size(); x < attributeChildrenSize; x++) {
                 XPathNode attributeNode = (XPathNode)rootXPathNode.getAttributeChildren().get(x);
-                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
+                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
             }
         }
 
         if (rootXPathNode.getAnyAttributeNode() != null) {
-            hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
+            hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
         }
 
         List selfChildren = rootXPathNode.getSelfChildren();

@@ -16,6 +16,7 @@ import java.io.Writer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -79,11 +80,11 @@ public class WriterRecord extends MarshalRecord {
         try {
             writer.write("<?xml version=\"");
             writer.write(version);
-            writer.write("\"");
+            writer.write('\"');
             if (null != encoding) {
                 writer.write(" encoding=\"");
                 writer.write(encoding);
-                writer.write("\"");
+                writer.write('\"');
             }
             writer.write("?>");
             writer.write(Helper.cr());
@@ -139,6 +140,10 @@ public class WriterRecord extends MarshalRecord {
         attribute(null, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
     }
 
+    
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    }
+    
     /**
      * INTERNAL:
      */
@@ -400,10 +405,11 @@ public class WriterRecord extends MarshalRecord {
         
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
-                if((atts.getQName(i) != null && (atts.getQName(i).startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || atts.getQName(i).equals(XMLConstants.XMLNS)))) {
+                String qName = atts.getQName(i);
+                if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
                     continue;
                 }
-                attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));
+                attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));
             }
         }
         

@@ -497,7 +497,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 return toReturn;
             } else {   
                 NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
-                for(int i=0; i< children.getLength(); i++){
+                for(int i=0, childrenLength=children.getLength(); i<childrenLength ; i++){
                     Node nextNode = children.item(i);
                     if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
                         //complex child
@@ -618,7 +618,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             	 org.w3c.dom.Document doc = record.getDocument();
             	 Node root = record.getDOM();
             	 NodeList children = ((Node) attributeValue).getChildNodes();
-            	 for(int i=0;i<children.getLength(); i++){
+            	 for(int i=0,childrenLength=children.getLength();i<childrenLength; i++){
                      Node importedCopy = doc.importNode(children.item(i), true);                     
                      root.appendChild(importedCopy);
                  }

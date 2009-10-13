@@ -334,7 +334,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         return;
                     }
                 }
-                Element element = (Element) builder.getNodes().pop();
+                Element element = (Element) builder.getNodes().remove(builder.getNodes().size() -1);
+                
                 String xsiType = null;
                 if(null != element) {
                     xsiType = element.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);

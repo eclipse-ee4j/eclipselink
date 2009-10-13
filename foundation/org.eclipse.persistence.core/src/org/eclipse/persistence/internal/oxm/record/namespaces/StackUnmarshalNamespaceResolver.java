@@ -12,10 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -25,64 +26,72 @@ import org.eclipse.persistence.oxm.XMLConstants;
  */
 public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolver {
 	
-    private Map<String, Stack<String>> namespaceMap;
-    private Map<String, Stack<String>> uriToPrefixMap;
-    
-	public StackUnmarshalNamespaceResolver(){
-		namespaceMap = new HashMap<String, Stack<String>>();
-		uriToPrefixMap = new HashMap<String, Stack<String>>();
+    private Map<String, List<String>> namespaceMap;
+    private Map<String, List<String>> uriToPrefixMap;
+
+    public StackUnmarshalNamespaceResolver(){
+        namespaceMap = new HashMap<String, List<String>>();
+        uriToPrefixMap = new HashMap<String, List<String>>();
 	}
 
     public String getPrefix(String namespaceURI) {
-        String prefix = null;
-        if(null == prefix) {
-            Stack<String> prefixStack = uriToPrefixMap.get(namespaceURI);
-            if(prefixStack != null && prefixStack.size() > 0) {
-                prefix = prefixStack.peek();
+        List<String> prefixes = uriToPrefixMap.get(namespaceURI);
+        if(prefixes != null){
+            int size = prefixes.size();
+            if(size > 0) {
+                return prefixes.get(size - 1);
             }
         }
-        return prefix;
+        return null;
     }
 
     public String getNamespaceURI(String prefix) {
-        String namespaceURI = null;
         if(prefix == null) {
             prefix = XMLConstants.EMPTY_STRING;
-        } 
-        
-        Stack<String> uriStack = namespaceMap.get(prefix);
-        if(uriStack != null && uriStack.size() > 0) {
-            namespaceURI = uriStack.peek();
-        }        
-        return namespaceURI;
+        }
+
+        List<String> uris = namespaceMap.get(prefix);
+        if(uris != null){
+            int size = uris.size();
+            if(size > 0) {
+                return uris.get(size - 1);
+            }
+        }
+        return null;
     }
 
-    public void pop(String prefix) {        
-        Stack<String> uriStack = namespaceMap.get(prefix);        
-        if(uriStack != null && uriStack.size() > 0) {
-            String uri = uriStack.pop();
-            if(uri != null) {
-                Stack<String> prefixStack = uriToPrefixMap.get(uri);
-                if(prefixStack != null && prefixStack.size() > 0) {
-                    prefixStack.pop();
+    public void pop(String prefix) {
+        List<String> uris = namespaceMap.get(prefix);
+        if(uris != null){        	
+            int size = uris.size();
+            if(size > 0) {
+                String uri = uris.remove(size - 1);
+                if(uri != null) {
+                    List<String> prefixes = uriToPrefixMap.get(uri);
+                    if(prefixes != null){
+                        int prefixesSize = prefixes.size();
+                        if(prefixesSize > 0) {
+                	       prefixes.remove(prefixesSize - 1);
+                        }
+                    }
                 }
             }
-        }        
+        }
     }
 
-    public void push(String prefix, String namespaceURI) {                
-        Stack uriStack = namespaceMap.get(prefix);
-        if(uriStack == null) {
-            uriStack = new Stack<String>();
-            namespaceMap.put(prefix, uriStack);
+    public void push(String prefix, String namespaceURI) {
+        List<String> uris = namespaceMap.get(prefix);
+        if(uris == null) {
+        	uris = new ArrayList<String>();
+            namespaceMap.put(prefix, uris);
         }
-        uriStack.push(namespaceURI);
-        Stack<String> prefixStack = uriToPrefixMap.get(namespaceURI);
-        if(prefixStack == null) {
-            prefixStack = new Stack<String>();
-            uriToPrefixMap.put(namespaceURI, prefixStack);
+        uris.add(namespaceURI);
+        List<String> prefixes = uriToPrefixMap.get(namespaceURI);
+        if(prefixes == null) {
+        	prefixes = new ArrayList<String>();
+            uriToPrefixMap.put(namespaceURI, prefixes);
         }
-        prefixStack.push(prefix);
+        prefixes.add(prefix);
     }
 
     public Set<String> getPrefixes() {        

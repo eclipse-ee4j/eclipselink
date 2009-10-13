@@ -32,7 +32,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
 import org.w3c.dom.Node;
@@ -44,7 +43,6 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
@@ -73,7 +71,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	private XMLMarshaller xmlMarshaller;
 	private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    private static String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private HashMap<QName, Class> qNameToGeneratedClasses;
 
 	/**

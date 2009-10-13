@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -594,24 +596,22 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
 
         List returnList = new ArrayList();
-        List namespaces = desc.getNonNullNamespaceResolver().getNamespaces();
-
-        for (int i = 0; i < namespaces.size(); i++) {
-            Namespace next = (Namespace)namespaces.get(i);
+        
+        for(Entry<String, String> entry: desc.getNonNullNamespaceResolver().getPrefixesToNamespaces().entrySet()) {
 
             //if isn't already on a parentadd namespace to this element
-            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(next.getNamespaceURI());
+            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(entry.getValue());
 
             if (prefix == null || prefix.length() == 0) {
                 //if there is no prefix already declared for this uri in the nr add this one                //
-                marshalRecord.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
-                returnList.add(next);
+                marshalRecord.getNamespaceResolver().put(entry.getKey(), entry.getValue());
+                returnList.add(new Namespace(entry.getKey(), entry.getValue()));
             } else {
                 //if prefix is the same do nothing 
-                if (!prefix.equals(next.getPrefix())) {
+                if (!prefix.equals(entry.getKey())) {
                     //if prefix exists for uri but is different then add this
-                    marshalRecord.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
-                    returnList.add(next);
+                    marshalRecord.getNamespaceResolver().put(entry.getKey(), entry.getValue());
+                    returnList.add(new Namespace(entry.getKey(), entry.getValue()));
                 }
             }
         }

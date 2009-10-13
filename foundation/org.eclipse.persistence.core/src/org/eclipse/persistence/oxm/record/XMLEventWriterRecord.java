@@ -13,8 +13,9 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -33,23 +34,21 @@ import org.w3c.dom.Node;
 
 public class XMLEventWriterRecord extends MarshalRecord {
     private Map<String, String> prefixMapping;
+    private NamespaceResolver namespaceResolver;
 
     private XMLEventWriter xmlEventWriter;
     private XMLEventFactory xmlEventFactory;
     private DomToXMLEventWriter domToXMLEventWriter;
     private boolean isStartElementOpen = false;
-    private ArrayList attributes;
-    private ArrayList namespaceDeclarations;
+    private List attributes;
+    private List namespaceDeclarations;
     private String namespaceURI;
     private XPathFragment xPathFragment;    
 
     public XMLEventWriterRecord(XMLEventWriter xmlEventWriter) {
         this.xmlEventWriter = xmlEventWriter;
-        this.prefixMapping = new HashMap<String, String>();
         this.xmlEventFactory = XMLEventFactory.newInstance();
         this.domToXMLEventWriter = new DomToXMLEventWriter(xmlEventFactory);
-        attributes = new ArrayList();
-        namespaceDeclarations = new ArrayList();
     }
     
     public XMLEventWriter getXMLEventWriter() {
@@ -77,8 +76,14 @@ public class XMLEventWriterRecord extends MarshalRecord {
              }
          }
          if(event.isNamespace()) {
+             if(null == this.namespaceDeclarations) {
+                 this.namespaceDeclarations = new ArrayList();
+             }
              this.namespaceDeclarations.add(event);
          } else {
+             if(null == attributes) {
+                 attributes = new ArrayList();
+             }
              this.attributes.add(event);
          }
     }
@@ -98,7 +103,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
              } else {
                  int index = name.indexOf(':');
                  if(index == -1) {
-                     event = xmlEventFactory.createAttribute("", namespaceURI, localName, value);
+                     event = xmlEventFactory.createAttribute(XMLConstants.EMPTY_STRING, namespaceURI, localName, value);
                  } else {
                      String prefix = name.substring(0, index);
                      event = xmlEventFactory.createAttribute(prefix, namespaceURI, localName, value);
@@ -106,8 +111,14 @@ public class XMLEventWriterRecord extends MarshalRecord {
              }
          }
          if(event.isNamespace()) {
+             if(null == this.namespaceDeclarations) {
+                 this.namespaceDeclarations = new ArrayList();
+             }
              this.namespaceDeclarations.add(event);
          } else {
+             if(null == this.attributes) {
+                 this.attributes = new ArrayList();
+             }
              this.attributes.add(event);
          }         
     }
@@ -115,18 +126,34 @@ public class XMLEventWriterRecord extends MarshalRecord {
     private void openAndCloseStartElement() {
         try {
              if(namespaceURI == null) {
-                 xmlEventWriter.add(xmlEventFactory.createStartElement("", "", xPathFragment.getLocalName(), attributes.iterator(), namespaceDeclarations.iterator()));
+                 Iterator attributesIterator = null;
+                 if(null != attributes) {
+                     attributesIterator = attributes.iterator();
+                 }
+                 Iterator namespaceDeclarationsIterator = null;
+                 if(null != namespaceDeclarations) {
+                     namespaceDeclarationsIterator = namespaceDeclarations.iterator();
+                 }
+                 xmlEventWriter.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
                  String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
                  if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
-                     this.xmlEventWriter.setDefaultNamespace("");
-                     this.xmlEventWriter.add(xmlEventFactory.createNamespace(""));
+                     this.xmlEventWriter.setDefaultNamespace(XMLConstants.EMPTY_STRING);
+                     this.xmlEventWriter.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
                  }
              } else {
                  String prefix = xPathFragment.getPrefix();
                  if(prefix == null) {
                      prefix = XMLConstants.EMPTY_STRING;
                  }
-                 XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, namespaceURI, xPathFragment.getLocalName(), attributes.iterator(), namespaceDeclarations.iterator());
+                 Iterator attributesIterator = null;
+                 if(null != attributes) {
+                     attributesIterator = attributes.iterator();
+                 }
+                 Iterator namespaceDeclarationsIterator = null;
+                 if(null != namespaceDeclarations) {
+                     namespaceDeclarationsIterator = namespaceDeclarations.iterator();
+                 }
+                 XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, namespaceURI, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator);
                  xmlEventWriter.add(startElement);
              }
         } catch(XMLStreamException ex) {
@@ -170,20 +197,31 @@ public class XMLEventWriterRecord extends MarshalRecord {
         isStartElementOpen = true;
         this.namespaceURI = xPathFragment.getNamespaceURI();
         this.xPathFragment = xPathFragment;
-        this.attributes = new ArrayList();
-        this.namespaceDeclarations = new ArrayList();
+        this.attributes = null;
+        this.namespaceDeclarations = null;
         writePrefixMappings();
     }
     
-    public void element(String namespaceURI, String localName, String Name) {
+    public void element(String namespaceURI, String localName, String name) {
+        try {
+            String prefix = XMLConstants.EMPTY_STRING;
+            if(name.indexOf(':') != -1) {
+                prefix = name.substring(0, name.indexOf(':'));
+            }
+            element(namespaceURI, localName, name, prefix);
+        } catch(Exception e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    public void element(String namespaceURI, String localName, String Name, String prefix) {
         try {
             if(isStartElementOpen) {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
-            String prefix = "";
-            if(Name.indexOf(':') != -1) {
-                prefix = Name.substring(0, Name.indexOf(':'));
+            if(null == prefix) {
+                prefix = XMLConstants.EMPTY_STRING;
             }
             XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, namespaceURI, localName);
             this.xmlEventWriter.add(startElement);
@@ -214,7 +252,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         String namespaceURI = pathFragment.getNamespaceURI();
         String prefix = pathFragment.getPrefix();
         if(prefix == null) {
-            prefix = "";
+            prefix = XMLConstants.EMPTY_STRING;
         }
         try {
             XMLEvent endElement = this.xmlEventFactory.createEndElement(prefix, namespaceURI, pathFragment.getLocalName());
@@ -253,34 +291,49 @@ public class XMLEventWriterRecord extends MarshalRecord {
     }
     
     public void startPrefixMapping(String prefix, String namespaceUri) {
+        if(null == this.prefixMapping) {
+            this.prefixMapping = new HashMap<String, String>();
+        }
         this.prefixMapping.put(prefix, namespaceUri);
     }
 
     private void writePrefixMappings() {
-        for(Map.Entry<String, String> entry:this.prefixMapping.entrySet()) {
-             XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
-             namespaceDeclarations.add(namespace);
+        if(null != namespaceResolver) {
+            String defaultNamespace = namespaceResolver.getDefaultNamespaceURI();
+            if(defaultNamespace != null) {
+                XMLEvent namespace = xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING, defaultNamespace);
+                if(null == namespaceDeclarations) {
+                    namespaceDeclarations = new ArrayList();
+                }
+                namespaceDeclarations.add(namespace);
+            }
+            for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
+                if(null == namespaceDeclarations) {
+                    namespaceDeclarations = new ArrayList();
+                }
+                namespaceDeclarations.add(namespace);
+            }
+            namespaceResolver = null;
         }
-        this.prefixMapping = new HashMap<String, String>();
+        if(null != prefixMapping) {
+            for(Map.Entry<String, String> entry:this.prefixMapping.entrySet()) {
+                XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
+                if(null == namespaceDeclarations) {
+                    namespaceDeclarations = new ArrayList();
+                }
+                namespaceDeclarations.add(namespace);
+           }
+            prefixMapping = null;
+        }
+        
     }
 
-    
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
     }
     
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
-        if (namespaceResolver != null) {
-            if(namespaceResolver.getDefaultNamespaceURI() != null) {
-                startPrefixMapping(XMLConstants.EMPTY_STRING, namespaceResolver.getDefaultNamespaceURI());
-            }
-            Enumeration prefixes = namespaceResolver.getPrefixes();
-            String prefix;
-            String uri;
-            while (prefixes.hasMoreElements()) {
-                prefix = (String)prefixes.nextElement();
-                uri = namespaceResolver.resolveNamespacePrefix(prefix);
-                startPrefixMapping(prefix, uri);
-            }
-        }
+        this.namespaceResolver = namespaceResolver;
     }
+
 }

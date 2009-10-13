@@ -12,10 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.MarshalRecordContentHandler;
@@ -30,7 +31,6 @@ import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -54,7 +54,7 @@ import org.xml.sax.SAXException;
  */
 public class NodeRecord extends MarshalRecord {
     private Document document;
-    private Stack nodes;
+    private List<Node> nodes;
 
     /**
      * INTERNAL:
@@ -102,7 +102,7 @@ public class NodeRecord extends MarshalRecord {
     public NodeRecord(String localRootElementName, NamespaceResolver namespaceResolver, Node parent) {
         this();
         Document document;
-        if (parent instanceof Document) {
+        if (parent.getNodeType() == Node.DOCUMENT_NODE) {
             document = (Document)parent;
         } else {
             document = parent.getOwnerDocument();
@@ -152,11 +152,11 @@ public class NodeRecord extends MarshalRecord {
      * @return The marshal target.
      */
     public Element getDOM() {
-        return (Element)nodes.peek();
+        return (Element)nodes.get(nodes.size() - 1);
     }
 
     private Node getNode() {
-        return (Node)nodes.peek();
+        return nodes.get(nodes.size() - 1);
     }
 
     /**
@@ -164,12 +164,12 @@ public class NodeRecord extends MarshalRecord {
      * @param writer The marshal target.
      */
     public void setDOM(Node dom) {
-        nodes = new Stack();
+        nodes = new ArrayList();
         if (dom.getNodeType() == Node.DOCUMENT_NODE) {
             document = (Document)dom;
         } else if ((dom.getNodeType() == Node.ELEMENT_NODE) || (dom.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
             document = dom.getOwnerDocument();
-            nodes.push(dom);
+            nodes.add(dom);
             getNamespaceResolver().setDOM(dom);
         } else {
             throw XMLMarshalException.marshalException(null);
@@ -227,14 +227,14 @@ public class NodeRecord extends MarshalRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
-        Element element = getDocument().createElementNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName());
+        Element element = document.createElementNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName());
         try {
             getNode().appendChild(element);
-            nodes.push(element);
+            nodes.add(element);
         } catch (Exception e) {
             document.appendChild(element);
             setDOM(element);
-            nodes.push(element);
+            nodes.add(element);
         }
     }
 
@@ -242,7 +242,7 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void element(String namespaceURI, String localName, String qName) {
-        Element element = getDocument().createElementNS(namespaceURI, qName);
+        Element element = document.createElementNS(namespaceURI, qName);
         getNode().appendChild(element);
     }
 
@@ -274,7 +274,7 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        nodes.pop();
+        nodes.remove(nodes.size() - 1);
     }
 
     /**
@@ -282,13 +282,12 @@ public class NodeRecord extends MarshalRecord {
      */
     public void characters(String value) {
         if (value.length() > 0) {
-            Text text = getDocument().createTextNode(value);
-            getNode().appendChild(text);
+            getNode().appendChild(document.createTextNode(value));
         }
     }
     
     public void cdata(String value) {
-        CDATASection cdata = getDocument().createCDATASection(value);
+        CDATASection cdata = document.createCDATASection(value);
         getNode().appendChild(cdata);
     }
 
@@ -319,6 +318,9 @@ public class NodeRecord extends MarshalRecord {
         }
     }
     
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
+    }
+    
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
@@ -338,18 +340,18 @@ public class NodeRecord extends MarshalRecord {
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             Element element;
             if (namespaceURI == null) {
-                element = getDocument().createElement(qName);
+                element = document.createElement(qName);
             } else {
-                element = getDocument().createElementNS(namespaceURI, qName);
+                element = document.createElementNS(namespaceURI, qName);
             }
             
             try {
                 getNode().appendChild(element);
-                nodes.push(element);
+                nodes.add(element);
             } catch (Exception e) {
                 document.appendChild(element);
                 setDOM(element);
-                nodes.push(element);
+                nodes.add(element);
             }
             // Handle attributes
             for (int i = 0; i < atts.getLength(); i++) {

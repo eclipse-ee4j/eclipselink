@@ -105,7 +105,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
             unmarshalRecord.resetStringBuffer();
             xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);
         } else if (!lastFrag.isAttribute()) {
-            Object value = builder.getNodes().pop();
+            Object value = builder.getNodes().remove(builder.getNodes().size() -1);
             unmarshalRecord.setAttributeValue(value, xmlFragmentMapping);
         }
     }

@@ -71,6 +71,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         prefixesToNamespaces = new HashMap<String, String>();
     }
 
+    public Map<String, String> getPrefixesToNamespaces() {
+        return prefixesToNamespaces;
+    }
+
     public void setDOM(Node dom) {
         this.dom = dom;
     }

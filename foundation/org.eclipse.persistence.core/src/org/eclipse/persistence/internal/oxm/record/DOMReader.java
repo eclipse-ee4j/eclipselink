@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm.record;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Stack;
+import java.util.List;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -151,17 +151,16 @@ public class DOMReader extends XMLReader {
             return;
         }
         // Add each parent node up to root to the stack
-        Stack<Node> parentElements = new Stack();
+        List<Node> parentElements = new ArrayList();
         while (parent != null && parent.getNodeType() != Node.DOCUMENT_NODE) {
-            parentElements.push(parent);
+            parentElements.add(parent);
             parent = parent.getParentNode();
         }        
         // Pop off each node and call startPrefixMapping for each XMLNS attribute
         for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
-            NamedNodeMap attrs = parentElements.pop().getAttributes();
+            NamedNodeMap attrs = parentElements.remove(parentElements.size() - 1).getAttributes();
             if (attrs != null) {
-                int length = attrs.getLength();
-                for (int i=0; i < length; i++) {
+                for (int i=0, length = attrs.getLength(); i < length; i++) {
                     Attr next = (Attr)attrs.item(i);
                     String attrPrefix = next.getPrefix();
                     if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -401,11 +400,8 @@ public class DOMReader extends XMLReader {
         }
         
         public int getIndex(String qname) {
-            Attr item;
-            int size = attrs.size();
-            for (int i=0; i<size; i++) {
-                item = attrs.get(i);
-                if (item.getName().equals(qname)) {
+            for (int i=0, size = attrs.size(); i<size; i++) {
+                if (attrs.get(i).getName().equals(qname)) {
                     return i;
                 }
             }
@@ -413,10 +409,8 @@ public class DOMReader extends XMLReader {
         }
         
         public int getIndex(String uri, String localName) {
-            Attr item;
-            int size = attrs.size();
-            for (int i=0; i<size; i++) {
-                item = attrs.get(i);
+            for (int i=0, size = attrs.size(); i<size; i++) {
+                Attr item = attrs.get(i);
                 try {
                     if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
                         return i;
@@ -451,10 +445,8 @@ public class DOMReader extends XMLReader {
         }
         
         public String getValue(String qname) {
-            Attr item;
-            int size = attrs.size();
-            for (int i=0; i<size; i++) {
-                item = attrs.get(i);
+            for (int i=0, size = attrs.size(); i<size; i++) {
+                Attr item = attrs.get(i);
                 if (item.getName().equals(qname)) {
                     return item.getValue();
                 }
@@ -463,10 +455,8 @@ public class DOMReader extends XMLReader {
         }
 
         public String getValue(String uri, String localName) {
-            Attr item;
-            int size = attrs.size();
-            for (int i=0; i<size; i++) {
-                item = attrs.get(i);
+            for (int i=0, size = attrs.size(); i<size; i++) {
+                Attr item = attrs.get(i);
                 if (item != null) {
                     String itemNS = item.getNamespaceURI();  
                     // Need to handle null/empty URI

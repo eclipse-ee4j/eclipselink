@@ -89,8 +89,8 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
     }
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-        Object value = builder.getNodes().pop();
+    	SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+        Object value = builder.getNodes().remove(builder.getNodes().size() -1);
         unmarshalRecord.addAttributeValue(this, value);
     }
 

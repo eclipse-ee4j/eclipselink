@@ -13,7 +13,6 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -41,7 +40,7 @@ import org.w3c.dom.Node;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public abstract class MarshalRecord extends XMLRecord {
-    private ArrayList groupingElements;
+    private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
     public MarshalRecord() {
@@ -121,7 +120,7 @@ public abstract class MarshalRecord extends XMLRecord {
             String stringValue = (String)xcm.convertObject(value, String.class);
             attribute(lastFragment, xmlField.getNamespaceResolver(), stringValue);
         } else {
-            element(lastFragment.getNamespaceURI(), lastFragment.getLocalName(), lastFragment.getShortName());
+            element(lastFragment.getNamespaceURI(), lastFragment.getLocalName(), lastFragment.getShortName(), lastFragment.getPrefix());
         }
     }
 
@@ -148,15 +147,9 @@ public abstract class MarshalRecord extends XMLRecord {
         if(null != namespaceURI) {
             attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
         }  
-
-        Enumeration prefixes = namespaceResolver.getPrefixes();
-        String namespacePrefix;
-        namespaceURI = null;
-        while (prefixes.hasMoreElements()) {
-            namespacePrefix = (String)prefixes.nextElement();
-            namespaceURI = namespaceResolver.resolveNamespacePrefix(namespacePrefix);
-
-            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, namespaceURI);
+        for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+            String namespacePrefix = entry.getKey();
+            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
         }
     }
 
@@ -182,13 +175,8 @@ public abstract class MarshalRecord extends XMLRecord {
 
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
         if (namespaceResolver != null) {
-            Enumeration prefixes = namespaceResolver.getPrefixes();
-            String prefix;
-            String uri;
-            while (prefixes.hasMoreElements()) {
-                prefix = (String)prefixes.nextElement();
-                uri = namespaceResolver.resolveNamespacePrefix(prefix);
-                startPrefixMapping(prefix, uri);
+            for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                startPrefixMapping(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -203,9 +191,8 @@ public abstract class MarshalRecord extends XMLRecord {
 
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
         if (namespaceResolver != null) {
-            Enumeration prefixes = namespaceResolver.getPrefixes();
-            while (prefixes.hasMoreElements()) {
-                endPrefixMapping((String)prefixes.nextElement());
+            for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                endPrefixMapping(entry.getKey());
             }
         }
     }
@@ -229,7 +216,11 @@ public abstract class MarshalRecord extends XMLRecord {
      * @param localName The local name of the element.
      * @param qName The qualified name of the element.
      */
-    public abstract void element(String namespaceURI, String localName, String Name);
+    public abstract void element(String namespaceURI, String localName, String name);
+
+    public void element(String namespaceURI, String localName, String name, String prefix) {
+        element(namespaceURI, localName, name);
+    }
 
     /**
      * Receive notification of an attribute.
@@ -301,11 +292,9 @@ public abstract class MarshalRecord extends XMLRecord {
         if (null == groupingElements) {
             return null;
         }
-        XPathNode xPathNode;
         XPathFragment xPathFragment = null;
-        int groupingElementsSize = groupingElements.size();
-        for (int x = 0; x < groupingElementsSize; x++) {
-            xPathNode = (XPathNode)groupingElements.get(x);
+        for (int x = 0, groupingElementsSize = groupingElements.size(); x < groupingElementsSize; x++) {
+            XPathNode xPathNode = groupingElements.get(x);
             xPathFragment = xPathNode.getXPathFragment();
             openStartElement(xPathFragment, namespaceResolver);
             if (x != (groupingElementsSize - 1)) {
@@ -332,7 +321,7 @@ public abstract class MarshalRecord extends XMLRecord {
                 start = index.intValue();
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
-                element(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
+                element(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), xPathFragment.getPrefix());
             }
             getPositionalNodes().put(xPathFragment.getShortName(), new Integer(xPathFragment.getIndexValue() + 1));
         }

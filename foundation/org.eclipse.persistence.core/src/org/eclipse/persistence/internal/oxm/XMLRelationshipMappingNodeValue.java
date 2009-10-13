@@ -181,8 +181,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     }
 
     protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverter converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
-        Object node = builder.getNodes().pop();
-
+        Object node = builder.getNodes().remove(builder.getNodes().size() -1);
         if (converter != null) {
             node = converter.convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
         }

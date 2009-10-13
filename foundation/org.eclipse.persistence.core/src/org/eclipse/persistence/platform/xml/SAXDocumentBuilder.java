@@ -14,7 +14,8 @@ package org.eclipse.persistence.platform.xml;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -34,14 +35,14 @@ import org.xml.sax.SAXException;
 
 public class SAXDocumentBuilder implements ContentHandler {
     protected Document document;
-    protected Stack nodes;
+    protected List<Node> nodes;
     protected XMLPlatform xmlPlatform;
     protected Map namespaceDeclarations;
     protected StrBuffer stringBuffer;
 
     public SAXDocumentBuilder() {
         super();
-        nodes = new Stack();
+        nodes = new ArrayList<Node>();
         xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         stringBuffer = new StrBuffer();
         namespaceDeclarations = new HashMap();
@@ -55,7 +56,7 @@ public class SAXDocumentBuilder implements ContentHandler {
         if (document == null) {
             try {
                 document = xmlPlatform.createDocument();
-                nodes.push(document);
+                nodes.add(document);
             } catch (Exception e) {
                 throw new SAXException(e);
             }
@@ -69,14 +70,14 @@ public class SAXDocumentBuilder implements ContentHandler {
     public void startDocument() throws SAXException {
         try {
             document = xmlPlatform.createDocument();
-            nodes.push(document);
+            nodes.add(document);
         } catch (Exception e) {
             throw new SAXException(e);
         }
     }
 
     public void endDocument() throws SAXException {
-        nodes.pop();
+    	nodes.remove(nodes.size() - 1);
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -99,7 +100,7 @@ public class SAXDocumentBuilder implements ContentHandler {
             namespaceURI = null;
         }
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
-        Node parentNode = (Node)nodes.peek();
+        Node parentNode = (Node)nodes.get(nodes.size()-1);
 
         if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
@@ -107,7 +108,7 @@ public class SAXDocumentBuilder implements ContentHandler {
             stringBuffer.reset();
         }
         appendChildNode(parentNode, element);
-        nodes.push(element);
+        nodes.add(element);
 
         if (namespaceDeclarations != null) {
             Iterator namespacePrefixes = namespaceDeclarations.keySet().iterator();
@@ -140,7 +141,7 @@ public class SAXDocumentBuilder implements ContentHandler {
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        Element endedElement = (Element)nodes.pop();
+    	Element endedElement = (Element)nodes.remove(nodes.size()-1);
         if (stringBuffer.length() > 0) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             endedElement.appendChild(text);
@@ -157,7 +158,7 @@ public class SAXDocumentBuilder implements ContentHandler {
 
     public void processingInstruction(String target, String data) throws SAXException {
         ProcessingInstruction pi = getInitializedDocument().createProcessingInstruction(target, data);
-        Node parentNode = (Node)nodes.peek();
+        Node parentNode = nodes.get(nodes.size() -1);
         parentNode.appendChild(pi);
     }
 

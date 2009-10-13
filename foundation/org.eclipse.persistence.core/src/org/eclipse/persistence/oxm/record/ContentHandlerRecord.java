@@ -103,7 +103,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-
+    
     /**
      * INTERNAL:
      */
@@ -112,6 +112,27 @@ public class ContentHandlerRecord extends MarshalRecord {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the namespace declarations to the XML document.
+     * @param namespaceResolver The NamespaceResolver contains the namespace
+     * prefix and URI pairings that need to be declared.
+     */
+    public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
+        if (namespaceResolver == null) {
+            return;
+        }
+        String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
+        if(null != namespaceURI) {
+            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
+        }  
+             
+        for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+            String namespacePrefix = entry.getKey();
+            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
         }
     }
 
@@ -136,7 +157,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     private void openAndCloseStartElement() {
     	try {
-            contentHandler.startElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+    		contentHandler.startElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -151,7 +172,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         	openAndCloseStartElement();
         }
         isStartElementOpen = true;
-        this.namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+        this.namespaceURI = xPathFragment.getNamespaceURI();
         this.xPathFragment = xPathFragment;
         this.attributes = new AttributesImpl();
         
@@ -206,8 +227,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             isStartElementOpen = false;
         }
         try {
-            String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
-            contentHandler.endElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName());
+            contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
             isStartElementOpen = false;
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);

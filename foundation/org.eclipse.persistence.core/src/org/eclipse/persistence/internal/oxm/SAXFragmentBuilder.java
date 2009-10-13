@@ -13,8 +13,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -65,14 +65,14 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
 
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
-        Node parentNode = (Node)nodes.peek();
+        Node parentNode = nodes.get(nodes.size() - 1);
 
         boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
         if (bufferContainsOnlyWhitespace) {
             stringBuffer.reset();
         }
         appendChildNode(parentNode, element);
-        nodes.push(element);
+        nodes.add(element);
 
         if (qNameColonIndex > -1) {
             String prefix = qName.substring(0, qNameColonIndex);
@@ -133,7 +133,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if (super.nodes.size() == 2) {
-            Element endedElement = (Element)nodes.peek();
+            Element endedElement = (Element)nodes.get(nodes.size() -1);
             if (stringBuffer.length() > 0) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
@@ -154,7 +154,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     public void endSelfElement(String namespaceURI, String localName, String qName) throws SAXException {        
     	
     	if (super.nodes.size() == 2) {
-            Element endedElement = (Element)nodes.peek();
+            Element endedElement = (Element)nodes.get(nodes.size() -1);
             if (stringBuffer.length() > 0) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
@@ -164,8 +164,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             super.endElement(namespaceURI, localName, qName);
         }
     }
-    
-    public Stack getNodes() {
+    public List<Node> getNodes() {
         return super.nodes;
     }
 
