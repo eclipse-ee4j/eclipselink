@@ -505,6 +505,17 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      * @return predicate
      */
     public Predicate isFalse(Expression<Boolean> x){
+        if (((InternalExpression)x).isPredicate()){
+            if (((InternalSelection)x).getCurrentNode() == null){
+                if (((Predicate)x).getOperator() == BooleanOperator.AND){
+                    return (Predicate)x;
+                }else{
+                    return this.conjunction();
+                }
+            }else{
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
+            }
+        }
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(false), buildList(x), "equals");
     }
     
