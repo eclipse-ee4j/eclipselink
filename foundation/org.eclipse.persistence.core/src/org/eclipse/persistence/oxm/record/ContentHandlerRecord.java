@@ -74,9 +74,9 @@ public class ContentHandlerRecord extends MarshalRecord {
     public void setContentHandler(ContentHandler contentHandler) {
         this.contentHandler = contentHandler;
     }
-    
+
     /**
-     * Set the LexicalHandler to recieve CDATA related events
+     * Set the LexicalHandler to receive CDATA related events
      */
     public void setLexicalHandler(LexicalHandler lexicalHandler) {
         this.lexicalHandler = lexicalHandler;
@@ -103,7 +103,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -114,7 +114,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add the namespace declarations to the XML document.
@@ -128,8 +128,8 @@ public class ContentHandlerRecord extends MarshalRecord {
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
         if(null != namespaceURI) {
             attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
-        }  
-             
+        }
+
         for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
             String namespacePrefix = entry.getKey();
             attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
@@ -156,20 +156,20 @@ public class ContentHandlerRecord extends MarshalRecord {
      * 
      */
     private void openAndCloseStartElement() {
-    	try {
-    		contentHandler.startElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+        try {
+            contentHandler.startElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         if (isStartElementOpen) {
-        	openAndCloseStartElement();
+            openAndCloseStartElement();
         }
         isStartElementOpen = true;
         this.namespaceURI = xPathFragment.getNamespaceURI();
@@ -183,7 +183,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void element(String namespaceURI, String localName, String qName) {
         if (isStartElementOpen) {
-        	openAndCloseStartElement();
+            openAndCloseStartElement();
             isStartElementOpen = false;
         }
         try {
@@ -209,13 +209,13 @@ public class ContentHandlerRecord extends MarshalRecord {
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         attributes.addAttribute(namespaceURI, localName, qName, XMLConstants.CDATA, value);
     }
-    
+
     /**
      * INTERNAL:
      */
     public void closeStartElement() {
-    	// do nothing - the openAndCloseStartElement call results in a 
-    	// complete start element
+        // do nothing - the openAndCloseStartElement call results in a 
+        // complete start element
     }
 
     /**
@@ -223,7 +223,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         if (isStartElementOpen) {
-        	openAndCloseStartElement();
+            openAndCloseStartElement();
             isStartElementOpen = false;
         }
         try {
@@ -239,7 +239,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void characters(String value) {
         if (isStartElementOpen) {
-        	openAndCloseStartElement();
+            openAndCloseStartElement();
             isStartElementOpen = false;
         }
         try {
@@ -248,7 +248,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -271,7 +271,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(ex);
         }
     }
-    
+
     /**
      * Receive notification of a node.
      * @param node The Node to be added to the document
@@ -314,7 +314,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             }
         }
     }
-        
+
     public String resolveNamespacePrefix(XPathFragment frag, NamespaceResolver resolver) {
         String resolved = frag.getNamespaceURI();
         if (resolved == null) {
@@ -330,4 +330,5 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
         return resolved;
     }
+
 }
