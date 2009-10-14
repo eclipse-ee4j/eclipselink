@@ -19,6 +19,8 @@
  *        partially fixed partially worked around this - see a big comment in predeploy method.
  *     12/23/2008-1.1M5 Michael O'Brien 
  *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
+ *     10/14/2008-2.0      Michael O'Brien 
+ *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -29,8 +31,12 @@ import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.Metamodel;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
@@ -44,6 +50,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -54,9 +61,11 @@ import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
@@ -73,6 +82,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -127,6 +137,10 @@ public class EntityManagerSetupImpl {
     // 253701: cache initializationHelper for later use during undeploy() - set by PersistenceProvider.createEntityManagerFactory()
     protected PersistenceInitializationHelper persistenceInitializationHelper = null;
 
+    // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
+    /** Reference to the Metamodel for this deployment and session. */
+    protected Metamodel metaModel;     
+    
     protected List<StructConverter> structConverters = null;
     // factoryCount==0; session==null
     public static final String STATE_INITIAL        = "Initial";
@@ -204,7 +218,7 @@ public class EntityManagerSetupImpl {
      *              In JSE case it allows to alter properties in main (as opposed to preMain where preDeploy is called).
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
-    public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
+    public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) { 
         if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
@@ -283,6 +297,9 @@ public class EntityManagerSetupImpl {
                 this.weaver.clear();
                 this.weaver = null;
             }            
+            
+            // 266912: Initialize the Metamodel
+            this.getMetamodel();            
             return session;
         } catch (Exception exception) {
             PersistenceException persistenceException = null;
@@ -882,6 +899,7 @@ public class EntityManagerSetupImpl {
                     this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             }
+            
             // factoryCount is not incremented only in case of a first call to preDeploy
             // in non-container mode: this call is not associated with a factory
             // but rather done by JavaSECMPInitializer.callPredeploy (typically in preMain).
@@ -1177,7 +1195,7 @@ public class EntityManagerSetupImpl {
      * our session.  This method gets those properties and sets them on the login.
      */
     protected void updateLoginDefaultConnector(DatasourceLogin login, Map m){
-        //Login info might be already set with sessions.xml and could be overrided by session customizer after this
+        //Login info might be already set with sessions.xml and could be overridden by session customizer after this
         //If login has default connector then JDBC properties update(override) the login info
         if ((login.getConnector() instanceof DefaultConnector)) {
             DatabaseLogin dbLogin = (DatabaseLogin)login;
@@ -1834,13 +1852,13 @@ public class EntityManagerSetupImpl {
 
     /**
      * If Bean Validation is enabled, bootstraps Bean Validation on descriptors.
-     * @param puProperties merged properties for this persitence unit
+     * @param puProperties merged properties for this persistence unit
      */
     private void addBeanValidationListeners(Map puProperties, ClassLoader appClassLoader) {
         ValidationMode validationMode = getValidationMode(persistenceUnitInfo, puProperties);
         if (validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK) {
             // BeanValidationInitializationHelper contains static reference to javax.validation.* classes. We need to support
-            // environment where thse classses are not available.
+            // environment where these classses are not available.
             // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
             ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
@@ -1865,14 +1883,14 @@ public class EntityManagerSetupImpl {
 
     /**
      * Validation mode from information in persistence.xml and properties specified at EMF creation
-     * @param persitenceUnitInfo PersitenceUnitInfo instance for this persitence unit
-     * @param puProperties merged properties for this persitence unit
-     * @return validtion mode
+     * @param persitenceUnitInfo PersitenceUnitInfo instance for this persistence unit
+     * @param puProperties merged properties for this persistence unit
+     * @return validation mode
      */
     private static ValidationMode getValidationMode(PersistenceUnitInfo persitenceUnitInfo, Map puProperties) {
         ValidationMode validationMode = null;
         // Initialize with value in persitence.xml
-        // Using reflection to call getValidationMode to prevent blowing up while we are running in JPA 1.0 environemnt
+        // Using reflection to call getValidationMode to prevent blowing up while we are running in JPA 1.0 environment
         // (This would be all JavaEE5 appservers) where PersistenceUnitInfo does not implement method getValidationMode().
         try {
             Method method = null;
@@ -1900,4 +1918,72 @@ public class EntityManagerSetupImpl {
         return validationMode;
     }
 
+    
+    /**
+     * INTERNAL:
+     * Return an instance of Metamodel interface for access to the
+     * metamodel of the persistence unit.
+     * @return Metamodel instance
+     * @since Java Persistence 2.0
+     */
+    public Metamodel getMetamodel() {
+        // perform lazy initialisation
+        if(null == metaModel) {
+            metaModel = new MetamodelImpl(this);
+            //If the canonical metamodel classes exist, initialize them
+            initializeCanonicalMetamodel(metaModel);
+        }
+        return metaModel;
+    }
+
+    /**
+     * INTERNAL:
+     * Initialize the Canonical Metamodel classes generated by EclipseLink
+     * @since Java Persistence 2.0 
+     */
+    protected void initializeCanonicalMetamodel(Metamodel model) {
+
+        for (ManagedType manType : model.getManagedTypes()) {
+            boolean classInitialized = false;
+            String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
+            try {                
+                Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                classInitialized=true;
+                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);                
+                String fieldName = "";
+                for(Object attribute : manType.getDeclaredAttributes()) { 
+                    try {
+                        fieldName = ((Attribute)attribute).getName();
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                          ((Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false))).set(clazz, attribute);
+                         } else {
+                            PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
+                         }  
+                    }
+                    catch (Exception e) {
+                       ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
+                       v.setInternalException(e);
+                       throw v;
+                    }
+                }
+            } catch (ConversionException exception){
+            }
+            if (!classInitialized) {
+                getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_classes_not_found");
+            }
+        }
+    }    
+    
+    /**
+     * INTERNAL:
+     * Convenience function to allow us to reset the Metamodel 
+     * in the possible case that we want to regenerate it.
+     * This function is outside of the JPA 2.0 specification.
+     * @param aMetamodel
+     * @since Java Persistence 2.0 
+     */
+    public void setMetamodel(Metamodel aMetamodel) {
+        this.metaModel = aMetamodel;
+    }
+    
 }

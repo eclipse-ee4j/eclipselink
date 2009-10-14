@@ -47,7 +47,7 @@ public class ClassConstants {
     public static final Class Void_Class = void.class;
     public static final Class PropertyChangeEvent_Class = java.beans.PropertyChangeEvent.class;
 
-    // Toplink Classes
+    // Eclipselink Classes
     public static final Class Accessor_Class = org.eclipse.persistence.internal.databaseaccess.Accessor.class;
     public static final Class ConversionManager_Class = org.eclipse.persistence.internal.helper.ConversionManager.class;
     public static final Class CursoredStream_Class = org.eclipse.persistence.queries.CursoredStream.class;
