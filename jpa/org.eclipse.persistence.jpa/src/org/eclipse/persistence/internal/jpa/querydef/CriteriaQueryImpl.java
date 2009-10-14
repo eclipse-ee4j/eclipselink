@@ -38,6 +38,8 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -113,7 +115,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         } else {
             this.queryType = selection.getJavaType();
-            ManagedType type = this.metamodel.managedType(this.queryType);
+            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 this.queryResult = ResultType.ENTITY;
                 ((FromImpl) selection).isLeaf = false; // this will be a
@@ -581,7 +583,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
             } else {
                 // Selection is not null set type to selection
-                ManagedType type = this.metamodel.managedType(selection.getJavaType());
+                TypeImpl type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
                 if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                     query = new ReadAllQuery(type.getJavaType());
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();

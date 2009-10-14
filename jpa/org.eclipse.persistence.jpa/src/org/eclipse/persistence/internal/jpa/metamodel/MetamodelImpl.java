@@ -23,6 +23,9 @@
  *       all other 6 remaining methods for Id and Version support.
  *       DI 70 - 77 and 56
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
+ *     10/14/2009-2.0  mobrien - 285512: managedType(clazz) now throws IAE again for 
+ *        any clazz that resolves to a BasicType - use getType(clazz) in implementations instead
+ *        when you are expecting a BasicType
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -395,18 +398,13 @@ public class MetamodelImpl implements Metamodel, Serializable {
     public <X> ManagedType<X> managedType(Class<X> clazz) {
         Object aType = this.managedTypes.get(clazz);
         // Throw an IAE exception if the returned type is not a ManagedType
-        // However in this case the type will usually be null - as no Basic types are in the managedTypes Map
-        if(null == aType) {
-            // return null as there is no way to check the return type for isManagedType
-            return null;
-        } else {        
-            if(aType instanceof ManagedType) {
-                return (ManagedType<X>) aType;
-            } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                        "metamodel_class_incorrect_type_instance", 
-                        new Object[] { clazz, "ManagedType", aType}));
-            }
+        // For any clazz that resolves to a BasicType - use getType(clazz) in implementations when you are expecting a BasicType
+        if(null != aType && aType instanceof ManagedType) {
+            return (ManagedType<X>) aType;
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_incorrect_type_instance", 
+                    new Object[] { clazz, "ManagedType", aType}));
         }
     }
     

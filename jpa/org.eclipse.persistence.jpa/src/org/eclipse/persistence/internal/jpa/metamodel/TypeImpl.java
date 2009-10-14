@@ -56,7 +56,7 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
      * @return
      */
-    protected abstract boolean isEntity();
+    public abstract boolean isEntity();
     
     /**
      * INTERNAL:
@@ -79,7 +79,7 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
      * @return
      */
-    protected abstract boolean isMappedSuperclass();
+    public abstract boolean isMappedSuperclass();
 
     /**
      * INTERNAL:
@@ -94,8 +94,6 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
         if(null != this.getJavaType()) {
             aBuffer.append(":");
             aBuffer.append(this.getJavaType().getSimpleName());
-        } else {
-            aBuffer.append("javaType unknown");
         }
         aBuffer.append(" [ javaType: ");
         aBuffer.append(this.getJavaType());

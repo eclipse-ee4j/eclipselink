@@ -33,6 +33,8 @@ import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpressi
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -74,7 +76,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
                 if (resultClass.isPrimitive() || resultClass.equals(ClassConstants.STRING)|| BasicTypeHelperImpl.getInstance().isWrapperClass(resultClass) || BasicTypeHelperImpl.getInstance().isDateClass(resultClass)) {
                     return new CriteriaQueryImpl<T>(metamodel, ResultType.OTHER, resultClass, this);
                 } else {
-                    ManagedType type = this.metamodel.managedType(resultClass);
+                    TypeImpl type = ((MetamodelImpl)this.metamodel).getType(resultClass);
                     if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                         return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, resultClass, this);
                     } else {

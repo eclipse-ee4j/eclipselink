@@ -96,7 +96,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      * @return
      */
     @Override
-    protected boolean isEntity() {
+    public boolean isEntity() {
         return true;
     }
     
@@ -106,7 +106,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      * @return
      */
     @Override
-    protected boolean isMappedSuperclass() {
+    public boolean isMappedSuperclass() {
         return !isEntity();
     }
     

@@ -41,6 +41,8 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQuery;
 
@@ -110,7 +112,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
                 this.subQuery.addItem(String.valueOf(count), ((InternalSelection) select).getCurrentNode());
             }
         } else {
-            ManagedType type = this.metamodel.managedType(selection.getJavaType());
+            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 this.subQuery.addAttribute("", new ConstantExpression(1, ((InternalSelection)selection).getCurrentNode().getBuilder()));
                 this.subQuery.addNonFetchJoinedAttribute(((InternalSelection)selection).getCurrentNode());
@@ -523,7 +525,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     protected void integrateRoot(RootImpl root) {
         if (this.roots.isEmpty()) {
-            ManagedType type = this.metamodel.managedType(this.queryType);
+            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(this.queryType);
             if ((type != null && type.getPersistenceType() == PersistenceType.ENTITY) || queryType.equals(ClassConstants.OBJECT)) {
                 // this is the first root, set return type and selection and
                 // query

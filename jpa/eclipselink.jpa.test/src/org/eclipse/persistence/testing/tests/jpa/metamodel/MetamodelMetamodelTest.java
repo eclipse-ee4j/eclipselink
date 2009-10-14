@@ -176,6 +176,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_handles_possible_null_cmppolicy"));
         return suite;
     }
 
@@ -203,6 +204,55 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
     
     private void privateTestTeardown() {        
+    }
+    
+    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_93:_20091014:_Single_PK_support_in_IdentifiableTypeImpl.getIdType.28.29_does_not_fully_handle_a_null_CMPPolicy_on_the_Descriptor
+    
+    
+    public void testIdentifiableType_getIdType_handles_possible_null_cmppolicy() {
+        if(!this.isJPA10()) {
+            boolean exceptionThrown = false;
+            EntityManager em = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+
+                boolean expectedIAExceptionThrown = false;
+                Type<?> personIdType = null;
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                
+                try {
+                    personIdType = msPerson_.getIdType();
+                } catch (IllegalArgumentException iae) {
+                    // expecting no exception
+                    iae.printStackTrace();
+                    expectedIAExceptionThrown = true;            
+                }
+                assertFalse(expectedIAExceptionThrown);
+                assertNotNull(personIdType);
+                assertEquals(PersistenceType.BASIC, personIdType.getPersistenceType());
+                assertEquals(Integer.class, personIdType.getJavaType());
+                
+                
+            } catch (Exception e) {
+                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+                e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse(exceptionThrown);
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != em) {
+                        cleanup(em);
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -1072,7 +1122,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
             assertNotNull(msCorporation_);
             
-            try {
+            // replaced by testIdentifiableType_getIdType_handles_possible_null_cmppolicy()
+            /*try {
                 personIdType = msPerson_.getIdType();
             } catch (IllegalArgumentException iae) {
                 // expecting no exception
@@ -1083,6 +1134,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(personIdType);
             assertEquals(PersistenceType.BASIC, personIdType.getPersistenceType());
             assertEquals(Integer.class, personIdType.getJavaType());
+            */
             
             // Verify all types (entities, embeddables, mappedsuperclasses and basic)
             try {
@@ -2372,7 +2424,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @return the metamodel managed type
              *  @throws IllegalArgumentException if not a managed class
              */
-            //<X> ManagedType<X> type(Class<X> cls);
+            //<X> ManagedType<X> managedType(Class<X> cls);
             // test normal path (subtype = Basic)
 /*            expectedIAExceptionThrown = false;            
             try {
@@ -2387,6 +2439,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             expectedIAExceptionThrown = false;            
             try {
                 Type<EmbeddedPK> aType = metamodel.managedType(EmbeddedPK.class);
+                assertFalse(((TypeImpl)aType).isEntity());
+                assertFalse(((TypeImpl)aType).isMappedSuperclass());
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -2397,6 +2451,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             expectedIAExceptionThrown = false;            
             try {
                 Type<Manufacturer> aType = metamodel.managedType(Manufacturer.class);
+                assertTrue(((TypeImpl)aType).isEntity());
+                assertFalse(((TypeImpl)aType).isMappedSuperclass());                
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
@@ -2423,9 +2479,19 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //iae.printStackTrace();
                 expectedIAExceptionThrown = true;            
             }
-            assertNull(aTypeFromNullClass);
-            assertFalse(expectedIAExceptionThrown);            
+            //assertNull(aTypeFromNullClass);
+            assertTrue("IllegalArgumentException expected on Metamodel.managedType(null)",expectedIAExceptionThrown);            
 
+            // Type is basic - throw IAE
+            expectedIAExceptionThrown = false;            
+            try {
+                Type<Integer> aType = metamodel.managedType(Integer.class);                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue("IllegalArgumentException expected on Metamodel.managedType(Integer.class)",expectedIAExceptionThrown);
+            
             // test variant path: wrong type (java simple type)
             expectedIAExceptionThrown = false;            
             try {

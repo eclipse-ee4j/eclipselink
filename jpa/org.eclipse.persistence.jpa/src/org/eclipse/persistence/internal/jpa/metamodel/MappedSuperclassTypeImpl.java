@@ -54,7 +54,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * The types in this map are keyed on the Java class of the inheriting type.
      * This map acts as the reverse of all superType fields that point to "this" MappedSuperclass.
      **/
-    protected Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
+    private Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
     
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {        
         super(metamodel, relationalDescriptor);
@@ -68,9 +68,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @param identifiableType
      */
     protected void addInheritingType(IdentifiableTypeImpl identifiableType) {
-        if(null == inheritingIdentifiableTypes) {
-            inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
-        }
+        // The Map will always be instantiated in the constructor
         inheritingIdentifiableTypes.put(identifiableType.getJavaType(), identifiableType);
     }
     
@@ -105,7 +103,8 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
         // search the inheriting types map for an attribute matching the attribute name
         for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
             if(inheritingType.members.containsKey(name)) {
-                return (AttributeImpl)inheritingType.getAttribute(name);
+                inheritedAttribute = (AttributeImpl)inheritingType.getAttribute(name);
+                break;
             }
         }
         // we will return a null attribute in the case that a MappedSuperclass has no implementing entities
@@ -126,7 +125,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @return
      */
     @Override
-    protected boolean isEntity() {
+    public boolean isEntity() {
         return false;
     }
    
@@ -136,7 +135,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @return
      */
     @Override
-    protected boolean isMappedSuperclass() {
+    public boolean isMappedSuperclass() {
         return !isEntity();
     }
 }
