@@ -233,7 +233,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT DEFAULT 0", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
