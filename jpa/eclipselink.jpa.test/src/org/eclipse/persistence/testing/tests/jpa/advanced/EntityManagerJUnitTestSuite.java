@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -145,6 +143,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
+        
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedAttribute"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
         
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
@@ -1775,7 +1780,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
+                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -1828,7 +1833,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
+                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -2580,7 +2585,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
               Employee e1=em.find(Employee.class,empId);
               e1.setFirstName("testfind");
               queryhints.put(QueryHints.REFRESH, "TRUE");
-              Employee e2= em.find(Employee.class,empId ,queryhints);
+              Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
               assertFalse(e2.getFirstName().equals("testfind"));
               commitTransaction(em);
             } catch (IllegalArgumentException iae) {
@@ -8633,7 +8638,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 
                 emp = (Employee)em.find(Employee.class, emp.getId());
                 PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-                assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
+                if (emp instanceof PersistenceWeaved){
+                    assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
+                } else {
+                    assertTrue("Non-weaved PersistenceUnitUtil says address is not loaded", util.isLoaded(emp, "address"));
+                }
                 assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
                 emp.getPhoneNumbers().size();
                 assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
@@ -8717,8 +8726,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
             assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
             assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
+            if (emp instanceof PersistenceWeaved){
+                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+            } else {
+                assertTrue("(NonWeaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.LOADED));
+            }
             assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
-            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
         } finally {
             rollbackTransaction(em);
         }
@@ -8754,11 +8767,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             clearCache();
             
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
-            assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
             
-            emp = em.getReference(Employee.class, emp.getId());
-            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
-        
+            if (emp instanceof PersistenceWeaved){
+                assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
+                
+                emp = em.getReference(Employee.class, emp.getId());
+                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
+            } else {
+                assertTrue("(NonWeaved) ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.UNKNOWN));
+                
+                emp = em.getReference(Employee.class, emp.getId());
+                assertTrue("(NonWeaved)  ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.UNKNOWN));
+            }
             assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
 
         } finally {
@@ -8800,10 +8820,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp.getPhoneNumbers().size();
             
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
-            assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
+            if (emp instanceof PersistenceWeaved){
+                assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
+                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+            } else {
+                assertTrue("(Unweaved) ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
+                assertTrue("(Unweaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.LOADED));
+            }
             assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
             assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
-            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+
             assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
         } finally {
             rollbackTransaction(em);

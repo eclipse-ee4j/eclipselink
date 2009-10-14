@@ -623,9 +623,9 @@ public class ExpressionOperator implements Serializable {
         operator.isRepeating = isRepeating;
         operator.nodeClass = nodeClass;
         operator.type = type;
-        operator.databaseStrings = databaseStrings == null ? null : Arrays.copyOf(databaseStrings, databaseStrings.length);
-        operator.argumentIndices = argumentIndices == null ? null : Arrays.copyOf(argumentIndices, argumentIndices.length);
-        operator.javaStrings = javaStrings == null ? null : Arrays.copyOf(javaStrings, javaStrings.length);
+        operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
+        operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
+        operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
     }
     
     /**

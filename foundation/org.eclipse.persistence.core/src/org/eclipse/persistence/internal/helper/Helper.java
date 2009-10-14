@@ -777,6 +777,41 @@ public class Helper implements Serializable {
 
         return newVector;
     }
+    
+    /**
+     * Copy an array of strings to a new array
+     * avoids the use of Arrays.copy() because it is not supported in JDK 1.5
+     * @param original
+     * @return
+     */
+    public static String[] copyStringArray(String[] original){
+        if (original == null){
+            return null;
+        }
+        String[] copy = new String[original.length];
+        for (int i=0;i<original.length;i++){
+            copy[i] = original[i];
+        }
+        return copy;
+    }
+    
+    
+    /**
+     * Copy an array of int to a new array
+     * avoids the use of Arrays.copy() because it is not supported in JDK 1.5
+     * @param original
+     * @return
+     */
+    public static int[] copyIntArray(int[] original){
+        if (original == null){
+            return null;
+        }
+        int[] copy = new int[original.length];
+        for (int i=0;i<original.length;i++){
+            copy[i] = original[i];
+        }
+        return copy;
+    }
 
     /**
      * Return a string containing the platform-appropriate

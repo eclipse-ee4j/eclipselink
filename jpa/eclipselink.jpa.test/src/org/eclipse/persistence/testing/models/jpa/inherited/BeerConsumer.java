@@ -198,7 +198,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         return (Alpine) ((Vector) alpineBeersToConsume).elementAt(index);
     }
     
-    @OneToMany(targetEntity=Becks.class, mappedBy="beerConsumer", cascade=ALL)
+    @OneToMany(targetEntity=Becks.class, mappedBy="beerConsumer", cascade=ALL, orphanRemoval=true)
     @MapKeyClass(BecksTag.class)
     @MapKeyJoinColumn(name="TAG_ID", referencedColumnName="ID")
     public Map getBecksBeersToConsume() {

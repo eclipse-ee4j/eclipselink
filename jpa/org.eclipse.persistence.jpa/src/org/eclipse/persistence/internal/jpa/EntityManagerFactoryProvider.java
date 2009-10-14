@@ -80,11 +80,11 @@ public class EntityManagerFactoryProvider {
     }
     
     protected static void createOrReplaceDefaultTables(SchemaManager mgr, boolean shouldDropFirst) {          
-    	if (shouldDropFirst){
-    		mgr.replaceDefaultTables(true, true); 
-    	} else { 
-    		mgr.createDefaultTables(true); 
-    	}
+        if (shouldDropFirst){
+            mgr.replaceDefaultTables(true, true); 
+        } else { 
+            mgr.createDefaultTables(true); 
+        }
     }
 
     protected static void generateDDL(ServerSession session, Map props) {

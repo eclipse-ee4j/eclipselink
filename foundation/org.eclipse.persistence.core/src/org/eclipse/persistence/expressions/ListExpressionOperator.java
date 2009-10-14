@@ -12,7 +12,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.expressions;
 
-import java.util.Arrays;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
@@ -42,9 +42,9 @@ public class ListExpressionOperator extends ExpressionOperator {
     public void copyTo(ExpressionOperator operator){
         super.copyTo(operator);
         if (operator instanceof ListExpressionOperator){
-            ((ListExpressionOperator)operator).startStrings = Arrays.copyOf(startStrings, startStrings.length);
-            ((ListExpressionOperator)operator).separators = Arrays.copyOf(separators, separators.length);
-            ((ListExpressionOperator)operator).terminationStrings = Arrays.copyOf(terminationStrings, terminationStrings.length);
+            ((ListExpressionOperator)operator).startStrings = Helper.copyStringArray(startStrings);
+            ((ListExpressionOperator)operator).separators = Helper.copyStringArray(separators);
+            ((ListExpressionOperator)operator).terminationStrings = Helper.copyStringArray(terminationStrings);
             // don't copy numberOfItems since this copy method is used to duplicate an operator that
             // may have a different number of items
         }

@@ -120,6 +120,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testBreakOrder_CorrectionType_EXCEPTION"));
         // OrderColumn with OrderCorrectionType.READ_WRITE
         suite.addTest(new InheritedModelJunitTest("testBreakOrder_CorrectionType_READ_WRITE"));
+        
+        suite.addTest(new InheritedModelJunitTest("testMapOrphanRemoval"));
+
         return suite;
     }
     
@@ -1107,5 +1110,52 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
         }
+    }
+    
+    public void testMapOrphanRemoval(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        
+        int beerConsumerId = 0;
+        try {
+            Becks becks1  = new Becks();
+            becks1.setAlcoholContent(5.1);
+            BecksTag becksTag1 = new BecksTag();
+            becksTag1.setCallNumber("0A.789");
+            em.persist(becksTag1);
+
+            initialBC.setName("Becks Consumer");
+            initialBC.addBecksBeerToConsume(becks1, becksTag1);
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            em.flush();
+            
+            clearCache();
+
+            BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);
+            refreshedBC.getBecksBeersToConsume().remove(becksTag1);
+            
+            em.flush();
+            
+            clearCache();
+            becksTag1 = (BecksTag)em.find(BecksTag.class, becksTag1.getId());
+            assertTrue("Key was deleted when it should not be.", becksTag1 != null);
+            becks1 = (Becks)em.find(Becks.class, becks1.getId());
+            assertTrue("Orphan removal did not remove the orphan", becks1 == null);
+            
+            rollbackTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+
     }
 }

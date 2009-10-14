@@ -617,7 +617,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      */
     @Override
     public void postCalculateChanges(ObjectChangeSet ocs, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
-        if (((DatabaseMapping)getKeyMapping()).isForeignReferenceMapping()){
+        if (((DatabaseMapping)getKeyMapping()).isForeignReferenceMapping() && ((DatabaseMapping)getKeyMapping()).isPrivateOwned()){
             Object key = ocs.getOldKey();
             uow.addDeletedPrivateOwnedObjects((DatabaseMapping)getKeyMapping(), key);
         }
