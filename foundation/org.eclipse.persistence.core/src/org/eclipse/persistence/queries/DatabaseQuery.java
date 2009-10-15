@@ -201,7 +201,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean isExecutionClone;
     
     /** PERF: Store if this query will use the descriptor custom query. */
-    protected Boolean isCustomQueryUsed;    
+    protected volatile Boolean isCustomQueryUsed;    
     
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
