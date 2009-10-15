@@ -21,6 +21,7 @@ package org.eclipse.persistence.exceptions;
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
+import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
@@ -36,6 +37,16 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since EclipseLink 1.2
  */
 public class DynamicException extends EclipseLinkException {
+
+    public final static int INVALID_PROPERTY_NAME = 51000;
+    public final static int INVALID_PROPERTY_GET_WRONG_TYPE = 51001;
+    public final static int INVALID_PROPERTY_SET_WRONG_TYPE = 51002;
+    public final static int INVALID_PROPERTY_INDEX = 51003;
+    public final static int ILLEGAL_DYNAMIC_CLASSWRITER = 51004;
+    public final static int DYNAMIC_ENTITY_NOT_FOUND = 51005;
+    public final static int DYNAMIC_ENTITY_HAS_NULL_TYPE = 51006;
+    public final static int ILLEGAL_PARENT_CLASSNAME = 51007;
+    public final static int INCOMPATIBLE_DYNAMIC_CLASSWRITERS = 51008;
 
     protected DynamicException(String message) {
         super(message);
@@ -53,7 +64,9 @@ public class DynamicException extends EclipseLinkException {
      * @see DynamicEntityImpl#get(String)
      * */
     public static DynamicException invalidPropertyName(DynamicType type, String propertyName) {
-        return new DynamicException("Invalid DynamicEntity[" + type + "] property name: " + propertyName);
+        DynamicException de = new DynamicException("Invalid DynamicEntity[" + type + "] property name: " + propertyName);
+        de.setErrorCode(INVALID_PROPERTY_NAME);
+        return de;
     }
 
     /**
@@ -65,17 +78,29 @@ public class DynamicException extends EclipseLinkException {
      * @see DynamicEntityImpl#get(String)
      */
     public static DynamicException invalidGetPropertyType(DatabaseMapping mapping, ClassCastException cce) {
-        return new DynamicException("DynamicEntity:: Cannot return: " + mapping + ": " + cce.getMessage(), cce);
+        DynamicException de = new DynamicException("DynamicEntity:: Cannot return: " + mapping + ": " + cce.getMessage(), cce);
+        de.setErrorCode(INVALID_PROPERTY_GET_WRONG_TYPE);
+        return de;
     }
 
     /**
-     * TODO 
+     * Invalid value attempted to be set into a {@link DynamicEntity}'s
+     * property. This could be caused by:
+     * <ul>
+     * <li>Putting null into an property which is classified as primitive or a
+     * collection
+     * <li>Putting a value into a property that cannot be assigned to the
+     * configured classification
+     * </ul>
+     * 
      * @param mapping
      * @param value
      * @return
      */
     public static DynamicException invalidSetPropertyType(DatabaseMapping mapping, Object value) {
-        return new DynamicException("DynamicEntity:: Cannot set: " + mapping + " with: " + value);
+        DynamicException de = new DynamicException("DynamicEntity:: Cannot set: " + mapping + " with: " + value);
+        de.setErrorCode(INVALID_PROPERTY_SET_WRONG_TYPE);
+        return de;
     }
 
     /**
@@ -86,7 +111,9 @@ public class DynamicException extends EclipseLinkException {
      * @see DynamicTypeImpl#getMapping(int)
      */
     public static DynamicException invalidPropertyIndex(DynamicType type, int propertyIndex) {
-        return new DynamicException("Invalid DynamicEntity[" + type + "] property index: " + propertyIndex);
+        DynamicException de = new DynamicException("Invalid DynamicEntity[" + type + "] property index: " + propertyIndex);
+        de.setErrorCode(INVALID_PROPERTY_INDEX);
+        return de;
     }
 
     /**
@@ -95,16 +122,20 @@ public class DynamicException extends EclipseLinkException {
      * or an empty string.
      */
     public static DynamicException illegalDynamicClassWriter(DynamicClassLoader loader, String parentClassName) {
-        return new DynamicException("Illegal DynamicClassWriter(" + loader + ", " + parentClassName + ")");
+        DynamicException de = new DynamicException("Illegal DynamicClassWriter(" + loader + ", " + parentClassName + ")");
+        de.setErrorCode(ILLEGAL_DYNAMIC_CLASSWRITER);
+        return de;
     }
 
     /**
      * A {@link DynamicEntity} could not be found
      */
     public static DynamicException entityNotFoundException(String message) {
-        return new DynamicException("DynamicEntity not found: " + message);
+        DynamicException de = new DynamicException("DynamicEntity not found: " + message);
+        de.setErrorCode(DYNAMIC_ENTITY_NOT_FOUND);
+        return de;
     }
-    
+
     /**
      * The {@link DynamicEntityImpl} has a null type indicating an illegal state
      * of the entity.
@@ -116,7 +147,9 @@ public class DynamicException extends EclipseLinkException {
      * when detachment through serialization is added.
      */
     public static DynamicException entityHasNullType(DynamicEntityImpl entity) {
-        return new DynamicException("DynamicEntity has null type: " + entity);
+        DynamicException de = new DynamicException("DynamicEntity has null type: " + entity);
+        de.setErrorCode(DYNAMIC_ENTITY_HAS_NULL_TYPE);
+        return de;
     }
 
     /**
@@ -126,7 +159,9 @@ public class DynamicException extends EclipseLinkException {
      * @see DynamicClassWriter(String)
      */
     public static DynamicException illegalParentClassName(String parentClassName) {
-        return new DynamicException("Illegal parent class name for dynamic type: " + parentClassName);
+        DynamicException de = new DynamicException("Illegal parent class name for dynamic type: " + parentClassName);
+        de.setErrorCode(ILLEGAL_PARENT_CLASSNAME);
+        return de;
     }
 
     /**
@@ -138,6 +173,8 @@ public class DynamicException extends EclipseLinkException {
      * writer.
      */
     public static DynamicException incompatibleDuplicateWriters(String className, DynamicClassWriter existingWriter, DynamicClassWriter writer) {
-        return new DynamicException("Duplicate addClass request with incompatible writer: " + className + " - existing: " + existingWriter + " - new: " + writer);
+        DynamicException de = new DynamicException("Duplicate addClass request with incompatible writer: " + className + " - existing: " + existingWriter + " - new: " + writer);
+        de.setErrorCode(INCOMPATIBLE_DYNAMIC_CLASSWRITERS);
+        return de;
     }
 }

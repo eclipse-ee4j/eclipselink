@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence
+	version="Eclipse Persistence Services - 1.0.2 (Build 20081024)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+	<name>comics</name>
+	<class-mapping-descriptors>
+		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+			<class>model.Issue</class>
+			<alias>Issue</alias>
+			<primary-key>
+				<field table="ISSUE" name="ID" xsi:type="column" />
+			</primary-key>
+			<events xsi:type="event-policy" />
+			<querying xsi:type="query-policy" />
+			<attribute-mappings>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>comments</attribute-name>
+					<field table="ISSUE" name="COMMENTS" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>condition</attribute-name>
+					<field table="ISSUE" name="COND" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>copies</attribute-name>
+					<field table="ISSUE" name="COPIES" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>id</attribute-name>
+					<field table="ISSUE" name="ID" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>number</attribute-name>
+					<field table="ISSUE" name="NUM" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="one-to-one-mapping">
+					<attribute-name>title</attribute-name>
+					<reference-class>model.Title</reference-class>
+					<foreign-key>
+						<field-reference>
+							<source-field table="ISSUE" name="TTITLE_ID"
+								xsi:type="column" />
+							<target-field table="TITLE" name="ID" xsi:type="column" />
+						</field-reference>
+					</foreign-key>
+					<foreign-key-fields>
+						<field table="ISSUE" name="TTITLE_ID" xsi:type="column" />
+					</foreign-key-fields>
+					<indirection xsi:type="value-holder-indirection-policy" />
+					<selection-query xsi:type="read-object-query" />
+				</attribute-mapping>
+			</attribute-mappings>
+			<descriptor-type>independent</descriptor-type>
+			<instantiation />
+			<copying xsi:type="instantiation-copy-policy" />
+			<tables>
+				<table name="ISSUE" />
+			</tables>
+		</class-mapping-descriptor>
+		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+			<class>model.Publisher</class>
+			<alias>Publisher</alias>
+			<primary-key>
+				<field table="PUBLISHER" name="ID" xsi:type="column" />
+			</primary-key>
+			<events xsi:type="event-policy" />
+			<querying xsi:type="query-policy" />
+			<attribute-mappings>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>id</attribute-name>
+					<field table="PUBLISHER" name="ID" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>name</attribute-name>
+					<field table="PUBLISHER" name="NAME" xsi:type="column" />
+				</attribute-mapping>
+			</attribute-mappings>
+			<descriptor-type>independent</descriptor-type>
+			<instantiation />
+			<copying xsi:type="instantiation-copy-policy" />
+			<tables>
+				<table name="PUBLISHER" />
+			</tables>
+		</class-mapping-descriptor>
+		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+			<class>model.Title</class>
+			<alias>Title</alias>
+			<primary-key>
+				<field table="TITLE" name="ID" xsi:type="column" />
+			</primary-key>
+			<events xsi:type="event-policy" />
+			<querying xsi:type="query-policy" />
+			<attribute-mappings>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>format</attribute-name>
+					<field table="TITLE" name="FORMAT" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>id</attribute-name>
+					<field table="TITLE" name="ID" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>name</attribute-name>
+					<field table="TITLE" name="NAME" xsi:type="column" />
+				</attribute-mapping>
+				<attribute-mapping xsi:type="one-to-one-mapping">
+					<attribute-name>publisher</attribute-name>
+					<reference-class>model.Publisher</reference-class>
+					<foreign-key>
+						<field-reference>
+							<source-field table="TITLE" name="PUB_ID" xsi:type="column" />
+							<target-field table="PUBLISHER" name="ID" xsi:type="column" />
+						</field-reference>
+					</foreign-key>
+					<foreign-key-fields>
+						<field table="TITLE" name="PUB_ID" xsi:type="column" />
+					</foreign-key-fields>
+					<selection-query xsi:type="read-object-query" />
+				</attribute-mapping>
+			</attribute-mappings>
+			<descriptor-type>independent</descriptor-type>
+			<instantiation />
+			<copying xsi:type="instantiation-copy-policy" />
+			<tables>
+				<table name="TITLE" />
+			</tables>
+		</class-mapping-descriptor>
+	</class-mapping-descriptors>
+</object-persistence>
