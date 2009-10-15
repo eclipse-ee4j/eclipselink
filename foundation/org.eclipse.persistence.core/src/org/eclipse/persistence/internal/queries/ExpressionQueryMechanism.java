@@ -119,6 +119,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // it is not thrown away at the end of cloning.
             expression = expression.copiedVersionFrom(clonedExpressions);
         }
+        if (expression != null && getQuery().isObjectLevelReadQuery()){
+            //reset any new ExpressionBuilders in the expression that do not belong to the query and are not
+            //parallel 
+            ExpressionBuilder builder = ((ObjectLevelReadQuery)getQuery()).getExpressionBuilder();
+                if ((!isSubSelect) && (builder != null)) {
+                    builder = (ExpressionBuilder)builder.copiedVersionFrom(clonedExpressions);
+                }
+            expression.resetPlaceHolderBuilder(builder);
+        }
 
         DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
 

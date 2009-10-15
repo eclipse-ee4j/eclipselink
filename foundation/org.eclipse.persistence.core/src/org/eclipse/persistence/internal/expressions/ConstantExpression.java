@@ -149,6 +149,16 @@ public class ConstantExpression extends Expression {
         return result;
     }
 
+    /**
+     * INTERNAL:
+     * Search the tree for any expressions (like SubSelectExpressions) that have been
+     * built using a builder that is not attached to the query.  This happens in case of an Exists
+     * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
+     */
+    public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
+        getLocalBase().resetPlaceHolderBuilder(queryBuilder);
+    }
+
     public void setLocalBase(Expression e) {
         localBase = e;
     }

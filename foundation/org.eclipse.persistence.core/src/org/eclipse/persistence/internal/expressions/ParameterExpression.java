@@ -316,6 +316,15 @@ public class ParameterExpression extends BaseExpression {
     }
 
     /**
+     * INTERNAL:
+     * Search the tree for any expressions (like SubSelectExpressions) that have been
+     * built using a builder that is not attached to the query.  This happens in case of an Exists
+     * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
+     */
+    public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
+        localBase.resetPlaceHolderBuilder(queryBuilder);
+    }
+    /**
      * The opposite side of the relation, this is used for conversion of the parameter using the others mapping.
      */
     public void setLocalBase(Expression localBase) {

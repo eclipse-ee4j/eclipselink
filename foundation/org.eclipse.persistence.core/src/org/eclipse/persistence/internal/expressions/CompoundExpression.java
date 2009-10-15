@@ -305,6 +305,19 @@ public abstract class CompoundExpression extends Expression {
         return first.performOperator(getOperator(), arguments);
     }
 
+    /**
+     * INTERNAL:
+     * Search the tree for any expressions (like SubSelectExpressions) that have been
+     * built using a builder that is not attached to the query.  This happens in case of an Exists
+     * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
+     */
+    public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
+        getFirstChild().resetPlaceHolderBuilder(queryBuilder);
+        if (getSecondChild() != null){
+            getSecondChild().resetPlaceHolderBuilder(queryBuilder);
+        }
+    }
+
     protected void setFirstChild(Expression firstChild) {
         this.firstChild = firstChild;
         this.builder = null;

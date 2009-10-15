@@ -563,7 +563,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
+            em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);

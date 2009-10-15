@@ -207,6 +207,23 @@ public class SubSelectExpression extends BaseExpression {
         return this;
     }
 
+    /**
+     * INTERNAL:
+     * Search the tree for any expressions (like SubSelectExpressions) that have been
+     * built using a builder that is not attached to the query.  This happens in case of an Exists
+     * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
+     */
+    public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
+        if(this.baseExpression.isExpressionBuilder() && ((ExpressionBuilder)this.baseExpression).wasQueryClassSetInternally()){
+            this.baseExpression = queryBuilder;
+            if (this.builder != null){
+                this.builder = queryBuilder;
+            }
+        }else{
+            this.baseExpression.resetPlaceHolderBuilder(queryBuilder);
+        }
+    }
+
     public void setSubQuery(ReportQuery subQuery) {
         this.subQuery = subQuery;
     }

@@ -453,7 +453,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             if (selectionCriteria != null) {
                 // PERF: Avoid clone of expression.            
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
-                if (builder.getSession() == null) {
+                if (builder != null && builder.getSession() == null) {
                     builder.setSession(getSession().getRootSession(null));
                     builder.setQueryClass(theClass);
                 }

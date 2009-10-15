@@ -1220,7 +1220,7 @@ public class ReportQuery extends ReadAllQuery {
                             // Now the reference class of the query needs to be reversed.
                             // See the bug description for an explanation.
                             ExpressionBuilder countBuilder = baseExp.getBuilder();
-                            ExpressionBuilder outerBuilder = new ExpressionBuilder();
+                            ExpressionBuilder outerBuilder ;
                             
                             ReportQuery subSelect = new ReportQuery(getReferenceClass(), countBuilder);
                             subSelect.setShouldRetrieveFirstPrimaryKey(true);
@@ -1228,9 +1228,10 @@ public class ReportQuery extends ReadAllQuery {
                             // Make sure the outerBuilder does not appear on the left of the subselect.
                             // Putting a builder on the left is desirable to trigger an optimization.
                             if (getSelectionCriteria() != null) {
-                                outerBuilder.setQueryClass(newDescriptor.getJavaClass());
+                                outerBuilder = new ExpressionBuilder(newDescriptor.getJavaClass());
                                 subSelect.setSelectionCriteria(baseExp.equal(outerBuilder).and(getSelectionCriteria()));
                             } else {
+                                outerBuilder = new ExpressionBuilder();
                                 subSelect.setSelectionCriteria(baseExp.equal(outerBuilder));
                             }
                             setSelectionCriteria(outerBuilder.exists(subSelect));

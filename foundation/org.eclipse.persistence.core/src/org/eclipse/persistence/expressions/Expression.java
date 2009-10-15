@@ -3582,6 +3582,14 @@ public abstract class Expression implements Serializable, Cloneable {
     public abstract Expression rebuildOn(Expression newBase);
 
     /**
+     * INTERNAL:
+     * Search the tree for any expressions (like SubSelectExpressions) that have been
+     * built using a builder that is not attached to the query.  This happens in case of an Exists
+     * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
+     */
+    public abstract void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder);
+
+    /**
      * ADVANCED:
      * For Object-relational support.
      */

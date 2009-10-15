@@ -31,6 +31,10 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -45,6 +49,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 
@@ -93,6 +98,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     TestSuite suite = new TestSuite();
     suite.setName("JUnitJPQLUnitTestSuite");
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSetup"));   
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testExistWithJoin"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCode"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));   
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));   
@@ -274,6 +280,37 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         }
   }
   
+  public void testExistWithJoin()
+  {
+      EntityManager em = createEntityManager();
+      
+      List expected = em.createQuery("SELECT c FROM Employee c WHERE NOT EXISTS (SELECT o1 FROM c.phoneNumbers o1)").getResultList();
+      beginTransaction(em);
+      try {        
+          Metamodel mm = em.getMetamodel();
+          CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+          CriteriaQuery<Employee> cquery =qbuilder.createQuery(Employee.class);
+           Root<Employee> customer = cquery.from(Employee.class);
+           cquery.select(customer);
+           
+           Subquery<PhoneNumber> sq = cquery.subquery(PhoneNumber.class);
+           // correlate subquery root to root of main query:
+           Root<Employee> sqc = sq.correlate(customer);
+           Join<Employee, PhoneNumber> sqo = sqc.join("phoneNumbers");
+           sq.select(sqo);
+           cquery.where(qbuilder.not(qbuilder.exists(sq)));
+           List result = em.createQuery(cquery).getResultList();
+           Assert.assertTrue("testExistWithJoin test failed !", comparer.compareObjects(result,expected));
+
+      } finally {
+          rollbackTransaction(em);
+          closeEntityManager(em);
+      }
+        
+      
+
+  }
+
   
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
