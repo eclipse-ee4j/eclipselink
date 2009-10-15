@@ -104,6 +104,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testVerySimpleJoin"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
@@ -443,6 +444,26 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     
+    public void testVerySimpleJoin(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            root.join("phoneNumbers");
+            cq.distinct(true);
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            for (Employee emp : result){
+                assertFalse("Found someone without a phone", emp.getPhoneNumbers().isEmpty());
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
     public void testSimpleJoin(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

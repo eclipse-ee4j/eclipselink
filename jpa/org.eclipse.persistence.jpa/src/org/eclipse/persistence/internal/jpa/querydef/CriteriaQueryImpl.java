@@ -594,8 +594,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                     if (!list.isEmpty()) {
                         query.setShouldFilterDuplicates(false);
-                        query.setExpressionBuilder(list.get(0).getBuilder());
                     }
+                    query.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
+
                 } else {
                     query = new ReportQuery();
                     query.setReferenceClass(((SelectionImpl) this.selection).getCurrentNode().getBuilder().getQueryClass());
@@ -642,6 +643,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 } else {
                     reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
                 }
+                reportQuery.setReferenceClass(((InternalSelection) this.selection).getCurrentNode().getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(((InternalSelection) this.selection).getCurrentNode().getBuilder());
             }
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
@@ -653,13 +656,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 reportQuery.setHavingExpression(((InternalSelection) this.havingClause).getCurrentNode());
             }
         }
-        if (query.getReferenceClass() == null) {
+        if (query.getReferenceClass() == null){
             if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
                 query.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
-                query.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
             } else if (roots != null && ! roots.isEmpty()){
                 Root root = this.getRoots().iterator().next();
                 query.setReferenceClass(root.getJavaType());
+            }
+        }
+
+        if (selection == null) {
+            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
+                query.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
+            } else if (roots != null && ! roots.isEmpty()){
+                Root root = this.getRoots().iterator().next();
                 query.setExpressionBuilder(((RootImpl) root).getCurrentNode().getBuilder());
             }
         }
