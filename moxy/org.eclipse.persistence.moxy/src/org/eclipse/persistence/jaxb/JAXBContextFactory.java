@@ -230,10 +230,12 @@ public class JAXBContextFactory {
         eventListener.setShouldValidateInstantiationPolicy(false);
         XMLPlatform platform = new SAXPlatform();
         platform.getConversionManager().setLoader(loader);
-        XMLLogin login = new XMLLogin(platform);
-        login.setEqualNamespaceResolvers(false);
-        proj.setLogin(login);
         xmlContext = new XMLContext(proj, loader, eventListener);
+        
+        if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
+        	((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
+        }
+        
         jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
 
         return jaxbContext;

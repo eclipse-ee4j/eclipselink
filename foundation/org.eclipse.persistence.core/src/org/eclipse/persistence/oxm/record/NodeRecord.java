@@ -318,7 +318,17 @@ public class NodeRecord extends MarshalRecord {
         }
     }
     
-    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
+    /**
+     * INTERNAL:
+     * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
+     */
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    }
+    /**
+     * INTERNAL:
+     * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
+     */
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
     
     /**
