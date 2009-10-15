@@ -14,7 +14,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
@@ -65,5 +69,28 @@ public class PersistenceInitializationHelper {
         }
         return classloader;
     }
-      
+    
+    public static final String PERSISTENCE_XML_PATH = "META-INF/persistence.xml";
+    public Enumeration<URL> getPersistenceResources(ClassLoader classloader) {
+        Enumeration<URL> persistenceResources = EmptyPersistenceResourcesEnumeration.theEmptyEnumeration;
+        try {
+            persistenceResources = classloader.getResources(PERSISTENCE_XML_PATH);
+        }
+        catch (IOException e) {
+            // e.printStackTrace();
+        }
+        return persistenceResources;
+    }
+    // for getPersistenceResources(), instead of returning <tt>null</tt> if PERSISTENCE_XML_PATH
+    // doesn't resolve, return a special 'empty' enumeration
+    private static final class EmptyPersistenceResourcesEnumeration implements Enumeration<URL> {
+        static EmptyPersistenceResourcesEnumeration theEmptyEnumeration = 
+            new EmptyPersistenceResourcesEnumeration();
+        public boolean hasMoreElements() {
+            return false;
+        }
+        public URL nextElement() {
+            throw new NoSuchElementException();
+        }
+    }
 }

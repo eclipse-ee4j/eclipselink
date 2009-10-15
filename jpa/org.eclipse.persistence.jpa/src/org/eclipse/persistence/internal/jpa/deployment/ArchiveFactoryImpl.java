@@ -116,7 +116,7 @@ public class ArchiveFactoryImpl {
      * format InputStream can be obtained.
      * @param url
      */
-    private boolean isJarInputStream(URL url) throws IOException {
+    protected boolean isJarInputStream(URL url) throws IOException {
         InputStream in = null;
         try {
         	in = url.openStream();
