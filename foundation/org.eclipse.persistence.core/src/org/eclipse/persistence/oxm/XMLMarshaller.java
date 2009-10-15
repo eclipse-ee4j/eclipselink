@@ -478,9 +478,6 @@ public class XMLMarshaller {
         	session = xmlContext.getSession(object);
         	xmlDescriptor = getDescriptor(object, session);
         }
-        
-       //XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
-        //AbstractSession session = xmlContext.getSession(xmlDescriptor);
 
         WriterRecord writerRecord;
         if (isFormattedOutput()) {

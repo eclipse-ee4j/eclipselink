@@ -140,8 +140,17 @@ public class WriterRecord extends MarshalRecord {
         attribute(null, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
     }
 
-    
+    /**
+     * INTERNAL:
+     * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
+     */
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    }
+    /**
+     * INTERNAL:
+     * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
+     */
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
     
     /**
@@ -223,22 +232,26 @@ public class WriterRecord extends MarshalRecord {
      */
     protected void writeValue(String value) {
         try {
-            char[] chars = value.toCharArray();
-            for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
-                char character = chars[x];
-                switch (character) {
-                case '&': {
-                    writer.write("&amp;");
-                    break;
-                }
-                case '<': {
-                    writer.write("&lt;");
-                    break;
-                }
-                default:
-                    writer.write(character);
-                }
-            }
+        	if(value.indexOf('&') > -1 || value.indexOf('<') > -1){
+                  char[] chars = value.toCharArray();
+                  for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
+                      char character = chars[x];
+                      switch (character) {
+                      case '&': {
+                          writer.write("&amp;");
+                          break;
+                      }
+                      case '<': {
+                          writer.write("&lt;");
+                          break;
+                      }
+                      default:
+                          writer.write(character);
+                      }
+                  }
+        	}else{
+                    writer.write(value);
+        	}
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
