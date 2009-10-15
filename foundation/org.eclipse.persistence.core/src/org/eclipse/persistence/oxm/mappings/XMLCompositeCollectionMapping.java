@@ -458,73 +458,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
-            Object objectToAdd = null;
-            ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
-
-            if(aDescriptor == null){
-                if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                    XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
-                    objectToAdd = ((DOMRecord)nestedRow).getDOM();
-                    if (getConverter() != null) {
-                        if (getConverter() instanceof XMLConverter) {
-                            objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
-                        } else {
-                            objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
-                        }
-                    }
-                    //simple case
-                    objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
-                } else {
-                    NodeList children =((Element) ((DOMRecord)nestedRow).getDOM()).getChildNodes();
-                    for(int i=0; i< children.getLength(); i++){
-                        Node nextNode = children.item(i);
-                        if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
-                            //complex child
-                            throw XMLMarshalException.noDescriptorFound(this);
-                        }
-                    }
-                     //simple case
-                     objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
-                }
-            }
-            else{
-                if (aDescriptor.hasInheritance()) {
-                    Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
-                    if (newElementClass == null) {
-                        // no xsi:type attribute - look for type indicator on the field
-                        QName leafElementType = ((XMLField) getField()).getLeafElementType();
-                        if (leafElementType != null) {
-                            Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                            // if the inheritance policy does not contain the user-set type, throw an exception
-                            if (indicator == null) {
-                                throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
-                            }
-                            newElementClass = (Class) indicator;
-                        }
-                    }
-                    if (newElementClass != null) {
-                        aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
-                    } else {
-                        // since there is no xsi:type attribute or leaf element type set,
-                        // use the reference descriptor -  make sure it is non-abstract
-                        if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
-                            // throw an exception
-                            throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
-                        }
-                    }
-                }
-
-                //Object element
-                objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
-                if (hasConverter()) {
-                    if (getConverter() instanceof XMLConverter) {
-                        objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
-                    } else {
-                        objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
-                    }
-                }
-            }
-
+            Object objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != containerAccessor) {
                 containerAccessor.setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
@@ -533,6 +467,75 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return result;
     }
 
+    public Object buildObjectFromNestedRow(AbstractRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) {
+        Object objectToAdd = null;
+        ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
+        
+        if(aDescriptor == null){    
+            if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
+                objectToAdd = ((DOMRecord)nestedRow).getDOM();
+                if (getConverter() != null) {     
+                    if (getConverter() instanceof XMLConverter) {
+                        objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
+                    } else {
+                        objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
+                    }
+                }
+                //simple case
+                objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
+            } else {
+                NodeList children =((Element) ((DOMRecord)nestedRow).getDOM()).getChildNodes();
+                for(int i=0; i< children.getLength(); i++){
+                    Node nextNode = children.item(i);
+                    if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                        //complex child
+                        throw XMLMarshalException.noDescriptorFound(this);                              
+                    }
+                }
+                 //simple case
+                 objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);       
+            }
+        }
+        else{
+            if (aDescriptor.hasInheritance()) {
+                Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                if (newElementClass == null) {
+                    // no xsi:type attribute - look for type indicator on the field
+                    QName leafElementType = ((XMLField) getField()).getLeafElementType();
+                    if (leafElementType != null) {
+                        Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                        // if the inheritance policy does not contain the user-set type, throw an exception
+                        if (indicator == null) {
+                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
+                        }
+                        newElementClass = (Class) indicator;
+                    }
+                }
+                if (newElementClass != null) {
+                    aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
+                } else {
+                    // since there is no xsi:type attribute or leaf element type set, 
+                    // use the reference descriptor -  make sure it is non-abstract
+                    if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
+                        // throw an exception
+                        throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                    }
+                }
+            }
+
+            //Object element 
+            objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
+            if (hasConverter()) {
+                if (getConverter() instanceof XMLConverter) {
+                    objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
+                } else {
+                    objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
+                }
+            }
+        }
+        return objectToAdd;
+    }
     private Object convertToSimpleTypeIfPresent(Object objectToAdd, AbstractRecord nestedRow, AbstractSession executionSession){
         String stringValue = null;
 

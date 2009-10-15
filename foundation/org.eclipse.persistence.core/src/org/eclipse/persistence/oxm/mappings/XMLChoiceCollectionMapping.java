@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm.mappings;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Vector;
@@ -30,7 +31,9 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -44,10 +47,14 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -203,13 +210,102 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }
 
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        return null;
+       List<XMLEntry> values = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getFields());
+       Object container = getContainerPolicy().containerInstance(values.size());
+       for(XMLEntry next:values) {
+           XMLField valueField = next.getXMLField();
+           DatabaseMapping nextMapping = (DatabaseMapping)this.choiceElementMappings.get(valueField);
+           Converter converter = getConverter();
+           if(nextMapping.isAbstractCompositeCollectionMapping()) {
+               XMLCompositeCollectionMapping xmlMapping = (XMLCompositeCollectionMapping)nextMapping;
+               Object value = xmlMapping.buildObjectFromNestedRow((AbstractRecord)next.getValue(), joinManager, sourceQuery, executionSession);
+               if(converter != null) {
+                   if (converter instanceof XMLConverter) {
+                       value = ((XMLConverter) converter).convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
+                   } else {
+                       value = converter.convertDataValueToObjectValue(value, executionSession);
+                   }
+               }
+               getContainerPolicy().addInto(value, container, executionSession);
+           } else {
+               XMLCompositeDirectCollectionMapping xmlMapping = (XMLCompositeDirectCollectionMapping)nextMapping;
+               Object value = next.getValue();
+               if(converter != null) {
+                   if (converter instanceof XMLConverter) {
+                       value = ((XMLConverter) converter).convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
+                   } else {
+                       value = converter.convertDataValueToObjectValue(value, executionSession);
+                   }
+               }
+               getContainerPolicy().addInto(value, container, executionSession);
+           }
+       }
+       return container;
     }
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
-
+        Object attributeValue = getAttributeValueFromObject(object);
+        List<XMLEntry> nestedRows = new ArrayList<XMLEntry>();
+        XMLRecord record = (XMLRecord)row;
+        //First determine which Field is associated with each value:
+        ContainerPolicy cp = getContainerPolicy();
+        Object iterator = cp.iteratorFor(attributeValue);
+        while(cp.hasNext(iterator)) {
+            Object value = cp.next(iterator, session);
+            if (null != converter) {
+                if (converter instanceof XMLConverter) {
+                    value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, record.getMarshaller());
+                } else {
+                    value = converter.convertObjectValueToDataValue(value, session);
+                }
+            }
+            NodeValue associatedNodeValue = null;
+            XMLField associatedField = null;
+            Object fieldValue = value;
+            if(value instanceof XMLRoot) {
+                XMLRoot rootValue = (XMLRoot)value;
+                String localName = rootValue.getLocalName();
+                String namespaceUri = rootValue.getNamespaceURI();
+                fieldValue = rootValue.getObject();
+                associatedField = getFieldForName(localName, namespaceUri);
+                if(associatedField == null) {
+                    associatedField = getClassToFieldMappings().get(fieldValue.getClass());
+                }
+            } else {
+                associatedField = getClassToFieldMappings().get(value.getClass());
+            }
+            DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(associatedField);
+            if(xmlMapping.isAbstractCompositeCollectionMapping()) {
+                fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row);
+            }
+            XMLEntry entry = new XMLEntry();
+            entry.setValue(fieldValue);
+            entry.setXMLField(associatedField);
+            nestedRows.add(entry);
+        }
+        ((DOMRecord)row).put(getFields(), nestedRows);
+        
     }
 
+    private XMLField getFieldForName(String localName, String namespaceUri) {
+        Iterator fields = getFields().iterator(); 
+        while(fields.hasNext()) {
+            XMLField nextField = (XMLField)fields.next();
+            XPathFragment fragment = nextField.getXPathFragment();
+            while(fragment != null && (!fragment.nameIsText())) {
+                if(fragment.getNextFragment() == null || fragment.getHasText()) {
+                    if(fragment.getLocalName().equals(localName)) {
+                        String fragUri = fragment.getNamespaceURI();
+                        if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+                            return nextField;
+                        }
+                    }
+                }
+                fragment = fragment.getNextFragment();
+            }
+        }
+        return null;
+    }    
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
 
     }
@@ -219,12 +315,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }
 
     public Vector<DatabaseField> getFields() {
-        return this.collectFields();
+        if(fields == null || fields.size() == 0) {
+            fields = this.collectFields();
+        }
+        return this.fields;
     }
 
     protected Vector<DatabaseField> collectFields() {
-        Vector<DatabaseField> fields = new Vector<DatabaseField>(getFieldToClassMappings().keySet());
-        return fields;
+        return new Vector<DatabaseField>(fieldToClassMappings.keySet());
     }
 
     public void addChoiceElement(String xpath, Class elementType) {
@@ -340,6 +438,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             if (classToFieldMappings.get(elementType) == null) {
                 classToFieldMappings.put(elementType, entry.getKey());
             }
+            if(fieldToClassMappings.get(entry.getKey()) == null) {
+                fieldToClassMappings.put(entry.getKey(), elementType);
+            }
         }        
     }
     
@@ -405,7 +506,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
              xmlMapping.setAttributeAccessor(temporaryAccessor);
              this.choiceElementMappings.put(xmlField, xmlMapping);                
          } else {
-             XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();             
+             XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();  
              if(!className.equals("java.lang.Object")){
                 xmlMapping.setReferenceClassName(className);
              }      

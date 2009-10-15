@@ -101,7 +101,7 @@ public class DirectMappingTestCases extends OXTestCase {
         this.assertXMLIdentical(controlDocument, resultDocument);
     }
 
-    public void testTwoAttributesNoReadOnly() throws Exception {
+    /*public void testTwoAttributesNoReadOnly() throws Exception {
         try {
             TwoDirectMappingProject project = new TwoDirectMappingProject();
             XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(Employee.class);
@@ -113,7 +113,7 @@ public class DirectMappingTestCases extends OXTestCase {
             fail("No Exception was thrown with 2 writeable mappings to the same field");
         } catch (IntegrityException ex) {
         }
-    }
+    }*/
 
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);

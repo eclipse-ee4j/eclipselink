@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -133,6 +134,21 @@ public class XPathEngine {
 
         return created.item(0);
     }
+    
+    public void create(List<XMLField> xmlFields, Node contextNode, List<XMLEntry> values, XMLField lastUpdatedField, DocumentPreservationPolicy docPresPolicy, AbstractSession session) {
+        List itemsToWrite = new ArrayList();
+        for(int i = 0, size = values.size(); i < size; i++) {
+            XMLEntry nextEntry = values.get(i);
+            itemsToWrite.add(nextEntry.getValue());
+            if(i == (values.size() -1) || values.get(i+1).getXMLField() != nextEntry.getXMLField()) {
+                create(nextEntry.getXMLField(), contextNode, itemsToWrite, lastUpdatedField, docPresPolicy, session);
+                itemsToWrite = new ArrayList();
+                lastUpdatedField = nextEntry.getXMLField();
+            }
+        }
+    }
+    
+    
 
     /**
     * Create the node path specified by <code>xpathString</code> under <code>element</code>
@@ -157,9 +173,13 @@ public class XPathEngine {
         }
         Node nextElement = element;
         Element sibling = null;
-        if ((lastUpdated != null) && !lastUpdated.getXPathFragment().isAttribute() && !lastUpdated.getXPathFragment().nameIsText()) {
+        XPathFragment siblingFragment = null;
+        if(lastUpdated != null) {
+            siblingFragment = lastUpdated.getXPathFragment();
+        }
+        if ((lastUpdated != null) && !siblingFragment.isAttribute() && !siblingFragment.nameIsText()) {
             //find the sibling element. 
-            NodeList nodes = unmarshalXPathEngine.selectElementNodes(element, lastUpdated.getXPathFragment(), getNamespaceResolverForField(lastUpdated));
+            NodeList nodes = unmarshalXPathEngine.selectElementNodes(element, siblingFragment, getNamespaceResolverForField(lastUpdated));
             if (nodes.getLength() > 0) {
                 sibling = (Element)nodes.item(nodes.getLength() - 1);
             }
@@ -198,8 +218,25 @@ public class XPathEngine {
 
                 nextElement = elements.item(elements.getLength() - 1);
             }
+            if(siblingFragment != null && sibling != null && siblingFragment.equals(next)) {
+                //if the sibling shares a grouping element, update the sibling
+                siblingFragment = siblingFragment.getNextFragment();
+                if ((siblingFragment != null) && !siblingFragment.isAttribute() && !siblingFragment.nameIsText()) {
+                    //find the sibling element. 
+                    NodeList nodes = unmarshalXPathEngine.selectElementNodes(nextElement, siblingFragment, getNamespaceResolverForField(lastUpdated));
+                    if (nodes.getLength() > 0) {
+                        sibling = (Element)nodes.item(nodes.getLength() - 1);
+                    } else {
+                        sibling = null;
+                    }
+                } else {
+                    sibling = null;
+                }
+            } else {
+                sibling = null;
+            }
+            
             next = next.getNextFragment();
-            sibling = null;
             if ((next != null) && next.nameIsText()) {
                 next = null;
             }
@@ -789,6 +826,34 @@ public class XPathEngine {
         return nodes;
     }
 
+    public List<XMLEntry> replaceCollection(List<XMLField> xmlFields, List<XMLEntry> values, Node contextNode, DocumentPreservationPolicy docPresPolicy, XMLField lastUpdatedField, AbstractSession session) {
+        List<XMLEntry> oldNodes = unmarshalXPathEngine.selectNodes(contextNode, xmlFields, getNamespaceResolverForField(xmlFields.get(0)));
+        if(oldNodes == null || oldNodes.size() == 0) {
+            return oldNodes;
+        }
+        
+        Iterator<XMLEntry> oldValues = oldNodes.iterator();
+        //Remove all the old values, and then call create to add them back in.
+        while(oldValues.hasNext()) {
+            XMLEntry entry = (XMLEntry)oldValues.next();
+            Node nextNode = (Node)entry.getValue();
+            Node parent = nextNode.getParentNode();
+            parent.removeChild(nextNode);
+            while(parent != contextNode) {
+                if(parent.getChildNodes().getLength() == 0) {
+                    nextNode = parent;
+                    parent = nextNode.getParentNode();
+                    parent.removeChild(nextNode);
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        create(xmlFields, contextNode, values, lastUpdatedField, xmlBinderPolicy, session);
+        
+        return oldNodes;
+    }
     public NodeList replaceCollection(XMLField xmlField, Node parent, Collection values, AbstractSession session) throws XMLMarshalException {
         NodeList nodes = null;
         if (xmlField != null) {

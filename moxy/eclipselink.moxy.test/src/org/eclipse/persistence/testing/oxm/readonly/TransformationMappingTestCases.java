@@ -116,7 +116,7 @@ public class TransformationMappingTestCases extends OXTestCase {
         this.assertXMLIdentical(controlDocument, resultDocument);
     }
 
-    public void testTwoAttributesNoReadOnly() throws Exception {
+    /*public void testTwoAttributesNoReadOnly() throws Exception {
         try {
             TwoTransformationMappingProject project = new TwoTransformationMappingProject();
             XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(Employee.class);
@@ -131,7 +131,7 @@ public class TransformationMappingTestCases extends OXTestCase {
             fail("No Exception was thrown with 2 writeable mappings to the same field");
         } catch (IntegrityException ex) {
         }
-    }
+    }*/
 
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);

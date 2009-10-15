@@ -12,9 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
@@ -142,6 +146,59 @@ public class UnmarshalXPathEngine {
         } catch (Exception x) {
             throw XMLMarshalException.invalidXPathString(xmlField.getXPath(), x);
         }
+    }
+    
+    public List<XMLEntry> selectNodes(Node contextNode, List<XMLField> xmlFields, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+        List<XMLEntry> nodes = new ArrayList<XMLEntry>();
+        List<XPathFragment> firstFragments = new ArrayList<XPathFragment>(xmlFields.size());
+        for(XMLField nextField:xmlFields) {
+            firstFragments.add(nextField.getXPathFragment());
+        }
+        selectNodes(contextNode, firstFragments, xmlNamespaceResolver, nodes);
+        return nodes;
+    }
+    
+    private void selectNodes(Node contextNode, List<XPathFragment> xpathFragments, XMLNamespaceResolver xmlNamespaceResolver, List<XMLEntry> entries) {
+        NodeList childNodes = contextNode.getChildNodes();
+        for(int i = 0, size = childNodes.getLength(); i < size; i++) {
+            Node nextChild = childNodes.item(i);
+            List<XPathFragment> matchingFragments = new ArrayList<XPathFragment>();
+            for(XPathFragment nextFragment:xpathFragments) {
+                if((nextChild.getNodeType() == Node.TEXT_NODE || nextChild.getNodeType() == Node.CDATA_SECTION_NODE) && nextFragment.nameIsText()) {
+                    addXMLEntry(nextChild, nextFragment.getXMLField(), entries);
+                } else if(nextChild.getNodeType() == Node.ATTRIBUTE_NODE && nextFragment.isAttribute()) {
+                    String attributeNamespaceURI = null;
+                    if (nextFragment.hasNamespace()) {
+                        attributeNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(nextFragment.getPrefix());
+                    }
+                    if(sameName(nextChild, nextFragment.getLocalName()) && sameNamespaceURI(nextChild, attributeNamespaceURI)) {
+                        addXMLEntry(nextChild, nextFragment.getXMLField(), entries);
+                    }
+                } else if(nextChild.getNodeType() == Node.ELEMENT_NODE) {
+                    String elementNamespaceURI = null;
+                    if(nextFragment.hasNamespace()) {
+                        elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(nextFragment.getPrefix());
+                    }
+                    if(sameName(nextChild, nextFragment.getLocalName()) && sameNamespaceURI(nextChild, elementNamespaceURI)) {
+                        if(nextFragment.getNextFragment() == null) {
+                            addXMLEntry(nextChild, nextFragment.getXMLField(), entries);
+                        } else {
+                            matchingFragments.add(nextFragment.getNextFragment());
+                        }
+                    }
+                }
+            }
+            if(matchingFragments.size() > 0) {
+                selectNodes(nextChild, matchingFragments, xmlNamespaceResolver, entries);
+            }
+        }
+    }
+    
+    private void addXMLEntry(Node entryNode, XMLField xmlField, List<XMLEntry> entries) {
+        XMLEntry entry = new XMLEntry();
+        entry.setValue(entryNode);
+        entry.setXMLField(xmlField);
+        entries.add(entry);
     }
 
     private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
@@ -345,4 +402,5 @@ public class UnmarshalXPathEngine {
     private boolean sameName(Node node, String name) {
         return name.equals(node.getLocalName()) || name.equals(node.getNodeName());
     }
+    
 }

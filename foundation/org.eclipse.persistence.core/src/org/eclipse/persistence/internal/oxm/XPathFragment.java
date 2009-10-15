@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -36,6 +37,7 @@ public class XPathFragment {
     public static final XPathFragment ANY_FRAGMENT = null;
 
     private XPathFragment nextFragment;
+    private XMLField xmlField;
     private String xpath;
     private boolean hasAttribute = false;
     private boolean hasText = false;
@@ -306,6 +308,14 @@ public class XPathFragment {
 
     public boolean isGeneratedPrefix() {
         return generatedPrefix;
+    }
+    
+    public XMLField getXMLField() {
+        return this.xmlField;
+    }
+    
+    public void setXMLField(XMLField field) {
+        this.xmlField = field;
     }
 
 }

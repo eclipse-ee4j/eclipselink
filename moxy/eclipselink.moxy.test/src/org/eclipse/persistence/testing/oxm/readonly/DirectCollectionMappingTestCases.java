@@ -107,7 +107,7 @@ public class DirectCollectionMappingTestCases extends OXTestCase {
         this.assertXMLIdentical(controlDocument, resultDocument);
     }
 
-    public void testTwoAttributesNoReadOnly() throws Exception {
+    /*public void testTwoAttributesNoReadOnly() throws Exception {
         try {
             TwoDirectCollectionMappingProject project = new TwoDirectCollectionMappingProject();
             XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(Employee.class);
@@ -120,7 +120,7 @@ public class DirectCollectionMappingTestCases extends OXTestCase {
             fail("No Exception was thrown");
         } catch (IntegrityException ex) {
         }
-    }
+    }*/
 
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);

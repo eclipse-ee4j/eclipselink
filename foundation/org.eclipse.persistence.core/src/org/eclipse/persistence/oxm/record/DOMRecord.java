@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -177,8 +179,8 @@ public class DOMRecord extends XMLRecord {
      * to a node value usable with the XPathEngine.
      */
     private Object convertToNodeValue(Object value) {
-        if (value instanceof Vector) {
-            Vector values = (Vector)value;
+        if (value instanceof List) {
+            List values = (List)value;
             Vector nodeValues = new Vector(values.size());
             for (int index = 0; index < values.size(); index++) {
                 Object nestedValue = values.get(index);
@@ -187,6 +189,10 @@ public class DOMRecord extends XMLRecord {
             return nodeValues;
         } else if (value instanceof DOMRecord) {
             return ((DOMRecord)value).getDOM();
+        } else if (value != null && value.getClass() == XMLEntry.class) {
+            XMLEntry entry = (XMLEntry)value;
+            entry.setValue(convertToNodeValue(entry.getValue()));
+            return entry;
         } else {
             return value;
         }
@@ -362,6 +368,28 @@ public class DOMRecord extends XMLRecord {
         return getValuesIndicatingNoEntry(key, false);
     }
     
+    public List<XMLEntry> getValuesIndicatingNoEntry(List<DatabaseField> keys) {
+        return getValuesIndicatingNoEntry(keys, false);
+    }
+    
+    public List<XMLEntry> getValuesIndicatingNoEntry(List<DatabaseField> keys, boolean shouldReturnNodes) {
+        List<XMLField> xmlFields = convertToXMLField(keys);
+        List<XMLEntry> values = UnmarshalXPathEngine.getInstance().selectNodes(dom, xmlFields, xmlFields.get(0).getNamespaceResolver());
+        if(shouldReturnNodes) {
+            return values;
+        }
+        for(XMLEntry next:values) {
+            Node nextNode = (Node)next.getValue();
+            if(!(nextNode.getNodeType() == Node.ELEMENT_NODE)) {
+                Object value = getValueFromElement((Element)nextNode.getParentNode(), nextNode, next.getXMLField());
+                next.setValue(value);
+            } else {
+                next.setValue(buildNestedRow((Element)nextNode));
+            }
+        }
+        return values;
+    }
+    
     /**
      * INTERNAL:
      * Given a DatabaseField, return the corresponding values from the document
@@ -515,7 +543,29 @@ public class DOMRecord extends XMLRecord {
         }
         return replaced;
     }
+
+    public Object put(List<XMLField> xmlFields, List<XMLEntry> values) {
+        Vector valuesToWrite = (Vector)convertToNodeValue(values);
+        List<XMLEntry> replaced = null;
+        
+        replaced = XPathEngine.getInstance().replaceCollection(xmlFields, valuesToWrite, dom, getDocPresPolicy(), lastUpdatedField, session);
+        if(replaced.size() == 0) {
+            XPathEngine.getInstance().create(xmlFields, dom, valuesToWrite, lastUpdatedField, getDocPresPolicy(), session);
+        }
+        return replaced;
+    }
     
+    public Object put(Object key, Object value) throws ValidationException {
+        if (key instanceof String) {
+            return put((String)key, value);
+        } else if (key instanceof DatabaseField) {
+            return put((DatabaseField)key, value);
+        } else if (key instanceof List) {
+            return put((List<XMLField>)key, (List<XMLEntry>)value);
+        } else {
+            throw ValidationException.onlyFieldsAreValidKeysForDatabaseRows();
+        }
+    }    
 
     /**
      * INTERNAL:

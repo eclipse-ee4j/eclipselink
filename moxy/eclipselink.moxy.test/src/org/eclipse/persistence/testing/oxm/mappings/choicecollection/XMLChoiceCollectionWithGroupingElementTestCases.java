@@ -55,7 +55,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLMappingT
   
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);
-      project.getDatasourceLogin().setPlatform(new SAXPlatform());
+      //project.getDatasourceLogin().setPlatform(new SAXPlatform());
       
       return project;
   }  

@@ -105,7 +105,7 @@ public class CompositeObjectMappingTestCases extends OXTestCase {
         this.assertXMLIdentical(controlDocument, resultDocument);
     }
 
-    public void testTwoAttributesNoReadOnly() throws Exception {
+    /*public void testTwoAttributesNoReadOnly() throws Exception {
         try {
             TwoCompositeObjectMappingProject project = new TwoCompositeObjectMappingProject();
             XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(Employee.class);
@@ -117,7 +117,7 @@ public class CompositeObjectMappingTestCases extends OXTestCase {
             fail("No Exception was thrown");
         } catch (IntegrityException ex) {
         }
-    }
+    }*/
 
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);

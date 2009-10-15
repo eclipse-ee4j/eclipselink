@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -114,6 +117,18 @@ public abstract class XMLRecord extends AbstractRecord {
         } catch (ClassCastException ex) {
             return new XMLField(databaseField.getName());
         }
+    }
+    
+    protected List<XMLField> convertToXMLField(List<DatabaseField> databaseFields) {
+        ArrayList<XMLField> xmlFields = new ArrayList(databaseFields.size());
+        for(DatabaseField next:databaseFields) {
+            try {
+                xmlFields.add((XMLField)next);
+            } catch(ClassCastException ex) {
+                xmlFields.add(new XMLField(next.getName()));
+            }
+        }
+        return xmlFields;
     }
 
     /**

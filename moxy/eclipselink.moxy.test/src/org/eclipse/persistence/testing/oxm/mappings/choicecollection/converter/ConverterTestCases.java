@@ -49,9 +49,9 @@ public class ConverterTestCases extends XMLMappingTestCases {
     }
 
     public Project getNewProject(Project originalProject, ClassLoader classLoader) {
-        Project project = new EmployeeProject();
-        project.setDatasourceLogin(new XMLLogin());
-        project.getDatasourceLogin().setPlatform(new SAXPlatform());
+        Project project = super.getNewProject(originalProject, classLoader);
+        //project.setDatasourceLogin(new XMLLogin());
+        //project.getDatasourceLogin().setPlatform(new SAXPlatform());
 
         return project;
     }

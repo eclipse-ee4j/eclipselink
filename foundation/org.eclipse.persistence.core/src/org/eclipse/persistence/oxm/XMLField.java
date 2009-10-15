@@ -473,6 +473,7 @@ public class XMLField extends DatabaseField {
             buildFragments(xPath);
         } else {
             XPathFragment xPathFragment = new XPathFragment(xPath.intern());
+            xPathFragment.setXMLField(this);
             setXPathFragment(xPathFragment);
             setLastXPathFragment(xPathFragment);
         }
@@ -505,6 +506,7 @@ public class XMLField extends DatabaseField {
             next = '/' + next;
             currentXPathFragment = new XPathFragment(next);
             setXPathFragment(currentXPathFragment);
+            currentXPathFragment.setXMLField(this);
             i++;
         }
 
@@ -524,6 +526,7 @@ public class XMLField extends DatabaseField {
                         currentXPathFragment.setHasText(true);
                     }
                 }
+                nextXPathFragment.setXMLField(this);
                 currentXPathFragment = nextXPathFragment;
                 i++;
             }

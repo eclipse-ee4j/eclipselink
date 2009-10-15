@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -46,6 +47,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLRoot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,11 +219,48 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     }
 
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        //try each of the fields and see if any of them has a value
+        for(XMLMapping nextMapping:this.choiceElementMappings.values()) {
+            Object value = ((DatabaseMapping)nextMapping).valueFromRow(row, joinManager, sourceQuery, executionSession);
+            if(value != null) {
+                return value;
+            }
+        }
         return null;
     }
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
-
+        Object value = getAttributeValueFromObject(object);
+        Class valueClass = value.getClass();
+        if(valueClass == XMLRoot.class) {
+            //look for a nested mapping based on the Root's QName
+            XMLRoot root = (XMLRoot)value;
+            for(DatabaseField next:this.fields) {
+                XMLField xmlField = (XMLField)next;
+                XPathFragment fragment = xmlField.getXPathFragment();
+                while(fragment != null && !fragment.nameIsText()) {
+                    if(fragment.getNextFragment() == null || fragment.getHasText()) {
+                        if(fragment.getLocalName().equals(root.getLocalName())) {
+                            String fragUri = fragment.getNamespaceURI();
+                            String namespaceUri = root.getNamespaceURI();
+                            if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+                                XMLMapping mapping = choiceElementMappings.get(xmlField);
+                                mapping.writeSingleValue(value, object, (XMLRecord)row, session);
+                                return;
+                            }
+                        }
+                    }
+                    fragment = fragment.getNextFragment();
+                }
+            }
+            //If the root doesn't match any of the types, try the class
+            valueClass = root.getObject().getClass();
+        }
+        XMLField valueField = this.classToFieldMappings.get(valueClass);
+        XMLMapping mapping = this.choiceElementMappings.get(valueField);
+        if(mapping != null) {
+            mapping.writeSingleValue(value, object, (XMLRecord)row, session);
+        }
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {

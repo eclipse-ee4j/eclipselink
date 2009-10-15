@@ -33,7 +33,10 @@ import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -646,4 +649,87 @@ public class XMLObjectBuilder extends ObjectBuilder {
             }
         }
     }
+    
+    public void initialize(AbstractSession session) throws DescriptorException {
+        getMappingsByField().clear();
+        getReadOnlyMappingsByField().clear();
+        getMappingsByAttribute().clear();
+        getCloningMappings().clear();
+        getEagerMappings().clear();
+        getRelationshipMappings().clear();
+
+        for (Enumeration mappings = this.descriptor.getMappings().elements();
+                 mappings.hasMoreElements();) {
+            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+
+            // Add attribute to mapping association
+            if (!mapping.isWriteOnly()) {
+                getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
+            }
+            // Cache mappings that require cloning.
+            if (mapping.isCloningRequired()) {
+                getCloningMappings().add(mapping);
+            }
+            // Cache eager mappings.
+            if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!mapping.isLazy())) {
+                getEagerMappings().add(mapping);
+            }
+            // Cache relationship mappings.
+            if (!mapping.isDirectToFieldMapping()) {
+                getRelationshipMappings().add(mapping);
+            }
+
+            // Add field to mapping association
+            for (DatabaseField field : mapping.getFields()) {
+
+                if (mapping.isReadOnly()) {
+                    List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+    
+                    if (readOnlyMappings == null) {
+                        readOnlyMappings = new ArrayList();
+                        getReadOnlyMappingsByField().put(field, readOnlyMappings);
+                    }
+    
+                    readOnlyMappings.add(mapping);
+                } else {
+                    if (mapping.isAggregateObjectMapping()) {
+                        // For Embeddable class, we need to test read-only 
+                        // status of individual fields in the embeddable.
+                        ObjectBuilder aggregateObjectBuilder = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder();
+                        
+                        // Look in the non-read-only fields mapping
+                        DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
+    
+                        if (aggregatedFieldMapping == null) { // mapping must be read-only
+                            List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                            
+                            if (readOnlyMappings == null) {
+                                readOnlyMappings = new ArrayList();
+                                getReadOnlyMappingsByField().put(field, readOnlyMappings);
+                            }
+    
+                            readOnlyMappings.add(mapping);
+                        } else {
+                            getMappingsByField().put(field, mapping);
+                        }
+                    } else { // Not an embeddable mapping
+                        if (!getMappingsByField().containsKey(field)) {  
+                            getMappingsByField().put(field, mapping);
+                        }
+                    }
+                }
+            }
+        }
+        this.isSimple = getRelationshipMappings().isEmpty();
+
+        initializePrimaryKey(session);
+        initializeJoinedAttributes();
+        
+        if (this.descriptor.usesSequenceNumbers()) {
+            DatabaseMapping sequenceMapping = getMappingForField(this.descriptor.getSequenceNumberField());
+            if ((sequenceMapping != null) && sequenceMapping.isDirectToFieldMapping()) {
+                setSequenceMapping((AbstractDirectMapping)sequenceMapping);
+            }
+        }
+    }    
 }
