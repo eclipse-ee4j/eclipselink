@@ -636,19 +636,21 @@
             <!-- core XSD files -->
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
-            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*1_0.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${jpa.prototype.xsds}" includes="*2_0.xsd" prefix="eclipselink/xsds"/>
             <!-- dbws XSD files -->
             <zipfileset dir="./${eclipselink.dbws.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar.name}"/>
                 <include name="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-                <include name="${eclipselink.plugins}/${modelgen.processor.jar}"/>
             </zipfileset>
             <zipfileset dir="./${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename.jar}"/>
                 <include name="readme.html"/>
             </zipfileset>
+            <!-- modelgen processor jar -->
+            <zipfileset dir="${eclipselink.plugins}/" includes="${modelgen.processor.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence jar -->
             <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
