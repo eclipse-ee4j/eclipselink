@@ -85,6 +85,17 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldMODEL.setUnique(false);
         table.addField(fieldMODEL);
         
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR");
+        fieldDTYPE.setSize(60);
+        fieldDTYPE.setSubSize(0);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setIsIdentity(false);
+        fieldDTYPE.setShouldAllowNull(true);
+        fieldDTYPE.setUnique(false);
+        table.addField(fieldDTYPE);
+
         FieldDefinition fieldCHASSIS = new FieldDefinition();
         fieldCHASSIS.setName("CHASSIS_ID");
         fieldCHASSIS.setTypeName("NUMERIC");
