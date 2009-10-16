@@ -98,7 +98,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         loginConfig.setSequenceCounterField("SEQ_COUNT");
         loginConfig.setSequenceNameField("SEQ_NAME");
         loginConfig.setSequencePreallocationSize(new Integer(99));
-        loginConfig.setSequenceTable("SEQUENCE");
+        loginConfig.setSequenceTable("\"SEQUENCE\"");
         loginConfig.setStreamsForBinding(false);
         loginConfig.setStringBinding(false);
         loginConfig.setTableQualifier("table:");
@@ -260,7 +260,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             check("SequenceCounterField", loginConfig.getSequenceCounterField(), "SEQ_COUNT");
             check("SequenceNameField", loginConfig.getSequenceNameField(), "SEQ_NAME");
             check("SequencePreallocationSize", loginConfig.getSequencePreallocationSize(), new Integer(99));
-            check("SequenceTable", loginConfig.getSequenceTable(), "SEQUENCE");
+            check("SequenceTable", loginConfig.getSequenceTable(), "\"SEQUENCE\"");
             checkBoolean("StreamsForBinding", loginConfig.getStreamsForBinding(), false);
             checkBoolean("StringBinding", loginConfig.getStringBinding(), false);
             check("TableQualifier", loginConfig.getTableQualifier(), "table:");

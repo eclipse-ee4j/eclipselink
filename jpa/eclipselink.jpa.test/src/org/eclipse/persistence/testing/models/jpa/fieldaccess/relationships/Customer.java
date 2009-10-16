@@ -37,7 +37,7 @@ public class Customer implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_CUSTOMER_TABLE_GENERATOR")
     @TableGenerator(
-        name="FIELDACCESS_CUSTOMER_GENERATOR_TABLE", 
+        name="FIELDACCESS_CUSTOMER_TABLE_GENERATOR", 
         table="CMP3_FIELDACCESS_CUSTOMER_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

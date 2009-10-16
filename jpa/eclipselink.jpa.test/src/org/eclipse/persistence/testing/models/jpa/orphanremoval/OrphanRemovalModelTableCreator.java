@@ -225,7 +225,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
-        fieldSERIALNUMBER.setSize(19);
+        fieldSERIALNUMBER.setSize(18);
         fieldSERIALNUMBER.setSubSize(0);
         fieldSERIALNUMBER.setIsPrimaryKey(false);
         fieldSERIALNUMBER.setIsIdentity(false);

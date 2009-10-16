@@ -54,7 +54,7 @@ public class Customer implements java.io.Serializable{
     // not be processed. If it is processed, because the table name is so long
     // it will cause an error. No error means everyone is happy.
 	@TableGenerator(
-        name="XML_MERGE_CUSTOMER_GENERATOR_TABLE", 
+        name="XML_MERGE_CUSTOMER_TABLE_GENERATOR", 
         table="CMP3_XML_MERGE_CUSTOMER_SEQ_INCORRECT_LONG_NAME_WILL_CAUSE_ERROR", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

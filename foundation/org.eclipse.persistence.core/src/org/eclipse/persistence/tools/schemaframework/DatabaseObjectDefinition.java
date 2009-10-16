@@ -75,7 +75,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * INTERNAL:
-     * Execute the DDL to create the varray.
+     * Execute the DDL to create this object.
      */
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         session.executeNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
@@ -83,7 +83,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * INTERNAL:
-     * Execute the DDL to drop the varray.
+     * Execute the DDL to drop the object.
      */
     public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
         session.executeNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
@@ -91,10 +91,10 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * INTERNAL:
-     * Execute the DDL to drop the varray.  Either directly from the database
+     * Execute the DDL to drop the object.  Either directly from the database
      * of write out the statement to a file.
      */
-    public void dropObject(AbstractSession session, Writer schemaWriter) throws EclipseLinkException {
+    public void dropObject(AbstractSession session, Writer schemaWriter, boolean createSQLFiles) throws EclipseLinkException {
         if (schemaWriter == null) {
             this.dropFromDatabase(session);
         } else {
@@ -133,6 +133,15 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         return qualifier;
     }
 
+    
+    /**
+     * Execute any statements required after the creation of the object
+     * @param session
+     * @param createSchemaWriter
+     */
+    public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
+    }
+    
     /**
      * PUBLIC:
      * Set the name of the object.

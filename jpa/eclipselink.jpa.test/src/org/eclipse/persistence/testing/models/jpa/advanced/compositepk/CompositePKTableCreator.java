@@ -747,7 +747,8 @@ public class CompositePKTableCreator extends TableCreator {
      */
     public void replaceTables(DatabaseSession session) {
         try {
-            if (session.getPlatform().supportsUniqueKeyConstraints()){
+            if (session.getPlatform().supportsUniqueKeyConstraints()
+                    && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
                 session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_CUBICLE");
                 session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_DEPT");
             }

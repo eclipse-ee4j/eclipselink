@@ -60,7 +60,7 @@ public void setup()
 	SchemaManager schemaManager = new SchemaManager((DatabaseSession) getSession());
 	schemaManager.replaceObject(Address.tableDefinition());
 	schemaManager.createSequences();
-	getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update SEQUENCE set SEQ_COUNT = 900000000000 where SEQ_NAME = 'STRESS_SEQ'"));
+	getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update \"SEQUENCE\" set SEQ_COUNT = 900000000000 where SEQ_NAME = 'STRESS_SEQ'"));
 	for (int i = 0; i < 50; i++) {
 		Address address = new Address();
 		getDatabaseSession().insertObject(address);

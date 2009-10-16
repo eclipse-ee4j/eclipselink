@@ -185,7 +185,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field75 = new FieldDefinition();
         field75.setName("ALONGOBJECT");
         field75.setTypeName("NUMERIC");
-        field75.setSize(31);
+        field75.setSize(18);
         field75.setShouldAllowNull(true);
         field75.setIsPrimaryKey(false);
         field75.setUnique(false);
@@ -196,7 +196,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field76 = new FieldDefinition();
         field76.setName("ABIGINTEGEROBJECT");
         field76.setTypeName("NUMERIC");
-        field76.setSize(31);
+        field76.setSize(18);
         field76.setShouldAllowNull(true);
         field76.setIsPrimaryKey(false);
         field76.setUnique(false);
@@ -207,7 +207,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field77 = new FieldDefinition();
         field77.setName("AFLOATOBJECT");
         field77.setTypeName("NUMERIC");
-        field77.setSize(31);
+        field77.setSize(18);
         field77.setShouldAllowNull(true);
         field77.setIsPrimaryKey(false);
         field77.setUnique(false);
@@ -218,7 +218,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field78 = new FieldDefinition();
         field78.setName("ADOUBLEOBJECT");
         field78.setTypeName("NUMERIC");
-        field78.setSize(31);
+        field78.setSize(18);
         field78.setShouldAllowNull(true);
         field78.setIsPrimaryKey(false);
         field78.setUnique(false);
@@ -284,7 +284,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field84 = new FieldDefinition();
         field84.setName("ALONG");
         field84.setTypeName("NUMERIC");
-        field84.setSize(31);
+        field84.setSize(18);
         field84.setShouldAllowNull(true);
         field84.setIsPrimaryKey(false);
         field84.setUnique(false);
@@ -295,7 +295,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field85 = new FieldDefinition();
         field85.setName("AFLOAT");
         field85.setTypeName("NUMERIC");
-        field85.setSize(31);
+        field85.setSize(18);
         field85.setShouldAllowNull(true);
         field85.setIsPrimaryKey(false);
         field85.setUnique(false);
@@ -306,7 +306,7 @@ DROP TABLE CMP3_MM_COMPUTER
         FieldDefinition field86 = new FieldDefinition();
         field86.setName("ADOUBLE");
         field86.setTypeName("NUMERIC");
-        field86.setSize(31);
+        field86.setSize(18);
         field86.setShouldAllowNull(true);
         field86.setIsPrimaryKey(false);
         field86.setUnique(false);

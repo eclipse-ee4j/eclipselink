@@ -118,7 +118,8 @@ public class InheritanceSystem extends TestSystem {
          
             // Drop old constraints.
             try {
-                if (session.getPlatform().supportsUniqueKeyConstraints()){
+                if (session.getPlatform().supportsUniqueKeyConstraints()
+                        && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
                     session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
                     session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
                     session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");

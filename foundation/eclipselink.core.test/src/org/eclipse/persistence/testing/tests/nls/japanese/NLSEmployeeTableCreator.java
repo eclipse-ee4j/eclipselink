@@ -55,7 +55,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("\u3066\u304a\u3061\u306a\u304a\u305b\u3046\u304a");//("SEQUENCE");
+        tabledefinition.setName("\n\u3066\u304a\u3061\u306a\u304a\u305b\u3046\u304a\n");//("SEQUENCE");
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();

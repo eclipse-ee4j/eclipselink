@@ -71,7 +71,7 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(20);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);

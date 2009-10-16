@@ -11,7 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
  *     tware - added implementation of computeMaxRowsForSQL 
- *     Dies Koper - bug fix for printFieldUnique()
+ *     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
+ *     Dies Koper (Fujitsu) - added methods to create/drop indices
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -1044,6 +1045,15 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
+     * returns the maximum number of characters that can be used in an index
+     * name on this platform.
+     */
+    public int getMaxIndexNameSize() {
+        return getMaxFieldNameSize();
+    }  
+    
+    /**
+     * INTERNAL:
      * returns the maximum number of characters that can be used in a unique key
      * name on this platform.
      */
@@ -1442,6 +1452,24 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used for table creation. If a database platform does not support ALTER
+     * TABLE syntax to add/drop unique constraints (like Symfoware), overriding
+     * this method will allow the constraint to be specified in the CREATE TABLE
+     * statement.
+     * <p/>
+     * This only affects unique constraints specified using the UniqueConstraint
+     * annotation or equivalent method. Columns for which the 'unique' attribute
+     * is set to true will be declared 'UNIQUE' in the CREATE TABLE statement
+     * regardless of the return value of this method.
+     * 
+     * @return whether unique constraints should be declared as part of the
+     *         CREATE TABLE statement instead of in separate ALTER TABLE
+     *         ADD/DROP statements.
+     */
+    public boolean requiresUniqueConstraintCreationOnTableCreate() {
+        return false;
+    }
+    /**
      *  Used for jdbc drivers which do not support autocommit to explicitly rollback a transaction
      *  This method is a no-op for databases which implement autocommit as expected.
      */
@@ -1663,6 +1691,27 @@ public class DatabasePlatform extends DatasourcePlatform {
         return shouldCacheAllStatements;
     }
 
+    /**
+     * Used for table creation. Most databases create an index automatically
+     * when a primary key is created. Symfoware does not.
+     * 
+     * @return whether an index should be created explicitly for primary keys
+     */
+     public boolean shouldCreateIndicesForPrimaryKeys() {
+         return false;
+    }
+
+    /**
+     * Used for table creation. Most databases create an index automatically for
+     * columns with a unique constraint. Symfoware does not.
+     * 
+     * @return whether an index should be created explicitly for unique
+     *         constraints
+     */
+    public boolean shouldCreateIndicesOnUniqueKeys() {
+        return false;
+    }
+    
     /**
      * Can be used if the app expects upper case but the database is not return consistent case, i.e. different databases.
      */
@@ -2722,6 +2771,39 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldPrintAliasForUpdate() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Override this method with the platform's CREATE INDEX statement.
+     * 
+     * @param fullTableName
+     *            qualified name of the table the index is to be created on
+     * @param indexName
+     *            name of the index
+     * @param columnNames
+     *            one or more columns the index is created for
+     */
+    public String buildCreateIndex(String fullTableName, String indexName, String... columnNames) {
+        String columns = columnNames[0];
+        for (int i = 1; i < columnNames.length; i++) {
+            columns += ", " + columnNames[i];
+        }
+        return "CREATE INDEX " + indexName + " ON " + fullTableName + " (" + columns + ")";
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method with the platform's DROP INDEX statement.
+     * 
+     * @param fullTableName
+     *            qualified name of the table the index is to be removed from
+     * @param indexName
+     *            name of the index
+     */
+    public String buildDropIndex(String fullTableName, String indexName) {
+        return "DROP INDEX " + indexName;
+    }
+
     
     /**
      * INTERNAL:

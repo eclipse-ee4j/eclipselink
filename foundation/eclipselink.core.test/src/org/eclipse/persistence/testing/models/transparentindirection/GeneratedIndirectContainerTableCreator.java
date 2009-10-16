@@ -350,7 +350,7 @@ public class GeneratedIndirectContainerTableCreator extends org.eclipse.persiste
         org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("SEQUENCE");
+        tabledefinition.setName("\"SEQUENCE\"");
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Dies Koper - add support for creating indices on tables
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -187,11 +188,12 @@ public class SchemaManager {
                 databaseObjectDefinition.createOnDatabase(getSession());
             } else {
                 databaseObjectDefinition.createObject(getSession(), createSchemaWriter);
+                if (createSQLFiles){
+                    this.appendToDDLWriter(createSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
+                }
+                this.appendToDDLWriter(createSchemaWriter, "\n");
+                databaseObjectDefinition.postCreateObject(getSession(), createSchemaWriter, createSQLFiles);
             }
-            if (createSQLFiles){
-                this.appendToDDLWriter(createSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
-            }
-            this.appendToDDLWriter(createSchemaWriter, "\n");
         } finally {
             if (usesBatchWriting) {
                 getSession().getPlatform().setUsesBatchWriting(true);
@@ -431,7 +433,7 @@ public class SchemaManager {
 
     /**
      * Use the definition object to drop the schema entity from the database.
-     * This is used for droping tables, views, procedures ... etc ...
+     * This is used for dropping tables, views, procedures ... etc ...
      */
     public void dropObject(DatabaseObjectDefinition databaseObjectDefinition) throws EclipseLinkException {
         boolean usesBatchWriting = false;
@@ -443,10 +445,12 @@ public class SchemaManager {
 
         try {
             if (shouldWriteToDatabase()) {
+                // drop actual object
                 databaseObjectDefinition.dropFromDatabase(getSession());
             } else {
                 Writer dropSchemaWriter = getDropSchemaWriter();
-                databaseObjectDefinition.dropObject(getSession(), dropSchemaWriter);
+                // drop actual object
+                databaseObjectDefinition.dropObject(getSession(), dropSchemaWriter, createSQLFiles);
                 if (createSQLFiles){
                     this.appendToDDLWriter(dropSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
                 }
