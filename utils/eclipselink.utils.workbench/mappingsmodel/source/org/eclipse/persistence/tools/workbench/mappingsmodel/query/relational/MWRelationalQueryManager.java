@@ -62,15 +62,15 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 	}
 	
 	@Override
-	protected void initialize(Node parent) {
-		super.initialize(parent);
+	protected void initialize() {
+		super.initialize();
 		this.insertQuery = new MWInsertQuery(this);
 		this.deleteQuery = new MWDeleteQuery(this);
 		this.updateQuery = new MWUpdateQuery(this);
 		this.readObjectQuery = new MWCustomReadObjectQuery(this);
 		this.readAllQuery = new MWCustomReadAllQuery(this);
 	}
-
+	
 	@Override
 	protected void addChildrenTo(List children) {
 		super.addChildrenTo(children);
@@ -130,6 +130,12 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		readAllQueryMapping.setReferenceClass(MWCustomReadAllQuery.class);
 		readAllQueryMapping.setXPath("read-all-query");
 		descriptor.addMapping(readAllQueryMapping);
+
+		descriptor.addDirectMapping("insertSQLString", "legacyGetInsertSQLString", "legacySetInsertSQLString", "insert-string/text()");
+		descriptor.addDirectMapping("updateSQLString", "legacyGetUpdateSQLString", "legacySetUpdateSQLString", "update-string/text()");
+		descriptor.addDirectMapping("deleteSQLString", "legacyGetDeleteSQLString", "legacySetDeleteSQLString", "delete-string/text()");
+		descriptor.addDirectMapping("readObjectSQLString", "legacyGetReadObjectSQLString", "legacySetReadObjectSQLString", "read-object-string/text()");
+		descriptor.addDirectMapping("readAllSQLString", "legacyGetReadAllSQLString", "legacySetReadAllSQLString", "read-all-string/text()");
 
 		return descriptor;
 	}
@@ -268,32 +274,41 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 	//TopLink use only
 	private void setInsertQueryForTopLink(MWInsertQuery query) {
-		this.insertQuery = query;
+		if (query != null) {
+			this.insertQuery = query;
+		}
 	}
 
 	//TopLink use only
 	private void setDeleteQueryForTopLink(MWDeleteQuery query) {
-		this.deleteQuery = query;
+		if (query != null) {
+			this.deleteQuery = query;
+		}
 	}
 
 	//TopLink use only
 	private void setUpdateQueryForTopLink(MWUpdateQuery query) {
-		this.updateQuery = query;
+		if (query != null) {
+			this.updateQuery = query;
+		}
 	}
 
 	//TopLink use only
 	private void setReadObjectQueryForTopLink(MWCustomReadObjectQuery query) {
-		this.readObjectQuery = query;
+		if (query != null) {
+			this.readObjectQuery = query;
+		}
 	}
 
 	//TopLink use only
 	private void setReadAllQueryForTopLink(MWCustomReadAllQuery query) {
-		this.readAllQuery = query;
+		if (query != null) {
+			this.readAllQuery = query;
+		}
 	}
 	
 	@Override
 	protected void legacy60PostBuild(DescriptorEvent event) {
-		// TODO Auto-generated method stub
 		super.legacy60PostBuild(event);
 
 		// Checks null since in cases where sql was specified,
@@ -319,32 +334,27 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 	//for legacy TopLink use only
 	private String legacyGetInsertSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetUpdateSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetDeleteSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetReadObjectSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
 	private String legacyGetReadAllSQLString() {
-		//this should never be called
-		throw new IllegalStateException();
+		return null;
 	}
 
 	//for legacy TopLink use only
