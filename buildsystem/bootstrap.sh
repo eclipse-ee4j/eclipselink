@@ -524,7 +524,7 @@ then
         MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
-        ./${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        .${BRANCH_PATH}/buildsystem/buildFailureList.sh
     fi
 
     ## Build Body text of email

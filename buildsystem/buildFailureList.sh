@@ -37,7 +37,7 @@ cd ${BaseDownloadNFSDir}/recent-failure-logs
 rmfiles=`ls *.log *.zip | grep -v ${curdate} | grep -v ${prevdate}`
 if [ ! "${rmfiles}" = "" ] ; then
     echo "Removing files older than ${cutoffdate} from build-failure site..."
-    rm ${files}
+    rm ${rmfiles}
 fi
 
 cd ${buildir}
