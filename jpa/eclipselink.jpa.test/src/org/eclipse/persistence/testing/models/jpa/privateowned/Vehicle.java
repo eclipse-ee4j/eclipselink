@@ -18,6 +18,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 
 @Entity(name="PO_Vehicle")
 @Table(name="CMP3_PO_VEHICLE")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorValue("V")
 public class Vehicle {
     
     @Id

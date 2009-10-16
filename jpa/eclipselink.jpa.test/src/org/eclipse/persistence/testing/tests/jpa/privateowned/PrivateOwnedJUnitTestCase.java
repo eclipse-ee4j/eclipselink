@@ -39,6 +39,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         
         // JPA testing:
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemoval"));
+        suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemovalWithInheritance"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemovalWithCascade"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemovalWithCascadeFromPO"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedRemovalWithCascade"));
@@ -608,6 +609,84 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
     }
     
+    /**
+     * The simplest test for private owned object removal (1:M)
+     */
+    public void testOneToManyPrivateOwnedRemovalWithInheritance() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        SpecificVehicle vehicle = new SpecificVehicle("GT-X");
+        Chassis chassis = new Chassis(1);
+        vehicle.setChassis(chassis);
+        
+        Wheel wheel1 = new Wheel(1l);
+        Wheel wheel2 = new Wheel(2l);
+        Wheel wheel3 = new Wheel(3l);
+        Wheel wheel4 = new Wheel(4l);
+        Wheel wheel5 = new Wheel(5l);
+        
+        chassis.addWheel(wheel1);
+        chassis.addWheel(wheel2);
+        chassis.addWheel(wheel3);
+        chassis.addWheel(wheel4);
+        chassis.addWheel(wheel5);
+        
+        em.persist(vehicle);
+        
+        chassis.removeWheel(wheel5); // never a good idea to have a 5th wheel
+        
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // Verification
+        
+        clearCache();        
+        em = createEntityManager();
+        beginTransaction(em);
+        
+        SpecificVehicle vehicleRead = em.find(SpecificVehicle.class, vehicle.getId());
+        assertNotNull("Vehicle should be inserted", vehicleRead);
+        assertNotNull(vehicleRead.getChassis());
+        
+        Chassis chassisRead = em.find(Chassis.class, chassis.getId());
+        assertNotNull("Chassis should be inserted", chassisRead);
+        assertSame("Vehicle should reference Chassis", chassisRead, vehicleRead.getChassis());
+        assertNotNull(chassisRead.getWheels());
+        assertEquals(4, chassisRead.getWheels().size());
+        
+        Wheel wheel1Read = em.find(Wheel.class, wheel1.getId());
+        Wheel wheel2Read = em.find(Wheel.class, wheel2.getId());
+        Wheel wheel3Read = em.find(Wheel.class, wheel3.getId());
+        Wheel wheel4Read = em.find(Wheel.class, wheel4.getId());
+        
+        assertNotNull(wheel1Read);
+        assertNotNull(wheel2Read);
+        assertNotNull(wheel3Read);
+        assertNotNull(wheel4Read);
+        
+        assertTrue(chassisRead.getWheels().contains(wheel1Read));
+        assertTrue(chassisRead.getWheels().contains(wheel2Read));
+        assertTrue(chassisRead.getWheels().contains(wheel3Read));
+        assertTrue(chassisRead.getWheels().contains(wheel4Read));
+
+        Wheel wheel5Read = em.find(Wheel.class, wheel5.getId());
+        assertNull("Wheel5 should not be inserted", wheel5Read);
+        assertFalse("Chassis should not reference Wheel5", chassisRead.getWheels().contains(wheel5Read));
+        
+        // Cleanup
+        em.remove(vehicleRead);
+        em.remove(chassisRead);
+        em.remove(wheel1Read);
+        em.remove(wheel2Read);
+        em.remove(wheel3Read);
+        em.remove(wheel4Read);
+        
+        commitTransaction(em);
+        
+        closeEntityManager(em);
+    }
+
     public void testOneToOnePrivateOwnedRemovalWithCascadeUsingClassic() {
         ServerSession serverSession = getServerSession();
         UnitOfWork uow = serverSession.acquireUnitOfWork();
