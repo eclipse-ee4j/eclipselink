@@ -37,7 +37,7 @@ cd ${BaseDownloadNFSDir}/recent-failure-logs
 rmfiles=`ls *.log *.zip | grep -v ${curdate} | grep -v ${prevdate}`
 if [ ! "${rmfiles}" = "" ] ; then
     echo "Removing files older than ${cutoffdate} from build-failure site..."
-    rm ${files}
+    rm ${rmfiles}
 fi
 
 cd ${buildir}
@@ -87,7 +87,7 @@ for file in `ls | grep log | sort -t_ -k3 -r` ; do
 
     # list all files in dir, reverse sort to put newer on top
     # and look for the first matching filename to generate html link
-    if [ "${file}" != "" ] ; then
+    if [ ! "${file}" = "" ] ; then
         buildtime=`echo ${file} | cut -d'.' -f1 | cut -d_ -f3`
         zipfile=`ls | grep zip | grep ${buildtime}`
         echo "            <td align=\"center\"> ${file} </td>"                                               >> $tmp/index.xml
@@ -96,7 +96,7 @@ for file in `ls | grep log | sort -t_ -k3 -r` ; do
     else
         echo "            <td colspan=\"3\" align=\"center\"> Ant log not available </td>"                   >> $tmp/index.xml
     fi
-    if [ "${zipfile}" != "" ] ; then
+    if [ ! "${zipfile}" = "" ] ; then
         echo "            <td align=\"center\"> ${zipfile} </td>"                                               >> $tmp/index.xml
         echo "            <td align=\"center\"> <a href=\"${FailDownloadURL}/${zipfile}\"> Download </a> </td>" >> $tmp/index.xml
     else
