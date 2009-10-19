@@ -828,7 +828,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (isPrivateOwned) getDescriptor().addMappingsPostCalculateChanges(this);
+        if (isPrivateOwned){
+            getDescriptor().addMappingsPostCalculateChanges(this);
+            if (getDescriptor().hasInheritance()){
+                for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    descriptor.addMappingsPostCalculateChanges(this);
+                }
+            }
+        }
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
         this.indirectionPolicy.initialize();
@@ -1088,8 +1095,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (this.descriptor != null && ! this.isMapKeyMapping()){ // initialized
             if (isPrivateOwned && !this.isPrivateOwned){
                 this.descriptor.addMappingsPostCalculateChanges(this);
+                if (getDescriptor().hasInheritance()){
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                        descriptor.addMappingsPostCalculateChanges(this);
+                    }
+                }
             }else if (!isPrivateOwned && this.isPrivateOwned){
                 this.descriptor.getMappingsPostCalculateChanges().remove(this);
+                if (getDescriptor().hasInheritance()){
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                        descriptor.getMappingsPostCalculateChanges().remove(this);
+                    }
+                }
             }
         }
         this.isPrivateOwned = isPrivateOwned;

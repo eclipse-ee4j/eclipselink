@@ -1219,6 +1219,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         super.initialize(session);
         if (getDescriptor() != null){ // descriptor will only be null in special case where the mapping has not been added to a descriptor prior to initialization.
             getDescriptor().addMappingsPostCalculateChanges(this); // always equivalent to Private Owned
+            if (getDescriptor().hasInheritance()){
+                for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    descriptor.addMappingsPostCalculateChanges(this);
+                }
+            }
         }
         if (!getReferenceDescriptor().isAggregateCollectionDescriptor()) {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(getReferenceClass().getName(), this));

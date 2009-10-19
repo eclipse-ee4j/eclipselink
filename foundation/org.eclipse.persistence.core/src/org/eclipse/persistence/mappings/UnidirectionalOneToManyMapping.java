@@ -13,8 +13,10 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -170,9 +172,19 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         if(getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
             if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
                 descriptor.addMappingsPostCalculateChanges(this);
+                if (getDescriptor().hasInheritance()){
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                        descriptor.addMappingsPostCalculateChanges(this);
+                    }
+                }
             }
             if(shouldIncrementTargetLockValueOnDeleteSource && !isPrivateOwned) {
                 descriptor.addMappingsPostCalculateChangesOnDeleted(this);
+                if (getDescriptor().hasInheritance()){
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                        descriptor.addMappingsPostCalculateChangesOnDeleted(this);
+                    }
+                }
             }
         }
     }
