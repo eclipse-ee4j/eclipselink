@@ -33,7 +33,7 @@ public class JEEPlatform implements ServerPlatform {
     /** The entity manager factory for the test is injected and passed to the test server platform. */
     public static EntityManagerFactory entityManagerFactory;
 
-    /** The variable for getting entity manager by jndi lookup, set it to true in test.properties if you want jndi lookup */
+    /** The variable for getting entity manager by jndi lookup, set the system property "ejb.lookup" to be true if you want jndi lookup */
     public static final String EJB_LOOKUP = "ejb.lookup";
 
     /**
