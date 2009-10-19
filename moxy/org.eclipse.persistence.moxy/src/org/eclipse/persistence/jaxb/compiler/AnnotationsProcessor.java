@@ -841,9 +841,6 @@ public class AnnotationsProcessor {
      */
     private void processXmlID(Property property, TypeInfo info) {
         if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
-            if (!areEquals(property.getType(), String.class)) {
-                throw JAXBException.invalidId(property.getPropertyName());
-            }
             if (info.isIDSet()) {
                 throw JAXBException.idAlreadySet(property.getPropertyName(), info.getIDProperty().getPropertyName(), info.getDescriptor().getAlias());
             }
