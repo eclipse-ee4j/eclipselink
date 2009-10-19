@@ -29,7 +29,9 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
@@ -104,6 +106,12 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSome"));
+  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereDisjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunctionAndDisjunction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testVerySimpleJoin"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
@@ -501,6 +509,76 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testWhereDisjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.disjunction());
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testWhereConjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.conjunction());
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testJoinDistinct(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+        Root<Employee> customer = cquery.from(Employee.class);
+        Fetch<Employee, Project> o = customer.fetch("phoneNumbers", JoinType.LEFT);
+        cquery.where(customer.get("address").get("city").in("Ottawa", "Halifax"));
+        cquery.select(customer).distinct(true);
+        TypedQuery<Employee> tquery = em.createQuery(cquery);
+        List<Employee> result = tquery.getResultList();
+        assertFalse ("No results found", result.isEmpty());
+        Long count = (Long)em.createQuery("Select count(e) from Employee e where e.address.city in ('Ottawa', 'Halifax')").getSingleResult();
+        assertTrue("Incorrect number of results returned", result.size() == count);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+
+    }
+    
+    public void testWhereConjunctionAndDisjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.and(qb.disjunction(), qb.conjunction()));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
     public void testSimpleWhereObject(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -556,6 +634,64 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
         
+    }
+
+    
+    public void testSize(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            em.createQuery("Select size(e.responsibilities) from Employee e").getResultList();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery = qbuilder.createQuery(Object[].class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            cquery.select(qbuilder.array(customer.get("id"), qbuilder.size(customer.<Collection<String>>get("responsibilities"))));
+            TypedQuery<Object[]> tquery = em.createQuery(cquery);
+            List<Object[]> result = tquery.getResultList();
+            for(Object[] value : result){
+                assertTrue("Incorrect responsibilities count", em.find(Employee.class, value[0]).getResponsibilities().size() == ((Integer)value[1]).intValue());
+            }
+        // No assert as version is not actually a mapped field in dealer.
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testSome(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            em.createQuery("SELECT e from Employee e, IN(e.phoneNumbers) p where p.type = some(select p2.type from PhoneNumber p2 where p2.areaCode = '613')").getResultList();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+           // Get Root Customer
+           Root<Employee> customer = cquery.from(Employee.class);
+
+
+           // Join Customer-Order
+           Join<Employee, PhoneNumber> orders= customer.join("phoneNumbers");
+
+
+          // create Subquery instance
+          Subquery<String> sq = cquery.subquery(String.class);
+
+          // Create Roots
+          Root<PhoneNumber> order = sq.from(PhoneNumber.class);
+
+           // Create SubQuery
+           sq.select(order.<String>get("type")).              
+      where(qbuilder.equal(order.get("areaCode"), "613"));
+
+        // Create Main Query with SubQuery         
+      cquery.where(qbuilder.equal(orders.<String>get("type"), qbuilder.some(sq)));
+      cquery.distinct(true);
+      em.createQuery(cquery).getResultList();
+
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
     public void testSubQuery(){

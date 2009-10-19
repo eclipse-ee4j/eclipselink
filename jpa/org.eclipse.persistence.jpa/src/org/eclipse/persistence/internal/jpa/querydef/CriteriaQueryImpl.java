@@ -712,9 +712,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
         if (this.distinct) {
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
+            query.setShouldFilterDuplicates(true);
         } else {
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
-
         }
         if (this.orderBy != null && !this.orderBy.isEmpty()) {
             for (Order order : this.orderBy) {
