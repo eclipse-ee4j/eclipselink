@@ -448,18 +448,17 @@ public class JavaType {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link JAXBElement }{@code <}{@link XmlElementWrapper }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
-         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
+         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * 
          * 
          */

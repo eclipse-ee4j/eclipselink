@@ -2,10 +2,10 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="my-overridden-digits" nillable="true">
+         <xsd:element name="my-digits" nillable="true">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="a-digit" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
+                  <xsd:element name="a-digit" type="xsd:int" maxOccurs="unbounded"/>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>

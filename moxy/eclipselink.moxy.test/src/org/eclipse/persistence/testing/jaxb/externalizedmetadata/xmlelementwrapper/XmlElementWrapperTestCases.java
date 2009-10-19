@@ -13,21 +13,12 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 
-import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -73,10 +64,10 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
     public void testXmlElementWrapperNoOverride() {
         outputResolver = generateSchema(new Class[] { Employee.class }, 1);
         // validate schema
-        String controlSchema = PATH + "schema_no_overrides.xsd";
+        String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
         
-        String src = PATH + "employee-no-overrides.xml";
+        String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }

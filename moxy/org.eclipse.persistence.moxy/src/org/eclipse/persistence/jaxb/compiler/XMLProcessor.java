@@ -264,8 +264,6 @@ public class XMLProcessor {
             return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, nsInfo);
         } else if (javaAttribute instanceof XmlElement) {
             return processXmlElement((XmlElement) javaAttribute, oldProperty, nsInfo);
-        } else if (javaAttribute instanceof XmlElementWrapper) {
-            return processXmlElementWrapper((XmlElementWrapper) javaAttribute, oldProperty, nsInfo);
         } else if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlElementRef) {
@@ -379,8 +377,8 @@ public class XMLProcessor {
 
         // set type
         if (xmlElement.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
-            // if xmlElement has no type, and the property type was set via @XmlElement, reset it to
-            // the original value
+            // if xmlElement has no type, and the property type was set via 
+            // @XmlElement, reset it to the original value
             if (oldProperty.isXmlElementType()) {
                 oldProperty.setType(oldProperty.getOriginalType());
             }
@@ -388,22 +386,20 @@ public class XMLProcessor {
             oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
         }
 
+        // handle XmlElementWrapper
+        if (xmlElement.getXmlElementWrapper() != null) {
+            oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
+        }
+
+        // for primitives we always set required, a.k.a. minOccurs="1"
+        if (!oldProperty.isRequired()) {
+            JavaClass ptype = oldProperty.getActualType();
+            oldProperty.setIsRequired(ptype.isPrimitive() || ptype.isArray() && ptype.getComponentType().isPrimitive());
+        }
+        
         return oldProperty;
     }
 
-    /**
-     * Process an XmlElementWrapper.  The wrapper instance is simply set on the property.  It will be used
-     * during schema generation.
-     * 
-     * @param xmlElementWrapper
-     * @param oldProperty
-     * @param nsInfo
-     * @return
-     */
-    private Property processXmlElementWrapper(XmlElementWrapper xmlElementWrapper, Property oldProperty, NamespaceInfo nsInfo) {
-        oldProperty.setXmlElementWrapper(xmlElementWrapper);
-        return oldProperty;
-    }
 
     private Property processXmlElements(XmlElements xmlElements, Property oldProperty) {
         return oldProperty;

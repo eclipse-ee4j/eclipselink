@@ -4,7 +4,9 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.Employee">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-element-wrapper java-attribute="digits" name="my-overridden-digits" nillable="true" required="true"/>
+                <xml-element java-attribute="digits">
+                    <xml-element-wrapper name="my-digits" nillable="true" required="true"/>
+                </xml-element>
             </java-attributes>
 		</java-type>
 	</java-types>

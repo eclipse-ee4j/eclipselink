@@ -12,15 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="employee")
 public class Employee {
-    @XmlElementWrapper(name="my-digits", nillable=false, required=false)
+    @XmlElementWrapper(name="my-digits", nillable=true, required=true)
     public int[] digits;
 
     /**

@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="my-overridden-digits" nillable="true">
+         <xsd:element name="my-digits" nillable="true">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element name="digits" type="xsd:int" maxOccurs="unbounded"/>
