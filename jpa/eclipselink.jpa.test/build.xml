@@ -426,7 +426,15 @@
             <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="**spring.xml"/>
         </copy>
     </target>
-    <target name="package-annotation" depends="">
+
+    <!-- Copy OSGi specified persistence.xml to default build location-->
+    <target name="prepare-osgi-xmls" depends="init, config-trunk, config-flat" if="is.osgi">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}/META-INF" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/${MODEL_NAME}/osgi" includes="persistence.xml"/>
+        </copy>
+    </target>
+	
+	<target name="package-annotation" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
         </copy>
@@ -446,7 +454,10 @@
         <antcall target="prepare-spring-xmls" inheritRefs="true">
             <param name="MODEL_NAME" value="${eclipselink.annotation.model}"/>
         </antcall>
-        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar">
+        <antcall target="prepare-osgi-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.annotation.model}"/>
+        </antcall>
+		<jar jarfile="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}">
             </fileset>
         </jar>
@@ -556,7 +567,10 @@
         <antcall target="prepare-spring-xmls" inheritRefs="true">
             <param name="MODEL_NAME" value="${eclipselink.advanced.field.access.model}"/>
         </antcall>
-        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar">
+        <antcall target="prepare-osgi-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.advanced.field.access.model}"/>
+        </antcall>
+		<jar jarfile="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
             </fileset>
         </jar>
