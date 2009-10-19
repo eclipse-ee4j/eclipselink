@@ -106,6 +106,7 @@
             <!--sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/-->
             <!--sysproperty key="http.proxyPort" value="80"/-->
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
+            <sysproperty key="ejb.lookup" value="${ejb.lookup}"/>
         </wlserver>
     </target>
 

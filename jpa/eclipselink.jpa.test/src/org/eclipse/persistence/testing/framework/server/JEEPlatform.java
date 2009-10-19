@@ -33,6 +33,9 @@ public class JEEPlatform implements ServerPlatform {
     /** The entity manager factory for the test is injected and passed to the test server platform. */
     public static EntityManagerFactory entityManagerFactory;
 
+    /** The variable for getting entity manager by jndi lookup, set it to true in test.properties if you want jndi lookup */
+    public static final String EJB_LOOKUP = "ejb.lookup";
+
     /**
      * Nothing required in JEE.
      */
@@ -152,14 +155,16 @@ public class JEEPlatform implements ServerPlatform {
      * Return the managed EntityManager for the persistence unit.
      */
     public EntityManager getEntityManager(String persistenceUnit) {
-        if (entityManager != null) {
+        String property = System.getProperty(EJB_LOOKUP);
+        if (property == null || !property.toUpperCase().equals("TRUE")){
             return entityManager;
-        }
-        String contextName = "java:comp/env/persistence/" + persistenceUnit + "/entity-manager";
-        try {
-            return (EntityManager)new InitialContext().lookup(contextName);
-        } catch (NamingException exception) {
-            throw new RuntimeException(exception);
+        } else {
+            String contextName = "java:comp/env/persistence/" + persistenceUnit + "/entity-manager";
+            try {
+                return (EntityManager)new InitialContext().lookup(contextName);
+            } catch (NamingException exception) {
+                throw new RuntimeException(exception);
+            }
         }
     }
     
@@ -167,14 +172,16 @@ public class JEEPlatform implements ServerPlatform {
      * Return the managed EntityManagerFactory for the persistence unit.
      */
     public EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
-        if (entityManagerFactory != null) {
+        String property = System.getProperty(EJB_LOOKUP);
+        if (property == null || !property.toUpperCase().equals("TRUE")){
             return entityManagerFactory;
-        }
-        String contextName = "java:comp/env/persistence/" + persistenceUnit + "/factory";
-        try {
-            return (EntityManagerFactory)new InitialContext().lookup(contextName);
-        } catch (NamingException exception) {
-            throw new RuntimeException(exception);
+        } else{
+            String contextName = "java:comp/env/persistence/" + persistenceUnit + "/factory";
+            try {
+                return (EntityManagerFactory)new InitialContext().lookup(contextName);
+            } catch (NamingException exception) {
+                throw new RuntimeException(exception);
+            }
         }
     }
     
