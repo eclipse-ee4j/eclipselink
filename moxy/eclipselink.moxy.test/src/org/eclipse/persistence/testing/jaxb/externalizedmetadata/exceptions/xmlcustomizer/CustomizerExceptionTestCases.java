@@ -12,18 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.xmlcustomizer;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
@@ -51,10 +41,8 @@ public class CustomizerExceptionTestCases extends ExternalizedMetadataTestCases 
                 Employee.class,
         };
         
-        
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+            JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {

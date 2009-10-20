@@ -17,10 +17,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -48,9 +46,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.Employee;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerNoDefaultRootTestProject;
 import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
@@ -145,7 +141,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param expectedSchemaCount
      */
     public MySchemaOutputResolver generateSchema(String contextPath, Map<String, Map<String, Source>> properties, int expectedSchemaCount) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(contextPath, outputResolver, properties);
@@ -163,9 +158,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file found on the path.  The eclipselink-oxm.xml will be stored in the property map 
      * using the contextPath as a key (maps package name to xml metadata file).
      * 
-     * @param classes
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
-     * @param metadataFileStream eclipselink-oxm.xml file as a stream
+     * @param iStream eclipselink-oxm.xml file as a stream
      * @param expectedSchemaCount
      */
     public MySchemaOutputResolver generateSchema(String contextPath, InputStream iStream, int expectedSchemaCount) {
@@ -181,7 +175,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file found on the path.  The eclipselink-oxm.xml will be stored in the property map 
      * using the contextPath as a key (maps package name to xml metadata file).
      * 
-     * @param classes
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param path eclipselink-oxm.xml file will be searched for on this path
      * @param expectedSchemaCount
@@ -198,6 +191,33 @@ public class ExternalizedMetadataTestCases extends TestCase {
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
+    }
+
+    /**
+     * Generate the schema(s) for a given set of classes, and apply the eclipselink-oxm.xml 
+     * file found on the path.  The eclipselink-oxm.xml will be stored in the property map 
+     * using the contextPath as a key (maps package name to xml metadata file).
+     * 
+     * @param classes
+     * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
+     * @param iStream eclipselink-oxm.xml file as a stream
+     * @param expectedSchemaCount
+     */
+    public MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, InputStream iStream, int expectedSchemaCount) {
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(contextPath, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        try {
+            generateSchema(classes, properties, outputResolver, loader); 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
+        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
+        return outputResolver;
     }
 
     /**

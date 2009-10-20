@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel;
 
-import java.util.Calendar;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="myClass")

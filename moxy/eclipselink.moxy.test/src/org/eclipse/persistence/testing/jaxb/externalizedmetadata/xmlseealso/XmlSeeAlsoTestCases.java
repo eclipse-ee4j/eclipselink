@@ -45,7 +45,6 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             shouldGenerateSchema = false;
         }
-        String messages = "";
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -61,7 +60,6 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
             outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             shouldGenerateSchema = false;
         }
-        String messages = "";
         String src = PATH + "mysimpleclass.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -78,7 +76,6 @@ public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
             shouldGenerateSchema = false;
         }
         String src = PATH + "myotherclass.xml";
-        String messages = "";
         String result = validateAgainstSchema(src, "http://www.example.com/xsd", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }

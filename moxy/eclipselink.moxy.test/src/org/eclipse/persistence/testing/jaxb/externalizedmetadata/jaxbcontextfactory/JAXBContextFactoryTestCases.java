@@ -167,7 +167,6 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * 
      */
     public void testBindingsFileWithNoTypes() {
-        String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String metadataFile = PATH + "eclipselink-oxm-no-types.xml";
         InputStream iStream = classLoader.getResourceAsStream(metadataFile);

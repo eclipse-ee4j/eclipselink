@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.nooverride;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="employee-type")
@@ -29,8 +27,5 @@ public class Employee {
     public boolean getIsSet() {
         return true;
     }
-    
-    private String getIdAsString() {
-        return "id";
-    }
+
 }

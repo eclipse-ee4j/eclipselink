@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar;
 
-import java.util.List;
-
 public class Manager extends Employee {
     public int id;
 }

@@ -30,8 +30,5 @@ public class Employee {
     public boolean getIsSet() {
         return true;
     }
-    
-    private String getIdAsString() {
-        return "id";
-    }
+
 }

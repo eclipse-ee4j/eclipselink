@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance;
 
-import javax.xml.bind.annotation.XmlID;
-
 public class Employee extends Person {
     public int employeeId;
 }

@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
@@ -32,8 +30,6 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
  *
  */
 public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/exceptions/contextfactory/";
     
@@ -58,9 +54,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -79,9 +74,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<Class, Source>> properties = new HashMap<String, Map<Class, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -101,9 +95,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<String, Class>> properties = new HashMap<String, Map<String, Class>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -122,9 +115,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -143,9 +135,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         ArrayList<Integer> ints = new ArrayList<Integer>();
         ints.add(new Integer(666));
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, ints);
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -170,9 +161,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -197,9 +187,8 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        JAXBContext jaxbContext;
         try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {

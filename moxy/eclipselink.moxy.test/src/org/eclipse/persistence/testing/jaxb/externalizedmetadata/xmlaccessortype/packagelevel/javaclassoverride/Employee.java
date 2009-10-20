@@ -31,7 +31,4 @@ public class Employee {
         return true;
     }
     
-    private String getIdAsString() {
-        return "id";
-    }
 }

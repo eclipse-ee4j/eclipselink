@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 public class Address {
     public String state;
     public String street;
