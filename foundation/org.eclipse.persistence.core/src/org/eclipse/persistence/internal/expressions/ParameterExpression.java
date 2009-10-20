@@ -168,6 +168,15 @@ public class ParameterExpression extends BaseExpression {
     public Object getType() { return type; }
 
     /**
+     * The inferred type of this parameter.
+     * Please note that the type might not be always initialized to correct value.
+     * It might be null if not initialized correctly
+     */
+    public void setType(Object type) { 
+        this.type = type; 
+    }
+
+    /**
      * Extract the value from the row.
      * This may require recursion if it is a nested parameter.
      */

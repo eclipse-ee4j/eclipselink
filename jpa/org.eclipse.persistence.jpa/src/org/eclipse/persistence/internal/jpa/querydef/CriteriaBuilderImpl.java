@@ -1730,7 +1730,14 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
+        org.eclipse.persistence.expressions.Expression xNode = ((InternalSelection)x).getCurrentNode();
+        org.eclipse.persistence.expressions.Expression yNode = ((InternalSelection)y).getCurrentNode();
+
+        if (xNode.isParameterExpression() && yNode.isParameterExpression()) {
+            //some database require the type when concatting two parameters.
+            ((org.eclipse.persistence.internal.expressions.ParameterExpression)xNode).setType(ClassConstants.STRING);
+        }
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, xNode.concat(yNode), list, "concat");
     }
 
     /**
