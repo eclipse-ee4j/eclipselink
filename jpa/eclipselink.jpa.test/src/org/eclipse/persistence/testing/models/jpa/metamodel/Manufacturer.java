@@ -33,6 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+// retain name attribute for testing
 @Entity(name="ManufacturerMetamodel")
 @Table(name="CMP3_MM_MANUF")
 public class Manufacturer extends Corporation implements java.io.Serializable{

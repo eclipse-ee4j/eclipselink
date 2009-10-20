@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;
+import java.lang.reflect.Member;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
@@ -26,6 +27,8 @@ import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAcc
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
  * <p>
@@ -88,14 +91,29 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      * 
      * @return corresponding java.lang.reflect.Member
      */
-    public java.lang.reflect.Member getJavaMember() {
+    public Member getJavaMember() {
         AttributeAccessor accessor = getMapping().getAttributeAccessor();
 
         if (accessor.isMethodAttributeAccessor()) {
             return ((MethodAttributeAccessor) accessor).getGetMethod();
         }
 
-        return ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
+        Member aMember = ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
+        // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+        // MappedSuperclasses need special handling to get their type from an inheriting subclass
+        // Note: This code does not handle attribute overrides on any entity subclass tree - use descriptor initialization instead
+        if(null == aMember) {
+            if(this.getManagedTypeImpl().isMappedSuperclass()) {
+                // get inheriting subtype member (without handling @override annotations)                
+                AttributeImpl inheritingTypeMember = ((MappedSuperclassTypeImpl)this.getManagedTypeImpl())
+                    .getMemberFromInheritingType(mapping.getAttributeName());
+                // Verify we have an attributeAccessor
+                aMember = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping()
+                        .getAttributeAccessor()).getAttributeField();
+            }
+        }
+        return aMember;
     }
 
     /**
@@ -161,23 +179,24 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
         if (getMapping().isAggregateObjectMapping()) {
             return PersistentAttributeType.EMBEDDED;
         }
-        if (getMapping().isOneToOneMapping()) {
-            return PersistentAttributeType.ONE_TO_ONE;
-        }
         if (getMapping().isOneToManyMapping()) {
             return PersistentAttributeType.ONE_TO_MANY;
         }
+        if (getMapping().isOneToOneMapping()) {
+            return PersistentAttributeType.ONE_TO_ONE;
+        }
+        // Internally we treat m:1 as 1:1 - place this before the 1:1 check
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_OneToMany_the_same_as_OneToOne
+        if (getMapping().isRelationalMapping() && 
+                (getMapping() instanceof OneToOneMapping || getMapping() instanceof VariableOneToOneMapping)) {
+            return PersistentAttributeType.MANY_TO_ONE;
+        }
+        // Test coverage required
         if (getMapping().isManyToManyMapping()) {
             return PersistentAttributeType.MANY_TO_MANY;
         }
-        if (getMapping().isRelationalMapping()) {
-            return PersistentAttributeType.MANY_TO_ONE;
-        }
-        if (getMapping().isRelationalMapping()) {
-            return PersistentAttributeType.ELEMENT_COLLECTION;
-        }
-
-        throw new IllegalStateException("Unknown mapping type: " + getMapping());
+        // Test coverage required
+        return PersistentAttributeType.ELEMENT_COLLECTION;
     }
     
     /**
@@ -186,6 +205,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *          corresponds to an association
      */
     public boolean isAssociation() {
+        // Only a ReferenceMapping that extends ObjectReferenceMapping returns true
         return getMapping().isReferenceMapping();
     }
 

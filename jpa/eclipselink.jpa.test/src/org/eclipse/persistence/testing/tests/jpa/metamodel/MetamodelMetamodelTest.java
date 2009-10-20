@@ -17,6 +17,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,8 +58,8 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ClassTypeExpression;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EmbeddableTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
@@ -135,21 +137,76 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
         suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_BASIC_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_MANY_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_MANY_Method"));
+        // TODO: currently our MANY_TO_ONE is treated as a ONE_TO_ONE - we need an alternate way of getting m:1 state        
+        //suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ELEMENT_COLLECTION_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getName_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getDeclaringType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaType_BasicType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaType_ManagedType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_BasicType_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_BasicType_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_ManagedType_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isAssociation_on_Plural_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isAssociation_on_Singular_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_false_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_true_Method"));
         suite.addTest(new MetamodelMetamodelTest("testBasicType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testBindable_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableJavaType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testEmbeddableType_Interface"));
         suite.addTest(new MetamodelMetamodelTest("testEntityType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getIdType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getIdClassAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_hasVersionAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_hasSingleIdAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getSupertype_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getDeclaredVersion_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getVersion_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getDeclaredId_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getId_Method"));        
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_handles_possible_null_cmppolicy"));
         suite.addTest(new MetamodelMetamodelTest("testListAttribute_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getCollection_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredCollection_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSet_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSet_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getList_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredList_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getMap_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredMap_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getPluralAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getCollection_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredCollection_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSet_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSet_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getList_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredList_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getMap_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredMap_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_variantCases"));        
-        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_Interface_getKeyJavaType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_Interface_getKeyType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));
         suite.addTest(new MetamodelMetamodelTest("testMappedSuperclassType_Interface"));
@@ -209,9 +266,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             emf = initialize();
             em = emf.createEntityManager();
             // Unset the metamodel - for repeated runs through this test
-            if(!isOnServer()) { 
-                ((EntityManagerFactoryImpl)emf).setMetamodel(null);
-            }
+            // 20091016 - turn this off for production - as it is a performance hit - reenable if you wish to debug metamodel pre-processing
+//            if(!isOnServer()) { 
+//                ((EntityManagerFactoryImpl)emf).setMetamodel(null);
+//            }
             metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
         } catch (Exception e) {
@@ -461,8 +519,130 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
-    
-    public void testAttribute_Interface() {
+
+    public void testAttribute_Interface_getPersistentAttributeType_BASIC_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityManufacturer_.getAttribute("anInt");                
+                assertNotNull(anAttribute);
+                assertEquals(int.class, anAttribute.getJavaType());
+                assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityComputer_.getAttribute("location");                
+                assertNotNull(anAttribute);
+                assertEquals(GalacticPosition.class, anAttribute.getJavaType());                
+                assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getPersistentAttributeType_ONE_TO_MANY_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());                
+                assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getPersistentAttributeType_MANY_TO_MANY_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -477,58 +657,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
                     MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
                 }*/
-                // Check persistent attribute type
-                //assertEquals(PersistentAttributeType.BASIC);
                 
-
-                /**
-                 * Return the name of the attribute.
-                 * @return name
-                 */
-                //String getName();
-
                 /**
                  *  Return the persistent attribute type for the attribute.
                  *  @return persistent attribute type
                  */
                 //PersistentAttributeType getPersistentAttributeType();
-
-                /**
-                 *  Return the managed type representing the type in which 
-                 *  the attribute was declared.
-                 *  @return declaring type
-                 */
-                //ManagedType<X> getDeclaringType();
-
-                /**
-                 *  Return the Java type of the represented attribute.
-                 *  @return Java type
-                 */
-                //Class<Y> getJavaType();
-
-                /**
-                 *  Return the java.lang.reflect.Member for the represented 
-                 *  attribute.
-                 *  @return corresponding java.lang.reflect.Member
-                 */
-                //java.lang.reflect.Member getJavaMember();
-
-                /**
-                 *  Is the attribute an association.
-                 *  @return whether boolean indicating whether attribute 
-                 *          corresponds to an association
-                 */
-                //boolean isAssociation();
-
-                /**
-                 *  Is the attribute collection-valued.
-                 *  @return boolean indicating whether attribute is 
-                 *          collection-valued
-                 */
-                //boolean isCollection();
-
-                
-                
+                // note: not implemented yet - need a manyToMany in the model
+                //assertEquals(PersistentAttributeType.MANY_TO_MANY, anAttribute.getPersistentAttributeType());
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
@@ -541,6 +677,535 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    public void testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Board> entityBoard_ = (EntityTypeImpl)metamodel.entity(Board.class);
+                assertNotNull(entityBoard_);
+                assertEquals(Type.PersistenceType.ENTITY, entityBoard_.getPersistenceType());
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityBoard_.getAttribute("computer");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());
+                // TODO: currently our MANY_TO_ONE is treated as a ONE_TO_ONE - we need an alternate way of getting m:1 state 
+                assertEquals(PersistentAttributeType.MANY_TO_ONE, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getPersistentAttributeType_ELEMENT_COLLECTION_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");
+                // Note: Not Implemented
+                //assertNotNull(anAttribute);
+                //assertEquals(Computer.class, anAttribute.getJavaType());                
+                //assertEquals(PersistentAttributeType.ELEMENT_COLLECTION, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<GalacticPosition> entityGalacticPosition_ = (EntityTypeImpl)metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityGalacticPosition_);
+                assertEquals(Type.PersistenceType.ENTITY, entityGalacticPosition_.getPersistenceType());
+
+                // Actual Test Case
+                /*public static enum PersistentAttributeType {
+                    MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+                    MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+                }*/
+                
+                /**
+                 *  Return the persistent attribute type for the attribute.
+                 *  @return persistent attribute type
+                 */
+                //PersistentAttributeType getPersistentAttributeType();
+                
+                Attribute anAttribute = entityGalacticPosition_.getAttribute("primaryKey");
+                assertNotNull(anAttribute);
+                assertEquals(EmbeddedPK.class, anAttribute.getJavaType());                
+                assertEquals(PersistentAttributeType.EMBEDDED, anAttribute.getPersistentAttributeType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testAttribute_Interface_getName_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                /**
+                 * Return the name of the attribute.
+                 * @return name
+                 */
+                //String getName();
+
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getDeclaringType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                /**
+                 *  Return the managed type representing the type in which 
+                 *  the attribute was declared.
+                 *  @return declaring type
+                 */
+                //ManagedType<X> getDeclaringType();
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getJavaType_BasicType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                /**
+                 *  Return the Java type of the represented attribute.
+                 *  @return Java type
+                 */
+                //Class<Y> getJavaType();
+                ManagedType<Person> msPerson = metamodel.managedType(Person.class);                
+                assertNotNull(msPerson);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());                
+                Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);                
+                assertNotNull(idAttribute);
+                assertEquals(Integer.class, idAttribute.getJavaType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getJavaType_ManagedType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                /**
+                 *  Return the Java type of the represented attribute.
+                 *  @return Java type
+                 */
+                //Class<Y> getJavaType();
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testAttribute_Interface_getJavaMember_BasicType_on_MappedSuperclass_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                ManagedType<Person> msPerson = metamodel.managedType(Person.class);                
+                assertNotNull(msPerson);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());                
+
+                /**
+                 *  Return the java.lang.reflect.Member for the represented 
+                 *  attribute.
+                 *  @return corresponding java.lang.reflect.Member
+                 */
+                //java.lang.reflect.Member getJavaMember();
+                Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);                
+                assertNotNull(idAttribute);
+                assertEquals(Integer.class, idAttribute.getJavaType());
+                // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+                Member aMember = idAttribute.getJavaMember();
+                assertNotNull(aMember);
+                assertTrue(aMember instanceof Field);
+                assertEquals("id", aMember.getName());
+                assertNotNull(((Field)aMember).getType());
+                assertEquals(Integer.class.getName(), ((Field)aMember).getType().getName());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_getJavaMember_BasicType_on_Entity_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                /**
+                 *  Return the java.lang.reflect.Member for the represented 
+                 *  attribute.
+                 *  @return corresponding java.lang.reflect.Member
+                 */
+                //java.lang.reflect.Member getJavaMember();
+                Attribute anAttribute = entityManufacturer_.getAttribute("anInt");                
+                assertNotNull(anAttribute);
+                assertEquals(int.class, anAttribute.getJavaType());
+                // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+                Member aMember = anAttribute.getJavaMember();
+                assertNotNull(aMember);
+                assertTrue(aMember instanceof Field);
+                assertEquals("anInt", aMember.getName());
+                assertNotNull(((Field)aMember).getType());
+                assertEquals(int.class.getName(), ((Field)aMember).getType().getName());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testAttribute_Interface_getJavaMember_ManagedType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                /**
+                 *  Return the java.lang.reflect.Member for the represented 
+                 *  attribute.
+                 *  @return corresponding java.lang.reflect.Member
+                 */
+                //java.lang.reflect.Member getJavaMember();
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());
+                Member aMember = anAttribute.getJavaMember();
+                assertNotNull(aMember);
+                assertTrue(aMember instanceof Field);
+                assertEquals("computers", aMember.getName());
+                assertNotNull(((Field)aMember).getType());
+                assertEquals(Set.class.getName(), ((Field)aMember).getType().getName());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_isAssociation_on_Plural_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+
+                /**
+                 *  Is the attribute an association.
+                 *  @return whether boolean indicating whether attribute 
+                 *          corresponds to an association
+                 */
+                //boolean isAssociation();
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());
+                boolean isAssociation = anAttribute.isAssociation();
+                assertFalse(isAssociation);
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_isAssociation_on_Singular_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                /**
+                 *  Is the attribute an association.
+                 *  @return whether boolean indicating whether attribute 
+                 *          corresponds to an association
+                 */
+                //boolean isAssociation();
+                Attribute anAttribute = entityComputer_.getAttribute("location");                
+                assertNotNull(anAttribute);
+                assertEquals(GalacticPosition.class, anAttribute.getJavaType());
+                boolean isAssociation = anAttribute.isAssociation();
+                // Only a ReferenceMapping that extends ObjectReferenceMapping returns true                
+                assertFalse(isAssociation);
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testAttribute_Interface_isCollection_false_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                Type<?> locationIdType = entityLocation_.getIdType();
+                assertNotNull(locationIdType);
+                assertEquals(PersistenceType.EMBEDDABLE, locationIdType.getPersistenceType());
+                assertEquals(EmbeddedPK.class, locationIdType.getJavaType());
+                Attribute locationIdAttribute = entityLocation_.getAttribute("primaryKey");
+                assertNotNull(locationIdAttribute);
+                assertTrue(locationIdAttribute instanceof SingularAttributeImpl);
+
+                /**
+                 *  Is the attribute collection-valued.
+                 *  @return boolean indicating whether attribute is 
+                 *          collection-valued
+                 */
+                //boolean isCollection();
+                assertFalse(locationIdAttribute.isCollection());
+                assertFalse(((AttributeImpl)locationIdAttribute).isPlural()); // non-spec.
+                ManagedType locationIdAttributeManagedType = locationIdAttribute.getDeclaringType();
+                assertEquals(entityLocation_, locationIdAttributeManagedType);
+                ManagedTypeImpl locationIdAttributeManagedTypeImpl = ((SingularAttributeImpl)locationIdAttribute).getManagedTypeImpl();
+                assertEquals(locationIdType.getJavaType(), ((SingularAttributeImpl)locationIdAttribute).getBindableJavaType());
+                assertEquals(Bindable.BindableType.SINGULAR_ATTRIBUTE, ((SingularAttributeImpl)locationIdAttribute).getBindableType());
+                assertEquals(locationIdType.getJavaType(), locationIdAttribute.getJavaType());
+                Type embeddableType = ((SingularAttributeImpl)locationIdAttribute).getType();
+                assertNotNull(embeddableType);
+                assertNotSame(embeddableType, locationIdAttributeManagedType);
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testAttribute_Interface_isCollection_true_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+                Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
+                assertNotNull(anAttribute);
+                assertEquals(Computer.class, anAttribute.getJavaType());
+
+                /**
+                 *  Is the attribute collection-valued.
+                 *  @return boolean indicating whether attribute is 
+                 *          collection-valued
+                 */
+                //boolean isCollection();
+                assertTrue(anAttribute.isCollection());
+                assertTrue(((AttributeImpl)anAttribute).isPlural()); // non-spec.
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
     public void testBasicType_Interface() {
         if(!this.isJPA10()) {
             EntityManager em = null;
@@ -551,8 +1216,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-                // Actual Test Case
-                
+                // This interface is empty - however we can test BasicTypeImpl INTERNAL functionality
+                // Test lazy creation of random basic types
+                TypeImpl aRandomType = ((MetamodelImpl)metamodel).getType(Integer.class);
+                assertEquals(Type.PersistenceType.BASIC, aRandomType.getPersistenceType());
+                BasicTypeImpl aRandomBasicType = (BasicTypeImpl) aRandomType;
+                assertFalse(aRandomBasicType.isEntity());
+                assertFalse(aRandomBasicType.isMappedSuperclass());
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
@@ -565,7 +1235,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testBindable_Interface() {
+    public void testBindable_Interface_getBindableType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -598,7 +1268,41 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     entityManufacturer_.getDeclaredList("hardwareDesigners", HardwareDesigner.class);
                 assertNotNull(manufacturer_hardwareDesignersList);
                 assertEquals(Bindable.BindableType.PLURAL_ATTRIBUTE, manufacturer_hardwareDesignersList.getBindableType());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testBindable_Interface_getBindableJavaType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                // Actual Test Case
+                /*public static enum BindableType { 
+                SINGULAR_ATTRIBUTE, PLURAL_ATTRIBUTE, ENTITY_TYPE}*/
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
             
+                SingularAttribute<Manufacturer, Boolean> manufacturer_booleanObject = 
+                    entityManufacturer_.getDeclaredSingularAttribute("aBooleanObject", Boolean.class);
+                assertNotNull(manufacturer_booleanObject);
+                ListAttribute<Manufacturer, HardwareDesigner> manufacturer_hardwareDesignersList = 
+                    entityManufacturer_.getDeclaredList("hardwareDesigners", HardwareDesigner.class);
+                assertNotNull(manufacturer_hardwareDesignersList);
+                
                 /**
                  * Return the Java type of the represented object.
                  * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
@@ -628,7 +1332,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
             }
         }
-    }
+    }    
     
     public void testEmbeddableType_Interface() {
         if(!this.isJPA10()) {
@@ -640,8 +1344,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-                // Actual Test Case
-                
+                // The EmbeddableType interface has no methods - however we can test EmbeddableTypeImpl INTERNAL functionality
+                Type<EmbeddedPK> aType_ = metamodel.managedType(EmbeddedPK.class);
+                assertNotNull("The EmbeddableType EmbeddedPK should not be null", aType_);
+                EmbeddableTypeImpl embeddableType_ = (EmbeddableTypeImpl) aType_; 
+                assertFalse("Expected EmbeddedPK.isEntity = false", embeddableType_.isEntity());
+                assertFalse("Expected EmbeddedPK.isMappedSuperclass = false", embeddableType_.isMappedSuperclass());
+                assertEquals(PersistenceType.EMBEDDABLE, embeddableType_.getPersistenceType());
+                assertEquals(EmbeddedPK.class, embeddableType_.getJavaType());
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
@@ -668,7 +1378,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
                 
-
                 // Actual Test Case
                 // exercise EntityTypeImpl
                 //System.out.println("_entityManufacturer.getBindableType(): " + entityManufacturer.getBindableType());
@@ -684,6 +1393,20 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //System.out.println("_entityManufacturer.getSupertype(): " + entityManufacturer.getSupertype());
                 //entityManufacturer.getVersion(manufacturer.getVersion());
 
+                /**
+                 *  Return the entity name.
+                 *  @return entity name
+                 */
+                //String getName();
+                String entityNameWithNameAttribute = entityManufacturer_.getName();
+                assertNotNull("EntityType.getName() should not be null", entityNameWithNameAttribute);
+                // this should match the @Entity(name="ManufacturerMetamodel")
+                assertEquals("ManufacturerMetamodel", entityNameWithNameAttribute);
+
+                String entityNameWithoutAttribute = entityHardwareDesigner_.getName();
+                assertNotNull("EntityType.getName() should not be null", entityNameWithoutAttribute);
+                // this should match the @Entity(name="HardwareDesigner")
+                assertEquals("HardwareDesigner", entityNameWithoutAttribute);
                 
                 // Normal use cases
                 // Composite table FK's that include a MappedSuperclass
@@ -707,7 +1430,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testIdentifiableType_Interface() {
+    public void testIdentifiableType_Interface_getId_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -739,7 +1462,82 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // declared and valid
                 MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
                 assertNotNull(msPerson1_.getId(Integer.class));
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
 
+    public void testIdentifiableType_Interface_getDeclaredId_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /**
+                 *  Return the attribute that corresponds to the id attribute 
+                 *  declared by the entity or mapped superclass.
+                 *  @param type  the type of the represented declared id attribute
+                 *  @return declared id attribute
+                 *  @throws IllegalArgumentException if id attribute of the given
+                 *          type is not declared in the identifiable type or if
+                 *          the identifiable type has an id class
+                 */
+                //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
+                // Not declared  - invalid
+//                assertNotNull(aManufacturerType.getDeclaredId(Integer.class));
+                // declared and valid
+                
+                //*********************************************/
+                // Require a version on a MappedSuperclass
+                
+//                assertNotNull(msPerson1_.getDeclaredId(Integer.class));
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testIdentifiableType_Interface_getVersion_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
                 /**
                  *  Return the attribute that corresponds to the version 
                  *    attribute of the entity or mapped superclass.
@@ -754,11 +1552,35 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // declared and inherited
                 
                 // declared 
-                assertNotNull(aManufacturerType.getVersion(int.class));
+                assertNotNull(entityManufacturer_.getVersion(int.class));
                 // declared and valid
                 // TODO : require MS version
 //                assertNotNull(msPerson1_.getVersion(Integer.class));
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
 
+    public void testIdentifiableType_Interface_getDeclaredVersion_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
                 /**
                  *  Return the attribute that corresponds to the id attribute 
                  *  declared by the entity or mapped superclass.
@@ -792,13 +1614,39 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 //                EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
 //                assertNotNull(anEnclosureType.getDeclaredVersion(Integer.class));
                 // Is declared
-                assertNotNull(aManufacturerType.getDeclaredVersion(int.class));
+                assertNotNull(entityManufacturer_.getDeclaredVersion(int.class));
                 
                 // TODO: need an undeclared subclass
                 // Is declared
 //                assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
-                
-                
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testIdentifiableType_Interface_getSupertype_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
                 /**
                  *  Return the identifiable type that corresponds to the most
                  *  specific mapped superclass or entity extended by the entity 
@@ -849,7 +1697,34 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertFalse(expectedIAExceptionThrown);
                 assertNull(superTypeLocation);
-                
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testIdentifiableType_Interface_hasSingleIdAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
                 /**
                  *  Whether or not the identifiable type has an id attribute.
                  *  Returns true for a simple id or embedded id; returns false
@@ -898,7 +1773,31 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertFalse(expectedIAExceptionThrown);            
                 assertFalse(hasSingleIdAttribute);
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
 
+    public void testIdentifiableType_Interface_hasVersionAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
                 /**
                  *  Whether or not the identifiable type has a version attribute.
                  *  @return boolean indicating whether or not the identifiable
@@ -907,8 +1806,29 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //boolean hasVersionAttribute();
                 EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
                 assertFalse(anEnclosureType.hasVersionAttribute());
-                assertTrue(aManufacturerType.hasVersionAttribute());
-                
+                assertTrue(entityManufacturer_.hasVersionAttribute());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testIdentifiableType_Interface_getIdClassAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                // Actual Test Case
                 /**
                  *   Return the attributes corresponding to the id class of the
                  *   identifiable type.
@@ -919,7 +1839,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  //java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
                 // @IdClass - test normal path
                 expectedIAExceptionThrown = false;
-                hasSingleIdAttribute = true;
+                boolean hasSingleIdAttribute = true;
                 Set<SingularAttribute<? super Enclosure, ?>> idClassAttributes = null;
                 try {
                     EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
@@ -936,8 +1856,35 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(hasSingleIdAttribute);
                 assertNotNull(idClassAttributes);
                 assertEquals(3, idClassAttributes.size());
+            } catch (Exception e) {
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
 
-                // @EmbeddedId - test exception path
+    public void testIdentifiableType_Interface_getIdType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
                 /**
                  *  Return the type that represents the type of the id.
                  *  @return type of id
@@ -1042,7 +1989,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
-    
+
     public void testListAttribute_Interface() {
         if(!this.isJPA10()) {
             EntityManager em = null;
@@ -1067,7 +2014,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface() {
+    public void testManagedType_Interface_getAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -2146,6 +3093,924 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    public void testManagedType_Interface_getDeclaredAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getSingularAttribute_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSingularAttribute_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getSingularAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSingularAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getCollection_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredCollection_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getSet_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSet_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getList_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredList_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getMap_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredMap_Type_param_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getPluralAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredPluralAttributes_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getSingularAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSingularAttribute_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getCollection_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredCollection_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getSet_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSet_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getList_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredList_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getMap_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getDeclaredMap_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+    
     public void testManagedType_Interface_variantCases() {
         if(!this.isJPA10()) {
             EntityManager em = null;
@@ -2260,7 +4125,43 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testMapAttribute_Interface() {
+    public void testMapAttribute_Interface_getKeyJavaType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                
+                
+            } catch (Exception e) {
+                //e.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+                if(null != em) {
+                    cleanup(em);
+                }
+            }
+        }
+    }
+
+    public void testMapAttribute_Interface_getKeyType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -2307,6 +4208,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
                 // Actual Test Case
+                // Interface is empty - however we will test native functionality
                 
             } catch (Exception e) {
                 //e.printStackTrace();

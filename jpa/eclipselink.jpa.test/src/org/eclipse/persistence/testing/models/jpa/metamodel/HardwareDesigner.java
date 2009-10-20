@@ -23,7 +23,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-@Entity(name="HardwareDesignerMetamodel")
+// No name attribute for testing
+@Entity
 @Table(name="CMP3_MM_HWDESIGNER")
 public class HardwareDesigner extends Designer {
     

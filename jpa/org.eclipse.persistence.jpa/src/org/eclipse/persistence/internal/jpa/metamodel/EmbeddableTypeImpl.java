@@ -47,7 +47,7 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
      *  Return the persistence type.
      *  @return persistence type
      */ 
-    public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
+    public PersistenceType getPersistenceType() {
         return PersistenceType.EMBEDDABLE;
     }
 

@@ -98,7 +98,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @param name
      * @return
      */
-    protected AttributeImpl getMemberFromInheritingType(String name) {
+    public AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
         // search the inheriting types map for an attribute matching the attribute name
         for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
