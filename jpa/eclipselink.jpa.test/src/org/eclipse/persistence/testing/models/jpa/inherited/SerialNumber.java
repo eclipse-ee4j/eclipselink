@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_SERIAL_NUMBER")
-public class SerialNumber {
+public class SerialNumber implements Serializable{
     private Alpine alpine;
     private Integer number;
     private Date issueDate;

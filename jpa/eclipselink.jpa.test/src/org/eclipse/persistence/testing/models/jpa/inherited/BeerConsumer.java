@@ -84,6 +84,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     private String name;
     
     private List<Alpine> alpineBeersToConsume;
+    private Map<SerialNumber, Alpine> alpineLookUp;
     private Collection<BlueLight> blueLightBeersToConsume;
     
     private Map becksBeersToConsume;
@@ -123,6 +124,10 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     public void addAlpineBeerToConsume(Alpine alpine) {
         alpine.setBeerConsumer(this);
         ((Vector) alpineBeersToConsume).add(alpine);
+    }
+    
+    public void addAlpineLookup(Alpine alpine) {
+        alpineLookUp.put(alpine.getSerialNumber(), alpine);
     }
     
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
@@ -192,6 +197,15 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     @OrderBy("bestBeforeDate ASC")
     public List<Alpine> getAlpineBeersToConsume() {
         return alpineBeersToConsume;
+    }
+    
+    // the target of this relationship should be serialized
+    @ElementCollection
+    @Column(name="DATA")
+    @CollectionTable(name="CMP3_ALPINE_LOOKUP")
+    @MapKeyJoinColumn(name="S_NUMBER")
+    public Map<SerialNumber, Alpine> getAlpineLookup(){
+        return alpineLookUp;
     }
     
     public Alpine getAlpineBeerToConsume(int index) {
@@ -343,6 +357,10 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         return alpine;
     }
     
+    public Alpine removeAlpineLookup(SerialNumber number){
+        return alpineLookUp.remove(number);        
+    }
+    
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
         Enumeration keys = ((Hashtable) telephoneNumbers).keys();
         while (keys.hasMoreElements()) {
@@ -359,6 +377,10 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
 
     public void setAlpineBeersToConsume(List<Alpine> alpineBeersToConsume) {
         this.alpineBeersToConsume = alpineBeersToConsume;
+    }
+    
+    public void setAlpineLookup(Map<SerialNumber, Alpine> alpineLookUp){
+        this.alpineLookUp = alpineLookUp;
     }
     
     public void setBecksBeersToConsume(Map becksBeersToConsume) {

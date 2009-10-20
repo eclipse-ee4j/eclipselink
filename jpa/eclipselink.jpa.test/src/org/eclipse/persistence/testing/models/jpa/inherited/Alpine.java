@@ -14,6 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.ArrayList;
 import javax.persistence.Table;
@@ -35,7 +36,7 @@ import static javax.persistence.TemporalType.DATE;
   pkColumnName="SEQ_NAME", 
   valueColumnName="SEQ_COUNT",
   pkColumnValue="BEVERAGE_SEQ")
-public class Alpine extends Beer<Integer, Double> implements Cloneable {
+public class Alpine extends Beer<Integer, Double> implements Cloneable, Serializable {
     public enum Classification { STRONG, BITTER, SWEET, NONE }
     
     private Date bestBeforeDate;

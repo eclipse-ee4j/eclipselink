@@ -122,7 +122,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testBreakOrder_CorrectionType_READ_WRITE"));
         
         suite.addTest(new InheritedModelJunitTest("testMapOrphanRemoval"));
-
+        
+        suite.addTest(new InheritedModelJunitTest("testSerializedElementCollectionMap"));
         return suite;
     }
     
@@ -1156,6 +1157,39 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-
+        
+    }
+    
+    public void testSerializedElementCollectionMap(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try{
+            BeerConsumer initialBC = new BeerConsumer();
+            em.persist(initialBC);
+            
+            SerialNumber serialNumber = new SerialNumber();
+            em.persist(serialNumber);
+            Alpine alpine = new Alpine(serialNumber);
+            alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 8, 21));
+            alpine.setAlcoholContent(5.0);
+            alpine.setClassification(Alpine.Classification.BITTER);
+            alpine.addInspectionDate(new Date(System.currentTimeMillis()));
+            em.persist(alpine);
+            
+            initialBC.addAlpineLookup(alpine);
+            
+            em.flush();
+            em.clear();
+            
+            initialBC = em.find(BeerConsumer.class, initialBC.getId());
+            serialNumber = em.find(SerialNumber.class, serialNumber.getNumber());
+            
+            assertTrue("The serialized map was not properly retrieved after persist.", initialBC.getAlpineLookup().size() == 1);
+            assertTrue("The serialized map did not contain the proper entry.", initialBC.getAlpineLookup().get(serialNumber) != null);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 }

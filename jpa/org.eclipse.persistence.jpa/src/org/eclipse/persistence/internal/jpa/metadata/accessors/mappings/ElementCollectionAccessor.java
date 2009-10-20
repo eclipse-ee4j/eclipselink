@@ -44,6 +44,7 @@ import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.MapKeyJoinColumns;
 import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
@@ -207,6 +208,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             for (Object jColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
                 m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
             }
+        }
+        
+        if (isAnnotationPresent(MapKeyJoinColumn.class)) {
+            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(MapKeyJoinColumn.class), accessibleObject));
         }
         
         // Set the map key column if one is defined.

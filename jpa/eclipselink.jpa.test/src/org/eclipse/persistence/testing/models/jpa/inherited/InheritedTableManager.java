@@ -80,6 +80,8 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
         
         addTableDefinition(build_LOCATION_Table());
+        
+        addTableDefinition(build_BC_LOOKUP_Table());
     }
     
     public static TableDefinition build_ALPINE_Table() {
@@ -158,6 +160,43 @@ public class InheritedTableManager extends TableCreator {
         fieldINSPECTIONDATES.setUnique(false);
         fieldINSPECTIONDATES.setShouldAllowNull(true);
         table.addField(fieldINSPECTIONDATES);
+
+        return table;
+    }
+    
+    
+    public static TableDefinition build_BC_LOOKUP_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ALPINE_LOOKUP");
+        
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("S_NUMBER");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        table.addField(ID_field);
+
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("BeerConsumer_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(true);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        table.addField(BEER_CONSUMER_ID_field);
+
+        FieldDefinition DATA_field = new FieldDefinition();
+        DATA_field.setName("DATA");
+        DATA_field.setTypeName("BLOB");
+        DATA_field.setShouldAllowNull(true);
+        DATA_field.setIsPrimaryKey(false);
+        DATA_field.setUnique(false);
+        DATA_field.setIsIdentity(false);
+        table.addField(DATA_field);
 
         return table;
     }
