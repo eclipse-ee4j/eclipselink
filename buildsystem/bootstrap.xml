@@ -215,7 +215,7 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
     </target>
 
-    <target name="oracle"  description="Trigger the oracle automated build">
+    <target name="oracle" depends="properties-init" description="Trigger the oracle automated build">
         <echo message="'oracle' target: Calling 'build-oracle' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-oracle"/>
     </target>
