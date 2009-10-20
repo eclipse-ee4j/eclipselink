@@ -113,7 +113,7 @@
     </target>
 
     <!-- Compiles all tests. -->
-    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
+    <target name="compile" depends="init, config-trunk, config-flat, repackage" description="compile EclipseLink testing">
         <javac srcdir="${eclipselink.jpa.osgi.test}/${src.dir}"
                destdir="${eclipselink.jpa.osgi.test}/${classes.dir}"
                debug="${javac.debug}"
@@ -157,11 +157,12 @@
         <delete dir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
         <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/configuration"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"/>
         <mkdir dir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
         <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/configuration">
             <fileset file="${eclipselink.jpa.osgi.test}/${resource.dir}/config.ini"/>
         </copy>
-        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}">
+	<copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins">
             <fileset file="${equinox.depend.dir}/org.eclipse.*.jar"/>
             <fileset dir="${eclipselink.plugins.dir}">
                     <include name="org.eclipse.persistence.jpa_*"/>
@@ -170,28 +171,46 @@
                     <include name="org.eclipse.persistence.antlr_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox.weaving_*"/>
+                    <include name="org.eclipse.persistence.oracle_*"/>
             </fileset>
             <fileset dir="${eclipselink.jpa.osgi.test}/../plugins">
                     <include name="javax.persistence_*"/>
             </fileset>
             <fileset file="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar"/>
-            <fileset file="${jdbc.driver.jar}"/>
         </copy>
+
+	<!-- copy DB related files --> 
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0"/>
+        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0">
+            <fileset dir="${eclipselink.targets.dir}">
+	        <include name="META-INF/MANIFEST.MF"/>
+            </fileset>
+	    <fileset dir="${oracle.extensions.depend.dir}" includes="${oracle.libs.jars}"/>
+        </copy>
+        <replace file="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0/META-INF/MANIFEST.MF"
+                 token="ojdbc5.jar" value="${jdbc.driver.jar.name}"/>
+	
     </target>
 
     <!-- Repackages JPA persistent unit test jars. -->
     <target name="repackage">
-        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/">
-            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/osgi" includes="**"/>
-        </copy>
-        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/">
-            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/osgi" includes="**"/>
-        </copy>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-annotation">
+            <property name="is.osgi" value="true"/>
+        </ant>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-jpa-advanced-field-access">
+            <property name="is.osgi" value="true"/>
+        </ant>
     </target>
     
     <target name="test" depends="clean-run">
         <echo>Running test on ${db.url}</echo>
-        <java jar="${eclipselink.jpa.osgi.test}/${run.dir}/${equinox.jar}"
+
+	<fileset dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"
+                id="equinox.launcher.jar.path"
+                includes="org.eclipse.equinox.launcher_*.jar"/>
+        <pathconvert refid="equinox.launcher.jar.path" property="equinox.launcher.jar"/>
+
+        <java jar="${equinox.launcher.jar}"
                  fork="true"
                  maxmemory="512m"
                  failonerror="false"
