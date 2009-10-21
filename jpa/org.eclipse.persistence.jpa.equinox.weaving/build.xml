@@ -54,7 +54,7 @@
     <property name="specification.vendor"  value="EclipseLink Project"/>
     <property name="implementation.vendor" value="EclipseLink Project"/>
     
-    <property name="eclipse.osgi.jar"      value="org.eclipse.osgi_3.5.0.v20090311-1300.jar"/>
+    <property name="eclipse.osgi.jar"      value="org.eclipse.osgi_3.5.0.v20090520.jar"/>
     
     <!-- Set Compile Path-->
     <path id="weaving.compile.path">

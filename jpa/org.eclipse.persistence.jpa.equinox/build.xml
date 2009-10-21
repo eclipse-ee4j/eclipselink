@@ -64,7 +64,7 @@
             "/>
         <fileset
             dir="${equinox.2.jpa.plugins.dir}"
-            includes="org.eclipse.osgi_3.5.0.v20090311-1300.jar,
+            includes="org.eclipse.osgi_3.5.0.v20090520.jar,
                       javax.persistence_1.99.0.*.jar
             "/>
     </path>
