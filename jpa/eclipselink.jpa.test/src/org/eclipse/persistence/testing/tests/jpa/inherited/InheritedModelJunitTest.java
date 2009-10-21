@@ -1169,14 +1169,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             
             SerialNumber serialNumber = new SerialNumber();
             em.persist(serialNumber);
-            Alpine alpine = new Alpine(serialNumber);
-            alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 8, 21));
-            alpine.setAlcoholContent(5.0);
-            alpine.setClassification(Alpine.Classification.BITTER);
-            alpine.addInspectionDate(new Date(System.currentTimeMillis()));
-            em.persist(alpine);
             
-            initialBC.addAlpineLookup(alpine);
+            initialBC.addCommentLookup(serialNumber, "A test comment");
             
             em.flush();
             em.clear();
@@ -1184,8 +1178,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             initialBC = em.find(BeerConsumer.class, initialBC.getId());
             serialNumber = em.find(SerialNumber.class, serialNumber.getNumber());
             
-            assertTrue("The serialized map was not properly retrieved after persist.", initialBC.getAlpineLookup().size() == 1);
-            assertTrue("The serialized map did not contain the proper entry.", initialBC.getAlpineLookup().get(serialNumber) != null);
+            assertTrue("The serialized map was not properly retrieved after persist.", initialBC.getCommentLookup().size() == 1);
+            assertTrue("The serialized map did not contain the proper entry.", initialBC.getCommentLookup().get(serialNumber) != null);
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

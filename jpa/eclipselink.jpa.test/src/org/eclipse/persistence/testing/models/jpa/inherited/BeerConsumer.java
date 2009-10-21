@@ -84,7 +84,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     private String name;
     
     private List<Alpine> alpineBeersToConsume;
-    private Map<SerialNumber, Alpine> alpineLookUp;
+    private Map<SerialNumber, String> commentLookup;
     private Collection<BlueLight> blueLightBeersToConsume;
     
     private Map becksBeersToConsume;
@@ -126,8 +126,8 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         ((Vector) alpineBeersToConsume).add(alpine);
     }
     
-    public void addAlpineLookup(Alpine alpine) {
-        alpineLookUp.put(alpine.getSerialNumber(), alpine);
+    public void addCommentLookup(SerialNumber number, String comment) {
+        commentLookup.put(number, comment);
     }
     
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
@@ -204,8 +204,8 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     @Column(name="DATA")
     @CollectionTable(name="CMP3_ALPINE_LOOKUP")
     @MapKeyJoinColumn(name="S_NUMBER")
-    public Map<SerialNumber, Alpine> getAlpineLookup(){
-        return alpineLookUp;
+    public Map<SerialNumber, String> getCommentLookup(){
+        return commentLookup;
     }
     
     public Alpine getAlpineBeerToConsume(int index) {
@@ -357,8 +357,8 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         return alpine;
     }
     
-    public Alpine removeAlpineLookup(SerialNumber number){
-        return alpineLookUp.remove(number);        
+    public String removeCommentLookup(SerialNumber number){
+        return commentLookup.remove(number);        
     }
     
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
@@ -379,8 +379,8 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         this.alpineBeersToConsume = alpineBeersToConsume;
     }
     
-    public void setAlpineLookup(Map<SerialNumber, Alpine> alpineLookUp){
-        this.alpineLookUp = alpineLookUp;
+    public void setCommentLookup(Map<SerialNumber, String> commentLookUp){
+        this.commentLookup = commentLookUp;
     }
     
     public void setBecksBeersToConsume(Map becksBeersToConsume) {

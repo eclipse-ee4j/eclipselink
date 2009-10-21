@@ -191,11 +191,13 @@ public class InheritedTableManager extends TableCreator {
 
         FieldDefinition DATA_field = new FieldDefinition();
         DATA_field.setName("DATA");
-        DATA_field.setTypeName("BLOB");
+        DATA_field.setTypeName("VARCHAR");
+        DATA_field.setSize(40);
         DATA_field.setShouldAllowNull(true);
         DATA_field.setIsPrimaryKey(false);
         DATA_field.setUnique(false);
         DATA_field.setIsIdentity(false);
+
         table.addField(DATA_field);
 
         return table;
