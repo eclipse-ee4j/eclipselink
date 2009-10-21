@@ -25,6 +25,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -113,10 +115,7 @@ public class BasicAccessor extends DirectAccessor {
         // Set the mutable value if one is present.
         MetadataAnnotation mutable = getAnnotation(Mutable.class);
         if (mutable != null) {
-            m_mutable = (Boolean) mutable.getAttribute("value");
-            if (m_mutable == null) {
-                m_mutable = true;
-            }
+            m_mutable = (Boolean) mutable.getAttributeBooleanDefaultTrue("value");
         }
         
         // Set the generated value if one is present.
@@ -289,9 +288,6 @@ public class BasicAccessor extends DirectAccessor {
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
-        
-        // Derived ID: set if this mapping has been marked as an ID.
-        mapping.setIsDerivedIdMapping(isId());
 
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);

@@ -37,6 +37,8 @@
  *          Map field by returning Void in this case.
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -139,6 +141,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected MappingAccessor(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     * @see ObjectAccessor
+     */
+    public boolean derivesId() {
+        return false;
     }
     
     /**
@@ -799,15 +810,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor represents a basic map mapping.
      */
     public boolean isBasicMap() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is this accessor is a derived id accessor.
-     * @see ObjectAccessor
-     */
-    public boolean isDerivedId() {
         return false;
     }
     

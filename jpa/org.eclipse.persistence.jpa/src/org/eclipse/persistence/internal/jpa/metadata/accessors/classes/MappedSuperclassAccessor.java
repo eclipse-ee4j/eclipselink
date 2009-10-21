@@ -32,6 +32,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel 
  *     09/24//2009-2.0 Michael O'Brien 
  *       - 266912: In initIdClass() store IdClass names for use by the Metamodel API  
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -609,7 +611,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else {
                 // Set the cacheable setting on the descriptor.
                 if (m_cacheable == null) {
-                    m_cacheable = (Boolean) getAnnotation(Cacheable.class).getAttribute("value");
+                    m_cacheable = (Boolean) getAnnotation(Cacheable.class).getAttributeBooleanDefaultTrue("value");
                 } 
                 
                 getDescriptor().setCacheable(m_cacheable);

@@ -8,8 +8,6 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     04/24/2009-2.0 Guy Pelletier 
- *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
@@ -27,28 +25,28 @@ import javax.persistence.Table;
  * @author gpelleti
  */
 @Entity
-@Table(name="JPA_SECOND_LIEUTENANT")
-public class SecondLieutenant {
+@Table(name="JPA_OFFICER_CADET")
+public class OfficerCadet {
     @EmbeddedId
     LieutenantId id;
     
     @OneToOne 
     @MapsId
-    Lieutenant lieutenant;
+    SecondLieutenant secondLieutenant;
     
     public LieutenantId getId() {
         return id;
     }
     
-    public Lieutenant getLieutenant() {
-        return lieutenant;
+    public SecondLieutenant getSecondLieutenant() {
+        return secondLieutenant;
     }
     
     public void setId(LieutenantId id) {
         this.id = id;
     }
 
-    public void setLieutenant(Lieutenant lieutenant) {
-        this.lieutenant = lieutenant;
+    public void setSecondLieutenant(SecondLieutenant secondLieutenant) {
+        this.secondLieutenant = secondLieutenant;
     }
 }

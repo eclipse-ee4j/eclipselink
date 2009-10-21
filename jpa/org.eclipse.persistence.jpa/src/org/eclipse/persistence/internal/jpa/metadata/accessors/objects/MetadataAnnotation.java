@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     James Sutherland - initial impl
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -37,7 +39,14 @@ public class MetadataAnnotation {
     
     /**
      * INTERNAL:
-     * Return the attribute value, or null if not set.
+     * Return the attribute value, or null if not set. Callers to this method
+     * should only use it if the annotation requires the attribute. Otherwise,
+     * you should call one of the more specific getAttribute calls that will
+     * return the annotation default value.
+     * @see getAttributeArray
+     * @see getAttributeString
+     * @see getAttributeBooleanDefaultFalse
+     * @see getAttributeBooleanDefaultTrue
      */
     public Object getAttribute(String name) {
         return m_attributes.get(name);
@@ -49,10 +58,32 @@ public class MetadataAnnotation {
      */
     public Object getAttributeArray(String name) {
         Object value = getAttribute(name);
-        if (value == null) {
-            return new Object[0];
-        }
-        return value;
+        return (value == null) ? new Object[0] : value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the boolean attribute value, or the default value if not set.
+     */
+    public Object getAttributeBoolean(String name, Boolean defaultValue) {
+        Object value = getAttribute(name);
+        return (value == null) ? defaultValue : value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the boolean attribute value, or FALSE if not set.
+     */
+    public Object getAttributeBooleanDefaultFalse(String name) {
+        return getAttributeBoolean(name, Boolean.FALSE);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the boolean attribute value, or TRUE if not set.
+     */
+    public Object getAttributeBooleanDefaultTrue(String name) {
+        return getAttributeBoolean(name, Boolean.TRUE);
     }
     
     /**
@@ -61,17 +92,14 @@ public class MetadataAnnotation {
     public Map<String, Object> getAttributes() {
         return m_attributes;
     }
-
+    
     /**
      * INTERNAL:
      * Return the attribute value, or "" if not set.
      */
     public Object getAttributeString(String name) {
         Object value = getAttribute(name);
-        if (value == null) {
-            return "";
-        }
-        return value;
+        return (value == null) ? "" : value;
     }
     
     /**
@@ -98,8 +126,8 @@ public class MetadataAnnotation {
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         return "@" + getName() + "(" + m_attributes + ")";
-        //return "@" + getName();
     }
 }

@@ -23,6 +23,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -101,11 +103,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Set the join fetch if one is present.           
         MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
         if (joinFetch != null) {
-            m_joinFetch = (String) joinFetch.getAttribute("value");
-            // If the value is null a value still must be set, otherwise it will not be known to be there.
-            if (m_joinFetch == null) {
-                m_joinFetch = "";
-            }
+            // Get attribute string will return the default ""
+            m_joinFetch = (String) joinFetch.getAttributeString("value");
         }
         
         // Set the private owned if one is present.

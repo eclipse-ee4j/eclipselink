@@ -10,6 +10,8 @@
  * Contributors:
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
@@ -18,6 +20,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
+
+import static javax.persistence.CascadeType.PERSIST;
 
 /**
  * This model tests Example #1 of the mapsId cases.
@@ -30,7 +34,7 @@ public class MasterCorporal {
     @EmbeddedId 
     MasterCorporalId id;
     
-    @ManyToOne // join column default to SARGEANT_ID
+    @ManyToOne(cascade=PERSIST) // join column default to SARGEANT_ID
     @MapsId("sargeantPK")
     Sargeant sargeant;
     
@@ -48,7 +52,6 @@ public class MasterCorporal {
 
     public void setSargeant(Sargeant sargeant) {
         this.sargeant = sargeant;
-        id.setSargeantPK(sargeant.getSargeantId());
     }
 }
 

@@ -317,20 +317,20 @@ public class CMPPolicy implements java.io.Serializable {
         
         Object keyInstance = getPKClassInstance();
         for (int index = 0; index < pkElementArray.length; index++) {
+            Object keyObj = key;
             KeyElementAccessor accessor = pkElementArray[index];
-            DatabaseMapping mapping = builder.getMappingForAttributeName(accessor.getAttributeName());
+            DatabaseField field = accessor.getDatabaseField();
+            DatabaseMapping mapping = builder.getMappingForField(field);
+            
             // With session validation, the mapping shouldn't be null at this 
             // point, don't bother checking.
             
             while (mapping.isAggregateObjectMapping()) {
-                mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[index].getAttributeName());
-            
-                if (mapping == null) { // must be aggregate
-                    mapping = builder.getMappingForField(accessor.getDatabaseField());
-                }
+                keyObj = mapping.getRealAttributeValueFromObject(keyObj, session);
+                mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
             }
             
-            Object fieldValue = mapping.getRealAttributeValueFromObject(key, session);
+            Object fieldValue = mapping.getRealAttributeValueFromObject(keyObj, session);
             accessor.setValue(keyInstance, fieldValue);
         }
         

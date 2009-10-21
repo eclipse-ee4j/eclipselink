@@ -46,6 +46,8 @@
  *       - 284147: So we do not add a pseudo PK Field for MappedSuperclasses when
  *         1 or more PK fields already exist on the descriptor. 
  *         Add m_idAccessor map and hasIdAccessor() function.
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -127,7 +129,9 @@ public class MetadataDescriptor {
     private List<String> m_orderByAttributeNames;
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
-    private List<ObjectAccessor> m_derivedIDAccessors;
+    
+    // Holds a list of derived id accessors.
+    private List<ObjectAccessor> m_derivedIdAccessors;
     
     private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
@@ -183,7 +187,7 @@ public class MetadataDescriptor {
         m_orderByAttributeNames = new ArrayList<String>();
         m_idOrderByAttributeNames = new ArrayList<String>();
         m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
-        m_derivedIDAccessors = new ArrayList<ObjectAccessor>();
+        m_derivedIdAccessors = new ArrayList<ObjectAccessor>();
         
         m_pkClassIDs = new HashMap<String, String>();
         m_genericTypes = new HashMap<String, String>();
@@ -258,13 +262,6 @@ public class MetadataDescriptor {
      */
     public void addDefaultEventListener(EntityListener listener) {
         m_descriptor.getEventManager().addDefaultEventListener(listener);
-    }
-
-    /** 
-     * INTERNAL:
-     */
-    public void addDerivedIDAccessor(ObjectAccessor accessor){
-        m_derivedIDAccessors.add(accessor);
     }
 
     /**
@@ -565,8 +562,8 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public List<ObjectAccessor> getDerivedIDAccessors(){
-        return m_derivedIDAccessors;
+    public List<ObjectAccessor> getDerivedIdAccessors(){
+        return m_derivedIdAccessors;
     }
     
     /**
@@ -1224,11 +1221,6 @@ public class MetadataDescriptor {
     public void processAccessors(MetadataDescriptor owningDescriptor) {
         for (MappingAccessor accessor : m_accessors.values()) {
             if (! accessor.isProcessed()) {
-                if (accessor.isDerivedId()){
-                    m_derivedIDAccessors.add((ObjectAccessor) accessor);
-                    getProject().addAccessorWithDerivedIDs(m_classAccessor);
-                }
-                
                 // We need to defer the processing of some mappings to stage
                 // 3 processing. Accessors are added to different lists since
                 // the order or processing of those accessors is important.
@@ -1268,7 +1260,12 @@ public class MetadataDescriptor {
                 } else if (accessor.isDirectCollection()) {
                     getProject().addDirectCollectionAccessor(accessor);
                 } else if (accessor.isRelationship()) {
-                    addRelationshipAccessor(accessor);
+                    if (accessor.derivesId()) {
+                        m_derivedIdAccessors.add((ObjectAccessor) accessor);
+                        getProject().addAccessorWithDerivedId(m_classAccessor);
+                    } else {
+                        addRelationshipAccessor(accessor);
+                    }
                 } else {
                     accessor.process();
                 }
@@ -1300,8 +1297,8 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Set the cacheable value of this descriptor.
      */
-    public boolean setCacheable(Boolean cacheable) {
-        return m_cacheable = cacheable;
+    public void setCacheable(Boolean cacheable) {
+        m_cacheable = cacheable;
     }
     
     /**

@@ -37,6 +37,8 @@
  *     08/11/2009-2.0 Michael O'Brien 
  *       - 284147: do not add a pseudo PK Field for MappedSuperclasses when
  *         1 or more PK fields already exist on the descriptor. 
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -183,8 +185,8 @@ public class MetadataProject {
     // Class accessors that have a customizer.
     private HashSet<ClassAccessor> m_accessorsWithCustomizer;
     
-    // Class accessors that have Ids derived from relationships.
-    private HashSet<ClassAccessor> m_accessorsWithDerivedIDs;
+    // Class accessors that have their id derived from a relationship.
+    private HashSet<ClassAccessor> m_accessorsWithDerivedId;
     
     // All direct collection accessors.
     private HashSet<DirectCollectionAccessor> m_directCollectionAccessors;
@@ -246,8 +248,7 @@ public class MetadataProject {
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
-        
-        m_accessorsWithDerivedIDs = new HashSet<ClassAccessor>();
+        m_accessorsWithDerivedId = new HashSet<ClassAccessor>();
         
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
     }
@@ -294,8 +295,8 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void addAccessorWithDerivedIDs(ClassAccessor accessor) {
-        m_accessorsWithDerivedIDs.add(accessor);
+    public void addAccessorWithDerivedId(ClassAccessor accessor) {
+        m_accessorsWithDerivedId.add(accessor);
     }
     
     /**
@@ -620,13 +621,6 @@ public class MetadataProject {
      */
     public Set<ClassAccessor> getAccessorsWithCustomizer() {
         return m_accessorsWithCustomizer;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Set<ClassAccessor> getAccessorsWithDerivedIDs() {
-        return m_accessorsWithDerivedIDs;
     }
     
     /**
@@ -1012,8 +1006,8 @@ public class MetadataProject {
         HashSet<ClassAccessor> processed = new HashSet();
         HashSet<ClassAccessor> processing = new HashSet();
         
-        for (ClassAccessor classAccessor : getAccessorsWithDerivedIDs()) {
-            classAccessor.processDerivedIDs(processing, processed);
+        for (ClassAccessor classAccessor : m_accessorsWithDerivedId) {
+            classAccessor.processDerivedId(processing, processed);
         }
     }
     
@@ -1303,8 +1297,8 @@ public class MetadataProject {
      */
     public void processStage2() {
         // 266912: process mappedSuperclasses separately from entity descriptors
-        for(MappedSuperclassAccessor msAccessor : m_metamodelMappedSuperclasses.values()) {
-            if(!msAccessor.isProcessed()) {               
+        for (MappedSuperclassAccessor msAccessor : m_metamodelMappedSuperclasses.values()) {
+            if (! msAccessor.isProcessed()) {               
                 msAccessor.processMetamodelDescriptor();    
             }
         }
@@ -1337,7 +1331,7 @@ public class MetadataProject {
 
         // 2 - Process all the direct collection accessors we found. This list
         // does not include direct collections to an embeddable class.
-         processDirectCollectionAccessors();
+        processDirectCollectionAccessors();
         
         // 3 - Process the sequencing metadata now that every entity has a 
         // validated primary key.

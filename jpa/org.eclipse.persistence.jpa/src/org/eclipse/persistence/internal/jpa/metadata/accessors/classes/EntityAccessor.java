@@ -45,6 +45,8 @@
  *          processAccessType() is now public and is overridden in the superclass 
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -795,9 +797,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * first to ensure the necessary fields are set before this derivedId is processed 
      */
     @Override
-    public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
-        if (hasDerivedId() && !processed.contains(this)){
-            super.processDerivedIDs(processing, processed);
+    public void processDerivedId(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
+        if (! processed.contains(this)) {
+            super.processDerivedId(processing, processed);
             
             // Validate we found a primary key.
             validatePrimaryKey();

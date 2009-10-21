@@ -92,15 +92,26 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     protected Map properties;
     
     /**
-     * Used by the CMP3Policy to see if this mapping should be used in processing pk classes 
-     * for find methods.  
+     * Used by the CMP3Policy to see if this mapping should be used in 
+     * processing pk classes for find methods
      */
-    protected boolean isDerivedIdMapping = false;
+    protected boolean derivesId;
+    
+    /**
+     * 
+     */
+    protected boolean isJPAId = false;
     
     /**
      * A mapsId value.
      */
-    protected String mappedByIdValue;
+    protected String mapsIdValue;
+    
+    /**
+     * The id mapping this mapping derives. Used by the CMP3Policy to see if 
+     * this mapping should be used in processing pk classes for find methods.
+     */
+    protected DatabaseMapping derivedIdMapping;
 
     /**
      * PERF: Used as a quick check to see if this mapping is a primary key mapping,
@@ -336,6 +347,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED:
+     * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.  
+     */
+    public boolean derivesId() {
+        return derivesId;
+    }
+    
+    /**
      * INTERNAL:
      * This method is called to update collection tables prior to commit.
      */
@@ -473,6 +492,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED:
+     * Set the maps id value  
+     */
+    public DatabaseMapping getDerivedIdMapping() {
+        return derivedIdMapping;
+    }
+    
+    /**
      * INTERNAL:
      * Return the descriptor to which this mapping belongs
      */
@@ -543,16 +570,16 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * ADVANCED:
      * Set the mapped by id value  
      */
-    public boolean hasMappedByIdValue() {
-        return mappedByIdValue != null;
+    public boolean hasMapsIdValue() {
+        return mapsIdValue != null;
     }
     
     /**
      * ADVANCED:
      * Set the mapped by id value  
      */
-    public String getMappedByIdValue() {
-        return mappedByIdValue;
+    public String getMapsIdValue() {
+        return mapsIdValue;
     }
     
     /**
@@ -747,14 +774,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public boolean isDatabaseMapping() {
         return true;
     }
-
-    /**
-     * ADVANCED:
-     * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.  
-     */
-    public boolean isDerivedIdMapping() {
-        return this.isDerivedIdMapping;
-    }
     
     /**
      * INTERNAL:
@@ -860,6 +879,18 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Flags that this mapping is part of a JPA id mapping. It should be
+     * temporary though, as the CMP3Policy should be able to figure things 
+     * out on its own. The problem being that the JPA mapped superclass
+     * descriptors are not initialize and do not have a CMP3Policy set by
+     * default. 
+     */
+    public boolean isJPAId() {
+        return isJPAId;
+    }
+    
+    /**
      * Return if this mapping is lazy.
      * Lazy has different meaning for different mappings.
      * For basic/direct mappings, this can be used exclude it from the descriptor's
@@ -881,15 +912,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
     
     /**
-     * ADVANCED:
-     * Used to indicate the mapping references a JPA ID or MapsId attribute 
-     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
-     * This is different from isPrimaryKeyMapping, as an ID mapping is user 
-     * specified and can be read only, as long as another writable mapping for 
-     * the field exists.  
+     * INTERNAL:
+     * Flags that this mapping is part of a JPA id mapping. It should be
+     * temporary though, as the CMP3Policy should be able to figure things 
+     * out on its own. The problem being that the JPA mapped superclass
+     * descriptors are not initialize and do not have a CMP3Policy set by
+     * default. 
      */
-    public void setIsDerivedIdMapping(boolean isDerivedIdMapping) {
-        this.isDerivedIdMapping = isDerivedIdMapping;
+    public void setIsJPAId() {
+        this.isJPAId = true;
     }
     
     /**
@@ -1409,14 +1440,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public void setIsReadOnly(boolean aBoolean) {
         isReadOnly = aBoolean;
     }
-
+    
     /**
      * ADVANCED:
-     * Set the mapped by id value  
+     * Set the maps id value  
      */
-    public void setMappedByIdValue(String mappedByIdValue) {
-        setIsDerivedIdMapping(true);
-        this.mappedByIdValue = mappedByIdValue;
+    public void setMapsIdValue(String mapsIdValue) {
+        this.mapsIdValue = mapsIdValue;
     }
     
     /**
@@ -1668,6 +1698,30 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
         // Nothing by default.
     }
 
+    /**
+     * ADVANCED:
+     * Used to indicate the mapping references a JPA ID or MapsId attribute 
+     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
+     * This is different from isPrimaryKeyMapping, as an ID mapping is user 
+     * specified and can be read only, as long as another writable mapping for 
+     * the field exists.  
+     */
+    public void setDerivesId(boolean derivesId) {
+        this.derivesId = derivesId;
+    }
+    
+    /**
+     * ADVANCED:
+     * Used to indicate the mapping references a JPA ID or MapsId attribute 
+     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
+     * This is different from isPrimaryKeyMapping, as an ID mapping is user 
+     * specified and can be read only, as long as another writable mapping for 
+     * the field exists.  
+     */
+    public void setDerivedIdMapping(DatabaseMapping derivedIdMapping) {
+        this.derivedIdMapping = derivedIdMapping;
+    }
+    
     /**
      * INTERNAL:
      * Directly build a change record without comparison

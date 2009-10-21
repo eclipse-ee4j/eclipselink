@@ -180,8 +180,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
-    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as a derived id
-    protected boolean hasDerivedId;
+    // JPA 2.0 Derived identities - map of mappings that act as derived ids
+    protected Map<String, DatabaseMapping> derivesIdMappings;
     
     //Added for interceptor support.
     protected Class cacheInterceptorClass;
@@ -252,7 +252,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.hasDerivedId = false;
+        this.derivesIdMappings = new HashMap(5);
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -1890,6 +1890,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED:
+     * Return the derives id mappings.
+     */
+    public Collection<DatabaseMapping> getDerivesIdMappinps() {
+        return derivesIdMappings.values();
+    }
+    
+    /**
      * PUBLIC:
      * Get the event manager for the descriptor.  The event manager is responsible
      * for managing the pre/post selectors.
@@ -2467,11 +2475,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * returns true if users have designated one or more mappings as IDs.  Used for CMP3Policy 
-     * primary key class processing. 
+     * returns true if users have designated one or more mappings as IDs. Used 
+     * for CMP3Policy primary key class processing. 
      */
     public boolean hasDerivedId() {
-        return this.hasDerivedId;
+        return ! derivesIdMappings.isEmpty();
     }
     
     /**
@@ -2621,9 +2629,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 prepareCascadeLockingPolicy(mapping);
             }
 
-            //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
-            if (mapping.isDerivedIdMapping()){
-                this.hasDerivedId = true;
+            // JPA 2.0 Derived identities - build a map of derived id mappings.
+            if (mapping.derivesId()) {
+                derivesIdMappings.put(mapping.getAttributeName(), mapping);
             }
             
             // Add all the fields in the mapping to myself.
@@ -2661,9 +2669,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     if (mapping.isAggregateObjectMapping() || ((mapping.isForeignReferenceMapping() && (!mapping.isDirectCollectionMapping())) && (!((ForeignReferenceMapping)mapping).usesIndirection()))) {
                         getLockableMappings().add(mapping);// add those mappings from the parent.
                     }
-                    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
-                    if (mapping.isDerivedIdMapping()) {
-                        this.hasDerivedId = true;
+                    // JPA 2.0 Derived identities - build a map of derived id mappings.
+                    if (mapping.derivesId()) {
+                        derivesIdMappings.put(mapping.getAttributeName(), mapping);
                     }
                 }
             }

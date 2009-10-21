@@ -11,8 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/02/2009-2.0 Chris delahunt 
  *       - 241765: JPA 2.0 Derived identities
-  *     04/24/2009-2.0 Guy Pelletier 
+ *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -329,11 +331,11 @@ public class CMP3Policy extends CMPPolicy {
                 
                 // So here is the ugly check to see if we want to further look at this mapping as part of 
                 // the id or not.
-                if (descriptor.hasDerivedId() && ! mapping.isDerivedIdMapping()) {
+                if (descriptor.hasDerivedId() && ! mapping.derivesId()) {
                     // If the mapping is not a derived id, then we need to keep looking for the mapping that 
                     // is marked as the derived id mapping. However, in a mapped by id case, we may have 
                     // 'extra' non-derived id fields within the embeddable class (and the writable mapping 
-                    // that we care about at this point will be defined on the embeddable descritor). Therefore, 
+                    // that we care about at this point will be defined on the embeddable descriptor). Therefore, 
                     // we can't bail at this point and must drill down further into the embeddable to make sure
                     // we initialize this portion of the composite id.
                     if (mapping.isAggregateMapping() && allMappings.size() > 1) {
@@ -362,9 +364,9 @@ public class CMP3Policy extends CMPPolicy {
                     // Update the index to parse the next mapping correctly.
                     index = allMappings.size();                        
                 } else {
-                    String fieldName = (mapping.hasMappedByIdValue()) ? mapping.getMappedByIdValue() : mapping.getAttributeName();
+                    String fieldName = (mapping.hasMapsIdValue()) ? mapping.getMapsIdValue() : mapping.getAttributeName();
                 
-                    if (keyClass == null){
+                    if (keyClass == null){                        
                         // must be a primitive since key class was not set
                         pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
                         if (mapping.isDirectToFieldMapping()){
@@ -436,7 +438,7 @@ public class CMP3Policy extends CMPPolicy {
                         }
                     }
                  
-                    if (mapping.isDerivedIdMapping() || noSuchElementException == null) {
+                    if (mapping.derivesId() || noSuchElementException == null) {
                         // Break out of the loop as we do not need to look for
                         // any more mappings
                         break;

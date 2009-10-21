@@ -21,6 +21,8 @@
  *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
  *     10/14/2008-2.0      Michael O'Brien 
  *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -383,6 +385,11 @@ public class EntityManagerSetupImpl {
                 descriptor.setCMPPolicy(new CMP3Policy());
             }
         }
+
+        // TODO: Look into setting a CMPPolicy on the MappedSuperclass descriptors.
+        // Will require some tweaking however to ensure the primary key fields are
+        // set/initialized correctly. Currently rely on the descriptor initialized
+        // object builder which is not available to mapped superclass descriptors.
     }
 
     /**

@@ -20,7 +20,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -70,22 +69,19 @@ public class ChangeTrackingMetadata extends ORMetadata {
         
         // Process the change tracking metadata.
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
-        ObjectChangePolicy policy = null;
                    
         if (m_type.equals(ChangeTrackingType.ATTRIBUTE.name())) {
-            policy = new AttributeChangeTrackingPolicy();
+            classDescriptor.setObjectChangePolicy(new AttributeChangeTrackingPolicy());
         } else if (m_type.equals(ChangeTrackingType.OBJECT.name())) {
-            policy = new ObjectChangeTrackingPolicy();
+            classDescriptor.setObjectChangePolicy(new ObjectChangeTrackingPolicy());
         } else if (m_type.equals(ChangeTrackingType.DEFERRED.name())) {
-            policy = new DeferredChangeDetectionPolicy();
+            classDescriptor.setObjectChangePolicy(new DeferredChangeDetectionPolicy());
         } else if (m_type.equals(ChangeTrackingType.AUTO.name())) {
             // By setting the policy to null, this will unset any global 
             // settings. EclipseLink will then determine the change tracking 
             // policy at runtime.
-            policy = null;
-        }
-               
-        classDescriptor.setObjectChangePolicy(policy);
+            classDescriptor.setObjectChangePolicy(null);
+        } 
     }
         
     /**

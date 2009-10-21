@@ -29,11 +29,12 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.FetchType;
@@ -119,12 +120,21 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         if (isAnnotationPresent(MapsId.class)) {
             // Call getAttributeString in this case because we rely on the
             // mapsId not being null and it's value of "" means we need to
-            // default. getAttribute returns null which kills (hasMapsId())
+            // default. getAttribute returns null which kills hasMapsId() logic
             m_mapsId = (String) getAnnotation(MapsId.class).getAttributeString("value");
         }
         
         // Set the derived id if one is specified.
         m_id = isAnnotationPresent(Id.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     */
+    @Override
+    public boolean derivesId() {
+        return hasId() || hasMapsId();
     }
     
     /**
@@ -208,6 +218,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      */
+    protected boolean hasId() {
+        return m_id != null && m_id;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected boolean hasMapsId() {
         return m_mapsId != null;
     }
@@ -223,7 +240,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
-        mapping.setIsDerivedIdMapping(isDerivedId());
+        mapping.setDerivesId(derivesId());
         
         // Process the orphanRemoval or PrivateOwned
         processOrphanRemoval(mapping);
@@ -252,15 +269,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is this accessor is a derived id accessor.
-     */
-    @Override
-    public boolean isDerivedId() {
-        return m_id != null && m_id;
     }
     
     /**
@@ -329,6 +337,53 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Used to process primary keys and DerivedIds.
+     */
+    protected void processId(OneToOneMapping mapping) {
+        // If this entity has a pk class, we need to validate our ids.
+        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
+        String keyname = referenceDescriptor.getPKClassName();
+
+        if (keyname != null) {
+            // They have a pk class
+            String ourpkname = getDescriptor().getPKClassName();
+            if (ourpkname == null){
+                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), ourpkname);
+            }
+            
+            if (! ourpkname.equals(keyname)){
+                // Validate our pk contains their pk.
+                getOwningDescriptor().validatePKClassId(getAttributeName(), referenceDescriptor.getPKClass());
+            } else {
+                // This pk is the reference pk, so all pk attributes are accounted through this relationship
+                getOwningDescriptor().getPKClassIDs().clear();
+            }
+        } else {
+            MetadataClass type = null;
+            if (referenceDescriptor.getClassAccessor().hasDerivedId()){
+                // Referenced object has a derived ID but no PK class defined,
+                // so it must be a simple pk type. Recurse through to get the 
+                // simple type
+                type = ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
+            } else {
+                // Validate on their basic mapping.
+                type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+            }
+            
+            getOwningDescriptor().validatePKClassId(getAttributeName(), type);
+        }
+
+        // Store the Id attribute name. Used with validation and OrderBy.
+        getOwningDescriptor().addIdAttributeName(getAttributeName());
+
+        // Add the primary key fields to the descriptor.  
+        for (DatabaseField pkField : mapping.getForeignKeyFields()) {
+            getOwningDescriptor().addPrimaryKeyField(pkField, null);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the indirection (aka fetch type)
      */
     protected void processIndirection(ObjectReferenceMapping mapping) {
@@ -352,63 +407,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Used to process primary keys and DerivedIds.
-     */
-    public void processKey(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed){
-        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-        ClassAccessor referenceAccessor = referenceDescriptor.getClassAccessor();
-        
-        if (!processed.contains(referenceAccessor)){
-            referenceAccessor.processDerivedIDs(processing, processed);
-        }
-
-        processRelationship();
-        String attributeName = getAttributeName();
-
-        // If this entity has a pk class, we need to validate our ids. 
-        String keyname = referenceDescriptor.getPKClassName();
-
-        if (keyname != null) {
-            // They have a pk class
-            String ourpkname = this.getDescriptor().getPKClassName();
-            if (ourpkname == null){
-                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), ourpkname);
-            }
-            
-            if (! ourpkname.equals(keyname)){
-                // Validate our pk contains their pk.
-                getOwningDescriptor().validatePKClassId(attributeName, referenceDescriptor.getPKClass());
-            } else {
-                // This pk is the reference pk, so all pk attributes are accounted through this relationship
-                getOwningDescriptor().getPKClassIDs().clear();
-            }
-        } else {
-            MetadataClass type = null;
-            if (referenceAccessor.hasDerivedId()){
-                // Referenced object has a derived ID but no PK class defined,
-                // so it must be a simple pk type. Recurse through to get the 
-                // simple type
-                type = ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
-            } else {
-                // Validate on their basic mapping.
-                type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
-            }
-            
-            getOwningDescriptor().validatePKClassId(attributeName, type);
-        }
-
-        // Store the Id attribute name. Used with validation and OrderBy.
-        getOwningDescriptor().addIdAttributeName(attributeName);
-
-        // Add the primary key fields to the descriptor.  
-        ObjectReferenceMapping mapping = (ObjectReferenceMapping) getMapping();
-        for (DatabaseField pkField : mapping.getForeignKeyFields()) {
-            getOwningDescriptor().addPrimaryKeyField(pkField, null);
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Process the mapping keys from the maps id value.
      */
     protected void processMapsId(OneToOneMapping oneToOneMapping) {
@@ -428,37 +426,45 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             
             // Set the primary key mapping as read only.
             primaryKeyMapping.setIsReadOnly(true);
-        } else if (embeddedIdAccessor.getReferenceClassName().equals(getReferenceDescriptor().getPKClassName())) {
-            // Embedded id class is the same as the parents parents id class.
-            // Case #5: Parent uses id class == to dependent's embedded id class
-            // Case #6: Both parent and dependent use same embedded id class.            
-            processMapsIdFields(oneToOneMapping, embeddedIdAccessor, null);
+            
+            // Set the maps id mapping.
+            oneToOneMapping.setDerivedIdMapping(primaryKeyMapping);
         } else {
-            if (m_mapsId.equals("")) {
-                // User didn't specify a mapsId value. By default the attribute name from this object accessor is used.
-                m_mapsId = getAttributeName();
-            }
+            if (embeddedIdAccessor.getReferenceClassName().equals(getReferenceDescriptor().getPKClassName())) {
+                // Embedded id class is the same as the parents parents id class.
+                // Case #5: Parent uses id class == to dependent's embedded id class
+                // Case #6: Both parent and dependent use same embedded id class.            
+                processMapsIdFields(oneToOneMapping, embeddedIdAccessor, null);
+            } else {
+                if (m_mapsId.equals("")) {
+                    // User didn't specify a mapsId value. By default the attribute name from this object accessor is used.
+                    m_mapsId = getAttributeName();
+                }
                 
-            MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getAccessorFor(m_mapsId);
+                MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getAccessorFor(m_mapsId);
         
-            if (mappingAccessor == null) {
-                throw ValidationException.invalidMappedByIdValue(m_mapsId, getAnnotatedElementName(), embeddedIdAccessor.getReferenceClass());
-            } else if (mappingAccessor.isBasic()) {
-                // Case #1: basic mapping from embedded id to parent entity.
-                processMapsIdFields(oneToOneMapping, embeddedIdAccessor, mappingAccessor);
-            } else if (mappingAccessor.isDerivedIdClass()) {
-                // Case #2 and case #3 (Id class or embedded id used as the derived id)
-                processMapsIdFields(oneToOneMapping, (DerivedIdClassAccessor) mappingAccessor, null);
+                if (mappingAccessor == null) {
+                    throw ValidationException.invalidMappedByIdValue(m_mapsId, getAnnotatedElementName(), embeddedIdAccessor.getReferenceClass());
+                } else if (mappingAccessor.isBasic()) {
+                    // Case #1: basic mapping from embedded id to parent entity.
+                    processMapsIdFields(oneToOneMapping, embeddedIdAccessor, mappingAccessor);
+                } else if (mappingAccessor.isDerivedIdClass()) {
+                    // Case #2 and case #3 (Id class or embedded id used as the derived id)
+                    processMapsIdFields(oneToOneMapping, (DerivedIdClassAccessor) mappingAccessor, null);
+                }
+            
+                // Set the maps id value on the mapping.
+                oneToOneMapping.setMapsIdValue(m_mapsId);
             }
             
-            // This will also set the isDerivedIdMapping flag to true.
-            oneToOneMapping.setMappedByIdValue(m_mapsId);
+            // Set the maps id mapping.
+            oneToOneMapping.setDerivedIdMapping(embeddedIdAccessor.getMapping());
         }
     }
     
     /**
      * INTERNAL:
-     * We're going to field name translations where necessary. If the user
+     * We're going to add field name translations where necessary. If the user
      * specified (erroneously that is) attribute overrides this will override
      * them.
      * The embedded accessor passed in is either the root embedded id accessor
@@ -571,11 +577,16 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * a mapsId first.
      */
     protected void processOwningMappingKeys(OneToOneMapping mapping) {
-        if (hasMapsId()) {
+        if (derivesId()) {
             // We need to process the join columns as we normally would.
             // Then we must update the fields from our derived id accessor.
             processOneToOneForeignKeyRelationship(mapping);
-            processMapsId(mapping);
+            
+            if (hasMapsId()) {
+                processMapsId(mapping);
+            } else {
+                processId(mapping);
+            }
         } else if (isOneToOnePrimaryKeyRelationship()) {
             processOneToOnePrimaryKeyRelationship(mapping);
         } else if (hasJoinTable()) {

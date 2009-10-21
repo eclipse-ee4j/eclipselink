@@ -17,6 +17,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -80,5 +82,8 @@ public class IdAccessor extends BasicAccessor {
 
         // Add the primary key field to the descriptor.            
         getOwningDescriptor().addPrimaryKeyField(getField(), this);
+        
+        // Flag this id accessor as a JPA id mapping.
+        getMapping().setIsJPAId();
     }
 }

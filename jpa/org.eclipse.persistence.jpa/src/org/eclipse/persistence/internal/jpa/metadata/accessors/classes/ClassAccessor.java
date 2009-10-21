@@ -35,6 +35,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -610,8 +612,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    public boolean hasDerivedId(){
-        return ! getDescriptor().getDerivedIDAccessors().isEmpty();
+    public boolean hasDerivedId() {
+        return ! getDescriptor().getDerivedIdAccessors().isEmpty();
     }
     
     /**
@@ -900,23 +902,39 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
-     * Allows for processing DerivedIds. All referenced accessors are processed
-     * first to ensure the necessary fields are set before this derivedId is 
-     * processed 
+     * Allows for processing derived ids, either from an Id or MapsId
+     * specification. All referenced accessors are processed first to ensure 
+     * the necessary fields are set before the derived id is processed and
+     * circular references are checked. 
      */
-    public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
-        if (hasDerivedId() && ! processed.contains(this)) {
-            if (processing.contains(this)){
-                //we have a circular pk reference problem
+    public void processDerivedId(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
+        // Process only if we haven't already done so (inheritance case)
+        if (! processed.contains(this)) {            
+            // If we appear in the processing list, through the chain of derived
+            // id we have come back to ourself. We have a circular reference,
+            // throw an exception.
+            if (processing.contains(this)) {
                 throw ValidationException.idRelationshipCircularReference(processing);
             }
             
             processing.add(this);
             
-            for (ObjectAccessor accessor : getDescriptor().getDerivedIDAccessors()) {
-                accessor.processKey(processing, processed);
+            for (ObjectAccessor accessor : getDescriptor().getDerivedIdAccessors()) {
+                // Check the reference accessor for a derived id and fast
+                // track its processing if need be.
+                MetadataDescriptor referenceDescriptor = accessor.getReferenceDescriptor();
+                ClassAccessor referenceAccessor = referenceDescriptor.getClassAccessor();
+                
+                if (referenceAccessor.hasDerivedId()) {    
+                    referenceAccessor.processDerivedId(processing, processed);
+                }
+                
+                // Now process the relationship, and the derived id.
+                accessor.processRelationship();
             }
             
+            // Once we're done, we'll move ourselves from the processing to 
+            // processed step.
             processing.remove(this);
             processed.add(this);
         }

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -40,6 +42,7 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildLIEUTENANTGENERALTable());
         addTableDefinition(buildLIEUTENANTTable());
         addTableDefinition(buildSECONDLIEUTENANTTable());
+        addTableDefinition(buildOFFICERCADETTable());
         addTableDefinition(buildLACKEYTable());
         addTableDefinition(buildLACKEYCREWTable());
     }
@@ -718,6 +721,33 @@ public class CompositePKTableCreator extends TableCreator {
     public static TableDefinition buildSECONDLIEUTENANTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SECOND_LIEUTENANT");
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("F_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildOFFICERCADETTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_OFFICER_CADET");
         
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");

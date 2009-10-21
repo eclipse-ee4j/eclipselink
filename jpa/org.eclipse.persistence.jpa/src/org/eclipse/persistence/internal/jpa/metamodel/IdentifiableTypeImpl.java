@@ -15,6 +15,8 @@
  *       all other 6 remaining methods for Id and Version support.
  *       DI 71 - 77 and 56
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -32,6 +34,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -213,7 +216,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             if(pkMappings.isEmpty()) {
                 // Search the mappings for Id mappings
                 for(DatabaseMapping aMapping : getDescriptor().getMappings()) {                    
-                    if(aMapping.isDerivedIdMapping()) {
+                    if(aMapping.isJPAId()) {
                         String attributeName = aMapping.getAttributeName();
                         // get the attribute Id (declared or not)
                         Attribute anAttribute = this.getAttribute(attributeName);

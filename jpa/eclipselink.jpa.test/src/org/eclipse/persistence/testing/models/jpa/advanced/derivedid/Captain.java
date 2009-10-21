@@ -10,6 +10,8 @@
  * Contributors:
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
@@ -57,6 +59,5 @@ public class Captain {
 
     public void setMajor(Major major) {
         this.major = major;
-        id.setMajor(major.getPK());
     }
 }

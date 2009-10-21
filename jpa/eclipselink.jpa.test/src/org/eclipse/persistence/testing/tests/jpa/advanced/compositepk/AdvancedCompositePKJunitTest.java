@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     10/21/2009-2.0 Guy Pelletier 
+ *       - 290567: mappedbyid support incomplete
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -53,6 +55,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorGenera
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporal;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporalId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.OfficerCadet;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.PrivateId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant;
@@ -92,6 +95,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample5"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample5a"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6MultiLevel"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
         
@@ -233,7 +237,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
             em.persist(depAdmin);
             commitTransaction(em);
-            //org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
+            org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId()); 
  
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);
@@ -332,11 +336,12 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         try {    
             sargeant.setName("Sarge");
-            em.persist(sargeant);
             
             masterCorporalId.setName("Corpie");
             masterCorporal.setId(masterCorporalId);
             masterCorporal.setSargeant(sargeant);
+            
+            // Sargeant is cascade persist.
             em.persist(masterCorporal);
             
             commitTransaction(em);
@@ -570,8 +575,9 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             lieutenant.setId(lieutenantId);
             em.persist(lieutenant);
             
-            secondLieutenant.setLieutenant(lieutenant);
             em.persist(secondLieutenant);
+            secondLieutenant.setLieutenant(lieutenant);
+            em.flush();
             
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -591,6 +597,52 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
         SecondLieutenant refreshedSecondLieutenant = em.find(SecondLieutenant.class, secondLieutenant.getId());
         assertTrue("The second lieutenant read back did not match the original", getServerSession().compareObjects(secondLieutenant, refreshedSecondLieutenant));  
+    }
+    
+    public void testMapsIdExample6MultiLevel() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Lieutenant lieutenant = new Lieutenant();
+        LieutenantId lieutenantId = new LieutenantId();
+        SecondLieutenant secondLieutenant = new SecondLieutenant();
+        OfficerCadet officerCadet = new OfficerCadet();
+        
+        try {
+            lieutenantId.setFirstName("Lieutenant");
+            lieutenantId.setLastName("Daniel");
+            lieutenant.setId(lieutenantId);
+            em.persist(lieutenant);
+            
+            em.persist(secondLieutenant);
+            secondLieutenant.setLieutenant(lieutenant);
+            
+            officerCadet.setSecondLieutenant(secondLieutenant);
+            em.persist(officerCadet);
+            
+            em.flush();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        Lieutenant refreshedLieutenant = em.find(Lieutenant.class, lieutenant.getId());
+        assertTrue("The lieutenant read back did not match the original", getServerSession().compareObjects(lieutenant, refreshedLieutenant));
+
+        SecondLieutenant refreshedSecondLieutenant = em.find(SecondLieutenant.class, secondLieutenant.getId());
+        assertTrue("The second lieutenant read back did not match the original", getServerSession().compareObjects(secondLieutenant, refreshedSecondLieutenant));
+        
+        OfficerCadet refreshedOfficerCadet = em.find(OfficerCadet.class, officerCadet.getId());
+        assertTrue("The officer cadet read back did not match the original", getServerSession().compareObjects(officerCadet, refreshedOfficerCadet));
     }
     
     public void testGetIdentifier(){

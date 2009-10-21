@@ -607,6 +607,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             
             ClassDescriptor descriptor = getDescriptor(object);
 
+            // Update any derived id's.
+            updateDerivedIds(object, descriptor);
+            
             // Block of code removed for code coverage, as it would never have been touched. bug # 2903600
             
             boolean isNew = isObjectNew(object);
@@ -4153,6 +4156,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 this.undeleteObject(newObject);
             }
             descriptor.getObjectBuilder().cascadeRegisterNewForCreate(newObject, this, visitedObjects);
+            // After any cascade persists and assigning any sequence numbers,
+            // update any derived id attributes on the new object.
+            updateDerivedIds(newObject, descriptor);
         } finally {
             endOperationProfile(SessionProfiler.Register);
         }
@@ -4229,7 +4235,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             descriptor.getEventManager().executeEvent(event);
         }  
     }
-
+    
     /**
      * INTERNAL:
      * Add the new object to the cache if set to.
@@ -5286,6 +5292,58 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //this is a no op in this unitOfWork Class see subclasses for implementation.
     }
 
+    /**
+     * INTERNAL:
+     * On persist and flush operations we must update any derived id fields.
+     */
+    protected Object updateDerivedIds(Object clone, ClassDescriptor descriptor) {
+        if (descriptor.hasDerivedId()) {
+            ObjectBuilder dependentBuilder = descriptor.getObjectBuilder();
+            
+            for (DatabaseMapping derivesIdMapping : descriptor.getDerivesIdMappinps()) {
+                DatabaseMapping derivedIdMapping = derivesIdMapping.getDerivedIdMapping();
+                
+                // If there is no derived id mapping, then there is no update required. Case #1a-#6a 
+                // from the JPA spec.
+                if (derivedIdMapping != null) {
+                    ClassDescriptor parentDescriptor = derivesIdMapping.getReferenceDescriptor();
+                    ObjectBuilder parentBuilder = parentDescriptor.getObjectBuilder();
+                    Object parentClone = derivesIdMapping.getRealAttributeValueFromObject(clone, this);
+                    
+                    // If the parent clone is null, we don't have any work to do, continue to the next 
+                    // mapping. Some mappings may be part of a composite primary key that allows for a 
+                    // null setting or the mapping may just not be set.
+                    if (parentClone != null) {
+                        Object key;
+                        // Recurse up the chain to figure out the key. The first dependent will figure 
+                        // it out and pass it to its sub-dependents (keeping it the same)
+                        if (parentDescriptor.hasDerivedId()) {
+                            key = updateDerivedIds(parentClone, parentDescriptor);
+                        } else {
+                            key = parentDescriptor.getCMPPolicy().createPrimaryKeyInstance(parentClone, this);
+                        }
+                        
+                        if (derivesIdMapping.hasMapsIdValue()) {
+                            // Case #1b, #2b and #3b from the JPA spec. The derived id is within our 
+                            // embedded id. We need to deal with that object and its mapping within the clone.
+                            Object aggregateClone = derivedIdMapping.getRealAttributeValueFromObject(clone, this);
+                            DatabaseMapping aggregateMapping = derivedIdMapping.getReferenceDescriptor().getMappingForAttributeName(derivesIdMapping.getMapsIdValue());
+                            aggregateMapping.setRealAttributeValueInObject(aggregateClone, key);
+                        } else {
+                            // Case #4b, #5b, #6b from the JPA spec. Our id mapping is the derived id. 
+                            // We will deal with the clone provided.
+                            derivedIdMapping.setRealAttributeValueInObject(clone, key);
+                        }
+                        
+                        return key;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
     /**
      * ADVANCED:
      * This can be used to help debugging an object-space corruption.
