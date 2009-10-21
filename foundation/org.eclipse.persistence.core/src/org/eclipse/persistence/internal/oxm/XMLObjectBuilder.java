@@ -453,7 +453,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     
     public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(getDescriptor().getJavaClass()))) {
-            return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
+            return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
         }
         if (getDescriptor().getPrimaryKeyFields().size() == 0) {
             return null;

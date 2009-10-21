@@ -33,6 +33,8 @@ public class XMLMarshallerTestSuite extends TestCase {
 
         suite.addTestSuite(XMLMarshallerCreateTestCases.class);
         suite.addTestSuite(XMLMarshalTestCases.class);
+        suite.addTestSuite(XMLMarshalNSTestCases.class);
+        suite.addTestSuite(XMLMarshalExceptionTestCases.class);
         suite.addTestSuite(XMLMarshalFragmentTestCases.class);
         suite.addTestSuite(XMLUnmarshalTestCases.class);
         if (!jaxpPlatform) {

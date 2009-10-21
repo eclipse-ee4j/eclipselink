@@ -150,34 +150,7 @@ public class XMLMarshalTestCases extends OXTestCase {
 
         assertXMLIdentical(marshalToNodeControl, document);
     }
-
-    
-        public void testMarshalObjectToElementNS() throws Exception {
-            XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));
-            String rootElement = descriptor.getDefaultRootElement();
-            descriptor.setDefaultRootElement("thens:" + rootElement);
-            NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thens", "www.example.com/some-dir/employee.xsd");
-            descriptor.setNamespaceResolver(resolver);
-
-            Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_NS_RESOURCE);
-
-            Document document = parser.newDocument();
-            Element element = document.createElement("root");
-            document.appendChild(element);
-
-            marshaller.marshal(controlObject, element);
-
-            //put default root element back
-            descriptor.setDefaultRootElement(rootElement);
-            descriptor.setNamespaceResolver(null);
-
-            log(marshalToNodeControl);
-            log(document);
-
-            assertXMLIdentical(marshalToNodeControl, document);
-        }
-
+       
         public void testMarshalObjectToDocument() {
             Document document = parser.newDocument();
             marshaller.marshal(controlObject, document);
@@ -198,34 +171,6 @@ public class XMLMarshalTestCases extends OXTestCase {
 
             marshaller.marshal(controlObject, documentFragment);
             rootElement.appendChild(documentFragment);
-
-            log(marshalToNodeControl);
-            log(document);
-
-            assertXMLIdentical(marshalToNodeControl, document);
-        }
-
-        public void testMarshalObjectToDocumentFragmentNS() throws Exception {
-            XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));
-            String originalRootElement = descriptor.getDefaultRootElement();
-            descriptor.setDefaultRootElement("thens:" + originalRootElement);
-            NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thens", "www.example.com/some-dir/employee.xsd");
-            descriptor.setNamespaceResolver(resolver);
-
-            Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_NS_RESOURCE);
-
-            Document document = parser.newDocument();
-            Element rootElement = document.createElement("root");
-            document.appendChild(rootElement);
-            DocumentFragment documentFragment = document.createDocumentFragment();
-
-            marshaller.marshal(controlObject, documentFragment);
-            rootElement.appendChild(documentFragment);
-
-            //put default root element back
-            descriptor.setDefaultRootElement(originalRootElement);
-            descriptor.setNamespaceResolver(null);
 
             log(marshalToNodeControl);
             log(document);
@@ -600,26 +545,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             }
 
             assertTrue("An XMLValidation should have been caught but wasn't.", false);
-        }
-
-        public void testMarshalWithNoPrefixInNamespaceResolver() {
-            XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));
-            String rootElement = descriptor.getDefaultRootElement();
-            descriptor.setDefaultRootElement("thens:" + rootElement);
-            NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thenstest", "www.example.com/some-dir/employee.xsd");
-            descriptor.setNamespaceResolver(resolver);
-
-            DefaultHandler output = new DefaultHandler();
-            try {
-                marshaller.marshal(controlObject, output);
-            } catch (XMLMarshalException exception) {
-                assertTrue("An unexpected XMLMarshalException was caught.", exception.getErrorCode() == XMLMarshalException.NAMESPACE_NOT_FOUND);
-                return;
-            }
-
-            assertTrue("An XMLValidation should have been caught but wasn't.", false);
-        }
+        }      
 
         public void testMarshalToElementWithNoNamespaceResolver() {
             XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));
@@ -637,28 +563,6 @@ public class XMLMarshalTestCases extends OXTestCase {
                 return;
             }
 
-            assertTrue("An XMLValidation should have been caught but wasn't.", false);
-        }
-
-        public void testMarshalToElementWithNoPrefixInNamespaceResolver() {
-            XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));
-            String rootElement = descriptor.getDefaultRootElement();
-            descriptor.setDefaultRootElement("thens:" + rootElement);
-            NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thenstest", "www.example.com/some-dir/employee.xsd");
-            descriptor.setNamespaceResolver(resolver);
-
-            try {
-                Document document = parser.newDocument();
-                Element element = document.createElement("root");
-                document.appendChild(element);
-
-                marshaller.marshal(controlObject, element);
-
-            } catch (XMLMarshalException exception) {
-                assertTrue("An unexpected XMLMarshalException was caught.", exception.getErrorCode() == XMLMarshalException.NAMESPACE_NOT_FOUND);
-                return;
-            }
             assertTrue("An XMLValidation should have been caught but wasn't.", false);
         }
 }

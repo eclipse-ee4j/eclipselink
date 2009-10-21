@@ -475,8 +475,8 @@ public class XMLMarshaller {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object);
-        	xmlDescriptor = getDescriptor(object, session);
+        	session = xmlContext.getSession(object.getClass());
+        	xmlDescriptor = getDescriptor(object.getClass(), session);
         }
 
         WriterRecord writerRecord;
@@ -557,8 +557,8 @@ public class XMLMarshaller {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object);
-        	xmlDescriptor = getDescriptor(object, session);
+        	session = xmlContext.getSession(object.getClass());
+        	xmlDescriptor = getDescriptor(object.getClass(), session);
         }
         
         //if it's a simple xml root then session and descriptor will be null
@@ -627,8 +627,8 @@ public class XMLMarshaller {
                     }                
                 }
             }else{
-            	session = xmlContext.getSession(object);
-            	xmlDescriptor = getDescriptor(object, session);
+            	session = xmlContext.getSession(object.getClass());
+            	xmlDescriptor = getDescriptor(object.getClass(), session);
             }
             
             
@@ -907,26 +907,9 @@ public class XMLMarshaller {
                 }
             }
         } else {
-            String rootName = descriptor.getDefaultRootElement();
-            if (null != rootName) {
-                rootFragment = new XPathFragment(rootName);
-                NamespaceResolver descriptorNamespaceResolver = descriptor.getNamespaceResolver();
-                if(rootFragment.getPrefix() != null && (rootFragment.getNamespaceURI() == null)) {
-                    String uri = null;
-                    if(null == descriptorNamespaceResolver) {
-                        throw XMLMarshalException.namespaceResolverNotSpecified(null);
-                    }
-                    uri = descriptor.getNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
-
-                    if(uri == null) {
-                        throw XMLMarshalException.namespaceNotFound(rootFragment.getPrefix());
-                    }
-                    rootFragment.setNamespaceURI(uri);
-                } else {
-                    if(descriptorNamespaceResolver != null) {
-                        rootFragment.setNamespaceURI(descriptorNamespaceResolver.getDefaultNamespaceURI());
-                    }
-                }
+            XMLField defaultRootField = descriptor.getDefaultRootElementField();
+            if(defaultRootField != null){            	
+            	rootFragment = defaultRootField.getXPathFragment();            	
             }
         }
         return rootFragment;
@@ -1345,6 +1328,19 @@ public class XMLMarshaller {
 
          return descriptor;
      }
+     
+     /**
+      * INTERNAL:
+      * Return the descriptor for the root object.
+      */
+      private XMLDescriptor getDescriptor(Class clazz, AbstractSession session) throws XMLMarshalException {
+          XMLDescriptor descriptor = (XMLDescriptor) session.getDescriptor(clazz);
+          if (descriptor == null) {
+              throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
+          }
+
+          return descriptor;
+      }
     
     protected XMLDescriptor getDescriptor(Object object, boolean isXMLRoot) {
         if (isXMLRoot) {

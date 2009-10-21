@@ -109,7 +109,7 @@ public class XMLDescriptor extends ClassDescriptor {
         }
         return getTables().firstElement().getName();
     }
-
+    
     /**
      * PUBLIC:
      * Return if unmapped information from the XML document should be maintained for this
@@ -155,7 +155,7 @@ public class XMLDescriptor extends ClassDescriptor {
     */
     public void setDefaultRootElement(String newDefaultRootElement) {
         if (newDefaultRootElement != null) {
-            // create the root element xml field based on default root element name
+        	// create the root element xml field based on default root element name
             setDefaultRootElementField(new XMLField(newDefaultRootElement));
 
             int index = getTableNames().indexOf(newDefaultRootElement);
@@ -716,26 +716,20 @@ public class XMLDescriptor extends ClassDescriptor {
         return object;
 
     }
-
+    
     public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
         if(resultAlwaysXMLRoot){
             return true;
         }
-        String defaultRootName = getDefaultRootElement();
+        XMLField defaultRootField = getDefaultRootElementField();
 
         // if the descriptor's default root element is null, we want to 
         // create/return an XMLRoot - otherwise, we need to compare the 
         // default root element vs. the root element in the instance doc.
-        if (defaultRootName != null) {
-            // resolve namespace prefix if one exists                 
-            String defaultRootNamespaceUri = null;
-            int idx = defaultRootName.indexOf(XMLConstants.COLON);
-            if (idx != -1) {
-                defaultRootNamespaceUri = getNamespaceResolver().resolveNamespacePrefix(defaultRootName.substring(0, idx));
-                defaultRootName = defaultRootName.substring(idx + 1);
-            } else if(getNamespaceResolver() != null) {
-                defaultRootNamespaceUri = getNamespaceResolver().getDefaultNamespaceURI();
-            }
+        if (defaultRootField != null) {
+            // resolve namespace prefix if one exists
+            String defaultRootName = defaultRootField.getXPathFragment().getLocalName();
+            String defaultRootNamespaceUri = defaultRootField.getXPathFragment().getNamespaceURI();
 
             // if the DOMRecord element == descriptor's default 
             // root element, return the object as per usual

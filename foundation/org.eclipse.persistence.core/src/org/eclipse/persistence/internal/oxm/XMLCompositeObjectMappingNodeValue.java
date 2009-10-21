@@ -141,8 +141,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 return true;
             }
         }
-
-        XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
+        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
+        if(descriptor == null || descriptor.hasInheritance()){
+        	descriptor = (XMLDescriptor)session.getDescriptor(objectValue.getClass());
+        }
+                
         if(descriptor != null){
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 

@@ -235,8 +235,12 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().beforeMarshal(value);
         }
+             
+        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
+        if(descriptor == null || descriptor.hasInheritance()){
+        	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
+        }
         
-        XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(value);
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && value instanceof org.w3c.dom.Node) {
             marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
