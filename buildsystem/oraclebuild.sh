@@ -49,13 +49,15 @@ echo "results stored in: '${tmp}'"
 #Define common variables
 PUTTY_SESSION=eclipse-dev
 START_DATE=`date '+%y%m%d-%H%M'`
-DEFAULT_PREVREV=5108
+DEFAULT_PREVREV=5461
+DEFAULT_PREVCOMMIT=5511
 #Directories
 HOME_DIR=/shared/rt/eclipselink
 JAVA_HOME=/usr/lib/jvm/java-6-sun
 ANT_HOME=/usr/share/ant
 LOG_DIR=${HOME_DIR}/logs
 ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
+ORACLE_CI_DIR=foundation/plugins
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
 #URLs
@@ -184,9 +186,13 @@ touch ${DATED_LOG}
 
 echo "Testing if build is needed..."
 echo "Testing if build is needed..." >> ${DATED_LOG}
-if [ -f ${PREVREV_FILE} ]; then PREV_REV=`cat ${PREVREV_FILE}`; fi
+if [ -f ${PREVREV_FILE} ]; then
+    PREV_REV=`cat ${PREVREV_FILE} | cut -d: -f1`
+    PREV_COMMIT=`cat ${PREVREV_FILE} | cut -d: -f2`
+fi
 if [ "${PREV_REV}" = "" ]; then PREV_REV=${DEFAULT_PREVREV}; fi
-echo "prevRev: '${PREV_REV}'"
+if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
+echo "previous Revs (Code:Commit): '${PREV_REV}:${PREV_COMMIT}'"
 svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "curRev: '${CURRENT_REV}'"
@@ -206,13 +212,14 @@ then
     echo "Build complete."
     echo "Updating Revision info..." >> ${DATED_LOG}
     echo "Updating Revision info..."
-    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
+    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
     COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
     echo "commitRev: '${COMMIT_REV}'"
-    if [ "${COMMIT_REV}" -gt "${CURRENT_REV}" ]
+        echo "${CURRENT_REV}:${COMMIT_REV}" > ${PREVREV_FILE}
+    if [ "${COMMIT_REV}" -gt "${PREV_COMMIT}" ]
     then
         COMMIT=true
-        echo ${COMMIT_REV} > ${PREVREV_FILE}
+        echo "${CURRENT_REV}:${COMMIT_REV}" > ${PREVREV_FILE}
         echo "   Complete." >> ${DATED_LOG}
         echo "   Complete."
     else
