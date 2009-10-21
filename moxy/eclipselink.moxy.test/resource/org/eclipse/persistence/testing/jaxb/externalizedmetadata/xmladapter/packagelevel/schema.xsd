@@ -14,9 +14,9 @@
    </xsd:complexType>
    <xsd:complexType name="myClass">
       <xsd:sequence>
-         <xsd:element name="id" type="xsd:int"/>
          <xsd:element name="cal" type="customDateType" minOccurs="0"/>
       </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int"/>
    </xsd:complexType>
    <xsd:element name="someLameClass" type="someLameClass"/>
    <xsd:element name="myClass" type="myClass"/>

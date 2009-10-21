@@ -3,7 +3,12 @@
 	<java-types>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.MyClass">
             <java-attributes>
-                <xml-java-type-adapter java-attribute="cal" value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.DateAdapter" type="java.util.Calendar"/>
+                <xml-attribute java-attribute="id">
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.IdAdapter" />
+                </xml-attribute>
+                <xml-element java-attribute="cal">
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.DateAdapter" />
+                </xml-element>
             </java-attributes>
 		</java-type>
 	</java-types>

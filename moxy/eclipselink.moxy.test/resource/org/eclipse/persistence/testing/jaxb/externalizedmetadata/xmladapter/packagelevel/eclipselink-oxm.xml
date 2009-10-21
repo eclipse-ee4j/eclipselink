@@ -3,4 +3,11 @@
     <xml-java-type-adapters>
         <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.DateAdapter" type="java.util.Calendar"/>
     </xml-java-type-adapters>
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.MyClass">
+            <java-attributes>
+                <xml-attribute java-attribute="id" />
+            </java-attributes>
+        </java-type>
+    </java-types>
 </xml-bindings>

@@ -28,6 +28,9 @@ public class MyClass {
             return false;
         }
         MyClass sc = (MyClass) obj;
+        if (this.id != sc.id) {
+            return false;
+        }
         return (this.cal.YEAR == sc.cal.YEAR && this.cal.MONTH == sc.cal.MONTH && this.cal.DATE == sc.cal.DATE);
     }
 }

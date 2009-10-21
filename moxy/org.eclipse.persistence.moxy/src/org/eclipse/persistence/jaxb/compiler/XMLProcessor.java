@@ -334,6 +334,11 @@ public class XMLProcessor {
         }
         oldProperty.setSchemaName(qName);
         
+        // handle XmlJavaTypeAdapter
+        if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
+        }
+        
         return oldProperty;
     }
 
@@ -386,6 +391,11 @@ public class XMLProcessor {
             oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
         }
 
+        // handle XmlJavaTypeAdapter
+        if (xmlElement.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
+        }
+        
         // handle XmlElementWrapper
         if (xmlElement.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());

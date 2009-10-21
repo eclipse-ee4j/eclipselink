@@ -392,7 +392,7 @@ public class SchemaGenerator {
                         parentCompositor = wrapperSequence;
                     }
                 }
-                if (helper.isAnnotationPresent(next.getElement(), XmlAttribute.class)) {
+                if (next.isAttribute()) {
                     Attribute attribute = new Attribute();
                     QName attributeName = next.getSchemaName(); 
                     attribute.setName(attributeName.getLocalPart());

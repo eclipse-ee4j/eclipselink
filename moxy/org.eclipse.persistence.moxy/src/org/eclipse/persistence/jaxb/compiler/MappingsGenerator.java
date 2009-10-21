@@ -1575,7 +1575,7 @@ public class MappingsGenerator {
                 xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + wrapper.getName() + "/");
             }
         }
-        if (helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
+        if (property.isAttribute()) {
             QName name = property.getSchemaName();
             String namespace = "";
             if (namespaceInfo.isAttributeFormQualified()) {
