@@ -215,7 +215,6 @@ then
     svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
     COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
     echo "commitRev: '${COMMIT_REV}'"
-        echo "${CURRENT_REV}:${COMMIT_REV}" > ${PREVREV_FILE}
     if [ "${COMMIT_REV}" -gt "${PREV_COMMIT}" ]
     then
         COMMIT=true
