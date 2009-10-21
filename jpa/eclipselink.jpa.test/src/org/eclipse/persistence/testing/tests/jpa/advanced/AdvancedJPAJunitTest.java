@@ -189,7 +189,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testMetamodelMinimalSanityTest() {
         // Run test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
         if(!this.isJPA10()) {
-            EntityManager em = createEntityManager("default1");
+            EntityManager em = createEntityManager();
             // pre-clear metamodel to enable test reentry (SE only - not EE)
             if(!this.isOnServer()) {
                 ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);

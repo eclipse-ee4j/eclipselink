@@ -143,14 +143,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
-        
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedAttribute"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
-        
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjects"));
@@ -8576,7 +8568,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Don't run this test in a JPA 1.0 environment.
         if (! isJPA10()) {
             EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
+            EntityManager em = createEntityManager();
             beginTransaction(em);
             try{
                 Employee emp = new Employee();
@@ -8610,7 +8602,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Don't run this test in a JPA 1.0 environment.
         if (! isJPA10()) {
             EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
+            EntityManager em = createEntityManager();
             beginTransaction(em);
             try{
                 Employee emp = new Employee();
@@ -8657,7 +8649,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Don't run this test in a JPA 1.0 environment.
         if (! isJPA10()) {
             EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
+            EntityManager em = createEntityManager();
             beginTransaction(em);
             try{
                 Employee emp = new Employee();
@@ -8690,8 +8682,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIsLoadedWithReference(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Employee emp = new Employee();
@@ -8738,8 +8729,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIsLoadedWithoutReference(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Employee emp = new Employee();
@@ -8787,8 +8777,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIsLoadedWithoutReferenceAttribute(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Employee emp = new Employee();

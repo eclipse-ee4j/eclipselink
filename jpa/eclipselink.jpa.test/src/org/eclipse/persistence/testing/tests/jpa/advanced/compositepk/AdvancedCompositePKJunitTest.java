@@ -649,7 +649,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         // Don't run this test in a JPA 1.0 environment.
         if (! isJPA10()) {
             EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
+            EntityManager em = createEntityManager();
             beginTransaction(em);
             try{
                 DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
