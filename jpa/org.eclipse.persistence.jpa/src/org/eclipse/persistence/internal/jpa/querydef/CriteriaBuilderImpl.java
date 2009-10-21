@@ -41,6 +41,9 @@ import org.eclipse.persistence.queries.ReportQuery;
 
 public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
     
+    public static final String CONCAT = "concat";
+    public static final String SIZE = "size";
+    
     protected Metamodel metamodel;
     
     public CriteriaBuilderImpl(Metamodel metamodel){
@@ -1411,7 +1414,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      * @return size expression
      */
     public <C extends java.util.Collection<?>> Expression<Integer> size(Expression<C> collection){
-        return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER), buildList(collection), "size");
+        return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER), buildList(collection), SIZE);
     }
 
     /**
@@ -1736,8 +1739,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         if (xNode.isParameterExpression() && yNode.isParameterExpression()) {
             //some database require the type when concatting two parameters.
             ((org.eclipse.persistence.internal.expressions.ParameterExpression)xNode).setType(ClassConstants.STRING);
-        }
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, xNode.concat(yNode), list, "concat");
+    }
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, xNode.concat(yNode), list, CONCAT);
     }
 
     /**
@@ -1753,7 +1756,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         List list = new ArrayList();
         list.add(x);
         list.add(this.literal(y));
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().concat(y), list, "concat");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().concat(y), list, CONCAT);
 
     }
 
@@ -1771,7 +1774,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         ExpressionImpl literal = (ExpressionImpl) this.literal(x);
         list.add(literal);
         list.add(y);
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)literal).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, "concat");
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)literal).getCurrentNode().concat(((InternalSelection)y).getCurrentNode()), list, CONCAT);
     }
 
     /**

@@ -106,9 +106,9 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSome"));
-  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereDisjunction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunctionAndDisjunction"));
@@ -641,7 +641,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("Select size(e.responsibilities) from Employee e").getResultList();
+  //          em.createQuery("Select size(e.responsibilities) from Employee e").getResultList();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = qbuilder.createQuery(Object[].class);
             Root<Employee> customer = cquery.from(Employee.class);

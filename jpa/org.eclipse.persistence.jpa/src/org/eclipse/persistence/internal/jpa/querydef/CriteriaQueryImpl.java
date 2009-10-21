@@ -536,6 +536,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     } else {
                         if (((InternalSelection) nested).isFrom()) {
                             reportQuery.addItem(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), ((FromImpl) nested).findJoinFetches());
+                        } else if (((InternalExpression) nested).isCompoundExpression() && ((FunctionExpressionImpl) nested).getOperation() == CriteriaBuilderImpl.SIZE) {
+                            //selecting size not all databases support subselect in select clause so convert to count/groupby
+                            PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl) nested).getChildExpressions().get(0);
+                            ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
+                            reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                            reportQuery.addGrouping(fromExpression.getCurrentNode());
                         } else {
                             reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
                         }
@@ -600,8 +606,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 } else {
                     query = new ReportQuery();
                     query.setReferenceClass(((SelectionImpl) this.selection).getCurrentNode().getBuilder().getQueryClass());
-                    ((ReportQuery) query).addItem(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode(), ((FromImpl) this.selection).findJoinFetches());
-                    ((ReportQuery) query).setShouldReturnSingleAttribute(true);
+                    if (!this.selection.isCompoundSelection() && ((InternalExpression) this.selection).isCompoundExpression()) {
+                        if (((FunctionExpressionImpl) this.selection).getOperation() == CriteriaBuilderImpl.SIZE) {
+                            //selecting size not all databases support subselect in select clause so convert to count/groupby
+                            PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl) this.selection).getChildExpressions().get(0);
+                            ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
+                            ((ReportQuery) query).addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                            ((ReportQuery) query).addGrouping(fromExpression.getCurrentNode());
+                        }
+                        ((ReportQuery) query).addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl) this.selection).getCurrentNode(), this.selection.getJavaType());
+
+                    } else {
+                        ((ReportQuery) query).addItem(this.selection.getAlias(), ((SelectionImpl) this.selection).getCurrentNode());
+                        ((ReportQuery) query).setShouldReturnSingleAttribute(true);
+                    }
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
@@ -638,11 +656,22 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 reportQuery.setShouldReturnWithoutReportQueryResult(true);
             }
             if (this.selection != null) {
+                if (!this.selection.isCompoundSelection() && ((InternalExpression)this.selection).isCompoundExpression()){
+                    if(((FunctionExpressionImpl)this.selection).getOperation() == CriteriaBuilderImpl.SIZE){
+                    //selecting size not all databases support subselect in select clause so convert to count/groupby
+                    PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl)this.selection).getChildExpressions().get(0);
+                    ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
+                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER); 
+                    reportQuery.addGrouping(fromExpression.getCurrentNode());
+                }else{
+                    reportQuery.addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl)this.selection).getCurrentNode(), this.selection.getJavaType()); 
+
+                }}else{
                 if (((InternalSelection) selection).isFrom()) {
                     reportQuery.addItem(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), ((FromImpl) selection).findJoinFetches());
                 } else {
                     reportQuery.addAttribute(selection.getAlias(), ((SelectionImpl) selection).getCurrentNode(), selection.getJavaType());
-                }
+                }}
                 reportQuery.setReferenceClass(((InternalSelection) this.selection).getCurrentNode().getBuilder().getQueryClass());
                 reportQuery.setExpressionBuilder(((InternalSelection) this.selection).getCurrentNode().getBuilder());
             }
