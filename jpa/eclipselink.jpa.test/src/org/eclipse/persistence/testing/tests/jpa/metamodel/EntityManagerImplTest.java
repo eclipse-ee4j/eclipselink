@@ -43,10 +43,6 @@ public class EntityManagerImplTest extends MetamodelTest {
         super(name);
     }
     
-    public void setUp() {
-        super.setUp();
-    }
-    
     public static Test suite() {
         TestSuite suite = new TestSuite("EntityManagerImplTest");        
         suite.addTest(new EntityManagerImplTest("testIllegalStateExceptionOnClosedEntityManager"));        
@@ -59,7 +55,7 @@ public class EntityManagerImplTest extends MetamodelTest {
         Metamodel metamodel = null;
         boolean exceptionThrown = false;
         try {
-            emf = initialize();
+            emf = initialize(true);
             em = emf.createEntityManager();
             
             // Verify an ISE if the em is closed
@@ -82,6 +78,9 @@ public class EntityManagerImplTest extends MetamodelTest {
         } finally {
             //finalizeForTest(em, entityList);
             cleanup(em);
+            // Close the EMF - to clear the cache for subsequent tests
+            closeEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            resetEntityManagerFactory();
         }
     }
     

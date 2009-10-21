@@ -58,7 +58,7 @@ public class EntityManagerFactoryImplTest extends MetamodelTest {
         Metamodel metamodel = null;
         boolean exceptionThrown = false;
         try {
-            emf = initialize();
+            emf = initialize(true);
             
             // Verify an ISE if the emf is closed
             emf.close();
@@ -75,6 +75,9 @@ public class EntityManagerFactoryImplTest extends MetamodelTest {
             assertTrue(exceptionThrown);            
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            // Close the EMF - to clear the cache for subsequent tests
+            resetEntityManagerFactory();
         }
     }
     

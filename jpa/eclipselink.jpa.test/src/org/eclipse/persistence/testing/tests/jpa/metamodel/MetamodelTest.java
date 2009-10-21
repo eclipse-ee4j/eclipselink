@@ -32,6 +32,10 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class MetamodelTest extends JUnitTestCase {
     
     public static final String PERSISTENCE_UNIT_NAME = "metamodel1";
+    /** Cache the EMF on the test suite - for performance - to save 20 sec per test case */
+    public EntityManagerFactory entityManagerFactory = null;
+    /** Create tables only once - for performance */
+    public boolean isDatabaseSchemaCreated = false;
     
     public MetamodelTest() {
         super();
@@ -40,22 +44,49 @@ public class MetamodelTest extends JUnitTestCase {
     public MetamodelTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
+        setUp(false);
+    }
+
+    public void setUp(boolean overrideEMFCachingForTesting) {
         super.setUp();
+        initialize();
         ServerSession session = JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME);
-        new MetamodelTableCreator().replaceTables(session);
+        //if(!isDatabaseSchemaCreated | overrideEMFCachingForTesting) {
+        if(null == entityManagerFactory || (null != entityManagerFactory && !entityManagerFactory.isOpen())) {
+            new MetamodelTableCreator().replaceTables(session);
+            isDatabaseSchemaCreated = true;
+        }
     }
     
     
     public EntityManagerFactory initialize() {
-        EntityManagerFactory emf = null;;
+        return initialize(false);
+    }
+    
+    public void resetEntityManagerFactory() {
         try {
-            emf = getEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            if(null != entityManagerFactory && entityManagerFactory.isOpen()) {
+                entityManagerFactory.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();            
+        } finally {
+            entityManagerFactory = null;
+        }
+        
+    }
+    
+    public EntityManagerFactory initialize(boolean overrideEMFCachingForTesting) {
+        try {
+            if(null == entityManagerFactory || overrideEMFCachingForTesting) {
+                entityManagerFactory = getEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return emf;
+        return entityManagerFactory;
     }
     
     public void cleanup(EntityManager em) {

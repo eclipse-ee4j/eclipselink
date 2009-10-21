@@ -186,7 +186,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
             return PersistentAttributeType.ONE_TO_ONE;
         }
         // Internally we treat m:1 as 1:1 - place this before the 1:1 check
-        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_OneToMany_the_same_as_OneToOne
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne
         if (getMapping().isRelationalMapping() && 
                 (getMapping() instanceof OneToOneMapping || getMapping() instanceof VariableOneToOneMapping)) {
             return PersistentAttributeType.MANY_TO_ONE;

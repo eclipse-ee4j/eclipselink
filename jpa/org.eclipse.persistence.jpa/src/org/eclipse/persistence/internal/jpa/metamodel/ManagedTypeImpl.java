@@ -1286,7 +1286,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                         } else {
                             // Handle Collection type mappings as a default (we should never get here)
                             // TODO: System.out.println("_Warning: defaulting to non-Set specific Collection type on " + colMapping);
-                            member = new CollectionAttributeImpl(this, colMapping, true);
+                            member = new CollectionAttributeImpl(this, colMapping);
                         }
                     }
                 }
