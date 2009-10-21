@@ -87,6 +87,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
             Customer customer = ModelExamples.customerExample1();
             em.persist(customer);
+            em.flush();
             Integer customerId = customer.getCustomerId();            
             commitTransaction(em);
             
@@ -268,6 +269,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             orders.add(ModelExamples.orderExample3());
             customer.setOrders(orders);
             em.persist(customer);
+            em.flush();
             customerId = customer.getCustomerId();
             commitTransaction(em);    
         } catch (RuntimeException e) {

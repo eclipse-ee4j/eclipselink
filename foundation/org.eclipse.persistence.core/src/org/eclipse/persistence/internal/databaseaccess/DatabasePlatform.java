@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -92,7 +93,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  */
 public class DatabasePlatform extends DatasourcePlatform {
 
-    /** Holds a hashtable of values used to map JAVA types to database types for table creation */
+    /** Holds a map of values used to map JAVA types to database types for table creation */
     protected transient Hashtable fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
@@ -166,10 +167,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected static boolean shouldIgnoreCaseOnFieldComparisons = false;
 
 
-	/** Bug#3214927 The default is 32000 for DynamicSQLBatchWritingMechanism.  
-	 * It would become 100 when switched to ParameterizedSQLBatchWritingMechanism. */
-	public static int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
-	public static int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
+    /** Bug#3214927 The default is 32000 for DynamicSQLBatchWritingMechanism.  
+     * It would become 100 when switched to ParameterizedSQLBatchWritingMechanism.
+     */
+    public static int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
+    public static int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
     
     /** This attribute will store the SQL query that will be used to 'ping' the database
      * connection in order to check the health of a connection.
@@ -187,6 +189,11 @@ public class DatabasePlatform extends DatasourcePlatform {
      * specified in SQL.  This setting allows it to be enabled/disabled
      */ 
     protected boolean useRownumFiltering = true;
+    
+    /** 
+     * Allow platform specific cast to be disabled.
+     */ 
+    protected boolean isCastRequired = true;
 
     /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
      * Redefined here for backward compatibility:
@@ -215,6 +222,22 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.castSizeForVarcharParameter = 32672;
         this.startDelimiter = "\"";
         this.endDelimiter = "\"";
+    }
+    
+    /**
+     * Return if casting is enabled for platforms that support it.
+     * Allow platform specific cast to be disabled.
+     */ 
+    public boolean isCastRequired() {
+        return isCastRequired;
+    }
+
+    /**
+     * Set if casting is enabled for platforms that support it.
+     * Allow platform specific cast to be disabled.
+     */ 
+    public void setIsCastRequired(boolean isCastRequired) {
+        this.isCastRequired = isCastRequired;
     }
 
     /**
@@ -2633,7 +2656,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
-    public void writeParameterMarker(Writer writer, ParameterExpression expression) throws IOException {
+    public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record) throws IOException {
         writer.write("?");
     }
 
@@ -2807,29 +2830,36 @@ public class DatabasePlatform extends DatasourcePlatform {
     
     /**
      * INTERNAL:
-     * Override this method if the platform supports sequence objects.
      * Returns sql used to create sequence object in the database.
      */
     public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
+        writer.write("CREATE SEQUENCE ");
+        writer.write(fullSeqName);
+        if (increment != 1) {
+            writer.write(" INCREMENT BY " + increment);
+        }
+        writer.write(" START WITH " + start);
         return writer;
     }
-
+ 
     /**
      * INTERNAL:
-     * Override this method if the platform supports sequence objects.
      * Returns sql used to delete sequence object from the database.
      */
     public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
         return writer;
     }
 
     /**
      * INTERNAL:
-     * Override this method if the platform supports sequence objects
-     * and isAlterSequenceObjectSupported returns true.
      * Returns sql used to alter sequence object's increment in the database.
      */
     public Writer buildSequenceObjectAlterIncrementWriter(Writer writer, String fullSeqName, int increment) throws IOException {
+        writer.write("ALTER SEQUENCE ");
+        writer.write(fullSeqName);
+        writer.write(" INCREMENT BY " + increment);
         return writer;
     }
     

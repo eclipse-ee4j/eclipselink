@@ -653,7 +653,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      */
     public void checkNoWaitSupported() {
         DatabasePlatform platform = getSession().getPlatform();
-        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
+        if (platform.isH2() || platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
             throw new TestWarningException("This database does not support NOWAIT");        
         }
     }

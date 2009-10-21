@@ -1229,7 +1229,7 @@ public class MetadataProject {
                             if (defaultAutoSequence != null) {
                                 seqName = defaultAutoSequence.getName();
                             } else {
-                                seqName = DEFAULT_AUTO_GENERATOR; 
+                                seqName = DEFAULT_AUTO_GENERATOR;
                             }
                         } else {
                             seqName = generatorName;

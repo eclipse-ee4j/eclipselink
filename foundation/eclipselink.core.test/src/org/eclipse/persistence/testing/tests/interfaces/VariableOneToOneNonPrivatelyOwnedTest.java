@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.interfaces;
 
+import java.util.List;
+
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.interfaces.*;
 
@@ -25,7 +27,13 @@ public class VariableOneToOneNonPrivatelyOwnedTest extends TransactionalTestCase
     public ContactHolder origional;
 
     public void test() {
-        this.contact = (Contact)getSession().readObject(Phone.class);
+        List<Phone> phones = getSession().readAllObjects(Phone.class);
+        for (Phone phone : phones) {
+            if (phone.getEmp() != null) {
+                this.contact = phone;
+                break;
+            }
+        }
         this.origional = (ContactHolder)this.contact.getEmp().clone();
         ContactHolder holder = this.contact.getEmp();
         if (holder instanceof Employee) {

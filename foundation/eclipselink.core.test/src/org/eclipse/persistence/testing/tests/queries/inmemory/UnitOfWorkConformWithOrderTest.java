@@ -30,18 +30,19 @@ public class UnitOfWorkConformWithOrderTest extends AutoVerifyTestCase {
 
     public void test() {
         // Make a query an search Number greaterThan "00005"
-        ExpressionBuilder emp = new ExpressionBuilder();
-        Expression exp = emp.get("areaCode").equal(613);
+        ExpressionBuilder phone = new ExpressionBuilder();
+        Expression exp = phone.get("areaCode").equal(613);
         ReadAllQuery query = new ReadAllQuery(PhoneNumber.class);
         query.setSelectionCriteria(exp);
         query.conformResultsInUnitOfWork();// set Conforming
-        query.addOrdering(emp.get("owner").get("lastName").descending());
+        query.addOrdering(phone.get("owner").get("id").descending());
+        query.addOrdering(phone.get("type").descending());
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Vector v = (Vector)uow.executeQuery(query);
         Vector v2 = (Vector)uow.executeQuery(query);
 
         if (!v.equals(v2)) {
-            throw new TestErrorException("Order not maintained when conforming");
+            throw new TestErrorException("Order not maintained when conforming:" + v + " != " + v2);
         }
     }
 }

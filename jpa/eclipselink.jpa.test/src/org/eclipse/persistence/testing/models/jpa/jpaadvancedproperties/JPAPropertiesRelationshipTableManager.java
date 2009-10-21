@@ -59,7 +59,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldCUST_ID.setSize(15);
         fieldCUST_ID.setSubSize(0);
         fieldCUST_ID.setIsPrimaryKey(true);
-        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setIsIdentity(true);
         fieldCUST_ID.setUnique(false);
         fieldCUST_ID.setShouldAllowNull(false);
         table.addField(fieldCUST_ID);
@@ -109,7 +109,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
         fieldITEM_ID.setIsPrimaryKey(true);
-        fieldITEM_ID.setIsIdentity(false);
+        fieldITEM_ID.setIsIdentity(true);
         fieldITEM_ID.setUnique(false);
         fieldITEM_ID.setShouldAllowNull(false);
         table.addField(fieldITEM_ID);
@@ -149,7 +149,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
         fieldITEM_ID.setIsPrimaryKey(true);
-        fieldITEM_ID.setIsIdentity(false);
+        fieldITEM_ID.setIsIdentity(true);
         fieldITEM_ID.setUnique(false);
         fieldITEM_ID.setShouldAllowNull(false);
         table.addField(fieldITEM_ID);
@@ -232,7 +232,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldORDER_ID.setSize(15);
         fieldORDER_ID.setSubSize(0);
         fieldORDER_ID.setIsPrimaryKey(true);
-        fieldORDER_ID.setIsIdentity(false);
+        fieldORDER_ID.setIsIdentity(true);
         fieldORDER_ID.setUnique(false);
         fieldORDER_ID.setShouldAllowNull(false);
         table.addField(fieldORDER_ID);
@@ -311,7 +311,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldID.setSize(15);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
+        fieldID.setIsIdentity(true);
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);

@@ -1407,6 +1407,7 @@ public class EntityManagerSetupImpl {
         updateBatchWritingSetting(m);
 
         updateNativeSQLSetting(m);
+        updateSQLCastSetting(m);
         updateUppercaseSetting(m);
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
@@ -1708,6 +1709,23 @@ public class EntityManagerSetupImpl {
                  session.getProject().getLogin().dontUseNativeSQL();
            }else{
                  session.handleException(ValidationException.invalidBooleanValueForSettingNativeSQL(nativeSQLString));
+           }
+        }
+    }
+    
+    /**
+     * Enable or disable SQL casting.
+     */
+    protected void updateSQLCastSetting(Map m) {
+        //Set Native SQL flag if it was specified.
+        String sqlCastString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SQL_CAST, m, session);
+        if (sqlCastString != null) {
+           if (sqlCastString.equalsIgnoreCase("true")) {
+                 session.getProject().getLogin().getPlatform().setIsCastRequired(true);
+           } else if (sqlCastString.equalsIgnoreCase("false")) {
+               session.getProject().getLogin().getPlatform().setIsCastRequired(false);
+           } else {
+                 session.handleException(ValidationException.invalidBooleanValueForProperty(sqlCastString, PersistenceUnitProperties.SQL_CAST));
            }
         }
     }

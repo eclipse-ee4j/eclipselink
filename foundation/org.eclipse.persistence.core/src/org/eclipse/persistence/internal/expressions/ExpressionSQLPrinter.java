@@ -148,7 +148,7 @@ public class ExpressionSQLPrinter {
 
     public void printParameter(ParameterExpression expression) {
         try {
-            getCall().appendTranslationParameter(getWriter(), expression, getPlatform());
+            getCall().appendTranslationParameter(getWriter(), expression, getPlatform(), getTranslationRow());
 
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);

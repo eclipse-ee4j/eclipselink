@@ -101,8 +101,6 @@ public class OrderListTestModel extends TestModel {
     public OrderListTestModel() {
         setDescription("This model tests ordered list.");
         isTopLevel = true;
-        
-        addModels();
     }
 
     /*
@@ -143,6 +141,16 @@ public class OrderListTestModel extends TestModel {
      * Cuts the models with invalid configurations, configurations that don't make any difference.
      */
     boolean shouldAddModel() {
+        // H2 has an issue with large outer joins, causes null-pointer in driver.
+        if (getSession().getPlatform().isH2() && useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
+            return false;
+        }
+        // VARCHAR order causes errors on H2, but I can't see how it could really work on anything,
+        // as "1" + 1 = "11" not 2.
+        if (getSession().getPlatform().isH2() && useVarcharOrder) {
+            return false;
+        }
+            
         // listOrderField is not used 
         if(!useListOrderField) {
             // explicitly asked not to run the model that don't use listOrderField.
@@ -308,6 +316,8 @@ public class OrderListTestModel extends TestModel {
             }
             
             addTest(new CreateManagersTest());
+        } else {
+            addModels();
         }
     }
     

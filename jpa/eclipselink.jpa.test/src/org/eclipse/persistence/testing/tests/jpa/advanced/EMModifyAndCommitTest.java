@@ -216,7 +216,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
         if (!employee.getAddress().getStreet().equals("324 Bay Street")){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " Address not Updated");
         }
-        if (employee.getPeriod().getEndDate().getTime() >= System.currentTimeMillis()){
+        if (employee.getPeriod().getEndDate().getTime() > System.currentTimeMillis()){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " EndDate not Updated");
         }
         if (employee.getSalary() != 0){
@@ -259,7 +259,7 @@ public class EMModifyAndCommitTest extends EntityContainerTestBase  {
         if (!employee.getAddress().getStreet().equals("324 Bay Street")){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " Address not Updated on Database");
         }
-        if (employee.getPeriod().getEndDate().getTime() >= System.currentTimeMillis()){
+        if (employee.getPeriod().getEndDate().getTime() > System.currentTimeMillis()){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " EndDate not Updated on Database");
         }
         if (employee.getSalary() != 0){

@@ -110,43 +110,32 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         
             //To fix bug 6217517, AVG(t1.SALARY) returns an Integer value with DB2
             // The Integer also returned by SyBase (JConnect 6.05) and SQLServer 2005 (SQL Server  Version: 9.00.2050; Driver: Microsoft SQL Server 2005 JDBC Driver  Version: 1.2.2828.100) 
-            value = result.get("salary-ave");
-            if (value instanceof Integer && !(getSession().getDatasourcePlatform().isDB2() || getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isSQLServer())) {
-                throw new TestErrorException("Incorrect result type for average function of report query.");
-            }
-        
-            if (getSession().getDatasourcePlatform().isOracle()) {  
+            if (getSession().getDatasourcePlatform().isOracle()) {
+                value = result.get("salary-ave");
+                if (value instanceof Integer) {
+                    throw new TestErrorException("Incorrect result type for average function of report query.");
+                }
                 value = result.get("salary-var");
                 if (value instanceof Integer) {
                     throw new TestErrorException("Incorrect result type for variance function of report query.");
+                }
+                value = result.get("id-sum");
+                if (value instanceof BigDecimal) {
+                    throw new TestErrorException("Incorrect result type for sum function of report query.");
+                }
+                value = result.get("id-min");
+                if (value instanceof BigDecimal) {
+                    throw new TestErrorException("Incorrect result type for min function of report query.");
+                }
+                value = result.get("id-max");
+                if (value instanceof BigDecimal) {
+                    throw new TestErrorException("Incorrect result type for max function of report query.");
                 }
             }
         
             value = result.get("salary-std");
             if (value instanceof Integer) {
                 throw new TestErrorException("Incorrect result type for standard deviation function of report query.");
-            }
-        
-            //To fix bug 6217517, SUM(t0.EMP_ID) returns an Integer value with DB2
-            value = result.get("id-sum");
-            if (! (value instanceof BigDecimal || (value instanceof Integer && getSession().getDatasourcePlatform().isDB2()))) {
-                throw new TestErrorException("Incorrect result type for sum function of report query.");
-            }
-        
-            //To fix bug 6217517, MIN(t0.EMP_ID) returns an Integer value with DB2; Long on MySQL
-            value = result.get("id-min");
-            if (! (value instanceof BigDecimal || (value instanceof Integer && getSession().getDatasourcePlatform().isDB2())
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isPostgreSQL())))) {
-                throw new TestErrorException("Incorrect result type for min function of report query.");
-            }
-        
-            //To fix bug 6217517, MAX(t0.EMP_ID) returns an Integer value with DB2; Long on MySQL
-            value = result.get("id-max");
-            if (! (value instanceof BigDecimal || (value instanceof Integer && getSession().getDatasourcePlatform().isDB2())
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isPostgreSQL())))) {
-                throw new TestErrorException("Incorrect result type for max function of report query.");
             }
         }
     }

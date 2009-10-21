@@ -353,6 +353,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.locate());
         addOperator(ExpressionOperator.locate2());
         addOperator(ExpressionOperator.nullIf());
+        addOperator(ExpressionOperator.ifNull());
 
         // Date
         addOperator(ExpressionOperator.addMonths());
@@ -426,6 +427,10 @@ public class DatasourcePlatform implements Platform {
     }
 
     public boolean isDB2() {
+        return false;
+    }
+
+    public boolean isH2() {
         return false;
     }
 

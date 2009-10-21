@@ -388,7 +388,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setSize(15);
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
-        ID_field.setIsIdentity(false);
+        ID_field.setIsIdentity(true);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
 

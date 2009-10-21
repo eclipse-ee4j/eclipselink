@@ -449,8 +449,15 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
             testPass = true;
-
-        Assert.assertEquals("All Expression test failed: data validation error", result.size(), 12);
+        
+        if (result.size() != 12) {
+            // H2 ALL does not work correctly if the result is empty.
+            if (getServerSession().getPlatform().isH2()) {
+                warning("ALL fails on H2 as H2 has an SQL bug in ALL of none");
+            } else {
+                fail("All Expression test failed: data validation error: " + result.size() + " != " + 12);                
+            }
+        }
         Assert.assertTrue("All Expression test failed", testPass);
     }
 

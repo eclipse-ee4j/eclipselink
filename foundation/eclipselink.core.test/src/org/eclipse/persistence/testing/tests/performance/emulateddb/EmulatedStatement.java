@@ -61,6 +61,8 @@ public class EmulatedStatement implements PreparedStatement {
                 }
                 rows.add(row);
             }
+            result.close();
+            statement.close();
         }
         this.connection.putRows(this.sql, rows);
         return rows;

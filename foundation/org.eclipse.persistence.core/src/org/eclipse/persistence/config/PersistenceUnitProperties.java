@@ -420,6 +420,12 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
     
     /**
+     * Allows the CAST SQL operation to be disabled on platforms that support casting.
+     * Casting is normally not required, and can cause issue when used.
+     */
+    public static final String SQL_CAST = "eclipselink.jdbc.sql-cast";
+    
+    /**
      * When native SQL queries are used, the JDBC meta-data may return column names in lower case on some platforms.
      * If the column names are uppercase in the mappings (default) then they will not match.
      * This setting allows for forcing the column names from the meta-data to uppercase.

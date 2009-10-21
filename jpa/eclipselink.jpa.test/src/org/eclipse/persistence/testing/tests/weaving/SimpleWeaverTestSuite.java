@@ -23,6 +23,8 @@ import org.eclipse.persistence.testing.models.weaving.SimpleObject;
 import org.eclipse.persistence.testing.models.weaving.SimpleProject;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.weaving.*;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.weaving.*;
 
 public class SimpleWeaverTestSuite extends TestCase {
@@ -40,7 +42,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 		InputStream is = simpleClassLoader.getResourceAsStream(SimpleObject.class.getName().replace('.','/') + ".class");
 		originalBytes = readStreamContentsIntoByteArray(is);
 		entities = new ArrayList();
-		entities.add(SimpleObject.class);
+		entities.add(new MetadataAsmFactory(new MetadataLogger(null), SimpleWeaverTestSuite.class.getClassLoader()).getMetadataClass(SimpleObject.class.getName()));
 	}
 	public static void tearDownFixtures() {
 		simpleClassLoader = null;

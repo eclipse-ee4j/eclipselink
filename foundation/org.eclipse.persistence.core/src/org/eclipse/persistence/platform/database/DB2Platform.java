@@ -19,6 +19,7 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
@@ -537,14 +538,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return false;
     }
 
-    public void writeParameterMarker(Writer writer, ParameterExpression parameter) throws IOException {
+    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record) throws IOException {
         // DB2 requires cast around parameter markers if both operands of certain
         // operators are parameter markers
         // This method generates CAST for parameter markers whose type is correctly
         // identified by the query compiler
         String paramaterMarker = "?";
         Object type = parameter.getType();
-        if(type != null) {
+        if (this.isCastRequired && (type != null)) {
             BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
             String castType = null;
             if (typeHelper.isBooleanType(type) || typeHelper.isByteType(type) || typeHelper.isShortType(type)) {

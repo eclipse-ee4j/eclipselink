@@ -221,6 +221,19 @@ public class TestSystem {
     }
 
     /**
+     * You must have the H2 driver loaded.
+     */
+    public void useH2() {
+        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.H2Platform());
+        login.setDriverClassName("org.h2.Driver");
+        login.setDriverURLHeader("jdbc:h2:");
+        login.setDatabaseURL("test");
+        login.setUserName("sa");
+        login.setPassword("");
+        setLogin(login);
+    }
+
+    /**
      * You must have the Postgres driver loaded.
      */
     public void usePostgres() {

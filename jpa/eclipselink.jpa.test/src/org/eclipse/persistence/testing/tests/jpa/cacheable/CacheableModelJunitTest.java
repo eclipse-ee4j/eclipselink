@@ -168,7 +168,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void setUp() {
         super.setUp();
         clearDSCache();
-        getDSServerSession().setLogLevel(0);
     }
     
     public static Test suite() {

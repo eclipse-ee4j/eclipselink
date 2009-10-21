@@ -65,6 +65,7 @@ public class CMWorkbenchIntegrationSystem extends ConversionManagerSystem {
     public static DatabaseQuery buildPersistenceTestEqualCalendarQuery() {
         ExpressionBuilder builder = new ExpressionBuilder(ConversionDataObject.class);
         GregorianCalendar month = new GregorianCalendar();
+        month.clear();
         month.set(2001, 6, 1, 11, 24, 36);
         Expression expression = builder.get("aCalendar").equal(month);
         ReadObjectQuery query = new ReadObjectQuery(ConversionDataObject.class);

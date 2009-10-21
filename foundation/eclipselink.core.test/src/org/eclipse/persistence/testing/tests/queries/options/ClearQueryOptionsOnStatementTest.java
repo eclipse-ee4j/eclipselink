@@ -102,6 +102,10 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     }
 
     public void testResultSetFetchSizeReset(Session session) {
+        // H2 sets the query fetch size on the connection, and does not clear it, so this will fail.
+        if (getSession().getLogin().getDatasourcePlatform().isH2()) {
+            return;            
+        }
         // Resultset fetch size
         ReadAllQuery query = new ReadAllQuery(QueryOptionEmployee.class);
         if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
@@ -176,7 +180,10 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     public void testQueryTimeoutReset(Session session) {
         boolean query1TimedOut = false;
         boolean query2TimedOut = false;
-        
+        // H2 sets the query timeout on the connection, and does not clear it, so this will fail.
+        if (getSession().getLogin().getDatasourcePlatform().isH2()) {
+            return;            
+        }
         String sql;
         if (getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL()) {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c,EMPLOYEE d";

@@ -75,8 +75,8 @@ public class PessimisticLockFineGrainedTest extends TestCase {
     public void test() throws Exception {
         checkSelectForUpateSupported();
 
-        if ((getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen()) && lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
-            throw new TestWarningException("This database does not support NOWAIT");        
+        if (lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
+            checkNoWaitSupported();
         }
     
         uow = getSession().acquireUnitOfWork();

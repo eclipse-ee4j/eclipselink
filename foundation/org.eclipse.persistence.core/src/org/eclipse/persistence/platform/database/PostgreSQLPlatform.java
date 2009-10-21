@@ -419,45 +419,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Override this method if the platform supports sequence objects.
-     * Returns sql used to create sequence object in the database.
-     */
-    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
-        writer.write("CREATE SEQUENCE ");
-        writer.write(fullSeqName);
-        if (increment != 1) {
-            writer.write(" INCREMENT BY " + increment);
-        }
-        writer.write(" START WITH " + start);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports sequence objects.
-     * Returns sql used to delete sequence object from the database.
-     */
-    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
-        writer.write("DROP SEQUENCE ");
-        writer.write(fullSeqName);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports sequence objects
-     * and isAlterSequenceObjectSupported returns true.
-     * Returns sql used to alter sequence object's increment in the database.
-     */
-    public Writer buildSequenceObjectAlterIncrementWriter(Writer writer, String fullSeqName, int increment) throws IOException {
-        writer.write("ALTER SEQUENCE ");
-        writer.write(fullSeqName);
-        writer.write(" INCREMENT BY " + increment);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
      * Override this method if the platform supports sequence objects
      * and it's possible to alter sequence object's increment in the database.
      */

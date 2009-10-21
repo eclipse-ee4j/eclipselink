@@ -17,7 +17,6 @@ import java.util.Collection;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * @author Guy Pelletier
@@ -25,8 +24,6 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * @version 1.0
  */
 public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
-    protected boolean m_reset = false;    // reset gets called twice on error
-    protected Exception m_exception;
     protected boolean citySlickersAreOrdered;
     protected boolean countryDwellersAreOrdered;
         
@@ -35,10 +32,7 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
     }
     
     public void setup () {
-        super.setup();
-        m_reset = true;
-        m_exception = null;
-        
+        super.setup();        
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
@@ -146,21 +140,11 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
         
         } catch (RuntimeException e) {
             rollbackTransaction();
-            m_exception = e;
+            throw e;
         }
     }
     
-    public void reset () {
-        if (m_reset) {
-            m_reset = false;
-        }
-    }
-    
-    public void verify() {
-        if (m_exception != null) {
-            throw new TestErrorException("Error encountered during testing: " + m_exception.getMessage());
-        }
-        
+    public void verify() {        
         // JBS - Ordering check removed as order is random based on class method order which is not consistent in Java.
         //if (!citySlickersAreOrdered) {
         //    throw new TestErrorException("The city slickers were not ordered properly.");

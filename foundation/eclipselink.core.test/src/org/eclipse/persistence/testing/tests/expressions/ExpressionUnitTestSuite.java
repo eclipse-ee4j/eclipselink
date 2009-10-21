@@ -802,13 +802,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setExpression(expression);
         test.setName("MonthsBetweenTest");
         test.setDescription("Test monthsBetween expression");
-        test.addUnsupportedPlatform(DB2Platform.class);
-        test.addUnsupportedPlatform(SybasePlatform.class);
-        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
-        test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQLPlatform.class);
-        test.addUnsupportedPlatform(TimesTenPlatform.class);
-        test.addUnsupportedPlatform(PostgreSQLPlatform.class);
+        test.addSupportedPlatform(OraclePlatform.class);
         addTest(test);
     }
 
@@ -820,13 +814,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setExpression(expression);
         test.setName("NextDayTest");
         test.setDescription("Test nextDay expression");
-        test.addUnsupportedPlatform(DB2Platform.class);
-        test.addUnsupportedPlatform(SybasePlatform.class);
-        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
-        test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQLPlatform.class);
-        test.addUnsupportedPlatform(TimesTenPlatform.class);
-        test.addUnsupportedPlatform(PostgreSQLPlatform.class);
+        test.addSupportedPlatform(OraclePlatform.class);
         addTest(test);
     }
 
@@ -1265,12 +1253,8 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setExpression(expression);
         test.setName("ToUpperCasedWordsTest");
         test.setDescription("Test toUpperCasedWords expression");
-        test.addUnsupportedPlatform(DB2Platform.class);
-        test.addUnsupportedPlatform(SybasePlatform.class);
-        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
-        test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQLPlatform.class);
-        test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(PostgreSQLPlatform.class);
         addTest(test);
     }
 

@@ -76,6 +76,7 @@ public interface Platform extends Serializable, Cloneable {
      */
     public ValueReadQuery getTimestampQuery();
 
+    public boolean isH2();
 
     public boolean isAccess();
 

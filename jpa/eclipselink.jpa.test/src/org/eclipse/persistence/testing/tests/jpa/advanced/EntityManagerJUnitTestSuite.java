@@ -8241,7 +8241,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
         // normally false; set to true for debug output for just this single test
-        boolean shouldForceFinest = true;
+        boolean shouldForceFinest = false;
         int originalLogLevel = -1; 
         
         ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();

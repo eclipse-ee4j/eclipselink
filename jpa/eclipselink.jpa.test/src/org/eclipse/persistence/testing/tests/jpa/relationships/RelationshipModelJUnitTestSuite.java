@@ -250,9 +250,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         Order order1 = new Order();
         Order order2 = new Order();
         Auditor auditor = new Auditor();
-        
-        getServerSession().setLogLevel(0);
-        
+                
         try {
             OrderCard order1Card = new OrderCard();
             OrderLabel order1Label = new OrderLabel();

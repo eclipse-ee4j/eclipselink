@@ -194,8 +194,8 @@
         <exclude-superclass-listeners/>
         <attributes>
             <id name="id">
-                <generated-value strategy="AUTO"/>
-                <!-- generated-value strategy="TABLE" generator="XML_CERTIFICATION_TABLE_GENERATOR"/ -->
+                <!--generated-value strategy="AUTO"/-->
+                <generated-value strategy="TABLE" generator="XML_CERTIFICATION_TABLE_GENERATOR"/>
             </id>
             <basic name="description"/>
             <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">

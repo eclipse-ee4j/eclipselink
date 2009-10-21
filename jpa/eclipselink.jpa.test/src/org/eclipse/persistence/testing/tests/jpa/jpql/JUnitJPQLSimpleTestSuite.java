@@ -33,6 +33,7 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -222,6 +223,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
 	        query.setParameter("arg1", 1);
 	        query.setParameter("arg2", 1);
+	        if (getServerSession().getPlatform().isDB2() || getServerSession().getPlatform().isH2() || getServerSession().getPlatform().isDerby()) {
+        	        warning(":param=:param fail on Derby/Db2/H2, disabling binding");
+        	        query.setHint(QueryHints.BIND_PARAMETERS, "false");
+	        }
 	        emps = query.getResultList();
 	
 	        Assert.assertNotNull(emps);
@@ -266,6 +271,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         //preload employees into the cache so that phonenumbers are not prefetched
         String ejbqlString = "SELECT e FROM Employee e";
         List result = em.createQuery(ejbqlString).getResultList();
+        result.size();
         // run the simpleJoinFetchTest and verify all employees have phonenumbers fetched.
         simpleJoinFetchTest(em);
     }
@@ -1058,7 +1064,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector parameters = new Vector();
         parameters.add(expectedResult.getFirstName());
 
-        Vector employees = (Vector)getServerSession().executeQuery(raq, parameters);
+        List employees = (List)getServerSession().executeQuery(raq, parameters);
+        employees.size();
 
         clearCache();
 
@@ -1423,7 +1430,6 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void conformResultsInUnitOfWorkTest() {
-        EntityManager em = createEntityManager();
         ReadObjectQuery readObjectQuery = new ReadObjectQuery();
 
         readObjectQuery.setReferenceClass(Employee.class);
@@ -1953,6 +1959,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         ejbqlString = "SELECT emp FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "emp.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME";
         List result = em.createQuery(ejbqlString).getResultList();
+        result.size();
     }
 
     public void selectNamedNativeQueryWithPositionalParameterTest() {
@@ -2128,7 +2135,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Date date = Date.valueOf("1901-01-01");
         Expression exp = (new ExpressionBuilder()).get("period").get("startDate").greaterThan(date);
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
 
@@ -2143,7 +2150,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
-        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
+        expectedResult.size();
         
         clearCache();
 

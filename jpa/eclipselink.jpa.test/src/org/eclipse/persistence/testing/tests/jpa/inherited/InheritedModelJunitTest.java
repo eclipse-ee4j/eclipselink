@@ -489,7 +489,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                         
             em.persist(beerConsumer);
             m_expertBeerConsumerId = beerConsumer.getId();
-            getServerSession().setLogLevel(0);
             commitTransaction(em);    
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

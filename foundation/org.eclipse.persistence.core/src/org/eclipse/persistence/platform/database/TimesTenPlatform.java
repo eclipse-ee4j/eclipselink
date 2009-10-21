@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 public class TimesTenPlatform extends DatabasePlatform {
@@ -228,41 +229,15 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Override this method if the platform supports sequence objects.
-     * Returns sql used to create sequence object in the database.
-     */
-    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
-        writer.write("CREATE SEQUENCE ");
-        writer.write(fullSeqName);
-        if (increment != 1) {
-            writer.write(" INCREMENT BY " + increment);
-        }
-        writer.write(" START WITH " + start);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports sequence objects.
-     * Returns sql used to delete sequence object from the database.
-     */
-    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
-        writer.write("DROP SEQUENCE ");
-        writer.write(fullSeqName);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
      * TimesTen and DB2 require cast around parameter markers if both operands of certain
      * operators are parameter markers
      * This method generates CAST for parameter markers whose type is correctly
      * identified by the query compiler
      */
-    public void writeParameterMarker(Writer writer, ParameterExpression parameter) throws IOException {
+    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record) throws IOException {
         String parameterMarker = "?";
         Object type = parameter.getType();
-        if(type != null) {
+        if (this.isCastRequired && (type != null)) {
             FieldTypeDefinition fieldType;
             fieldType = getFieldTypeDefinition((Class)type);
             if (fieldType != null){

@@ -16,6 +16,7 @@ import java.util.Vector;
 import java.io.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
@@ -271,9 +272,9 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * INTERNAL:
      * All values are printed as ? to allow for parameter binding or translation during the execute of the call.
      */
-    public void appendTranslationParameter(Writer writer, ParameterExpression expression, DatabasePlatform platform) throws IOException {
+    public void appendTranslationParameter(Writer writer, ParameterExpression expression, DatabasePlatform platform, AbstractRecord record) throws IOException {
         try {
-            platform.writeParameterMarker(writer, expression);
+            platform.writeParameterMarker(writer, expression, record);
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }

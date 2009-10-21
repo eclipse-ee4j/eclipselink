@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
 import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
@@ -30,6 +31,10 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
     public Session originalSession;
 
     public void addRequiredSystems() {
+        // H2 has locking issue with multiple connections.
+        if (getSession().getPlatform().isH2()) {
+            throw new TestWarningException("H2 has locking issue with multiple connections");
+        }
         addRequiredSystem(new OwnershipSystem());
         addRequiredSystem(new IndirectListSystem());
         addRequiredSystem(new EmployeeSystem());
