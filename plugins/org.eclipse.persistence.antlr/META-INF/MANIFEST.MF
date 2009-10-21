@@ -1,15 +1,22 @@
 Manifest-Version: 1.0
-Specification-Vendor: 
-Specification-Version: 
-Implementation-Vendor: ${implementation.vendor}
+Export-Package: org.eclipse.persistence.internal.libraries.antlr.runti
+ me;uses:="org.eclipse.persistence.internal.libraries.antlr.runtime.tr
+ ee";version="2.0.0.qualifier",org.eclipse.persistence.internal.librar
+ ies.antlr.runtime.tree;uses:="org.eclipse.persistence.internal.librar
+ ies.antlr.runtime";version="2.0.0.qualifier"
 Implementation-Version: 2.0.0.qualifier
-Bundle-ManifestVersion: 2
+Tool: Bnd-0.0.366
+DSTAMP: 20091021
 Bundle-Name: EclipseLink ANTLR
-Bundle-SymbolicName: org.eclipse.persistence.antlr
-Bundle-Vendor: ${implementation.vendor}
-Bundle-Version: 2.0.0.qualifier
+TODAY: October 21 2009
+Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+TSTAMP: 1030
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="2.0.0.qualifier"
-Bundle-ClassPath: .
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.0.qualifier
+Bnd-LastModified: 1256135426981
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.persistence.antlr
+

@@ -1,13 +1,36 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Java Persistence 2.0
-Bundle-SymbolicName: javax.persistence
-Bundle-Version: 1.99.7
-Export-Package: javax.persistence;version="1.99.7",
- javax.persistence.criteria;version="1.99.7",
- javax.persistence.metamodel;version="1.99.7",
- javax.persistence.spi;version="1.99.7"
-Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activator
+Export-Package: javax.persistence.spi;uses:="javax.persistence,javax.s
+ ql";version="1.99.7",javax.persistence;uses:="javax.persistence.crite
+ ria,javax.persistence.metamodel,javax.persistence.spi";version="1.99.
+ 7",javax.persistence.criteria;uses:="javax.persistence.metamodel,java
+ x.persistence";version="1.99.7",javax.persistence.metamodel;version="
+ 1.99.7"
+Private-Package: .,org.eclipse.persistence.javax.persistence.osgi
+Implementation-Version: 1.99.7
 Bundle-ClassPath: .
-Import-Package: org.osgi.framework;resolution:=optional,
- org.osgi.util.tracker;resolution:=optional
+Specification-Vendor: Sun Microsystems Inc.
+Tool: Bnd-0.0.366
+DSTAMP: 20091021
+Bundle-Name: Java Persistence 2.0 - EARLY ACCESS
+TODAY: October 21 2009
+Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+TSTAMP: 1412
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 1.99.7.v200910211412
+Bnd-LastModified: 1256148773934
+Bundle-ManifestVersion: 2
+Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activ
+ ator
+Include-Resource: ../../../about.html,../../../readme.html,../../../li
+ cense.html,./readme.txt,javax/persistence/orm_1_0.xsd=./src/javax/per
+ sistence/orm_1_0.xsd,javax/persistence/orm_2_0.xsd=./src/javax/persis
+ tence/orm_2_0.xsd,javax/persistence/persistence_1_0.xsd=./src/javax/p
+ ersistence/persistence_1_0.xsd,javax/persistence/persistence_2_0.xsd=
+ ./src/javax/persistence/persistence_2_0.xsd
+Import-Package: javax.sql;resolution:=optional,org.osgi.framework;reso
+ lution:=optional,org.osgi.util.tracker;resolution:=optional
+Specification-Version: 2.0 PFD
+Bundle-SymbolicName: javax.persistence
+

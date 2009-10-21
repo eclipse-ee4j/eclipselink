@@ -19,7 +19,7 @@ Include-Resource:\
  xsd=resource/xsd,\
  org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties=resource/org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties
 Import-Package:                                                           \
- javax.activation.*;resolution:=optional;version="1.1.0",                 \
+ javax.activation.*;resolution:=optional,                 \
  javax.crypto.*;resolution:=optional,                                     \
  javax.imageio.*;resolution:=optional,                                    \
  javax.jms.*;resolution:=optional;version="1.1.0",                        \
