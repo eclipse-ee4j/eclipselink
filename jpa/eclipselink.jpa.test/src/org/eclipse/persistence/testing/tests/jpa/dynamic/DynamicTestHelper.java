@@ -21,10 +21,12 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //java eXtension imports
-import javax.persistence.EntityManagerFactory;
+import java.util.Map;
 
-//EclipseLink imports
-import org.eclipse.persistence.jpa.PersistenceProvider;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.ProviderUtil;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties;
@@ -44,10 +46,23 @@ public class DynamicTestHelper {
             "</persistence-unit>" +
         "</persistence>";
     
+    //TODO - create custom javax.persistence.spi.PersistenceProvider
     public static EntityManagerFactory createEMF(String emName) {
-         PersistenceProvider provider = new PersistenceProvider();
-         provider.setInitializationHelper(
-             new DynamicPersistenceInitializationHelper(DYNAMIC_PERSISTENCE_XML));
+         PersistenceProvider provider = new PersistenceProvider() {
+            @Override
+            public EntityManagerFactory createContainerEntityManagerFactory(
+                PersistenceUnitInfo info, Map map) {
+                return null;
+            }
+            @Override
+            public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
+                return null;
+            }
+            @Override
+            public ProviderUtil getProviderUtil() {
+                return null;
+            }
+         };
          return provider.createEntityManagerFactory(emName, getDatabaseProperties());
     }
 }

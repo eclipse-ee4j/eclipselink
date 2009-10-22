@@ -50,13 +50,6 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         initializationHelper = new PersistenceInitializationHelper();
     }
     
-    public PersistenceInitializationHelper getInitializationHelper() {
-        return initializationHelper;
-    }
-    public void setInitializationHelper(PersistenceInitializationHelper initializationHelper) {
-        this.initializationHelper = initializationHelper;
-    }
-
     /**
      * Called by Persistence class when an EntityManagerFactory
      * is to be created.
@@ -101,7 +94,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         EntityManagerSetupImpl emSetupImpl = null;
 
         try {
-            Enumeration<URL> resources = initializationHelper.getPersistenceResources(classLoader); 
+            Enumeration<URL> resources = classLoader.getResources("META-INF/persistence.xml");
             boolean initialized = false;
             while (resources.hasMoreElements()) {
                 String puName = PersistenceUnitProcessor.buildPersistenceUnitName(PersistenceUnitProcessor.computePURootURL(resources.nextElement()), name);
