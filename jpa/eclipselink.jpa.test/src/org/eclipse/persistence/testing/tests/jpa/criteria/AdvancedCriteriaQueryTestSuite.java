@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
   //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testProd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSome"));
@@ -977,6 +979,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    public void testProd(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+  //          em.createQuery("Select size(e.responsibilities) from Employee e").getResultList();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<BigInteger> cquery = qbuilder.createQuery(BigInteger.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            cquery.select(qbuilder.toBigInteger(qbuilder.prod(qbuilder.literal(BigInteger.valueOf(5)),customer.<Integer>get("salary"))));
+            TypedQuery<BigInteger> tquery = em.createQuery(cquery);
+            List<BigInteger> result = tquery.getResultList();
+            for(BigInteger value : result){
+                assertTrue("Incorrect arithmatic returned ", value.mod(BigInteger.valueOf(5)).equals(BigInteger.valueOf(0)));
+            }
+        // No assert as version is not actually a mapped field in dealer.
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 

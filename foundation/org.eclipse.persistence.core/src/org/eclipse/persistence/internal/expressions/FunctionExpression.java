@@ -571,6 +571,8 @@ public class FunctionExpression extends BaseExpression {
         } else {
             // This field is a complex function value so any name can be used.
             DatabaseField field = new DatabaseField("*");
+            // If the result type is set, use it.
+            field.setSqlType(DatabaseField.NULL_SQL_TYPE);
             field.setType(getResultType());
             newFields.addElement(field);
         }

@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -1208,6 +1209,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else if (fieldType == ClassConstants.TIMESTAMP) {
                 value = resultSet.getTimestamp(columnNumber);
             }
+        }else if (fieldType == ClassConstants.BIGINTEGER){
+            value = resultSet.getBigDecimal(columnNumber).toBigInteger();
         }
         
         // PERF: Only check for null for primitives.
