@@ -466,7 +466,7 @@ public class SDOSchemaGenerator {
         if (dataType == null) {
             dataType = getAutomaticDataTypeForType(sdoProperty.getType());
         }
-        if (dataType != null) {
+        if (dataType != null && !shouldSuppressDataType(sdoProperty, dataType)) {        	
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE, sdoXmlPrefix);
             String dataTypeString = dataType.getName();
@@ -496,6 +496,37 @@ public class SDOSchemaGenerator {
         }
     }
 
+    private boolean shouldSuppressDataType(SDOProperty prop, Type dataType){
+    	if(prop.isNullable()){
+    		SDOType type = prop.getType();    		
+    		if(dataType == SDOConstants.SDO_BOOLEANOBJECT && (type == SDOConstants.SDO_BOOLEAN || type == SDOConstants.SDO_BOOLEANOBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_BYTEOBJECT && (type == SDOConstants.SDO_BYTE || type == SDOConstants.SDO_BYTEOBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_CHARACTEROBJECT && (type == SDOConstants.SDO_CHARACTER || type == SDOConstants.SDO_CHARACTEROBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_DOUBLEOBJECT && (type == SDOConstants.SDO_DOUBLE || type == SDOConstants.SDO_DOUBLEOBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_FLOATOBJECT && (type == SDOConstants.SDO_FLOAT || type == SDOConstants.SDO_FLOATOBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_INTOBJECT && (type == SDOConstants.SDO_INT || type == SDOConstants.SDO_INTOBJECT )){
+    			return true;
+    		}    		
+    		if(dataType == SDOConstants.SDO_LONGOBJECT && (type == SDOConstants.SDO_LONG || type == SDOConstants.SDO_LONGOBJECT )){
+    			return true;
+    		}
+    		if(dataType == SDOConstants.SDO_SHORTOBJECT && (type == SDOConstants.SDO_SHORT || type == SDOConstants.SDO_SHORTOBJECT )){
+    			return true;
+    		}
+        }
+    	return false;
+    }
+    
     private String buildAliasNameString(List aliasNames) {
         String aliasNamesString = new String();
         int size = aliasNames.size();

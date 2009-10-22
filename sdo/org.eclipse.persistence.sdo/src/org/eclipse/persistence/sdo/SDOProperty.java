@@ -247,6 +247,9 @@ public class SDOProperty implements Property, Serializable {
      */
     public void setType(Type type) {
         this.type = (SDOType) type;
+        if(isNullable()){
+        	updateType();
+        }
     }
 
     /**
@@ -1036,6 +1039,9 @@ public class SDOProperty implements Property, Serializable {
       */
     public void setNullable(boolean nullable) {
         this.nullable = nullable;
+        if(nullable && getType() != null){
+        	updateType();
+        }
     }
 
     public boolean isNullable() {
@@ -1260,4 +1266,23 @@ public class SDOProperty implements Property, Serializable {
         }
         return true;
     }
+    private void updateType(){    	
+        if (type == SDOConstants.SDO_BOOLEAN) {
+            setType(SDOConstants.SDO_BOOLEANOBJECT);
+        } else if (type == SDOConstants.SDO_BYTE) {
+            setType(SDOConstants.SDO_BYTEOBJECT);
+        } else if (type == SDOConstants.SDO_CHARACTER) {
+            setType(SDOConstants.SDO_CHARACTEROBJECT);
+        } else if (type == SDOConstants.SDO_DOUBLE) {
+            setType(SDOConstants.SDO_DOUBLEOBJECT);
+        } else if (type == SDOConstants.SDO_FLOAT) {
+            setType(SDOConstants.SDO_FLOATOBJECT);
+        } else if (type == SDOConstants.SDO_INT) {
+            setType(SDOConstants.SDO_INTOBJECT);
+        } else if (type == SDOConstants.SDO_LONG) {
+            setType(SDOConstants.SDO_LONGOBJECT);
+        } else if (type == SDOConstants.SDO_SHORT) {
+            setType(SDOConstants.SDO_SHORTOBJECT);
+        } 
+    }   	   
 }

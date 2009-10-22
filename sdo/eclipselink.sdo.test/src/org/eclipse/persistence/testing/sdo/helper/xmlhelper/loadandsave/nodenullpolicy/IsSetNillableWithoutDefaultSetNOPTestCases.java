@@ -62,8 +62,8 @@ public class IsSetNillableWithoutDefaultSetNOPTestCases extends IsSetNillableWit
         boolean isSet = doc.getRootObject().isSet(ID_NAME);
         // verify defaults
         // TODO: this test case will fail for noSchemaLoad until we resolve #6151874 Jira-253
-        assertEquals(0, value);        
-        assertNotNull(value);
+        assertEquals(null, value);        
+        assertNull(value);
         assertFalse(isSet);
 
         value = doc.getRootObject().get(FIRSTNAME_NAME);
