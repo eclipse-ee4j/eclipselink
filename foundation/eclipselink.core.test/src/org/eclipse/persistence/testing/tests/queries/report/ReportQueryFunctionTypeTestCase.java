@@ -120,15 +120,15 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
                     throw new TestErrorException("Incorrect result type for variance function of report query.");
                 }
                 value = result.get("id-sum");
-                if (value instanceof BigDecimal) {
+                if (!(value instanceof BigDecimal)) {
                     throw new TestErrorException("Incorrect result type for sum function of report query.");
                 }
                 value = result.get("id-min");
-                if (value instanceof BigDecimal) {
+                if (!(value instanceof BigDecimal)) {
                     throw new TestErrorException("Incorrect result type for min function of report query.");
                 }
                 value = result.get("id-max");
-                if (value instanceof BigDecimal) {
+                if (!(value instanceof BigDecimal)) {
                     throw new TestErrorException("Incorrect result type for max function of report query.");
                 }
             }
