@@ -42,7 +42,6 @@
     <property name="src.dir"                       value="src"/>
     <property name="asm.classes.dir"             value="."/>
     <property name="temp.dir"                    value="${asm.classes.dir}/tmp"/>
-    <property name="eclipselink.asm.bndl.prefix" value="${ant.project.name}"/>
 
     <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>

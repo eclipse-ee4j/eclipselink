@@ -42,7 +42,6 @@
     <property name="src.dir"                       value="src"/>
     <property name="antlr.classes.dir"             value="."/>
     <property name="temp.dir"                      value="${antlr.classes.dir}/tmp"/>
-    <property name="eclipselink.antlr.bndl.prefix" value="${ant.project.name}"/>
 
     <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
