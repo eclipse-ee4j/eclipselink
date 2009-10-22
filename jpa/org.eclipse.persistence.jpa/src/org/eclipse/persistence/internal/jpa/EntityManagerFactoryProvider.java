@@ -54,7 +54,8 @@ public class EntityManagerFactoryProvider {
         {PersistenceUnitProperties.JDBC_USER , "eclipselink.jdbc.user"},
         {PersistenceUnitProperties.JDBC_DRIVER ,"eclipselink.jdbc.driver"},
         {PersistenceUnitProperties.JDBC_URL , "eclipselink.jdbc.url"},
-        {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"}
+        {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"},
+        {PersistenceUnitProperties.WEAVING , "persistence.tools.weaving"}
     };
 
     /**
