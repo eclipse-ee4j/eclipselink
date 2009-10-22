@@ -567,14 +567,14 @@ public class SQLSelectStatement extends SQLStatement {
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
         for (Expression expression : getGroupByExpressions()) {            
-            if (expression.isObjectExpression() && ((ObjectExpression)expression).getDescriptor() != null){
+      //      if (expression.isObjectExpression() && ((ObjectExpression)expression).getDescriptor() != null){
                 //in the case where the user is grouping by an entity we need to change this to the PKs
-               for (String field : ((ObjectExpression)expression).getDescriptor().getPrimaryKeyFieldNames()){
-                   writeFieldsFromExpression(printer, expression.getField(field), newFields);
-               }
-            }else{
+//               for (String field : ((ObjectExpression)expression).getDescriptor().getPrimaryKeyFieldNames()){
+//                   writeFieldsFromExpression(printer, expression.getField(field), newFields);
+    //           }
+  //          }else{
                 writeFieldsFromExpression(printer, expression, newFields);
-            }
+       //     }
         }
     }
 
