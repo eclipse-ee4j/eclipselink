@@ -148,6 +148,7 @@
         <copy file="${eclipselink.core.test.dir}/eclipselink-tests.jar" toFile="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/core-tests.jar"/>
         <jar jarfile="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar" manifest="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
+            <fileset dir="${ant.home}/lib" includes="ant-junit.jar,ant.jar"/>
         </jar>
     </target>
 
@@ -162,7 +163,7 @@
         <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/configuration">
             <fileset file="${eclipselink.jpa.osgi.test}/${resource.dir}/config.ini"/>
         </copy>
-	<copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins">
+        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins">
             <fileset file="${equinox.depend.dir}/org.eclipse.*.jar"/>
             <fileset dir="${eclipselink.plugins.dir}">
                     <include name="org.eclipse.persistence.jpa_*"/>
@@ -202,20 +203,20 @@
         </ant>
     </target>
     
-    <target name="test" depends="clean-run">
+    <target name="run-test">
         <echo>Running test on ${db.url}</echo>
 
-	<fileset dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"
+        <fileset dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"
                 id="equinox.launcher.jar.path"
                 includes="org.eclipse.equinox.launcher_*.jar"/>
         <pathconvert refid="equinox.launcher.jar.path" property="equinox.launcher.jar"/>
-
+        <dirname property="report.dirname" file="${eclipselink.jpa.osgi.test}/${report.dir}/${test.class}-test-results"/>
         <java jar="${equinox.launcher.jar}"
                  fork="true"
                  maxmemory="512m"
                  failonerror="false"
                  dir="${eclipselink.jpa.osgi.test}/${run.dir}">
-                <arg value="-console"/>
+                <arg value="-console -clean"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=${db.url}"/>
@@ -223,9 +224,25 @@
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-Ddb.platform=${db.platform}"/>
                 <jvmarg value="-DTEST_CLASS=${test.class}"/>
+                <jvmarg value="-DREPORT_FILE=${report.dirname}/${test.class}-test-results.xml"/>
                 <jvmarg value="${test.weaving}"/>
                 <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
         </java>
+    </target>
+
+    <target name="test-osgi-srg" depends="clean-run">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
+        </antcall>
+        <junitreport todir="${eclipselink.jpa.osgi.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.osgi.test}/${report.dir}">
+                <include name="*test-results.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
+        </junitreport>
     </target>
 
 </project>

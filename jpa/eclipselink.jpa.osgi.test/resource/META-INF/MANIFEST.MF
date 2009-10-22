@@ -7,13 +7,16 @@ Bundle-ClassPath: .,
     eclipselink-xml-only-model.jar,
     eclipselink-xml-merge-model.jar,
     eclipselink-annotation-model.jar,
+    eclipselink-advanced-field-access-model.jar,
     eclipselink-pu with spaces.jar,
     eclipselink-advanced-properties.jar,
     eclipselink-validation-failed-model.jar,
     eclipselink-tests.jar,
     core-tests.jar,
     ojdbc5_11.jar,
-    junit.jar
+    junit.jar,
+    ant-junit.jar,
+    ant.jar
 Bundle-Activator: org.eclipse.persistence.testing.framework.osgi.Activator
 Import-Package: javax.persistence;version="1.99",
     javax.persistence.spi;version="1.99",
