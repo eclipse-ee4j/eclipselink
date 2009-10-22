@@ -417,19 +417,19 @@
             <fileset dir="${signing.dir}" includes="**/*.zip"/>
         </delete>
         <!-- Since we've checked in some files, the svn revision has incremented. To create a valid "latest.svnrev" file -->
-        <!-- it needs to be recreated now that the build has completed.      --> 
+        <!-- it needs to be recreated now that the build has completed.      -->
         <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
     </target>
 
     <target name="publish-oracle">
-        <echo message="oracle commit is commented out."/>
-        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
+        <echo message="oracle commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
-        </exec -->
+        </exec>
     </target>
 
     <target name="publish-maven" depends="init">
