@@ -14,15 +14,19 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import static javax.persistence.GenerationType.TABLE;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 @Entity(name="AdvancedCustomer")
+@Access(value=AccessType.PROPERTY)
 @Table(name="CMP3_ADV_CUSTOMER")
 public class Customer {
     private Integer id;
@@ -30,6 +34,12 @@ public class Customer {
     private String firstName;
     private String lastName;
     private int budget;
+    
+    // this field should not be mapped, but the combination of
+    // annotations should be allowed
+    @Transient
+    @Access(value=AccessType.FIELD)
+    private String transientField;
     
     public Customer() {
         super();

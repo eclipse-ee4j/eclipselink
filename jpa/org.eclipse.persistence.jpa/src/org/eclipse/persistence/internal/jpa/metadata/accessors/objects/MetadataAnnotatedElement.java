@@ -33,6 +33,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,7 @@ import javax.persistence.Version;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
 import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
@@ -354,8 +356,15 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessible object has 2 or more declared 
      * persistence annotations.
      */
-    public boolean hasMoreThanOneDeclaredAnnotation(MetadataDescriptor descriptor) {
-        return getDeclaredAnnotationsCount(descriptor) > 1;
+    public boolean areAnnotationsCompatibleWithTransient(MetadataDescriptor descriptor) {
+        int legalAnnotationCount = 1;
+        Iterator annotations = TransientCompatibleAnnotations.getTransientCompatibleAnnotations().iterator();
+        while (annotations.hasNext()){
+            if (m_annotations.containsKey(annotations.next())){
+                legalAnnotationCount++;
+            }
+        }
+        return getDeclaredAnnotationsCount(descriptor) <= legalAnnotationCount;
     }
     
     /** 

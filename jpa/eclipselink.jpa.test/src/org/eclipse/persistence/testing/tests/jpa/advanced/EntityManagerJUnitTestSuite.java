@@ -329,6 +329,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTemporalOnClosedEm"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testTransientMapping"));
         
         return suite;
     }
@@ -8883,6 +8884,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             caughtException = e;
         }
         assertTrue("Wrong Exception was caught when setting a named temporal Calendar parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
+    }
+    
+    public void testTransientMapping(){
+        ServerSession session = getServerSession();
+        ClassDescriptor descriptor = session.getClassDescriptor(Customer.class);
+        assertTrue("There should not be a mapping for transientField.", descriptor.getMappingForAttributeName("transientField") == null);
     }
 
 }
