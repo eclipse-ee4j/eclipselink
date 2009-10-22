@@ -273,7 +273,7 @@
     </target>
 
     <target name="build-oracle-extension">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">

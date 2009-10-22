@@ -53,7 +53,7 @@
         - clean-testing : removes all testing specific build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
-        - build-extensions : compiles Oracle extensions and tests
+        - build-oracle : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
         - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
@@ -169,7 +169,7 @@
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
     <!-- Compiles core components, tests and extensions (excluding utilities). -->
-    <target name="build-extensions" depends="build-oracle-extension, build-oracle-extension-test"/>
+    <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
@@ -696,6 +696,12 @@
     <!-- Run core SRG. -->
     <target name="test-core-srg" description="run the core srg tests">
         <ant antfile="build.xml" dir="${eclipselink.core.test}" target="test-srg"/>
+    </target>
+    <!-- Run Oracle Tests -->
+    <target name="test-oracle" description="run all oracle specific tests">
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}"      target="test-oracle"/>
+        <!-- ant antfile="build.xml" dir="${eclipselink.dbws.test.oracle}"       target="test-oracle"/ -->
+        <!-- ant antfile="build.xml" dir="${eclipselink.utils.dbws.test.oracle}" target="test-oracle"/ -->
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">

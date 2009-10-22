@@ -185,7 +185,7 @@
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
     <target name="test">
-        <antcall target="run.test" inheritRefs="true">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
