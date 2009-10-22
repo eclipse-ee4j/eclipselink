@@ -359,7 +359,7 @@
         <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
     </target>
-    
+
     <target name="publish-oracle">
         <echo message="oracle commit in progress..."/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
