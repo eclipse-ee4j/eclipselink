@@ -18,7 +18,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** 
- * The Customizer annotation is used to specify a class that implements the 
+ * The XmlCustomizer annotation is used to specify a class that implements the 
  * org.eclipse.persistence.config.DescriptorCustomizer 
  * interface and is to run against a class descriptor after all metadata 
  * processing has been completed.
@@ -26,9 +26,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE})
 @Retention(RUNTIME)
 public @interface XmlCustomizer {
+
     /**
      * (Required) Defines the name of the descriptor customizer that should be
      * applied to this classes descriptor.
      */
-     Class value(); 
+     Class value();
+
 }
