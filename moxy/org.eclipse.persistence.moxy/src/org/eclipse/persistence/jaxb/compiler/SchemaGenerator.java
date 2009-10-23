@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
@@ -207,7 +206,7 @@ public class SchemaGenerator {
                 if(prefix != null) {
                     baseTypeName = prefix + ":" + baseTypeName;
                 }
-                if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class) || (valueField.getGenericType() != null)){                	
+                if (valueField.isXmlList() || (valueField.getGenericType() != null)) {                	
                     //generate a list instead of a restriction
                     List list = new List();
                     list.setItemType(baseTypeName);
@@ -660,7 +659,7 @@ public class SchemaGenerator {
                         }
                         
                         if (next.getGenericType() != null){
-                            if (helper.isAnnotationPresent(next.getElement(), XmlList.class)) {
+                            if (next.isXmlList()) {
                                 if (isComplexType) {
                                     //TODO: Error case probably
                                 }

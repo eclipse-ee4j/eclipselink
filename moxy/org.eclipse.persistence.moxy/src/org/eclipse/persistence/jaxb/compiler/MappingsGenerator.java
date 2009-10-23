@@ -881,7 +881,7 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
         
         mapping.setField(getXPathForField(property, namespaceInfo, true));
-        if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {         
+        if (property.isXmlList()) {         
             mapping.setUsesSingleNode(true);
         }        
         
@@ -1303,7 +1303,7 @@ public class MappingsGenerator {
         if(xmlField.getXPathFragment().isAttribute()){
             mapping.setUsesSingleNode(true);
         }                
-        if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
+        if (property.isXmlList()) {         
             mapping.setUsesSingleNode(true);
         }
         descriptor.addMapping(mapping);

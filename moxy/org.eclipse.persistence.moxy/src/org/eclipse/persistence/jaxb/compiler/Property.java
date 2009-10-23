@@ -57,6 +57,7 @@ public class Property {
     private String setMethodName;
     private boolean isRequired = false;
     private boolean isNillable = false;
+    private boolean isXmlList = false;
     private boolean isTransient;
     private String defaultValue;
     private boolean isMixedContent = false;
@@ -399,5 +400,23 @@ public class Property {
      */
     public void setXmlElementWrapper(XmlElementWrapper xmlElementWrapper) {
         this.xmlElementWrapper = xmlElementWrapper;
+    }
+    
+    /**
+     * Set the isXmlList property.
+     * 
+     * @param isXmlList
+     */
+    public void setIsXmlList(boolean isXmlList) {
+        this.isXmlList = isXmlList;
+    }
+    
+    /**
+     * Indicates if this property is an XmlList.
+     * 
+     * @return
+     */
+    public boolean isXmlList() {
+        return this.isXmlList;
     }
 }

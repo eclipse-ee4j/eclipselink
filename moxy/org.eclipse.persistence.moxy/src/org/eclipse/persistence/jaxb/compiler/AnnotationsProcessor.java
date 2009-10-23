@@ -978,7 +978,7 @@ public class AnnotationsProcessor {
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 int modifiers = nextField.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {          
-               	Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                	               
+                    Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                	               
                     properties.add(property);
                 }
             } else {
@@ -1208,11 +1208,12 @@ public class AnnotationsProcessor {
             property.setXmlElementWrapper(xmlEltWrapper);
         }
 
-        // Make sure XmlList annotation is on a collection or array
         if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
+            // Make sure XmlList annotation is on a collection or array
             if (!isCollectionType(property) && !property.getType().isArray()) {
                 throw JAXBException.invalidList(property.getPropertyName());
             }
+            property.setIsXmlList(true);
         }
 
         if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {

@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
@@ -32,7 +33,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
@@ -407,9 +407,16 @@ public class XMLProcessor {
             oldProperty.setIsRequired(ptype.isPrimitive() || ptype.isArray() && ptype.getComponentType().isPrimitive());
         }
         
+        if (xmlElement.isSetXmlList()) {
+            // Make sure XmlList annotation is on a collection or array
+            if (!aProcessor.isCollectionType(oldProperty) && !oldProperty.getType().isArray()) {
+                throw JAXBException.invalidList(oldProperty.getPropertyName());
+            }
+            oldProperty.setIsXmlList(xmlElement.isXmlList());
+        }
+        
         return oldProperty;
     }
-
 
     private Property processXmlElements(XmlElements xmlElements, Property oldProperty) {
         return oldProperty;
