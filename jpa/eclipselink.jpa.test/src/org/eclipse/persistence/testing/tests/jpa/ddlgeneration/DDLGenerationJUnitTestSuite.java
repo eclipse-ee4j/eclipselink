@@ -24,6 +24,11 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldBenefit;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldCustomer;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.LuxuryCar;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumBenefit;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Port;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO;
@@ -41,6 +46,7 @@ import javax.persistence.Query;
 public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // the persistence unit name which is used in this test suite
     private static final String DDL_PU = "ddlGeneration";
+    private static final String DDL_TPC_PU = "ddlTablePerClass";
 
     public DDLGenerationJUnitTestSuite() {
         super();
@@ -67,11 +73,97 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager(DDL_PU);
             //em.close();
             clearCache(DDL_PU);
+            
+            EntityManager emDDLTPC = createEntityManager(DDL_TPC_PU);
+            clearCache(DDL_TPC_PU);
         } catch (Throwable t){
             t.printStackTrace();
         }
     }
 
+    public void testDDLTablePerClassModel() {
+        EntityManager em = createEntityManager(DDL_TPC_PU);
+        beginTransaction(em);
+        
+        GoldCustomer goldCustomer = new GoldCustomer();;
+        PlatinumCustomer platinumCustomer = new PlatinumCustomer();
+        
+        try {
+            goldCustomer.setFullName("GoldCustomer");
+            goldCustomer.setAge(21);
+            goldCustomer.setGender("Male");
+            goldCustomer.setNationality("Canadian");
+            em.persist(goldCustomer);
+            
+            platinumCustomer.setFullName("PlatinumCustomer");
+            platinumCustomer.setAge(22);
+            platinumCustomer.setGender("Female");
+            platinumCustomer.setNationality("American");
+            em.persist(platinumCustomer);
+            
+            LuxuryCar luxuryCar1 = new LuxuryCar();
+            em.persist(luxuryCar1);
+            
+            GoldBenefit goldBenefit1 = new GoldBenefit();
+            goldBenefit1.setBenefitDescription("Gold benefit 1");
+            goldBenefit1.setLuxuryCar(luxuryCar1);
+            em.persist(goldBenefit1);
+            
+            LuxuryCar luxuryCar2 = new LuxuryCar();
+            em.persist(luxuryCar2);
+            
+            GoldBenefit goldBenefit2 = new GoldBenefit();
+            goldBenefit2.setBenefitDescription("Gold benefit 2");
+            goldBenefit2.setLuxuryCar(luxuryCar2);
+            em.persist(goldBenefit2);
+            
+            LuxuryCar luxuryCar3 = new LuxuryCar();
+            em.persist(luxuryCar3);
+            
+            PlatinumBenefit platinumBenefit1 = new PlatinumBenefit();
+            platinumBenefit1.setBenefitDescription("Platinum benefit 1");
+            platinumBenefit1.setCar(luxuryCar3);
+            em.persist(platinumBenefit1);
+            
+            List<GoldBenefit> goldBenefits1 = new ArrayList<GoldBenefit>();
+            List<GoldBenefit> goldBenefits2 = new ArrayList<GoldBenefit>();
+            List<PlatinumBenefit> platinumBenefits1 = new ArrayList<PlatinumBenefit>();
+            
+            goldCustomer.setGoldBenefitList(goldBenefits1);
+            platinumCustomer.setGoldBenefitList(goldBenefits2);
+            platinumCustomer.setPlatinumBenefitList(platinumBenefits1);           
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            fail("Exception thrown on DDL test of Table Per Class model, thrown:" + e);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        clearCache(DDL_TPC_PU);
+        em = createEntityManager(DDL_TPC_PU);        
+        
+        GoldCustomer refreshedGoldCustomer = em.find(GoldCustomer.class, goldCustomer.getCustomerId());
+        assertTrue("The gold customer read back did not match the original", getServerSession(DDL_TPC_PU).compareObjects(goldCustomer, refreshedGoldCustomer));
+
+        PlatinumCustomer refreshedPlatinumCustomer = em.find(PlatinumCustomer.class, platinumCustomer.getCustomerId());
+        assertTrue("The platinum customer read back did not match the original", getServerSession(DDL_TPC_PU).compareObjects(platinumCustomer, refreshedPlatinumCustomer));
+    }
+    
+    public void testDDLTablePerClassModelQuery() {
+        EntityManager em = createEntityManager(DDL_TPC_PU);
+        
+        List goldCustomers = em.createNamedQuery("GoldCustomer.findAll").getResultList();
+        List platinumCustomers = em.createNamedQuery("PlatinumCustomer.findAll").getResultList();
+        
+        assertFalse("No gold customers returned", goldCustomers.isEmpty());
+        assertFalse("No platinum customers returned", platinumCustomers.isEmpty());
+    }
+    
     // Test for GF#1392
     // If there is a same name column for the entity and many-to-many table, wrong pk constraint generated.
     public void testDDLPkConstraintErrorIncludingRelationTableColumnName() {

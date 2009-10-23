@@ -38,6 +38,33 @@
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="ddlTablePerClass" transaction-type="RESOURCE_LOCAL">
+        <!-- This persistence unit is configured to use 
+        name="eclipselink.ddl-generation" value="drop-and-create-tables",
+        any models that do not use a TableCreator class should be placed
+        here -->
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Benefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Car</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.LuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SuperLuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.StandardBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SUV</class>
+        <properties>
+            <property name="eclipselink.session=name" value="ddlTablePerClass"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerClass.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerClass.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+        </properties>
+    </persistence-unit>
 </persistence>
 
 
