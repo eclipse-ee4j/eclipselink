@@ -95,11 +95,51 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.oracle"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.oracle.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.oracle.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink Oracle Extensions"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.modelgen.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.modelgen.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink JPA Modelgen (non-OSGi)"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen.processor"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.processor.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.processor.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.equinox"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.equinox.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.equinox.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink JPA Equinox Fragment"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.weaving"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.weaving.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.weaving.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink JPA Weaving for Equinox Fragment"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
@@ -119,14 +159,6 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.oracle"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink Oracle Extensions"/>
-        </antcall>
-        <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.antlr"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar"/>
@@ -143,11 +175,19 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.dbws"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.dbws.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.dbws.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink DBWS"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="eclipselink"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.jar.name}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-            <param name="artifactName" value="EclipseLink"/>
+            <param name="artifactName" value="EclipseLink (non-OSGi)"/>
         </antcall>
         <antcall target="upload-artifact">
             <!-- eventually this will ship separately, comments for future use -->

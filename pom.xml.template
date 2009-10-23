@@ -9,7 +9,7 @@
   <version>@version@</version>
   <url>http://www.eclipse.org/eclipselink</url>
   <issueManagement>
-    <system>jira</system>
+    <system>bugzilla</system>
     <url>https://bugs.eclipse.org/bugs</url>
   </issueManagement>
   <inceptionYear>2007</inceptionYear>

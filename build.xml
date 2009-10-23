@@ -263,7 +263,7 @@
     </target>
 
     <target name="build-oracle-extension-test">
-        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
