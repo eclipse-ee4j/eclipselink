@@ -242,6 +242,8 @@
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
         </path>
     </target>
 
