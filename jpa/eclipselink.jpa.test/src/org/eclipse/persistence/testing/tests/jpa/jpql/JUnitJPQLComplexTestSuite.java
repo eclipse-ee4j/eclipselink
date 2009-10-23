@@ -193,6 +193,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeParameterTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("absInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("modInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("sqrtInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("sizeInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mathInSelectTest"));
         
         return suite;
     }
@@ -2422,6 +2427,57 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
         }
 
+    }
+    
+    public void absInSelectTest(){
+        EntityManager em = createEntityManager();
+        
+        String ejbqlString = "select abs(e.salary) from Employee e where e.firstName = 'Bob' and e.lastName = 'Smith'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 35000);
+    }
+    
+    public void modInSelectTest(){
+        EntityManager em = createEntityManager();
+        
+        String ejbqlString = "select mod(e.salary, 10) from Employee e where e.firstName = 'Bob' and e.lastName = 'Smith'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        assertTrue("The wrong mod value was returned.", ((Integer)result.get(0)).intValue() == 0);
+    }
+    
+    public void sqrtInSelectTest(){
+        EntityManager em = createEntityManager();
+        
+        String ejbqlString = "select sqrt(e.salary) from Employee e where e.firstName = 'Bob' and e.lastName = 'Smith'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() > 187);
+        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() < 188);
+    }
+    
+    public void sizeInSelectTest(){
+        EntityManager em = createEntityManager();
+        
+        String ejbqlString = "select size(e.phoneNumbers) from Employee e where e.firstName = 'Betty'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 2);
+    }
+    
+    public void mathInSelectTest(){
+        EntityManager em = createEntityManager();
+        
+        String ejbqlString = "select e.salary + 100 from Employee e where e.firstName = 'Bob' and e.lastName = 'Smith'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        assertTrue("The wrong value was returned.", ((Integer)result.get(0)).intValue() == 35100);
     }
     
     

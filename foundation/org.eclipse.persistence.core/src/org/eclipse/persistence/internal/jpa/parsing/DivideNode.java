@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
@@ -28,6 +30,17 @@ public class DivideNode extends BinaryOperatorNode {
         super();
     }
 
+    /**
+     * INTERNAL
+     * Apply this node to the passed query
+     */
+    public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
+        if (theQuery.isReportQuery()) {
+            ReportQuery reportQuery = (ReportQuery)theQuery;
+            reportQuery.addAttribute("divide", generateExpression(context), (Class)getType());
+        }
+    }
+    
     /**
      * INTERNAL
      * Validate node and calculates its type.

@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.JPQLException;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
@@ -31,6 +33,18 @@ public class SizeNode extends ArithmeticFunctionNode {
         super();
     }
 
+    /**
+     * INTERNAL
+     * Apply this node to the passed query
+     */
+    public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
+        if (theQuery.isReportQuery()) {
+            ReportQuery reportQuery = (ReportQuery)theQuery;
+            reportQuery.addAttribute("size", getLeft().generateExpression(context).count(), (Class)getType());
+            reportQuery.addGrouping(getLeft().getLeft().generateExpression(context));
+        }
+    }
+    
     /**
      * INTERNAL
      * Validate node and calculate its type.
