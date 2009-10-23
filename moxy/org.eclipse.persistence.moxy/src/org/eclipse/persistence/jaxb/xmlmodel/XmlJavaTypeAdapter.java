@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+
 /**
  * <p>Java class for anonymous complex type.
  * 
@@ -37,7 +38,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-public class XmlJavaTypeAdapter extends JavaAttribute {
+public class XmlJavaTypeAdapter
+    extends JavaAttribute
+{
 
     @XmlAttribute
     protected String value;

@@ -57,8 +57,8 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/all>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-accessor-order"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-accessor-type"/>
+ *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
+ *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -83,10 +83,10 @@ public class XmlBindings {
     protected XmlBindings.XmlEnums xmlEnums;
     @XmlElement(name = "java-types", required = true)
     protected XmlBindings.JavaTypes javaTypes;
-    @XmlAttribute(name = "xml-accessor-order", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected XmlAccessOrder xmlAccessorOrder;
-    @XmlAttribute(name = "xml-accessor-type", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
+    @XmlAttribute(name = "xml-accessor-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
+    @XmlAttribute(name = "xml-accessor-order")
+    protected XmlAccessOrder xmlAccessorOrder;
 
     /**
      * Gets the value of the xmlSchema property.
@@ -209,6 +209,43 @@ public class XmlBindings {
     }
 
     /**
+     * Gets the value of the xmlAccessorType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
+     *     
+     */
+    public org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType getXmlAccessorType() {
+        if (xmlAccessorType == null) {
+            return org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.PUBLIC_MEMBER;
+        } else {
+            return xmlAccessorType;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlAccessorType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
+     *     
+     */
+    public void setXmlAccessorType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType value) {
+        this.xmlAccessorType = value;
+    }
+
+    /**
+     * Indicates if XmlAccessorType is set, i.e. non-null.
+     * 
+     * @return true if xmlAccessorType is not null, false otherwise
+     */
+    public boolean isSetXmlAccessorType() {
+        return xmlAccessorType != null;
+    }
+
+    /**
      * Gets the value of the xmlAccessorOrder property.
      * 
      * @return
@@ -245,42 +282,7 @@ public class XmlBindings {
         return xmlAccessorOrder != null;
     }
 
-    /**
-     * Gets the value of the xmlAccessorType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
-     */
-    public org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType getXmlAccessorType() {
-        if (xmlAccessorType == null) {
-            return org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.PUBLIC_MEMBER;
-        } else {
-            return xmlAccessorType;
-        }
-    }
 
-    /**
-     * Sets the value of the xmlAccessorType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
-     */
-    public void setXmlAccessorType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType value) {
-        this.xmlAccessorType = value;
-    }
-
-    /**
-     * Indicates if XmlAccessorType is set, i.e. non-null.
-     * 
-     * @return true if xmlAccessorType is not null, false otherwise
-     */
-    public boolean isSetXmlAccessorType() {
-        return xmlAccessorType != null;
-    }
 
     /**
      * <p>Java class for anonymous complex type.

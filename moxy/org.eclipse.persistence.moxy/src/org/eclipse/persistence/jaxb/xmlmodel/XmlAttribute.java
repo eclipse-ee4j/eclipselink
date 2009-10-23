@@ -31,15 +31,15 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
  *       &lt;/all>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-inline-binary-data"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-id"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-idref"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-attachment-ref"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-list"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-mime-type"/>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-id" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-attachment-ref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-mime-type" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -60,24 +60,24 @@ public class XmlAttribute
     protected XmlSchemaType xmlSchemaType;
     @XmlElement(name = "xml-java-type-adapter", required = true)
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected Boolean xmlInlineBinaryData;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-id", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected Boolean xmlId;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-idref", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected Boolean xmlIdref;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-attachment-ref", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected Boolean xmlAttachmentRef;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-list", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected Boolean xmlList;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-mime-type", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
-    protected String xmlMimeType;
     @javax.xml.bind.annotation.XmlAttribute
     protected String name;
     @javax.xml.bind.annotation.XmlAttribute
     protected String namespace;
     @javax.xml.bind.annotation.XmlAttribute
     protected Boolean required;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-id")
+    protected Boolean xmlId;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-idref")
+    protected Boolean xmlIdref;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-list")
+    protected Boolean xmlList;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
+    protected Boolean xmlInlineBinaryData;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-attachment-ref")
+    protected Boolean xmlAttachmentRef;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-mime-type")
+    protected String xmlMimeType;
 
     /**
      * Gets the value of the xmlSchemaType property.
@@ -125,170 +125,6 @@ public class XmlAttribute
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
-    }
-
-    /**
-     * Gets the value of the xmlInlineBinaryData property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isXmlInlineBinaryData() {
-        if (xmlInlineBinaryData == null) {
-            return false;
-        } else {
-            return xmlInlineBinaryData;
-        }
-    }
-
-    /**
-     * Sets the value of the xmlInlineBinaryData property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setXmlInlineBinaryData(Boolean value) {
-        this.xmlInlineBinaryData = value;
-    }
-
-    /**
-     * Gets the value of the xmlId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isXmlId() {
-        if (xmlId == null) {
-            return false;
-        } else {
-            return xmlId;
-        }
-    }
-
-    /**
-     * Sets the value of the xmlId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setXmlId(Boolean value) {
-        this.xmlId = value;
-    }
-
-    /**
-     * Gets the value of the xmlIdref property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isXmlIdref() {
-        if (xmlIdref == null) {
-            return false;
-        } else {
-            return xmlIdref;
-        }
-    }
-
-    /**
-     * Sets the value of the xmlIdref property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setXmlIdref(Boolean value) {
-        this.xmlIdref = value;
-    }
-
-    /**
-     * Gets the value of the xmlAttachmentRef property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isXmlAttachmentRef() {
-        if (xmlAttachmentRef == null) {
-            return false;
-        } else {
-            return xmlAttachmentRef;
-        }
-    }
-
-    /**
-     * Sets the value of the xmlAttachmentRef property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setXmlAttachmentRef(Boolean value) {
-        this.xmlAttachmentRef = value;
-    }
-
-    /**
-     * Gets the value of the xmlList property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isXmlList() {
-        if (xmlList == null) {
-            return false;
-        } else {
-            return xmlList;
-        }
-    }
-
-    /**
-     * Sets the value of the xmlList property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setXmlList(Boolean value) {
-        this.xmlList = value;
-    }
-
-    /**
-     * Gets the value of the xmlMimeType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getXmlMimeType() {
-        return xmlMimeType;
-    }
-
-    /**
-     * Sets the value of the xmlMimeType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setXmlMimeType(String value) {
-        this.xmlMimeType = value;
     }
 
     /**
@@ -373,6 +209,170 @@ public class XmlAttribute
      */
     public void setRequired(Boolean value) {
         this.required = value;
+    }
+
+    /**
+     * Gets the value of the xmlId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlId() {
+        if (xmlId == null) {
+            return false;
+        } else {
+            return xmlId;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlId(Boolean value) {
+        this.xmlId = value;
+    }
+
+    /**
+     * Gets the value of the xmlIdref property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlIdref() {
+        if (xmlIdref == null) {
+            return false;
+        } else {
+            return xmlIdref;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlIdref property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlIdref(Boolean value) {
+        this.xmlIdref = value;
+    }
+
+    /**
+     * Gets the value of the xmlList property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlList() {
+        if (xmlList == null) {
+            return false;
+        } else {
+            return xmlList;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlList property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlList(Boolean value) {
+        this.xmlList = value;
+    }
+
+    /**
+     * Gets the value of the xmlInlineBinaryData property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlInlineBinaryData() {
+        if (xmlInlineBinaryData == null) {
+            return false;
+        } else {
+            return xmlInlineBinaryData;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlInlineBinaryData property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlInlineBinaryData(Boolean value) {
+        this.xmlInlineBinaryData = value;
+    }
+
+    /**
+     * Gets the value of the xmlAttachmentRef property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlAttachmentRef() {
+        if (xmlAttachmentRef == null) {
+            return false;
+        } else {
+            return xmlAttachmentRef;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlAttachmentRef property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlAttachmentRef(Boolean value) {
+        this.xmlAttachmentRef = value;
+    }
+
+    /**
+     * Gets the value of the xmlMimeType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlMimeType() {
+        return xmlMimeType;
+    }
+
+    /**
+     * Sets the value of the xmlMimeType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlMimeType(String value) {
+        this.xmlMimeType = value;
     }
 
 }

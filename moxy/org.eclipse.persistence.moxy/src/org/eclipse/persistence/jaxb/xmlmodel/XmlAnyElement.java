@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-mixed"/>
+ *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="dom-handler" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.W3CDomHandler" />
  *     &lt;/extension>
@@ -43,7 +43,7 @@ public class XmlAnyElement
     extends JavaAttribute
 {
 
-    @XmlAttribute(name = "xml-mixed", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
+    @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
     @XmlAttribute
     protected Boolean lax;

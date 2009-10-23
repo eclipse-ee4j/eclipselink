@@ -57,27 +57,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlSchema.XmlNs }
+     * Create an instance of {@link XmlElementRef }
      * 
      */
-    public XmlSchema.XmlNs createXmlSchemaXmlNs() {
-        return new XmlSchema.XmlNs();
-    }
-
-    /**
-     * Create an instance of {@link XmlElementRefs }
-     * 
-     */
-    public XmlElementRefs createXmlElementRefs() {
-        return new XmlElementRefs();
-    }
-
-    /**
-     * Create an instance of {@link XmlType }
-     * 
-     */
-    public XmlType createXmlType() {
-        return new XmlType();
+    public XmlElementRef createXmlElementRef() {
+        return new XmlElementRef();
     }
 
     /**
@@ -89,27 +73,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlEnum }
+     * Create an instance of {@link XmlSchema }
      * 
      */
-    public XmlEnum createXmlEnum() {
-        return new XmlEnum();
-    }
-
-    /**
-     * Create an instance of {@link XmlBindings.XmlEnums }
-     * 
-     */
-    public XmlBindings.XmlEnums createXmlBindingsXmlEnums() {
-        return new XmlBindings.XmlEnums();
-    }
-
-    /**
-     * Create an instance of {@link XmlElement }
-     * 
-     */
-    public XmlElement createXmlElement() {
-        return new XmlElement();
+    public XmlSchema createXmlSchema() {
+        return new XmlSchema();
     }
 
     /**
@@ -118,6 +86,38 @@ public class ObjectFactory {
      */
     public XmlJavaTypeAdapters createXmlJavaTypeAdapters() {
         return new XmlJavaTypeAdapters();
+    }
+
+    /**
+     * Create an instance of {@link XmlEnumValue }
+     * 
+     */
+    public XmlEnumValue createXmlEnumValue() {
+        return new XmlEnumValue();
+    }
+
+    /**
+     * Create an instance of {@link JavaType.JavaAttributes }
+     * 
+     */
+    public JavaType.JavaAttributes createJavaTypeJavaAttributes() {
+        return new JavaType.JavaAttributes();
+    }
+
+    /**
+     * Create an instance of {@link XmlJavaTypeAdapter }
+     * 
+     */
+    public XmlJavaTypeAdapter createXmlJavaTypeAdapter() {
+        return new XmlJavaTypeAdapter();
+    }
+
+    /**
+     * Create an instance of {@link XmlElements }
+     * 
+     */
+    public XmlElements createXmlElements() {
+        return new XmlElements();
     }
 
     /**
@@ -137,91 +137,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XmlElements }
+     * Create an instance of {@link XmlEnum }
      * 
      */
-    public XmlElements createXmlElements() {
-        return new XmlElements();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchemaType }
-     * 
-     */
-    public XmlSchemaType createXmlSchemaType() {
-        return new XmlSchemaType();
-    }
-
-    /**
-     * Create an instance of {@link XmlAnyAttribute }
-     * 
-     */
-    public XmlAnyAttribute createXmlAnyAttribute() {
-        return new XmlAnyAttribute();
-    }
-
-    /**
-     * Create an instance of {@link XmlValue }
-     * 
-     */
-    public XmlValue createXmlValue() {
-        return new XmlValue();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchema }
-     * 
-     */
-    public XmlSchema createXmlSchema() {
-        return new XmlSchema();
-    }
-
-    /**
-     * Create an instance of {@link XmlJavaTypeAdapter }
-     * 
-     */
-    public XmlJavaTypeAdapter createXmlJavaTypeAdapter() {
-        return new XmlJavaTypeAdapter();
-    }
-
-    /**
-     * Create an instance of {@link XmlAttribute }
-     * 
-     */
-    public XmlAttribute createXmlAttribute() {
-        return new XmlAttribute();
-    }
-
-    /**
-     * Create an instance of {@link XmlEnumValue }
-     * 
-     */
-    public XmlEnumValue createXmlEnumValue() {
-        return new XmlEnumValue();
-    }
-
-    /**
-     * Create an instance of {@link XmlElementRef }
-     * 
-     */
-    public XmlElementRef createXmlElementRef() {
-        return new XmlElementRef();
-    }
-
-    /**
-     * Create an instance of {@link XmlBindings }
-     * 
-     */
-    public XmlBindings createXmlBindings() {
-        return new XmlBindings();
-    }
-
-    /**
-     * Create an instance of {@link XmlSchemaTypes }
-     * 
-     */
-    public XmlSchemaTypes createXmlSchemaTypes() {
-        return new XmlSchemaTypes();
+    public XmlEnum createXmlEnum() {
+        return new XmlEnum();
     }
 
     /**
@@ -233,11 +153,83 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JavaType }
+     * Create an instance of {@link XmlSchemaType }
      * 
      */
-    public JavaType createJavaType() {
-        return new JavaType();
+    public XmlSchemaType createXmlSchemaType() {
+        return new XmlSchemaType();
+    }
+
+    /**
+     * Create an instance of {@link XmlValue }
+     * 
+     */
+    public XmlValue createXmlValue() {
+        return new XmlValue();
+    }
+
+    /**
+     * Create an instance of {@link XmlBindings }
+     * 
+     */
+    public XmlBindings createXmlBindings() {
+        return new XmlBindings();
+    }
+
+    /**
+     * Create an instance of {@link XmlElement }
+     * 
+     */
+    public XmlElement createXmlElement() {
+        return new XmlElement();
+    }
+
+    /**
+     * Create an instance of {@link XmlType }
+     * 
+     */
+    public XmlType createXmlType() {
+        return new XmlType();
+    }
+
+    /**
+     * Create an instance of {@link XmlElementRefs }
+     * 
+     */
+    public XmlElementRefs createXmlElementRefs() {
+        return new XmlElementRefs();
+    }
+
+    /**
+     * Create an instance of {@link XmlSchemaTypes }
+     * 
+     */
+    public XmlSchemaTypes createXmlSchemaTypes() {
+        return new XmlSchemaTypes();
+    }
+
+    /**
+     * Create an instance of {@link XmlAttribute }
+     * 
+     */
+    public XmlAttribute createXmlAttribute() {
+        return new XmlAttribute();
+    }
+
+    /**
+     * Create an instance of {@link XmlBindings.XmlEnums }
+     * 
+     */
+    public XmlBindings.XmlEnums createXmlBindingsXmlEnums() {
+        return new XmlBindings.XmlEnums();
+    }
+
+    /**
+     * Create an instance of {@link XmlSchema.XmlNs }
+     * 
+     */
+    public XmlSchema.XmlNs createXmlSchemaXmlNs() {
+        return new XmlSchema.XmlNs();
     }
 
     /**
@@ -249,11 +241,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JavaType.JavaAttributes }
+     * Create an instance of {@link JavaType }
      * 
      */
-    public JavaType.JavaAttributes createJavaTypeJavaAttributes() {
-        return new JavaType.JavaAttributes();
+    public JavaType createJavaType() {
+        return new JavaType();
+    }
+
+    /**
+     * Create an instance of {@link XmlAnyAttribute }
+     * 
+     */
+    public XmlAnyAttribute createXmlAnyAttribute() {
+        return new XmlAnyAttribute();
     }
 
     /**

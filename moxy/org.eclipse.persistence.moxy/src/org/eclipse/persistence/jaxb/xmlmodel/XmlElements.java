@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-idref"/>
- *       &lt;attribute ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-list"/>
+ *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -55,9 +55,9 @@ public class XmlElements
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
-    @XmlAttribute(name = "xml-idref", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
+    @XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
-    @XmlAttribute(name = "xml-list", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
+    @XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
 
     /**
