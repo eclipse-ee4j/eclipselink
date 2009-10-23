@@ -22,7 +22,7 @@
 *
 * Contributors:
 *     tware - initial API and implementation
-*     egwin - update to adopt calling standards 
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - build (default) : cleans, compiles, and packages all tests
