@@ -428,6 +428,14 @@ public class XMLDescriptor extends ClassDescriptor {
         // do nothing, since the parent descriptor was already modified during pre-initialize
     }
 
+    @Override
+    public void setTableNames(Vector tableNames) {
+        if (null != tableNames && tableNames.size() > 0) {
+            setDefaultRootElementField(new XMLField((String)tableNames.get(0)));
+        }
+        super.setTableNames(tableNames);
+    }
+    
     /**
      * INTERNAL:
      * Allow the descriptor to initialize any dependencies on this session.

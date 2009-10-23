@@ -403,6 +403,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         defaultRootElementFieldMapping.setSetMethodName("setDefaultRootElementField");
         defaultRootElementFieldMapping.setXPath(getPrimaryNamespaceXPath() + "default-root-element-field");
         defaultRootElementFieldMapping.setReferenceClass(XMLField.class);
+        NullPolicy defaultRootElementFieldNullPolicy = new NullPolicy();
+        defaultRootElementFieldNullPolicy.setSetPerformedForAbsentNode(false);
+        defaultRootElementFieldMapping.setNullPolicy(defaultRootElementFieldNullPolicy);
         /* order is important for writing out
          * don't use addMapping: set parent descriptor and add after
          * first mapping built in super.buildOXXMLDescriptorDescriptor()
