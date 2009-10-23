@@ -154,6 +154,7 @@ public class AnnotationsProcessor {
         preBuildTypeInfo(classes);
         classes = postBuildTypeInfo(classes);
         processJavaClasses(classes);
+        finalizeProperties();
     }
 
     /**
@@ -338,6 +339,28 @@ public class AnnotationsProcessor {
         }
         return typeInfo;
     }
+    
+    /**
+     * Perform any final generation and/or validation operations on TypeInfo 
+     * properties.
+     * 
+     */
+    public void finalizeProperties() {
+        ArrayList<JavaClass> jClasses = getTypeInfoClasses();
+        for (JavaClass jClass : jClasses) {
+            TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
+            // validate XmlValue
+            if (tInfo.getXmlValueProperty() != null) {
+                validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
+            }
+            for (Property property : tInfo.getPropertyList()) {
+                // if there is an XmlValue, only XmlAttributes are allowed
+                if (tInfo.getXmlValueProperty() != null && (!property.equals(tInfo.getXmlValueProperty()) && !property.isAttribute())) {
+                    throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
+                }
+            }
+        }
+    }
 
     /**
      * Process a given TypeInfo instance's properties.
@@ -346,7 +369,7 @@ public class AnnotationsProcessor {
      */
     private void processTypeInfoProperties(TypeInfo info) {
         ArrayList<Property> properties = info.getPropertyList();
-        for (Property property : properties) {                     
+        for (Property property : properties) {
             // handle @XmlID
             processXmlID(property, info);
 
@@ -957,13 +980,6 @@ public class AnnotationsProcessor {
         } else {
             returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
         }
-        if (info.getXmlValueProperty() != null) {
-            for (Property nextProp : returnList) {
-                if (!nextProp.equals(info.getXmlValueProperty()) && !nextProp.isAttribute()) {
-                    throw JAXBException.propertyOrFieldShouldBeAnAttribute(nextProp.getPropertyName());
-                }
-            }
-        }
         return returnList;
     }
 
@@ -1190,7 +1206,7 @@ public class AnnotationsProcessor {
             if (!property.getType().getName().equals("java.util.Map")) {
                 throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
-            property.setIsAttribute(true);
+            property.setIsAnyAttribute(true);
             info.setAnyAttributeProperty(true);
         }               
         
@@ -1217,8 +1233,11 @@ public class AnnotationsProcessor {
         }
 
         if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
+            if (info.getXmlValueProperty() != null && info.getXmlValueProperty() != property) {
+                // only one XmlValue annotation is allowed per class
+                throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), info.getXmlValueProperty().getPropertyName(), cls.getRawName());
+            }
             info.setXmlValueProperty(property);
-            validateXmlValueFieldOrProperty(cls, property, ptype, property.getPropertyName());
         }
     }
     
@@ -2079,7 +2098,9 @@ public class AnnotationsProcessor {
         }
     }
 
-    private void validateXmlValueFieldOrProperty(JavaClass cls, Property property, JavaClass ptype, String propName) {
+    private void validateXmlValueFieldOrProperty(JavaClass cls, Property property) {
+        JavaClass ptype = property.getActualType();
+        String propName = property.getPropertyName();
         JavaClass parent = cls.getSuperclass();
         while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
             TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());

@@ -20,12 +20,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.namespace.QName;
 
@@ -165,7 +163,8 @@ public class SchemaGenerator {
         }
        
         ArrayList<String> propertyNames = info.getPropertyNames();
-        if (info.isEnumerationType() || (propertyNames.size() == 1 && helper.isAnnotationPresent(info.getProperties().get(propertyNames.get(0)).getElement(), XmlValue.class))) {
+        Property xmlValueProperty = info.getXmlValueProperty();
+        if (info.isEnumerationType() || (propertyNames.size() == 1 && xmlValueProperty != null)) {
             SimpleType type = new SimpleType();
             //simple type case, we just need the name and namespace info
             //TODO: add namespace support
@@ -221,7 +220,7 @@ public class SchemaGenerator {
                 }
             }
             info.setSimpleType(type);
-        } else if ((valueField = this.getXmlValueFieldForSimpleContent(info.getPropertyList())) != null) {
+        } else if ((valueField = this.getXmlValueFieldForSimpleContent(info)) != null) {
             ComplexType type = new ComplexType();
             SimpleContent content = new SimpleContent();
             if (typeName.equals("")) {
@@ -341,6 +340,8 @@ public class SchemaGenerator {
     }
     
     public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
+        Property xmlValueProperty = ownerTypeInfo.getXmlValueProperty();
+        
         for (Property next : properties) {
             if (next == null) { continue; }
             
@@ -391,7 +392,7 @@ public class SchemaGenerator {
                         parentCompositor = wrapperSequence;
                     }
                 }
-                if (next.isAttribute()) {
+                if (next.isAttribute() && !next.isAnyAttribute()) {
                     Attribute attribute = new Attribute();
                     QName attributeName = next.getSchemaName(); 
                     attribute.setName(attributeName.getLocalPart());
@@ -578,7 +579,7 @@ public class SchemaGenerator {
                             ((Choice)parentCompositor).addChoice(choice);
                         }
                 	}
-                } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
+                } else if (!(xmlValueProperty != null && xmlValueProperty == next)) {
                         Element element = new Element();
                         // Set minOccurs based on the 'required' flag
                         if (!(parentCompositor instanceof All)) {
@@ -848,16 +849,18 @@ public class SchemaGenerator {
         return (ArrayList<String>)info.getFieldValues();
     }
 
-    public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {
+    public Property getXmlValueFieldForSimpleContent(TypeInfo info) {
+        ArrayList<Property> properties = info.getPropertyList();
+        Property xmlValueProperty = info.getXmlValueProperty();
         boolean foundValue = false;
         boolean foundNonAttribute = false;
         Property valueField = null;
         
         for (Property prop : properties) {
-            if (helper.isAnnotationPresent(prop.getElement(), XmlValue.class)) {
+            if (xmlValueProperty != null && xmlValueProperty == prop) {
                 foundValue = true;
                 valueField = prop;
-            } else if (!helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class) && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !helper.isAnnotationPresent(prop.getElement(), XmlAnyAttribute.class)) {
+            } else if (!prop.isAttribute() && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !helper.isAnnotationPresent(prop.getElement(), XmlAnyAttribute.class)) {
                 foundNonAttribute = true;
             }
         }

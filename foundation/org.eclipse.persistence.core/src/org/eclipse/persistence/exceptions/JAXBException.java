@@ -58,6 +58,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int COULD_NOT_CREATE_CUSTOMIZER_INSTANCE = 50028;
     public static final int INVALID_CUSTOMIZER_CLASS = 50029;
     public static final int ID_ALREADY_SET = 50030;
+    public static final int XMLVALUE_ALREADY_SET = 50031;
     
     protected JAXBException(String message) {
         super(message);
@@ -365,6 +366,22 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, descriptorAlias, idPropertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ID_ALREADY_SET, args));
         exception.setErrorCode(ID_ALREADY_SET);
+        return exception;
+    }
+    
+    /**
+     * This exception should be used when an attempt is made to set an XmlValue property
+     * when one has already been set.
+     *  
+     * @param propertyName attempting to set this property as XmlValue
+     * @param idPropertyName existing XmlValue property
+     * @param className class in question
+     * @return
+     */
+    public static JAXBException xmlValueAlreadySet(String propertyName, String xmlValuePropertyName, String className) {
+        Object[] args = { className, propertyName, xmlValuePropertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLVALUE_ALREADY_SET, args));
+        exception.setErrorCode(XMLVALUE_ALREADY_SET);
         return exception;
     }
 }

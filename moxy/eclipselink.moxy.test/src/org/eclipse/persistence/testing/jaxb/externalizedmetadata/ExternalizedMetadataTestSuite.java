@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSc
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.XmlTransientTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -54,6 +55,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlCustomizerTestCases.class);
         suite.addTestSuite(CustomizerExceptionTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
+        suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
         return suite;
     }

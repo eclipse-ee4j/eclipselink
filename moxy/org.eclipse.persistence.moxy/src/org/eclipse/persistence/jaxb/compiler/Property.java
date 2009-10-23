@@ -52,6 +52,7 @@ public class Property {
     private JavaHasAnnotations element;
     private JavaClass genericType;
     private boolean isAttribute = false;
+    private boolean isAnyAttribute = false;
     private Helper helper;
     private String getMethodName;
     private String setMethodName;
@@ -66,9 +67,11 @@ public class Property {
     
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private XmlElementWrapper xmlElementWrapper;
+    private boolean isXmlValue;
     
     public Property() {
     	xmlElementType = false;
+    	isXmlValue = false;
     }
 
     public Property(Helper helper) {
@@ -208,11 +211,19 @@ public class Property {
     }
     
     public boolean isAttribute() {
-        return isAttribute;
+        return isAttribute || isAnyAttribute;
+    }
+    
+    public boolean isAnyAttribute() {
+        return isAnyAttribute;
     }
     
     public void setIsAttribute(boolean attribute) {
         isAttribute = attribute;
+    }
+    
+    public void setIsAnyAttribute(boolean anyAtribute) {
+        isAnyAttribute = anyAtribute;
     }
     
     public String getGetMethodName() {
@@ -400,6 +411,24 @@ public class Property {
      */
     public void setXmlElementWrapper(XmlElementWrapper xmlElementWrapper) {
         this.xmlElementWrapper = xmlElementWrapper;
+    }
+    
+    /**
+     * Set the isXmlValue property.
+     * 
+     * @param isXmlValue
+     */
+    public void setIsXmlValue(boolean isXmlValue) {
+        this.isXmlValue = isXmlValue;
+    }
+    
+    /**
+     * Indicates if this property is an XmlValue.
+     * 
+     * @return
+     */
+    public boolean isXmlValue() {
+        return this.isXmlValue;
     }
     
     /**

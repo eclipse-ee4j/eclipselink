@@ -222,6 +222,8 @@ public class XMLProcessor {
                 }
             }
         }
+        
+        aProcessor.finalizeProperties();
     }
 
     /**
@@ -241,7 +243,7 @@ public class XMLProcessor {
                     getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
                     continue;
                 }
-                Property newProperty = processJavaAttribute(javaAttribute, oldProperty, nsInfo);
+                Property newProperty = processJavaAttribute(typeInfo, javaAttribute, oldProperty, nsInfo, javaType);
                 typeInfo.getProperties().put(javaAttribute.getJavaAttribute(), newProperty);
             }
         }
@@ -255,7 +257,7 @@ public class XMLProcessor {
      * @param nsInfo
      * @return
      */
-    private Property processJavaAttribute(JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo) {
+    private Property processJavaAttribute(TypeInfo typeInfo, JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo, JavaType javaType) {
         if (javaAttribute instanceof XmlAnyAttribute) {
             return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlAnyElement) {
@@ -273,7 +275,7 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlTransient) {
             return processXmlTransient((XmlTransient) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlValue) {
-            return processXmlValue((XmlValue) javaAttribute, oldProperty);
+            return processXmlValue((XmlValue) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlJavaTypeAdapter) {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
         }
@@ -435,7 +437,12 @@ public class XMLProcessor {
         return oldProperty;
     }
 
-    private Property processXmlValue(XmlValue xmlValue, Property oldProperty) {
+    private Property processXmlValue(XmlValue xmlValue, Property oldProperty, TypeInfo info, JavaType javaType) {
+        if (info.getXmlValueProperty() != null && info.getXmlValueProperty() != oldProperty) {
+            // only one XmlValue is allowed per class
+            throw JAXBException.xmlValueAlreadySet(oldProperty.getPropertyName(), info.getXmlValueProperty().getPropertyName(), javaType.getName());
+        }
+        info.setXmlValueProperty(oldProperty);
         return oldProperty;
     }
 
