@@ -20,13 +20,38 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
-//java eXtension imports
+//javase imports
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+//java eXtension imports
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ProviderUtil;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties;
@@ -45,10 +70,51 @@ public class DynamicTestHelper {
                 "<exclude-unlisted-classes>true</exclude-unlisted-classes>" +
             "</persistence-unit>" +
         "</persistence>";
-    
-    //TODO - create custom javax.persistence.spi.PersistenceProvider
+
+    // custom 'in-memory' URL that doesn't "go" anywhere, doesn't resolve to anything
+    static URL dynamicTestUrl = null; 
+    static {
+        try {
+            dynamicTestUrl = new URL(null, "inmemory:", new URLStreamHandler() {
+                @Override
+                protected URLConnection openConnection(URL url) throws IOException {
+                    return new URLConnection(url) {
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return null;
+                        }
+                        @Override
+                        public void connect() throws IOException {
+                        }
+                    };
+                }
+            });
+        }
+        catch (MalformedURLException e) {
+            // ignore
+        }
+    }
+
     public static EntityManagerFactory createEMF(String emName) {
-         PersistenceProvider provider = new PersistenceProvider() {
+        PersistenceContentHandler myContentHandler = new PersistenceContentHandler();
+        try {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setNamespaceAware(true);
+            SAXParser sp = spf.newSAXParser();
+            XMLReader xmlReader = sp.getXMLReader();
+            XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
+            xmlReader.setErrorHandler(xmlErrorHandler);
+            xmlReader.setContentHandler(myContentHandler);
+            InputSource inputSource = new InputSource(new StringReader(DYNAMIC_PERSISTENCE_XML));
+            xmlReader.parse(inputSource);
+        }
+        catch (Exception e) {
+            return null;
+        }
+        // only ever one
+        final SEPersistenceUnitInfo puInfo = myContentHandler.getPersistenceUnits().get(0);
+        puInfo.setPersistenceUnitRootUrl(dynamicTestUrl);
+        PersistenceProvider provider = new PersistenceProvider() {
             @Override
             public EntityManagerFactory createContainerEntityManagerFactory(
                 PersistenceUnitInfo info, Map map) {
@@ -56,7 +122,18 @@ public class DynamicTestHelper {
             }
             @Override
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
-                return null;
+                if (emName.equals(puInfo.getPersistenceUnitName())) {
+                    EntityManagerSetupImpl entityManagerSetupImpl = new EntityManagerSetupImpl();
+                    map.put(PersistenceUnitProperties.WEAVING, "false");
+                    map.put(PersistenceUnitProperties.SESSION_NAME, DYNAMIC_PERSISTENCE_NAME);
+                    puInfo.getProperties().put(
+                        PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE, "true");
+                    entityManagerSetupImpl.predeploy(puInfo, map);
+                    return new EntityManagerFactoryImpl(entityManagerSetupImpl, map);
+                }
+                else {
+                    return null;
+                }
             }
             @Override
             public ProviderUtil getProviderUtil() {
@@ -65,4 +142,5 @@ public class DynamicTestHelper {
          };
          return provider.createEntityManagerFactory(emName, getDatabaseProperties());
     }
+
 }
