@@ -117,12 +117,11 @@
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.modelgen.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Modelgen (non-OSGi)"/>
         </antcall>
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-no-src">
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen.processor"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.processor.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.processor.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
         </antcall>
         <antcall target="upload-artifact">
@@ -202,7 +201,7 @@
         </antcall>
    </target>
 
-   <!-- Uploads a single artifact to maven repository -->
+   <!-- Uploads a single artifact & source to maven repository -->
    <target name="upload-artifact" >
        <!-- Copy pom.template to pom.xml filtering various properties -->
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
@@ -225,8 +224,32 @@
 
        <!-- cleanup -->
        <delete file="pom.xml"/>
-
    </target>
+   
+   <!-- Uploads a single artifact without src to maven repository -->
+   <target name="upload-artifact-no-src" >
+       <!-- Copy pom.template to pom.xml filtering various properties -->
+       <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
+         <filterset>
+           <filter token="groupId"      value="${groupId}"/>
+           <filter token="version"      value="${artifactVersion}"/>
+           <filter token="svn.revision" value="${svn.revision}"/>
+           <filter token="artifactId"   value="${artifactId}"/>
+           <filter token="artifactName" value="${artifactName}"/>
+          </filterset>
+       </copy>
+
+       <!-- Delploy the jar to maven repository along with sources -->
+       <artifact:pom id="maven.project" file="pom.xml" />
+       <artifact:deploy file="${artifact}">
+         <remoteRepository refid="eclipselink.repository"/>
+         <pom refid="maven.project"/>
+       </artifact:deploy>
+
+       <!-- cleanup -->
+       <delete file="pom.xml"/>
+   </target>
+
 </project>
 
 
