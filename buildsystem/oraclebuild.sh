@@ -49,8 +49,8 @@ echo "results stored in: '${tmp}'"
 #Define common variables
 PUTTY_SESSION=eclipse-dev
 START_DATE=`date '+%y%m%d-%H%M'`
-DEFAULT_PREVREV=5461
-DEFAULT_PREVCOMMIT=5511
+DEFAULT_PREVREV=5400
+DEFAULT_PREVCOMMIT=5401
 #Directories
 HOME_DIR=/shared/rt/eclipselink
 JAVA_HOME=/usr/lib/jvm/java-6-sun
@@ -81,6 +81,7 @@ SUCC_MAILLIST="eric.gwin@oracle.com"
 FAIL_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
+PROJ_LOG_FILE=${tmp}/projlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
 FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BUILD_FAILED="false"
@@ -184,43 +185,62 @@ cd ${HOME_DIR}
 echo "Results logged to: ${DATED_LOG}"
 touch ${DATED_LOG}
 
-echo "Testing if build is needed..."
 echo "Testing if build is needed..." >> ${DATED_LOG}
+echo "Testing if build is needed..."
 if [ -f ${PREVREV_FILE} ]; then
     PREV_REV=`cat ${PREVREV_FILE} | cut -d: -f1`
     PREV_COMMIT=`cat ${PREVREV_FILE} | cut -d: -f2`
 fi
 if [ "${PREV_REV}" = "" ]; then PREV_REV=${DEFAULT_PREVREV}; fi
 if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
-echo "previous Revs (Code:Commit): '${PREV_REV}:${PREV_COMMIT}'"
+# Test to make sure noone else checked in a new version of the oracle jars independant of this process
+svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+PREV_COMMIT=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
+echo "previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
+echo "previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'"
 svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
-echo "curRev: '${CURRENT_REV}'"
+echo "curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
+echo "curProjRev: '${CURRENT_REV}'"
 if [ "${CURRENT_REV}" -gt "${PREV_REV}" ]
 then
+    # Get Current view revision for later use
+    svn info ${BRANCH_PATH} > ${TEMP_FILE}
+    VIEW_REV=`cat ${TEMP_FILE} | grep -m1 Revision | cut -d: -f2 | tr -d ' '`
+    echo "curViewRev: '${VIEW_REV}'"
+    # remove potential "conflicts"
+    echo "Cleanup previous build for new checkout..." >> ${DATED_LOG}
+    echo "Cleanup previous build for new checkout..."
+    rm -f ${BRANCH_PATH}/eclipselink*
+    rm -f ${BRANCH_PATH}/${ORACLE_CI_DIR}/org.eclipse.persistence.oracle*
     echo "Retrieving latest source from subversion..." >> ${DATED_LOG}
     echo "Retrieving latest source from subversion..."
     svn co --non-interactive svn+ssh://${PUTTY_SESSION}/${BRANCH_URL} ${BRANCH_PATH}
-    echo "Updating ${BOOTSTRAP_BLDFILE}..." >> ${DATED_LOG}
-    echo "Updating ${BOOTSTRAP_BLDFILE}..."
+    # Get Current view revision for later use
+    svn info ${BRANCH_PATH} > ${TEMP_FILE}
+    NEW_VIEW_REV=`cat ${TEMP_FILE} | grep -m1 Revision | cut -d: -f2 | tr -d ' '`
+    echo "    newViewRev: '${NEW_VIEW_REV}' (If matches SVN_REV can remove some postprocessing code)."
+    echo "Copying latest ${BOOTSTRAP_BLDFILE} for build..." >> ${DATED_LOG}
+    echo "Copying latest ${BOOTSTRAP_BLDFILE} for build..."
     cp ${BRANCH_PATH}/buildsystem/${BOOTSTRAP_BLDFILE} ./${BOOTSTRAP_BLDFILE}
-    echo "Oracle Extension Build starting..."
     echo "Oracle Extension Build started at: `date`" >> ${DATED_LOG}
+    echo "Oracle Extension Build started."
     echo "ant ${ANT_BASEARG} ${TARGET}" >> ${DATED_LOG}
     ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
     echo "Build completed at: `date`" >> ${DATED_LOG}
-    echo "Build complete."
-    echo "Updating Revision info..." >> ${DATED_LOG}
-    echo "Updating Revision info..."
+    echo "Build completed."
     svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
     COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
-    echo "commitRev: '${COMMIT_REV}'"
+    echo "Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
+    echo "Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'"
+    echo "Updating Revision info..." >> ${DATED_LOG}
+    echo "Updating Revision info..."
     if [ "${COMMIT_REV}" -gt "${PREV_COMMIT}" ]
     then
         COMMIT=true
         echo "${CURRENT_REV}:${COMMIT_REV}" > ${PREVREV_FILE}
-        echo "   Complete." >> ${DATED_LOG}
-        echo "   Complete."
+        echo "   New revision info stored, commit appears to have completed successfully." >> ${DATED_LOG}
+        echo "   New revision info stored, commit appears to have completed successfully."
     else
         echo "   It appears there was no commit. Aborting Revision update..." >> ${DATED_LOG}
         echo "   It appears there was no commit. Aborting Revision update..."
@@ -232,9 +252,32 @@ then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
-    echo "Generating summary email for ${VERSION}."
+    SVN_REV=`cat ${DATED_LOG} | grep -m1 "svn.revision" | cut -d= -f2 | tr -d '\047'`
+    echo "Generating summary email for ${VERSION} build:"
+    echo "    Revision info (project code:built using:artifact ci): '${CURRENT_REV}:${SVN_REV}:${COMMIT_REV}'"
+    echo "DEBUG: SVN_REV: '${SVN_REV}'"
 
-    ## fixup the revision of the last build to not include it
+    echo "Getting View transaction log..."
+    ## fixup the revision of the previous view to not include itself
+    ##
+    if [ ! "$VIEW_REV" = "" ]
+    then
+        ## Include everything but the revision of the last build (jump 1 up from it)
+        PREV_VIEW=`expr "${VIEW_REV}" + "1"`
+        ## Prepend the ":" for the "to" syntax of the "svn log" command
+        PREV_VIEW=:${PREV_VIEW}
+    else
+        echo "ERROR: What the heck's going on here? There's no VIEW_REV?"
+    fi
+    echo "  change log will be from the current retrieved codebase to earliest"
+    echo "  not previously checked-out (${SVN_REV}${PREV_VIEW}) inclusive."
+    ## Generate transaction log for latest build
+    ##
+    svn log -q -r ${SVN_REV}${PREV_VIEW} -v  svn+ssh://${PUTTY_SESSION}/${BRANCH_URL} >> ${SVN_LOG_FILE}
+    cat ${SVN_LOG_FILE}
+
+    echo "Getting  Project transaction log..."
+    ## fixup the revision of the last project build to not include itself
     ##
     if [ ! "$PREV_REV" = "" ]
     then
@@ -245,18 +288,20 @@ then
     else
         echo "ERROR: What the heck's going on here? There's no PREV_REV?"
     fi
-    echo "  changes included are from current revision to earliest not previously built (${CURRENT_REV}${OLDEST_TRAN}) inclusive."
-
-    ## Generate transaction log for this revision
+    echo "  change log will be from latest project transaction to earliest"
+    echo "  not previously built (${CURRENT_REV}${OLDEST_TRAN}) inclusive."
+    ## Generate transaction log for oracle project changes
     ##
-    svn log -q -r ${CURRENT_REV}${OLDEST_TRAN} -v  svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} >> ${SVN_LOG_FILE}
+    svn log -q -r ${CURRENT_REV}${OLDEST_TRAN} -v  svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} >> ${PROJ_LOG_FILE}
+    cat ${PROJ_LOG_FILE}
 
     ## Verify Compile complete
     ## if [ not build failed ]
     ##
+    echo "Verifying build status..."
     if [ ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" ]
     then
-        echo "Build successful."
+        echo "Build was successful."
         MAIL_SUBJECT="${BRANCH_NM} Oracle Extension Nightly build complete."
         MAILLIST=${SUCC_MAILLIST}
     else
@@ -268,7 +313,7 @@ then
     ## Build Body text of email
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
-    echo "Build summary for Revision ${CURRENT_REV}" > ${MAILBODY}
+    echo "Build summary for o.e.p.oracle project revision ${CURRENT_REV} (Full codebase rev '${SVN_REV}')." > ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
     echo "Full Build log can be found on the Oracle Build machine at:" >> ${MAILBODY}
     echo "    ${DATED_LOG}" >> ${MAILBODY}
@@ -278,7 +323,9 @@ then
         echo "-----------------------------------" >> ${MAILBODY}
     fi
     echo "" >> ${MAILBODY}
-    echo "SVN Changes since Last Build:" >> ${MAILBODY}
+    echo "Project Changes since Last Build:" >> ${MAILBODY}
+    cat ${PROJ_LOG_FILE} >> ${MAILBODY}
+    echo "View Changes since Last Build:" >> ${MAILBODY}
     cat ${SVN_LOG_FILE} >> ${MAILBODY}
 
     ## Send result email
