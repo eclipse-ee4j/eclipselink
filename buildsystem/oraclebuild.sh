@@ -196,18 +196,18 @@ if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
 # Test to make sure noone else checked in a new version of the oracle jars independant of this process
 svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
 PREV_COMMIT=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
-echo "previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
-echo "previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'"
+echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
+echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'"
 svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
-echo "curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
-echo "curProjRev: '${CURRENT_REV}'"
+echo "    curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
+echo "    curProjRev: '${CURRENT_REV}'"
 if [ "${CURRENT_REV}" -gt "${PREV_REV}" ]
 then
     # Get Current view revision for later use
     svn info ${BRANCH_PATH} > ${TEMP_FILE}
     VIEW_REV=`cat ${TEMP_FILE} | grep -m1 Revision | cut -d: -f2 | tr -d ' '`
-    echo "curViewRev: '${VIEW_REV}'"
+    echo "    curViewRev: '${VIEW_REV}'"
     # remove potential "conflicts"
     echo "Cleanup previous build for new checkout..." >> ${DATED_LOG}
     echo "Cleanup previous build for new checkout..."
@@ -229,12 +229,12 @@ then
     ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
     echo "Build completed at: `date`" >> ${DATED_LOG}
     echo "Build completed."
-    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
-    COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
-    echo "Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
-    echo "Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'"
     echo "Updating Revision info..." >> ${DATED_LOG}
     echo "Updating Revision info..."
+    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+    COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
+    echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
+    echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'"
     if [ "${COMMIT_REV}" -gt "${PREV_COMMIT}" ]
     then
         COMMIT=true
@@ -253,9 +253,9 @@ then
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     SVN_REV=`cat ${DATED_LOG} | grep -m1 "svn.revision" | cut -d= -f2 | tr -d '\047'`
-    echo "Generating summary email for ${VERSION} build:"
+    echo "Generating summary email for ${VERSION} build..."
     echo "    Revision info (project code:built using:artifact ci): '${CURRENT_REV}:${SVN_REV}:${COMMIT_REV}'"
-    echo "DEBUG: SVN_REV: '${SVN_REV}'"
+    echo "    DEBUG: SVN_REV: '${SVN_REV}'"
 
     echo "Getting View transaction log..."
     ## fixup the revision of the previous view to not include itself
@@ -267,14 +267,13 @@ then
         ## Prepend the ":" for the "to" syntax of the "svn log" command
         PREV_VIEW=:${PREV_VIEW}
     else
-        echo "ERROR: What the heck's going on here? There's no VIEW_REV?"
+        echo "    ERROR: What the heck's going on here? There's no VIEW_REV?"
     fi
-    echo "  change log will be from the current retrieved codebase to earliest"
-    echo "  not previously checked-out (${SVN_REV}${PREV_VIEW}) inclusive."
+    echo "    change log will be from the current retrieved codebase to earliest"
+    echo "    not previously checked-out (${SVN_REV}${PREV_VIEW}) inclusive."
     ## Generate transaction log for latest build
     ##
     svn log -q -r ${SVN_REV}${PREV_VIEW} -v  svn+ssh://${PUTTY_SESSION}/${BRANCH_URL} >> ${SVN_LOG_FILE}
-    cat ${SVN_LOG_FILE}
 
     echo "Getting  Project transaction log..."
     ## fixup the revision of the last project build to not include itself
@@ -286,14 +285,13 @@ then
         ## Prepend the ":" for the "to" syntax of the "svn log" command
         OLDEST_TRAN=:${OLDEST_TRAN}
     else
-        echo "ERROR: What the heck's going on here? There's no PREV_REV?"
+        echo "    ERROR: What the heck's going on here? There's no PREV_REV?"
     fi
-    echo "  change log will be from latest project transaction to earliest"
-    echo "  not previously built (${CURRENT_REV}${OLDEST_TRAN}) inclusive."
+    echo "    change log will be from latest project transaction to earliest"
+    echo "    not previously built (${CURRENT_REV}${OLDEST_TRAN}) inclusive."
     ## Generate transaction log for oracle project changes
     ##
     svn log -q -r ${CURRENT_REV}${OLDEST_TRAN} -v  svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} >> ${PROJ_LOG_FILE}
-    cat ${PROJ_LOG_FILE}
 
     ## Verify Compile complete
     ## if [ not build failed ]
@@ -301,11 +299,11 @@ then
     echo "Verifying build status..."
     if [ ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" ]
     then
-        echo "Build was successful."
+        echo "    Build was successful."
         MAIL_SUBJECT="${BRANCH_NM} Oracle Extension Nightly build complete."
         MAILLIST=${SUCC_MAILLIST}
     else
-        echo "Build had issues to be resolved."
+        echo "    Build had issues to be resolved."
         MAIL_SUBJECT="${BRANCH_NM} Oracle Extension Nightly build failed!"
         MAILLIST=${FAIL_MAILLIST}
     fi
@@ -339,6 +337,12 @@ then
        echo "     failed."
     fi
 
+    echo "Printing Project Transaction log..."
+    echo " "
+    cat ${PROJ_LOG_FILE}
+    echo "#####################################################################"
+    echo "Printing Transaction log for Build View..."
+    cat ${SVN_LOG_FILE}
 else
     echo "Oracle Extension Nightly build aborted... no code changes" >> ${DATED_LOG}
     echo "Oracle Extension Nightly build aborted... no code changes"
