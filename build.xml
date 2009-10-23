@@ -704,7 +704,7 @@
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="test-lrg"/>
     </target>
     <!-- Run JPA SRG. -->
     <target name="test-jpa-srg" description="run the jpa srg tests">
