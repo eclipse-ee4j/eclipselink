@@ -476,6 +476,7 @@
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${temp.rebuild.path}/bundlezip">
                 <include name="org.eclipse.persistence.*.jar"/>
+                <include name="*modelgen*.jar"/>
             </fileset>
         </copy>
         <!-- get javax.persistence* -->
