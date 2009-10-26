@@ -49,8 +49,6 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import junit.framework.Test;
@@ -135,7 +133,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
-        suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));
+        // Test has been expanded by interface function below
+        //suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_BASIC_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method"));
@@ -5484,8 +5483,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Criteria queries (use the Metamodel)
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            CriteriaBuilder qb = null;
-/*            List results = null;
+/*            CriteriaBuilder qb = null;
+            List results = null;
             try {
                 qb = em.getCriteriaBuilder();
                 //CriteriaQuery<String> cq = qb.createQuery(String.class);
