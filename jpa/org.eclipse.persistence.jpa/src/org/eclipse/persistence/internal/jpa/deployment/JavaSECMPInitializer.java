@@ -21,6 +21,7 @@ import java.security.ProtectionDomain;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -43,27 +44,37 @@ public class JavaSECMPInitializer extends JPAInitializer {
 
     // Used when byte code enhancing
     public static Instrumentation globalInstrumentation;
-
-    // The JavaSECMPInitializer - a singleton
-    protected static JavaSECMPInitializer javaSECMPInitializer;
+    // Adding this flag because globalInstrumentation could be set to null after weaving is done.
+    protected static boolean usesAgent;
+    // Indicates whether has been initialized - that could be done only once.
+    protected static boolean isInitialized;
+    // Indicates whether puInfos of the initial emSetupImpls (EntityManagerFactoryProvider.initialEmSetupImpls)
+    // should be cached forever in EntityManagerFactoryProvider.initialPuInfos.
+    // The flag is only relevant in usesAgent case - puInfos never kept otherwise.
+    // In useAgent case both cases settings could work: 
+    //   true is obviously more efficient (puInfo is read only once);
+    //   false will work the same way as in non agent case (app. server case) - good for testing.
+    public static boolean keepInitialPuInfos = true;
 
     /**
      * Get the singleton entityContainer.
      */
     public static synchronized JavaSECMPInitializer getJavaSECMPInitializer() {
-        if (javaSECMPInitializer == null) {
-           javaSECMPInitializer = new JavaSECMPInitializer();
+        if(!isInitialized) {
+            initializeTopLinkLoggingFile();  
+            JavaSECMPInitializer initializer = new JavaSECMPInitializer();
+            initializer.initialize(new HashMap());
+            return initializer;
+        }  else {
+            return new JavaSECMPInitializer();
         }
-        initializeTopLinkLoggingFile();
-        return javaSECMPInitializer;
     }
 
-    /**
-     * Return whether initialization has occurred without actually triggering
-     * initialization
-     */
-    public static boolean isSingletonInitialized(){
-        return javaSECMPInitializer != null;
+    public static synchronized JavaSECMPInitializer getJavaSECMPInitializer(ClassLoader loader) {
+        if(!isInitialized) {
+            initializeTopLinkLoggingFile();        
+        }
+        return new JavaSECMPInitializer(loader);
     }
 
     /**
@@ -73,13 +84,20 @@ public class JavaSECMPInitializer extends JPAInitializer {
         super();
     }
 
+    protected JavaSECMPInitializer(ClassLoader loader) {
+        super();
+        this.initializationClassloader = loader;
+    }
+
     /**
      * Check whether weaving is possible and update the properties and variable as appropriate
      * @param properties The list of properties to check for weaving and update if weaving is not needed
      */
     public void checkWeaving(Map properties){
         String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, properties, null);
-        if (globalInstrumentation == null) {
+        // Check usesAgent instead of globalInstrumentation!=null because globalInstrumentation is set to null after initialization,
+        // but we still have to keep weaving so that the resulting projects correspond to the woven (during initialization) classes.
+        if (!usesAgent) {
             if (weaving == null) {
                properties.put(PersistenceUnitProperties.WEAVING, "false");
                weaving = "false";
@@ -122,14 +140,6 @@ public class JavaSECMPInitializer extends JPAInitializer {
     }
     
     /**
-     * Initialize the classloader to be used during persistence unit initialization.  
-     * @param persistenceHelper
-     */
-    public void initializeClassLoader(PersistenceInitializationHelper persistenceHelper){
-        initializationClassloader = persistenceHelper.getClassLoader(null, null);
-    }
-
-    /**
      * INTERNAL:
      * Should be called only by the agent. (when weaving classes)
      * If succeeded return true, false otherwise.
@@ -139,10 +149,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_agent", (Object[])null);
         // Squirrel away the instrumentation for later
         globalInstrumentation = instrumentation;
-        // Create JavaSECMPInitializer singleton
-        javaSECMPInitializer = new JavaSECMPInitializer();
-        // Initialize it
-        javaSECMPInitializer.initialize(new HashMap(), new PersistenceInitializationHelper());
+        (new JavaSECMPInitializer()).initialize(new HashMap());
     }
     
     /**
@@ -167,10 +174,8 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * @param m - a map containing the set of properties to instantiate with.
      */
     public static void initializeFromMain(Map m) {
-        if (javaSECMPInitializer != null) {
-            return;
-        }        
-        getJavaSECMPInitializer().initialize(m, new PersistenceInitializationHelper());
+        initializeTopLinkLoggingFile();        
+        (new JavaSECMPInitializer()).initialize(m);
     }
 
     /**
@@ -178,6 +183,58 @@ public class JavaSECMPInitializer extends JPAInitializer {
      */
     public static void initializeFromMain() {
         initializeFromMain(new HashMap());
+    }
+
+    /**
+     * This method initializes the container.  Essentially, it will try to load the
+     * class that contains the list of entities and reflectively call the method that
+     * contains that list.  It will then initialize the container with that list.
+     * If succeeded return true, false otherwise.
+     */
+    public void initialize(Map m) {
+        if(!isInitialized) {
+            if(globalInstrumentation != null) {
+                usesAgent = true;
+                if(this.initializationClassloader == null) {
+                    this.initializationClassloader = Thread.currentThread().getContextClassLoader();
+                }
+                final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
+                PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();
+                for (Archive archive: pars) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
+                    initPersistenceUnits(archive, m, initializationHelper);
+                }
+                // all the transformers have been added to instrumentation, don't need it any more.
+                globalInstrumentation = null;
+            }
+            isInitialized = true;
+        }
+    }
+
+    /**
+     * Initialize one persistence unit.
+     * Initialization is a two phase process.  First the predeploy process builds the metadata
+     * and creates any required transformers.
+     * Second the deploy process creates an EclipseLink session based on that metadata.
+     */
+    protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationHelper persistenceActivator){
+        EntityManagerFactoryProvider.initialEmSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
+        if(keepInitialPuInfos) {
+            EntityManagerFactoryProvider.initialPuInfos = new HashMap<String, SEPersistenceUnitInfo>();
+        }
+        Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
+        while (persistenceUnits.hasNext()) {
+            SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
+            // This code only called when usesAgent - no need for uniqueName, puName uniquely defines the pu.
+            String puName = persistenceUnitInfo.getPersistenceUnitName();
+            // Note that session name is extracted only from puInfo, the passed properties ignored.
+            String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(Collections.emptyMap(), persistenceUnitInfo, puName);
+            EntityManagerSetupImpl emSetupImpl = callPredeploy(persistenceUnitInfo, m, persistenceActivator, puName, sessionName);
+            EntityManagerFactoryProvider.initialEmSetupImpls.put(puName, emSetupImpl);
+            if(keepInitialPuInfos) {
+                EntityManagerFactoryProvider.initialPuInfos.put(puName, persistenceUnitInfo);
+            }
+        }
     }
 
     /**
@@ -204,6 +261,31 @@ public class JavaSECMPInitializer extends JPAInitializer {
         } else if (globalInstrumentation == null) {
             AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_globalInstrumentation_is_null");
         }
+    }
+    
+    /**
+     * Indicates whether puName uniquely defines the persistence unit.
+     * usesAgent means that it is a stand alone SE case.
+     * Otherwise it could be an application server case where different persistence units
+     * may have the same name: that could happen if they are loaded by different classloaders;
+     * the common case is the same persistence unit jar deployed in several applications.
+     */
+    public boolean isPersistenceUnitUniquelyDefinedByName() {
+        return usesAgent;
+    }
+    
+    /**
+     * Indicates whether initialization has already occurred.
+     */
+    public static boolean isInitialized() {
+        return isInitialized;
+    }
+    
+    /**
+     * Indicates whether Java agent and globalInstrumentation was used.
+     */
+    public static boolean usesAgent() {
+        return usesAgent;
     }
     
     /*********************************/

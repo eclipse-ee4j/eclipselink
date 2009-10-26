@@ -69,50 +69,29 @@ public abstract class JPAInitializer {
      * This method will prepare to call predeploy, call it and finally register the
      * transformer returned to be used for weaving.
      */
-    public boolean callPredeploy(PersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationHelper persistenceHelper) {
-        // we will only attempt to deploy when EclipseLink is specified as the provider or the provider is unspecified
-        String providerClassName = persistenceUnitInfo.getPersistenceProviderClassName();
-        if (isPersistenceProviderSupported(providerClassName)){
-            // Bug 210280/215865: this decoded URL path + PU name [puName] must be used as the key in the EMSetup map below
-            String sessionName = (String)m.get(PersistenceUnitProperties.SESSION_NAME);
-            if (sessionName == null){
-                sessionName = (String)persistenceUnitInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
-            }
-            if (sessionName == null) sessionName = "";
-            String emName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName()) + sessionName;
-            
-            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(emName);
-            // if we already have an EntityManagerSetupImpl this PU has already been processed.  Use the existing one
-            if (emSetupImpl != null && !emSetupImpl.isUndeployed()){
-                return false;
-            }
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
-            Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
-            // Bug#4452468  When globalInstrumentation is null, there is no weaving
-            checkWeaving(mergedProperties);
-            
-            if (persistenceUnitInfo instanceof SEPersistenceUnitInfo){
-                Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
-                // Create the temp loader that will not cache classes for entities in our persistence unit
-                ClassLoader tempLoader = createTempLoader(tempLoaderSet);
-                ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);
-                ((SEPersistenceUnitInfo)persistenceUnitInfo).setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
-            }
-            if (emSetupImpl == null){
-                emSetupImpl = new EntityManagerSetupImpl();
-                // Bug 210280/215865: use the decoded URL path + PU name as the key in the EMSetup map - to handle paths with spaces
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(emName, emSetupImpl);
-                ++ EntityManagerFactoryProvider.PUIUsageCount;
-            }
-           
-    
-            // A call to predeploy will partially build the session we will use
-            final ClassTransformer transformer = emSetupImpl.predeploy(persistenceUnitInfo, mergedProperties);
-    
-            registerTransformer(transformer, persistenceUnitInfo);
-            return true;
-        }
-        return false;
+    public EntityManagerSetupImpl callPredeploy(SEPersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationHelper persistenceHelper, String persistenceUnitUniqueName, String sessionName) {
+        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
+        Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
+        // Bug#4452468  When globalInstrumentation is null, there is no weaving
+        checkWeaving(mergedProperties);
+        
+        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
+        // Create the temp loader that will not cache classes for entities in our persistence unit
+        ClassLoader tempLoader = createTempLoader(tempLoaderSet);
+        ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);
+        ((SEPersistenceUnitInfo)persistenceUnitInfo).setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
+
+        EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(persistenceUnitUniqueName, sessionName);
+
+        // A call to predeploy will partially build the session we will use
+        final ClassTransformer transformer = emSetupImpl.predeploy(persistenceUnitInfo, mergedProperties);
+
+        // After preDeploy it's impossible to weave again - so may substitute the temporary classloader with the real one.
+        // The temporary classloader could be garbage collected even if the puInfo is cached for the future use by other emSetupImpls.
+        ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(((SEPersistenceUnitInfo)persistenceUnitInfo).getClassLoader());
+        
+        registerTransformer(transformer, persistenceUnitInfo);
+        return emSetupImpl;
     }
     
     /**
@@ -131,35 +110,51 @@ public abstract class JPAInitializer {
     protected abstract ClassLoader createTempLoader(Collection col, boolean shouldOverrideLoadClassForCollectionMembers);
     
     /**
-     * This method initializes the container.  Essentially, it will try to load the
-     * class that contains the list of entities and reflectively call the method that
-     * contains that list.  It will then initialize the container with that list.
-     * If succeeded return true, false otherwise.
+     * Find PersistenceUnitInfo corresponding to the persistence unit name.
+     * Returns null if either persistence unit either not found or provider is not supported.
      */
-    public void initialize(Map m, PersistenceInitializationHelper persistenceHelper) {
-        initializeClassLoader(persistenceHelper);
-        final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
-        for (Archive archive: pars) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
-            initPersistenceUnits(archive, m, persistenceHelper);
+    public SEPersistenceUnitInfo findPersistenceUnitInfo(String puName, Map m, PersistenceInitializationHelper persistenceHelper) {
+        SEPersistenceUnitInfo persistenceUnitInfo = null;
+        if(EntityManagerFactoryProvider.initialPuInfos != null) {
+            persistenceUnitInfo = EntityManagerFactoryProvider.initialPuInfos.get(puName);
+            if(persistenceUnitInfo != null) {
+                return persistenceUnitInfo;
+            }
         }
+        return findPersistenceUnitInfoInArchives(puName, m, persistenceHelper);
     }
     
     /**
-     * Initialize one persistence unit.
-     * Initialization is a two phase process.  First the predeploy process builds the metadata
-     * and creates any required transformers.
-     * Second the deploy process creates an EclipseLink session based on that metadata.
+     * Find PersistenceUnitInfo corresponding to the persistence unit name.
+     * Returns null if either persistence unit either not found or provider is not supported.
      */
-    protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationHelper persistenceActivator){
+    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchives(String puName, Map m, PersistenceInitializationHelper persistenceHelper) {
+        SEPersistenceUnitInfo persistenceUnitInfo = null;
+        final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
+        for (Archive archive: pars) {
+            persistenceUnitInfo = findPersistenceUnitInfoInArchive(puName, archive, m, persistenceHelper);
+            if(persistenceUnitInfo != null) {
+                break;
+            }
+        }
+        return persistenceUnitInfo;
+    }
+    
+    /**
+     * Find PersistenceUnitInfo corresponding to the persistence unit name in the archive.
+     * Returns null if either persistence unit either not found or provider is not supported.
+     */
+    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchive(String puName, Archive archive, Map m, PersistenceInitializationHelper persistenceActivator){
         Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
         while (persistenceUnits.hasNext()) {
             SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
-            EntityManagerFactoryProvider.persistenceUnits.put(PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(), persistenceUnitInfo.getPersistenceUnitName()), persistenceUnitInfo);
-            callPredeploy(persistenceUnitInfo, m, persistenceActivator);
+            if(isPersistenceProviderSupported(persistenceUnitInfo.getPersistenceProviderClassName()) &&  persistenceUnitInfo.getPersistenceUnitName().equals(puName)) {
+                return persistenceUnitInfo;
+            }
         }
+        return null;
     }
-
+    
     /**
      * Returns whether the given persistence provider class is supported by this implementation
      * @param providerClassName
@@ -198,10 +193,17 @@ public abstract class JPAInitializer {
     public abstract void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo);
 
     /**
-     * Initialize the classloader to be used during persistence unit initialization.  This method should
-     * be overridden to provide initialization appropriate to the environment
-     * @param persistenceHelper
+     * Indicates whether puName uniquely defines the persistence unit.
      */
-    public void initializeClassLoader(PersistenceInitializationHelper persistenceHelper){
+    public boolean isPersistenceUnitUniquelyDefinedByName() {
+        return true;
+    }
+    
+    /**
+     * In case persistence unit is not uniquely defined by name
+     * this method is called to generate a unique name.
+     */
+    public String createUniquePersistenceUnitName(PersistenceUnitInfo puInfo) {
+        return PersistenceUnitProcessor.buildPersistenceUnitName(puInfo.getPersistenceUnitRootUrl(), puInfo.getPersistenceUnitName());
     }
 }

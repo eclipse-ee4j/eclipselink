@@ -18,10 +18,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -35,9 +34,10 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 public class EntityManagerFactoryProvider { 
     public static final HashMap<String, EntityManagerSetupImpl> emSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
     
-    //Cache the Persistence Units
-    public static final HashMap<String, PersistenceUnitInfo> persistenceUnits = new HashMap<String, PersistenceUnitInfo>();
-    public static volatile int PUIUsageCount = 0;
+    //Cache the initial emSetupImpls - those created and predeployed by JavaSECMPInitializer.initialize method. 
+    public static HashMap<String, EntityManagerSetupImpl> initialEmSetupImpls = null;
+    //Cache the initial puInfos - those used by  initialEmSetupImpls
+    public static HashMap<String, SEPersistenceUnitInfo> initialPuInfos = null;
     
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
@@ -214,16 +214,6 @@ public class EntityManagerFactoryProvider {
         return emSetupImpls;
     }
     
-    /**
-     * Return the setup class for a given entity manager name 
-     * @param emName 
-     */
-    public static PersistenceUnitInfo getPersistenceUnitInfo(String puName){
-        if (puName == null){
-            return persistenceUnits.get("");
-        }
-        return persistenceUnits.get(puName);
-    }
     /**
      * Logs in to given session. If user has not specified  <codeTARGET_DATABASE</code>
      * the platform would be auto detected

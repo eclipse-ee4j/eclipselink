@@ -36,6 +36,7 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
     public static final int EXCEPTION_BUILDING_PERSISTENCE_UNIT_NAME = 30013;
     public static final int EXCEPTION_OBTAINING_REQUIRED_BEAN_VALIDATOR_FACTORY = 30014;
     public static final int EXCEPTION_LOADING_VALIDATION_GROUP_CLASS = 30015;
+    public static final int SESSION_NAME_ALREADY_IN_USE= 30016;
 
 
     /**
@@ -190,6 +191,14 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
 
         PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, EXCEPTION_LOADING_VALIDATION_GROUP_CLASS, args), cause);
         loadingException.setErrorCode(EXCEPTION_LOADING_VALIDATION_GROUP_CLASS);
+        return loadingException;
+    }
+
+    public static PersistenceUnitLoadingException sessionNameAlreadyInUse(String sessionName, String newPersistenceUnit, String existingPersistenceUnit) {
+        Object[] args = { sessionName, newPersistenceUnit, existingPersistenceUnit };
+
+        PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, SESSION_NAME_ALREADY_IN_USE, args));
+        loadingException.setErrorCode(SESSION_NAME_ALREADY_IN_USE);
         return loadingException;
     }
 

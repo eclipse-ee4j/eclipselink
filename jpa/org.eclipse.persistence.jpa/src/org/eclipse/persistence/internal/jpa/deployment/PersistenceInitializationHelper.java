@@ -33,20 +33,9 @@ public class PersistenceInitializationHelper {
      * @return
      */
     public JPAInitializer getInitializer(ClassLoader classLoader, Map m){
-        return JavaSECMPInitializer.getJavaSECMPInitializer();
+        return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
     }
 
-    /**
-     * Clear all references inside the initializer
-     */
-    public void unsetInitializer() {
-        // 253701: release reference to classloader tree for non-OSGI initializers
-        if(null != JavaSECMPInitializer.javaSECMPInitializer && JavaSECMPInitializer.javaSECMPInitializer.isSingletonInitialized()) {
-            JavaSECMPInitializer.javaSECMPInitializer.initializationClassloader = null;
-            JavaSECMPInitializer.javaSECMPInitializer.globalInstrumentation = null;
-        }
-    }
-    
     /**
      * Answer the classloader to use to create an EntityManager.
      * If a classloader is not found in the properties map then 

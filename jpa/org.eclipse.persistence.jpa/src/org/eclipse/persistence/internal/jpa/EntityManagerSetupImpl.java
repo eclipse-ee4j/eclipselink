@@ -89,7 +89,6 @@ import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -119,11 +118,15 @@ public class EntityManagerSetupImpl {
      * 
      */
 
+    // this name should uniquely identify the persistence unit
+    protected String persistenceUnitUniqueName;
+    // session name should uniquely identify the session
+    protected String sessionName;
+
     protected MetadataProcessor processor = null;
     /** Holds a reference to the weaver class transformer so it can be cleared after login. */
     protected PersistenceWeaver weaver = null;
     protected PersistenceUnitInfo persistenceUnitInfo = null;
-    protected Map predeployProperties = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
     protected ServerSession session = null;
@@ -135,9 +138,6 @@ public class EntityManagerSetupImpl {
     // indicates that classes have already been woven
     protected boolean isWeavingStatic = false;
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
-
-    // 253701: cache initializationHelper for later use during undeploy() - set by PersistenceProvider.createEntityManagerFactory()
-    protected PersistenceInitializationHelper persistenceInitializationHelper = null;
 
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
     /** Reference to the Metamodel for this deployment and session. */
@@ -168,18 +168,97 @@ public class EntityManagerSetupImpl {
      *     Initial -----> PredeployFailed
      *           |         |
      *           V         V
-     *       |-> Predeployed --> DeployFailed
-     *       |   |         |        |
-     *       |   V         V        V
-     *       | Deployed -> Undeployed-->|
-     *       |                          |
-     *       |<-------------------------V
+     *         Predeployed --> DeployFailed
+     *           |         |        |
+     *           V         V        V
+     *         Deployed -> Undeployed
+     *                                  
      */
     
     
     public static final String ERROR_LOADING_XML_FILE = "error_loading_xml_file";
     public static final String EXCEPTION_LOADING_ENTITY_CLASS = "exception_loading_entity_class";
 
+    /*
+     * Properties used to generate sessionName if none is provided.
+     */
+    public static String[] connectionPropertyNames = {
+        PersistenceUnitProperties.TRANSACTION_TYPE,
+        PersistenceUnitProperties.JTA_DATASOURCE,
+        PersistenceUnitProperties.NON_JTA_DATASOURCE,
+        PersistenceUnitProperties.JDBC_URL,
+        PersistenceUnitProperties.JDBC_USER,
+    };
+    
+    public EntityManagerSetupImpl(String persistenceUnitUniqueName, String sessionName) {
+        this.persistenceUnitUniqueName = persistenceUnitUniqueName;
+        this.sessionName = sessionName;
+    }
+    
+    public EntityManagerSetupImpl() {
+        this("", "");
+    }
+    
+    /*
+     * Return session name if specified.
+     * Otherwise build one from the connection properties names and values.
+     * Note that specifying value "" in properties causes 
+     * the property value specified in PersistenceUnitInfo to be ignored.
+     * Never returns null.
+     */
+    public static String getOrBuildSessionName(Map properties, PersistenceUnitInfo puInfo, String persistenceUnitUniqueName) {
+        // if SESSION_NAME is specified in either properties or puInfo properties - use it as session name (unless it's an empty String).
+        String sessionName = (String)properties.get(PersistenceUnitProperties.SESSION_NAME);
+        if (sessionName == null) {
+            sessionName = (String)puInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
+        }
+        // Specifying empty String in properties allows to remove SESSION_NAME specified in puInfo properties.
+        if(sessionName != null && sessionName.length() > 0) {
+            return sessionName;
+        }
+        // In case no SESSION_NAME specified (or empty String) - build one
+        // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
+        return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+    }
+        
+    protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {        
+        String suffix = "";
+        for(int i=0; i < connectionPropertyNames.length; i++) {
+            String name = connectionPropertyNames[i];
+            Object value = properties.get(name);
+            if(value != null) {
+                String strValue = null;
+                if(value instanceof String) {
+                    strValue = (String)value;
+                } else {
+                    if(value instanceof javax.sql.DataSource) {
+                        // value of JTA_DATASOURCE / NON_JTA_DATASOURCE may be a DataSource (we would prefer DataSource name)
+                        strValue = Integer.toString(System.identityHashCode(value));
+                    } else if(value instanceof PersistenceUnitTransactionType) {
+                        strValue = value.toString();
+                    }
+                }
+                // don't set an empty String
+                if(strValue.length() > 0) {
+                    suffix += "_" + Helper.getShortClassName(name) + "=" + strValue;
+                }
+            }
+        }
+        return suffix;
+    }
+    
+    /*
+     * Should only be called when emSetupImpl created during SE initialization is set into a new EMF.
+     * emSetupImpl must be in PREDEPLOYED state.
+     */
+    public void changeSessionName(String newSessionName) {
+        if(!session.getName().equals(newSessionName)) {
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "session_name_change", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), newSessionName});
+            sessionName = newSessionName;
+            session.setName(newSessionName);
+        }
+    }
+    
     /**
      * This method can be used to ensure the session represented by emSetupImpl
      * is removed from the SessionManager.
@@ -216,19 +295,19 @@ public class EntityManagerSetupImpl {
      * 
      * @param realClassLoader The class loader that was used to load the entity classes. This loader
      *               will be maintained for the lifespan of the loaded classes.
-     * @param additionalProperties added to predeployProperties for updateServerSession overriding existing properties.
+     * @param additionalProperties added to persistence unit properties for updateServerSession overriding existing properties.
      *              In JSE case it allows to alter properties in main (as opposed to preMain where preDeploy is called).
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
-    public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) { 
+    public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
         if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         // state is PREDEPLOYED or DEPLOYED
-        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         
         try {
-            Map deployProperties = mergeMaps(additionalProperties, predeployProperties);
+            Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
             translateOldProperties(deployProperties, session);
             
             if (state == STATE_PREDEPLOYED) {
@@ -313,7 +392,7 @@ public class EntityManagerSetupImpl {
             session.logThrowable(SessionLog.SEVERE, SessionLog.EJB, exception);
             throw persistenceException;
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         }
     }
 
@@ -453,9 +532,8 @@ public class EntityManagerSetupImpl {
      * Update loggers and settings for the singleton logger and the session logger. 
      * @param persistenceProperties the properties map
      * @param serverPlatformChanged the boolean that denotes a serverPlatform change in the session.
-     * @param sessionNameChanged the boolean that denotes a sessionNameChanged change in the session.
      */
-    protected void updateLoggers(Map persistenceProperties, boolean serverPlatformChanged, boolean sessionNameChanged, ClassLoader loader) {
+    protected void updateLoggers(Map persistenceProperties, boolean serverPlatformChanged, ClassLoader loader) {
         // Logger(SessionLog type) can be specified by the logger property or ServerPlatform.getServerLog().
         // The logger property has a higher priority to ServerPlatform.getServerLog().
         String loggerClassName = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.LOGGING_LOGGER, persistenceProperties, session);
@@ -489,11 +567,6 @@ public class EntityManagerSetupImpl {
         if (singletonLog != null && sessionLog != null) {
             AbstractSessionLog.setLog(singletonLog);
             session.setSessionLog(sessionLog);
-        } else if (sessionNameChanged) {
-            // In JavaLog this will result in logger name changes,
-            // but won't affect DefaultSessionLog.
-            // Note, that the session hasn't change, only its name.
-            session.getSessionLog().setSession(session);
         }
 
         // Bug5389828.  Update the logging settings for the singleton logger.
@@ -735,27 +808,26 @@ public class EntityManagerSetupImpl {
      */
     public synchronized ClassTransformer predeploy(PersistenceUnitInfo info, Map extendedProperties) {
         ClassLoader privateClassLoader = null;
-        if (state == STATE_DEPLOY_FAILED) {
+        if (state == STATE_DEPLOY_FAILED || state == STATE_UNDEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         if (state == STATE_PREDEPLOYED || state == STATE_DEPLOYED) {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             factoryCount++;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             return null;
-        } else if(state == STATE_INITIAL || state == STATE_UNDEPLOYED) {
+        } else if(state == STATE_INITIAL) {
             persistenceUnitInfo = info;
         }
         
-        // state is INITIAL, PREDEPLOY_FAILED or UNDEPLOYED
+        // state is INITIAL or PREDEPLOY_FAILED
         try {
-            predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
+            Map predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
             // Translate old properties.
             // This should be done before using properties (i.e. ServerPlatform).
             translateOldProperties(predeployProperties, null);
 
             String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
-            String sessionNameStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);
             if (sessionsXMLStr != null) {
                 isSessionLoadedFromSessionsXML = true;
             }
@@ -764,54 +836,36 @@ public class EntityManagerSetupImpl {
             // If a sessions-xml is used this will get replaced later, but is required for logging.
             session = new ServerSession(new Project(new DatabaseLogin()));            
             // ServerSession name and ServerPlatform must be set prior to setting the loggers.
-            setServerSessionName(predeployProperties);
+            session.setName(this.sessionName);
             ClassLoader realClassLoader = persistenceUnitInfo.getClassLoader();
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
-            updateLoggers(predeployProperties, true, false, realClassLoader);
-            // If it's SE case and the pu has been undeployed weaving again here is impossible:
-            // the classes were loaded already. Therefore using temporaryClassLoader is no longer required.
-            // Moreover, it causes problem in case the same factory is opened and closed many times:
-            // eventually it causes "java.lang.OutOfMemoryError: PermGen space".
-            // It seems that tempLoaders are not garbage collected, therefore each predeploy would add new
-            // classes to Permanent Generation heap.
-            // Therefore this doesn't really fix the problem but rather makes it less severe: in case of
-            // the factory opened / closed 20 times only one temp. class loader may be left behind - not 20.
-            // Another workaround would be increasing Permanent Generation Heap size by adding VM argument -XX:MaxPermSize=256m. 
-            if(!this.isInContainerMode && state==STATE_UNDEPLOYED) {
-                privateClassLoader = realClassLoader;
-            } else {
-                // Get the temporary classLoader based on the platform
-                JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
-                privateClassLoader = privateClassLoaderHolder.getClassLoader();
-                // Bug 229634: If we switched to using the non-temporary classLoader then disable weaving
-                if(!privateClassLoaderHolder.isTempClassLoader()) {
-                    // Disable dynamic weaving for the duration of this predeploy()
-                    // Now leave weaving enabled, as there is no dependency on the temp class loader.
-                    //enableWeaving = Boolean.FALSE;
-                }
-            }
+            updateLoggers(predeployProperties, true, realClassLoader);
+            // Get the temporary classLoader based on the platform
+            JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
+            privateClassLoader = privateClassLoaderHolder.getClassLoader();
             
             //Update performance profiler
             updateProfiler(predeployProperties,realClassLoader);
             
             // Cannot start logging until session and log and initialized, so log start of predeploy here.
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             
             if (isSessionLoadedFromSessionsXML) {
                 // Loading session from sessions-xml.
-                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionNameStr);
-                if (sessionNameStr == null) {
+                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
+                if (sessionName == null) {
                     throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(info.getPersistenceUnitName(), sessionsXMLStr));
                 }                
                 XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
                 // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
                 // This allows for the project to be accessed without loading any of the classes to allow weaving.
-                Session tempSession = new SessionManager().getSession(xmlLoader, sessionNameStr, privateClassLoader, false, false);
+                // Note that this method assigns sessionName to session.
+                Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
                 // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
                 if (tempSession == null) {
-                    throw new PersistenceException(ValidationException.noSessionFound(sessionNameStr, sessionsXMLStr));
+                    throw new PersistenceException(ValidationException.noSessionFound(sessionName, sessionsXMLStr));
                 }
                 if (tempSession.isServerSession()) {
                    session = (ServerSession) tempSession;
@@ -819,11 +873,10 @@ public class EntityManagerSetupImpl {
                     throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(info.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
                 }
                 // Must now reset logging and server-platform on the loaded session.
-                // ServerSession name and ServerPlatform must be set prior to setting the loggers.
-                setServerSessionName(predeployProperties);
+                // ServerPlatform must be set prior to setting the loggers.
                 updateServerPlatform(predeployProperties, privateClassLoader);
                 // Update loggers and settings for the singleton logger and the session logger.
-                updateLoggers(predeployProperties, true, false, privateClassLoader);
+                updateLoggers(predeployProperties, true, privateClassLoader);
             }
             
             warnOldProperties(predeployProperties, session);
@@ -845,12 +898,12 @@ public class EntityManagerSetupImpl {
             }
             
             // this flag is used to disable work done as a result of the LAZY hint on OneToOne and ManyToOne mappings
-            if((state == STATE_INITIAL || state == STATE_UNDEPLOYED)) {
+            if(state == STATE_INITIAL) {
                 if(null == enableWeaving) {                    
                     enableWeaving = Boolean.TRUE;
                 }
                 isWeavingStatic = false;
-                String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING);
+                String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
                 if (weaving != null && weaving.equalsIgnoreCase("false")) {
                     enableWeaving = Boolean.FALSE;
                 }else if (weaving != null && weaving.equalsIgnoreCase("static")) {
@@ -910,11 +963,11 @@ public class EntityManagerSetupImpl {
             // factoryCount is not incremented only in case of a first call to preDeploy
             // in non-container mode: this call is not associated with a factory
             // but rather done by JavaSECMPInitializer.callPredeploy (typically in preMain).
-            if((state != STATE_INITIAL && state != STATE_UNDEPLOYED) || this.isInContainerMode()) {
+            if(state != STATE_INITIAL || this.isInContainerMode()) {
                 factoryCount++;
             }
             state = STATE_PREDEPLOYED;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors 
             if (isWeavingStatic) {
                 return null;
@@ -933,13 +986,6 @@ public class EntityManagerSetupImpl {
      * Check the provided map for an object with the given key.  If that object is not available, check the
      * System properties.  If it is not available from either location, return the default value.
      */
-    public String getConfigPropertyAsString(String propertyKey, String defaultValue){
-        return getConfigPropertyAsStringLogDebug(propertyKey, predeployProperties, defaultValue, session);
-    }
-
-    public String getConfigPropertyAsString(String propertyKey){
-        return getConfigPropertyAsStringLogDebug(propertyKey, predeployProperties, session);
-    }
 
     /**
      * Return the name of the session this SetupImpl is building. The session name is only known at deploy
@@ -975,9 +1021,7 @@ public class EntityManagerSetupImpl {
     }
     
     protected Map mergeWithExistingMap(Map m) {
-        if(predeployProperties != null) {
-            return mergeMaps(m, predeployProperties);
-        } else if(persistenceUnitInfo != null) {
+        if(persistenceUnitInfo != null) {
             return mergeMaps(m, persistenceUnitInfo.getProperties());
         } else {
             return m;
@@ -1186,8 +1230,13 @@ public class EntityManagerSetupImpl {
             return defaultDataSource;
         } 
         if ( datasource instanceof String){
-            // Create a dummy DataSource that will throw an exception on access
-            return new DataSourceImpl((String)datasource, null, null, null);
+            if(((String)datasource).length() > 0) {
+                // Create a dummy DataSource that will throw an exception on access
+                return new DataSourceImpl((String)datasource, null, null, null);
+            } else {
+                // allow an empty string data source property passed to createEMF to cancel data source specified in persistence.xml
+                return null;
+            }
         }
         if ( !(datasource instanceof javax.sql.DataSource) ){
             //A warning should be enough.  Though an error might be better, the properties passed in could contain anything
@@ -1335,38 +1384,8 @@ public class EntityManagerSetupImpl {
     protected void initServerSession(Map properties) {
         assignCMP3Policy();
 
-        // This server session could have been initialized in predeploy with
-        // another set of properties that would have set the session name to 
-        // something else.  We need to verify session name here.
-        String newName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_NAME, properties, session);
-        if (newName != null && !(newName.equals(session.getName()))) {
-            session.setName(newName);
-        }
-
         // Register session that has been created earlier.
         addSessionToGlobalSessionManager();
-    }
-
-    /**
-     * Set ServerSession name but do not register the session.
-     * The session registration should be done in sync
-     * with increment of the deployment counter, as otherwise the
-     * undeploy will not behave correctly in case of a more
-     * than one predeploy request for the same session name.
-     * @param m the combined properties map.
-     */
-    protected void setServerSessionName(Map m) {
-        // use default session name if none is provided
-        String name = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.SESSION_NAME, m);
-        if(name == null) {
-            if (persistenceUnitInfo.getPersistenceUnitRootUrl() != null){
-                name = persistenceUnitInfo.getPersistenceUnitRootUrl().toString() + "-" + persistenceUnitInfo.getPersistenceUnitName();
-            } else {
-                name = persistenceUnitInfo.getPersistenceUnitName();
-            }
-        } 
-
-        session.setName(name);
     }
 
     /**
@@ -1377,11 +1396,10 @@ public class EntityManagerSetupImpl {
             return;
         }
 
-        // In deploy Session name and ServerPlatform could've changed which will affect the loggers.
+        // In deploy ServerPlatform could've changed which will affect the loggers.
         boolean serverPlatformChanged = updateServerPlatform(m, loader);
-        boolean sessionNameChanged = updateSessionName(m);
 
-        updateLoggers(m, serverPlatformChanged, sessionNameChanged, loader);
+        updateLoggers(m, serverPlatformChanged, loader);
         
         updateProfiler(m,loader);
 
@@ -1480,23 +1498,6 @@ public class EntityManagerSetupImpl {
         }
     }
 
-    /**
-     * Updates server session name if changed.
-     * @return true if the name has changed.
-     */
-    protected boolean updateSessionName(Map m) {
-        String newName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_NAME, m, session);
-        if(newName == null || newName.equals(session.getName())) {
-            return false;
-        }
-
-        removeSessionFromGlobalSessionManager();
-        session.setName(newName);
-        addSessionToGlobalSessionManager();
-
-        return true;
-    }
-    
     protected void processDescriptorCustomizers(Map m, ClassLoader loader) {
         Map customizerMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_, m, session);
         if (customizerMap.isEmpty()) {
@@ -1554,10 +1555,18 @@ public class EntityManagerSetupImpl {
         return state == STATE_DEPLOY_FAILED;
     }
 
+    public String getPersistenceUnitUniqueName() {
+        return this.persistenceUnitUniqueName;
+    }
+    
     public int getFactoryCount() {
         return factoryCount;
     }
 
+    public String getSessionName() {
+        return this.sessionName;
+    }
+    
     public boolean shouldRedeploy() {
         return state == STATE_UNDEPLOYED || state == STATE_PREDEPLOY_FAILED;
     }
@@ -1576,37 +1585,20 @@ public class EntityManagerSetupImpl {
             return;
         }
         // state is PREDEPLOYED, DEPLOYED or DEPLOY_FAILED
-        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         try {
             factoryCount--;
             if(factoryCount > 0) {
                 return;
             }
-            state = STATE_UNDEPLOYED;
-            removeSessionFromGlobalSessionManager();
-
-            // There is a single map entry for each instance of an EMSetupImpl
-            // 253701: This instance of EMSetupImpl must remove itself as key:value=name:emSetupImpl from the EntityManagerFactoryProvider HashMapCache 
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-                String puName = PersistenceUnitProcessor.buildPersistenceUnitName(getPersistenceUnitInfo().getPersistenceUnitRootUrl(), getPersistenceUnitInfo().getPersistenceUnitName());
-                String esiName = puName;
-                if (this.predeployProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
-                    esiName = puName + this.predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);
-                }
-                EntityManagerFactoryProvider.emSetupImpls.remove(esiName);
-                --EntityManagerFactoryProvider.PUIUsageCount;
-                if (EntityManagerFactoryProvider.PUIUsageCount <= 0){
-                    EntityManagerFactoryProvider.persistenceUnits.remove(puName);
-                }
-            }
-            
-            // 253701: remove any JPAInitializer singleton so GC can occur on the entityManagerFactoryImpl instance
-            if(null != persistenceInitializationHelper) {
-                // clear classloader references
-                persistenceInitializationHelper.unsetInitializer();
+                state = STATE_UNDEPLOYED;
+                removeSessionFromGlobalSessionManager();
+                // remove undeployed emSetupImpl from the map
+                EntityManagerFactoryProvider.emSetupImpls.remove(session.getName());
             }
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             if(state == STATE_UNDEPLOYED) {
                 session = null;
             }
@@ -1845,26 +1837,6 @@ public class EntityManagerSetupImpl {
                 }
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Return the persistenceInitializationHelper instance 
-     * @return
-     */
-    public PersistenceInitializationHelper getPersistenceInitializationHelper() {
-        return persistenceInitializationHelper;
-    }
-
-    /**
-     * INTERNAL:
-     * Set the persistenceInitializationHelper instance.
-     * Currently implemented only by PersistenceProvideder
-     * @param persistenceInitializationHelper
-     */
-    public void setPersistenceInitializationHelper(
-            PersistenceInitializationHelper persistenceInitializationHelper) {
-        this.persistenceInitializationHelper = persistenceInitializationHelper;
     }
 
     private void updateQueryTimeout(Map persistenceProperties) {

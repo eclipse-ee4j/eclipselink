@@ -418,7 +418,7 @@ public class PersistenceUnitProcessor {
        String fullPuName = null;
        try {
            // append the persistence unit name to the decoded URL
-           fullPuName = URLDecoder.decode(url.toString(), "UTF8")+puName;
+           fullPuName = URLDecoder.decode(url.toString(), "UTF8")+"_"+puName;
        } catch (UnsupportedEncodingException e) {
            throw PersistenceUnitLoadingException.couldNotBuildPersistenceUntiName(e,url.toString(),puName);
        }

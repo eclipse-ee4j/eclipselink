@@ -84,7 +84,9 @@ import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -102,6 +104,7 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -330,6 +333,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTemporalOnClosedEm"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTransientMapping"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGenerateSessionNameFromConnectionProperties"));
         
         return suite;
     }
@@ -8892,4 +8896,185 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("There should not be a mapping for transientField.", descriptor.getMappingForAttributeName("transientField") == null);
     }
 
+    public static class SessionNameCustomizer implements SessionCustomizer {
+        static ServerSession ss;
+        public void customize(Session session) throws Exception {
+            ss = (ServerSession)session;
+        }
+    }
+    public void testGenerateSessionNameFromConnectionProperties() {
+        // the test requires passing properties to createEMF or createContainerEMF method.
+        if (isOnServer()) {
+            return;
+        }
+        
+        String errorMsg = "";
+        EntityManagerFactory emf;
+        Map properties;
+        String puName = "default";
+        String customizer = "org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite$SessionNameCustomizer";
+        
+        String myJtaDS = "myJtaDS";
+        String myNonJtaDS = "myNonJtaDS";
+        String myUrl = "myUrl";
+        String myUser = "myUser";
+        String myDriver = "myDriver";
+        String myPassword = "myPassword";
+        
+        ServerSession originalSession = JUnitTestCase.getServerSession();
+        String loggingLevel = originalSession.getSessionLog().getLevelString();
+        SessionNameCustomizer.ss = null;
+        
+        // 0: The session name specified in persistence.xml is NOT overridden -> the existing session is used by emf.
+        // If persistence.xml no longer specifies session name then comment out this part of the test.
+        properties = new HashMap();
+        // required by the test
+        properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, customizer);
+        // log on the same level as original session
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, loggingLevel);
+        properties.put(PersistenceUnitProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+        // to override data source if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, "");
+        // to override data source if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, "");
+        properties.put(PersistenceUnitProperties.JDBC_URL, myUrl);
+        properties.put(PersistenceUnitProperties.JDBC_USER, myUser);
+        properties.put(PersistenceUnitProperties.JDBC_DRIVER, myDriver);
+        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, myPassword);
+        emf = Persistence.createEntityManagerFactory(puName, properties);
+        try {
+            emf.createEntityManager();
+        } catch (Exception ex) {
+            // Ignore exception that probably caused by attempt to connect the session with invalid connection data provided in the properties.
+        } finally {
+            emf.close();
+            if(SessionNameCustomizer.ss != null && SessionNameCustomizer.ss != originalSession) {
+                errorMsg += "0: Session name NOT overridden by an empty string - original session expected; ";
+            }
+            // clear for the next test
+            SessionNameCustomizer.ss = null;
+        }
+        
+        // 1: New session with DefaultConnector with myUrl, myDriver, myUser, myPassword
+        properties = new HashMap();
+        // required by the test
+        properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, customizer);
+        // log on the same level as original session
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, loggingLevel);
+        // to override SESSION_NAME if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "");
+        properties.put(PersistenceUnitProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+        // to override data source if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, "");
+        // to override data source if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, "");
+        properties.put(PersistenceUnitProperties.JDBC_URL, myUrl);
+        properties.put(PersistenceUnitProperties.JDBC_USER, myUser);
+        properties.put(PersistenceUnitProperties.JDBC_DRIVER, myDriver);
+        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, myPassword);
+        emf = Persistence.createEntityManagerFactory(puName, properties);
+        try {
+            emf.createEntityManager();
+        } catch (Exception ex) {
+            // Ignore exception that probably caused by attempt to connect the session with invalid connection data provided in the properties.
+        } finally {
+            emf.close();
+            if(SessionNameCustomizer.ss == null && SessionNameCustomizer.ss == originalSession) {
+                errorMsg += "1: New session expected; ";
+            } else {
+                if(SessionNameCustomizer.ss.getLogin().shouldUseExternalConnectionPooling()) {
+                    errorMsg += "1: internal connection pooling expected; ";
+                }
+                if(SessionNameCustomizer.ss.getLogin().shouldUseExternalTransactionController()) {
+                    errorMsg += "1: no externalTransactionController expected; ";
+                }
+                if(! myUser.equals(SessionNameCustomizer.ss.getLogin().getUserName())) {
+                    errorMsg += "1: myUser expected; ";
+                }
+                Connector connector = SessionNameCustomizer.ss.getLogin().getConnector();
+                if(connector instanceof DefaultConnector) {
+                    if(! myUrl.equals(((DefaultConnector)connector).getDatabaseURL())) {
+                        errorMsg += "1: myUrl expected; ";
+                    }
+                    if(! myDriver.equals(((DefaultConnector)connector).getDriverClassName())) {
+                        errorMsg += "1: myDriver expected; ";
+                    }
+                } else {
+                    errorMsg += "1: DefaultConnector expected; ";
+                }
+            }                
+            // clear for the next test
+            SessionNameCustomizer.ss = null;
+        }
+
+        
+        // 2: New session with JNDIConnector with myJtaDs, myNonJtaDs
+        properties = new HashMap();
+        // required by the test
+        properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, customizer);
+        // log on the same level as original session
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, loggingLevel);
+        // to override SESSION_NAME if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "");
+        properties.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
+        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, myJtaDS);
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, myNonJtaDS);
+        // to override user if one is specified in persistence.xml
+        properties.put(PersistenceUnitProperties.JDBC_USER, "");
+        // note that there is no need to override JDBC_URL, JDBC_DRIVER, JDBC_PASSWORD with an empty string, they will be ignored.
+        // JDBC_URL, JDBC_DRIVER - because data source(s) are specified; JDBC_PASSWORD - because JDBC_USER is not specified 
+        emf = Persistence.createEntityManagerFactory(puName, properties);
+        try {
+            emf.createEntityManager();
+        } catch (Exception ex) {
+            // Ignore exception that probably caused by attempt to connect the session with invalid connection data provided in the properties.
+        } finally {
+            emf.close();
+            if(SessionNameCustomizer.ss == null && SessionNameCustomizer.ss == originalSession) {
+                errorMsg += "2: New session expected; ";
+            } else {
+                if(! SessionNameCustomizer.ss.getLogin().shouldUseExternalConnectionPooling()) {
+                    errorMsg += "2: external connection pooling expected; ";
+                }
+                if(! SessionNameCustomizer.ss.getLogin().shouldUseExternalTransactionController()) {
+                    errorMsg += "2: externalTransactionController expected; ";
+                }
+                if(SessionNameCustomizer.ss.getLogin().getUserName().length() > 0) {
+                    errorMsg += "2: empty string user expected; ";
+                }
+                Connector connector = SessionNameCustomizer.ss.getLogin().getConnector();
+                if(connector instanceof JNDIConnector) {
+                    if(! myJtaDS.equals(((JNDIConnector)connector).getName())) {
+                        errorMsg += "2: myJtaDS expected; ";
+                    }
+                } else {
+                    errorMsg += "2: JNDIConnector expected; ";
+                }
+
+                if(! SessionNameCustomizer.ss.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+                    errorMsg += "2: resding: external connection pooling expected; ";
+                }
+                if(SessionNameCustomizer.ss.getReadConnectionPool().getLogin().shouldUseExternalTransactionController()) {
+                    errorMsg += "2: reading no externalTransactionController expected; ";
+                }
+                if(SessionNameCustomizer.ss.getReadConnectionPool().getLogin().getUserName().length() > 0) {
+                    errorMsg += "2: reading: empty string user expected; ";
+                }
+                Connector readConnector = ((DatasourceLogin)SessionNameCustomizer.ss.getReadConnectionPool().getLogin()).getConnector();
+                if(readConnector instanceof JNDIConnector) {
+                    if(! myNonJtaDS.equals(((JNDIConnector)readConnector).getName())) {
+                        errorMsg += "2: reading: myNonJtaDS expected; ";
+                    }
+                } else {
+                    errorMsg += "2: reading: JNDIConnector expected; ";
+                }
+            }                
+            // clear for the next test
+            SessionNameCustomizer.ss = null;
+        }
+
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
 }

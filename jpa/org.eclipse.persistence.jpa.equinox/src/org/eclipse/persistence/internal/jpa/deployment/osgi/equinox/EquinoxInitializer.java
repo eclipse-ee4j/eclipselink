@@ -53,7 +53,6 @@ public class EquinoxInitializer extends JPAInitializer {
     @SuppressWarnings("unchecked")
     public EquinoxInitializer(ClassLoader bundleClassloader, Map m, PersistenceInitializationHelper helper) {
         this.initializationClassloader = bundleClassloader;
-        initialize(m, helper);
     }
 
     /**
