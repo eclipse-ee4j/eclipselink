@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -49,10 +50,10 @@ public class XMLEventReaderReader extends XMLReader {
     private int depth = 0;
     //Required because the EndElement fails to properly won't give the list of namespaces going out of
     //scope in some STAX implementations
-    private HashMap<Integer, ArrayList<Namespace>> namespaces;
+    private Map<Integer, List<Namespace>> namespaces;
 
     public XMLEventReaderReader() {
-        this.namespaces = new HashMap<Integer, ArrayList<Namespace>>();
+        this.namespaces = new HashMap<Integer, List<Namespace>>();
     }
 
     @Override
@@ -84,34 +85,31 @@ public class XMLEventReaderReader extends XMLReader {
 
     @Override
     public void parse(InputSource input) throws SAXException {
+        if(null == contentHandler) {
+            return;
+        }
         if(input instanceof XMLEventReaderInputSource) {
             XMLEventReader xmlEventReader = ((XMLEventReaderInputSource) input).getXmlEventReader();
             parse(xmlEventReader);
         }
     }
 
-
     public void parse(String systemId) throws SAXException {}
 
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
         try {
-            getContentHandler().startDocument();
-            XMLEvent firstEvent = xmlEventReader.nextEvent();
-            parseEvent(firstEvent);    
-            while(depth > 0 && xmlEventReader.hasNext()) {
-                XMLEvent xmlEvent = (XMLEvent)xmlEventReader.nextEvent();
-                parseEvent(xmlEvent);                            
+            contentHandler.startDocument();
+            parseEvent(xmlEventReader.nextEvent());
+            while(depth > 0) {
+                parseEvent(xmlEventReader.nextEvent());
             }
-            getContentHandler().endDocument();
+            contentHandler.endDocument();
         } catch(XMLStreamException ex) {
             throw new RuntimeException(ex);
         }
     }
-    
+
     private void parseEvent(XMLEvent xmlEvent) throws SAXException {
-        if(null == getContentHandler()) {
-            return;
-        }
         switch (xmlEvent.getEventType()) {
             case XMLEvent.ATTRIBUTE:  {
                 break;
@@ -119,23 +117,23 @@ public class XMLEventReaderReader extends XMLReader {
             case XMLEvent.CDATA: {
                 Characters characters = xmlEvent.asCharacters();
                 if(null == lexicalHandler) {
-                    getContentHandler().characters(characters.getData().toCharArray(), 0, characters.getData().length());
+                    contentHandler.characters(characters.getData().toCharArray(), 0, characters.getData().length());
                 } else {
                     lexicalHandler.startCDATA();
-                    getContentHandler().characters(characters.getData().toCharArray(), 0, characters.getData().length());
+                    contentHandler.characters(characters.getData().toCharArray(), 0, characters.getData().length());
                     lexicalHandler.endCDATA();
                 }
                 break;
             }
             case XMLEvent.CHARACTERS: {
-                Characters characters = xmlEvent.asCharacters();
-                getContentHandler().characters(characters.getData().toCharArray(), 0, characters.getData().length());
+                char[] characters = xmlEvent.asCharacters().getData().toCharArray();
+                contentHandler.characters(characters, 0, characters.length);
                 break;
             }
             case XMLEvent.COMMENT: {
                 if(null != lexicalHandler) {
-                    Comment comment = (Comment)xmlEvent;
-                    lexicalHandler.comment(comment.getText().toCharArray(), 0, comment.getText().length());
+                    char[] comment = ((Comment) xmlEvent).getText().toCharArray();
+                    lexicalHandler.comment(comment, 0, comment.length);
                 }
                 break;
             }
@@ -147,24 +145,22 @@ public class XMLEventReaderReader extends XMLReader {
                 return;
             }
             case XMLEvent.END_ELEMENT: {
-                ArrayList declaredNs = this.namespaces.get(new Integer(depth));
+                List<Namespace> declaredNs = this.namespaces.get(new Integer(depth));
                 depth--;
                 EndElement endElement = xmlEvent.asEndElement();
 
                 QName name = endElement.getName();
                 String prefix = endElement.getName().getPrefix();
                 if(null == prefix || prefix.length() == 0) {
-                    getContentHandler().endElement(name.getNamespaceURI(), name.getLocalPart(), name.getLocalPart());                    
+                    contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), name.getLocalPart());
                 } else {
-                    getContentHandler().endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + XMLConstants.COLON + name.getLocalPart());                    
+                    contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + XMLConstants.COLON + name.getLocalPart());
                 }
                 if(declaredNs != null) {
-                    Iterator iter = declaredNs.iterator();
-                    while(iter.hasNext()) {
-                        Namespace next = (Namespace)iter.next();
-                        getContentHandler().endPrefixMapping(next.getPrefix());
+                    for(Namespace next : declaredNs) {
+                        contentHandler.endPrefixMapping(next.getPrefix());
                     }
-                }                
+                }
                 break;
             }
             case XMLEvent.ENTITY_DECLARATION: {
@@ -181,12 +177,12 @@ public class XMLEventReaderReader extends XMLReader {
             }
             case XMLEvent.PROCESSING_INSTRUCTION: {
                 ProcessingInstruction pi = (ProcessingInstruction)xmlEvent;
-                getContentHandler().processingInstruction(pi.getTarget(), pi.getData());
+                contentHandler.processingInstruction(pi.getTarget(), pi.getData());
                 break;
             }
             case XMLEvent.SPACE: {
                 char[] characters = xmlEvent.asCharacters().getData().toCharArray(); 
-                getContentHandler().characters(characters, 0, characters.length);
+                contentHandler.characters(characters, 0, characters.length);
                 break;
             }
             case XMLEvent.START_DOCUMENT: {
@@ -197,13 +193,13 @@ public class XMLEventReaderReader extends XMLReader {
                 depth++;
                 StartElement startElement = xmlEvent.asStartElement();
                 Iterator namespaces = startElement.getNamespaces();
-                ArrayList<Namespace> declaredNs = null;
+                List<Namespace> declaredNs = null;
                 if(namespaces.hasNext()) {
                     declaredNs = new ArrayList<Namespace>();
                 }
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();
-                    getContentHandler().startPrefixMapping(next.getPrefix(), next.getNamespaceURI());
+                    contentHandler.startPrefixMapping(next.getPrefix(), next.getNamespaceURI());
                     declaredNs.add(next);
                 }
                 if(declaredNs != null) {
@@ -212,13 +208,13 @@ public class XMLEventReaderReader extends XMLReader {
                 QName qName = startElement.getName();
                 String prefix = qName.getPrefix();
                 if(null == prefix || prefix.length() == 0) {
-                    getContentHandler().startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));                    
+                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));
                 } else {
-                    getContentHandler().startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + XMLConstants.COLON + qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));                    
+                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + XMLConstants.COLON + qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));
                 }
                 break;
             }
-        }       
+        }
     }
 
     private static class IndexedAttributeList implements Attributes {

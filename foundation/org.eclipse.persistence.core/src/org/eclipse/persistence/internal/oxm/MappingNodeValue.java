@@ -64,13 +64,11 @@ public abstract class MappingNodeValue extends NodeValue {
     protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
-        QName nextQName;
-        Class javaClass;
-        for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
+        for (int i = 0, schemaTypesSize = schemaTypes.size(); i < schemaTypesSize; i++) {
+            QName nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
-                    javaClass = xmlField.getJavaClass(nextQName);
+                    Class javaClass = xmlField.getJavaClass(nextQName);
                     value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;

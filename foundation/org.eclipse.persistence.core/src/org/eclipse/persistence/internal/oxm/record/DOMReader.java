@@ -193,8 +193,7 @@ public class DOMReader extends XMLReader {
     protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {
         IndexedAttributeList attributes = new IndexedAttributeList();
         NamedNodeMap attrs = elem.getAttributes();
-        int length = attrs.getLength();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0, length = attrs.getLength(); i < length; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if(attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -217,8 +216,7 @@ public class DOMReader extends XMLReader {
     
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamedNodeMap attrs = elem.getAttributes();
-        int numOfAtts = attrs.getLength();
-        for(int i = 0; i < numOfAtts; i++) {
+        for(int i = 0, numOfAtts = attrs.getLength(); i < numOfAtts; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -365,7 +363,7 @@ public class DOMReader extends XMLReader {
      * to the startElement method of the reader's content handler.
      */
     protected class IndexedAttributeList implements org.xml.sax.Attributes {
-        private ArrayList<Attr> attrs;
+        private List<Attr> attrs;
         
         public IndexedAttributeList() {
             attrs = new ArrayList();
