@@ -28,6 +28,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -107,6 +108,7 @@ public class OrderListTestModel extends TestModel {
      * Loops through all possible model configurations and adds those for which shouldAddModel returns true.
      */
     void addModels() {
+        DatabasePlatform platform = getSession().getPlatform();
         do {
             do {
                 do {
@@ -118,7 +120,7 @@ public class OrderListTestModel extends TestModel {
                                 do{ 
                                     for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
                                         joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
-                                        if(shouldAddModel()) {
+                                        if(shouldAddModel(platform)) {
                                             addTest(new OrderListTestModel(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
                                         }
                                     }
@@ -140,14 +142,16 @@ public class OrderListTestModel extends TestModel {
      * Verifies whether the current model configuration should be added.
      * Cuts the models with invalid configurations, configurations that don't make any difference.
      */
-    boolean shouldAddModel() {
+    boolean shouldAddModel(DatabasePlatform platform) {
         // H2 has an issue with large outer joins, causes null-pointer in driver.
-        if (getSession().getPlatform().isH2() && useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
-            return false;
+        // Platforms like Oracle that support both ways of joining (in from and where clause) should have switched to joining in from clause in setup.
+        // Platforms like TimesTen that support joining only in where clause cannot run this test model. See comments in setup method.
+        if (useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
+            if(platform.isH2() || platform.shouldPrintOuterJoinInWhereClause()) {
+                return false;
+            }
         }
-        // VARCHAR order causes errors on H2, but I can't see how it could really work on anything,
-        // as "1" + 1 = "11" not 2.
-        if (getSession().getPlatform().isH2() && useVarcharOrder) {
+        if (useVarcharOrder && !platform.supportsAutoConversionToNumericForArithmeticOperations()) {
             return false;
         }
             
@@ -352,10 +356,12 @@ public class OrderListTestModel extends TestModel {
              * If there happens to be another outer join to the secondary table (in useSecondaryTable case manager_id is in salary table)
              * then suddenly the secondary table auto joined to two tables - that causes exception: 
              * ORA-01417: a table may be outer joined to at most one other table.
+             * Oracle can join in FROM clause, TimesTen can't.
              */
-            if(this.joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN) {
-                if(getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
-                    getSession().getPlatform().setPrintOuterJoinInWhereClause(false);
+            DatabasePlatform platform = getSession().getPlatform();
+            if (useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
+                if(platform.shouldPrintOuterJoinInWhereClause() && platform.isOracle()) {
+                    platform.setPrintOuterJoinInWhereClause(false);
                     shouldSetPrintOuterJoinInWhereClauseBackToFalse = true;
                 }
             }
@@ -1519,8 +1525,8 @@ public class OrderListTestModel extends TestModel {
 
         SimpleIndexTest(boolean useIndex) {
             super();
-            nSize = 5;
-            min = 2;
+            nSize = 12;
+            min = 1;
             max = 4;
             nExpected = max - min + 1;
             
@@ -2098,14 +2104,14 @@ public class OrderListTestModel extends TestModel {
             // assume (as usual) that there were no objects in the db when the test started,
             // then all the objects left should have their order set to null (including manager if not deleted).
             if(useManagedEmployees) {
-                String sqlString = "SELECT COUNT(*) FROM "+this.getManagegedEmployeesOrderTable()+" WHERE "+this.getManagegedEmployeesOrderField()+" <> null";
+                String sqlString = "SELECT COUNT(*) FROM "+this.getManagegedEmployeesOrderTable()+" WHERE "+this.getManagegedEmployeesOrderField()+" IS NOT NULL";
                 int nonNulls = ((Number)((AbstractRecord)getSession().executeSQL(sqlString).get(0)).getValues().get(0)).intValue();
                 if(nonNulls != 0) {
                     errorMsg += "useManagedEmployees has "+nonNulls+" non nulls; ";
                 }
             }
             if(useChildren) {
-                String sqlString = "SELECT COUNT(*) FROM "+this.getChildrenOrderTable()+" WHERE "+this.getChildrenOrderField()+" <> null";
+                String sqlString = "SELECT COUNT(*) FROM "+this.getChildrenOrderTable()+" WHERE "+this.getChildrenOrderField()+" IS NOT NULL";
                 int nonNulls = ((Number)((AbstractRecord)getSession().executeSQL(sqlString).get(0)).getValues().get(0)).intValue();
                 if(nonNulls != 0) {
                     errorMsg += "useManagedEmployees has "+nonNulls+" non nulls; ";

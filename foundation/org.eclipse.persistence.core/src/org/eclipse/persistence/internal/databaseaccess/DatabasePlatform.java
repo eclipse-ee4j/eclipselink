@@ -1865,6 +1865,15 @@ public class DatabasePlatform extends DatasourcePlatform {
         return supportsAutoCommit;
     }
 
+    /**
+     * Some db allow VARCHAR db field to be used in arithmetic operations automatically converting them to numeric:
+     * UPDATE OL_PHONE SET PHONE_ORDER_VARCHAR = (PHONE_ORDER_VARCHAR + 1) WHERE ...
+     * SELECT ... WHERE  ... t0.MANAGED_ORDER_VARCHAR BETWEEN 1 AND 4 ...
+     */
+    public boolean supportsAutoConversionToNumericForArithmeticOperations() {
+        return false;
+    }
+    
     public boolean supportsForeignKeyConstraints() {
         return true;
     }
