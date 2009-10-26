@@ -295,7 +295,7 @@ public abstract class ORMetadata {
      */
     protected boolean loadedFromEclipseLinkXML() {
         if (loadedFromXML()) {
-            return getLocation().toString().contains(MetadataHelper.ECLIPSELINK_ORM_FILE);
+            return m_entityMappings.isEclipseLinkORMFile();
         }
         
         return false; 
@@ -305,7 +305,6 @@ public abstract class ORMetadata {
      * INTERNAL:
      */
     public boolean loadedFromXML() {
-        // This is a better check
         return m_entityMappings != null;
     }
     

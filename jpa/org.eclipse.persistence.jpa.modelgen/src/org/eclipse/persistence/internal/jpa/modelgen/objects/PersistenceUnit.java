@@ -28,6 +28,7 @@ import javax.persistence.MappedSuperclass;
 import javax.tools.FileObject;
 import javax.tools.Diagnostic.Kind;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitProperty;
@@ -77,11 +78,12 @@ public class PersistenceUnit {
         processingEnv = factory.getProcessingEnvironment();
         project = factory.getMetadataProject(persistenceUnitInfo);
 
-        // Init our mapping files.
-        initXMLEntityMappings();
-        
         // Init our OX mapped properties into a map.
         initPersistenceUnitProperties();
+        
+        // Init our mapping files. This method relies on properties being
+        // initialized first.
+        initXMLEntityMappings();
     }
     
     /**
@@ -205,12 +207,17 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected void addXMLEntityMappings(FileObject fileObject, XMLContext context) throws IOException {
+    protected void addXMLEntityMappings(FileObject fileObject, String mappingFile, XMLContext context) throws IOException {
         InputStream in = null;
             
         try {
             in = fileObject.openInputStream();
-            xmlEntityMappings.add((XMLEntityMappings) XMLEntityMappingsReader.getEclipseLinkOrmProject().createUnmarshaller().unmarshal(in));
+            XMLEntityMappings entityMappings = (XMLEntityMappings) context.createUnmarshaller().unmarshal(in);
+            // For eclipselink-orm merging and overriding these need to be set.
+            entityMappings.setIsEclipseLinkORMFile(mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
+            entityMappings.setMappingFile(mappingFile);
+            processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
+            xmlEntityMappings.add(entityMappings);
         } finally {
             if (in != null) {
                 in.close();
@@ -227,16 +234,15 @@ public class PersistenceUnit {
             
             try {
                 fileObject = persistenceUnitReader.getFileObject(mappingFile, processingEnv);
-                
                 // Try eclipselink project
-                addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getEclipseLinkOrmProject());
+                addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getEclipseLinkOrmProject());
             } catch (XMLMarshalException e) {
                 try {
                     // Try JPA 2.0 project
-                    addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getOrm2Project());
+                    addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getOrm2Project());
                 } catch (XMLMarshalException ee) {
                     // Try JPA 1.0 project, don't catch any exception at this point and throw it.
-                    addXMLEntityMappings(fileObject, XMLEntityMappingsReader.getOrm1Project());
+                    addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getOrm1Project());
                 }
             }
         } catch (IOException exception) {
@@ -335,11 +341,21 @@ public class PersistenceUnit {
         xmlEntityMappings = new ArrayList<XMLEntityMappings>();
         
         // Load the orm.xml if it exists.
-        addXMLEntityMappings("META-INF/orm.xml");
+        addXMLEntityMappings(MetadataHelper.JPA_ORM_FILE);
+        
+        // Load the eclipselink-orm.xml if it exists and is not excluded.
+        Boolean excludeEclipseLinkORM = false;
+        if (persistenceUnitProperties.containsKey(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE)) {
+            excludeEclipseLinkORM = new Boolean((String) persistenceUnitProperties.get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
+        }
+        
+        if (! excludeEclipseLinkORM) {
+            addXMLEntityMappings(MetadataHelper.ECLIPSELINK_ORM_FILE);
+        }
         
         // Load the listed mapping files.
         for (String mappingFile : persistenceUnitInfo.getMappingFileNames()) {
-            if (! mappingFile.equals("META-INF/orm.xml")) {
+            if (! mappingFile.equals(MetadataHelper.JPA_ORM_FILE) && ! mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE)) {
                 addXMLEntityMappings(mappingFile);
             }
         }

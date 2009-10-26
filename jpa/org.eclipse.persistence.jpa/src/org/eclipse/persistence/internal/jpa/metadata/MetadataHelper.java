@@ -58,14 +58,23 @@ public class MetadataHelper {
      */
     protected static String getCanonicalName(String name, Map<String, String> properties) {
         String prefix = properties.get(CANONICAL_MODEL_PREFIX);
-        if (prefix == null) {
-            prefix = CANONICAL_MODEL_PREFIX_DEFAULT;
+        String suffix = properties.get(CANONICAL_MODEL_SUFFIX);
+        
+        // If the suffix is not specified, before defaulting it check that a
+        // prefix was not specified.
+        if (suffix == null) {
+            if (prefix == null) {
+                // No prefix, use the default
+                suffix = CANONICAL_MODEL_SUFFIX_DEFAULT;
+            } else {
+                // Prefix specified so just blank out the suffix.
+                suffix = "";
+            }
         }
         
-        String suffix = properties.get(CANONICAL_MODEL_SUFFIX);
-        if (suffix == null) {
-            suffix = CANONICAL_MODEL_SUFFIX_DEFAULT;
-        }
+        if (prefix == null) {
+            prefix = CANONICAL_MODEL_PREFIX_DEFAULT;
+        }        
         
         return prefix + name + suffix;
     }
