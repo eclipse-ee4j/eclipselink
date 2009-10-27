@@ -16,6 +16,8 @@ package org.eclipse.persistence.internal.jpa.deployment;
 import java.util.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 import java.lang.instrument.*;
 import java.security.ProtectionDomain;
 
@@ -198,6 +200,10 @@ public class JavaSECMPInitializer extends JPAInitializer {
                 if(this.initializationClassloader == null) {
                     this.initializationClassloader = Thread.currentThread().getContextClassLoader();
                 }
+                EntityManagerFactoryProvider.initialEmSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
+                if(keepInitialPuInfos) {
+                    EntityManagerFactoryProvider.initialPuInfos = new HashMap<String, SEPersistenceUnitInfo>();
+                }
                 final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
                 PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();
                 for (Archive archive: pars) {
@@ -218,15 +224,28 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * Second the deploy process creates an EclipseLink session based on that metadata.
      */
     protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationHelper persistenceActivator){
-        EntityManagerFactoryProvider.initialEmSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
-        if(keepInitialPuInfos) {
-            EntityManagerFactoryProvider.initialPuInfos = new HashMap<String, SEPersistenceUnitInfo>();
-        }
         Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
         while (persistenceUnits.hasNext()) {
             SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
             // This code only called when usesAgent - no need for uniqueName, puName uniquely defines the pu.
             String puName = persistenceUnitInfo.getPersistenceUnitName();
+            
+            // If puName is already in the map then there are two jars containing persistence units with the same name.
+            // Because both are loaded from the same classloader there is no way to distinguish between them - throw exception.
+            EntityManagerSetupImpl anotherEmSetupImpl = EntityManagerFactoryProvider.initialEmSetupImpls.get(puName);
+            if(anotherEmSetupImpl != null) {
+                String puUrl;
+                String anotherPuUrl;
+                try {
+                    puUrl = URLDecoder.decode(persistenceUnitInfo.getPersistenceUnitRootUrl().toString(), "UTF8");
+                    anotherPuUrl = URLDecoder.decode(anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString(), "UTF8");
+                } catch (UnsupportedEncodingException e) {
+                    puUrl = persistenceUnitInfo.getPersistenceUnitRootUrl().toString();
+                    anotherPuUrl = anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString();
+                }
+                throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
+            }
+            
             // Note that session name is extracted only from puInfo, the passed properties ignored.
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(Collections.emptyMap(), persistenceUnitInfo, puName);
             EntityManagerSetupImpl emSetupImpl = callPredeploy(persistenceUnitInfo, m, persistenceActivator, puName, sessionName);
