@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -21,30 +21,45 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.queries.*;
 
 /**
- * <p><b>Purpose</b>: Provides DB2 specific behavior.
- * <p><b>Responsibilities</b>:<ul>
- * <li> Native SQL for byte[], Date, Time, & Timestamp.
- * <li> Support for table qualified names.
+ * <p>
+ * <b>Purpose</b>: Provides DB2 specific behavior.
+ * <p>
+ * <b>Responsibilities</b>:
+ * <ul>
+ * <li>Support for schema creation.
+ * <li>Native SQL for byte[], Date, Time, & Timestamp.
+ * <li>Support for table qualified names.
+ * <li>Support for stored procedures.
+ * <li>Support for temp tables.
+ * <li>Support for casting.
+ * <li>Support for database functions.
+ * <li>Support for identity sequencing.
+ * <li>Support for SEQUENCE sequencing.
  * </ul>
- *
+ * 
  * @since TOPLink/Java 1.0
  */
 public class DB2Platform extends org.eclipse.persistence.platform.database.DatabasePlatform {
 
-    public DB2Platform(){
+    public DB2Platform() {
         super();
         this.pingSQL = "VALUES(1)";
     }
 
     /**
+     * INTERNAL:
      * Append a byte[] in native DB@ format BLOB(hexString) if usesNativeSQL(),
      * otherwise use ODBC format from DatabasePLatform.
      */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("BLOB(x'");
@@ -56,9 +71,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Appends the Date in native format if usesNativeSQL() otherwise use ODBC format from DatabasePlatform.
-     * Native format: 'mm/dd/yyyy'
+     * INTERNAL:
+     * Appends the Date in native format if usesNativeSQL() otherwise use ODBC
+     * format from DatabasePlatform. Native format: 'mm/dd/yyyy'
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendDB2Date(date, writer);
@@ -68,11 +85,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
+     * INTERNAL:
      * Write a timestamp in DB2 specific format (mm/dd/yyyy).
      */
     protected void appendDB2Date(java.sql.Date date, Writer writer) throws IOException {
         writer.write("'");
-        // PERF: Avoid deprecated get methods, that are now very inefficient and used from toString.
+        // PERF: Avoid deprecated get methods, that are now very inefficient and
+        // used from toString.
         Calendar calendar = Helper.allocateCalendar();
         calendar.setTime(date);
 
@@ -93,10 +112,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
+     * INTERNAL:
      * Write a timestamp in DB2 specific format (yyyy-mm-dd-hh.mm.ss.ffffff).
      */
     protected void appendDB2Timestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
-        // PERF: Avoid deprecated get methods, that are now very inefficient and used from toString.
+        // PERF: Avoid deprecated get methods, that are now very inefficient and
+        // used from toString.
         Calendar calendar = Helper.allocateCalendar();
         calendar.setTime(timestamp);
 
@@ -142,7 +163,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         int minute;
         int second;
         if (!Helper.getDefaultTimeZone().equals(calendar.getTimeZone())) {
-            // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
+            // Must convert the calendar to the local timezone if different, as
+            // dates have no timezone (always local).
             Calendar localCalendar = Helper.allocateCalendar();
             localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -187,9 +209,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Append the Time in Native format if usesNativeSQL() otherwise use ODBC format from DAtabasePlatform.
-     * Native Format: 'hh:mm:ss'
+     * INTERNAL:
+     * Append the Time in Native format if usesNativeSQL() otherwise use ODBC
+     * format from DAtabasePlatform. Native Format: 'hh:mm:ss'
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -201,9 +225,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Append the Timestamp in native format if usesNativeSQL() is true otherwise use ODBC format from DatabasePlatform.
-     * Native format: 'YYYY-MM-DD-hh.mm.ss.SSSSSS'
+     * INTERNAL:
+     * Append the Timestamp in native format if usesNativeSQL() is true
+     * otherwise use ODBC format from DatabasePlatform. Native format:
+     * 'YYYY-MM-DD-hh.mm.ss.SSSSSS'
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -215,9 +242,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Append the Timestamp in native format if usesNativeSQL() is true otherwise use ODBC format from DatabasePlatform.
-     * Native format: 'YYYY-MM-DD-hh.mm.ss.SSSSSS'
+     * INTERNAL:
+     * Append the Timestamp in native format if usesNativeSQL() is true
+     * otherwise use ODBC format from DatabasePlatform. Native format:
+     * 'YYYY-MM-DD-hh.mm.ss.SSSSSS'
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -228,6 +258,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         }
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = new Hashtable();
 
@@ -248,9 +279,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", 64000));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", 64000));        
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", 64000));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", 64000));  
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", 64000));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
@@ -260,27 +291,39 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in a field
-     * name on this platform.
+     * INTERNAL: returns the maximum number of characters that can be used in a
+     * field name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 128;
     }
 
     /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in a foreign key
-     * name on this platform.
+     * INTERNAL: returns the maximum number of characters that can be used in a
+     * foreign key name on this platform.
      */
+    @Override
     public int getMaxForeignKeyNameSize() {
         return 18;
     }
+    
+    /**
+     * INTERNAL:
+     * returns the maximum number of characters that can be used in a unique key
+     * name on this platform.
+     */
+    @Override
+    public int getMaxUniqueKeyNameSize() {
+        return 18;
+    }    
 
     /**
-     * Return the catalog information through using the native SQL catalog selects.
-     * This is required because many JDBC driver do not support meta-data.
-     * Willcards can be passed as arguments.
+     * INTERNAL:
+     * Return the catalog information through using the native SQL catalog
+     * selects. This is required because many JDBC driver do not support
+     * meta-data. Wildcards can be passed as arguments.
+     * This is currently not used.
      */
     public Vector getNativeTableInfo(String table, String creator, AbstractSession session) {
         String query = "SELECT * FROM SYSIBM.SYSTABLES WHERE TBCREATOR NOT IN ('SYS', 'SYSTEM')";
@@ -302,52 +345,67 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
+     * INTERNAL:
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "CALL ";
     }
 
-/*    public String getSelectForUpdateString() {
-        return " FOR UPDATE";
-    }*/
+    /**
+     * INTERNAL:
+     * Used for pessimistic locking in DB2.
+     * Without the "WITH RS" the lock is not held.
+     */
+    // public String getSelectForUpdateString() { return " FOR UPDATE"; }
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE WITH RS";
     }
-    
+
     /**
+     * INTERNAL:
      * Used for stored procedure defs.
      */
+    @Override
     public String getProcedureEndString() {
         return "END";
     }
-    
+
     /**
      * Used for stored procedure defs.
      */
+    @Override
     public String getProcedureBeginString() {
         return "BEGIN";
     }
-    
+
     /**
+     * INTERNAL:
      * Used for stored procedure defs.
      */
+    @Override
     public String getProcedureAsString() {
         return "";
     }
-    
+
     /**
-     * This is required in the construction of the stored procedures with
-     * output parameters
+     * INTERNAL:
+     * This is required in the construction of the stored procedures with output
+     * parameters.
      */
+    @Override
     public boolean shouldPrintOutputTokenAtStart() {
         return true;
     }
-    
+
     /**
-     * This method returns the query to select the timestamp
-     * from the server for DB2.
+     * INTERNAL:
+     * This method returns the query to select the timestamp from the server for
+     * DB2.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -357,8 +415,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
+     * INTERNAL:
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
 
@@ -366,22 +426,28 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToLowerCase, "LCASE"));
         addOperator(concatOperator());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Instring, "Locate"));
-        //CR#2811076 some missing DB2 functions added.
+        // CR#2811076 some missing DB2 functions added.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DECIMAL"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToChar, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.DateToString, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToDate, "DATE"));
     }
 
+    @Override
     public boolean isDB2() {
         return true;
     }
 
     /**
-     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
-     * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
+     * INTERNAL:
+     * Builds a table of maximum numeric values keyed on java class. This is
+     * used for type testing but might also be useful to end users attempting to
+     * sanitize values.
+     * <p>
+     * <b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their
+     * precision & Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -397,10 +463,15 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
-     * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
+     * INTERNAL:
+     * Builds a table of minimum numeric values keyed on java class. This is
+     * used for type testing but might also be useful to end users attempting to
+     * sanitize values.
+     * <p>
+     * <b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their
+     * precision & Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -416,26 +487,33 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Allow for the platform to ignore exceptions.
-     * This is required for DB2 which throws no-data modified as an exception.
+     * INTERNAL:
+     * Allow for the platform to ignore exceptions. This is required for DB2
+     * which throws no-data modified as an exception.
      */
+    @Override
     public boolean shouldIgnoreException(SQLException exception) {
-        if (exception.getMessage().equals("No data found") || exception.getMessage().equals("No row was found for FETCH, UPDATE or DELETE; or the result of a query is an empty table") || (exception.getErrorCode() == 100)) {
+        if (exception.getMessage().equals("No data found") || exception.getMessage().equals("No row was found for FETCH, UPDATE or DELETE; or the result of a query is an empty table")
+                || (exception.getErrorCode() == 100)) {
             return true;
         }
         return super.shouldIgnoreException(exception);
     }
 
     /**
-     * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
+     * INTERNAL:
+     * JDBC defines and outer join syntax, many drivers do not support this. So
+     * we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
 
     /**
-     * The Concat operator is of the form
-     * .... VARCHAR ( <operand1> || <operand2> )
+     * INTERNAL:
+     * The Concat operator is of the form .... VARCHAR ( <operand1> ||
+     * <operand2> )
      */
     private ExpressionOperator concatOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
@@ -452,9 +530,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL:
-     * Build the identity query for native sequencing.
+     * INTERNAL: Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -465,9 +543,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL:
-     * Append the receiver's field 'identity' constraint clause to a writer
+     * INTERNAL: Append the receiver's field 'identity' constraint clause to a
+     * writer.
+     * Used by table creation with sequencing.
      */
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" GENERATED ALWAYS AS IDENTITY");
@@ -477,72 +557,98 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     *  INTERNAL:
-     *  Indicates whether the platform supports identity.
-     *  DB2 does through AS IDENTITY field types.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL: Indicates whether the platform supports identity. DB2 does
+     * through AS IDENTITY field types.
+     * This is used by sequencing.
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
 
     /**
-     * INTERNAL:
+     * INTERNAL: DB2 supports temp tables.
+     * This is used by UpdateAllQuerys.
      */
-     public boolean supportsGlobalTempTables() {
-         return true;
-     }
+    @Override
+    public boolean supportsGlobalTempTables() {
+        return true;
+    }
 
     /**
-     * INTERNAL:
+     * INTERNAL: DB2 temp table syntax.
+     * This is used by UpdateAllQuerys.
      */
-     protected String getCreateTempTableSqlPrefix() {
-         return "DECLARE GLOBAL TEMPORARY TABLE ";
-     }
+    @Override
+    protected String getCreateTempTableSqlPrefix() {
+        return "DECLARE GLOBAL TEMPORARY TABLE ";
+    }
 
     /**
-     * INTERNAL:
+     * INTERNAL: DB2 temp table syntax.
+     * This is used by UpdateAllQuerys.
      */
-     public DatabaseTable getTempTableForTable(DatabaseTable table) {
-         DatabaseTable tempTable =  super.getTempTableForTable(table);
-         tempTable.setTableQualifier("session");
-         return tempTable;
-     }
+    @Override
+    public DatabaseTable getTempTableForTable(DatabaseTable table) {
+        DatabaseTable tempTable = super.getTempTableForTable(table);
+        tempTable.setTableQualifier("session");
+        return tempTable;
+    }
 
     /**
-     * INTERNAL:
+     * INTERNAL: DB2 temp table syntax.
+     * This is used by UpdateAllQuerys.
      */
+    @Override
     protected String getCreateTempTableSqlSuffix() {
         return " ON COMMIT DELETE ROWS NOT LOGGED";
-    }          
+    }
 
     /**
-     * INTERNAL:
+     * INTERNAL: DB2 allows LIKE to be used to create temp tables, which avoids having to know the types.
+     * This is used by UpdateAllQuerys.
      */
-     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return " LIKE " + table.getQualifiedNameDelimited(this);
-     }
-     
-     /**
-      * INTERNAL:
-      */
-      public boolean dontBindUpdateAllQueryUsingTempTables() {
-          return true;
-      }
+    @Override
+    protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
+        return " LIKE " + table.getQualifiedNameDelimited(this);
+    }
 
     /**
-     * INTERNAL:
-     * Override this if the platform cannot handle NULL in select clause.
+     * INTERNAL: DB2 has issues with binding with temp table queries.
+     * This is used by UpdateAllQuerys.
      */
+    @Override
+    public boolean dontBindUpdateAllQueryUsingTempTables() {
+        return true;
+    }
+
+    /**
+     * INTERNAL: DB2 does not allow NULL in select clause.
+     * This is used by UpdateAllQuerys.
+     */
+    @Override
     public boolean isNullAllowedInSelectClause() {
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * DB2 requires casting on certain operations, such as the CONCAT function,
+     * and parameterized queries of the form, ":param = :param". This method
+     * will write CAST operation to parameters if the type is known. The type is
+     * only currently set by JPQL (always) and Criteria (some cases), as this
+     * causes the CAST to always be written even though it is rarely required,
+     * the CAST can be disabled using the isCastRequired property. Note, this
+     * method doesn't actually solve the ":param = :param", as the type is
+     * unknown in this case, to resolve that case binding of literals is also
+     * disabled, but this only resolves the issue for JPQL literals, not for
+     * parameters. For parameters, binding must be disabled through the query
+     * hint.
+     * TODO: Reconsider always writing out CAST, perhaps only write when
+     * required, or auto make query not bind.
+     */
+    @Override
     public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record) throws IOException {
-        // DB2 requires cast around parameter markers if both operands of certain
-        // operators are parameter markers
-        // This method generates CAST for parameter markers whose type is correctly
-        // identified by the query compiler
         String paramaterMarker = "?";
         Object type = parameter.getType();
         if (this.isCastRequired && (type != null)) {
@@ -562,7 +668,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 castType = "VARCHAR(" + getCastSizeForVarcharParameter() + ")";
             }
 
-            if(castType != null){
+            if (castType != null) {
                 paramaterMarker = "CAST (? AS " + castType + " )";
             }
         }
@@ -570,18 +676,86 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL
-     * Allows platform to choose whether to bind literals in DatabaseCalls or not.
+     * INTERNAL:
+     * Binding of literals is disabled on DB2 to resolve queries like "1 = 1", and some functions,
+     * which DB2 requires a CAST to perform.
      */
+    @Override
     public boolean shouldBindLiterals() {
         return false;
     }
 
     /**
      * INTERNAL:
-     * Indicates whether locking clause could be applied to the query that has more than one table
+     * DB2 does not seem to allow FOR UPDATE on queries with multiple tables.
+     * This is only used by testing to exclude these tests.
      */
+    @Override
     public boolean supportsLockingQueriesWithMultipleTables() {
         return false;
-    }        
+    }
+
+    /**
+     * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
+     */
+    @Override
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
+        return new ValueReadQuery("VALUES(NEXT VALUE FOR " + getQualifiedName(seqName) + ")");
+    }
+
+    /**
+     * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
+     */
+    @Override
+    public boolean supportsSequenceObjects() {
+        return true;
+    }
+
+    /**
+     * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
+     */
+    @Override
+    public boolean isAlterSequenceObjectSupported() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Print the SQL representation of the statement on a stream, storing the fields
+     * in the DatabaseCall.  This implementation works MaxRows and FirstResult into the SQL using
+     * DB2's ROWNUMBER() OVER() to filter values if shouldUseRownumFiltering is true.  
+     */
+    @Override
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
+        int max = 0;
+        int firstRow = 0;
+
+        statement.setMaximumAliasLength(getMaxFieldNameSize());
+        if (statement.getQuery()!=null){
+            max = statement.getQuery().getMaxRows();
+            firstRow = statement.getQuery().getFirstResult();
+        }
+        
+        if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        } else if ( max > 0 ){
+            statement.setUseUniqueFieldAliases(true);
+            printer.printString("SELECT * FROM (SELECT * FROM (SELECT ");
+            printer.printString("EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");            
+            call.setFields(statement.printSQL(printer));
+            printer.printString(") AS EL_TEMP) AS EL_TEMP2 WHERE EL_ROWNM <= ");
+            printer.printParameter(DatabaseCall.MAXROW_FIELD);
+            printer.printString(") AS EL_TEMP3 WHERE EL_ROWNM > ");
+            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+        } else {// firstRow>0
+            statement.setUseUniqueFieldAliases(true);
+            printer.printString("SELECT * FROM (SELECT EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");            
+            call.setFields(statement.printSQL(printer));
+            printer.printString(") AS EL_TEMP) AS EL_TEMP2 WHERE EL_ROWNM > ");
+            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+        }
+        call.setIgnoreFirstRowMaxResultsSettings(true);
+    }
+    
 }

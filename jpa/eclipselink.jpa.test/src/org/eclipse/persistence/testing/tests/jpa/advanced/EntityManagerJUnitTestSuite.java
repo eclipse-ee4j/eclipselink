@@ -4458,7 +4458,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testGetLockModeType() {
         // getLockModeType not supported on 1.0
-        if (! isJPA10()) {
+        if ((! isJPA10()) && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             try {
                 beginTransaction(em);
@@ -8804,7 +8804,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             em.persist(emp);
             em.flush();
-            Integer id = emp.getId();
             
             em.clear();
             clearCache();

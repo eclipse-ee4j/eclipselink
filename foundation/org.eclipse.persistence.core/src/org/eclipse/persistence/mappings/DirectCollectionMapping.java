@@ -1961,7 +1961,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             containerPolicy.propogatePostInsert(query, wrappedObject);
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Convert the attribute value to a field value.
+     * Process any converter if defined.
+     */
+    public Object getFieldValue(Object attributeValue, AbstractSession session) {
+        if (this.valueConverter != null) {
+            return this.valueConverter.convertObjectValueToDataValue(attributeValue, session);
+        }
+        return attributeValue;
+    }
+    
     /**
      * INTERNAL:
      * Update private owned part.
@@ -2028,10 +2040,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                  iterator.hasNext();) {
             Object object = iterator.next();
             AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
-            Object value = object;
-            if (getValueConverter() != null) {
-                value = getValueConverter().convertObjectValueToDataValue(value, writeQuery.getSession());
-            }
+            Object value = getFieldValue(object, writeQuery.getSession());
             thisRow.add(getDirectField(), value);
 
             // Hey I might actually want to use an inner class here... ok array for now.
@@ -2112,9 +2121,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             // re-insert them back
             for(int i=0; i < ((List)changeRecord.getLatestCollection()).size(); i++) {
                 Object value = ((List)changeRecord.getLatestCollection()).get(i);
-                if (getValueConverter() != null) {
-                    value = getValueConverter().convertObjectValueToDataValue(value, writeQuery.getSession());
-                }
+                value = getFieldValue(value, writeQuery.getSession());
                 AbstractRecord insertRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
                 insertRow.add(getDirectField(), value);
                 insertRow.add(this.listOrderField, i);

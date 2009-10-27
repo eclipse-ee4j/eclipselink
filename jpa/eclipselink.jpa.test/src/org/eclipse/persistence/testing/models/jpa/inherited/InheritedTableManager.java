@@ -186,7 +186,7 @@ public class InheritedTableManager extends TableCreator {
         BEER_CONSUMER_ID_field.setIsPrimaryKey(true);
         BEER_CONSUMER_ID_field.setUnique(false);
         BEER_CONSUMER_ID_field.setIsIdentity(false);
-        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(false);
         table.addField(BEER_CONSUMER_ID_field);
 
         FieldDefinition DATA_field = new FieldDefinition();

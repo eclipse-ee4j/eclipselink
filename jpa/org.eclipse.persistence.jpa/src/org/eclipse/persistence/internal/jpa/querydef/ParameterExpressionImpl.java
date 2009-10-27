@@ -12,18 +12,18 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
     protected Integer position;
     
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, String name){
-        super(metamodel, javaType, new ExpressionBuilder().getParameter(name));
+        super(metamodel, javaType, new ExpressionBuilder().getParameter(name, javaType));
         this.name = name;
     }
 
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType){
         super(metamodel, javaType, null);
         this.name = String.valueOf(System.identityHashCode(this));
-        this.currentNode = new ExpressionBuilder().getParameter(this.name);
+        this.currentNode = new ExpressionBuilder().getParameter(this.name, javaType);
     }
 
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, Integer position){
-        super(metamodel, javaType, new ExpressionBuilder().getParameter(position.toString()));
+        super(metamodel, javaType, new ExpressionBuilder().getParameter(position.toString(), javaType));
         this.position = position;
         this.name = String.valueOf(position);
     }

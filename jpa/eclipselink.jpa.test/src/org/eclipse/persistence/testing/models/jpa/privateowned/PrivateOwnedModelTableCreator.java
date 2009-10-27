@@ -12,6 +12,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class PrivateOwnedModelTableCreator extends TableCreator {
@@ -120,7 +121,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         
         // ALTER TABLE CMP3_PO_VEHICLE ADD CONSTRAINT FK_CMP3_PO_VEHICLE_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES CMP3_PO_ENGINE (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_ENGINE = new ForeignKeyConstraint();
-        foreignKeyVEHICLE_ENGINE.setName("FK_CMP3_PO_VEHICLE_ENGINE_ID");
+        foreignKeyVEHICLE_ENGINE.setName("FK_PO_VEH_ENG_ID");
         foreignKeyVEHICLE_ENGINE.setTargetTable("CMP3_PO_ENGINE"); 
         foreignKeyVEHICLE_ENGINE.addSourceField("ENGINE_ID");
         foreignKeyVEHICLE_ENGINE.addTargetField("ID");
@@ -128,7 +129,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
 
         // ALTER TABLE CMP3_PO_VEHICLE ADD CONSTRAINT FK_CMP3_PO_VEHICLE_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES CMP3_PO_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_CHASSIS = new ForeignKeyConstraint();
-        foreignKeyVEHICLE_CHASSIS.setName("FK_CMP3_PO_VEHICLE_CHASSIS_ID");
+        foreignKeyVEHICLE_CHASSIS.setName("FK_PO_VEH_CHAS_ID");
         foreignKeyVEHICLE_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
         foreignKeyVEHICLE_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyVEHICLE_CHASSIS.addTargetField("ID");
@@ -207,7 +208,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         
         // ALTER TABLE CMP3_PO_SPARK_PLUG ADD CONSTRAINT CMP3_PO_SPARK_PLUG_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES CMP3_PO_ENGINE (ID)
         ForeignKeyConstraint foreignKeySPARKPLUG_ENGINE = new ForeignKeyConstraint();
-        foreignKeySPARKPLUG_ENGINE.setName("CMP3_PO_SPARK_PLUG_ENGINE_ID");
+        foreignKeySPARKPLUG_ENGINE.setName("PO_SPK_PG_ENG_ID");
         foreignKeySPARKPLUG_ENGINE.setTargetTable("CMP3_PO_ENGINE"); 
         foreignKeySPARKPLUG_ENGINE.addSourceField("ENGINE_ID");
         foreignKeySPARKPLUG_ENGINE.addTargetField("ID");
@@ -290,7 +291,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         
         // ALTER TABLE CMP3_PO_WHEEL ADD CONSTRAINT FK_CMP3_PO_WHEEL_WHEELRIM_ID FOREIGN KEY (WHEELRIM_ID) REFERENCES CMP3_PO_WHEEL_RIM (ID)
         ForeignKeyConstraint foreignKeyWHEEL_WHEELRIM = new ForeignKeyConstraint();
-        foreignKeyWHEEL_WHEELRIM.setName("FK_CMP3_PO_WHEEL_WHEELRIM_ID");
+        foreignKeyWHEEL_WHEELRIM.setName("FK_WL_WLRM_ID");
         foreignKeyWHEEL_WHEELRIM.setTargetTable("CMP3_PO_WHEEL_RIM"); 
         foreignKeyWHEEL_WHEELRIM.addSourceField("WHEELRIM_ID");
         foreignKeyWHEEL_WHEELRIM.addTargetField("ID");
@@ -298,7 +299,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         
         // ALTER TABLE CMP3_PO_WHEEL ADD CONSTRAINT FK_CMP3_PO_WHEEL_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES CMP3_PO_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyWHEEL_CHASSIS = new ForeignKeyConstraint();
-        foreignKeyWHEEL_CHASSIS.setName("FK_CMP3_PO_WHEEL_CHASSIS_ID");
+        foreignKeyWHEEL_CHASSIS.setName("FK_WEL_CHAS_ID");
         foreignKeyWHEEL_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
         foreignKeyWHEEL_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyWHEEL_CHASSIS.addTargetField("ID");
@@ -355,13 +356,29 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         
         // ALTER TABLE CMP3_PO_WHEEL_NUT ADD CONSTRAINT FK_CMP3_PO_WHEEL_NUT_WHEEL_ID FOREIGN KEY (WHEEL_ID) REFERENCES CMP3_PO_WHEEL (ID)
         ForeignKeyConstraint foreignKeyWHEELNUT_WHEEL = new ForeignKeyConstraint();
-        foreignKeyWHEELNUT_WHEEL.setName("FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+        foreignKeyWHEELNUT_WHEEL.setName("FK_WL_NUT_WHL_ID");
         foreignKeyWHEELNUT_WHEEL.setTargetTable("CMP3_PO_WHEEL"); 
         foreignKeyWHEELNUT_WHEEL.addSourceField("WHEEL_ID");
         foreignKeyWHEELNUT_WHEEL.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyWHEELNUT_WHEEL);
         
         return table;
+    }
+    
+    /**
+     * Dropping old foreign keys from schema change.
+     */
+    @Override
+    public void replaceTables(DatabaseSession session) {
+        try {
+            session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
+            session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
+            session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");
+            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_WHEELRIM_ID");
+            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_CHASSIS_ID");
+            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop constraint FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+        } catch (Exception ignore) {}
+        super.replaceTables(session);
     }
     
 }

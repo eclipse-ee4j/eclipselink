@@ -13,6 +13,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class OrphanRemovalModelTableCreator extends TableCreator {
@@ -109,7 +110,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         
         // ALTER TABLE JPA_OR_VEHICLE ADD CONSTRAINT FK_JPA_OR_VEHICLE_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES JPA_OR_ENGINE (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_ENGINE = new ForeignKeyConstraint();
-        foreignKeyVEHICLE_ENGINE.setName("FK_JPA_OR_VEHICLE_ENGINE_ID");
+        foreignKeyVEHICLE_ENGINE.setName("FK_OR_VEH_ENG_ID");
         foreignKeyVEHICLE_ENGINE.setTargetTable("JPA_OR_ENGINE"); 
         foreignKeyVEHICLE_ENGINE.addSourceField("ENGINE_ID");
         foreignKeyVEHICLE_ENGINE.addTargetField("ID");
@@ -117,7 +118,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
 
         // ALTER TABLE JPA_OR_VEHICLE ADD CONSTRAINT FK_JPA_OR_VEHICLE_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES JPA_OR_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_CHASSIS = new ForeignKeyConstraint();
-        foreignKeyVEHICLE_CHASSIS.setName("FK_JPA_OR_VEHICLE_CHASSIS_ID");
+        foreignKeyVEHICLE_CHASSIS.setName("FK_OR_VEH_CHAS_ID");
         foreignKeyVEHICLE_CHASSIS.setTargetTable("JPA_OR_CHASSIS"); 
         foreignKeyVEHICLE_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyVEHICLE_CHASSIS.addTargetField("ID");
@@ -196,7 +197,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         
         // ALTER TABLE JPA_OR_SPARK_PLUG ADD CONSTRAINT JPA_OR_SPARK_PLUG_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES JPA_OR_ENGINE (ID)
         ForeignKeyConstraint foreignKeySPARKPLUG_ENGINE = new ForeignKeyConstraint();
-        foreignKeySPARKPLUG_ENGINE.setName("JPA_OR_SPARK_PLUG_ENGINE_ID");
+        foreignKeySPARKPLUG_ENGINE.setName("FK_SPK_PG_ENG_ID");
         foreignKeySPARKPLUG_ENGINE.setTargetTable("JPA_OR_ENGINE"); 
         foreignKeySPARKPLUG_ENGINE.addSourceField("ENGINE_ID");
         foreignKeySPARKPLUG_ENGINE.addTargetField("ID");
@@ -279,7 +280,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         
         // ALTER TABLE JPA_OR_WHEEL ADD CONSTRAINT FK_JPA_OR_WHEEL_WHEELRIM_ID FOREIGN KEY (WHEELRIM_ID) REFERENCES JPA_OR_WHEEL_RIM (ID)
         ForeignKeyConstraint foreignKeyWHEEL_WHEELRIM = new ForeignKeyConstraint();
-        foreignKeyWHEEL_WHEELRIM.setName("FK_JPA_OR_WHEEL_WHEELRIM_ID");
+        foreignKeyWHEEL_WHEELRIM.setName("FK_WHL_WHLRM_ID");
         foreignKeyWHEEL_WHEELRIM.setTargetTable("JPA_OR_WHEEL_RIM"); 
         foreignKeyWHEEL_WHEELRIM.addSourceField("WHEELRIM_ID");
         foreignKeyWHEEL_WHEELRIM.addTargetField("ID");
@@ -287,7 +288,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         
         // ALTER TABLE JPA_OR_WHEEL ADD CONSTRAINT FK_JPA_OR_WHEEL_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES JPA_OR_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyWHEEL_CHASSIS = new ForeignKeyConstraint();
-        foreignKeyWHEEL_CHASSIS.setName("FK_JPA_OR_WHEEL_CHASSIS_ID");
+        foreignKeyWHEEL_CHASSIS.setName("FK_WHL_CHAS_ID");
         foreignKeyWHEEL_CHASSIS.setTargetTable("JPA_OR_CHASSIS"); 
         foreignKeyWHEEL_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyWHEEL_CHASSIS.addTargetField("ID");
@@ -344,13 +345,29 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         
         // ALTER TABLE JPA_OR_WHEEL_NUT ADD CONSTRAINT FK_JPA_OR_WHEEL_NUT_WHEEL_ID FOREIGN KEY (WHEEL_ID) REFERENCES JPA_OR_WHEEL (ID)
         ForeignKeyConstraint foreignKeyWHEELNUT_WHEEL = new ForeignKeyConstraint();
-        foreignKeyWHEELNUT_WHEEL.setName("FK_JPA_OR_WHEEL_NUT_WHEEL_ID");
+        foreignKeyWHEELNUT_WHEEL.setName("FK_WH_NUT_WL_ID");
         foreignKeyWHEELNUT_WHEEL.setTargetTable("JPA_OR_WHEEL"); 
         foreignKeyWHEELNUT_WHEEL.addSourceField("WHEEL_ID");
         foreignKeyWHEELNUT_WHEEL.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyWHEELNUT_WHEEL);
         
         return table;
+    }
+    
+    /**
+     * Dropping old foreign keys from schema change.
+     */
+    @Override
+    public void replaceTables(DatabaseSession session) {
+        try {
+            session.executeNonSelectingSQL("Alter table JPA_OR_SPARK_PLUG drop constraint JPA_OR_SPARK_PLUG_ENGINE_ID");
+            session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_ENGINE_ID");
+            session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_CHASSIS_ID");
+            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_WHEELRIM_ID");
+            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_CHASSIS_ID");
+            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL_NUT drop constraint FK_JPA_OR_WHEEL_NUT_WHEEL_ID");
+        } catch (Exception ignore) {}
+        super.replaceTables(session);
     }
     
 }

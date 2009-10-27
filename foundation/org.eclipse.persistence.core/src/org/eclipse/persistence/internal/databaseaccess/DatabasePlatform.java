@@ -1073,7 +1073,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public int getMaxIndexNameSize() {
         return getMaxFieldNameSize();
-    }  
+    }
     
     /**
      * INTERNAL:
@@ -1082,7 +1082,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public int getMaxUniqueKeyNameSize() {
         return getMaxFieldNameSize();
-    }    
+    }
 
     /**
      * INTERNAL:

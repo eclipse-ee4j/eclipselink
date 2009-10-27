@@ -599,7 +599,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
 
         objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        if (containerPolicy.isEmpty(objects)) {
+        if (this.containerPolicy.isEmpty(objects)) {
             return;
         }
 
@@ -613,13 +613,10 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
 
         // Extract target field and its value. Construct insert statement and execute it
-        Object keyIter = containerPolicy.iteratorFor(objects);
-        while (containerPolicy.hasNext(keyIter)) {
-            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keyIter, query.getSession());
-            Object value = entry.getValue();
-            if (getValueConverter() != null) {
-                value = getValueConverter().convertObjectValueToDataValue(value, query.getSession());
-            }
+        Object keyIter = this.containerPolicy.iteratorFor(objects);
+        while (this.containerPolicy.hasNext(keyIter)) {
+            Map.Entry entry = (Map.Entry)this.containerPolicy.nextEntry(keyIter, query.getSession());
+            Object value = getFieldValue(entry.getValue(), query.getSession());
             databaseRow.put(getDirectField(), value);
 
             ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(entry, query.getSession()), databaseRow);
@@ -677,10 +674,8 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             Map.Entry entry = (Map.Entry)iterator.next();
             AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
             Object value = changeRecord.getAddObjects().get(entry.getKey());
-            if (getValueConverter() != null) {
-                value = getValueConverter().convertObjectValueToDataValue(value, writeQuery.getSession());
-            }
-            ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
+            value = getFieldValue(value, writeQuery.getSession());
+            ContainerPolicy.copyMapDataToRow(this.containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
             thisRow.add(getDirectField(), value);
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = new Object[3];
