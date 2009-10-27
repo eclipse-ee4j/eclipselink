@@ -14,7 +14,7 @@ public class RelationshipsAddress {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("RelationshipsAddress");
         sb.append("[");
         sb.append(addressId);
         sb.append("]");

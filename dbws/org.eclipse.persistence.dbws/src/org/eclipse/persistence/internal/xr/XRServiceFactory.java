@@ -29,7 +29,6 @@ import javax.xml.transform.TransformerFactory;
 
 //EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -205,8 +204,7 @@ public class XRServiceFactory  {
      */
     @SuppressWarnings("unchecked")
     public void buildSessions() {
-
-        ClassLoader projectLoader = new BaseEntityClassLoader(parentClassLoader);
+        ClassLoader projectLoader = new XRDynamicClassLoader(parentClassLoader);
         SessionManager sessionManager = SessionManager.getManager();
         boolean found = false;
         String sessionsFile =

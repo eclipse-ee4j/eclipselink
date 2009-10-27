@@ -10,12 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-
-package org.eclipse.persistence.internal.dynamicpersist;
-
-// Javase imports
-
-// Java extension imports
+package org.eclipse.persistence.internal.xr;
 
 // EclipseLink imports
 import org.eclipse.persistence.indirection.ValueHolder;
@@ -23,8 +18,8 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 /**
  * <p>
- * <b>INTERNAL:</b> BaseEntityVHAccessor is similar to
- * {@link BaseEntityAccessor}; however, it is used exclusively by O-X mappings
+ * <b>INTERNAL:</b> XRDynamicEntityVHAccessor is similar to
+ * {@link XRDynamicEntityAccessor}; however, it is used exclusively by O-X mappings
  * as they require attribute navigation <i>through</i> the ValueHolder to the
  * contained value.
  *
@@ -33,41 +28,41 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
  */
 
 @SuppressWarnings("serial")
-public class BaseEntityVHAccessor extends BaseEntityAccessor {
+public class XRDynamicEntityVHAccessor extends XRDynamicEntityAccessor {
 
-    public BaseEntityVHAccessor(String attributeName, int fieldIdx) {
+    public XRDynamicEntityVHAccessor(String attributeName, int fieldIdx) {
         super(attributeName, fieldIdx);
     }
 
     @Override
     public Object getAttributeValueFromObject(Object object) {
 
-        BaseEntity baseEntity = (BaseEntity) object;
+        XRDynamicEntity entity = (XRDynamicEntity)object;
         // if the attribute's slot is empty, put in a dummy ValueHolder
         // and return null
-        if (baseEntity.get(fieldIdx) == null) {
-            baseEntity.set(fieldIdx, new ValueHolder());
+        if (entity.get(fieldIdx) == null) {
+            entity.set(fieldIdx, new ValueHolder());
             return null;
         }
         // return the value from the attribute's existing ValueHolder
-        return ((ValueHolderInterface) baseEntity.get(fieldIdx)).getValue();
+        return ((ValueHolderInterface)entity.get(fieldIdx)).getValue();
     }
 
     @Override
     public void setAttributeValueInObject(Object object, Object value) {
 
-        BaseEntity baseEntity = (BaseEntity) object;
+        XRDynamicEntity entity = (XRDynamicEntity)object;
         // ValueHolders go directly into the attribute's slot
         if (value instanceof ValueHolderInterface) {
-            baseEntity.set(fieldIdx, value);
+            entity.set(fieldIdx, value);
             return;
         }
         // what if this is the first time setting - the attribute's slot
         // will be null and needs a dummy ValueHolder
-        if (baseEntity.get(fieldIdx) == null) {
-            baseEntity.set(fieldIdx, new ValueHolder());
+        if (entity.get(fieldIdx) == null) {
+            entity.set(fieldIdx, new ValueHolder());
         }
         // put the value into the attribute's existing ValueHolder
-        ((ValueHolderInterface) baseEntity.get(fieldIdx)).setValue(value);
+        ((ValueHolderInterface)entity.get(fieldIdx)).setValue(value);
     }
 }

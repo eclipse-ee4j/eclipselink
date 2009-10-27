@@ -27,7 +27,7 @@ public class RelationshipsEmployee {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("RelationshipsEmployee");
         sb.append("[");
         sb.append(empId);
         sb.append("]");

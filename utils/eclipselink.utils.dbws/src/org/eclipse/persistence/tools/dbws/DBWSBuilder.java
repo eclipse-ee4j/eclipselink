@@ -23,7 +23,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.sql.Array;
 import java.sql.Connection;
@@ -67,14 +66,9 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityVHAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -89,6 +83,8 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectClassConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectXMLConfig;
+import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.CollectionResult;
 import org.eclipse.persistence.internal.xr.DeleteOperation;
 import org.eclipse.persistence.internal.xr.InsertOperation;
@@ -101,11 +97,8 @@ import org.eclipse.persistence.internal.xr.UpdateOperation;
 import org.eclipse.persistence.internal.xr.Util;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -155,7 +148,6 @@ import org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
 import static org.eclipse.persistence.internal.helper.ClassConstants.ABYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
 import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
@@ -168,7 +160,6 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
 import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
@@ -1146,68 +1137,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             // need a deep-copy clone of oxProject; simplest way is to marshall/unmarshall to a stream
             StringWriter sw = new StringWriter();
             XMLProjectWriter.write(oxProject, sw);
-            BaseEntityClassLoader specialLoader = new BaseEntityClassLoader(this.getClass().getClassLoader());
+            XRDynamicClassLoader specialLoader = 
+                new XRDynamicClassLoader(this.getClass().getClassLoader());
             Project oxProjectClone = XMLProjectReader.read(new StringReader(sw.toString()), specialLoader);
-            oxProjectClone.convertClassNamesToClasses(specialLoader);
-            for (Iterator i = oxProjectClone.getDescriptors().values().iterator(); i.hasNext();) {
-                ClassDescriptor xdesc = (ClassDescriptor)i.next();
-                if (!BaseEntity.class.isAssignableFrom(xdesc.getJavaClass())) {
-                    continue;
-                }
-                int idx = 0;
-                for (Iterator j = xdesc.getMappings().iterator(); j.hasNext();) {
-                    DatabaseMapping xdm = (DatabaseMapping)j.next();
-                    String attributeName = xdm.getAttributeName();
-                    xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
-                    if (xdm != null) {
-                        if (xdm.isForeignReferenceMapping()) {
-                            ForeignReferenceMapping frm = (ForeignReferenceMapping)xdm;
-                            if (frm.usesIndirection() && frm.getIndirectionPolicy().getClass().
-                                isAssignableFrom(BasicIndirectionPolicy.class)) {
-                                xdm.setAttributeAccessor(new BaseEntityVHAccessor(attributeName, idx));
-                            } else {
-                                // no indirection or indirection that is transparent enough (!) to work
-                                xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
-                            }
-                        }
-                        else {
-                            xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
-                            if (xdm.isDirectToFieldMapping()) {
-                                XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
-                                XMLField xmlField = (XMLField)xmlDM.getField();
-                                Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
-                                if (clz != null) {
-                                    xmlField.setType(clz);
-                                }
-                                else {
-                                    xmlField.setType(OBJECT);
-                                }
-                            }
-                            else if (xdm.isAbstractCompositeDirectCollectionMapping()) {
-                                AbstractCompositeDirectCollectionMapping acdcm =
-                                    (AbstractCompositeDirectCollectionMapping)xdm;
-                                XMLField xmlField = (XMLField)acdcm.getField();
-                                Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
-                                if (clz != null) {
-                                    xmlField.setType(clz);
-                                }
-                                else {
-                                    xmlField.setType(OBJECT);
-                                }
-                            }
-                        }
-                    }
-                    idx++;
-                }
-                try {
-                    Class clz = xdesc.getJavaClass();
-                    Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
-                    setNumAttrs.invoke(clz, new Integer(idx));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            specialLoader.dontGenerateSubclasses();
+            ProjectHelper.fixOROXAccessors(oxProjectClone, null);
             XMLLogin xmlLogin = new XMLLogin();
             DOMPlatform domPlatform = new DOMPlatform();
             domPlatform.getConversionManager().setLoader(specialLoader);

@@ -29,7 +29,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
-import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
 

@@ -14,13 +14,11 @@ package dbws.testing.visit;
 
 //javase imports
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -32,17 +30,14 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-//import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -151,17 +146,17 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         testOrProject(pModel, "region", REGION_OR_PROJECT);
         // test query
         DatabaseSession ds = fixUp(REGION_OR_PROJECT);
-        Class regionClass = ds.getProject().getDescriptorForAlias("region").getJavaClass();
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoRegion");
-        BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
+        XRDynamicEntity regionEntity = (XRDynamicEntity)ds.getProject().getDescriptorForAlias(
+            "region").getObjectBuilder().buildNewInstance();
         regionEntity.set(0, BigDecimal.valueOf(5));
         regionEntity.set(1, "this is a test");
         Vector v = new NonSynchronizedVector();
         v.add(regionEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorrect return type from StoredFunctionCall",
-            o instanceof BaseEntity);
-        BaseEntity regionEntityEchoed = (BaseEntity)o;
+            o instanceof XRDynamicEntity);
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
             regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect second field for type returned from StoredFunctionCall",
@@ -366,15 +361,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         DatabaseSession ds = fixUp(EMPADDRESS_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
-        Class regionClass = regionDesc.getJavaClass();
         ObjectRelationalDataTypeDescriptor empAddressDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
-        Class empAddressClass = empAddressDesc.getJavaClass();
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpAddress");
-        BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
+        XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
         regionEntity.set(0, BigDecimal.valueOf(5));
         regionEntity.set(1, "this is a test");
-        BaseEntity empAddressEntity = (BaseEntity)empAddressClass.newInstance();
+        XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
         empAddressEntity.set(0, "20 Pinetrail Cres.");
         empAddressEntity.set(1, "Centrepointe");
         empAddressEntity.set(2, regionEntity);
@@ -382,13 +375,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Vector v = new NonSynchronizedVector();
         v.add(empAddressEntity);
         Object o = ds.executeQuery(vrq, v);
-        assertTrue("incorect return type from StoredFunctionCall", o instanceof BaseEntity);
-        BaseEntity addressEntityEchoed = (BaseEntity)o;
+        assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
+        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
         assertTrue("incorrect second field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(1).equals("Centrepointe"));
-        BaseEntity regionEntityEchoed = (BaseEntity)addressEntityEchoed.get(2);
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
         assertTrue("incorrect nested-third-first field for type returned from StoredFunctionCall",
             regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-third-second field for type returned from StoredFunctionCall",
@@ -704,23 +697,20 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         DatabaseSession ds = fixUp(EMPOBJECT_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
-        Class regionClass = regionDesc.getJavaClass();
         ObjectRelationalDataTypeDescriptor empAddressDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
-        Class empAddressClass = empAddressDesc.getJavaClass();
         ObjectRelationalDataTypeDescriptor empObjectDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_object");
-        Class empObjectClass = empObjectDesc.getJavaClass();
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpObject");
-        BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
+        XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
         regionEntity.set(0, BigDecimal.valueOf(5));
         regionEntity.set(1, "this is a test");
-        BaseEntity empAddressEntity = (BaseEntity)empAddressClass.newInstance();
+        XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
         empAddressEntity.set(0, "20 Pinetrail Cres.");
         empAddressEntity.set(1, "Centrepointe");
         empAddressEntity.set(2, regionEntity);
         empAddressEntity.set(3, BigDecimal.valueOf(12));
-        BaseEntity empObjectEntity = (BaseEntity)empObjectClass.newInstance();
+        XRDynamicEntity empObjectEntity = (XRDynamicEntity)empObjectDesc.getObjectBuilder().buildNewInstance();
         empObjectEntity.set(0, BigDecimal.valueOf(55));
         empObjectEntity.set(1, empAddressEntity);
         empObjectEntity.set(2, "Mike Norman");
@@ -728,16 +718,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Vector v = new NonSynchronizedVector();
         v.add(empObjectEntity);
         Object o = ds.executeQuery(vrq, v);
-        assertTrue("incorect return type from StoredFunctionCall", o instanceof BaseEntity);
-        BaseEntity empObjectEntityEchoed = (BaseEntity)o;
+        assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
+        XRDynamicEntity empObjectEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
             empObjectEntityEchoed.get(0).equals(BigDecimal.valueOf(55)));
-        BaseEntity addressEntityEchoed = (BaseEntity)empObjectEntityEchoed.get(1);
+        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)empObjectEntityEchoed.get(1);
         assertTrue("incorrect nested-second-first field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
         assertTrue("incorrect nested-second-second field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(1).equals("Centrepointe"));
-        BaseEntity regionEntityEchoed = (BaseEntity)addressEntityEchoed.get(2);
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
         assertTrue("incorrect nested-second-third-first field for type returned from StoredFunctionCall",
             regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-second-third-second field for type returned from StoredFunctionCall",
@@ -758,52 +748,29 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setProcedurePattern("echoEmpObject");
         testOxProject(pModel, "empObject", "urn:struct3", EMPOBJECT_OX_PROJECT, EMPOBJECT_SCHEMA);
         // test marshalling
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
-        XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, becl);
+        XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(this.getClass().getClassLoader());
+        XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, xrdecl);
         Project p2 = (Project)xmlContext.createUnmarshaller().unmarshal(
             new StringReader(EMPOBJECT_OX_PROJECT));
-        for (Iterator i = p2.getDescriptors().values().iterator(); i.hasNext();) {
-            ClassDescriptor desc = (ClassDescriptor) i.next();
-            if (!BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
-                continue;
-            }
-            int idx = 0;
-            for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                DatabaseMapping dm = (DatabaseMapping) j.next();
-                String attributeName = dm.getAttributeName();
-                dm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx++));
-            }
-            try {
-                Class clz = desc.getJavaClass();
-                Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
-                setNumAttrs.invoke(clz, new Integer(idx));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        // turn-off dynamic class generation
-        becl.dontGenerateSubclasses();
+        ProjectHelper.fixOROXAccessors(p2, null);
         XMLDescriptor regionDesc = (XMLDescriptor)p2.getDescriptorForAlias("region");
-        Class regionClass = regionDesc.getJavaClass();
         XMLDescriptor empAddressDesc = (XMLDescriptor)p2.getDescriptorForAlias("emp_address");
-        Class empAddressClass = empAddressDesc.getJavaClass();
         XMLDescriptor empObjectDesc = (XMLDescriptor)p2.getDescriptorForAlias("emp_object");
-        Class empObjectClass = empObjectDesc.getJavaClass();
-        BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
+        XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
         regionEntity.set(0, BigDecimal.valueOf(5));
         regionEntity.set(1, "this is a test");
-        BaseEntity empAddressEntity = (BaseEntity)empAddressClass.newInstance();
+        XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
         empAddressEntity.set(0, "20 Pinetrail Cres.");
         empAddressEntity.set(1, "Centrepointe");
         empAddressEntity.set(2, regionEntity);
         empAddressEntity.set(3, BigInteger.valueOf(12));
-        BaseEntity empObjectEntity = (BaseEntity)empObjectClass.newInstance();
+        XRDynamicEntity empObjectEntity = (XRDynamicEntity)empObjectDesc.getObjectBuilder().buildNewInstance();
         empObjectEntity.set(0, BigDecimal.valueOf(55));
         empObjectEntity.set(1, empAddressEntity);
         empObjectEntity.set(2, "Mike Norman");
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         empObjectEntity.set(3, today);
-        XMLContext xmlContext2 = new XMLContext(p2, becl);
+        XMLContext xmlContext2 = new XMLContext(p2, xrdecl);
         Document empObjectEntityDoc = xmlPlatform.createDocument();
         xmlContext2.createMarshaller().marshal(empObjectEntity, empObjectEntityDoc);
         String empObjectEntityString = 
@@ -812,16 +779,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("instance empObject not same as control empObject",
             anEmpObject.equals(empObjectEntityString));
         // test un-marshalling
-        BaseEntity echoedEmpObjectEntity = (BaseEntity)xmlContext2.createUnmarshaller().unmarshal(
-            new StringReader(anEmpObject), empObjectClass);
+        XRDynamicEntity echoedEmpObjectEntity = (XRDynamicEntity)xmlContext2.createUnmarshaller().unmarshal(
+            new StringReader(anEmpObject), empObjectDesc.getJavaClass());
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
             echoedEmpObjectEntity.get(0).equals(BigDecimal.valueOf(55)));
-        BaseEntity addressEntityEchoed = (BaseEntity)echoedEmpObjectEntity.get(1);
+        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)echoedEmpObjectEntity.get(1);
         assertTrue("incorrect nested-second-first field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
         assertTrue("incorrect nested-second-second field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(1).equals("Centrepointe"));
-        BaseEntity regionEntityEchoed = (BaseEntity)addressEntityEchoed.get(2);
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
         assertTrue("incorrect nested-second-third-first field for type returned from StoredFunctionCall",
             regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-second-third-second field for type returned from StoredFunctionCall",
@@ -1182,23 +1149,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
-        assertTrue("return value not correct type", o instanceof BaseEntity);
-        BaseEntity returnValue = (BaseEntity)o;
+        assertTrue("return value not correct type", o instanceof XRDynamicEntity);
+        XRDynamicEntity returnValue = (XRDynamicEntity)o;
         Object o2 = returnValue.get(0);
         assertTrue("return value array not correct type", o2 instanceof ArrayList);
         ArrayList empInfo = (ArrayList)o2;
         assertTrue("return value array wrong size", empInfo.size() == 3);
-        BaseEntity emp1 = (BaseEntity)empInfo.get(0);
+        XRDynamicEntity emp1 = (XRDynamicEntity)empInfo.get(0);
         assertTrue("return value array first element id wrong value",
             emp1.get(0).equals(BigDecimal.valueOf(1)));
         assertTrue("return value array first element name wrong value",
             emp1.get(1).equals("entry 1"));
-        BaseEntity emp2 = (BaseEntity)empInfo.get(1);
+        XRDynamicEntity emp2 = (XRDynamicEntity)empInfo.get(1);
         assertTrue("return value array second element id wrong value",
             emp2.get(0).equals(BigDecimal.valueOf(2)));
         assertTrue("return value array second element name wrong value",
             emp2.get(1).equals("entry 2"));
-        BaseEntity emp3 = (BaseEntity)empInfo.get(2);
+        XRDynamicEntity emp3 = (XRDynamicEntity)empInfo.get(2);
         assertTrue("return value array third element id wrong value",
             emp3.get(0).equals(BigDecimal.valueOf(3)));
         assertTrue("return value array second element name wrong value",
@@ -1390,8 +1357,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
-        assertTrue("return value not correct type", o instanceof BaseEntity);
-        BaseEntity returnValue = (BaseEntity)o;
+        assertTrue("return value not correct type", o instanceof XRDynamicEntity);
+        XRDynamicEntity returnValue = (XRDynamicEntity)o;
         ArrayList<String> strings = (ArrayList<String>)returnValue.get(0);
         assertTrue("wrong number of returned strings", 3 == strings.size());
         for (int i = 0, len = strings.size(); i < len; i++) {
@@ -1546,8 +1513,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
-        assertTrue("return value not correct type", o instanceof BaseEntity);
-        BaseEntity returnValue = (BaseEntity)o;
+        assertTrue("return value not correct type", o instanceof XRDynamicEntity);
+        XRDynamicEntity returnValue = (XRDynamicEntity)o;
         ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get(0);
         assertTrue("wrong number of returned dates", 3 == dates.size());
     }
@@ -1773,8 +1740,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         int num = 3;
         args.add(Integer.valueOf(num));
         Object o = ds.executeQuery(vrq, args);
-        assertTrue("return value not correct type", o instanceof BaseEntity);
-        BaseEntity returnValue = (BaseEntity)o;
+        assertTrue("return value not correct type", o instanceof XRDynamicEntity);
+        XRDynamicEntity returnValue = (XRDynamicEntity)o;
         ArrayList<String> tbl1 = (ArrayList<String>)returnValue.get(0);
         assertTrue("wrong number of returned strings", num == tbl1.size());
         for (int i = 0, len = tbl1.size(); i < len; i++) {
@@ -2178,7 +2145,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         int num = 3;
         args.add(Integer.valueOf(num));
         Object o = ds.executeQuery(vrq, args);
-        assertTrue("return value not correct type", o instanceof BaseEntity);
+        assertTrue("return value not correct type", o instanceof XRDynamicEntity);
     }
     
     @Test
@@ -2513,8 +2480,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
 
     @SuppressWarnings("unchecked")
     public DatabaseSession fixUp(String projectString) {
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
-        XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, becl);
+        XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(this.getClass().getClassLoader());
+        XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, xrdecl);
         Project project = (Project)xmlContext.createUnmarshaller().unmarshal(
             new StringReader(projectString));
         DatabaseLogin login = new DatabaseLogin();
@@ -2525,30 +2492,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         login.setDatasourcePlatform(ora11Platform);
         login.bindAllParameters();
         project.setDatasourceLogin(login);
-        for (Iterator i = project.getDescriptors().values().iterator(); i.hasNext();) {
-            ClassDescriptor desc = (ClassDescriptor) i.next();
-            if (!BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
-                continue;
-            }
-            int idx = 0;
-            for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                DatabaseMapping dm = (DatabaseMapping) j.next();
-                String attributeName = dm.getAttributeName();
-                dm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx++));
-            }
-            try {
-                Class clz = desc.getJavaClass();
-                Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
-                setNumAttrs.invoke(clz, new Integer(idx));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        // turn-off dynamic class generation
-        becl.dontGenerateSubclasses();
+        ProjectHelper.fixOROXAccessors(project, null);
         DatabaseSession ds = project.createDatabaseSession();
         ds.dontLogMessages();
-        //ds.setLogLevel(SessionLog.FINE);
         ds.login();
         return ds;
     }

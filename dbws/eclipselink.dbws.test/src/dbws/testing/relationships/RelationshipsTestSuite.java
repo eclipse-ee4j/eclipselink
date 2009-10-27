@@ -25,7 +25,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import dbws.testing.RootHelper;
 
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
@@ -34,6 +33,8 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
+import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
@@ -354,6 +355,39 @@ public class RelationshipsTestSuite {
                     "<table name=\"XR_PHONE\"/>" +
                  "</tables>" +
               "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"class-mapping-descriptor\">" +
+                 "<class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class>" +
+                 "<alias>XRDynamicEntity_CollectionWrapper</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"aggregate-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<private-owned>true</private-owned>" +
+                       "<cascade-persist>true</cascade-persist>" +
+                       "<cascade-merge>true</cascade-merge>" +
+                       "<cascade-refresh>true</cascade-refresh>" +
+                       "<cascade-remove>true</cascade-remove>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<selection-query xsi:type=\"read-all-query\">" +
+                          "<container xsi:type=\"list-container-policy\">" +
+                             "<collection-type>java.util.ArrayList</collection-type>" +
+                          "</container>" +
+                       "</selection-query>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +              
            "</class-mapping-descriptors>" +
            "<login xsi:type=\"database-login\">\n" +
               "<bind-all-parameters>true</bind-all-parameters>\n" +
@@ -526,16 +560,16 @@ public class RelationshipsTestSuite {
                    "<node-type>complex-type</node-type>" +
                  "</schema>" +
               "</class-mapping-descriptor>\n" +
-              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
-                 "<class>dbws.testing.RootHelper</class>\n" +
-                 "<alias>RootHelper</alias>\n" +
+                 "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+                 "<class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class>\n" +
+                 "<alias>XRDynamicEntity_CollectionWrapper</alias>\n" +
                  "<events xsi:type=\"event-policy\"/>\n" +
                  "<querying xsi:type=\"query-policy\"/>\n" +
                  "<attribute-mappings>\n" +
                     "<attribute-mapping xsi:type=\"xml-any-collection-mapping\">\n" +
-                       "<attribute-name>roots</attribute-name>\n" +
+                       "<attribute-name>items</attribute-name>\n" +
                        "<container xsi:type=\"list-container-policy\">\n" +
-                          "<collection-type>java.util.Vector</collection-type>\n" +
+                          "<collection-type>java.util.ArrayList</collection-type>\n" +
                        "</container>\n" +
                        "<keep-as-element-policy>KEEP_NONE_AS_ELEMENT</keep-as-element-policy>\n" +
                     "</attribute-mapping>\n" +
@@ -556,7 +590,7 @@ public class RelationshipsTestSuite {
                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
                        "</namespace>\n" +
                     "</namespaces>\n" +
-                   "<default-namespace-uri>urn:relationships</default-namespace-uri>" +
+                    "<default-namespace-uri>urn:relationships</default-namespace-uri>" +
                  "</namespace-resolver>" +
               "</class-mapping-descriptor>\n" +
            "</class-mapping-descriptors>\n" +
@@ -613,6 +647,7 @@ public class RelationshipsTestSuite {
                 orProject.setDatasourceLogin(login);
                 Project oxProject = (Project)unmarshaller.unmarshal(
                     new StringReader(RELATIONSHIPS_OX_PROJECT));
+                ProjectHelper.fixOROXAccessors(orProject, oxProject);
                 xrService.setORSession(orProject.createDatabaseSession());
                 xrService.getORSession().dontLogMessages();
                 xrService.setXMLContext(new XMLContext(oxProject));
@@ -633,13 +668,13 @@ public class RelationshipsTestSuite {
       Object result = op.invoke(xrService, invocation);
       assertNotNull("result is null", result);
       Vector<RelationshipsEmployee> resultVector = (Vector<RelationshipsEmployee>)result;
-      RootHelper rootHelper = new RootHelper();
+      XRDynamicEntity_CollectionWrapper xrDynamicEntityCol = new XRDynamicEntity_CollectionWrapper();
       for (RelationshipsEmployee employee : resultVector) {
-        rootHelper.roots.add(employee);
+          xrDynamicEntityCol.add(employee);
       }
       Document doc = xmlPlatform.createDocument();
       XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-      marshaller.marshal(rootHelper, doc);
+      marshaller.marshal(xrDynamicEntityCol, doc);
       Document controlDoc = xmlParser.parse(new StringReader(EMPLOYEE_COLLECTION_XML));
       assertTrue("control document not same as XRService instance document",
           comparer.isNodeEqual(controlDoc, doc));

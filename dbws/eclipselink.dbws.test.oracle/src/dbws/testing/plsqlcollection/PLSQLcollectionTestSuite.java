@@ -3,9 +3,7 @@ package dbws.testing.plsqlcollection;
 //javase imports
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Array;
-import java.util.Iterator;
 import org.w3c.dom.Document;
 
 //Java extension libraries
@@ -13,7 +11,6 @@ import org.w3c.dom.Document;
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-//import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -22,13 +19,11 @@ import static org.junit.Assert.fail;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -198,10 +193,10 @@ public class PLSQLcollectionTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void fromProjectXML() {
-        BaseEntityClassLoader becl = 
-            new BaseEntityClassLoader(PLSQLcollectionTestSuite.class.getClassLoader());
+        XRDynamicClassLoader xrdecl = 
+            new XRDynamicClassLoader(PLSQLcollectionTestSuite.class.getClassLoader());
         Project projectFromXML = XMLProjectReader.read(new StringReader(TEST_PROJECT_CONTROL_DOC),
-            becl);
+            xrdecl);
         DatasourceLogin login = new DatabaseLogin();
         login.setUserName(username);
         login.setPassword(password);
@@ -209,34 +204,12 @@ public class PLSQLcollectionTestSuite {
         ((DatabaseLogin)login).setDriverClassName("oracle.jdbc.OracleDriver");
         Platform platform = new Oracle10Platform();
         ConversionManager cm = platform.getConversionManager();
-        cm.setLoader(becl);
+        cm.setLoader(xrdecl);
         login.setDatasourcePlatform(platform);
         ((DatabaseLogin)login).bindAllParameters();
         projectFromXML.setDatasourceLogin(login);
-        // dynamically generate domain classes
-        projectFromXML.convertClassNamesToClasses(becl);
-        for (Iterator i = projectFromXML.getDescriptors().values().iterator(); i.hasNext();) {
-            ClassDescriptor desc = (ClassDescriptor) i.next();
-            if (!BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
-                continue;
-            }
-            int idx = 0;
-            for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                DatabaseMapping dm = (DatabaseMapping) j.next();
-                String attributeName = dm.getAttributeName();
-                dm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx++));
-            }
-            try {
-                Class clz = desc.getJavaClass();
-                Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
-                setNumAttrs.invoke(clz, new Integer(idx));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        // turn-off dynamic class generation
-        becl.dontGenerateSubclasses();
-
+        ProjectHelper.fixOROXAccessors(projectFromXML, null);
+        xrdecl.dontGenerateSubclasses();
         ClassDescriptor t1Descriptor = projectFromXML.getDescriptorForAlias("T1");
         DatabaseQuery query = t1Descriptor.getQueryManager().getQuery(QUERY_NAME);
         assertTrue(QUERY_NAME + " is wrong type of query: " + query.getClass().getSimpleName(),

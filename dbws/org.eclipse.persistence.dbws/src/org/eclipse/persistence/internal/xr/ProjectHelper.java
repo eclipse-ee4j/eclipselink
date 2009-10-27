@@ -10,24 +10,24 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-
 package org.eclipse.persistence.internal.xr;
 
-// Javase imports
-import java.lang.reflect.Method;
+//javase imports
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-// Java extension imports
+//java eXtension imports
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityVHAccessor;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
@@ -37,7 +37,7 @@ import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
-
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
  * <p>
@@ -48,40 +48,47 @@ import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
  */
 
 public class ProjectHelper {
-
     /**
-     * INTERNAL: Fix the given TopLink OR and OX projects so that the
-     * descriptors for all generated sub-classes of BaseEntity have the correct
+     * INTERNAL: Fix the given EclipseLink OR and OX projects so that the
+     * descriptors for all generated sub-classes of XRDynamicEntity have the correct
      * AttributeAccessors.
      */
     @SuppressWarnings("unchecked")
     public static void fixOROXAccessors(Project orProject, Project oxProject) {
-
         for (Iterator i = orProject.getDescriptors().values().iterator(); i.hasNext();) {
-            ClassDescriptor desc = (ClassDescriptor) i.next();
-            if (!BaseEntity.class.isAssignableFrom(desc.getJavaClass())) {
+            ClassDescriptor desc = (ClassDescriptor)i.next();
+            if (!XRDynamicEntity.class.isAssignableFrom(desc.getJavaClass())) {
                 continue;
             }
-            ClassDescriptor xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
+            Map<String, IndexInfo> propertyNames2indexes = new HashMap<String, IndexInfo>();
+            ClassDescriptor xdesc = null;
+            if (oxProject != null) { 
+                xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
+            }
             int idx = 0;
             for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                DatabaseMapping dm = (DatabaseMapping) j.next();
+                DatabaseMapping dm = (DatabaseMapping)j.next();
                 String attributeName = dm.getAttributeName();
-                DatabaseMapping xdm = xdesc.getMappingForAttributeName(attributeName);
-                dm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                IndexInfo info = new IndexInfo(idx, false);
+                DatabaseMapping xdm = null;
+                if (xdesc != null) {
+                    xdm = xdesc.getMappingForAttributeName(attributeName);
+                }
+                dm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
                 if (xdm != null) {
                     if (dm.isForeignReferenceMapping()) {
                         ForeignReferenceMapping frm = (ForeignReferenceMapping)dm;
                         if (frm.usesIndirection() && frm.getIndirectionPolicy().getClass().
                             isAssignableFrom(BasicIndirectionPolicy.class)) {
-                            xdm.setAttributeAccessor(new BaseEntityVHAccessor(attributeName, idx));
+                            xdm.setAttributeAccessor(new XRDynamicEntityVHAccessor(attributeName, idx));
+                            info.derefVH = true;
                         } else {
                             // no indirection or indirection that is transparent enough (!) to work
-                            xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                            xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
                         }
                     }
                     else {
-                        xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                        xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
                         if (xdm.isDirectToFieldMapping()) {
                             XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
                             XMLField xmlField = (XMLField)xmlDM.getField();
@@ -107,14 +114,38 @@ public class ProjectHelper {
                         }
                     }
                 }
+                propertyNames2indexes.put(attributeName, info);
                 idx++;
             }
-            try {
-                Class clz = desc.getJavaClass();
-                Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
-                setNumAttrs.invoke(clz, new Integer(idx));
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!desc.getJavaClassName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
+                InstantiationPolicy iPolicy = new InstantiationPolicy() {
+                    Map<String, IndexInfo> propertyNames2indexes;
+                    @Override
+                    public Object buildNewInstance() throws DescriptorException {
+                        Object o = null;
+                        try {
+                            Class clz = descriptor.getJavaClass();
+                            Constructor constructor = clz.getConstructor(Map.class);
+                            o = constructor.newInstance(propertyNames2indexes);
+                        }
+                        catch (Exception e) {
+                            //e.printStackTrace();
+                        }
+                        return o;
+                    }
+                    public InstantiationPolicy setUp(ClassDescriptor descriptor, 
+                        Map<String, IndexInfo> propertyNames2indexes) {
+                        setDescriptor(descriptor);
+                        this.propertyNames2indexes = propertyNames2indexes;
+                        return this;
+                    }
+                }.setUp(desc, propertyNames2indexes);
+                desc.setInstantiationPolicy(iPolicy);
+                if (xdesc != null) {
+                    InstantiationPolicy iPolicy2 = (InstantiationPolicy)iPolicy.clone();
+                    iPolicy2.setDescriptor(xdesc);
+                    xdesc.setInstantiationPolicy(iPolicy2);
+                }
             }
         }
         // turn-off dynamic class generation
@@ -129,24 +160,26 @@ public class ProjectHelper {
                 }
             }
         }
-        if (cl != null && cl instanceof BaseEntityClassLoader) {
-            BaseEntityClassLoader becl = (BaseEntityClassLoader)cl;
-            becl.dontGenerateSubclasses();
+        if (cl != null && cl instanceof XRDynamicClassLoader) {
+            XRDynamicClassLoader xrdecl = (XRDynamicClassLoader)cl;
+            xrdecl.dontGenerateSubclasses();
         }
+        if (oxProject != null) {
         cl = null;
-        login = oxProject.getDatasourceLogin();
-        if (login != null) {
-            Platform platform = login.getDatasourcePlatform();
-            if (platform != null) {
-                ConversionManager conversionManager = platform.getConversionManager();
-                if (conversionManager != null) {
-                    cl = conversionManager.getLoader();
+            login = oxProject.getDatasourceLogin();
+            if (login != null) {
+                Platform platform = login.getDatasourcePlatform();
+                if (platform != null) {
+                    ConversionManager conversionManager = platform.getConversionManager();
+                    if (conversionManager != null) {
+                        cl = conversionManager.getLoader();
+                    }
                 }
             }
-        }
-        if (cl != null && cl instanceof BaseEntityClassLoader) {
-            BaseEntityClassLoader becl = (BaseEntityClassLoader)cl;
-            becl.dontGenerateSubclasses();
+            if (cl != null && cl instanceof XRDynamicClassLoader) {
+                XRDynamicClassLoader xrdecl = (XRDynamicClassLoader)cl;
+                xrdecl.dontGenerateSubclasses();
+            }
         }
     }
 }

@@ -28,7 +28,8 @@ import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
-import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
+
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
 

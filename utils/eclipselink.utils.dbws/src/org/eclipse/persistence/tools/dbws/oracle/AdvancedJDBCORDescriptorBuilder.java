@@ -30,7 +30,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 
-import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
 

@@ -30,8 +30,8 @@ import org.junit.Test;
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
@@ -125,11 +125,11 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
             }
             @Override
             public void buildSessions() {
-                BaseEntityClassLoader becl = new BaseEntityClassLoader(parentClassLoader);
+                XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(parentClassLoader);
                 Project orProject = null;
                 if (DBWS_OR_STREAM.size() != 0) {
                     orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-                        becl);
+                        xrdecl);
                 }
                 else {
                     orProject = new Project();
@@ -138,7 +138,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {
                     oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-                        becl);
+                        xrdecl);
                 }
                 else {
                     oxProject = new Project();
@@ -152,7 +152,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
                 Platform platform = builder.getDatabasePlatform();;
                 ConversionManager conversionManager = platform.getConversionManager();
                 if (conversionManager != null) {
-                    conversionManager.setLoader(becl);
+                    conversionManager.setLoader(xrdecl);
                 }
                 login.setDatasourcePlatform(platform);
                 ((DatabaseLogin)login).bindAllParameters();
@@ -163,7 +163,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
                     if (platform != null) {
                         conversionManager = platform.getConversionManager();
                         if (conversionManager != null) {
-                            conversionManager.setLoader(becl);
+                            conversionManager.setLoader(xrdecl);
                         }
                     }
                 }

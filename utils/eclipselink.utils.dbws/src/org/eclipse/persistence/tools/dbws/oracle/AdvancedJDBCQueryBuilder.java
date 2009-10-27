@@ -31,8 +31,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder.DbStoredProcedureNameAndModel;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
-import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 
 public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {

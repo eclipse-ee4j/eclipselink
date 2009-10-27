@@ -13,7 +13,7 @@ public class RelationshipsPhone {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("RelationshipsPhone");
         sb.append("(");
         sb.append(areaCode);
         sb.append(") ");

@@ -31,14 +31,15 @@ import static org.junit.Assert.fail;
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
+import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
@@ -55,7 +56,6 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 
 // testing imports
-import dbws.testing.RootHelper;
 import static dbws.testing.DBWSTestHelper.CONSTANT_PROJECT_BUILD_VERSION;
 import static dbws.testing.DBWSTestHelper.DATABASE_DRIVER_KEY;
 import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
@@ -175,21 +175,6 @@ public class KeyMappingsTestSuite {
                  "<querying xsi:type=\"query-policy\">\n" +
                  "</querying>\n" +
                  "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"one-to-one-mapping\">\n" +
-                       "<attribute-name>address</attribute-name>\n" +
-                       "<reference-class>dbws.testing.keymappings.Address</reference-class>\n" +
-                       "<foreign-key>\n" +
-                          "<field-reference>\n" +
-                             "<source-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
-                             "<target-field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"column\"/>\n" +
-                          "</field-reference>\n" +
-                       "</foreign-key>\n" +
-                       "<foreign-key-fields>\n" +
-                          "<field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
-                       "</foreign-key-fields>\n" +
-                       "<selection-query xsi:type=\"read-object-query\"/>\n" +
-                       "<join-fetch>inner-join</join-fetch>\n" +
-                    "</attribute-mapping>\n" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
                        "<attribute-name>employeeId</attribute-name>\n" +
                        "<field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"column\"/>\n" +
@@ -202,6 +187,21 @@ public class KeyMappingsTestSuite {
                        "<attribute-name>lastName</attribute-name>\n" +
                        "<field table=\"XR_KEYMAP_EMPLOYEE\" name=\"L_NAME\" xsi:type=\"column\"/>\n" +
                     "</attribute-mapping>\n" +
+                    "<attribute-mapping xsi:type=\"one-to-one-mapping\">\n" +
+                    "<attribute-name>address</attribute-name>\n" +
+                    "<reference-class>dbws.testing.keymappings.Address</reference-class>\n" +
+                    "<foreign-key>\n" +
+                       "<field-reference>\n" +
+                          "<source-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
+                          "<target-field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"column\"/>\n" +
+                       "</field-reference>\n" +
+                    "</foreign-key>\n" +
+                    "<foreign-key-fields>\n" +
+                       "<field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
+                    "</foreign-key-fields>\n" +
+                    "<selection-query xsi:type=\"read-object-query\"/>\n" +
+                    "<join-fetch>inner-join</join-fetch>\n" +
+                 "</attribute-mapping>\n" +                    
                     "<attribute-mapping xsi:type=\"one-to-many-mapping\">\n" +
                        "<attribute-name>phones</attribute-name>\n" +
                        "<reference-class>dbws.testing.keymappings.Phone</reference-class>\n" +
@@ -280,6 +280,39 @@ public class KeyMappingsTestSuite {
                     "<table name=\"XR_KEYMAP_PHONE\"/>\n" +
                  "</tables>\n" +
               "</class-mapping-descriptor>\n" +
+              "<class-mapping-descriptor xsi:type=\"class-mapping-descriptor\">" +
+                 "<class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class>" +
+                 "<alias>XRDynamicEntity_CollectionWrapper</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"aggregate-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<private-owned>true</private-owned>" +
+                       "<cascade-persist>true</cascade-persist>" +
+                       "<cascade-merge>true</cascade-merge>" +
+                       "<cascade-refresh>true</cascade-refresh>" +
+                       "<cascade-remove>true</cascade-remove>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<selection-query xsi:type=\"read-all-query\">" +
+                          "<container xsi:type=\"list-container-policy\">" +
+                             "<collection-type>java.util.ArrayList</collection-type>" +
+                          "</container>" +
+                       "</selection-query>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                     "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>\n" +
            "<login xsi:type=\"database-login\">\n" +
               "<bind-all-parameters>true</bind-all-parameters>\n" +
@@ -471,15 +504,15 @@ public class KeyMappingsTestSuite {
                  "</schema>" +
               "</class-mapping-descriptor>\n" +
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
-                 "<class>dbws.testing.RootHelper</class>\n" +
-                 "<alias>RootHelper</alias>\n" +
+                 "<class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class>\n" +
+                 "<alias>XRDynamicEntity_CollectionWrapper</alias>\n" +
                  "<events xsi:type=\"event-policy\"/>\n" +
                  "<querying xsi:type=\"query-policy\"/>\n" +
                  "<attribute-mappings>\n" +
                     "<attribute-mapping xsi:type=\"xml-any-collection-mapping\">\n" +
-                       "<attribute-name>roots</attribute-name>\n" +
+                       "<attribute-name>items</attribute-name>\n" +
                        "<container xsi:type=\"list-container-policy\">\n" +
-                          "<collection-type>java.util.Vector</collection-type>\n" +
+                          "<collection-type>java.util.ArrayList</collection-type>\n" +
                        "</container>\n" +
                        "<keep-as-element-policy>KEEP_NONE_AS_ELEMENT</keep-as-element-policy>\n" +
                     "</attribute-mapping>\n" +
@@ -500,7 +533,7 @@ public class KeyMappingsTestSuite {
                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
                        "</namespace>\n" +
                     "</namespaces>\n" +
-                 "  <default-namespace-uri>urn:keymappings</default-namespace-uri>" +
+                    "<default-namespace-uri>urn:keymappings</default-namespace-uri>" +
                  "</namespace-resolver>" +
               "</class-mapping-descriptor>\n" +
            "</class-mapping-descriptors>\n" +
@@ -542,9 +575,9 @@ public class KeyMappingsTestSuite {
             }
             @Override
             public void buildSessions() {
-                BaseEntityClassLoader becl = new BaseEntityClassLoader(parentClassLoader);
+                XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(parentClassLoader);
                 XMLContext context = new XMLContext(
-                    new EclipseLinkObjectPersistenceRuntimeXMLProject(),becl);
+                    new EclipseLinkObjectPersistenceRuntimeXMLProject(),xrdecl);
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 Project orProject = (Project)unmarshaller.unmarshal(
                     new StringReader(KEYMAPPINGS_OR_PROJECT));
@@ -556,7 +589,7 @@ public class KeyMappingsTestSuite {
                 Platform platform = new MySQLPlatform();
                 ConversionManager conversionManager = platform.getConversionManager();
                 if (conversionManager != null) {
-                    conversionManager.setLoader(becl);
+                    conversionManager.setLoader(xrdecl);
                 }
                 login.setDatasourcePlatform(platform);
                 ((DatabaseLogin)login).bindAllParameters();
@@ -569,7 +602,7 @@ public class KeyMappingsTestSuite {
                     if (platform != null) {
                         conversionManager = platform.getConversionManager();
                         if (conversionManager != null) {
-                            conversionManager.setLoader(becl);
+                            conversionManager.setLoader(xrdecl);
                         }
                     }
                 }
@@ -593,20 +626,20 @@ public class KeyMappingsTestSuite {
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
-        Vector<BaseEntity> resultVector = (Vector<BaseEntity>)result;
-        RootHelper rootHelper = new RootHelper();
-        for (BaseEntity employee : resultVector) {
-          rootHelper.roots.add(employee);
-          rootHelper.roots.add(employee.get(0)); // address
-          Vector<BaseEntity> phones = (Vector<BaseEntity>)employee.get(4); // phones
-          phones.size(); // trigger IndirectList
-          for (BaseEntity phone : phones) {
-            rootHelper.roots.add(phone);
-          }
+        Vector<DynamicEntity> resultVector = (Vector<DynamicEntity>)result;
+        XRDynamicEntity_CollectionWrapper xrDynEntityCol = new XRDynamicEntity_CollectionWrapper();
+        for (DynamicEntity employee : resultVector) {
+            xrDynEntityCol.add(employee);
+            xrDynEntityCol.add(employee.get("address"));
+            Vector<DynamicEntity> phones = (Vector<DynamicEntity>)employee.get("phones");
+            phones.size(); // trigger IndirectList
+            for (DynamicEntity phone : phones) {
+                xrDynEntityCol.add(phone);
+            }
         }
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-        marshaller.marshal(rootHelper, doc);
+        marshaller.marshal(xrDynEntityCol, doc);
         Document controlDoc = xmlParser.parse(new StringReader(EMPLOYEE_COLLECTION_XML));
         assertTrue("control document not same as XRService instance document",
             comparer.isNodeEqual(controlDoc, doc));
@@ -620,13 +653,13 @@ public class KeyMappingsTestSuite {
         InputSource inputSource = new InputSource(reader);
         Object result = unMarshaller.unmarshal(inputSource);
         assertNotNull("result is null", result);
-        RootHelper rootHelper = (RootHelper)result;
-        BaseEntity employee1 = (BaseEntity)rootHelper.roots.firstElement();
-        assertNotNull("employee1 address is null", employee1.get(0));
-        assertTrue("employee1 __pk incorrent", Integer.valueOf(1).equals(employee1.get(1)));
-        assertTrue("employee1 first name incorrent", "Mike".equals(employee1.get(2)));
-        assertTrue("employee1 last name incorrent", "Norman".equals(employee1.get(3)));
-        ArrayList<BaseEntity> phones = (ArrayList<BaseEntity>)employee1.get(4); // phones
+        XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper)result;
+        DynamicEntity employee1 = (DynamicEntity)xrDynEntityCol.iterator().next();
+        assertNotNull("employee1 address is null", employee1.get("address"));
+        assertTrue("employee1 __pk incorrent", Integer.valueOf(1).equals(employee1.get("employeeId")));
+        assertTrue("employee1 first name incorrent", "Mike".equals(employee1.get("firstName")));
+        assertTrue("employee1 last name incorrent", "Norman".equals(employee1.get("lastName")));
+        ArrayList<DynamicEntity> phones = (ArrayList<DynamicEntity>)employee1.get("phones"); // phones
         assertTrue("employee1 has wrong number of phones", phones.size() == 2);
     }
 

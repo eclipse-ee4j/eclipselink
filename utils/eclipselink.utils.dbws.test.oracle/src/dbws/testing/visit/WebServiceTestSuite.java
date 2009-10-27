@@ -50,11 +50,11 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.DBWSAdapter;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.dbws.SOAPResponseWriter;
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.Parameter;
@@ -170,7 +170,7 @@ public class WebServiceTestSuite extends ProviderHelper {
 
     @SuppressWarnings("serial")
     public void init() {
-        parentClassLoader = new BaseEntityClassLoader(Thread.currentThread().getContextClassLoader());
+        parentClassLoader = new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader());
         InputStream xrServiceStream = new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
         DBWSModelProject xrServiceModelProject = new DBWSModelProject();
         XMLContext xmlContext = new XMLContext(xrServiceModelProject);

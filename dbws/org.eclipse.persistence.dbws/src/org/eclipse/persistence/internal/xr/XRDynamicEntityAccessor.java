@@ -10,22 +10,21 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
+package org.eclipse.persistence.internal.xr;
 
-package org.eclipse.persistence.internal.dynamicpersist;
+//javase imports
 
-// Javase imports
+//java eXtension imports
 
-// Java extension imports
-
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
 /**
  * <p>
- * <b>INTERNAL:</b> BaseEntityAccessor is used by dynamically generated
- * subclasses of {@link BaseEntity} to 'close over' information for the
+ * <b>INTERNAL:</b> XRDynamicEntityAccessor is used by dynamically generated
+ * subclasses of {@link XRDynamicEntity} to 'close over' information for the
  * psuedo-attributes in the <tt>Object[] attributes</tt> array inherited from
- * {@link BaseEntity}. The required information is an attributeName, and a
+ * {@link XRDynamicEntity}. The required information is an attributeName, and a
  * field-index into the <tt>Object[] attributes</tt> array
  *
  * @author Mike Norman - michael.norman@oracle.com
@@ -33,11 +32,11 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
  */
 
 @SuppressWarnings("serial")
-public class BaseEntityAccessor extends AttributeAccessor {
+public class XRDynamicEntityAccessor extends AttributeAccessor {
 
     protected int fieldIdx;
 
-    public BaseEntityAccessor(String attributeName, int fieldIdx) {
+    public XRDynamicEntityAccessor(String attributeName, int fieldIdx) {
         super();
         setAttributeName(attributeName);
         this.fieldIdx = fieldIdx;
@@ -45,12 +44,11 @@ public class BaseEntityAccessor extends AttributeAccessor {
 
     @Override
     public Object getAttributeValueFromObject(Object object) {
-        return ((BaseEntity) object).get(fieldIdx);
+        return ((XRDynamicEntity)object).get(fieldIdx);
     }
 
     @Override
     public void setAttributeValueInObject(Object object, Object value) {
-        ((BaseEntity) object).set(fieldIdx, value);
+        ((XRDynamicEntity)object).set(fieldIdx, value);
     }
-
 }

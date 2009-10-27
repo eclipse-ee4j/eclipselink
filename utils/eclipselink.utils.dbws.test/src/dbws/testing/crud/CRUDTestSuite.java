@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -172,7 +172,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
         Reader reader = new StringReader(CRUD1_CONTROL_DOC);
         InputSource inputSource = new InputSource(reader);
-        BaseEntity firstEmp = (BaseEntity)unMarshaller.unmarshal(inputSource);
+        XRDynamicEntity firstEmp = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
         firstEmp.set(1, "some other name");
         Invocation invocation = new Invocation("update_crud_tableType");
         invocation.setParameter("theInstance", firstEmp);
@@ -185,13 +185,13 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public void test5_delete() {
         Invocation invocation = new Invocation("findAll_crud_tableType");
         Operation op = xrService.getOperation(invocation.getName());
-        Vector<BaseEntity> result = (Vector<BaseEntity>)op.invoke(xrService, invocation);
-        BaseEntity firstEmp = result.firstElement();
+        Vector<XRDynamicEntity> result = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
+        XRDynamicEntity firstEmp = result.firstElement();
         Invocation invocation2 = new Invocation("delete_crud_tableType");
         invocation2.setParameter("id", firstEmp.get(0));
         Operation op2 = xrService.getOperation(invocation2.getName());
         op2.invoke(xrService, invocation2);
-        Vector<BaseEntity> result2 = (Vector<BaseEntity>)op.invoke(xrService, invocation);
+        Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
         assertTrue("Wrong number of employees", result2.size() == 2);
     }
 
@@ -201,14 +201,14 @@ public class CRUDTestSuite extends DBWSTestSuite {
         XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
         Reader reader = new StringReader(CRUD1_CONTROL_DOC);
         InputSource inputSource = new InputSource(reader);
-        BaseEntity anotherEmployee = (BaseEntity)unMarshaller.unmarshal(inputSource);
+        XRDynamicEntity anotherEmployee = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
         Invocation invocation = new Invocation("create_crud_tableType");
         invocation.setParameter("theInstance", anotherEmployee);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
         Invocation invocation2 = new Invocation("findAll_crud_tableType");
         Operation op2 = xrService.getOperation(invocation2.getName());
-        Vector<BaseEntity> result2 = (Vector<BaseEntity>)op2.invoke(xrService, invocation2);
+        Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op2.invoke(xrService, invocation2);
         assertTrue("Wrong number of employees", result2.size() == 3);
     }
 }

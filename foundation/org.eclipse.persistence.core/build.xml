@@ -249,7 +249,6 @@
         <echo message=" org.eclipse.persistence.internal.descriptors;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.descriptors.changetracking;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.dynamic;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.dynamicpersist;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.jms;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.xmlfile;version=&quot;${version.string}&quot;,${line.separator}"                         file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.cobol;version=&quot;${version.string}&quot;,${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
