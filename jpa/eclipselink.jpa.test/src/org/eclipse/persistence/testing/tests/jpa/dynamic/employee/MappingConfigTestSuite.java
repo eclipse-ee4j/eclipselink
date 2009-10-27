@@ -86,8 +86,7 @@ public class MappingConfigTestSuite {
         assertNotNull(serverSession);
         assertTrue(serverSession.isConnected());
         assertTrue(serverSession.isServerSession());
-        assertTrue(serverSession.getName().startsWith("string:")); // custom URL
-        assertTrue(serverSession.getName().endsWith(DYNAMIC_PERSISTENCE_NAME));
+        assertTrue(serverSession.getName().equals(DYNAMIC_PERSISTENCE_NAME));
     }
 
     @Test
