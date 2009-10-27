@@ -177,7 +177,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             classMetadata.setName(className);
             classMetadata.setSuperclassName(toClassName(superName));
             classMetadata.setModifiers(access);
-            if ((!ALLOW_JDK) && (className.startsWith("java") || className.startsWith("javax"))) {
+            if ((!ALLOW_JDK) && (className.startsWith("java.") || className.startsWith("javax."))) {
                 classMetadata.setIsJDK(true);
             }
             
