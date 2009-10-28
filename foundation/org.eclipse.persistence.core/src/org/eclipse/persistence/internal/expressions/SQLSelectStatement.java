@@ -1764,7 +1764,7 @@ public class SQLSelectStatement extends SQLStatement {
     * Returns a generated alias based on the column name.  If the new alias will be too long
     * The alias is automatically truncated
     */
-    protected String generatedAlias(String fieldName) {
+    public String generatedAlias(String fieldName) {
         final String counterValueString = String.valueOf(getNextFieldCounterValue());
         final Integer maximumAliasLength = getMaximumAliasLength();
         if (null != maximumAliasLength) {
@@ -1773,7 +1773,7 @@ public class SQLSelectStatement extends SQLStatement {
             final int maximumAliasLengthValue = maximumAliasLength.intValue();
             if ((fieldNameLength + counterValueStringLength) > maximumAliasLengthValue) {
                 // truncate the alias so that appending the counter value doesn't exceed the maximum length
-                return fieldName.substring(0, maximumAliasLengthValue - counterValueStringLength) + counterValueString;
+                return fieldName.substring(0, maximumAliasLengthValue - counterValueStringLength - 1) + counterValueString;
             }
         }
         // If no maximum limit, or if we would not exceed the limit
