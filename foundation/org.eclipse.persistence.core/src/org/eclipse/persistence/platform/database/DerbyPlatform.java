@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -260,5 +263,22 @@ public class DerbyPlatform extends DB2Platform {
         super.initializePlatformOperators();
         // Derby does not support DECIMAL, but does have a DOUBLE function.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
+    }
+    
+    /**
+     * INTERNAL:
+     * Derby does not support the DB2 syntax, so perform the default.
+     */
+    @Override
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        call.setFields(statement.printSQL(printer));
+    }
+
+    /**
+     * INTERNAL: Derby does not support sequence objects as DB2 does.
+     */
+    @Override
+    public boolean supportsSequenceObjects() {
+        return false;
     }
 }
