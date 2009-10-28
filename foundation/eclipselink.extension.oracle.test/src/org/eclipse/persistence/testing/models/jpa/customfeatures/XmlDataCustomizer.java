@@ -16,6 +16,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.factories.DescriptorCustomizer;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 
+@SuppressWarnings("deprecation")
 public class XmlDataCustomizer implements DescriptorCustomizer {
 
     public void customize(final ClassDescriptor descriptor) throws Exception{
