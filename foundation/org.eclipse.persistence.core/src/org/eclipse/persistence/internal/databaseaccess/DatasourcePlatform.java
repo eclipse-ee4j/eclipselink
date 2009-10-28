@@ -491,6 +491,13 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Allow the platform to initialize itself after login/init.
+     */
+    public void initialize() {
+        
+    }
+    
+    /**
      * OBSOLETE:
      * Can override the default query for returning the sequence numbers.
      * This query must be a valid query that has one parameter which is

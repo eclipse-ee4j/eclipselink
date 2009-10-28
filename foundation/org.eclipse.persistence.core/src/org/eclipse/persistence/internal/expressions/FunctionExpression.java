@@ -15,8 +15,6 @@ package org.eclipse.persistence.internal.expressions;
 import java.io.*;
 import java.util.*;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -24,7 +22,6 @@ import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -33,7 +30,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -349,6 +345,12 @@ public class FunctionExpression extends BaseExpression {
         validateNode();
         if (getChildren().isEmpty()) {
             return this;
+        }
+        
+        // Ensure session has been set.
+        ExpressionBuilder builder = getBuilder();
+        if ((builder != null) && (builder.getSession() == null)) {
+            builder.setSession(normalizer.getSession().getRootSession(null));
         }
         
         if (this.operator.getSelector() == ExpressionOperator.Count && getBaseExpression().isObjectExpression() && (!((ObjectExpression)getBaseExpression()).isAttribute())){

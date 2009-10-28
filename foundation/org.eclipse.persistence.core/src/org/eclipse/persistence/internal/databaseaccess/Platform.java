@@ -115,6 +115,11 @@ public interface Platform extends Serializable, Cloneable {
     public boolean isTimesTen7();
     
     public boolean isPostgreSQL();
+    
+    /**
+     * Allow the platform to initialize itself after login/init.
+     */
+    public void initialize();
 
     /**
      * Set the qualifier for the table. Required by some

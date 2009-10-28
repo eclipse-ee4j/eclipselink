@@ -709,6 +709,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     public void executeJPQL() {
         showBusyCursor();
         try {
+            getSession().getProject().getJPQLParseCache().getCache().clear();
+            
             String jpql = getJPQLText().getSelectedText();
             if ((jpql == null) || (jpql.length() == 0)) {
                 return;

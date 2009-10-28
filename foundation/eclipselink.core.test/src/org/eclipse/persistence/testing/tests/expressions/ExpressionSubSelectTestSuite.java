@@ -87,6 +87,28 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
     }
 
     /**
+     * this test added for bug 3252935.  When fixed the workaround should be
+     * removed from this test (i.e. query.usedDistinct()).
+     */
+    private void addSameManagerTest()
+    {
+            ExpressionBuilder emp = new ExpressionBuilder();
+            ExpressionBuilder coworker = new ExpressionBuilder(Employee.class);
+
+            Expression exp = emp.get("manager").equal(coworker.get("manager")).and(emp.notEqual(coworker));
+
+            ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
+            query.useDistinct();
+
+            ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 5);
+            test.setExpression(exp);
+            test.setQuery(query);
+            test.setName("SameManagerTest");
+            test.setDescription("Tests whether a parallel select will use distinct.");
+            addTest(test);
+    }
+    
+    /**
      * TODO:
      * This test was remove because it fails, should be fixed and added back.
      * @bug 3381830
@@ -688,6 +710,9 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addSubSelectTwoProjectsTest();
         addSubSelectUnderpaidManagersTest();
         addVehicleViewTest();
+        addUpperCaseTest();
+        addVehicleViewTest1();
+        addSameManagerTest();
     }
 
     private void addSubSelectEmployeeTest() {
@@ -728,8 +753,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
     }
 
     /**
-     * TODO:
-     * This test was removed, not sure why?
+     * This test was removed, not sure why?  Added back.
      */
     private void addUpperCaseTest() {
         Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
@@ -744,8 +768,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
     }
 
     /**
-     * TODO:
-     * This test was removed?
+     * This test was removed?  Added back.
      */
     private void addVehicleViewTest1() {
         ExpressionBuilder builder = new ExpressionBuilder();

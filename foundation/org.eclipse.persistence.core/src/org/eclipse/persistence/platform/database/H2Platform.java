@@ -144,11 +144,6 @@ public class H2Platform extends HSQLPlatform {
     }
 
     @Override
-    public boolean supportsLocalTempTables() {
-        return true;
-    }
-
-    @Override
     public boolean supportsGlobalTempTables() {
         return true;
     }
@@ -189,11 +184,6 @@ public class H2Platform extends HSQLPlatform {
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(")");
-    }
-
-    @Override
-    public boolean supportsNativeSequenceNumbers() {
-        return true;
     }
 
     @Override

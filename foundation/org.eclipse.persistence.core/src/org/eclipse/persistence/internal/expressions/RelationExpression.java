@@ -68,6 +68,11 @@ public class RelationExpression extends CompoundExpression {
      * If the expression in not able to determine if the object conform throw a not supported exception.
      */
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
+        if ((getSecondChild().getBuilder().getSession() == null) || (getFirstChild().getBuilder().getSession() == null)) {
+            // Parallel selects are not supported in memory.
+            throw QueryException.cannotConformExpression();
+        }
+        
         // Extract the value from the right side.
         //CR 3677 integration of valueHolderPolicy
         Object rightValue = 

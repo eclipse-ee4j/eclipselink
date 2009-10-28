@@ -160,10 +160,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingTwoLevelOfEmbeddeds"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNamedQueryResultPropertiesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexOuterJoinQuery"));
-        /*Removed because this functionality requires implementation in ReportQuery
+        
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceUsingNamedQueryTest"));
-        */
         
         suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapKeyInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapValueInSelectTest"));
@@ -198,6 +197,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("sqrtInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("sizeInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mathInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("paramNoVariableTest"));
         
         return suite;
     }
@@ -2480,6 +2480,17 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         assertTrue("The wrong value was returned.", ((Integer)result.get(0)).intValue() == 35100);
     }
     
+    public void paramNoVariableTest(){
+        EntityManager em = createEntityManager();
+        
+        List expectedResult = em.createQuery("select e from Employee e where e.firstName = 'Bob'").getResultList();
+        
+        String ejbqlString = "select e from Employee e where :arg = 1 or e.firstName = 'Bob'";
+        
+        List result = em.createQuery(ejbqlString).setParameter("arg", 2).getResultList();
+        
+        assertTrue("The wrong number of employees returned, expected:" + expectedResult + " got:" + result, result.size() == expectedResult.size());
+    }
     
 }
 

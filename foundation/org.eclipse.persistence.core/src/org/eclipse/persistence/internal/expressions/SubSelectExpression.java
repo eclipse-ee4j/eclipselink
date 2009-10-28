@@ -156,11 +156,8 @@ public class SubSelectExpression extends BaseExpression {
                 // Must clone the expression builder.
                 clonedQuery.setExpressionBuilder((ExpressionBuilder)clonedQuery.getExpressionBuilder().copiedVersionFrom(alreadyDone));
             }
-            // If we are building/cloning a selection criteria for a batch query, a little extra work
-            // needs to be done (see bug 2812185).
-            if (alreadyDone.get(alreadyDone) != null) {
-                clonedQuery.copyReportItems(alreadyDone);
-            }
+            // Must also clone report items.
+            clonedQuery.copyReportItems(alreadyDone);
         }
         setSubQuery(clonedQuery);
     }

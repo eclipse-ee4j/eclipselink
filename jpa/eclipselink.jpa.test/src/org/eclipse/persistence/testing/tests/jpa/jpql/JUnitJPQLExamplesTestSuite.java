@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.math.BigDecimal;
-
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -100,8 +98,10 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLExamplesTestSuite("testOrderByExpressionWithSelect"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testDeleteExpression"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testComplexDeleteExpression"));
-        // suite.addTest(new JUnitJPQLExamplesTestSuite("testCountExpression"));    //bug 5166658
-        // suite.addTest(new JUnitJPQLExamplesTestSuite("testUpdateExpression"));   //bug 5159164, 5159198        
+        
+        suite.addTest(new JUnitJPQLExamplesTestSuite("testCountExpression"));    //bug 5166658
+        suite.addTest(new JUnitJPQLExamplesTestSuite("testUpdateExpression"));   //bug 5159164, 5159198
+        
         //Bug5097278 
         suite.addTest(new JUnitJPQLExamplesTestSuite("updateAllTest"));
         //Bug5040609  
@@ -616,7 +616,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Long result = (Long)em.createQuery(ejbqlString).getSingleResult();
 
         String alternateEjbqlString = "SELECT COUNT(p) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a " + " WHERE a.province='QUE' AND a.city='Montreal' AND p.areaCode IS NOT NULL";
-        BigDecimal alternateResult = (BigDecimal)em.createQuery(alternateEjbqlString).getSingleResult();
+        Long alternateResult = (Long)em.createQuery(alternateEjbqlString).getSingleResult();
 
         Assert.assertTrue("Count expression test failed: data validation error, ReportQuery returned 0", expectedResult.intValue() > 0);
         Assert.assertTrue("Count expression test failed: data validation error, first JPQL returned 0", result.intValue() > 0);
@@ -742,25 +742,19 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
     public void testUpdateExpression() {
         EntityManager em = createEntityManager();
-        int result = 0;
-        UpdateAllQuery uaq = new UpdateAllQuery(Customer.class, new ExpressionBuilder());
-        uaq.addUpdate(uaq.getExpressionBuilder().get("name"), "Test Case");
-        Expression whereClause1 = uaq.getExpressionBuilder().get("name").equal("Jane Smith");
-
-        ReportQuery innerQuery = new ReportQuery(Customer.class, new ExpressionBuilder(Customer.class));
-        innerQuery.addCount("orders", innerQuery.getExpressionBuilder().anyOf("orders").get("orderId"));
-
-        Expression whereClause2 = uaq.getExpressionBuilder().subQuery(innerQuery).greaterThan(0);
-        uaq.setSelectionCriteria(whereClause1.and(whereClause2));
+        Number result = null;
         beginTransaction(em);
-        List expectedResult = (List)getServerSession().executeQuery(uaq);
-        commitTransaction(em);
-
-        String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
-        result = em.createQuery(ejbqlString).executeUpdate();
+        try {    
+            String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
+            result = em.createQuery(ejbqlString).executeUpdate();
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
         
-        Assert.assertEquals("Update expression test failed", 1, expectedResult);
-        Assert.assertEquals("Update Expression test failed", result, expectedResult);
+        Assert.assertEquals("Update expression test failed", 1, result);
     }
 
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address 

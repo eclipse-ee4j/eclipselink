@@ -1611,29 +1611,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.DB2Platform.class);
         addTest(test);
     }
-
-    /**
-     * this test added for bug 3252935.  When fixed the workaround should be
-     * removed from this test (i.e. query.usedDistinct()).
-     *
-
-    private void addSameManagerTest()
-    {
-            ExpressionBuilder emp = new ExpressionBuilder();
-            ExpressionBuilder coworker = new ExpressionBuilder(Employee.class);
-
-            Expression exp = emp.get("manager").equal(coworker.get("manager")).and(emp.notEqual(coworker));
-
-            ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
-            query.useDistinct();
-
-            ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
-            test.setExpression(exp);
-            test.setQuery(query);
-            test.setName("SameManagerTest");
-            test.setDescription("Tests whether a parallel select will use distinct.");
-            addTest(test);
-    }*/
+    
     private void addSelectionObjectWithoutPrepareTest() {
         Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
         ReadObjectQuery query = new ReadObjectQuery(employee);
@@ -1762,7 +1740,6 @@ public class ExpressionTestSuite extends TestSuite {
         addBetweenTest();
         addBetweenTest2();
 
-        // Broken: 3252935 addSameManagerTest();
         addSelectionObjectWithoutPrepareTest();
         addSelfManagedEmployeeTests();
         addSingleTableJoinTest();

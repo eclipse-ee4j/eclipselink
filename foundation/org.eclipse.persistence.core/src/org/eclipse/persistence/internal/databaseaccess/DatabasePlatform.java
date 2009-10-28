@@ -223,6 +223,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.startDelimiter = "\"";
         this.endDelimiter = "\"";
     }
+
+    /**
+     * Initialize operators to avoid concurrency issues.
+     */
+    public void initialize() {
+        getPlatformOperators();
+    }
     
     /**
      * Return if casting is enabled for platforms that support it.

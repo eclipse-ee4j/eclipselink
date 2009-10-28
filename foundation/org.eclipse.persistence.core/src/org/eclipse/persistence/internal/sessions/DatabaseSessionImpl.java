@@ -685,6 +685,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         //register the MBean
         getServerPlatform().registerMBean();
         this.descriptors = getDescriptors();
+        // EclipseLink 23869 - Initialize plaformOperators eagerly to avoid concurrency issues.
+        getDatasourcePlatform().initialize();
     }
 
     /**
