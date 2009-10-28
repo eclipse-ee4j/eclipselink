@@ -4292,7 +4292,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
         //bug6070214: unique field aliases need to be generated when required.
         if (statement.getUseUniqueFieldAliases()){
-            printer.printString(" AS " + field.getNameDelimited(printer.getPlatform()) + statement.getNextFieldCounterValue() );
+            printer.printString(" AS " + statement.generatedAlias(field.getNameDelimited(printer.getPlatform())));
         }
     }
 
