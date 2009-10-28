@@ -2682,6 +2682,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             && (getFetchGroupName() == null)
             && (shouldUseDefaultFetchGroup());
     }
+    
+    /**
+     * INTERNAL:
+     * Checks to see if a builder has been set on the query.
+     */
+    public boolean hasDefaultBuilder(){
+        return this.defaultBuilder != null;
+    }
 
     /**
      * Return if a fetch group is set in the query.

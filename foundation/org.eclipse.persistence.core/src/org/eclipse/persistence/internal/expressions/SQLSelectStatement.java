@@ -1579,6 +1579,10 @@ public class SQLSelectStatement extends SQLStatement {
     public void resetDistinct() {
         setDistinctState(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT);
     }
+    
+    public void setBuilder(ExpressionBuilder builder){
+        this.builder = builder;
+    }
 
     /**
      * Sets a unique id that will be used to alias the next table.

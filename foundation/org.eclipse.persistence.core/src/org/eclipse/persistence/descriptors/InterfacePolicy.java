@@ -216,7 +216,9 @@ public class InterfacePolicy implements Serializable {
         // Update the selection criteria if needed as well and don't lose 
         // the translation row.
         if (concreteQuery.getQueryMechanism().getSelectionCriteria() != null) {
-            concreteQuery.getQueryMechanism().getSelectionCriteria().getBuilder().setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
+            //make sure query builder is used for the selection criteria as deepClone will create
+            //two separate builders.
+            concreteQuery.setSelectionCriteria(concreteQuery.getQueryMechanism().getSelectionCriteria().rebuildOn(concreteQuery.getExpressionBuilder()));
             return query.getSession().executeQuery(concreteQuery, query.getTranslationRow());
         }
         

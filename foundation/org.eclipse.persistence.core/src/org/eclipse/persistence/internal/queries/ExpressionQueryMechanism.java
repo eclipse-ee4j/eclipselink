@@ -172,6 +172,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         selectStatement.setDistinctState(query.getDistinctState());
         selectStatement.setTables((Vector)getDescriptor().getTables().clone());
         selectStatement.setWhereClause(buildBaseSelectionCriteria(isSubSelect, clonedExpressions));
+        //make sure we use the cloned builder and make sure we get the builder from the query if we have set the type.
+        // If we use the expression builder and there are parallel builders and the query builder is on the 'right' 
+        //instead of the 'left' we will build the SQL using the wrong builder.
+        if (!query.isReportQuery() && query.hasDefaultBuilder() && !query.getExpressionBuilder().wasQueryClassSetInternally()){
+            selectStatement.setBuilder((ExpressionBuilder)query.getExpressionBuilder().copiedVersionFrom(clonedExpressions));
+        }
         //For bug 5900782, the clone of the OrderBy expressions needs to be used to ensure they are normalized
         //every time when select SQL statement gets re-prepared, which will further guarantee the calculation 
         //of table alias always be correct

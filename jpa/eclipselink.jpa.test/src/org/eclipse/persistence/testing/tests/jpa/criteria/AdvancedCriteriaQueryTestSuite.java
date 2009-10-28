@@ -28,13 +28,12 @@ import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -105,8 +104,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
-  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
-  //      suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testProd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
@@ -138,6 +137,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsEmpty"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNeg"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMember"));
+    suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMemberEntity"));
         
         return suite;
     }
@@ -340,7 +340,6 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            em.createQuery("select e from Employee e where '613' in e.responsibilities").getResultList();
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
@@ -430,30 +429,58 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     public void testIsMember(){
-       /* 
+        
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> emp = cq.from(Employee.class);
-            cq.where(qb.isNotMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
+            cq.where(qb.isMember(qb.parameter(String.class,"1"), emp.<Collection<String>>get("responsibilities")));
             Query query = em.createQuery(cq);
-            query.setParameter("1", "coffee");
+            query.setParameter("1", "Sort files");
             List<Employee> result = query.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
             for (Employee e : result){
-                assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
+                assertTrue("Employee Found without Responcibilities", e.getResponsibilities().contains("Sort files"));
             
             }
         }finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        */
+        
     }
 
     
+    public void testIsMemberEntity(){
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Root<PhoneNumber> phone = cq.from(PhoneNumber.class);
+            cq.where(qb.and(qb.equal(phone.get("areaCode"), "416"), qb.isMember(phone, emp.<Collection<PhoneNumber>>get("phoneNumbers"))));
+            Query query = em.createQuery(cq);
+            List<Employee> result = query.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            for (Employee e : result){
+                boolean areacode = false;
+                for (PhoneNumber p : e.getPhoneNumbers()){
+                    areacode = areacode || p.getAreaCode().equals("416");
+                }
+                assertTrue("No PhoneNumbers with '416'area code", areacode);
+            
+            }
+        }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        
+    }
+
     public void testVerySimpleJoin(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

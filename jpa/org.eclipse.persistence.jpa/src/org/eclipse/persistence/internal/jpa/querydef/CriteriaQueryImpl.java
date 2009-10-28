@@ -695,11 +695,14 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         if (selection == null) {
-            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder() != null && ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
-                query.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
-            } else if (roots != null && ! roots.isEmpty()){
-                Root root = this.getRoots().iterator().next();
-                query.setExpressionBuilder(((RootImpl) root).getCurrentNode().getBuilder());
+            //the builder in the where clause  may not be the correct builder for this query.  Search for a root that matches the query type.
+            if (roots != null && ! roots.isEmpty()){
+                for (Root root : this.getRoots()){
+                    if (root.getJavaType().equals(this.queryType)){
+                        query.setExpressionBuilder(((RootImpl) root).getCurrentNode().getBuilder());
+                        break;
+                    }
+                }
             }
         }
 

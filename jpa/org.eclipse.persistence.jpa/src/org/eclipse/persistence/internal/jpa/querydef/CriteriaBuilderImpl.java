@@ -1163,7 +1163,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      * @return quotient
      */
     public Expression<Number> quot(Expression<? extends Number> x, Expression<? extends Number> y){
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "quot");
+        return new FunctionExpressionImpl(this.metamodel, (Class)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "quot");
     }
 
     /**
@@ -1176,7 +1176,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      * @return quotient
      */
     public Expression<Number> quot(Expression<? extends Number> x, Number y){
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "quot");
+        return new FunctionExpressionImpl(this.metamodel, (Class)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),y), buildList(x,literal(y)), "quot");
     }
 
     /**

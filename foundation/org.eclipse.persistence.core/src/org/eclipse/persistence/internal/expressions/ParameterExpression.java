@@ -381,7 +381,7 @@ public class ParameterExpression extends BaseExpression {
                     }
                 } else if (mapping.isDirectCollectionMapping()){
                     Class targetClass = ((DirectCollectionMapping)mapping).getDirectField().getType();
-                    if (((Class)targetClass).equals(BasicTypeHelperImpl.ElementPlaceHolder.class)){
+                    if (targetClass == null || ((Class)targetClass).equals(BasicTypeHelperImpl.ElementPlaceHolder.class)){
                         // we do not know the class of the target and cannot do validation
                         return;
                     } else {
