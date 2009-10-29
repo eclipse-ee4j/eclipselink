@@ -106,25 +106,29 @@ public class StaticWeaveClassTransformer {
         } else {
             classTransformers = new ArrayList<ClassTransformer>();
         }
-        Archive archive =null;
+        Archive archive = null;
         try {
-           archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL);
+            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL);
+            
+            List<SEPersistenceUnitInfo> persistenceUnitsList = 
+            PersistenceUnitProcessor.processPersistenceArchive(archive, aclassloader);
+            if (persistenceUnitsList==null) {
+                throw PersistenceUnitLoadingException.couldNotGetUnitInfoFromUrl(inputArchiveURL);
+            }
+            Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
+            while (persistenceUnitsIterator.hasNext()) {
+                SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();
+                unitInfo.setNewTempClassLoader(aclassloader);
+                //build class transformer.
+                ClassTransformer transformer = buildTransformer(unitInfo,this.logWriter,this.logLevel);
+                classTransformers.add(transformer);
+            }
         } catch (ZipException e) {
             throw StaticWeaveException.exceptionOpeningArchive(inputArchiveURL,e);
-        }
-            
-        List<SEPersistenceUnitInfo> persistenceUnitsList = 
-        PersistenceUnitProcessor.processPersistenceArchive(archive, aclassloader);
-        if (persistenceUnitsList==null) {
-            throw PersistenceUnitLoadingException.couldNotGetUnitInfoFromUrl(inputArchiveURL);
-        }
-        Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
-        while (persistenceUnitsIterator.hasNext()) {
-            SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();
-            unitInfo.setNewTempClassLoader(aclassloader);
-            //build class transformer.
-            ClassTransformer transformer = buildTransformer(unitInfo,this.logWriter,this.logLevel);
-            classTransformers.add(transformer);
+        } finally {
+            if (archive != null) {
+                archive.close();
+            }
         }
     }
     

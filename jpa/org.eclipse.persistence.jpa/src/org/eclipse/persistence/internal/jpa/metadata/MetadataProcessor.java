@@ -345,29 +345,29 @@ public class MetadataProcessor {
         for (URL rootURL : rootUrls) {
             logMessage("Searching for default mapping file in " + rootURL);
             URL ormURL = null;
-            
+
+            Archive par = null;
             try {
-                Archive m_par = null;
-                m_par = new ArchiveFactoryImpl().createArchive(rootURL);
-                ormURL = m_par.getEntryAsURL(ormXMLFile);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        
-            if (ormURL != null) {
-                logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
-                
-                try {
+                par = new ArchiveFactoryImpl().createArchive(rootURL);
+                ormURL = par.getEntryAsURL(ormXMLFile);
+
+                if (ormURL != null) {
+                    logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
+
                     // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
                     XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(
                             ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
                     entityMappings.setIsEclipseLinkORMFile(ormXMLFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
                     m_project.addEntityMappings(entityMappings);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } 
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (par != null) {
+                    par.close();
+                }
             }
         }
     }

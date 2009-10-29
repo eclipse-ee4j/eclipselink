@@ -123,5 +123,10 @@ public class DirectoryArchive implements Archive {
         return f;
     }
 
+    public void close() {
+        // nothing to close. it's caller's responsibility to close
+        // any InputStream returned by getEntry().
+    }
+
 }
 

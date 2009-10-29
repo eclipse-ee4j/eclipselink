@@ -59,5 +59,10 @@ public interface Archive {
      * @return the URL that this archive represents.
      */
     URL getRootURL();
+
+    /**
+     * Close this archive and associated InputStream.
+     */
+    void close();
 }
 

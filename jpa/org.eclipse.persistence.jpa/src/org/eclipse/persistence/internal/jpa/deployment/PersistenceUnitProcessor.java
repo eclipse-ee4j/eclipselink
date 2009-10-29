@@ -188,10 +188,12 @@ public class PersistenceUnitProcessor {
     }
 
     /**
-     * Search the classpath for persistence archives. A persistence archive is 
-     * defined as any part of the class path that contains a META-INF directory 
-     * with a persistence.xml file in it. Return a list of {@link Archive} 
-     * representing the root of those files.
+     * Search the classpath for persistence archives. A persistence archive is
+     * defined as any part of the class path that contains a META-INF directory
+     * with a persistence.xml file in it. Return a list of {@link Archive}
+     * representing the root of those files. It is the caller's responsibility
+     * to close all the archives.
+     * 
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
@@ -205,8 +207,16 @@ public class PersistenceUnitProcessor {
                 pars.add(archive);
             }
         } catch (java.io.IOException exc){
+            //clean up first
+            for (Archive archive : pars) {
+                archive.close();
+            }
             throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exc);
         } catch (URISyntaxException exc) {
+            //clean up first
+            for (Archive archive : pars) {
+                archive.close();
+            }
             throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exc);
         }
         
@@ -218,16 +228,20 @@ public class PersistenceUnitProcessor {
         Archive archive = null;
         try {
             archive = new ArchiveFactoryImpl().createArchive(url);
+        
+            for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
+                String entry = entries.next();
+                if (entry.endsWith(".class")){ // NOI18N
+                     classNames.add(buildClassNameFromEntryString(entry));
+                }
+            }
         } catch (URISyntaxException e) {
             throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
         } catch (IOException e) {
             throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
-        }
-        
-        for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
-            String entry = entries.next();
-            if (entry.endsWith(".class")){ // NOI18N
-                 classNames.add(buildClassNameFromEntryString(entry));
+        } finally {
+            if (archive != null) {
+                archive.close();
             }
         }
         return classNames;

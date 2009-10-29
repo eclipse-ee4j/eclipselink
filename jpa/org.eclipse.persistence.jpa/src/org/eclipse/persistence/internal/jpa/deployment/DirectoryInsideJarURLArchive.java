@@ -106,4 +106,12 @@ public class DirectoryInsideJarURLArchive  implements Archive {
     public URL getRootURL() {
         return rootURL;
     }
+
+    public void close() {
+        try {
+            jarFile.close();
+        } catch (IOException e) {
+            // ignore
+        }
+    }
 }

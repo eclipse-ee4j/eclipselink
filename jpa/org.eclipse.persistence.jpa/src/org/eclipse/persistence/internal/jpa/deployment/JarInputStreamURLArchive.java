@@ -108,4 +108,9 @@ public class JarInputStreamURLArchive implements Archive {
     public URL getRootURL() {
         return url;
     }
+
+    public void close() {
+        // nothing to close. it's caller's responsibility to close
+        // any InputStream returned by getEntry().
+    }
 }
