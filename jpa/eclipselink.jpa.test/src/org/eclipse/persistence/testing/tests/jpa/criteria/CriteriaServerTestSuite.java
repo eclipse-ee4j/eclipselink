@@ -23,11 +23,12 @@ public class CriteriaServerTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Criteria ServerTestSuite");
-    //    suite.addTest(AdvancedCompositePKJunitTest.suite());
+        suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedCriteriaQueryTestSuite.suite());
-    //    suite.addTest(AdvancedQueryTestSuite.suite());
-    //    suite.addTest(JUnitCriteriaSimpleTestSuite.suite());
+        suite.addTest(AdvancedQueryTestSuite.suite());
+        suite.addTest(JUnitCriteriaSimpleTestSuite.suite());
         suite.addTest(JUnitCriteriaUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
         
         return suite;
     }

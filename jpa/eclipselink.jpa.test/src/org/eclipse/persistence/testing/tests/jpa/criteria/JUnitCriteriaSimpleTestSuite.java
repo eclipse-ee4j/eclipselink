@@ -1014,8 +1014,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
     public void simpleLikeEscapeTestWithParameter() {
         EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
+
             Address expectedResult = new Address();
             expectedResult.setCity("TAIYUAN");
             expectedResult.setCountry("CHINA");
@@ -1046,7 +1045,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
                 patternString = "234 RUBY \\_Way";
                 escChar = new Character('\\');
             }
-
+        beginTransaction(em);
+        try {
             List result = em.createQuery(cq).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
 
             Assert.assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));

@@ -330,6 +330,7 @@
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
@@ -348,6 +349,7 @@
                failonerror="true">
             <include name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <include name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
+            <include name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
@@ -1375,7 +1377,8 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${TEST_DIR}/**/*.java">
+            includes="${TEST_DIR}/**/*.java"
+			excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -1432,7 +1435,8 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${TEST_DIR}/**/*.java">
+            includes="${TEST_DIR}/**/*.java"
+			excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -1540,10 +1544,24 @@
             <include name="*.xml"/>
         </replace>
 
+        <!-- Copy the canonical metamodel and criteria api test -->
+        <antcall target="copy_criteria_api_canonical_model" inheritRefs="true"/>
         <!-- Create ejb jar. -->
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
+    </target>
+
+    <target name="copy_criteria_api_canonical_model" if="is.criteria.server.test">
+        <!-- Coping the CriteriaServerTestSuite class -->
+        <antcall target="compile"/>
+        <copy todir="${eclipselink.jpa.test}/stage">
+            <fileset dir="${eclipselink.jpa.test}/classes">
+                <include name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.class"/>
+                <include name="org/eclipse/persistence/testing/tests/jpa/criteria/metamodel/JUnitCriteriaSimpleTestSuite.class"/>
+                <include name="org/eclipse/persistence/testing/models/jpa/advanced/*.class"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="create-ejb-stubs" depends="detect-os" if="is.websphere">
@@ -1741,6 +1759,7 @@
     </target>
 
     <target name="server-test-criteria">
+        <property name="is.criteria.server.test" value="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
