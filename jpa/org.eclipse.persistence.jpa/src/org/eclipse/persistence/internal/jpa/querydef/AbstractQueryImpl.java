@@ -297,27 +297,6 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
     /**
      *  Used to use a root from a different query.
      */
-/*    
-    protected void validateRoot(Expression<?> predicate) {
-        Set<Root<?>> newRoots = new HashSet<Root<?>>();
-        ((InternalSelection) predicate).findRoot(newRoots);
-        for (Root root : newRoots) {
-            if (!this.roots.contains(root)) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("EXPRESSION_USES_UNKOWN_ROOT_TODO"));
-            }
-        }
-    }
-
-    protected void validateRoot(Selection<?> selection){
-        if (selection.isCompoundSelection()){
-            for (Selection subSelection: selection.getCompoundSelectionItems()){
-                validateRoot(subSelection);
-            }
-        }else{
-            validateRoot((Expression)selection);
-        }
-    }
-    */
     protected abstract void integrateRoot(RootImpl root);
 
     protected void findRootAndParameters(Expression<?> predicate) {

@@ -1227,7 +1227,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
         Parameter param = (Parameter)this.parameters.get(name);
         if (param == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[]{name, this.databaseQuery}));
             
         }
         return param;
@@ -1246,7 +1246,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
         Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
         if (param == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[]{position, this.databaseQuery}));
             
         }
         return param;
@@ -1265,7 +1265,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
             Parameter param = (Parameter)this.parameters.get(name);
         if (param == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[]{name, this.databaseQuery}));
         }
         return param;
     } catch (RuntimeException e) {
@@ -1283,7 +1283,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
             Parameter param = (Parameter)this.parameters.get(String.valueOf(position));
         if (param == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX_TODO"));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[]{position, this.databaseQuery}));
         }
         return param;
         } catch (RuntimeException e) {
@@ -1297,7 +1297,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public <T> T getParameterValue(Parameter<T> param) {
-        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND_TODO"));
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND"));
         return (T) this.getParameterValue(param.getName());
     }
 
@@ -1312,10 +1312,10 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         try {
             entityManager.verifyOpen();
             if (! this.parameters.containsKey(new ParameterExpressionImpl(null, null, name))){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME_TODO"));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[]{name, this.databaseQuery}));
             }
             if (! this.parameterValues.containsKey(name)){ // must check for key.  get() would return negative for value == null.
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("NO_VALUE_BOUND_TODO"));
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("NO_VALUE_BOUND", new Object[]{name}));
             }
             return this.parameterValues.get(name);
             
@@ -1379,7 +1379,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         query
      */
     public <T> TypedQuery setParameter(Parameter<T> param, T value){
-        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         return this.setParameter(param.getName(), value);
     }
 
@@ -1393,7 +1393,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Date> param, Date value,  TemporalType temporalType){
-        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         return this.setParameter(param.getName(), value, temporalType);
     }
     
@@ -1407,7 +1407,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *         correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType){
-        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER_TODO"));
+        if (param == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         return this.setParameter(param.getName(), value, temporalType);
     }
     

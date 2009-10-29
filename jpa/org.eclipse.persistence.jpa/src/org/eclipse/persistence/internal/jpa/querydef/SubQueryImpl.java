@@ -454,8 +454,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         List list = new ArrayList();
         list.add(this);
         for (Expression exp: values){
-            if (!((InternalExpression)exp).isLiteral()){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
+            if (!((InternalExpression)exp).isLiteral() && !((InternalExpression) exp).isParameter()){
+                Object[] params = new Object[]{exp};
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
             }
         }
         

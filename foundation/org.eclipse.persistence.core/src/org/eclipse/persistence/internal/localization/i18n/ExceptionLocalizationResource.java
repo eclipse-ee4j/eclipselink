@@ -160,8 +160,15 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_identifiable_type_has_no_idclass_attribute", "No @IdClass attributes exist on the IdentifiableType [{0}].  There still may be one or more @Id or an @EmbeddedId on type." },
                                            { "metamodel_identifiable_no_version_attribute_present", "No @Version attribute exists on the identifiable type [{0}]." },
                                            { "metamodel_identifiable_no_id_attribute_present", "No @Id attribute exists on the identifiable type [{0}]." },
-                                           { "metamodel_identifiable_id_attribute_is_incorrect_idclass", "The expected single @Id attribute for the identifiable type [{0}] is part of an unexpected @IdClass." }
-
+                                           { "metamodel_identifiable_id_attribute_is_incorrect_idclass", "The expected single @Id attribute for the identifiable type [{0}] is part of an unexpected @IdClass." },
+                                           { "criteria_no_constructor_found", "No constructor using arguments {1} was found for class: {0}.  If this CriteriaQuery was not intended to be a constructor query please verify that the selection matches the return type."},
+                                           { "MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT", "'multiSelect' was invoked on a CriteriaQuery with a primitive result type.  Either the return type is incorrect or 'select' should be used instead."},
+                                           { "CRITERIA_NON_LITERAL_PASSED_TO_IN", "'in(Expression<?>... values)' was invoked with an expression type: {0} that was neither a literal nor a parameter.  This is not supported."},
+                                           { "NO_PARAMETER_WITH_NAME", "No paramter with name : {0} was found within the query: {1}."},
+                                           { "NO_PARAMETER_WITH_INDEX", "No parameter with index : {0} was found within the query: {1}."},
+                                           { "PARAMETER_NILL_NOT_FOUND", "Null parameter passed to getParameterValue()"},
+                                           { "NO_VALUE_BOUND", "No value was bound to parameter named: {0}"},
+                                           { "NULL_PARAMETER_PASSED_TO_SET_PARAMETER", "Null parameter was passed to 'setParameter'.  Can not index parameters by 'Null'."}
                                         };
 
     /**

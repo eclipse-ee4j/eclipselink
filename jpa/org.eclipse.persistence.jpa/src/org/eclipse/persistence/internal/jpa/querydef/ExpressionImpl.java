@@ -79,7 +79,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
                 List<Object> inValues = new ArrayList<Object>();
                 for (Expression exp : values) {
                     if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN_TODO"));
+                        Object[] params = new Object[]{exp};
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
                     } else {
                         list.add(exp);
                         inValues.add(((InternalSelection)exp).getCurrentNode());

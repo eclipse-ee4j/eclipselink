@@ -99,13 +99,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryType = Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
                 if (!findConstructor(this.selection.getJavaType(), selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]))) {
-                    Object[] params = new Object[selection.getCompoundSelectionItems().size() + 1];
+                    Object[] selections = new Object[selection.getCompoundSelectionItems().size()];
+                    Object[] params = new Object[2];
                     params[0] = this.queryType;
                     int count = 0;
                     for (Selection select : selection.getCompoundSelectionItems()) {
-                        params[++count] = select.getJavaType();
+                        selections[++count] = select.getJavaType();
                     }
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
+                    params[1] = params;
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
                 }
                 this.queryResult = ResultType.CONSTRUCTOR;
                 this.queryType = selection.getJavaType();
@@ -177,13 +179,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             if (!findConstructor(this.queryType, selections)) {
-                Object[] params = new Object[selections.length + 1];
+                Object[] args = new Object[selections.length];
+                Object[] params = new Object[2];
                 params[0] = this.queryType;
                 int count = 0;
-                for (Selection select : selections) {
-                    params[++count] = select.getJavaType();
+                for (Selection select : selection.getCompoundSelectionItems()) {
+                    args[++count] = select.getJavaType();
                 }
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
+                params[1] = args;
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
             } else {
                 this.selection = new ConstructorSelectionImpl(this.queryType, selections);
             }
@@ -204,16 +208,18 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.selection = (SelectionImpl<?>) selections[0];
             } else {
                 if (!BasicTypeHelperImpl.getInstance().isDateClass(this.queryType)) {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT_TODO"));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT"));
                 }
                 if (!findConstructor(this.queryType, selections)) {
-                    Object[] params = new Object[selections.length + 1];
+                    Object[] args = new Object[selections.length];
+                    Object[] params = new Object[2];
                     params[0] = this.queryType;
                     int count = 0;
                     for (Selection select : selections) {
-                        params[++count] = select.getJavaType();
+                        args[++count] = select.getJavaType();
                     }
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_CONSTRUCTOR_FOUND_TODO", params));
+                    params[1] = args;
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
                 } else {
                     this.selection = new ConstructorSelectionImpl(this.queryType, selections);
                 }
