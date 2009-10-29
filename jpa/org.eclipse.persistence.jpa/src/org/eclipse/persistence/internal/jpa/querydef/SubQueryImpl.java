@@ -78,6 +78,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public SubQueryImpl(Metamodel metamodel, Class result, CriteriaBuilderImpl queryBuilder, AbstractQuery parent){
         super(metamodel, ResultType.OTHER, queryBuilder, result);
         this.subQuery = new ReportQuery();
+        TypeImpl queryType = ((MetamodelImpl)metamodel).getType(result);
+        if (queryType != null && queryType.getPersistenceType() == PersistenceType.ENTITY){
+            this.subQuery.setReferenceClass(result);
+        }
         this.subQuery.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
         this.correlatedJoins = new HashSet();
         this.correlations = new HashSet();

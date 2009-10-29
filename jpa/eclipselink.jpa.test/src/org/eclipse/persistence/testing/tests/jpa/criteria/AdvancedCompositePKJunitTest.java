@@ -141,7 +141,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             cq = qb.createQuery(Scientist.class);
             from_scientist = cq.from(Scientist.class);
             Join d = from_scientist.join("department");
-            cq.where(qb.and(qb.and(qb.equal(d.get("name"), "DEPT A"), qb.equal(c.get("role"), "ROLE A")), qb.equal(c.get("location"), "LOCATION A")) );
+            cq.where(qb.and(qb.and(qb.equal(d.get("name"), "DEPT A"), qb.equal(d.get("role"), "ROLE A")), qb.equal(d.get("location"), "LOCATION A")) );
 
             Query controlQuery3 = em.createQuery(cq);
             List<Scientist> controlResults3 = controlQuery3.getResultList();
