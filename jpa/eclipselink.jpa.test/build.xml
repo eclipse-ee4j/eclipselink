@@ -30,8 +30,8 @@
         - package : jars JPA persistent units and tests jars
         - test : runs JPA LRG (FullRegressionTestSuite)
         - test-lrg : runs JPA LRG (FullRegressionTestSuite, if database is Oracle, OracleJPATestSuite as well)
-        - test-oracle : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
-        - test-oracle-proxy : runs JPA Oracle Proxy Authentication specific tests (ProxyAuthenticationServerTestSuite)
+        - oracle-test : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
+        - oracle-proxy-test : runs JPA Oracle Proxy Authentication specific tests (ProxyAuthenticationServerTestSuite)
         - test-no-weave : runs JPA LRG using no weaving (no agent)
         - test-static-weave : runs JPA LRG using static weaving
 
@@ -786,12 +786,12 @@
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <antcall target="test-oracle" inheritRefs="true"/>
+        <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Runs JPA Oracle-specific tests. -->
-    <target name="test-oracle" if="is.oracle" depends="config-trunk, config-flat">
+    <target name="oracle-test" if="is.oracle" depends="config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
@@ -808,11 +808,11 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <antcall target="test-oracle-proxy" inheritRefs="true"/>
+        <antcall target="oracle-proxy-test" inheritRefs="true"/>
     </target>
 
     <!-- Oracle proxy authentication needs to be setup for the tests. -->
-    <target name="test-oracle-proxy" if="is.ready.for.proxy.authentication">
+    <target name="oracle-proxy-test" if="is.ready.for.proxy.authentication">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
