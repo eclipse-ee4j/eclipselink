@@ -265,7 +265,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             }
         }
 
-        if (attributeValue == XMLRecord.nil && isNullRepresentedByXsiNil) {
+        if (attributeValue == XMLRecord.NIL && isNullRepresentedByXsiNil) {
             fieldValue = null;
             attributeValue = null;
         }

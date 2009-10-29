@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
@@ -18,6 +18,8 @@ import java.util.List;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
@@ -30,7 +32,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: Utility class for finding XML nodes using XPath 
+ * <p><b>Purpose</b>: Utility class for finding XML nodes using XPath
  * expressions.</p>
  * @since Oracle TopLink 10.1.3
  */
@@ -94,18 +96,18 @@ public class UnmarshalXPathEngine {
     public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         return this.selectSingleNode(contextNode, xmlField, xmlNamespaceResolver, false);
     }
-    
+
     private Object selectSingleNode(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) {
         Node resultNode = getSingleNode(contextNode, xPathFragment, xmlNamespaceResolver);
-        
+
         if (resultNode == null) {
 
             if (checkForXsiNil) {
                 // Check for presence of xsi:nil="true"
                 String nil = ((Element) contextNode).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
-    
+
                 if (nil.equals(XMLConstants.BOOLEAN_STRING_TRUE)) {
-                    return XMLRecord.nil;
+                    return XMLRecord.NIL;
                 }
             }
 
@@ -131,6 +133,10 @@ public class UnmarshalXPathEngine {
      * @throws XMLPlatformException
      */
     public NodeList selectNodes(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+        return this.selectNodes(contextNode, xmlField, xmlNamespaceResolver, null);
+    }
+
+    public NodeList selectNodes(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) throws XMLMarshalException {
         try {
             if (contextNode == null) {
                 return null;
@@ -142,12 +148,12 @@ public class UnmarshalXPathEngine {
             if (xPathFragment.shouldExecuteSelectNodes()) {
                 return xmlPlatform.selectNodesAdvanced(contextNode, xmlField.getXPath(), xmlNamespaceResolver);
             }
-            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver);
+            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy);
         } catch (Exception x) {
             throw XMLMarshalException.invalidXPathString(xmlField.getXPath(), x);
         }
     }
-    
+
     public List<XMLEntry> selectNodes(Node contextNode, List<XMLField> xmlFields, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         List<XMLEntry> nodes = new ArrayList<XMLEntry>();
         List<XPathFragment> firstFragments = new ArrayList<XPathFragment>(xmlFields.size());
@@ -157,7 +163,7 @@ public class UnmarshalXPathEngine {
         selectNodes(contextNode, firstFragments, xmlNamespaceResolver, nodes);
         return nodes;
     }
-    
+
     private void selectNodes(Node contextNode, List<XPathFragment> xpathFragments, XMLNamespaceResolver xmlNamespaceResolver, List<XMLEntry> entries) {
         NodeList childNodes = contextNode.getChildNodes();
         for(int i = 0, size = childNodes.getLength(); i < size; i++) {
@@ -193,7 +199,7 @@ public class UnmarshalXPathEngine {
             }
         }
     }
-    
+
     private void addXMLEntry(Node entryNode, XMLField xmlField, List<XMLEntry> entries) {
         XMLEntry entry = new XMLEntry();
         entry.setValue(entryNode);
@@ -201,8 +207,8 @@ public class UnmarshalXPathEngine {
         entries.add(entry);
     }
 
-    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
-        NodeList resultNodes = getNodes(contextNode, xPathFragment, xmlNamespaceResolver);
+    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) {
+        NodeList resultNodes = getNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy);
 
         if (xPathFragment.getNextFragment() != null) {
             Node resultNode;
@@ -210,7 +216,7 @@ public class UnmarshalXPathEngine {
             int numberOfResultNodes = resultNodes.getLength();
             for (int x = 0; x < numberOfResultNodes; x++) {
                 resultNode = resultNodes.item(x);
-                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver));
+                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, nullPolicy));
             }
             return result;
         }
@@ -233,11 +239,11 @@ public class UnmarshalXPathEngine {
         return selectSingleElement(contextNode, xPathFragment, xmlNamespaceResolver);
     }
 
-    private NodeList getNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
+    private NodeList getNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) {
         if (xPathFragment.isAttribute()) {
             return selectAttributeNodes(contextNode, xPathFragment, xmlNamespaceResolver);
         } else if (xPathFragment.nameIsText()) {
-            return selectTextNodes(contextNode);
+            return selectTextNodes(contextNode, nullPolicy);
         } else if (xPathFragment.isSelfFragment()) {
             XMLNodeList xmlNodeList = new XMLNodeList(1);
             xmlNodeList.add(contextNode);
@@ -258,7 +264,7 @@ public class UnmarshalXPathEngine {
             return contextNode.getAttributes().getNamedItem(xPathFragment.getShortName());
         }
     }
-    
+
     private NodeList selectAttributeNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
         XMLNodeList xmlNodeList = new XMLNodeList();
 
@@ -370,13 +376,25 @@ public class UnmarshalXPathEngine {
         return null;
     }
 
-    private NodeList selectTextNodes(Node contextNode) {
+    private NodeList selectTextNodes(Node contextNode, AbstractNullPolicy nullPolicy) {
         Node n = selectSingleText(contextNode);
 
         XMLNodeList xmlNodeList = new XMLNodeList();
-        if (n != null) {
-            xmlNodeList.add(n);
+
+        if (n == null && nullPolicy != null) {
+            if (nullPolicy.valueIsNull((Element) contextNode)) {
+                if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
+                    xmlNodeList.add(n);
+                }
+            } else {
+                xmlNodeList.add(contextNode.getOwnerDocument().createTextNode(XMLConstants.EMPTY_STRING));
+            }
+        } else {
+            if (n != null) {
+                xmlNodeList.add(n);
+            }
         }
+        
         return xmlNodeList;
     }
 
@@ -402,5 +420,5 @@ public class UnmarshalXPathEngine {
     private boolean sameName(Node node, String name) {
         return name.equals(node.getLocalName()) || name.equals(node.getNodeName());
     }
-    
+
 }

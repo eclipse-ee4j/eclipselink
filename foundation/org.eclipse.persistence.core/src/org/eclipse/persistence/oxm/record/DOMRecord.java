@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.io.Reader;
@@ -34,6 +34,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -82,13 +83,13 @@ public class DOMRecord extends XMLRecord {
         String rootElementNamespaceURI = resolveNamespace(namespaceResolver, rootElementName);
         setDOM(createNewDocument(rootElementName, rootElementNamespaceURI));
     }
-    
+
      /**
      * INTERNAL:
      * Create a record with the root element name get the namespace URI from the namespaceResolver.
      */
     public DOMRecord(String rootElementName, String rootElementNamespaceURI) {
-        this();        
+        this();
         setDOM(createNewDocument(rootElementName, rootElementNamespaceURI));
     }
 
@@ -128,7 +129,7 @@ public class DOMRecord extends XMLRecord {
         this();
         setDOM(element);
     }
-    
+
     public DOMRecord(Node node) {
         this();
         setDOM(node);
@@ -237,7 +238,7 @@ public class DOMRecord extends XMLRecord {
     public Node createNewDocument(String defaultRootElementName, String namespaceURI) {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         Document document = xmlPlatform.createDocument();
-        
+
         if (defaultRootElementName == null || defaultRootElementName.length() == 0) {
             DocumentFragment fragment = document.createDocumentFragment();
             return fragment;
@@ -290,9 +291,9 @@ public class DOMRecord extends XMLRecord {
     }
 
     public Object getIndicatingNoEntry(DatabaseField key, boolean shouldReturnNode) {
-        return getIndicatingNoEntry(key, shouldReturnNode, false);    
+        return getIndicatingNoEntry(key, shouldReturnNode, false);
     }
-    
+
     public Object getIndicatingNoEntry(DatabaseField key, boolean shouldReturnNode, boolean checkForXsiNil) {
         XMLField field = convertToXMLField(key);
 
@@ -310,8 +311,8 @@ public class DOMRecord extends XMLRecord {
             return noEntry;
         }
 
-        if (result == nil) {
-            return nil;
+        if (result == NIL) {
+            return NIL;
         }
 
         Node node = (Node)result;
@@ -322,7 +323,7 @@ public class DOMRecord extends XMLRecord {
         if (null == node) {
             return null;
         }
-        
+
         // For Attributes and Text nodes return their value
         if (Node.ELEMENT_NODE != node.getNodeType()) {
             if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
@@ -355,7 +356,11 @@ public class DOMRecord extends XMLRecord {
      * Given a DatabaseField, return the corresponding values from the document
      */
     public Object getValues(DatabaseField key) {
-        Object value = getValuesIndicatingNoEntry(key);
+        return this.getValues(key, null);
+    }
+
+    public Object getValues(DatabaseField key, AbstractNullPolicy nullPolicy) {
+        Object value = getValuesIndicatingNoEntry(key, nullPolicy);
 
         if (value == AbstractRecord.noEntry) {
             return null;
@@ -365,13 +370,17 @@ public class DOMRecord extends XMLRecord {
     }
 
     public Object getValuesIndicatingNoEntry(DatabaseField key) {
-        return getValuesIndicatingNoEntry(key, false);
+        return this.getValuesIndicatingNoEntry(key, null);
     }
-    
+
+    public Object getValuesIndicatingNoEntry(DatabaseField key, AbstractNullPolicy nullPolicy) {
+        return getValuesIndicatingNoEntry(key, false, nullPolicy);
+    }
+
     public List<XMLEntry> getValuesIndicatingNoEntry(List<DatabaseField> keys) {
         return getValuesIndicatingNoEntry(keys, false);
     }
-    
+
     public List<XMLEntry> getValuesIndicatingNoEntry(List<DatabaseField> keys, boolean shouldReturnNodes) {
         List<XMLField> xmlFields = convertToXMLField(keys);
         List<XMLEntry> values = UnmarshalXPathEngine.getInstance().selectNodes(dom, xmlFields, xmlFields.get(0).getNamespaceResolver());
@@ -389,14 +398,18 @@ public class DOMRecord extends XMLRecord {
         }
         return values;
     }
-    
+
     /**
      * INTERNAL:
      * Given a DatabaseField, return the corresponding values from the document
      */
     public Object getValuesIndicatingNoEntry(DatabaseField key, boolean shouldReturnNodes) {
+        return this.getValuesIndicatingNoEntry(key, shouldReturnNodes, null);
+    }
+
+    public Object getValuesIndicatingNoEntry(DatabaseField key, boolean shouldReturnNodes, AbstractNullPolicy nullPolicy) {
         XMLField field = convertToXMLField(key);
-        NodeList nodeList = UnmarshalXPathEngine.getInstance().selectNodes(dom, field, field.getNamespaceResolver());
+        NodeList nodeList = UnmarshalXPathEngine.getInstance().selectNodes(dom, field, field.getNamespaceResolver(), nullPolicy);
 
         // If a node was not found return null
         if (null == nodeList) {
@@ -416,7 +429,7 @@ public class DOMRecord extends XMLRecord {
         }
         // Assumption:  NodeList contains nodes of the same type
         Node firstNode = nodeList.item(0);
-        if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {        	
+        if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {
             if (field.usesSingleNode() && (resultSize == 1)) {
                 Node next = nodeList.item(0);
                 if (next == null) {
@@ -456,7 +469,7 @@ public class DOMRecord extends XMLRecord {
     	Object convertedValue = key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
     	currentNode = getDOM();
     	return convertedValue;
-    	
+
     }
 
     private Object getValueFromElement(Element node, Node textChild, XMLField key) {
@@ -524,7 +537,7 @@ public class DOMRecord extends XMLRecord {
         NodeList replaced = null;
         boolean isEmptyCollection = false;
         if (nodeValue instanceof Collection) {
-            isEmptyCollection = ((Collection)nodeValue).size() == 0; 
+            isEmptyCollection = ((Collection)nodeValue).size() == 0;
             replaced = XPathEngine.getInstance().replaceCollection(convertToXMLField(key), dom, (Collection)nodeValue, session);
         } else {
             replaced = XPathEngine.getInstance().replaceValue(convertToXMLField(key), dom, nodeValue, session);
@@ -547,14 +560,14 @@ public class DOMRecord extends XMLRecord {
     public Object put(List<XMLField> xmlFields, List<XMLEntry> values) {
         Vector valuesToWrite = (Vector)convertToNodeValue(values);
         List<XMLEntry> replaced = null;
-        
+
         replaced = XPathEngine.getInstance().replaceCollection(xmlFields, valuesToWrite, dom, getDocPresPolicy(), lastUpdatedField, session);
         if(replaced.size() == 0) {
             XPathEngine.getInstance().create(xmlFields, dom, valuesToWrite, lastUpdatedField, getDocPresPolicy(), session);
         }
         return replaced;
     }
-    
+
     public Object put(Object key, Object value) throws ValidationException {
         if (key instanceof String) {
             return put((String)key, value);
@@ -565,7 +578,7 @@ public class DOMRecord extends XMLRecord {
         } else {
             throw ValidationException.onlyFieldsAreValidKeysForDatabaseRows();
         }
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -662,7 +675,7 @@ public class DOMRecord extends XMLRecord {
         this.currentNode = element;
         this.getNamespaceResolver().setDOM(element);
     }
-    
+
     public void setDOM(Element element) {
         this.dom = element;
         this.currentNode = element;
@@ -746,7 +759,7 @@ public class DOMRecord extends XMLRecord {
             String prefix = localName.substring(0, colonIndex);
             String uri = namespaceResolver.resolveNamespacePrefix(prefix);
             if (uri == null) {
-                //throw an exception if the prefix is not found in the namespaceresolver 
+                //throw an exception if the prefix is not found in the namespaceresolver
                 throw XMLMarshalException.namespaceNotFound(prefix);
             }
             return uri;

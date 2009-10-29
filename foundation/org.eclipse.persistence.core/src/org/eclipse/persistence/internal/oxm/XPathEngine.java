@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.XMLEntry;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -53,7 +54,7 @@ public class XPathEngine {
     private UnmarshalXPathEngine unmarshalXPathEngine;
     private DocumentPreservationPolicy noDocPresPolicy = new NoDocumentPreservationPolicy();//handles xpath engine calls without a policy
     private DocumentPreservationPolicy xmlBinderPolicy = new XMLBinderPolicy();//used for adding new elements to a collection.
-    
+
     /**
     * Return the <code>XPathEngine</code> singleton.
     */
@@ -134,7 +135,7 @@ public class XPathEngine {
 
         return created.item(0);
     }
-    
+
     public void create(List<XMLField> xmlFields, Node contextNode, List<XMLEntry> values, XMLField lastUpdatedField, DocumentPreservationPolicy docPresPolicy, AbstractSession session) {
         List itemsToWrite = new ArrayList();
         for(int i = 0, size = values.size(); i < size; i++) {
@@ -147,8 +148,8 @@ public class XPathEngine {
             }
         }
     }
-    
-    
+
+
 
     /**
     * Create the node path specified by <code>xpathString</code> under <code>element</code>
@@ -178,7 +179,7 @@ public class XPathEngine {
             siblingFragment = lastUpdated.getXPathFragment();
         }
         if ((lastUpdated != null) && !siblingFragment.isAttribute() && !siblingFragment.nameIsText()) {
-            //find the sibling element. 
+            //find the sibling element.
             NodeList nodes = unmarshalXPathEngine.selectElementNodes(element, siblingFragment, getNamespaceResolverForField(lastUpdated));
             if (nodes.getLength() > 0) {
                 sibling = (Element)nodes.item(nodes.getLength() - 1);
@@ -222,7 +223,7 @@ public class XPathEngine {
                 //if the sibling shares a grouping element, update the sibling
                 siblingFragment = siblingFragment.getNextFragment();
                 if ((siblingFragment != null) && !siblingFragment.isAttribute() && !siblingFragment.nameIsText()) {
-                    //find the sibling element. 
+                    //find the sibling element.
                     NodeList nodes = unmarshalXPathEngine.selectElementNodes(nextElement, siblingFragment, getNamespaceResolverForField(lastUpdated));
                     if (nodes.getLength() > 0) {
                         sibling = (Element)nodes.item(nodes.getLength() - 1);
@@ -235,7 +236,7 @@ public class XPathEngine {
             } else {
                 sibling = null;
             }
-            
+
             next = next.getNextFragment();
             if ((next != null) && next.nameIsText()) {
                 next = null;
@@ -263,20 +264,20 @@ public class XPathEngine {
             schemaType = xmlField.getXMLType(value.getClass());
         }else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
-        } 
+        }
 
         if (value instanceof List) {
             if (xmlField.usesSingleNode()) {
                 String returnString = XMLConstants.EMPTY_STRING;
                 for (int i = 0; i < ((List)value).size(); i++) {
                     Object nextItem = ((List)value).get(i);
-                    
+
                     String nextConvertedItem = null;
                     if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
                         nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
                     }else{
                     	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
-                    }                    
+                    }
                     returnString += nextConvertedItem;
                     if (i < (((List)value).size() - 1)) {
                         returnString += " ";
@@ -287,7 +288,7 @@ public class XPathEngine {
                 ArrayList items = new ArrayList(((List)value).size());
                 for (int index = 0; index < ((List)value).size(); index++) {
                     Object nextItem = ((List)value).get(index);
-                    if (nextItem instanceof Node) {
+                    if (nextItem instanceof Node || nextItem == XMLRecord.NIL) {
                         items.add(nextItem);
                     } else {
                         if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
@@ -301,7 +302,7 @@ public class XPathEngine {
                 }
                 return items;
             }
-        } else {            
+        } else {
             if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
                 return getStringForQName((QName)value, getNamespaceResolverForField(xmlField));
             }
@@ -481,7 +482,15 @@ public class XPathEngine {
             if (value instanceof List) {
                 List values = (List)value;
                 for (int index = 0; index < values.size(); index++) {
-                    Element newElement = (Element)createElement(parent, fragment, xmlField, values.get(index), session);
+                    Element newElement = null;
+
+                    if (values.get(index) != XMLRecord.NIL) {
+                        newElement = (Element) createElement(parent, fragment, xmlField, values.get(index), session);
+                    } else {
+                        newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
+                        newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                    }
+
                     docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
                     elementsToReturn.add(newElement);
                     sibling = newElement;
@@ -556,7 +565,7 @@ public class XPathEngine {
     * @param schemaInstancePrefix the prefix representing the schema instance namespace
     */
     private void addTypeAttributes(NodeList elements, XMLField field, Object value, String schemaInstancePrefix) {
-        NamespaceResolver namespaceResolver = getNamespaceResolverForField(field);        
+        NamespaceResolver namespaceResolver = getNamespaceResolverForField(field);
         if (!field.isTypedTextField()) {
             return;
         }
@@ -585,10 +594,10 @@ public class XPathEngine {
                     QName qname = field.getXMLType(valueClass);
                     if (qname != null) {
                         if (null == schemaInstancePrefix) {
-                            schemaInstancePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                       
+                            schemaInstancePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
                             ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
                         }
-    
+
                         String type;
                         String prefix = this.resolveNamespacePrefixForURI(qname.getNamespaceURI(), namespaceResolver);
                         if (prefix == null || prefix.length() == 0) {
@@ -687,7 +696,7 @@ public class XPathEngine {
                         // If the namespace resolver has a prefix for the node's URI, use it
                         parentElement.setAttributeNS(attr.getNamespaceURI(), pfx + XMLConstants.COLON + attr.getLocalName(), attr.getNodeValue());
                     } else {
-                        // No entry for the node's URI in the resolver, so use the node's 
+                        // No entry for the node's URI in the resolver, so use the node's
                         // prefix/uri pair and define the URI locally
                         parentElement.setAttributeNS(attr.getNamespaceURI(), attr.getName(), attr.getNodeValue());
                     }
@@ -811,8 +820,8 @@ public class XPathEngine {
                     newElement = (Element)createElement(parentNode, childFrag, xmlField, valueToWrite, session);
 
                     createdElements.add(newElement);
-                    
-                    
+
+
                     if (newElement != element) {
                         parentNode.replaceChild(newElement, element);
                     }
@@ -820,7 +829,7 @@ public class XPathEngine {
             }
         }
         if (xmlField.isTypedTextField()) {
-        	
+
             addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, getNamespaceResolverForField(xmlField)));
         }
         return nodes;
@@ -831,7 +840,7 @@ public class XPathEngine {
         if(oldNodes == null || oldNodes.size() == 0) {
             return oldNodes;
         }
-        
+
         Iterator<XMLEntry> oldValues = oldNodes.iterator();
         //Remove all the old values, and then call create to add them back in.
         while(oldValues.hasNext()) {
@@ -849,9 +858,9 @@ public class XPathEngine {
                 }
             }
         }
-        
+
         create(xmlFields, contextNode, values, lastUpdatedField, xmlBinderPolicy, session);
-        
+
         return oldNodes;
     }
     public NodeList replaceCollection(XMLField xmlField, Node parent, Collection values, AbstractSession session) throws XMLMarshalException {
@@ -954,7 +963,7 @@ public class XPathEngine {
         return nodes;
     }
 
-    // ==========================================================================================   
+    // ==========================================================================================
 
     /**
     * Determine if <code>xpathString</code> contains an index (e.g. 'element[index]').
@@ -1012,10 +1021,10 @@ public class XPathEngine {
         if(null == qName) {
             return null;
         }
-            
+
         if(null == qName.getNamespaceURI()) {
             return qName.getLocalPart();
-        } else {        
+        } else {
             String namespaceURI = qName.getNamespaceURI();
             if(namespaceResolver == null){
                 throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
@@ -1029,12 +1038,12 @@ public class XPathEngine {
         }
 
     }
-    
+
     private NamespaceResolver getNamespaceResolverForField(XMLField field){
         NamespaceResolver nr = field.getNamespaceResolver();
         if(nr == null){
-            field.setNamespaceResolver(new NamespaceResolver());     
+            field.setNamespaceResolver(new NamespaceResolver());
         }
         return field.getNamespaceResolver();
-    }      
+    }
 }

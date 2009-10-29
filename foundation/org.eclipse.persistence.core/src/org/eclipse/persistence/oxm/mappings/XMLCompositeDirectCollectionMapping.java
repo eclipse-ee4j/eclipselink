@@ -28,6 +28,8 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollec
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -287,7 +289,9 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
-        Object fieldValue = row.getValues(this.getField());
+        DOMRecord domRecord = (DOMRecord) row;
+
+        Object fieldValue = domRecord.getValues(this.getField(), this.getNullPolicy());
         if (fieldValue == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();
@@ -358,8 +362,21 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
                     element = getValueConverter().convertObjectValueToDataValue(element, session);
                 }
             }
+
             if (element != null) {
                 elements.addElement(element);
+            } else {
+                if (getNullPolicy() == null) {
+                    elements.addElement(null);
+                } else {
+                    if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                        elements.addElement(XMLRecord.NIL);
+                    } else if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
+                        // Do nothing
+                    } else {
+                        elements.addElement(XMLConstants.EMPTY_STRING);
+                    }
+                }
             }
         }
 

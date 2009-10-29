@@ -47,13 +47,13 @@ public abstract class XMLRecord extends AbstractRecord {
      * INTERNAL:
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
-    public static final XMLRecord.Nil nil = new XMLRecord.Nil();
+    public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
 
     /**
      * INTERNAL:
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
-    public static class Nil {
+    private static class Nil {
         private Nil() {
         }
     }
