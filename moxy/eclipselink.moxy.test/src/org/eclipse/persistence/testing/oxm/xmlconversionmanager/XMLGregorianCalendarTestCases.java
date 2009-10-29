@@ -38,13 +38,11 @@ import org.xml.sax.InputSource;
 
 public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
     
-    private XMLContext ctx;
     private DatatypeProject proj = new DatatypeProject();
     
     public XMLGregorianCalendarTestCases(String name) throws Exception {
         super(name);
         setProject(proj);
-        ctx = getXMLContext(proj);
         setControlDocument("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
     }
 
@@ -102,11 +100,11 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
         
-        Object objFromXML = ctx.createUnmarshaller().unmarshal(inputStream);
+        Object objFromXML = xmlUnmarshaller.unmarshal(inputStream);
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        ctx.createMarshaller().marshal(objFromXML, outputStream);
+        xmlMarshaller.marshal(objFromXML, outputStream);
         StringReader sreader = new StringReader(outputStream.toString());
         InputSource inputSource = new InputSource(sreader);
         Document testDoc = parser.parse(inputSource);
@@ -125,7 +123,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
 
-        Object objFromXML = ctx.createUnmarshaller().unmarshal(inputStream);
+        Object objFromXML = xmlUnmarshaller.unmarshal(inputStream);
 
         // Now set the TimeZone again, to ensure XMLConversionManager is making the
         // proper adjustments:
@@ -133,7 +131,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        ctx.createMarshaller().marshal(objFromXML, outputStream);
+        xmlMarshaller.marshal(objFromXML, outputStream);
         StringReader sreader = new StringReader(outputStream.toString());
         InputSource inputSource = new InputSource(sreader);
         Document testDoc = parser.parse(inputSource);
@@ -206,7 +204,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
     }
     
     public XMLConversionManager getXmlConversionManager() {
-        return (XMLConversionManager) ctx.getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
+        return (XMLConversionManager) xmlContext.getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
     
 }
