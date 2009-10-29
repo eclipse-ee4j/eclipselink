@@ -74,9 +74,13 @@ public class JavaSECMPInitializer extends JPAInitializer {
 
     public static synchronized JavaSECMPInitializer getJavaSECMPInitializer(ClassLoader loader) {
         if(!isInitialized) {
-            initializeTopLinkLoggingFile();        
+            initializeTopLinkLoggingFile();  
+            JavaSECMPInitializer initializer = new JavaSECMPInitializer(loader);
+            initializer.initialize(new HashMap());
+            return initializer;
+        }  else {
+            return new JavaSECMPInitializer(loader);
         }
-        return new JavaSECMPInitializer(loader);
     }
 
     /**
