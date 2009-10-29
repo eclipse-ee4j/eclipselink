@@ -30,6 +30,8 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.JuniorScientist;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.OfficePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.ScientistPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
@@ -98,6 +100,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6MultiLevel"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
+        
+        suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
         
         return suite;
     }
@@ -664,6 +668,42 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             } finally {
                 rollbackTransaction(em);
             }
+        }
+    }
+    
+    public void testJoinColumnSharesPK(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        org.eclipse.persistence.descriptors.ClassDescriptor descriptor = getServerSession().getDescriptor(Office.class);
+        try{
+            Department department = new Department();
+            department.setName("DEPT B");
+            department.setRole("ROLE B");
+            department.setLocation("LOCATION B");
+            em.persist(department);
+            
+            Office office = new Office();
+            office.setId(1);
+            office.setLocation("LOCATION B");
+            office.setDepartment(department);
+            em.persist(office);
+            department.getOffices().add(office);
+            em.flush();
+            
+            clearCache();
+            
+            office = em.find(Office.class, new OfficePK(1, "LOCATION B"));
+            department = em.find(Department.class, new DepartmentPK("DEPT B", "ROLE B", "LOCATION B"));
+            
+            assertTrue("Office's department not properly persisted", office.getDepartment() != null);
+            assertTrue("Department's offices not properly persisted", department.getOffices().size() > 0);
+            
+            
+        } catch (Exception e){
+            fail("Exception thrown while inserting an object with a read-only column in a foreign key." + e);
+        } finally {
+            rollbackTransaction(em);
         }
     }
     

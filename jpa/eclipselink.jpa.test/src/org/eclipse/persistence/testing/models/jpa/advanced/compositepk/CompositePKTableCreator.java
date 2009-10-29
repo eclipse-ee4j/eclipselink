@@ -45,6 +45,7 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildOFFICERCADETTable());
         addTableDefinition(buildLACKEYTable());
         addTableDefinition(buildLACKEYCREWTable());
+        addTableDefinition(buildOFFICETable());
     }
     
     public static TableDefinition buildADMIN_CONTRACTTable(){
@@ -769,6 +770,53 @@ public class CompositePKTableCreator extends TableCreator {
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
         
+        return table;
+    }
+    
+    public static TableDefinition buildOFFICETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_OFFICE");
+   
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setShouldAllowNull(true);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(true);
+        table.addField(ID_field);
+        
+        FieldDefinition NAME_field = new FieldDefinition();
+        NAME_field.setName("NAME");
+        NAME_field.setTypeName("VARCHAR");
+        NAME_field.setSize(40);
+        NAME_field.setShouldAllowNull(false);
+        NAME_field.setIsPrimaryKey(false);
+        NAME_field.setUnique(false);
+        NAME_field.setIsIdentity(false);
+        table.addField(NAME_field);
+        
+        FieldDefinition LOCATION_field = new FieldDefinition();
+        LOCATION_field.setName("LOCATION");
+        LOCATION_field.setTypeName("VARCHAR");
+        LOCATION_field.setSize(40);
+        LOCATION_field.setShouldAllowNull(false);
+        LOCATION_field.setIsPrimaryKey(true);
+        LOCATION_field.setUnique(false);
+        LOCATION_field.setIsIdentity(true);
+        table.addField(LOCATION_field);
+        
+        FieldDefinition DROLE_field = new FieldDefinition();
+        DROLE_field.setName("DROLE");
+        DROLE_field.setTypeName("VARCHAR");
+        DROLE_field.setSize(40);
+        DROLE_field.setShouldAllowNull(false);
+        DROLE_field.setIsPrimaryKey(false);
+        DROLE_field.setUnique(false);
+        DROLE_field.setIsIdentity(false);
+        table.addField(DROLE_field);
+
         return table;
     }
     

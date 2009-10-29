@@ -34,9 +34,11 @@ public class Department {
     private String role;
     private String location;
     private Collection<Scientist> scientists;
+    private Collection<Office> offices;
 
     public Department() {
         scientists = new Vector<Scientist>();
+        offices = new Vector<Office>();
     }
 
     @Id
@@ -75,6 +77,16 @@ public class Department {
 
     public void setScientists(Collection<Scientist> scientists) {
         this.scientists = scientists;
+    }
+    
+
+    @OneToMany(mappedBy="department")
+    public Collection<Office> getOffices() {
+        return offices;
+    }
+
+    public void setOffices(Collection<Office> offices) {
+        this.offices = offices;
     }
 
     public Scientist addScientist(Scientist scientist) {

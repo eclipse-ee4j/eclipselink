@@ -1440,13 +1440,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 fkField.setTable(defaultFKTable);
             }
             
-            // Add a source foreign key to the mapping.
-            mapping.addForeignKeyField(fkField, pkField);
-            
-            // If any of the join columns is marked read-only then set the 
-            // mapping to be read only.
-            if (fkField.isReadOnly()) {
-                mapping.setIsReadOnly(true);
+            if (fkField.isReadOnly()){
+                mapping.addTargetForeignKeyField(pkField, fkField);
+            } else {
+                // Add a source foreign key to the mapping.
+                mapping.addForeignKeyField(fkField, pkField);
             }
         }
     }
