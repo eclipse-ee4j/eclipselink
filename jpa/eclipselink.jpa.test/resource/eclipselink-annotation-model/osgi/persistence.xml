@@ -64,6 +64,7 @@
             <!--Uncomment these to test weaving options >
             <property name="eclipselink.weaving.eager" value="true"/>
             <property name="eclipselink.weaving.internal" value="false"/-->
+            <property name="eclipselink.weaving" value="false"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>

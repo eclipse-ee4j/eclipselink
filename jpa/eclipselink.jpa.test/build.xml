@@ -433,9 +433,16 @@
 
     <!-- Copy OSGi specified persistence.xml to default build location-->
     <target name="prepare-osgi-xmls" depends="init, config-trunk, config-flat" if="is.osgi">
+        <condition property="TEST_WEAVING" value="true" else="false">
+            <equals arg1="${test.weaving}" arg2="-DTEST_NO_WEAVING=false" casesensitive="false" trim="true"/>
+        </condition>
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}/META-INF" overwrite="true">
             <fileset dir="${eclipselink.jpa.test}/${resource.dir}/${MODEL_NAME}/osgi" includes="persistence.xml"/>
         </copy>
+        <replaceregexp file="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}/META-INF/persistence.xml"
+            match='property name="eclipselink.weaving"\s+value="false"'
+            replace='property name="eclipselink.weaving" value="${TEST_WEAVING}"'
+        />
     </target>
 	
 	<target name="package-annotation" depends="">
