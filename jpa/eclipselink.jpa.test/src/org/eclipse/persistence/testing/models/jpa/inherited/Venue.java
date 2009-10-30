@@ -20,11 +20,6 @@ import javax.persistence.Embedded;
 public class Venue {
     private String name;
     private Integer attendance;
-    private VenueHistory history;
-
-    public Integer getAttendance() {
-        return attendance;
-    }
     
     @Embedded
     // There are no attribute overrides at this level, however, novice beer 
@@ -34,6 +29,12 @@ public class Venue {
     // And expert beer consumer is going to use the defaults (columns) of
     // - YEAR_BUILT
     // - BUILDER
+    private VenueHistory history;
+
+    public Integer getAttendance() {
+        return attendance;
+    }
+    
     public VenueHistory getHistory() {
         return history;
     }

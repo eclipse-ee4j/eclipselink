@@ -13,10 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import javax.persistence.Access;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import static javax.persistence.AccessType.PROPERTY;
+
 @Embeddable
+@Access(PROPERTY)
 public class VenueHistory {
     private Integer yearBuilt;
     private String builder;

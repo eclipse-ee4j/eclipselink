@@ -35,6 +35,10 @@ import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.TeamVital
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.Vitals;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
+/**
+ * The mapping file for this test model is located here:
+ * resource/eclipselinkorm/eclipselink-xml-extended-model/complexaggregate-extended-entity-mappings
+ */
 public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
     private static HockeyTeamId[] teamIDs = new HockeyTeamId[3];
     
@@ -297,15 +301,6 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
     
     public void testAutoGenerationOnEmbeddedId() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        
-        // BEGIN
-        // Bug 247511 - this test will now only run on oracle.  The lines between BEGIN and END should be removed
-        // when bug 247511 is fixed
-        DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
-        if (!session.getPlatform().isOracle()){
-            return;
-        }
-        // END
         
         try {
             Name sharedName = new Name();

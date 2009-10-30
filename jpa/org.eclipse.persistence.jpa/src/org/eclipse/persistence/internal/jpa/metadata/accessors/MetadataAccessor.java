@@ -83,9 +83,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
     
     private MetadataDescriptor m_descriptor;
-    private MetadataDescriptor m_owningDescriptor;
     private MetadataProject m_project;
-   
     private String m_name;
     
     /**
@@ -103,7 +101,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         super(annotation, accessibleObject);
         
         m_project = project;
-        m_descriptor = descriptor;
+        setDescriptor(descriptor);
         
         // Look for an explicit access type specification.
         initAccess();
@@ -286,22 +284,6 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * In the general case the owning descriptor is the descriptor for this
-     * accessor. However, in an Embeddable (and nested embeddables) the owning
-     * descriptor is the original entities descriptor where the first embedded
-     * was found. The owning descriptor will be copied down the embeddedable
-     * chain. It should not be set otherwise.
-     */
-    public MetadataDescriptor getOwningDescriptor() {
-        if (m_owningDescriptor == null) {
-            return getDescriptor();
-        } else {
-            return m_owningDescriptor;
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Return the MetadataProject.
      */
     public MetadataProject getProject() {
@@ -403,7 +385,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void initXMLAccessor(MetadataDescriptor descriptor, MetadataProject project) {
         m_project = project;
-        m_descriptor = descriptor;
+        setDescriptor(descriptor);
     }
 
     /**
@@ -591,7 +573,8 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL: 
-     * Set the metadata descriptor for this accessor.
+     * Set the metadata descriptor for this accessor. When setting the
+     * descriptor on entities, the owning descriptor is set to this descriptor.
      */
     public void setDescriptor(MetadataDescriptor descriptor) {
         m_descriptor = descriptor;
@@ -627,13 +610,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
         m_objectTypeConverters = objectTypeConverters;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setOwningDescriptor(MetadataDescriptor owningDescriptor) {
-        m_owningDescriptor = owningDescriptor;
     }
     
     /**

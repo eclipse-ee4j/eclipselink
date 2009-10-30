@@ -37,6 +37,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -53,6 +57,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.0
  */ 
 public class EmbeddableAccessor extends ClassAccessor {
+    // Embedding accessors is a map of those classes that embed this embeddable.
+    // All embedding accessors are owning descriptors, but not vice versa.
+    private Map<String, ClassAccessor> m_embeddingAccessors = new HashMap<String, ClassAccessor>();
+    
     /**
      * INTERNAL:
      */
@@ -68,25 +76,108 @@ public class EmbeddableAccessor extends ClassAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Embedding accessors are those accessors that actually embed the 
+     * embeddable class with an embedded mapping. We use this list to extract
+     * and validate the access type of this embeddable when the embeddable
+     * does not specify an explicit access type.
+     */
+    protected void addEmbeddingAccessor(ClassAccessor embeddingAccessor) {
+       m_embeddingAccessors.put(embeddingAccessor.getJavaClassName(), embeddingAccessor);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addEmbeddingAccessors(Map<String, ClassAccessor> embeddingAccessors) {
+        m_embeddingAccessors.putAll(embeddingAccessors);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addOwningDescriptor(MetadataDescriptor owningDescriptor) {
+        getOwningDescriptors().add(owningDescriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addOwningDescriptors(List<MetadataDescriptor> owningDescriptors) {
+        getOwningDescriptors().addAll(owningDescriptors);
+    }
+    
+    /**
      * INTERNAL
      * Ensure any embeddable classes that are discovered during pre-process
      * are added to the project. The newly discovered embeddable accesors will
      * also be pre-processed now as well.
      */
     @Override
-    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass) {
+    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass, ClassAccessor embeddingAccessor) {
         if (potentialEmbeddableClass != null) {
-            // Get embeddable accessor will add the embeddable to the 
-            // project if it is a valid embeddable. That is, if one the class
-            // has an Embeddable annotation of the class is used as an IdClass
-            // for another entity within the persistence unit.
+            // Get embeddable accessor will add the embeddable to the  project 
+            // if it is a valid embeddable. That is, if the class has an 
+            // Embeddable annotation of the class is used as an IdClass for 
+            // another entity within the persistence unit.
             EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass, true);
         
             if (embeddableAccessor != null && ! embeddableAccessor.isPreProcessed()) {
-                embeddableAccessor.setOwningDescriptor(getOwningDescriptor());
+                embeddableAccessor.addEmbeddingAccessor(embeddingAccessor);
+                embeddableAccessor.addOwningDescriptors(getOwningDescriptors());
                 embeddableAccessor.preProcess();
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, ClassAccessor> getEmbeddingAccessors() {
+        return m_embeddingAccessors;
+    }
+    
+    /**
+     * INTERNAL:
+     * So, here's the deal ... this method typically gets called when defaulting 
+     * pk's name, primary table names etc. for various mappings. The problem 
+     * however is that we go beyond the spec and allow more mappings to be 
+     * specified on embeddable classes. For example, a M-M would default its 
+     * join table and join columns using the info from its owning descriptor. 
+     * The problem then is ... what to do when this embedabble has multiple 
+     * owning descriptors? That is, is shared. Right now, their pk names from 
+     * the owners better be same or mappings must be fully specified and not use 
+     * any defaults. I think that is somewhat ok given we're going beyond the 
+     * spec and TopLink doesn't even support it anyway???
+     * 
+     * So the stance is, we'll allow the extra mappings on embeddables that are 
+     * not shared, however on shared cases there are restrictions. Users should 
+     * use mapped superclasses when they have a need to share complex 
+     * embeddables.
+     * 
+     * Or they can write customizers to modify their embeddable descriptors 
+     * after initialize (after they have been cloned)
+     * 
+     * Future: the metadata processing 'could' set all necessary (per owning 
+     * descriptor) metadata and have the descriptor initialize code handle it.
+     * Metadata processing would process embeddable classes as it currently does 
+     * for MappedSuperclasses. Clone them and process under each owning entity 
+     * context. At descriptor initialize time, we would avoid cloning the 
+     * aggregate descriptor and use the one metadata processing provided. 
+     * Investigate further at a later date ...
+     * 
+     * Callers to this method are ...
+     * BasicCollectionAccessor - processCollectionTable - defaults pk names from the owning descriptor.
+     * RelationshipAccessor - processJoinTable - defaults the join table name and the source field name
+     * OneToManyAccessor - processUnidirectionalOneToManyMapping - defaults the pk field and table.
+     * MappingAccessor - processAssociationOverride and updatePrimaryKeyField.
+     * ObjectAccessor - processId
+     */
+    @Override
+    public MetadataDescriptor getOwningDescriptor() {
+        // Return the first owning descriptor. In most cases this will be OK
+        // since in most cases there is only one.
+        return getOwningDescriptors().get(0);
     }
     
     /** 
@@ -100,7 +191,10 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Process the items of interest on an embeddable class.
+     * Pre-process the embeddable class. This method is called after each
+     * entity of the persistence unit has had an opportunity to pre-process
+     * itself first since we'll rely on owning entities for things like access
+     * type etc. The pre-process will run some validation.
      */
     @Override
     public void preProcess() {
@@ -108,7 +202,18 @@ public class EmbeddableAccessor extends ClassAccessor {
         
         // Step 1 - process the embeddable specifics, like access type, 
         // metadata complete etc. which we need before proceeding any further.
-        processEmbeddable();
+        // Process the access type first.
+        processAccessType();
+        
+        // Set a metadata complete flag if specified.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } 
+        
+        // Set an exclude default mappings flag if specified.
+        if (getExcludeDefaultMappings() != null) {
+            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+        } 
 
         // Step 2 - Add the accessors and converters on this embeddable.
         addAccessors();
@@ -126,17 +231,15 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Process the items of interest on an embeddable class.
+     * Process the metadata from this embeddable class.
      */
     @Override
     public void process() {
-        setIsProcessed();
-        
         // If a Cache annotation is present throw an exception.
         if (isAnnotationPresent(Cache.class)) {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
-    
+        
         // Process the customizer metadata.
         processCustomizer();
         
@@ -151,89 +254,43 @@ public class EmbeddableAccessor extends ClassAccessor {
 
         // Process the accessors on this embeddable.
         processAccessors();
+        
+        // Set the processed flag.
+        setIsProcessed();
     }
     
     /**
      * INTERNAL:
-     * This method processes an embeddable class, if we have not processed it 
-     * yet. Be careful while changing the order of processing.
-     * <p>
-     * MappedSuperclass descriptors have relaxed constraints.
+     * Process the access type of this embeddable. If this embeddable is not
+     * embedded by at least one entity, it will not be processed. Therefore,
+     * embedding accessors can not be empty at this point.
      */
-    public void process(MetadataDescriptor owningDescriptor) {
-        if (isProcessed()) {
-            // We have already processed this embeddable class. Let's validate 
-            // that it is not used in entities with conflicting access type
-            // when the embeddable doesn't have its own explicit setting. The
-            // biggest mistake that could occur otherwise is that FIELD
-            // processing 'could' yield a different mapping set than PROPERTY
-            // processing would. Do we really care? If both access types
-            // yielded the same mappings then the only difference would be
-            // how they are accessed and well ... does it really matter at this
-            // point? The only way to know if they would yield different
-            // mappings would be by processing the class for each access type
-            // and comparing the yield or some other code to manually inspect
-            // the class. I think this error should be removed since the spec
-            // states: 
-            //  "Embedded objects belong strictly to their owning entity, and 
-            //   are not sharable across persistent entities. Attempting to 
-            //   share an embedded object across entities has undefined 
-            //   semantics."
-            // I think we should assume the users know what they are are doing
-            // in this case (that is, if they opt to share an embeddable).
-            if (! hasAccess()) {
-                // We inherited our access from our owning entity.
-                if (! getDescriptor().getDefaultAccess().equals(owningDescriptor.getDefaultAccess())) {
-                    // 266912: relax restrictions when either the accessor on this or the owning descriptor is a MappedSuperclass                    
-                    if(!getDescriptor().isMappedSuperclass() && !owningDescriptor.isMappedSuperclass()) {
-                            throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), owningDescriptor.getJavaClass(), owningDescriptor.getClassAccessor().usesPropertyAccess());
-                    }
+    protected void processAccessType() {
+        // Validate that this embeddable is not used within entities with 
+        // conflicting access types when the embeddable doesn't have its own 
+        // explicit setting. When the embeddable is shared, the access type
+        // must be the same across the board.
+        if (! hasAccess()) {
+            ClassAccessor embeddingAccessor = null;
+            
+            // The access type of the embeddable is determined from the class 
+            // that is embedding it. If there are multiple embedding
+            // accessors we will validate that there are no conflicting types.
+            for (ClassAccessor currentEmbeddingAccessor : m_embeddingAccessors.values()) {
+                if (embeddingAccessor == null) {
+                    embeddingAccessor = currentEmbeddingAccessor;
+                    continue;
+                }
+                
+                if (! embeddingAccessor.getAccessType().equals(currentEmbeddingAccessor.getAccessType())) {
+                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClassName(), embeddingAccessor.getAccessType(), embeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getAccessType(), currentEmbeddingAccessor.getJavaClassName());
                 }
             }
             
-            // TODO: Bug 247511: We need to do more processing here for shared
-            // embeddables (primary keys and generated values).
-        } else {
-            // Need to set the owning descriptor on the embeddable class before 
-            // we proceed any further in the processing.
-            setOwningDescriptor(owningDescriptor);
-            process(); 
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the access type of this embeddable.
-     */
-    protected void processAccessType() {
-        // Set the default access type on the descriptor and log a message
-        // to the user if we are defaulting the access type for this 
-        // embeddable to that default.
-        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccessType();
-        getDescriptor().setDefaultAccess(owningClassAccessorsAccess);
-        
-        if (getAccess() == null) {
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccess, getJavaClass());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the embeddable metadata.
-     */
-    protected void processEmbeddable() {
-        // Process the access type first.
-        processAccessType();
-        
-        // Set a metadata complete flag if specified.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } 
-        
-        // Set an exclude default mappings flag if specified.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+            // Set the default access type on the descriptor and log a message
+            // that we are defaulting the access type for this embeddable.
+            getDescriptor().setDefaultAccess(embeddingAccessor.getAccessType());
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, embeddingAccessor.getAccessType(), getJavaClass());
         } 
     }
-
 }

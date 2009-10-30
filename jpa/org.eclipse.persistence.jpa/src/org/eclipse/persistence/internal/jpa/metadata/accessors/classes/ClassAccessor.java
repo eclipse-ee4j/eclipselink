@@ -40,9 +40,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
@@ -139,6 +141,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
     
+    // In the normal case owning descriptors is a single list. Could only be
+    // multiples when dealing with embeddable accessors.
+    private List<MetadataDescriptor> m_owningDescriptors = new ArrayList<MetadataDescriptor>();
+    
     private String m_className;
     private String m_customizerClassName;
     private String m_description;
@@ -177,13 +183,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessor(MappingAccessor accessor) {
         if (accessor != null) {
-            // The actual owning descriptor for this class accessor. In most
-            // cases this is the same as our descriptor. However in an
-            // embeddable class accessor, it will be the owning entities
-            // descriptor. This was introduced to support nesting 
-            // embeddables to the nth level.
-            accessor.setOwningDescriptor(getOwningDescriptor());
-            
             // Add any converters on this mapping accessor.
             accessor.addConverters();
             
@@ -196,7 +195,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             // Add the embeddable accessor to the project. In the case of
             // pre-processing, if we are an embeddable accessor the nested 
             // embeddable will be pre-processed now.
-            addPotentialEmbeddableAccessor(accessor.getReferenceClass());
+            addPotentialEmbeddableAccessor(accessor.getReferenceClass(), accessor.getClassAccessor());
             
             // Tell an embeddable accessor that is a map key to a collection
             // to pre-process itself.
@@ -221,7 +220,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // Add the embeddable accessor to the project. In the case of
                 // pre-processing, if we are an embeddable accessor the nested 
                 // embeddable will be pre-processed now.
-                addPotentialEmbeddableAccessor(mapKeyClass);
+                addPotentialEmbeddableAccessor(mapKeyClass, accessor.getReferenceDescriptor(), accessor.getClassAccessor());
             }
          
             // Add the accessor to the descriptor.
@@ -396,16 +395,31 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Add an embeddable class to the embeddable accessor list if it is
      * indeed an embeddable. This method is overridden in EmbeddableAccessor
      * and is called during pre-process. At the entity level all we want to do
-     * is set the owning descriptor. Any nested embeddables will be discovered
-     * and pre-processed when pre-processing the known list of embeddables.
+     * is set the owning descriptor whereas for nested embeddables they'll 
+     * need the list of owning descriptors. Any nested embeddables will be 
+     * discovered and pre-processed when pre-processing the known list of root 
+     * embeddables.
      * @see MetadataProject processStage1()
      */
-    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass) {
+    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass, ClassAccessor embeddingAccessor) {
+        addPotentialEmbeddableAccessor(potentialEmbeddableClass, getDescriptor(), embeddingAccessor);
+    }
+    
+    /**
+     * INTERNAL
+     * Add an embeddable class to the embeddable accessor list if it is
+     * indeed an embeddable. This method is called on map key classes that
+     * are embeddables. The owning descriptor at this point is the accessors
+     * reference descriptor (passed in as the owning descriptor).
+     * @see addAccessor(MappingAccessor)
+     */
+    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass, MetadataDescriptor owningDescriptor, ClassAccessor embeddingAccessor) {
         if (potentialEmbeddableClass != null) {
             EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass);
         
             if (embeddableAccessor != null) {
-                embeddableAccessor.setOwningDescriptor(getOwningDescriptor());
+                embeddableAccessor.addEmbeddingAccessor(embeddingAccessor);
+                embeddableAccessor.addOwningDescriptor(owningDescriptor);
                 getProject().addRootEmbeddableAccessor(embeddableAccessor);
             }
         }
@@ -611,6 +625,37 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * In most cases the owning descriptor is the descriptor associated with
+     * this class accessor. Owning descriptors come into play when dealing
+     * with embeddable classes and their accessors. Processing certain accessors 
+     * from an embeddable class requires knowledge of owning descriptors that 
+     * require metadata settings from processing the embeddable metadata.
+     * @see EmbeddableAccessor
+     */
+    public MetadataDescriptor getOwningDescriptor() {
+        return getDescriptor();
+    }
+    
+    /**
+     * INTERNAL:
+     * In most cases the owning descriptors is the single descriptor associated 
+     * with this class accessor. Owning descriptors come into play when dealing
+     * with shared embeddable classes (included nested) and their accessors. 
+     * Processing certain accessors from an embeddable class requires knowledge 
+     * of owning descriptors that require metadata settings from processing the 
+     * embeddable metadata.
+     * @see EmbeddableAccessor
+     */
+    public List<MetadataDescriptor> getOwningDescriptors() {
+        if (m_owningDescriptors.isEmpty() && ! isEmbeddableAccessor()) {
+            m_owningDescriptors.add(getDescriptor());
+        }
+        
+        return m_owningDescriptors;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasDerivedId() {
         return ! getDescriptor().getDerivedIdAccessors().isEmpty();
@@ -786,7 +831,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void processAccessors() {
         // Now tell the descriptor to process its accessors.
-        getDescriptor().processAccessors(getOwningDescriptor());
+        getDescriptor().processAccessors();
     }
     
     /**

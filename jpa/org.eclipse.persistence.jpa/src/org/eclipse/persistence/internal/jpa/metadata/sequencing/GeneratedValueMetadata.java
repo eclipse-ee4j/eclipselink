@@ -35,7 +35,7 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      */
     public GeneratedValueMetadata(MetadataAnnotation generatedValue) {
-        m_generator = (String) generatedValue.getAttribute("generator");
+        m_generator = (String) generatedValue.getAttributeString("generator");
         m_strategy = (String) generatedValue.getAttribute("strategy"); 
     }
     

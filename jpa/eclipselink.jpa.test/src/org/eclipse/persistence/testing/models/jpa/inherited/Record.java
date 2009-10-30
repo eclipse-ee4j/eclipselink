@@ -29,26 +29,15 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Embeddable
 public class Record {
-    private Date date;
-    private String description;
-    private Location location;
-    private Venue venue;
-
     @Column(name="R_DATE")
-    public Date getDate() {
-        return date;
-    }
-
+    private Date date;
+    
     @Column(name="DESCR")
-    public String getDescription() {
-        return description;
-    }
+    private String description;
     
     @ManyToOne(cascade=PERSIST)
     @JoinColumn(name="L_ID")
-    public Location getLocation() {
-        return location;
-    }
+    private Location location;
     
     @Embedded
     @AttributeOverrides({
@@ -59,6 +48,20 @@ public class Record {
     // VENUE_ATTENDANCE as is.
     // Expert beer consumer is going to override VENUE_ATTENDANCE to WITNESSES
     // and user VENUE_NAME as is.
+    private Venue venue;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    
+    public Location getLocation() {
+        return location;
+    }
+    
     public Venue getVenue() {
         return venue;
     }

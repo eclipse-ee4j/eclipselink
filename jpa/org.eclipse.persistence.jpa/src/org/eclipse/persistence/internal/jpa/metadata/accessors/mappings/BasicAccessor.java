@@ -47,6 +47,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -346,14 +347,16 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected void processGeneratedValue() {
         if (m_generatedValue != null) {
-            // Set the sequence number field on the descriptor.        
-            DatabaseField existingSequenceNumberField = getOwningDescriptor().getSequenceNumberField();
+            // Set the sequence number field on all the owning descriptors.
+            for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
+                DatabaseField existingSequenceNumberField = owningDescriptor.getSequenceNumberField();
 
-            if (existingSequenceNumberField == null) {
-                getOwningDescriptor().setSequenceNumberField(m_field);
-                getProject().addGeneratedValue(m_generatedValue, getOwningDescriptor().getJavaClass());
-            } else {
-                throw ValidationException.onlyOneGeneratedValueIsAllowed(getOwningDescriptor().getJavaClass(), existingSequenceNumberField.getQualifiedName(), m_field.getQualifiedName());
+                if (existingSequenceNumberField == null) {
+                    owningDescriptor.setSequenceNumberField(m_field);
+                    getProject().addGeneratedValue(m_generatedValue, owningDescriptor.getJavaClass());
+                } else {
+                    throw ValidationException.onlyOneGeneratedValueIsAllowed(owningDescriptor.getJavaClass(), existingSequenceNumberField.getQualifiedName(), m_field.getQualifiedName());
+                }
             }
         }
     }

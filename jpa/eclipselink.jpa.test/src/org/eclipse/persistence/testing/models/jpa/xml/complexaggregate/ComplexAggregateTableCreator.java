@@ -121,7 +121,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
+        fieldID.setIsIdentity(true);
         fieldID.setUnique(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);

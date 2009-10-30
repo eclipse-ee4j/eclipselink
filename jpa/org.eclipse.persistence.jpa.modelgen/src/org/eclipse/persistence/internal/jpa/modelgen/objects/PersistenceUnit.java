@@ -131,7 +131,9 @@ public class PersistenceUnit {
         // descriptor in the pre-process stage of those entities, overriding 
         // this setting)
         if (project.hasEmbeddable(embeddableAccessor.getJavaClass())) {
-            embeddableAccessor.setOwningDescriptor(project.getEmbeddableAccessor(embeddableAccessor.getJavaClass()).getOwningDescriptor());
+            EmbeddableAccessor existingEmbeddableAccessor = project.getEmbeddableAccessor(embeddableAccessor.getJavaClass());
+            embeddableAccessor.addEmbeddingAccessors(existingEmbeddableAccessor.getEmbeddingAccessors());
+            embeddableAccessor.addOwningDescriptors(existingEmbeddableAccessor.getOwningDescriptors());
         }
         
         project.addEmbeddableAccessor(embeddableAccessor);

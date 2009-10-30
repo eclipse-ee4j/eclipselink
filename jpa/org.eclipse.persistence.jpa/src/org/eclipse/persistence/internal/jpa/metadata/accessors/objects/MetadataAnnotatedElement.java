@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.type.PrimitiveType;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -98,9 +97,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /** Defines the field type, or method return type class name. */
     private String m_type;
     
-    // Used with the APT processor. Stores the PrimitiveType is this annotated
-    // element is a primitive
-    PrimitiveType m_primitiveType;
+    /** 
+     * Used with the APT processor. Stores the PrimitiveType if this annotated
+     * element is a primitive. We can't make it a primitive type here because
+     * it introduces a JDK 1.6 dependency. The APT processor will need to cast
+     * it back.
+     */
+    Object m_primitiveType;
 
     /** Defines the attribute name of a field, or property name of a method. */
     private String m_attributeName;
@@ -249,7 +252,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * If this annotated element was built from java model elements and is
      * a primitive type, this primitive type will be set.
      */
-    public PrimitiveType getPrimitiveType() {
+    public Object getPrimitiveType() {
         return m_primitiveType;
     }
     
@@ -705,7 +708,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * If this annotated element was built from java model elements and is
      * a primitive type this method will be called.
      */
-    public void setPrimitiveType(PrimitiveType primitiveType) {
+    public void setPrimitiveType(Object primitiveType) {
         m_primitiveType = primitiveType;
         m_type = primitiveType.toString();
     }

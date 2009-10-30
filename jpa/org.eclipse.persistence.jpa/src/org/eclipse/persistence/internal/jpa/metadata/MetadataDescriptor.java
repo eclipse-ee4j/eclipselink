@@ -214,7 +214,7 @@ public class MetadataDescriptor {
      */
     public MetadataDescriptor(MetadataClass javaClass, ClassAccessor classAccessor) {
         this(javaClass);
-        setClassAccessor(classAccessor);
+        m_classAccessor = classAccessor;
     }
     
     /**
@@ -1218,7 +1218,7 @@ public class MetadataDescriptor {
      * right away, instead stored on the project for processing in a later 
      * stage.
      */
-    public void processAccessors(MetadataDescriptor owningDescriptor) {
+    public void processAccessors() {
         for (MappingAccessor accessor : m_accessors.values()) {
             if (! accessor.isProcessed()) {
                 // We need to defer the processing of some mappings to stage
@@ -1237,8 +1237,10 @@ public class MetadataDescriptor {
                     if (embeddableAccessor == null) {
                         throw ValidationException.invalidEmbeddedAttribute(getJavaClass(), accessor.getAttributeName(), accessor.getReferenceClass());
                     } else {
-                        // Process the embeddable class now.
-                        embeddableAccessor.process(owningDescriptor);
+                        // Process the embeddable class now (if it's not already processed)
+                        if (! embeddableAccessor.isProcessed()) {
+                            embeddableAccessor.process();
+                        }
                     
                         // Store this descriptor metadata. It may be needed again 
                         // later on to look up a mappedBy attribute etc.
@@ -1306,7 +1308,6 @@ public class MetadataDescriptor {
      */
     public void setClassAccessor(ClassAccessor accessor) {
         m_classAccessor = accessor;
-        accessor.setDescriptor(this);
     }
     
     /**

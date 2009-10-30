@@ -539,6 +539,24 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the owning descriptor of this accessor.
+     */
+    public MetadataDescriptor getOwningDescriptor() {
+        return getClassAccessor().getOwningDescriptor();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the owning descriptors of this accessor. In most cases this is
+     * a single descriptors. Multiples can only exist when dealing with 
+     * accessors for an embeddable that is shared.
+     */
+    public List<MetadataDescriptor> getOwningDescriptors() {
+        return getClassAccessor().getOwningDescriptors();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the map key reference class for this accessor if applicable. It 
      * will try to extract a reference class from a generic specification.<p>
      * Parameterized generic keys on a MappedSuperclass will return void.class.<p>  
@@ -1224,7 +1242,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Tell the embeddable accessor to process itself it is hasn't already.
         EmbeddableAccessor mapKeyAccessor = getProject().getEmbeddableAccessor(mapKeyClass);
         if (! mapKeyAccessor.isProcessed()) {
-            mapKeyAccessor.process(getReferenceDescriptor());
+            mapKeyAccessor.process();
         }
         
         // Ensure the reference descriptor is marked as an embeddable collection.

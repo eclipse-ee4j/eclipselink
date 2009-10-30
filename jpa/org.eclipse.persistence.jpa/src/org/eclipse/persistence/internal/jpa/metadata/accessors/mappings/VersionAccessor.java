@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -88,10 +89,12 @@ public class VersionAccessor extends BasicAccessor {
             getField().setType(getJavaClass(lockType));
 
             if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
-                VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  
-                policy.storeInObject();
-                policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
-                getOwningDescriptor().setOptimisticLockingPolicy(policy);
+                for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
+                    VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  
+                    policy.storeInObject();
+                    policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
+                    owningDescriptor.setOptimisticLockingPolicy(policy);
+                }
             } else {
                 throw ValidationException.invalidTypeForVersionAttribute(getAttributeName(), lockType, getJavaClass());
             }

@@ -204,7 +204,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      * INTERNAL:
      */
     protected String getBoxedType(MetadataAnnotatedElement annotatedElement) {
-        PrimitiveType primitiveType = annotatedElement.getPrimitiveType();
+        PrimitiveType primitiveType = (PrimitiveType) annotatedElement.getPrimitiveType();
         if (primitiveType != null) {
             return processingEnv.getTypeUtils().boxedClass(primitiveType).toString();
         }

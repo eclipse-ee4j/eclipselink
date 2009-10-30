@@ -33,6 +33,7 @@ import java.util.HashMap;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -114,25 +115,9 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      */    
     @Override
     public void process() {
-        // Check if we already processed an EmbeddedId for this entity.
-        if (getOwningDescriptor().hasEmbeddedId()) {
-            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getEmbeddedIdAttributeName());
-        } 
-        
-        // Check if we already processed an Id or IdClass.
-        if (getOwningDescriptor().hasPrimaryKeyFields()) {
-            throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getIdAttributeName());
-        }
-        
-        // Now process the embeddable and our embedded metadata. This must be
+        // Process the embeddable and our embedded metadata. This must be
         // done now and before the calls below.
         super.process();
-        
-        // Set the PK class.
-        getOwningDescriptor().setPKClass(getReferenceClass());
-            
-        // Store the embeddedId attribute name.
-        getOwningDescriptor().setEmbeddedIdAccessor(this);
         
         // After processing the embeddable class, we need to gather our 
         // primary keys fields that we will eventually set on the owning 
@@ -157,19 +142,38 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                 }
             }
         
-            // Add all the fields from the embeddable as primary keys on the 
-            // owning metadata descriptor.
-            for (DatabaseField field : m_idFields.values()) {
-                if (! getOwningDescriptor().getPrimaryKeyFieldNames().contains(field.getName())) {
-                    // Set a table if one is not specified. Because embeddables 
-                    // can be re-used we must deal with clones and not change 
-                    // the original fields.
-                    DatabaseField clone = (DatabaseField) field.clone();
-                    if (clone.getTableName().equals("")) {
-                        clone.setTable(getOwningDescriptor().getPrimaryTable());
-                    }
+            // Set the embedded id metadata on all owning descriptors.
+            for (MetadataDescriptor owningDescriptor : this.getOwningDescriptors()) {
+                // Check if we already processed an EmbeddedId for this entity.
+                if (owningDescriptor.hasEmbeddedId()) {
+                    throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), owningDescriptor.getEmbeddedIdAttributeName());
+                } 
+            
+                // Check if we already processed an Id or IdClass.
+                if (owningDescriptor.hasPrimaryKeyFields()) {
+                    throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), owningDescriptor.getIdAttributeName());
+                }
+                
+                // Set the PK class.
+                owningDescriptor.setPKClass(getReferenceClass());
                     
-                    getOwningDescriptor().addPrimaryKeyField(clone, m_idAccessors.get(clone));
+                // Store the embeddedId attribute name.
+                owningDescriptor.setEmbeddedIdAccessor(this);
+                
+                // Add all the fields from the embeddable as primary keys on the 
+                // owning metadata descriptor.
+                for (DatabaseField field : m_idFields.values()) {
+                    if (! owningDescriptor.getPrimaryKeyFieldNames().contains(field.getName())) {
+                        // Set a table if one is not specified. Because embeddables 
+                        // can be re-used we must deal with clones and not change 
+                        // the original fields.
+                        DatabaseField clone = (DatabaseField) field.clone();
+                        if (clone.getTableName().equals("")) {
+                            clone.setTable(owningDescriptor.getPrimaryTable());
+                        }
+                    
+                        owningDescriptor.addPrimaryKeyField(clone, m_idAccessors.get(clone));
+                    }
                 }
             }
         }

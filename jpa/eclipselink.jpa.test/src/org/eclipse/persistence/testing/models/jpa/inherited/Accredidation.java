@@ -28,8 +28,33 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Embeddable
 public class Accredidation {
+    @Column(name="BOGUS_COLUMN_NAME")
+    // Expert beer consumer will use the attribute override from the 
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level attribute override to override
+    // the above mentioned attribute override.
+    // If these overrides are not picked up, the column name will be picked up
+    // and errors will occur.
     private String details;
+    
+    @OneToMany(cascade={PERSIST, MERGE})
+    @JoinColumn(name="BOGUS_JOIN_COLUMN_NAME")
+    // Expert beer consumer will use the association overrides from the 
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level association override to override
+    // the above mentioned association override.
+    // If these overrides are not picked up, this join column will be picked up
+    // and errors will occur.
     private List<Official> officials;
+    
+    @ManyToMany(cascade={PERSIST, MERGE})
+    @JoinTable(name="BOGUS_JOIN_TABLE_NAME")
+    // Expert beer consumer will use the association overrides from the 
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level association override to override
+    // the above mentioned association override.
+    // If these overrides are not picked up, the join table will default
+    // and errors will occur.
     private List<Witness> witnesses;
     
     public Accredidation() {
@@ -45,37 +70,14 @@ public class Accredidation {
         witnesses.add(witness);
     }
     
-    @Column(name="BOGUS_COLUMN_NAME")
-    // Expert beer consumer will use the attribute override from the 
-    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
-    // consumer will provide a class level attribute override to override
-    // the above mentioned attribute override.
-    // If these overrides are not picked up, the column name will be picked up
-    // and errors will occur.
     public String getDetails() {
         return details;
     }
     
-    @OneToMany(cascade={PERSIST, MERGE})
-    @JoinColumn(name="BOGUS_JOIN_COLUMN_NAME")
-    // Expert beer consumer will use the association overrides from the 
-    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
-    // consumer will provide a class level association override to override
-    // the above mentioned association override.
-    // If these overrides are not picked up, this join column will be picked up
-    // and errors will occur.
     public List<Official> getOfficials() {
         return officials;
     }
     
-    @ManyToMany(cascade={PERSIST, MERGE})
-    @JoinTable(name="BOGUS_JOIN_TABLE_NAME")
-    // Expert beer consumer will use the association overrides from the 
-    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
-    // consumer will provide a class level association override to override
-    // the above mentioned association override.
-    // If these overrides are not picked up, the join table will default
-    // and errors will occur.
     public List<Witness> getWitnesses() {
         return witnesses;
     }

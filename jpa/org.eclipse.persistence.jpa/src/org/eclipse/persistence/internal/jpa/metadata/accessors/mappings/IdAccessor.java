@@ -24,6 +24,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -69,19 +70,21 @@ public class IdAccessor extends BasicAccessor {
         
         String attributeName = getAttributeName();
 
-        if (getOwningDescriptor().hasEmbeddedId()) {
-            // We found both an Id and an EmbeddedId, throw an exception.
-            throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getOwningDescriptor().getEmbeddedIdAttributeName(), attributeName);
+        for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
+            if (owningDescriptor.hasEmbeddedId()) {
+                // We found both an Id and an EmbeddedId, throw an exception.
+                throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), owningDescriptor.getEmbeddedIdAttributeName(), attributeName);
+            }
+
+            // If this entity has a pk class, we need to validate our ids. 
+            owningDescriptor.validatePKClassId(attributeName, getReferenceClass());
+
+            // Store the Id attribute name. Used with validation and OrderBy.
+            owningDescriptor.addIdAttributeName(attributeName);
+
+            // Add the primary key field to the descriptor.            
+            owningDescriptor.addPrimaryKeyField(getField(), this);
         }
-
-        // If this entity has a pk class, we need to validate our ids. 
-        getOwningDescriptor().validatePKClassId(attributeName, getReferenceClass());
-
-        // Store the Id attribute name. Used with validation and OrderBy.
-        getOwningDescriptor().addIdAttributeName(attributeName);
-
-        // Add the primary key field to the descriptor.            
-        getOwningDescriptor().addPrimaryKeyField(getField(), this);
         
         // Flag this id accessor as a JPA id mapping.
         getMapping().setIsJPAId();
