@@ -21,7 +21,6 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //javase imports
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -29,7 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.xml.sax.InputSource;
@@ -44,13 +42,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
-import org.eclipse.persistence.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
-import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
 
 //domain-specific (testing) imports
@@ -115,12 +110,10 @@ public class DynamicTestHelper {
         final SEPersistenceUnitInfo puInfo = myContentHandler.getPersistenceUnits().get(0);
         puInfo.setPersistenceUnitRootUrl(dynamicTestUrl);
         PersistenceProvider provider = new PersistenceProvider() {
-            @Override
             public EntityManagerFactory createContainerEntityManagerFactory(
                 PersistenceUnitInfo info, Map map) {
                 return null;
             }
-            @Override
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
                     EntityManagerSetupImpl entityManagerSetupImpl = new EntityManagerSetupImpl();
@@ -135,7 +128,6 @@ public class DynamicTestHelper {
                     return null;
                 }
             }
-            @Override
             public ProviderUtil getProviderUtil() {
                 return null;
             }

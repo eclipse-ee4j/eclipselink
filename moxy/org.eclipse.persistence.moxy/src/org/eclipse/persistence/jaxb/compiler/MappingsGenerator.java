@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
-import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
@@ -1977,9 +1976,10 @@ public class MappingsGenerator {
         }
         return generatedMapEntryClasses;
     }
-	
+
+    @SuppressWarnings("unused")
     private class MapEntryGeneratedKey {
-    	String keyClassName;
+        String keyClassName;
 		String valueClassName;
 		
     	public MapEntryGeneratedKey(String keyClass, String valueClass){

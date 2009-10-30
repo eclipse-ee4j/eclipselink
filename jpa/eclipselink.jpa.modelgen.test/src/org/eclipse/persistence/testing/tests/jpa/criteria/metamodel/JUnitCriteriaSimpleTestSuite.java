@@ -71,6 +71,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  * @author cdelahun
  * Converted from JUnitJPQLSimpleTestSuite
  */
+@SuppressWarnings("unchecked")
 public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
     static JUnitDomainObjectComparer comparer; //the global comparer object used in all tests
@@ -219,7 +220,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         //preload employees into the cache so that phonenumbers are not prefetched
         String ejbqlString = "SELECT e FROM Employee e";
-        List result = em.createQuery(ejbqlString).getResultList();
+        em.createQuery(ejbqlString).getResultList();
         // run the simpleJoinFetchTest and verify all employees have phonenumbers fetched.
         simpleJoinFetchTest(em);
     }
@@ -929,7 +930,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString;
+        //String ejbqlString;
         //"SELECT OBJECT(emp) FROM Employee emp WHERE LENGTH ( emp.firstName     ) = " + expectedResult.getFirstName().length();
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -1285,7 +1286,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector parameters = new Vector();
         parameters.add(expectedResult.getFirstName());
 
-        Vector employees = (Vector)getServerSession().executeQuery(raq, parameters);
+        getServerSession().executeQuery(raq, parameters);
 
         clearCache();
 
@@ -1531,7 +1532,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         String firstNamePart;
-        String ejbqlString;
 
         firstNamePart = expectedResult.getFirstName().substring(0, 2);
         //"SELECT OBJECT(emp) FROM Employee emp WHERE \"" + firstNamePart + "\" = SUBSTRING(emp.firstName, 1, 2)";
@@ -2358,14 +2358,13 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleEnumTest() {
         EntityManager em = createEntityManager();
 
-        String ejbqlString;
-
         //"SELECT emp FROM Employee emp WHERE emp.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         cq.where(qb.equal(cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).get(Employee_.status), org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME));
         beginTransaction(em);
         try {
+            @SuppressWarnings("unused")
             List result = em.createQuery(cq).getResultList();
         } finally {
             rollbackTransaction(em);

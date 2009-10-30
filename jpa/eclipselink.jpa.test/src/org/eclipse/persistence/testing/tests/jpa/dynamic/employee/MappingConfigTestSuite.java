@@ -21,7 +21,6 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
 //java eXtension imports
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 //JUnit4 imports
@@ -38,7 +37,6 @@ import static org.junit.Assume.assumeTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.mappings.ManyToManyMapping;

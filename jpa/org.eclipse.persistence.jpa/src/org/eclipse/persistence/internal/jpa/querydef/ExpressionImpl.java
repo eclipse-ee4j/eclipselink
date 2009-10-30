@@ -52,8 +52,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         this.isLiteral = true;
     }
 
-    public <X> Expression<X> as(Class<X> type) {
-        return (Expression<X>) this;
+    public <T> Expression<T> as(Class<T> type) {
+        return (Expression<T>) this;
     }
     
     public Predicate in(Object... values) {

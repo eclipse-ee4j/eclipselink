@@ -218,7 +218,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join
      * @return the resulting fetch join
      */
-    public <X, Y> Fetch<X, Y> fetch(String assocName){
+    public <T, Y> Fetch<T, Y> fetch(String assocName){
         return fetch(assocName, JoinType.INNER);
     }
 
@@ -233,7 +233,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join type
      * @return the resulting fetch join
      */
-    public <X, Y> Fetch<X, Y> fetch(String assocName, JoinType jt){
+    public <T, Y> Fetch<T, Y> fetch(String assocName, JoinType jt){
         Attribute attribute = this.managedType.getAttribute(assocName);
         if (attribute.isCollection()) {
             return fetch(((PluralAttribute)attribute), jt);
@@ -468,11 +468,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
-    public <X, Y> Join<X, Y> join(String attributeName) {
+    public <T, Y> Join<T, Y> join(String attributeName) {
         return join(attributeName, JoinType.INNER);
     }
 
-    public <X, Y> Join<X, Y> join(String attributeName, JoinType jt) {
+    public <T, Y> Join<T, Y> join(String attributeName, JoinType jt) {
         this.isLeaf = false;
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
@@ -513,49 +513,49 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
-    public <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName) {
+    public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName) {
         return joinCollection(attributeName, JoinType.INNER);
     }
 
-    public <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt) {
+    public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName, JoinType jt) {
         try {
-            return (CollectionJoin<X, Y>) join(attributeName, jt);
+            return (CollectionJoin<T, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_collection", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
 
-    public <X, Y> ListJoin<X, Y> joinList(String attributeName) {
+    public <T, Y> ListJoin<T, Y> joinList(String attributeName) {
         return joinList(attributeName, JoinType.INNER);
     }
 
-    public <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt) {
+    public <T, Y> ListJoin<T, Y> joinList(String attributeName, JoinType jt) {
         try {
-            return (ListJoin<X, Y>) join(attributeName, jt);
+            return (ListJoin<T, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_list", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
 
-    public <X, K, Y> MapJoin<X, K, Y> joinMap(String attributeName) {
+    public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName) {
         return joinMap(attributeName, JoinType.INNER);
     }
 
-    public <X, K, Y> MapJoin<X, K, Y> joinMap(String attributeName, JoinType jt) {
+    public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName, JoinType jt) {
         try {
-            return (MapJoin<X, K, Y>) join(attributeName, jt);
+            return (MapJoin<T, K, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_map", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
 
-    public <X, Y> SetJoin<X, Y> joinSet(String attributeName) {
+    public <T, Y> SetJoin<T, Y> joinSet(String attributeName) {
         return joinSet(attributeName, JoinType.INNER);
     }
 
-    public <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt) {
+    public <T, Y> SetJoin<T, Y> joinSet(String attributeName, JoinType jt) {
         try {
-            return (SetJoin<X, Y>) join(attributeName, jt);
+            return (SetJoin<T, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_set", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
