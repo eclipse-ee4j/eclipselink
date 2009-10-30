@@ -378,6 +378,27 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     }
 
     /**
+     * ADVANCED:
+     * Register the new object with the unit of work.
+     * This will register the new object without cloning.
+     * Normally the registerObject method should be used for all registration of
+     * new and existing objects.
+     * This version of the register method can only be used for new objects.
+     * This method should only be used if a new object is desired to be
+     * registered without cloning.
+     *
+     * @see #registerObject(Object)
+     */
+
+    public Object registerNewObject(Object newObject) {
+        Object workingCopy = super.registerNewObject(newObject);
+        if (!this.discoverUnregisteredNewObjectsWithoutPersist) {
+            assignSequenceNumber(workingCopy);
+        }
+        return workingCopy;
+    }
+
+    /**
      * INTERNAL:
      * Called only by registerNewObjectForPersist method,
      * and only if newObject is not already registered.
@@ -403,6 +424,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         super.registerNotRegisteredNewObjectForPersist(newObject, descriptor);
     }
 
+    
     /**
      * INTERNAL:
      * This is internal to the uow, transactions should not be used explicitly in a uow.
@@ -478,6 +500,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         getCloneMapping().put(clone, clone);
 
         builder.populateAttributesForClone(original, clone, this);
+        if (!this.discoverUnregisteredNewObjectsWithoutPersist){
+            assignSequenceNumber(clone);
+        }
         // Must reregister in both new objects.
         registerNewObjectClone(clone, newOriginal, descriptor);
 
@@ -486,6 +511,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         Object backupClone = descriptor.getObjectChangePolicy().buildBackupClone(clone, builder, this);
         getCloneMapping().put(clone, backupClone);// The backup clone must be updated.
 
+        //this is the second difference.  Assign a sequence just like JPA unless this RWUOW is set to old behaviour
         return clone;
     }
     
