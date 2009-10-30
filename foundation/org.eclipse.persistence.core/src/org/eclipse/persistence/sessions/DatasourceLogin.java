@@ -510,7 +510,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                     platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
                 }
                 usePlatform(platform);
-            } catch(Exception cne2) {
+            } catch(Throwable cne2) {
                 //if still not found, throw exception
                 throw ValidationException.platformClassNotFound(cne2, platformClassName);                
             }

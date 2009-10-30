@@ -409,7 +409,7 @@ public class ValidationException extends EclipseLinkException {
      * INTERNAL:
      * TopLink exceptions should only be thrown by TopLink.
      */
-    protected ValidationException(String message, Exception internalException) {
+    protected ValidationException(String message, Throwable internalException) {
         super(message, internalException);
     }
     
@@ -1476,7 +1476,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException platformClassNotFound(Exception exception, String className) {
+    public static ValidationException platformClassNotFound(Throwable exception, String className) {
         Object[] args = { className };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, PLATFORM_CLASS_NOT_FOUND, args), exception);

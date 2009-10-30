@@ -70,7 +70,7 @@ public class Oracle9Platform extends Oracle8Platform {
     public static final Class NSTRING = NString.class;
     public static final Class NCLOB = NClob.class;
     public static final Class XMLTYPE = XMLTypePlaceholder.class;
-    
+
     /* Driver version set to connection.getMetaData.getDriverVersion() */
     protected transient String driverVersion;
     /* Indicates whether printCalendar should be used when creating TIMESTAMPTZ.
@@ -93,6 +93,17 @@ public class Oracle9Platform extends Oracle8Platform {
     protected transient boolean isConnectionDataInitialized;
     
     private XMLTypeFactory xmlTypeFactory;
+
+    /**
+     * Please ensure that following declarations stay as it is. Having them ensures that oracle jdbc driver available
+     * in classpath when this class loaded.
+     * If driver is not available, this class will not be initialized and will fail fast instead of failing later on
+     * when classes from driver are utilized
+     */
+    private static final Class ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
+    private static final Class ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
+    private static final Class ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
+    
     
     public Oracle9Platform(){
         super();
@@ -250,9 +261,9 @@ public class Oracle9Platform extends Oracle8Platform {
         //Bug#3381652 10g database does not accept Time for DATE field
         fieldTypes.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypes.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(oracle.sql.TIMESTAMP.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(oracle.sql.TIMESTAMPTZ.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
-        fieldTypes.put(oracle.sql.TIMESTAMPLTZ.class, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
         return fieldTypes;
     }
 
@@ -262,9 +273,9 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     protected Hashtable buildClassTypes() {
         Hashtable classTypeMapping = super.buildClassTypes();
-        classTypeMapping.put("TIMESTAMP", oracle.sql.TIMESTAMP.class);
-        classTypeMapping.put("TIMESTAMP WITH TIME ZONE", oracle.sql.TIMESTAMPTZ.class);
-        classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", oracle.sql.TIMESTAMPLTZ.class);
+        classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
+        classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
+        classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
         return classTypeMapping;
     }
 
