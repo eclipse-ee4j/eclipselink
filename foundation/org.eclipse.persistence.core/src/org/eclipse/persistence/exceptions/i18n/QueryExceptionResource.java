@@ -82,7 +82,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6076", "Object comparisons can only be used with OneToOneMappings.  Other mapping comparisons must be done through query keys or direct attribute level comparisons. {2}Mapping: [{0}] {2}Expression: [{1}]" },
        { "6077", "Object comparisons cannot be used in parameter queries.  You must build the expression dynamically. {1}Expression: [{0}]" },
        { "6078", "The class of the argument for the object comparison is incorrect. {3}Expression: [{0}] {3}Mapping: [{1}] {3}Argument: [{2}]" },
-       { "6079", "Object comparison cannot be used for target foreign key relationships.  Query on the source primary key instead. {3}Expression: [{0}] {3}Mapping: [{1}] {3}Argument: [{2}]" },
+       { "6079", "Object comparison to NULL cannot be used for target foreign key relationships.  Query on the source primary key instead. {3}Expression: [{0}] {3}Mapping: [{1}] {3}Argument: [{2}]" },
        { "6080", "Invalid database call [{0}].  The call must be an instance of DatabaseCall." },
        { "6081", "Invalid database accessor [{0}].  The accessor must be an instance of DatabaseAccessor." },
        { "6082", "The method [{0}] with argument types [{1}] cannot be invoked on Expression." },

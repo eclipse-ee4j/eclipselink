@@ -101,7 +101,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
         
-     //   suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
         
         return suite;
     }

@@ -1445,6 +1445,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * thrown).
      */
     protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping, List<JoinColumnMetadata> joinColumns, String defaultPKFieldName, DatabaseTable defaultPKTable, String defaultFKFieldName, DatabaseTable defaultFKTable) {         
+        // we need to know if all the mappings are read-only so we can determine if we use target foreign keys
+        // to represent read-only parts of the join, or if we simply set the whole mapping as read-only
+        boolean allReadOnly = true;
+        for (JoinColumnMetadata joinColumn : joinColumns) {
+            allReadOnly = allReadOnly && joinColumn.getForeignKeyField().isReadOnly();
+        }
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
@@ -1457,15 +1463,22 @@ public abstract class MappingAccessor extends MetadataAccessor {
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(defaultFKTable);
             }
-            
-            // Add a source foreign key to the mapping.
-            mapping.addForeignKeyField(fkField, pkField);
-            
-            // If any of the join columns is marked read-only then set the 
-            // mapping to be read only.
-            if (fkField.isReadOnly()) {
-                mapping.setIsReadOnly(true);
+            if (allReadOnly || !fkField.isReadOnly()){
+                // Add a source foreign key to the mapping.
+                mapping.addForeignKeyField(fkField, pkField);
+            } else {
+                // this is a read-only join column that is part of a set of 
+                // join columns that are not all read only - hence this
+                // is not a read-only mapping, but instead uses a target 
+                // foreign key field to enable the read-only functionality
+                mapping.addTargetForeignKeyField(pkField, fkField);
             }
+        }
+        
+        // If any of the join columns is marked read-only then set the 
+        // mapping to be read only.
+        if (allReadOnly) {
+            mapping.setIsReadOnly(true);
         }
     }
     
