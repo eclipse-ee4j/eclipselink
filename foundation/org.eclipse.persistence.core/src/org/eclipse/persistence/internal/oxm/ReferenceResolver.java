@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sessions.Session;
@@ -133,10 +134,9 @@ public class ReferenceResolver {
             if (reference.getMapping() instanceof XMLCollectionReferenceMapping) {
                 XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) reference.getMapping();
                 ContainerPolicy cPolicy = mapping.getContainerPolicy();
-
+                Object currentObject = reference.getSourceObject();
                 Object container = null;
                 if (mapping.getReuseContainer()) {
-                    Object currentObject = reference.getSourceObject();
                     container = mapping.getAttributeAccessor().getAttributeValueFromObject(currentObject);
                 } else {
                     container = cPolicy.containerInstance();
@@ -155,14 +155,44 @@ public class ReferenceResolver {
                 }
                 // for each reference, get the source object and add it to the container policy
                 // when finished, set the policy on the mapping
-                mapping.setAttributeValueInObject(reference.getSourceObject(), container);
+                mapping.setAttributeValueInObject(currentObject, container);
+                if(mapping.getBidirectionalTargetAccessor() != null) {
+                    Object iterator = cPolicy.iteratorFor(container);
+                    while(cPolicy.hasNext(iterator)) {
+                        Object next = cPolicy.next(iterator, session);
+                        if(mapping.getBidirectionalTargetContainerPolicy() == null) {
+                            mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(next, currentObject);
+                        } else {
+                            Object backpointerContainer = mapping.getBidirectionalTargetAccessor().getAttributeValueFromObject(next);
+                            if(backpointerContainer == null) {
+                                backpointerContainer = mapping.getBidirectionalTargetContainerPolicy().containerInstance();
+                                mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(next, backpointerContainer);
+                            }
+                            mapping.getBidirectionalTargetContainerPolicy().addInto(currentObject, backpointerContainer, session);
+                        }
+                    }
+                }
             } else if (reference.getMapping() instanceof XMLObjectReferenceMapping) {
                 Object value = session.getIdentityMapAccessor().getFromIdentityMap(reference.getPrimaryKeys(), reference.getTargetClass());
+                XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
                 if (value != null) {
-                    ((XMLObjectReferenceMapping) reference.getMapping()).setAttributeValueInObject(reference.getSourceObject(), value);
+                    mapping.setAttributeValueInObject(reference.getSourceObject(), value);
                 }
                 if (null != reference.getSetting()) {
                     reference.getSetting().setValue(value);
+                }
+                AttributeAccessor backpointerAccessor = mapping.getBidirectionalTargetAccessor();
+                if(backpointerAccessor != null) {
+                    if(mapping.getBidirectionalTargetContainerPolicy() == null) {
+                        mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(value, reference.getSourceObject());
+                    } else {
+                        Object backpointerContainer = mapping.getBidirectionalTargetAccessor().getAttributeValueFromObject(value);
+                        if(backpointerContainer == null) {
+                            backpointerContainer = mapping.getBidirectionalTargetContainerPolicy().containerInstance();
+                            mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(value, backpointerContainer);
+                        }
+                        mapping.getBidirectionalTargetContainerPolicy().addInto(reference.getSourceObject(), backpointerContainer, session);
+                    }
                 }
             }
         }

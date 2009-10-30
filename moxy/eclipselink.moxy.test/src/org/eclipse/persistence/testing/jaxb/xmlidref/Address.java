@@ -12,10 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlidref;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name="address")
 public class Address {
@@ -34,6 +37,9 @@ public class Address {
     
     @XmlElement(name="zip")
 	public String zip;
+    
+    @XmlTransient
+    public List<Employee> emp;
 	
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Address)) {
@@ -44,6 +50,6 @@ public class Address {
 				tgtAddress.country.equals(country) &&
 				tgtAddress.id.equals(id) &&
 				tgtAddress.street.equals(street) &&
-				tgtAddress.zip.equals(zip));
+				tgtAddress.zip.equals(zip) && (tgtAddress.emp == emp || (emp != null && tgtAddress.emp != null)));
 	}
 }

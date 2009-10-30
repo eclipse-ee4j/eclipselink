@@ -69,6 +69,11 @@ public class Property {
     private XmlElementWrapper xmlElementWrapper;
     private boolean isXmlValue;
     
+    private String backpointerPropertyName;
+    private String backpointerGetMethodName;
+    private String backpointerSetMethodName;
+    private JavaClass backpointerContainerClass;
+    
     public Property() {
     	xmlElementType = false;
     	isXmlValue = false;
@@ -447,5 +452,37 @@ public class Property {
      */
     public boolean isXmlList() {
         return this.isXmlList;
+    }
+    
+    public String getBackpointerPropertyName() {
+        return this.backpointerPropertyName;
+    }
+    
+    public void setBackpointerPropertyName(String name) {
+        this.backpointerPropertyName = name;
+    }
+    
+    public String getBackpointerGetMethodName() {
+        return this.backpointerGetMethodName;
+    }
+    
+    public String getBackpointerSetMethodName() {
+        return this.backpointerSetMethodName;
+    }
+    
+    public void setBackpointerGetMethodName(String methodName) {
+        this.backpointerGetMethodName = methodName;
+    }
+    
+    public void setBackpointerSetMethodName(String methodName) {
+        this.backpointerSetMethodName = methodName;
+    }
+    
+    public JavaClass getBackpointerContainerClass() {
+        return this.backpointerContainerClass;
+    }
+    
+    public void setBackpointerContainerClass(JavaClass cls) {
+        this.backpointerContainerClass = cls;
     }
 }

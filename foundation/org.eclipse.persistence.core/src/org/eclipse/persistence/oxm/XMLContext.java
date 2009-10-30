@@ -34,11 +34,13 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -712,6 +714,25 @@ public class XMLContext {
                                         ((XMLCompositeCollectionMapping)oxmMapping).setContainerAccessor(ormAccessor);
                                     }
                                     
+                                }
+                            }
+                        }
+                    }
+                }
+                Iterator<DatabaseMapping> oxmMappingsIterator = oxmDescriptor.getMappings().iterator();
+                while(oxmMappingsIterator.hasNext()) {
+                    //iterate over the oxm mappings. Any ReferenceMappings that have a 
+                    //collection as a backpointer, check to see if the container policy
+                    //needs to be matched with the ORM project
+                    DatabaseMapping nextMapping = oxmMappingsIterator.next();
+                    if(nextMapping instanceof XMLObjectReferenceMapping) {
+                        XMLObjectReferenceMapping refMapping = (XMLObjectReferenceMapping)nextMapping;
+                        if(refMapping.getBidirectionalTargetAccessor() != null && refMapping.getBidirectionalTargetContainerPolicy() != null) {
+                            ClassDescriptor refDescriptor = ormSession.getClassDescriptor(refMapping.getReferenceClass());
+                            if(refDescriptor != null) {
+                                DatabaseMapping backpointerMapping =refDescriptor.getMappingForAttributeName(refMapping.getBidirectionalTargetAttributeName());
+                                if(backpointerMapping != null && backpointerMapping.isCollectionMapping()) {
+                                    refMapping.setBidirectionalTargetContainerClass(((CollectionMapping)backpointerMapping).getContainerPolicy().getContainerClass());
                                 }
                             }
                         }

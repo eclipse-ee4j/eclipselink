@@ -89,6 +89,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.annotations.XmlBidirectional;
+import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 
 /**
@@ -1166,7 +1168,22 @@ public class AnnotationsProcessor {
             info.setMixed(true);
             property.setMixedContent(true);
         }
-        
+        if(helper.isAnnotationPresent(javaHasAnnotations, XmlContainerProperty.class)) {
+            XmlContainerProperty container = (XmlContainerProperty)helper.getAnnotation(javaHasAnnotations, XmlContainerProperty.class);
+            property.setBackpointerPropertyName(container.value());
+            property.setBackpointerGetMethodName(container.getMethodName());
+            property.setBackpointerSetMethodName(container.setMethodName());
+        } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlBidirectional.class)) {
+            XmlBidirectional backpointer = (XmlBidirectional)helper.getAnnotation(javaHasAnnotations, XmlBidirectional.class);
+            property.setBackpointerPropertyName(backpointer.targetAttribute());
+            TypeInfo targetInfo = this.getTypeInfo().get(property.getActualType().getName());
+            if(targetInfo != null && targetInfo.getXmlAccessType() == XmlAccessType.PROPERTY) {
+                String propName = property.getPropertyName();
+                propName = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
+                property.setBackpointerGetMethodName("get" + propName);
+                property.setBackpointerSetMethodName("set" + propName);
+            }
+        }
         processXmlJavaTypeAdapter(property, info);
         
         processXmlElement(property, info);

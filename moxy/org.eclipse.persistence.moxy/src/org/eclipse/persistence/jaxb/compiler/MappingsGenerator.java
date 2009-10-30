@@ -35,9 +35,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
@@ -73,6 +74,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
@@ -683,13 +685,11 @@ public class MappingsGenerator {
         	mapping.setReferenceClassName(referenceClassName);
         }
                 
-        if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
-            XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
-            String name = containerProp.value();
-            mapping.setContainerAttributeName(name);
-            if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
-                mapping.setContainerGetMethodName(containerProp.getMethodName());
-                mapping.setContainerSetMethodName(containerProp.setMethodName());
+        if(property.getBackpointerPropertyName() != null) {
+            mapping.setContainerAttributeName(property.getBackpointerPropertyName());
+            if(!property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
+                mapping.setContainerGetMethodName(property.getBackpointerSetMethodName());
+                mapping.setContainerSetMethodName(property.getBackpointerSetMethodName());
             }
         }
         
@@ -1194,13 +1194,11 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setRequired(true);
         }
         
-        if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
-            XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
-            String name = containerProp.value();
-            mapping.setContainerAttributeName(name);
-            if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
-                mapping.setContainerGetMethodName(containerProp.getMethodName());
-                mapping.setContainerSetMethodName(containerProp.setMethodName());
+        if(property.getBackpointerPropertyName() != null) {
+            mapping.setContainerAttributeName(property.getBackpointerPropertyName());
+            if(!property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
+                mapping.setContainerGetMethodName(property.getBackpointerSetMethodName());
+                mapping.setContainerSetMethodName(property.getBackpointerSetMethodName());
             }
         }
         
@@ -1507,6 +1505,27 @@ public class MappingsGenerator {
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
+        
+        if(property.getBackpointerPropertyName() != null) {
+            mapping.setBidirectionalTargetAttributeName(property.getBackpointerPropertyName());
+            JavaClass backPointerPropertyType = null;
+            if(property.getBackpointerGetMethodName() != null && property.getBackpointerSetMethodName() != null && !property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
+                mapping.setBidirectionalTargetGetMethodName(property.getBackpointerSetMethodName());
+                mapping.setBidirectionalTargetSetMethodName(property.getBackpointerSetMethodName());
+                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getBidirectionalTargetGetMethodName(), new JavaClass[]{});
+                if(getMethod != null) {
+                    backPointerPropertyType = getMethod.getReturnType();
+                }
+            } else {
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBackpointerPropertyName());
+                if(backpointerField != null) {
+                    backPointerPropertyType = backpointerField.getResolvedType();
+                }
+            }
+            if(isCollectionType(backPointerPropertyType)) {
+                mapping.setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+            }
+        }
 
         // TODO: if reference class is not in typeinfo list OR the ID is not
         // set, throw an exception...
@@ -1549,7 +1568,26 @@ public class MappingsGenerator {
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
-
+        if(property.getBackpointerPropertyName() != null) {
+            mapping.setBidirectionalTargetAttributeName(property.getBackpointerPropertyName());
+            JavaClass backPointerPropertyType = null;
+            if(property.getBackpointerGetMethodName() != null && property.getBackpointerSetMethodName() != null && !property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
+                mapping.setBidirectionalTargetGetMethodName(property.getBackpointerSetMethodName());
+                mapping.setBidirectionalTargetSetMethodName(property.getBackpointerSetMethodName());
+                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getBidirectionalTargetGetMethodName(), new JavaClass[]{});
+                if(getMethod != null) {
+                    backPointerPropertyType = getMethod.getReturnType();
+                }
+            } else {
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBackpointerPropertyName());
+                if(backpointerField != null) {
+                    backPointerPropertyType = backpointerField.getResolvedType();
+                }
+            }
+            if(isCollectionType(backPointerPropertyType)) {
+                mapping.setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+            }
+        }
         // TODO: if reference class is not in typeinfo list OR the ID is not
         // set, throw an exception...
         descriptor.addMapping(mapping);

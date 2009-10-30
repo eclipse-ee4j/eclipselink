@@ -26,8 +26,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
-import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -150,8 +148,8 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  */
 public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
-    private AttributeAccessor containerAccessor;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
+    private BidirectionalPolicy bidirectionalPolicy;
 
     private boolean isWriteOnly;
     private boolean reuseContainer = false;
@@ -160,6 +158,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         super();
         // The default policy is NullPolicy
         nullPolicy = new NullPolicy();
+        this.bidirectionalPolicy = new BidirectionalPolicy();
     }
 
     /**
@@ -167,7 +166,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * container on the target object.
      */
     public AttributeAccessor getContainerAccessor() {
-        return this.containerAccessor;
+        return this.bidirectionalPolicy.getBidirectionalTargetAccessor();
     }
 
     /**
@@ -177,7 +176,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param anAttributeAccessor - the accessor to be used.
      */
     public void setContainerAccessor(AttributeAccessor anAttributeAccessor) {
-        this.containerAccessor = anAttributeAccessor;
+        this.bidirectionalPolicy.setBidirectionalTargetAccessor(anAttributeAccessor);
     }
 
     /**
@@ -189,22 +188,14 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param attributeName - the name of the backpointer attribute to be populated
      */
     public void setContainerAttributeName(String attributeName) {
-        if(attributeName != null) {
-            if(this.getContainerAccessor() == null) {
-                this.containerAccessor = new InstanceVariableAttributeAccessor();
-            }
-            this.getContainerAccessor().setAttributeName(attributeName);
-        }
+        this.bidirectionalPolicy.setBidirectionalTargetAttributeName(attributeName);
     }
 
     /**
      * Gets the name of the backpointer attribute on the target object.
      */
     public String getContainerAttributeName() {
-        if(this.getContainerAccessor() == null) {
-            return null;
-        }
-        return this.getContainerAccessor().getAttributeName();
+        return this.bidirectionalPolicy.getBidirectionalTargetAttributeName();
     }
 
     /**
@@ -216,21 +207,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param methodName - the name of the getter method to be used.
      */
     public void setContainerGetMethodName(String methodName) {
-        if (methodName == null) {
-            return;
-        }
-
-        if(getContainerAccessor() == null) {
-            this.containerAccessor = new MethodAttributeAccessor();
-        }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
-        if (!getContainerAccessor().isMethodAttributeAccessor()) {
-            String attributeName = this.containerAccessor.getAttributeName();
-            setContainerAccessor(new MethodAttributeAccessor());
-            getContainerAccessor().setAttributeName(attributeName);
-        }
-
-        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);
+        this.bidirectionalPolicy.setBidirectionalTargetGetMethodName(methodName);
     }
 
     /**
@@ -238,10 +215,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * back pointer on the target object of this mapping.
      */
     public String getContainerGetMethodName() {
-        if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
-            return null;
-        }
-        return ((MethodAttributeAccessor)getContainerAccessor()).getGetMethodName();
+        return this.bidirectionalPolicy.getBidirectionalTargetGetMethodName();
     }
 
     /**
@@ -249,10 +223,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * back pointer on the target object of this mapping.
      */
     public String getContainerSetMethodName() {
-        if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
-            return null;
-        }
-        return ((MethodAttributeAccessor)getContainerAccessor()).getSetMethodName();
+        return this.bidirectionalPolicy.getBidirectionalTargetSetMethodName();
     }
 
     /**
@@ -264,21 +235,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param methodName - the name of the setter method to be used.
      */
     public void setContainerSetMethodName(String methodName) {
-        if (methodName == null) {
-            return;
-        }
-
-        if(getContainerAccessor() == null) {
-            this.containerAccessor = new MethodAttributeAccessor();
-        }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
-        if (!getContainerAccessor().isMethodAttributeAccessor()) {
-            String attributeName = this.containerAccessor.getAttributeName();
-            setContainerAccessor(new MethodAttributeAccessor());
-            getContainerAccessor().setAttributeName(attributeName);
-        }
-
-        ((MethodAttributeAccessor)getContainerAccessor()).setSetMethodName(methodName);
+        this.bidirectionalPolicy.setBidirectionalTargetSetMethodName(methodName);
     }
 
     /**
@@ -322,8 +279,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 ((MapContainerPolicy) cp).setElementClass(this.getReferenceClass());
             }
         }
-        if(null != containerAccessor) {
-            containerAccessor.initializeAttributes(this.referenceClass);
+        if(null != getContainerAccessor()) {
+            getContainerAccessor().initializeAttributes(this.referenceClass);
         }
 
     }
@@ -460,8 +417,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
             Object objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
-            if(null != containerAccessor) {
-                containerAccessor.setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
+            if(null != getContainerAccessor()) {
+                getContainerAccessor().setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
             }
         }
         return result;

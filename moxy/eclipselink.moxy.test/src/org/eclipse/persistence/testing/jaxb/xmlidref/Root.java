@@ -24,6 +24,9 @@ public class Root {
     
     @XmlElement(name="address")
 	public Collection<Address> addresses;
+    
+    @XmlElement(name="phone-number")
+    public Collection<PhoneNumber> phoneNumbers;
 	
 	/**
 	 * For the purpose of ID/IDREF  tests, equality will be performed 

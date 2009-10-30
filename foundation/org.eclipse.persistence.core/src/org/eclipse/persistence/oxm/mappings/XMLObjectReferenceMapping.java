@@ -27,11 +27,13 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceListener;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
@@ -54,6 +56,8 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     protected HashMap sourceToTargetKeyFieldAssociations;
     protected Vector sourceToTargetKeys; // maintain the order of the keys
     private boolean isWriteOnly;
+    private BidirectionalPolicy bidirectionalPolicy;
+    
 
     /**
      * PUBLIC:
@@ -63,6 +67,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     public XMLObjectReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap();
         sourceToTargetKeys = new Vector();
+        bidirectionalPolicy = new BidirectionalPolicy();
     }
 
     /**
@@ -306,6 +311,10 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             targetField = (XMLField) targetDescriptor.buildField(targetField);
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
+        
+        if(null != getBidirectionalTargetAccessor()) {
+            getBidirectionalTargetAccessor().initializeAttributes(this.referenceClass);
+        }
     }
     
     public void preInitialize(AbstractSession session) throws DescriptorException {
@@ -416,5 +425,103 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             return;
         }
         super.setAttributeValueInObject(object, value);
+    } 
+    
+    /**
+     * Gets the AttributeAccessor that is used to get and set the value of the
+     * container on the target object.
+     */
+    public AttributeAccessor getBidirectionalTargetAccessor() {
+        return this.bidirectionalPolicy.getBidirectionalTargetAccessor();
+    }
+    
+    /**
+     * Sets the AttributeAccessor that is used to get and set the value of the 
+     * container on the target object.
+     * 
+     * @param anAttributeAccessor - the accessor to be used.
+     */
+    public void setBidirectionalTargetAccessor(AttributeAccessor anAttributeAccessor) {
+        this.bidirectionalPolicy.setBidirectionalTargetAccessor(anAttributeAccessor);
+    }
+    
+    /**
+     * Sets the name of the backpointer attribute on the target object. Used to 
+     * populate the backpointer. If the specified attribute doesn't exist on 
+     * the reference class of this mapping, a DescriptorException will be thrown
+     * during initialize.
+     * 
+     * @param attributeName - the name of the backpointer attribute to be populated
+     */
+    public void setBidirectionalTargetAttributeName(String attributeName) {
+        this.bidirectionalPolicy.setBidirectionalTargetAttributeName(attributeName);
+    }
+    
+    /**
+     * Gets the name of the backpointer attribute on the target object. Used to 
+     * populate the backpointer.
+     */    
+    public String getBidirectionalTargetAttributeName() {
+        return this.bidirectionalPolicy.getBidirectionalTargetAttributeName();
+    }
+    
+    /**
+     * Sets the method name to be used when accessing the value of the back pointer 
+     * on the target object of this mapping. If the specified method doesn't exist
+     * on the reference class of this mapping, a DescriptorException will be thrown
+     * during initialize.
+     * 
+     * @param methodName - the getter method to be used.
+     */
+    public void setBidirectionalTargetGetMethodName(String methodName) {
+        this.bidirectionalPolicy.setBidirectionalTargetGetMethodName(methodName);
+    }
+    
+    /**
+     * Sets the name of the method to be used when setting the value of the back pointer 
+     * on the target object of this mapping. If the specified method doesn't exist
+     * on the reference class of this mapping, a DescriptorException will be thrown
+     * during initialize.
+     * 
+     * @param methodName - the setter method to be used.
+     */
+    public void setBidirectionalTargetSetMethodName(String methodName) {
+        this.bidirectionalPolicy.setBidirectionalTargetSetMethodName(methodName);
     }    
+    
+    /**
+     * Gets the name of the method to be used when accessing the value of the 
+     * back pointer on the target object of this mapping.
+     */    
+    public String getBidirectionalTargetGetMethodName() {
+        return this.bidirectionalPolicy.getBidirectionalTargetGetMethodName();
+    }
+    
+    /**
+     * Gets the name of the method to be used when setting the value of the 
+     * back pointer on the target object of this mapping.
+     */    
+    public String getBidirectionalTargetSetMethodName() {
+        return this.bidirectionalPolicy.getBidirectionalTargetSetMethodName();
+    }  
+    
+    public ContainerPolicy getBidirectionalTargetContainerPolicy() {
+        return this.bidirectionalPolicy.getBidirectionalTargetContainerPolicy();
+    }
+    
+    public void setBidirectionalTargetContainerPolicy(ContainerPolicy cp) {
+        this.bidirectionalPolicy.setBidirectionalTargetContainerPolicy(cp);
+    }
+    
+    public void setBidirectionalTargetContainerClass(Class cls) {
+        this.bidirectionalPolicy.setBidirectionalTargetContainerClass(cls);
+    }
+    
+    public BidirectionalPolicy getBidirectionalPolicy() {
+        return this.bidirectionalPolicy;
+    }
+    
+    public void setBirdirectionalPolicy(BidirectionalPolicy policy) {
+        this.bidirectionalPolicy = policy;
+    }
 }

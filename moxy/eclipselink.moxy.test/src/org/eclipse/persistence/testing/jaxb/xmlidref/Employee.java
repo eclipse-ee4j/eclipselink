@@ -12,11 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlidref;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.eclipse.persistence.oxm.annotations.XmlBidirectional;
 
 @XmlRootElement(name="employee")
 public class Employee {
@@ -29,7 +34,13 @@ public class Employee {
     
     @XmlIDREF
     @XmlAttribute(name="address-id")
+    @XmlBidirectional(targetAttribute = "emp")
     public Address address;
+    
+    @XmlIDREF
+    @XmlElement(name="phone-id")
+    @XmlBidirectional(targetAttribute = "emp")
+    public Collection<PhoneNumber> phones;
 
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Employee)) {
@@ -42,6 +53,16 @@ public class Employee {
         if (emp.address == null) {
             return false;
         }
-        return this.address.equals(emp.address);
+        boolean equal = true;
+        equal = equal && address.equals(emp.address);
+        
+        Iterator<PhoneNumber> phones1 = phones.iterator();
+        Iterator<PhoneNumber> phones2 = emp.phones.iterator();
+        
+        while(phones1.hasNext() && phones2.hasNext()) {
+            equal = phones1.next().equals(phones2.next()) && equal;
+        }
+        
+        return equal;
     }
 }
