@@ -64,7 +64,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
     }
     
     public Sequence createUnaryTableSequence() {
-        return new UnaryTableSequence("ADDRESS_SEQ", 40);
+        return new UnaryTableSequence("ADDRESS_SEQ", 40, "COUNTER");
     }
     
     public Sequence createTableSequence() {

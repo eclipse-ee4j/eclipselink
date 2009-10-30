@@ -29,6 +29,12 @@ public class SampleStringSequencingPolicy extends TableSequence {
 
     public SampleStringSequencingPolicy(String name, int size) {
         super(name, size);
+        setPreallocationSize(size);
+    }
+
+    public SampleStringSequencingPolicy(String name, String tableName, int size) {
+        super(name, tableName);
+        setPreallocationSize(size);
     }
 
     protected Vector createVector(Number sequence, String seqName, int size) {

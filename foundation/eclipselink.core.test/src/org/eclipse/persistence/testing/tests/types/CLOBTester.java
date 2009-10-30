@@ -111,14 +111,14 @@ public class CLOBTester extends TypeTester {
     }
 
     /**
-     *Return a platform independant definition of the database table.
+     *Return a platform independent definition of the database table.
      */
     public static TableDefinition tableDefinition(Session session) {
         TableDefinition definition = TypeTester.tableDefinition();
 
         definition.setName("CLOBS");
 
-        definition.addField("THECLOB", Character[].class);
+        definition.addField("THECLOB", Character[].class, 25000);
         return definition;
     }
 

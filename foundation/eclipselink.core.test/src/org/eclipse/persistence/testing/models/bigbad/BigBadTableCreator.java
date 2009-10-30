@@ -116,18 +116,21 @@ public class BigBadTableCreator extends TableCreator {
             field.setName("LSTRING_DATA" + indexString);
             field.setTypeName("CLOB");
             field.setShouldAllowNull(true);
+            field.setSize(500);
             table.addField(field);
         }
         // blob	
         FieldDefinition field = new FieldDefinition();
         field.setName("BLOB_DATA");
         field.setTypeName("BLOB");
+        field.setSize(1000);
         field.setShouldAllowNull(true);
         table.addField(field);
         // serialized blob
         field = new FieldDefinition();
         field.setName("SER_DATA");
         field.setTypeName("BLOB");
+        field.setSize(10000);
         field.setShouldAllowNull(true);
         table.addField(field);
         // numbers

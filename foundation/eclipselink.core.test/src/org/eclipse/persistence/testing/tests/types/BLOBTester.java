@@ -97,7 +97,7 @@ public class BLOBTester extends TypeTester {
         TableDefinition definition = TypeTester.tableDefinition();
 
         definition.setName("BLOBS");
-        definition.addField("BLOB_", Byte[].class);
+        definition.addField("BLOB_", Byte[].class, 33000);
         return definition;
     }
 
