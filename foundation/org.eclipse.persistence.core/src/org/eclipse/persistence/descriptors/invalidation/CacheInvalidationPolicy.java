@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.invalidation;
 
+import java.util.Random;
+
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
@@ -22,18 +24,43 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
  * By default in EclipseLink, objects do not expire in the cache.  Several different policies
  * are available to allow objects to expire.  These can be set on the ClassDescriptor.
  * @see org.eclipse.persistence.descriptors.ClassDescriptor
- * @see org.eclipse.persistence.descriptors.cacheinvalidation.NoExpiryCacheInvalidationPolicy
- * @see org.eclipse.persistence.descriptors.cacheinvalidation.DailyCacheInvalidationPolicy
- * @see org.eclipse.persistence.descriptors.cacheinvalidation.TimeToLiveCacheInvalidationPolicy
+ * @see org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy
+ * @see org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy
+ * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy
  */
 public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     public static final long NO_EXPIRY = -1;
 
-    /** this will represent objects that do not expire */
+    /** This will represent objects that do not expire. */
     protected boolean shouldUpdateReadTimeOnUpdate = false;
 
     /** Determines if expired object registered in the unit of work should be refreshed, default true. */
     protected boolean shouldRefreshInvalidObjectsInUnitOfWork = true;
+    
+    /** Allows the timeToLive to be randomized to avoid bottlenecks. */
+    protected boolean isInvalidationRandomized = false;
+    
+    /** Random used for randomized invalidation. */
+    protected Random random;
+
+    /**
+     * PUBLIC:
+     * Allows the timeToLive to be randomized to avoid bottlenecks.
+     */
+    public boolean isInvalidationRandomized() {
+        return isInvalidationRandomized;
+    }
+
+    /**
+     * PUBLIC:
+     * Allows the timeToLive to be randomized to avoid bottlenecks.
+     */
+    public void setIsInvalidationRandomized(boolean isInvalidationRandomized) {
+        this.isInvalidationRandomized = isInvalidationRandomized;
+        if (isInvalidationRandomized) {
+            this.random = new Random();
+        }
+    }
     
     /**
      * INTERNAL:

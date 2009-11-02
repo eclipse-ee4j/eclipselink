@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.invalidation;
 
+import java.util.Random;
+
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
@@ -23,6 +25,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * @see CacheInvalidationPolicy
  */
 public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
+    /** Number of milliseconds before invalidation. */
     protected long timeToLive = 0;
 
     /**
@@ -41,18 +44,24 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
     public TimeToLiveCacheInvalidationPolicy(long timeToLive) {
         this.timeToLive = timeToLive;
     }
-
+    
     /**
      * INTERNAL:
-     * return the next expiry time
+     * Return the next expiry time.
      */
     public long getExpiryTimeInMillis(CacheKey key) {
-        return key.getReadTime() + timeToLive;
+        if (this.isInvalidationRandomized) {
+            // If using randomized invalidation, subtract 0-10% of the timeToLive
+            int randomDelta = this.random.nextInt((int)this.timeToLive / 10);
+            return key.getReadTime() + (this.timeToLive - randomDelta);
+        } else {
+            return key.getReadTime() + this.timeToLive;
+        }
     }
 
     /**
      * PUBLIC:
-     * return the time-to-live specified for this policy
+     * Return the time-to-live specified for this policy.
      */
     public long getTimeToLive() {
         return timeToLive;
@@ -71,7 +80,7 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * PUBLIC:
-     * Set the time-to-live specified by this policy
+     * Set the time-to-live specified by this policy.
      */
     public void setTimeToLive(long timeToLive) {
         this.timeToLive = timeToLive;

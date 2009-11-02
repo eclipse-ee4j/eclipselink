@@ -35,12 +35,14 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.history.AsOfSCNClause;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -260,6 +262,9 @@ public class QueryHintsHandler {
             addHint(new ResultSetTypeHint());
             addHint(new ResultSetConcurrencyHint());
             addHint(new IndirectionPolicyHint());
+            addHint(new QueryCacheTypeHint());
+            addHint(new QueryCacheIgnoreNullHint());
+            addHint(new QueryCacheRandomizedExpiryHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -910,6 +915,61 @@ public class QueryHintsHandler {
     }
 
     /**
+     * Define the query cache ignore null hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheIgnoreNullHint extends Hint {
+        QueryCacheIgnoreNullHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_IGNORE_NULL, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isReadQuery()) {
+                if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
+                    ((ReadQuery)query).cacheQueryResults();
+                }
+                ((ReadQuery)query).getQueryResultsCachePolicy().setIsNullIgnored(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Define the query cache randomized expiry hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheRandomizedExpiryHint extends Hint {
+        QueryCacheRandomizedExpiryHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isReadQuery()) {
+                if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
+                    ((ReadQuery)query).cacheQueryResults();
+                }
+                if (((ReadQuery)query).getQueryResultsCachePolicy().getCacheInvalidationPolicy() == null) {
+                    ((ReadQuery)query).getQueryResultsCachePolicy().setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy());
+                }
+                ((ReadQuery)query).getQueryResultsCachePolicy().getCacheInvalidationPolicy().setIsInvalidationRandomized(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
      * Define the query cache size hint.
      * Only reset the query cache if unset (as other query cache properties may be set first).
      */
@@ -956,6 +1016,47 @@ public class QueryHintsHandler {
                             new TimeToLiveCacheInvalidationPolicy(Integer.parseInt((String)valueToApply)));
                 } catch (NumberFormatException exception) {
                     throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.QUERY_RESULTS_CACHE_EXPIRY, valueToApply, exception);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Define the query cache type hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheTypeHint extends Hint {
+        QueryCacheTypeHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_TYPE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isReadQuery()) {
+                ReadQuery readQuery = (ReadQuery)query;
+                if (readQuery.getQueryResultsCachePolicy() == null) {
+                    readQuery.cacheQueryResults();
+                }
+                if (valueToApply == null) {
+                    // Leave as default.
+                } else if (valueToApply.equals(CacheType.SOFT_WEAK.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.SoftCacheWeakIdentityMap_Class);
+                } else if (valueToApply.equals(CacheType.FULL.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.FullIdentityMap_Class);
+                } else if (valueToApply.equals(CacheType.WEAK.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.WeakIdentityMap_Class);
+                }  else if (valueToApply.equals(CacheType.SOFT.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.SoftIdentityMap_Class);
+                } else if (valueToApply.equals(CacheType.HARD_WEAK.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.HardCacheWeakIdentityMap_Class);
+                } else if (valueToApply.equals(CacheType.CACHE.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.CacheIdentityMap_Class);
+                } else if (valueToApply.equals(CacheType.NONE.name())) {
+                    readQuery.getQueryResultsCachePolicy().setCacheType(ClassConstants.NoIdentityMap_Class);
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-query-hint-value",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));

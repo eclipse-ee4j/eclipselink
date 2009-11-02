@@ -110,6 +110,36 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setCacheInvalidationPolicy(org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy)
      */
     public static final String QUERY_RESULTS_CACHE_EXPIRY = "eclipselink.query-results-cache.expiry";
+
+    /**
+     * "eclipselink.query-results-cache.randomize-expiry"
+     * <p>Configures a randomization on the expiry invalidation time.
+     * This can be used to avoid bottlenecks from the cached values expiring at the same time.
+     * By default expiry is not randomized.
+     * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
+     * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy#setInvalidationRandomized(boolean)
+     */
+    public static final String QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY = "eclipselink.query-results-cache.randomize-expiry";
+
+    /**
+     * "eclipselink.query-results-cache.ignore-null"
+     * <p>Configures null results to not be cached.
+     * This can be used to use the query cache as a secondary key index, and allow inserts of new objects.
+     * By default null results are cached.
+     * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
+     * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setIsNullIgnored(boolean)
+     */
+    public static final String QUERY_RESULTS_CACHE_IGNORE_NULL = "eclipselink.query-results-cache.ignore-null";
+    
+    /**
+     * "eclipselink.query-results-cache.type"
+     * <p>Configures the cache type of the query's results cache.
+     * By default the a fixed sized LRU cache is used (CACHE).
+     * Valid values are defined in the CacheType enum (as Strings).
+     * @see org.eclipse.persistence.annotations.CacheType
+     * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setCacheType(java.lang.Class)
+     */
+    public static final String QUERY_RESULTS_CACHE_TYPE = "eclipselink.query-results-cache.type";
     
     /**
      * "eclipselink.query-results-cache.expiry-time-of-day"

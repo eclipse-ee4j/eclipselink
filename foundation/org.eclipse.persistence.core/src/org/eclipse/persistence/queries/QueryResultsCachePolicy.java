@@ -13,6 +13,7 @@
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.descriptors.invalidation.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 
 /**
  * PUBLIC:
@@ -26,8 +27,36 @@ import org.eclipse.persistence.descriptors.invalidation.*;
  * @see org.eclipse.persistence.queries.ReadQuery#setQueryCachePolicy(QueryResultsCachePolicy)
  */
 public class QueryResultsCachePolicy implements java.io.Serializable {
+    /** Allows invalidation to be specified. */
     protected CacheInvalidationPolicy invalidationPolicy;
-    protected int maximumResultSets = 0;
+    /** Specifies the cache size. */
+    protected int maximumResultSets;
+    /** Allows the identity map class type to be set. */
+    protected Class cacheType;
+    /** Allows the caching of null to be configured. */
+    protected boolean isNullIgnored;
+
+    /**
+     * PUBLIC:
+     * Return if null results should be cached or ignored.
+     * By default they are cached.
+     * They can be ignored to allow a query cache to be used as a secondary cache index,
+     * and allow new objects to be insert, and still found.
+     */
+    public boolean isNullIgnored() {
+        return isNullIgnored;
+    }
+
+    /**
+     * PUBLIC:
+     * Set if null results should be cached or ignored.
+     * By default they are cached.
+     * They can be ignored to allow a query cache to be used as a secondary cache index,
+     * and allow new objects to be insert, and still found.
+     */
+    public void setIsNullIgnored(boolean isNullIgnored) {
+        this.isNullIgnored = isNullIgnored;
+    }
 
     /**
      * PUBLIC:
@@ -49,6 +78,65 @@ public class QueryResultsCachePolicy implements java.io.Serializable {
     public QueryResultsCachePolicy(CacheInvalidationPolicy policy, int maximumResultSets) {
         this.invalidationPolicy = policy;
         this.maximumResultSets = maximumResultSets;
+        this.cacheType = ClassConstants.CacheIdentityMap_Class;
+        this.isNullIgnored = false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the type of the cache used for the query results.
+     * This defaults to a LRU cache (CacheIdentityMap), but can be
+     * set to any IdentityMap class, such as Full or Soft.
+     */
+    public Class getCacheType() {
+        return cacheType;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of the cache used for the query results.
+     * This defaults to a LRU cache (CacheIdentityMap), but can be
+     * set to any IdentityMap class, such as Full or Soft.
+     */
+    public void setCacheType(Class cacheType) {
+        this.cacheType = cacheType;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of the cache used for the query results to a FullIdentityMap.
+     * This will cache all query results, so caution should be used to avoid running out of memory.
+     */
+    public void useFullCache() {
+        setCacheType(ClassConstants.FullIdentityMap_Class);
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of the cache used for the query results to a SoftIdentityMap.
+     * This will cache all query results, unless the JVM believes memory is low.
+     */
+    public void useSoftCache() {
+        setCacheType(ClassConstants.SoftIdentityMap_Class);
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of the cache used for the query results to a SoftCacheWeakIdentityMap.
+     * This will uses a fixed size LRU cache using Soft references, so will allow garbage collection when memory is low.
+     */
+    public void useSoftLRUCache() {
+        setCacheType(ClassConstants.SoftCacheWeakIdentityMap_Class);
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of the cache used for the query results to a CacheIdentityMap.
+     * This will uses a fixed size LRU cache.
+     * This is the default.
+     */
+    public void useLRUCache() {
+        setCacheType(ClassConstants.CacheIdentityMap_Class);
     }
 
     /**

@@ -51,11 +51,11 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * return the next expiry time
+     * Return the next expiry time.
      */
     public long getExpiryTimeInMillis(CacheKey key) {
         incrementExpiry();
-        return expiryTime.getTimeInMillis();
+        return this.expiryTime.getTimeInMillis();
     }
 
     /**
