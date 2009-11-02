@@ -12,22 +12,25 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jaxb;
 
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import java.lang.reflect.Method;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.DomHandler;
-
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.jaxb.JAXBErrorHandler;
 import javax.xml.transform.Source;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import org.xml.sax.ErrorHandler;
-import javax.xml.bind.ValidationEventHandler;
 
+import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.JAXBErrorHandler;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -45,28 +48,31 @@ import javax.xml.bind.ValidationEventHandler;
 public class DomHandlerConverter implements XMLConverter {
 	private DomHandler domHandler;
 	private XMLTransformer xmlTransformer;
-	private Class<? extends DomHandler> domHandlerClass;
+	private String domHandlerClassName;
 	private Class elementClass;
 	private Class resultType;
 	
-	public DomHandlerConverter(Class<? extends DomHandler> domHandlerClass) {
-		this.domHandlerClass = domHandlerClass;
+	public DomHandlerConverter(String domHandlerClassName) {
+		this.domHandlerClassName = domHandlerClassName;
 	}
 	
 	public void initialize(DatabaseMapping mapping, Session session) {
 		try {
+		    ConversionManager cMgr = session.getDatasourcePlatform().getConversionManager();
+		    Class<? extends DomHandler> domHandlerClass = cMgr.convertClassNameToClass(domHandlerClassName);
+		    
 			this.domHandler = domHandlerClass.newInstance();
-			java.lang.reflect.Method createUnmarshallerMethod = domHandlerClass.getDeclaredMethod("createUnmarshaller", new Class[]{ValidationEventHandler.class});
+			
+			Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class[]{ValidationEventHandler.class}); 
 			resultType = createUnmarshallerMethod.getReturnType();
 			
-			java.lang.reflect.Method getElementMethod = domHandlerClass.getDeclaredMethod("getElement", new Class[]{resultType});
+            Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class[]{resultType});
 			elementClass = getElementMethod.getReturnType();
-			xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
 			
+			xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
 			xmlTransformer.setFormattedOutput(true);
 		} catch(Exception ex) {
-			//TODO Throw Appropriate Exception
-			ex.printStackTrace();
+		    throw JAXBException.couldNotInitializeDomHandlerConverter(ex, domHandlerClassName, mapping.getAttributeName());
 		}
 	}
 	

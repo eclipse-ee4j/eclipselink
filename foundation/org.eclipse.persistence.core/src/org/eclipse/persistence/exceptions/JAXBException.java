@@ -59,6 +59,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_CUSTOMIZER_CLASS = 50029;
     public static final int ID_ALREADY_SET = 50030;
     public static final int XMLVALUE_ALREADY_SET = 50031;
+    public static final int XMLANYELEMENT_ALREADY_SET = 50032;
+    public static final int COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER = 50033;
     
     protected JAXBException(String message) {
         super(message);
@@ -346,6 +348,14 @@ public class JAXBException extends EclipseLinkException {
         return exception;
     }
     
+    /**
+     * This exception would typically be thrown when a customizer class is set
+     * that is not an instance of DescriptorCustomizer. 
+     * 
+     * @param e
+     * @param customizerClassName
+     * @return
+     */
     public static JAXBException invalidCustomizerClass(Exception e, String customizerClassName) {
         Object[] args = { customizerClassName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_CUSTOMIZER_CLASS, args), e);
@@ -374,7 +384,7 @@ public class JAXBException extends EclipseLinkException {
      * when one has already been set.
      *  
      * @param propertyName attempting to set this property as XmlValue
-     * @param idPropertyName existing XmlValue property
+     * @param xmlValuePropertyName existing XmlValue property
      * @param className class in question
      * @return
      */
@@ -382,6 +392,37 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { className, propertyName, xmlValuePropertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLVALUE_ALREADY_SET, args));
         exception.setErrorCode(XMLVALUE_ALREADY_SET);
+        return exception;
+    }
+
+    /**
+     * This exception should be used when an attempt is made to set an XmlAnyElement 
+     * property when one has already been set.
+     *  
+     * @param propertyName attempting to set this property as XmlAnyElement
+     * @param xmlAnyElementPropertyName existing XmlAnyElement property
+     * @param className class in question
+     * @return
+     */
+    public static JAXBException xmlAnyElementAlreadySet(String propertyName, String xmlAnyElementPropertyName, String className) {
+        Object[] args = { className, propertyName, xmlAnyElementPropertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLANYELEMENT_ALREADY_SET, args));
+        exception.setErrorCode(XMLANYELEMENT_ALREADY_SET);
+        return exception;
+    }
+    
+    /**
+     * This exception should be used when DomHandlerConverter initialization fails.
+     *  
+     * @param nestedException
+     * @param domHandlerClassName
+     * @param propertyName
+     * @return
+     */
+    public static JAXBException couldNotInitializeDomHandlerConverter(Exception nestedException, String domHandlerClassName, String propertyName) {
+        Object[] args = { domHandlerClassName, propertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER, args), nestedException);
+        exception.setErrorCode(COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER);
         return exception;
     }
 }

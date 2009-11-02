@@ -522,6 +522,12 @@ public class SchemaGenerator {
                 	} else {
                 	    any.setProcessContents("skip");
                 	}
+                	
+                	if (isCollectionType(next)) {
+                        any.setMinOccurs(Occurs.ZERO);
+                        any.setMaxOccurs(Occurs.UNBOUNDED);
+                	}
+                	
                     if (parentCompositor instanceof Sequence) {
                         ((Sequence)parentCompositor).addAny(any);
                     } else if (parentCompositor instanceof Choice) {

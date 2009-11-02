@@ -294,7 +294,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
-        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader, properties);
             jaxbContext.generateSchema(outputResolver);
@@ -310,7 +309,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver) throws Exception {
-        //JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader);
             jaxbContext.generateSchema(outputResolver);

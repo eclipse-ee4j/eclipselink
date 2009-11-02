@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -27,6 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
+ *       &lt;all>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
+ *       &lt;/all>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="dom-handler" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.W3CDomHandler" />
@@ -38,17 +42,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+    "xmlJavaTypeAdapter"
+})
 public class XmlAnyElement
     extends JavaAttribute
 {
 
+    @XmlElement(name = "xml-java-type-adapter", required = true)
+    protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
     @XmlAttribute
     protected Boolean lax;
     @XmlAttribute(name = "dom-handler")
     protected String domHandler;
+
+    /**
+     * Gets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Sets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        this.xmlJavaTypeAdapter = value;
+    }
 
     /**
      * Gets the value of the xmlMixed property.

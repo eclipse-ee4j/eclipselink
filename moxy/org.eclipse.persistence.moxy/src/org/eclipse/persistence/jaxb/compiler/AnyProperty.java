@@ -11,8 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
+
 import org.eclipse.persistence.jaxb.javamodel.Helper;
-import javax.xml.bind.annotation.DomHandler;
 
 /**
  *  INTERNAL:
@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.DomHandler;
  */
 public class AnyProperty extends Property {
 	private boolean lax;
-	private Class<? extends DomHandler> domHandlerClass;
-	
+    private String domHandlerClassName;
+    
 	public AnyProperty(Helper helper) {
 		super(helper);
 	}
@@ -52,12 +52,21 @@ public class AnyProperty extends Property {
 		lax = b;
 	}
 	
-	public void setDomHandlerClass(Class<? extends DomHandler> domHandlerClass) {
-		this.domHandlerClass = domHandlerClass;
-	}
-	
-	public Class<? extends DomHandler> getDomHandlerClass() {
-		return this.domHandlerClass;
-	}
-	
+	/**
+	 * Return the DomHandler class name.
+	 * 
+	 * @return
+	 */
+    public String getDomHandlerClassName() {
+        return domHandlerClassName;
+    }
+
+    /**
+     * Set the DomHandler class name.
+     * 
+     * @param domHandlerClassName
+     */
+    public void setDomHandlerClassName(String domHandlerClassName) {
+        this.domHandlerClassName = domHandlerClassName;
+    }
 }

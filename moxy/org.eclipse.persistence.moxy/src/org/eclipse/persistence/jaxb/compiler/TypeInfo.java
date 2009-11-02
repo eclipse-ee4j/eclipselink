@@ -75,12 +75,11 @@ public class TypeInfo {
     private String factoryMethodName;
     private String[] factoryMethodParamTypes;
     private Property xmlValueProperty;
+
     private boolean isMixed;
     private boolean isTransient;
-
     private boolean isPreBuilt;
     private boolean isPostBuilt;
-
     private boolean isSetXmlTransient;
     private boolean isAnyAttributeProperty;
 
@@ -91,7 +90,9 @@ public class TypeInfo {
     private XmlAccessOrder xmlAccessOrder;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private String xmlCustomizer;
-    
+
+    private String anyElementPropertyName;
+
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
      * processing.  Other fields are initialized here as well.
@@ -722,5 +723,32 @@ public class TypeInfo {
      */
     public void setXmlCustomizer(String xmlCustomizerClassName) {
         this.xmlCustomizer = xmlCustomizerClassName;
+    }
+    
+    /**
+     * Indicates if the name of the XmlAnyElement property has been set.
+     * 
+     * @return
+     */
+    public boolean isSetAnyElementPropertyName() {
+        return getAnyElementPropertyName() != null;
+    }
+
+    /**
+     * Return the name of the XmlAnyElement property, if one is set.
+     * 
+     * @return
+     */
+    public String getAnyElementPropertyName() {
+        return anyElementPropertyName;
+    }
+
+    /**
+     * Set the name of the XmlAnyElement property
+     * 
+     * @param anyElementPropertyName
+     */
+    public void setAnyElementPropertyName(String anyElementPropertyName) {
+        this.anyElementPropertyName = anyElementPropertyName;
     }
 }

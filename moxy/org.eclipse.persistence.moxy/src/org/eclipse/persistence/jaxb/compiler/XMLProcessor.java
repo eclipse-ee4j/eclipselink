@@ -261,7 +261,7 @@ public class XMLProcessor {
         if (javaAttribute instanceof XmlAnyAttribute) {
             return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlAnyElement) {
-            return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty);
+            return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlAttribute) {
             return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, nsInfo);
         } else if (javaAttribute instanceof XmlElement) {
@@ -299,8 +299,52 @@ public class XMLProcessor {
         return oldProperty;
     }
 
-    private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty) {
-        return oldProperty;
+    /**
+     * Handle xml-any-element.  If the property was annotated with @XmlAnyElement in code all
+     * values will be overridden.  
+     * 
+     * @param xmlAnyElement
+     * @param oldProperty
+     * @return
+     */
+    private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
+        // if there was an @XmlAnyElement annotation in the class, override the values
+        if (oldProperty.isAny()) {
+            AnyProperty anyProp = (AnyProperty) oldProperty;
+            anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
+            anyProp.setLax(xmlAnyElement.isLax());
+            anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
+            
+            if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
+                anyProp.setXmlJavaTypeAdapter(xmlAnyElement.getXmlJavaTypeAdapter());
+            } else if (oldProperty.isSetXmlJavaTypeAdapter()) {
+                anyProp.setXmlJavaTypeAdapter(null);
+            }
+            
+            return anyProp;
+        }
+
+        // if oldProperty is not an Any property and the TypeInfo has one set, throw an error
+        if (tInfo.isSetAnyElementPropertyName()) {
+            throw JAXBException.xmlAnyElementAlreadySet(oldProperty.getPropertyName(), tInfo.getAnyElementPropertyName(), javaType.getName());
+        }
+        
+        // need to create a new AnyProperty and copy over existing values
+        AnyProperty anyProp = new AnyProperty(aProcessor.getHelper());
+        anyProp.setPropertyName(oldProperty.getPropertyName());
+        anyProp.setElement(oldProperty.getElement());
+        anyProp.setType(oldProperty.getType());
+        anyProp.setSchemaName(oldProperty.getSchemaName());
+        
+        anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
+        anyProp.setLax(xmlAnyElement.isLax());
+        anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
+        
+        if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
+            anyProp.setXmlJavaTypeAdapter(xmlAnyElement.getXmlJavaTypeAdapter());
+        }
+        
+        return anyProp;
     }
 
     /**

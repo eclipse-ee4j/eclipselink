@@ -601,13 +601,14 @@ public class MappingsGenerator {
 
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
         boolean isLax = false;
-        Class domHandlerClass = null;
+        String domHandlerClassName = null;
         
-        if(property instanceof AnyProperty) {
+        if (property instanceof AnyProperty) {
             AnyProperty prop = (AnyProperty)property;
             isLax = prop.isLax();
-            domHandlerClass = prop.getDomHandlerClass();
+            domHandlerClassName = prop.getDomHandlerClassName();
         }
+        
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
@@ -626,7 +627,7 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        if(!isMixed) {
+        if (!isMixed) {
             mapping.setUseXMLRoot(true);
         }
 
@@ -634,17 +635,17 @@ public class MappingsGenerator {
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
 
-        if(isLax) {
+        if (isLax) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
         }
-        if(domHandlerClass != null) {
-            jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(domHandlerClass));
+        if (domHandlerClassName != null) {
+            jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(domHandlerClassName));
         }
         descriptor.addMapping(mapping);
         mapping.setMixedContent(isMixed);
-        if(isMixed) {
+        if (isMixed) {
             mapping.setPreserveWhitespaceForMixedContent(true);
         }
         return mapping;

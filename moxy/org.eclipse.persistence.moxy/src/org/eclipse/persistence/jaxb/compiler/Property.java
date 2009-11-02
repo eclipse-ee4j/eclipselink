@@ -386,8 +386,13 @@ public class Property {
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
         this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
-        // set the adapter class
-        setAdapterClass(helper.getJavaClass(xmlJavaTypeAdapter.getValue()));
+        if (xmlJavaTypeAdapter == null) {
+            adapterClass = null;
+            setType(originalType);
+        } else {
+            // set the adapter class
+            setAdapterClass(helper.getJavaClass(xmlJavaTypeAdapter.getValue()));
+        }
     }
     
     /**

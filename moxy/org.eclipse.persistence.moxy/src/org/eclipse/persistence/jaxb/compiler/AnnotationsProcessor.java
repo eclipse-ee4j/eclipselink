@@ -1020,8 +1020,9 @@ public class AnnotationsProcessor {
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {                	
             property = new AnyProperty(helper);
             XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
-            ((AnyProperty) property).setDomHandlerClass(anyElement.value());
+            ((AnyProperty) property).setDomHandlerClassName(anyElement.value().getName());
             ((AnyProperty) property).setLax(anyElement.lax());
+            info.setAnyElementPropertyName(propertyName);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
             property = buildReferenceProperty(info, cls, javaHasAnnotations, propertyName, ptype);
         } else {
@@ -2943,5 +2944,14 @@ public class AnnotationsProcessor {
             logger = new JAXBMetadataLogger();
         }
         return logger;
+    }
+    
+    /**
+     * Return the Helper object set on this processor.
+     * 
+     * @return
+     */
+    Helper getHelper() {
+        return this.helper;
     }
 }
