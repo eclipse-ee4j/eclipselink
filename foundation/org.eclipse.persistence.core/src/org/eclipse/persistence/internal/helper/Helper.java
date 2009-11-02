@@ -2157,8 +2157,8 @@ public class Helper implements Serializable {
     public static boolean isEquivalentToNull(Object value) {
         return (value == null)
                         || (!isZeroValidPrimaryKey
-                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() <= 0L))
-                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() <= 0))));
+                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
+                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
     }
 
     /**
