@@ -122,11 +122,14 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * Indicate if the next XPathFragment is an attribute or text() node.
      */
     public boolean isOwningNode(XPathFragment xPathFragment) {
-        if (xmlCollectionReferenceMapping.usesSingleNode()) {
-            return xPathFragment.nameIsText() || xPathFragment.isAttribute();
+        if(isMarshalNodeValue()) {
+            if (xmlCollectionReferenceMapping.usesSingleNode()) {
+                return xPathFragment.nameIsText() || xPathFragment.isAttribute();
+            }
+            XPathFragment nextFragment = xPathFragment.getNextFragment();
+            return (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
         }
-        XPathFragment nextFragment = xPathFragment.getNextFragment();
-        return (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
+        return super.isOwningNode(xPathFragment);
     }
 
     public boolean isContainerValue() {
@@ -176,7 +179,13 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 objectValue = cp.next(iterator, session);
                 Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, session);
                 if (fieldValue == null) {
-                    return false;
+                    if(null != objectValue) {
+                        XMLField fkField = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+                        fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(objectValue, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+                    }
+                    if(null == fieldValue) {
+                        return false;
+                    }
                 }
                 schemaType = getSchemaType(xmlField, fieldValue, session);
                 newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
@@ -260,6 +269,11 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
+    }
+
+    @Override
+    public boolean isMarshalNodeValue() {
+        return xmlCollectionReferenceMapping.getFields().size() == 1 || xmlCollectionReferenceMapping.usesSingleNode();
     }
 
 }

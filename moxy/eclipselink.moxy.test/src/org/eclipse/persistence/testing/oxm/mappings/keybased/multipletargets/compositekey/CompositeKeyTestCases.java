@@ -16,12 +16,30 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.attributekey.CompositeAttributeKeysTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyEmptyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyNSTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeySingleNodeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingEmptyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingNSTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingSingleNodeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.nestedattributekey.NestedAttributeKeyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyWithGroupingTestCases;
 
 public class CompositeKeyTestCases extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Multiple targets with composite key test suite");
         suite.addTestSuite(CompositeAttributeKeysTestCases.class);
+        suite.addTestSuite(CompositeElementKeyTestCases.class);
+        suite.addTestSuite(CompositeElementKeyWithGroupingTestCases.class);
+        suite.addTestSuite(CompositeElementKeyNSTestCases.class);
+        suite.addTestSuite(CompositeElementKeyWithGroupingNSTestCases.class);
+        suite.addTestSuite(CompositeElementKeyEmptyTestCases.class);
+        suite.addTestSuite(CompositeElementKeyWithGroupingEmptyTestCases.class);
+        suite.addTestSuite(CompositeElementKeySingleNodeTestCases.class);
+        suite.addTestSuite(CompositeElementKeyWithGroupingSingleNodeTestCases.class);
         suite.addTestSuite(NestedAttributeKeyTestCases.class);
         return suite;
     }
@@ -30,4 +48,5 @@ public class CompositeKeyTestCases extends TestCase {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.CompositeKeyTestCases"};
         junit.textui.TestRunner.main(arguments);
     }
+
 }

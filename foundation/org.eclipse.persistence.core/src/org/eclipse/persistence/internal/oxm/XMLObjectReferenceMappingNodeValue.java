@@ -155,7 +155,13 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
-            return false;
+            if(null != targetObject) {
+                XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+                fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+            }
+            if(null == fieldValue) {
+                return false;
+            }
         }
 
         QName schemaType = getSchemaType(xmlField, fieldValue, session);

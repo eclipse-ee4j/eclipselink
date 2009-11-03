@@ -258,10 +258,18 @@ public class UnmarshalXPathEngine {
 
     private Node selectSingleAttribute(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
         if (xPathFragment.hasNamespace()) {
-            String attributeNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-            return contextNode.getAttributes().getNamedItemNS(attributeNamespaceURI, xPathFragment.getLocalName());
+            if(Node.ELEMENT_NODE == contextNode.getNodeType()) {
+                String attributeNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+                return contextNode.getAttributes().getNamedItemNS(attributeNamespaceURI, xPathFragment.getLocalName());
+            } else {
+                return null;
+            }
         } else {
-            return contextNode.getAttributes().getNamedItem(xPathFragment.getShortName());
+            if(Node.ELEMENT_NODE == contextNode.getNodeType()) {
+                return contextNode.getAttributes().getNamedItem(xPathFragment.getShortName());
+            } else {
+                return null;
+            }
         }
     }
 

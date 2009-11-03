@@ -81,7 +81,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public void addTransformationMapping(AbstractTransformationMapping transformationMapping) {
-        if (null == getTransformationMappings()) {
+        if (null == this.transformationMappings) {
             this.transformationMappings = new ArrayList();
         }
         transformationMappings.add(transformationMapping);
@@ -96,7 +96,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public void addContainerValue(ContainerValue containerValue) {
-        if (null == getContainerValues()) {
+        if (null == this.containerValues) {
             this.containerValues = new ArrayList();
         }
         this.containerValues.add(containerValue);
@@ -107,7 +107,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public void addNullCapableValue(NullCapableValue nullCapableValue) {
-        if (null == getNullCapableValues()) {
+        if (null == this.nullCapableValues) {
             this.nullCapableValues = new ArrayList();
         }
         this.nullCapableValues.add(nullCapableValue);
@@ -172,7 +172,18 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((XMLFragmentCollectionMapping)xmlMapping);
                 } else if (xmlMapping instanceof XMLCollectionReferenceMapping) {
                     XMLCollectionReferenceMapping xmlColMapping = (XMLCollectionReferenceMapping)xmlMapping;
-                    Iterator fieldIt = xmlColMapping.getFields().iterator();
+                    List fields = xmlColMapping.getFields();
+                    XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
+                    XPathNode branchNode;
+                    if(null == xmlColMappingField) {
+                        if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {
+                            addChild(XPathFragment.SELF_FRAGMENT, new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
+                        }
+                        branchNode = rootXPathNode;
+                    } else {
+                        branchNode = addChild(((XMLField) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
+                    }
+                    Iterator fieldIt = fields.iterator();
                     while (fieldIt.hasNext()) {
                         XMLField xmlFld = (XMLField)fieldIt.next();
                         mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
@@ -182,7 +193,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         if (mappingNodeValue.isNullCapableValue()) {
                             addNullCapableValue((NullCapableValue)mappingNodeValue);
                         }
-                        addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                        branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                     }
                     continue;
                 } else if (xmlMapping instanceof XMLObjectReferenceMapping) {
@@ -283,8 +294,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         }
     }
 
-    public void addChild(XPathFragment xPathFragment, NodeValue nodeValue, NamespaceResolver namespaceResolver) {
-        getRootXPathNode().addChild(xPathFragment, nodeValue, namespaceResolver);
+    public XPathNode addChild(XPathFragment xPathFragment, NodeValue nodeValue, NamespaceResolver namespaceResolver) {
+        return getRootXPathNode().addChild(xPathFragment, nodeValue, namespaceResolver);
     }
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session) {
@@ -315,11 +326,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         boolean hasValue = false;
         NamespaceResolver namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
 
-        List attributeChildren = rootXPathNode.getAttributeChildren();
+        List<XPathNode> attributeChildren = rootXPathNode.getAttributeChildren();
         if (null != attributeChildren) {
             for (int x = 0, attributeChildrenSize=attributeChildren.size(); x < attributeChildrenSize; x++) {
-                XPathNode attributeNode = (XPathNode)rootXPathNode.getAttributeChildren().get(x);
-                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
+                hasValue = attributeChildren.get(x).marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
             }
         }
 
@@ -327,11 +337,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
         }
 
-        List selfChildren = rootXPathNode.getSelfChildren();
+        List<XPathNode> selfChildren = rootXPathNode.getSelfChildren();
         if (null != selfChildren) {
             for (int x = 0, selfChildrenSize=selfChildren.size(); x < selfChildrenSize; x++) {
-                XPathNode childNode = (XPathNode)selfChildren.get(x);
-                childNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
+                selfChildren.get(x).marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
             }
         }
 
@@ -375,5 +384,5 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public AbstractRecord createRecord(int size, AbstractSession session) {
         return createRecord(session);
     }
-        
+
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:department xmlns:ns="urn:example">
+   <employee>
+      <id>
+         <id1>1</id1>
+         <ns:id2>A</ns:id2>
+      </id>
+      <team-member>
+          <fk1>2</fk1>
+          <ns:fk2>B</ns:fk2>
+      </team-member>
+      <team-member>
+          <fk1>3</fk1>
+          <ns:fk2>C</ns:fk2>
+      </team-member>
+   </employee>
+   <employee>
+      <id>
+         <id1>2</id1>
+         <ns:id2>B</ns:id2>
+      </id>
+      <manager>
+         <fk1>1</fk1>
+         <ns:fk2>A</ns:fk2>
+      </manager>
+   </employee>
+   <employee>
+      <id>
+         <id1>3</id1>
+         <ns:id2>C</ns:id2>
+      </id>
+      <manager>
+         <fk1>1</fk1>
+         <ns:fk2>A</ns:fk2>
+      </manager>
+   </employee>
+</ns:department>

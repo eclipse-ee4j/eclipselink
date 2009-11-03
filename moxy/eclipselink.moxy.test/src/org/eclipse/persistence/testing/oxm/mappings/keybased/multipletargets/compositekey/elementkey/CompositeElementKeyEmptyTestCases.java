@@ -1,31 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.attributekey;
+* Copyright (c) 1998, 2009 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+* Contributors:
+*     bdoughan - Oct 23/2009 - 2.0 - Initial implementation
+******************************************************************************/
+package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Root;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.Employee;
 
-public class CompositeAttributeKeysTestCases extends KeyBasedMappingTestCases {
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/compositekey/attributekey/instance.xml";
+public class CompositeElementKeyEmptyTestCases extends KeyBasedMappingTestCases {
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/compositekey/elementkey/instance-empty.xml";
 
-    public CompositeAttributeKeysTestCases(String name) throws Exception {
+    public CompositeElementKeyEmptyTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setProject(new CompositeAttributeKeysProject());
+        setProject(new CompositeElementKeyProject());
     }
 
     protected Object getControlObject() {
@@ -66,7 +66,6 @@ public class CompositeAttributeKeysTestCases extends KeyBasedMappingTestCases {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
         employee.name = CONTROL_NAME;
-        employee.addresses = addresses;
 
         Root root = new Root();
         root.employee = employee;

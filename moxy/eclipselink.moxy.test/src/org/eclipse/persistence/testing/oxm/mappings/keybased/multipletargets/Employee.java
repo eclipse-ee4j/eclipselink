@@ -18,38 +18,41 @@ import java.util.Iterator;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
 
 public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keybased.Employee {
-	public ArrayList addresses;
+    public ArrayList<Address> addresses;
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Employee)) {
-			return false;
-		}
-		Employee tgtEmp = ((Employee) obj);
-		ArrayList tgtAddresses = tgtEmp.addresses;
-		if (this.addresses == null) {
+    public Employee() {
+        addresses = new ArrayList<Address>();
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Employee)) {
+            return false;
+        }
+        Employee tgtEmp = ((Employee) obj);
+        ArrayList tgtAddresses = tgtEmp.addresses;
+        if (this.addresses == null) {
             return tgtAddresses == null;
-		}
-		
-		if (tgtAddresses == null || tgtAddresses.size() != addresses.size()) {
-			return false;
-		}
-		
-		for (Iterator addIt = this.addresses.iterator(); addIt.hasNext(); ) {
-			Address address = (Address) addIt.next();
-			if (!(tgtAddresses.contains(address))) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public String toString() {
-	    String addressString="";
+        }
+
+        if (tgtAddresses == null || tgtAddresses.size() != addresses.size()) {
+            return false;
+        }
+
         for (Iterator addIt = this.addresses.iterator(); addIt.hasNext(); ) {
             Address address = (Address) addIt.next();
+            if (!(tgtAddresses.contains(address))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public String toString() {
+        String addressString="";
+        for (Address address : addresses) {
             addressString = address.toString();
         }
-	    
-	    return "Employee: id="+ id + ", name=" + name + ", addresses=[" + addressString+"]";
-	}
+        return "Employee: id="+ id + ", name=" + name + ", addresses=[" + addressString+"]";
+    }
+
 }

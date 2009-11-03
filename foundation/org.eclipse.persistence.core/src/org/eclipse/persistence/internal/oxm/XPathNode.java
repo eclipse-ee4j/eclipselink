@@ -109,15 +109,15 @@ public class XPathNode {
         this.parent = parent;
     }
 
-    public List getAttributeChildren() {
+    public List<XPathNode> getAttributeChildren() {
         return this.attributeChildren;
     }
 
-    public List getNonAttributeChildren() {
+    public List<XPathNode> getNonAttributeChildren() {
         return this.nonAttributeChildren;
     }
 
-    public List getSelfChildren() {
+    public List<XPathNode> getSelfChildren() {
         return this.selfChildren;
     }
 
@@ -183,7 +183,7 @@ public class XPathNode {
         }
     }
 
-    public void addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
+    public XPathNode addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
         if (null != anXPathFragment && anXPathFragment.nameIsText()) {
             if (aNodeValue.isOwningNode(anXPathFragment)) {
                 XPathNode textXPathNode = new XPathNode();
@@ -200,7 +200,7 @@ public class XPathNode {
                     nonAttributeChildren = new ArrayList();
                 }
                 nonAttributeChildren.add(textXPathNode);
-                return;
+                return textXPathNode;
             }
         }
 
@@ -255,7 +255,7 @@ public class XPathNode {
                 }
                 setAnyNode(xPathNode);
             }
-            return;
+            return xPathNode;
         }
         boolean isSelfFragment = XPathFragment.SELF_FRAGMENT.equals(anXPathFragment);
 
@@ -289,6 +289,7 @@ public class XPathNode {
             XPathFragment nextFragment = anXPathFragment.getNextFragment();
             xPathNode.addChild(nextFragment, aNodeValue, namespaceResolver);
         }
+        return xPathNode;
     }
 
     public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext) {

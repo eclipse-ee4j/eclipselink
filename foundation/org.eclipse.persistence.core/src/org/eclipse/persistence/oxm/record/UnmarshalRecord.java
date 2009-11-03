@@ -515,12 +515,24 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         // if the object has any primary key fields set, add it to the cache
         if (session.isUnitOfWork()) {
             ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
-            if ((xmlDescriptor != null) && (xmlDescriptor.getPrimaryKeyFieldNames().size() > 0)) {
-                Vector pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
-                CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
-                key.setRecord(this);
-                key.setObject(currentObject);
-                key.releaseDeferredLock();
+            if(null != xmlDescriptor) {
+                List primaryKeyFields = xmlDescriptor.getPrimaryKeyFields();
+                int primaryKeyFieldsSize = primaryKeyFields.size();
+                if (primaryKeyFieldsSize > 0) {
+                    Vector pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
+                    if(pk.contains(null)) {
+                        for(int x=0; x<primaryKeyFieldsSize; x++) {
+                            if(null == pk.get(x)) {
+                                XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
+                                pk.set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
+                            }
+                        }
+                    }
+                    CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
+                    key.setRecord(this);
+                    key.setObject(currentObject);
+                    key.releaseDeferredLock();
+                }
             }
         }
 

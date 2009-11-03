@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -806,5 +808,61 @@ public class XMLDescriptor extends ClassDescriptor {
     public void setResultAlwaysXMLRoot(boolean resultAlwaysXMLRoot) {
         this.resultAlwaysXMLRoot = resultAlwaysXMLRoot;
     }
-    
+
+    @Override
+    public DatabaseField getTypedField(DatabaseField field) {
+        XMLField foundField = (XMLField) super.getTypedField(field);
+        if(null != foundField) {
+            return foundField;
+        }
+        StringTokenizer stringTokenizer = new StringTokenizer(field.getName(), "/");
+        DatabaseField typedField = getTypedField(stringTokenizer);
+        if(null == typedField) {
+            DatabaseMapping selfMapping = objectBuilder.getMappingForField(new XMLField("."));
+            if(null != selfMapping) {
+                return selfMapping.getReferenceDescriptor().getTypedField(field); 
+            }
+        }
+        return typedField;
+    }
+
+    protected DatabaseField getTypedField(StringTokenizer stringTokenizer) {
+        String xPath = ""; 
+        XMLField xmlField = new XMLField(); 
+        xmlField.setNamespaceResolver(namespaceResolver); 
+        while(stringTokenizer.hasMoreElements()) {
+            String nextToken = stringTokenizer.nextToken();
+            xmlField.setXPath(xPath + nextToken);
+            xmlField.initialize();
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
+            if(null == mapping) {
+                XPathFragment xPathFragment = new XPathFragment(nextToken);
+                if(xPathFragment.getIndexValue() > 0) {
+                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.initialize();
+                    mapping = objectBuilder.getMappingForField(xmlField);
+                    if(null != mapping) {
+                        if(mapping.isCollectionMapping()) {
+                            if(mapping.getContainerPolicy().isListPolicy()) {
+                                if(stringTokenizer.hasMoreElements()) {
+                                    return ((XMLDescriptor) mapping.getReferenceDescriptor()).getTypedField(stringTokenizer); 
+                                } else {
+                                    return mapping.getField();
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if(stringTokenizer.hasMoreElements()) {
+                    return ((XMLDescriptor) mapping.getReferenceDescriptor()).getTypedField(stringTokenizer);
+                } else {
+                    return mapping.getField();
+                } 
+            } 
+            xPath = xPath + nextToken + "/"; 
+        }
+        return null; 
+    }
+
 }

@@ -378,6 +378,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
                         <exclude name="**/SAXMappingTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/compositekey/CompositeKeyTestCases.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -412,6 +413,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                         <!--
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
@@ -468,6 +470,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/directtofield/converter/DirectToFieldConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -515,6 +518,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -552,6 +556,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/KeyBasedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
                         <!--
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>

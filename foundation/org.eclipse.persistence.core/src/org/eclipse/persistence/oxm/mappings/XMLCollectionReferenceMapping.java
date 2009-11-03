@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -62,6 +63,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping implements ContainerMapping {
     protected ContainerPolicy containerPolicy; // type of container used to hold the aggregate objects
     private static final String SPACE = " ";
+    private DatabaseField field;
     private boolean usesSingleNode;
     private boolean reuseContainer;
 
@@ -75,6 +77,31 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         sourceToTargetKeys = new NonSynchronizedVector();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
+    }
+
+    public DatabaseField getField() {
+        return field;
+    }
+
+    public void setField(DatabaseField field) {
+        this.field = field;
+    }
+
+    
+    /**
+     * Get the XPath String
+     * @return String the XPath String associated with this Mapping
+     */
+    public String getXPath() {
+        return getField().getName();
+    }
+
+    /**
+     * Set the Mapping field name attribute to the given XPath String
+     * @param xpathString String
+     */
+    public void setXPath(String xpathString) {
+        this.setField(new XMLField(xpathString));
     }
 
     /**    
@@ -141,6 +168,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }        
 
         ClassDescriptor descriptor = session.getClassDescriptor(getReferenceClass());
+        DatabaseField typedField = descriptor.getTypedField(tgtFld);
         Class type = descriptor.getTypedField(tgtFld).getType();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
@@ -166,6 +194,9 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
+        if(null != getField()) {
+            setField(getDescriptor().buildField(getField()));
+        }
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {

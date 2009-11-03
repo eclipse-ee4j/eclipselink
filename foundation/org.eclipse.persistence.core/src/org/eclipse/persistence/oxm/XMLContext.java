@@ -786,8 +786,15 @@ public class XMLContext {
         } 
         Session session = this.getSession(object); 
         XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object); 
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
-        return getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/");
+        T value = getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
+        if(null == value) {
+            DatabaseMapping selfMapping = xmlDescriptor.getObjectBuilder().getMappingForField(new XMLField("."));
+            if(null != selfMapping) {
+                return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(), new StringTokenizer(xPath, "/"), ((XMLDescriptor) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
+            }
+        }
+        return value;
     } 
  
     private <T> T getValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {

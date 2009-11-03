@@ -15,14 +15,16 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.SingleKeyTestCases;
+
 //import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.CompositeKeyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.SingleKeyTestCases;
 
 public class MultipleTargetTestCases extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Multiple target test suite");
         suite.addTest(SingleKeyTestCases.suite());
-        // Keep the composite key test suite commented out until bug# 5683210 is addressed
+
+        // Testing fix for bug# 5683210
         //suite.addTest(CompositeKeyTestCases.suite());
         return suite;
     }
