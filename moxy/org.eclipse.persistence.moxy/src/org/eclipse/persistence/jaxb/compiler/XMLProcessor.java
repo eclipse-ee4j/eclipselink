@@ -263,9 +263,9 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlAnyElement) {
             return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlAttribute) {
-            return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, nsInfo);
+            return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, typeInfo, nsInfo);
         } else if (javaAttribute instanceof XmlElement) {
-            return processXmlElement((XmlElement) javaAttribute, oldProperty, nsInfo);
+            return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo);
         } else if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlElementRef) {
@@ -348,15 +348,28 @@ public class XMLProcessor {
     }
 
     /**
-     * XmlAttribute override will completely replace the existing values.  This will set name, 
-     * namespace and required on the given property.
+     * XmlAttribute override will completely replace the existing values.
      *  
      * @param xmlAttribute
      * @param oldProperty
      * @param nsInfo
      * @return
      */
-    private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, NamespaceInfo nsInfo) {
+    private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+        // handle xml-id
+        if (xmlAttribute.isXmlId()) {
+            typeInfo.setIDProperty(oldProperty);
+        } else if (oldProperty.isXmlId()) {
+            // account for XmlID un-set via XML
+            if (typeInfo.getIDProperty() != null && typeInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
+                typeInfo.setIDProperty(null);
+            }
+        }
+        oldProperty.setIsXmlId(xmlAttribute.isXmlId());
+        
+        // handle xml-idref
+        oldProperty.setIsXmlIdRef(xmlAttribute.isXmlIdref());
+        
         // set isAttribute
         oldProperty.setIsAttribute(true);
 
@@ -395,7 +408,21 @@ public class XMLProcessor {
      * @param oldProperty
      * @return
      */
-    private Property processXmlElement(XmlElement xmlElement, Property oldProperty, NamespaceInfo nsInfo) {
+    private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+        // handle xml-id
+        if (xmlElement.isXmlId()) {
+            typeInfo.setIDProperty(oldProperty);
+        } else if (oldProperty.isXmlId()) {
+            // account for XmlID un-set via XML
+            if (typeInfo.getIDProperty() != null && typeInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
+                typeInfo.setIDProperty(null);
+            }
+        }
+        oldProperty.setIsXmlId(xmlElement.isXmlId());
+        
+        // handle xml-idref
+        oldProperty.setIsXmlIdRef(xmlElement.isXmlIdref());
+        
         // set required
         oldProperty.setIsRequired(xmlElement.isRequired());
 
@@ -576,9 +603,11 @@ public class XMLProcessor {
         }
         return logger;
     }
-    /**Convenience method to determine if a class exists in a given ArrayList.  The classes
-    * are compared via equals() method.
-    */
+    
+    /**
+     * Convenience method to determine if a class exists in a given ArrayList.  The classes
+     * are compared via equals() method.
+     */
     public boolean classExistsInArray(JavaClass theClass, ArrayList<JavaClass> existingClasses) {
         for (JavaClass jClass : existingClasses) {
         	if(areClassesEqual(jClass, theClass)){

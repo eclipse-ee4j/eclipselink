@@ -62,26 +62,24 @@ public class Property {
     private boolean isTransient;
     private String defaultValue;
     private boolean isMixedContent = false;
-    private boolean xmlElementType;
+    private boolean xmlElementType = false;
     private JavaClass originalType;
     
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private XmlElementWrapper xmlElementWrapper;
-    private boolean isXmlValue;
+    private boolean isXmlValue = false;
+    private boolean isXmlId = false;
+    private boolean isXmlIdRef = false;
     
     private String backpointerPropertyName;
     private String backpointerGetMethodName;
     private String backpointerSetMethodName;
     private JavaClass backpointerContainerClass;
     
-    public Property() {
-    	xmlElementType = false;
-    	isXmlValue = false;
-    }
+    public Property() {}
 
     public Property(Helper helper) {
         this.helper = helper;
-        xmlElementType = false;
     }
 
     public void setHelper(Helper helper) {
@@ -489,5 +487,42 @@ public class Property {
     
     public void setBackpointerContainerClass(JavaClass cls) {
         this.backpointerContainerClass = cls;
+    }
+    
+    /**
+     * Indicates if this property is an ID field.
+     * 
+     * @return
+     */
+    public boolean isXmlId() {
+        return isXmlId;
+    }
+
+    /**
+     * Sets the indicator that identifies this property as an ID field.
+     * 
+     * @param isXmlIdRef
+     */
+    public void setIsXmlId(boolean isXmlId) {
+        this.isXmlId = isXmlId;
+    }
+
+    /**
+     * Indicates if this property is a reference to an ID field.
+     * 
+     * @return
+     */
+    public boolean isXmlIdRef() {
+        return isXmlIdRef;
+    }
+
+    /**
+     * Sets the indicator that identifies this property as a reference
+     * to an ID field.
+     * 
+     * @param isXmlIdRef
+     */
+    public void setIsXmlIdRef(boolean isXmlIdRef) {
+        this.isXmlIdRef = isXmlIdRef;
     }
 }

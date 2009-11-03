@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
@@ -405,29 +403,26 @@ public class SchemaGenerator {
                     if (next.getGenericType() != null) {
                         javaType = (JavaClass) next.getGenericType();
                     }
-                    String typeName = null;
                     TypeInfo info = (TypeInfo)typeInfo.get(next.getType().getQualifiedName());
-                    if (info != null) {
-                        if (!info.isComplexType()) {
-                            typeName = info.getSimpleType().getName();
-                        }
+                    String typeName = null;
+                    if (next.isXmlId()) {
+                        typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
+                    } else if (next.isXmlIdRef()) {
+                        typeName = XMLConstants.SCHEMA_PREFIX + ":IDREF";
+                    } else if (info != null && !info.isComplexType()) {
+                        typeName = info.getSimpleType().getName();
                     } else {
-                    	if (helper.isAnnotationPresent(next.getElement(), XmlID.class)) {
-                            typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
-                    	} else if (helper.isAnnotationPresent(next.getElement(), XmlIDREF.class)) {
-                            typeName = XMLConstants.SCHEMA_PREFIX + ":IDREF";
-                    	} else {
-	                        QName schemaType = next.getSchemaType();
-	                        if (schemaType == null) {
-	                            schemaType = getSchemaTypeFor(javaType);
-	                        }
-	                        if (schemaType != null) {
-	                            typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
-	                        } else {
-	                            typeName = XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
-	                        }
-                    	}
+                        QName schemaType = next.getSchemaType();
+                        if (schemaType == null) {
+                            schemaType = getSchemaTypeFor(javaType);
+                        }
+                        if (schemaType != null) {
+                            typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
+                        } else {
+                            typeName = XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
+                        }
                     }
+                    
                     if (isCollectionType(next)) {
                         // assume XmlList for an attribute collection
                         SimpleType localType = new SimpleType();
@@ -601,68 +596,62 @@ public class SchemaGenerator {
                         QName elementName = next.getSchemaName();
                         JavaClass javaType = next.getActualType();
                         boolean isMapType = isMapType(next);
+                        boolean isComplexType = false;
                         
                         element.setName(elementName.getLocalPart());
                         
-                        TypeInfo info = (TypeInfo)typeInfo.get(javaType.getQualifiedName());
                         String typeName = null;
-                        boolean isComplexType = false;
-                        if (info != null) {
-                        	if (helper.isAnnotationPresent(next.getElement(), XmlID.class)) {
-                                typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
-                        	} else if (helper.isAnnotationPresent(next.getElement(), XmlIDREF.class)) {
-                                typeName = XMLConstants.SCHEMA_PREFIX + ":IDREF";
-                        	} else {
+                        if (next.isXmlId()) {
+                            typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
+                        } else if (next.isXmlIdRef()) {
+                            typeName = XMLConstants.SCHEMA_PREFIX + ":IDREF";
+                        } else {
+                            TypeInfo info = (TypeInfo)typeInfo.get(javaType.getQualifiedName());
+                            if (info != null) {
     	                        isComplexType = info.isComplexType();
-    	                        if (info.isComplexType()) {
+    	                        if (isComplexType) {
     	                            typeName = info.getComplexType().getName();
     	                        } else if (info.getSimpleType() != null){
     	                            typeName = info.getSimpleType().getName();
-    	                        } else{
+    	                        } else {
     	                        	typeName = info.getSchemaTypeName();
     	                        }
-                        	}
-                            
-                            if (typeName == null) {
-                                //need to add complex-type locally, or reference global element
-                                if (!info.hasRootElement()) {
-                                    if (info.isComplexType()) {
-                                        element.setComplexType(info.getComplexType());
-                                    } else {
-                                        element.setSimpleType(info.getSimpleType());
+                                
+                                if (typeName == null) {
+                                    //need to add complex-type locally, or reference global element
+                                    if (!info.hasRootElement()) {
+                                        if (info.isComplexType()) {
+                                            element.setComplexType(info.getComplexType());
+                                        } else {
+                                            element.setSimpleType(info.getSimpleType());
+                                        }
                                     }
+                                }
+                                
+                                // check to see if we need to add an import
+                                if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())){
+                                	String prefix = schema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
+                                	if (prefix != null && !typeName.equals("")) {
+                                        typeName = prefix + ":" + typeName;
+                                    }
+                                }
+                            } else if (!isMapType) {
+                                QName schemaType = next.getSchemaType();
+                                if (schemaType == null) {
+                                    schemaType = getSchemaTypeFor(javaType);
+                                }
+                                if (schemaType != null) {
+                                    typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
                                 }
                             }
                             
-                            // check to see if we need to add an import
-                            if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())){
-                            	String prefix = schema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
-                            	if (prefix != null && !typeName.equals("")) {
+                            // may need to qualify the type
+                            if (typeName != null && !typeName.contains(":")) {                            
+                                String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
+                                if (prefix != null) {
                                     typeName = prefix + ":" + typeName;
-                                }
-                            }                        	                                             
-                        } else {
-                            if (helper.isAnnotationPresent(next.getElement(), XmlID.class)) {
-                                typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
-                            } else {
-                            	if (!isMapType){
-                                    QName schemaType = next.getSchemaType();
-                                    if (schemaType == null) {
-                                        schemaType = getSchemaTypeFor(javaType);
-                                    }
-                                    if (schemaType != null) {
-                                        typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
-    	                            }
-                                }
+                                }                            
                             }
-                        }
-                        
-                        // may need to qualify the type
-                        if (typeName != null && !typeName.contains(":")) {                            
-                            String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
-                            if (prefix != null) {
-                                typeName = prefix + ":" + typeName;
-                            }                            
                         }
                         
                         if (next.getGenericType() != null){

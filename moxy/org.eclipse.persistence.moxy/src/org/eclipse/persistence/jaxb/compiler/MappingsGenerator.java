@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlSchemaType;
@@ -406,7 +405,7 @@ public class MappingsGenerator {
             }else{
                 TypeInfo reference = typeInfo.get(referenceClass.getQualifiedName());
                 if (reference != null) {
-                    if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
+                    if (property.isXmlIdRef()) {
                         generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, referenceClass);
                     } else {
                         if (reference.isEnumerationType()) {
@@ -836,7 +835,7 @@ public class MappingsGenerator {
             if (referenceInfo.isEnumerationType()) {
                 generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) referenceInfo);
             } else {
-                if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
+                if (property.isXmlIdRef()) {
                     generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
                 } else {
                     generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
@@ -2025,7 +2024,5 @@ public class MappingsGenerator {
     		keyClassName = keyClass;
     		valueClassName = valueClass;
     	}
-		
-		
 	}
 }

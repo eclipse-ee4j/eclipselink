@@ -133,7 +133,6 @@ public class AnnotationsProcessor {
 
     private NamespaceResolver namespaceResolver;
     private Helper helper;
-    private ArrayList<Property> xmlIdRefProps;
 
     private JAXBMetadataLogger logger;
     
@@ -174,7 +173,6 @@ public class AnnotationsProcessor {
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
-        xmlIdRefProps = new ArrayList<Property>();
 
         arrayClassesToGeneratedClasses = new HashMap<String, Class>();
         collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
@@ -324,7 +322,7 @@ public class AnnotationsProcessor {
             info.setProperties(getPropertiesForClass(javaClass, info));
 
             // process properties
-            processTypeInfoProperties(info);
+            processTypeInfoProperties(javaClass, info);
 
             // handle @XmlAccessorOrder
             postProcessXmlAccessorOrder(info, packageNamespace);
@@ -360,6 +358,18 @@ public class AnnotationsProcessor {
                 if (tInfo.getXmlValueProperty() != null && (!property.equals(tInfo.getXmlValueProperty()) && !property.isAttribute())) {
                     throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                 }
+                // if the property is an XmlIDREF, the target must have an XmlID set
+                if (property.isXmlIdRef()) {
+                    JavaClass typeClass = property.getActualType();
+                    TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
+                    if (targetInfo != null && targetInfo.getIDProperty() == null) {
+                        throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
+                    }
+                }
+                // there can only be one XmlID per type info 
+                if (property.isXmlId() && tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
+                    throw JAXBException.idAlreadySet(property.getPropertyName(), tInfo.getIDProperty().getPropertyName(), jClass.getName());
+                }
             }
         }
     }
@@ -369,11 +379,11 @@ public class AnnotationsProcessor {
      * 
      * @param info
      */
-    private void processTypeInfoProperties(TypeInfo info) {
+    private void processTypeInfoProperties(JavaClass javaClass, TypeInfo info) {
         ArrayList<Property> properties = info.getPropertyList();
         for (Property property : properties) {
             // handle @XmlID
-            processXmlID(property, info);
+            processXmlID(property, javaClass, info);
 
             // handle @XmlIDREF - validate these properties after processing of all types is completed
             processXmlIDREF(property);
@@ -401,15 +411,6 @@ public class AnnotationsProcessor {
         }
 
         checkForCallbackMethods();
-
-        // validate @XmlIDREF annotated properties - target class must have an XmlID annotation
-        for (Property property : xmlIdRefProps) {
-        	JavaClass typeClass = property.getActualType();
-            TypeInfo tInfo = typeInfo.get(typeClass.getQualifiedName());
-            if (tInfo != null && tInfo.getIDProperty() == null) {
-                throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
-            }
-        }
     }
 
     /**
@@ -864,11 +865,9 @@ public class AnnotationsProcessor {
      * @param property
      * @param info
      */
-    private void processXmlID(Property property, TypeInfo info) {
+    private void processXmlID(Property property, JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
-            if (info.isIDSet()) {
-                throw JAXBException.idAlreadySet(property.getPropertyName(), info.getIDProperty().getPropertyName(), info.getDescriptor().getAlias());
-            }
+            property.setIsXmlId(true);
             info.setIDProperty(property);
         }
     }
@@ -880,7 +879,7 @@ public class AnnotationsProcessor {
      */
     private void processXmlIDREF(Property property) {
         if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
-            xmlIdRefProps.add(property);
+            property.setIsXmlIdRef(true);
         }
     }
 
@@ -2072,7 +2071,6 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlID.class)
                 || helper.isAnnotationPresent(elem, XmlSchemaType.class)
                 || helper.isAnnotationPresent(elem, XmlElementWrapper.class)
-                || helper.isAnnotationPresent(elem, XmlID.class)
                 || helper.isAnnotationPresent(elem, XmlList.class)
                 || helper.isAnnotationPresent(elem, XmlMimeType.class)
                 || helper.isAnnotationPresent(elem, XmlIDREF.class)) {

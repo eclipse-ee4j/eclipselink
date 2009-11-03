@@ -369,11 +369,11 @@ public class JAXBException extends EclipseLinkException {
      *  
      * @param propertyName attempting to set this property as ID
      * @param idPropertyName existing ID property
-     * @param descriptorAlias descriptor in question
+     * @param className class in question
      * @return
      */
-    public static JAXBException idAlreadySet(String propertyName, String idPropertyName, String descriptorAlias) {
-        Object[] args = { propertyName, descriptorAlias, idPropertyName };
+    public static JAXBException idAlreadySet(String propertyName, String idPropertyName, String className) {
+        Object[] args = { propertyName, className, idPropertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ID_ALREADY_SET, args));
         exception.setErrorCode(ID_ALREADY_SET);
         return exception;
