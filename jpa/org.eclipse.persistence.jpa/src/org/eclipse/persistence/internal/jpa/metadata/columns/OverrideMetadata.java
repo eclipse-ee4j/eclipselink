@@ -108,7 +108,7 @@ public abstract class OverrideMetadata extends ORMetadata {
             // We already have an attribute override specified and the 
             // java class names are different. We must be processing
             // a mapped superclass therefore, ignore and log a message.
-            logger.logWarningMessage(getIgnoreMappedSuperclassContext(), getName(), getLocation(), descriptorClass);
+            logger.logConfigMessage(getIgnoreMappedSuperclassContext(), getName(), getLocation(), descriptorClass);
             return false;
         }
     }

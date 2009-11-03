@@ -390,6 +390,30 @@ public class MetadataLogger {
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
+     */
+    public void logConfigMessage(String ctx, Object param1, Object param2, Object param3) {
+        log(SessionLog.CONFIG, ctx, new Object[] { param1, param2, param3 });    
+    }
+    
+    /**
+     * INTERNAL:
+     * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
+     */
+    public void logConfigMessage(String ctx, Object param1, Object param2, Object param3, Object param4) {
+        log(SessionLog.CONFIG, ctx, new Object[] { param1, param2, param3, param4 });    
+    }
+    
+    /**
+     * INTERNAL:
+     * Logging utility method.
      */
     public void logWarningMessage(String ctx, MetadataAccessor accessor) {
         log(SessionLog.WARNING, ctx, new Object[] { accessor.getJavaClass(), accessor.getAnnotatedElement() });
@@ -417,22 +441,6 @@ public class MetadataLogger {
      */
     public void logWarningMessage(String ctx, Object param1, Object param2, Object param3) {
         log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3});
-    }
-    
-    /**
-     * INTERNAL:
-     * Logging utility method.
-     */
-    public void logWarningMessage(String ctx, Object param1, Object param2, Object param3, Object param4) {
-        log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3, param4});
-    }
-    
-    /**
-     * INTERNAL:
-     * Logging utility method.
-     */
-    public void logWarningMessage(String ctx, Object param1, Object param2, Object param3, Object param4, Object param5) {
-        log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3, param4, param5});
     }
     
     /**

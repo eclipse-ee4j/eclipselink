@@ -337,7 +337,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         } else {
             // We have an XML specification. Log a message if an annotation has also been defined.
             if (isAnnotationPresent(IdClass.class)) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(IdClass.class), getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(IdClass.class), getJavaClassName(), getLocation());
             }
         }
         
@@ -586,7 +586,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else if (getDescriptor().hasCache()) {
                 // Ignore cache on mapped superclass if cache is already 
                 // defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cache == null) {
                     new CacheMetadata(getAnnotation(Cache.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
@@ -607,7 +607,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (getDescriptor().hasCacheable()) {
                 // Ignore cacheable on mapped superclass if cacheable is already 
                 // defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 // Set the cacheable setting on the descriptor.
                 if (m_cacheable == null) {
@@ -631,7 +631,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else if (getDescriptor().hasCacheInterceptor()) {
                 // Ignore cache interceptor on mapped superclass if cache 
                 // interceptor is already defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cacheInterceptor == null) {
                     new CacheInterceptorMetadata(getAnnotation(CacheInterceptor.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
@@ -753,7 +753,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else if (getDescriptor().hasDefaultRedirectors()) {
                 // Ignore query redirector on mapped superclass if query 
                 // redirector is already defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_defaultRedirectors == null) {
                     new DefaultRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
@@ -833,13 +833,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (getDescriptor().hasExistenceChecking()) {
                 // Ignore existence-checking on mapped superclass if existence
                 // checking is already defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_existenceChecking == null) {
                     getDescriptor().setExistenceChecking((String) existenceChecking.getAttribute("value"));
                 } else {
                     if (existenceChecking != null) {
-                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existenceChecking, getJavaClassName(), getLocation());
+                        getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existenceChecking, getJavaClassName(), getLocation());
                     }
                     
                     getDescriptor().setExistenceChecking(m_existenceChecking);
@@ -967,7 +967,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 // We must be processing a mapped superclass to an entity that
                 // defined its own optimistic locking meta data. Ignore it and
                 // log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, getDescriptor().getJavaClass(), getJavaClass());
             }
         } else {
             MetadataAnnotation optimisticLocking = getAnnotation(OptimisticLocking.class);
@@ -981,7 +981,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 // If there is an annotation log a warning that we are 
                 // ignoring it.
                 if (optimisticLocking != null) {
-                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, optimisticLocking, getJavaClassName(), getLocation());
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, optimisticLocking, getJavaClassName(), getLocation());
                 }
             
                 // Process the meta data for this accessor's descriptor.
@@ -1004,13 +1004,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else if (getDescriptor().hasReadOnly()) {
                 // Ignore read only on mapped superclass if read only is already 
                 // defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_READ_ONLY, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_READ_ONLY, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_readOnly == null) {
                     getDescriptor().setReadOnly(true);
                 } else {
                     if (readOnly != null) {
-                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, readOnly, getJavaClassName(), getLocation());
+                        getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, readOnly, getJavaClassName(), getLocation());
                     }
                     
                     getDescriptor().setReadOnly(m_readOnly);
@@ -1035,7 +1035,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             // If there is an annotation log a warning that we are 
             // ignoring it.
             if (primaryKey != null) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, primaryKey, getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, primaryKey, getJavaClassName(), getLocation());
             }
         
             // Process the meta data for this accessor's descriptor.

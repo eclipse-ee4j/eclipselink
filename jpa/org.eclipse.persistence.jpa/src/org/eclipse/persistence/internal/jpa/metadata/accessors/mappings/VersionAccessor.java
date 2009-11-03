@@ -83,7 +83,7 @@ public class VersionAccessor extends BasicAccessor {
         // Process an @Version or version element if there is one.
         if (getDescriptor().usesOptimisticLocking()) {
             // Ignore the version locking if it is already set.
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
         } else {
             MetadataClass lockType = getRawClass();
             getField().setType(getJavaClass(lockType));

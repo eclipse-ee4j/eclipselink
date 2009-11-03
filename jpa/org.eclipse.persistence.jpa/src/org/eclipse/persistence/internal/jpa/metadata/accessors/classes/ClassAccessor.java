@@ -846,13 +846,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // We must be processing a mapped superclass setting for an
                 // entity that has its own change tracking setting. Ignore it 
                 // and log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_changeTracking == null) {
                     new ChangeTrackingMetadata(changeTracking, getAccessibleObject()).process(getDescriptor());
                 } else {
                     if (changeTracking != null) {
-                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, changeTracking, getJavaClassName(), getLocation());
+                        getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, changeTracking, getJavaClassName(), getLocation());
                     }
                     
                     m_changeTracking.process(getDescriptor());
@@ -872,7 +872,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         if (getCopyPolicy() != null || copyPolicy != null || instantiationCopyPolicy != null || cloneCopyPolicy != null) {
             if (getDescriptor().hasCopyPolicy()){
                 // We must be processing a mapped superclass ...
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, getDescriptor().getJavaClass(), getJavaClass());
             }
             
             if (getCopyPolicy() == null) {
@@ -900,15 +900,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
             } else {
                 // We have a copy policy specified in XML.
                 if (copyPolicy != null) {
-                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, copyPolicy, getJavaClassName(), getLocation());
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, copyPolicy, getJavaClassName(), getLocation());
                 }
                 
                 if (instantiationCopyPolicy != null) {
-                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, instantiationCopyPolicy, getJavaClassName(), getLocation());
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, instantiationCopyPolicy, getJavaClassName(), getLocation());
                 }
                 
                 if (cloneCopyPolicy != null) {
-                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, cloneCopyPolicy, getJavaClassName(), getLocation());
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, cloneCopyPolicy, getJavaClassName(), getLocation());
                 }
                 
                 getCopyPolicy().process(getDescriptor());
@@ -928,7 +928,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // override the customizer class, that is, defined its own. Log 
                 // a warning that we are ignoring the Customizer metadata on the 
                 // mapped superclass for the descriptor's java class.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, getDescriptor().getJavaClass(), getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_customizerClass == null || m_customizerClass.equals(void.class)) { 
                     // Use the annotation value.
@@ -936,7 +936,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 } else {
                     // Use the xml value and log a message if necessary.
                     if (customizer != null) {
-                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, customizer, getJavaClassName(), getLocation());
+                        getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, customizer, getJavaClassName(), getLocation());
                     }
                 }
                 

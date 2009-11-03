@@ -504,18 +504,18 @@ public abstract class ORMetadata {
             if (loadedFromXML() && existing.loadedFromAnnotation()) {
                 // Need to override, log a message and return true;
                 if (hasIdentifier()) {
-                    logger.logWarningMessage(MetadataLogger.OVERRIDE_NAMED_ANNOTATION_WITH_XML, existing.getAnnotation(), getIdentifier(), existing.getLocation(), getLocation());
+                    logger.logConfigMessage(MetadataLogger.OVERRIDE_NAMED_ANNOTATION_WITH_XML, existing.getAnnotation(), getIdentifier(), existing.getLocation(), getLocation());
                 } else {
-                    logger.logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existing.getAnnotation(), existing.getLocation(), getLocation());
+                    logger.logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existing.getAnnotation(), existing.getLocation(), getLocation());
                 }
                 
                 return true;
             } else if (loadedFromAnnotation() && existing.loadedFromXML()) {
                 // Log an override warning.
                 if (hasIdentifier()) {
-                    logger.logWarningMessage(MetadataLogger.OVERRIDE_NAMED_ANNOTATION_WITH_XML, m_annotation, getIdentifier(), getLocation(), existing.getLocation());
+                    logger.logConfigMessage(MetadataLogger.OVERRIDE_NAMED_ANNOTATION_WITH_XML, m_annotation, getIdentifier(), getLocation(), existing.getLocation());
                 } else {
-                    logger.logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, m_annotation, getLocation(), existing.getLocation());
+                    logger.logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, m_annotation, getLocation(), existing.getLocation());
                 }
             } else {
                 // Before throwing an exception we need to examine where the
@@ -525,18 +525,18 @@ public abstract class ORMetadata {
                 if (loadedFromEclipseLinkXML() && ! existing.loadedFromEclipseLinkXML()) {
                     // Need to override, log a message and return true.
                     if (hasIdentifier()) {
-                        logger.logWarningMessage(MetadataLogger.OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getIdentifier(), existing.getLocation(), getLocation());
+                        logger.logConfigMessage(MetadataLogger.OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getIdentifier(), existing.getLocation(), getLocation());
                     } else {
-                        logger.logWarningMessage(MetadataLogger.OVERRIDE_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), existing.getLocation(), getLocation());
+                        logger.logConfigMessage(MetadataLogger.OVERRIDE_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), existing.getLocation(), getLocation());
                     }
                     
                     return true;
                 } else if (! loadedFromEclipseLinkXML() && existing.loadedFromEclipseLinkXML()) {
                     // Log an override warning.
                     if (hasIdentifier()) {
-                        logger.logWarningMessage(MetadataLogger.OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getIdentifier(), getLocation(), existing.getLocation());
+                        logger.logConfigMessage(MetadataLogger.OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getIdentifier(), getLocation(), existing.getLocation());
                     } else {
-                        logger.logWarningMessage(MetadataLogger.OVERRIDE_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getLocation(), existing.getLocation());
+                        logger.logConfigMessage(MetadataLogger.OVERRIDE_XML_WITH_ECLIPSELINK_XML, existing.getXMLElement(), getLocation(), existing.getLocation());
                     }
                 } else {
                     if (loadedFromAnnotation()) {

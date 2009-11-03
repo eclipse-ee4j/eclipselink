@@ -756,7 +756,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                // specified Cacheable(false). Log a warning message that it is 
                // being ignored. If Cacheable(true) was specified then it is 
                // redundant and we just carry on.
-               getLogger().logWarningMessage(MetadataLogger.IGNORE_CACHEABLE_FALSE, getJavaClass());
+               getLogger().logConfigMessage(MetadataLogger.IGNORE_CACHEABLE_FALSE, getJavaClass());
            }
                 
            // Process the cache metadata.
@@ -767,7 +767,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // specified Cacheable(true). Log a warning message that it is being 
                 // ignored. If Cacheable(false) was specified then it is redundant 
                 // and we just carry on.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_CACHEABLE_TRUE, getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_CACHEABLE_TRUE, getJavaClass());
             }
                 
             // Turn off the cache.
@@ -824,7 +824,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             m_discriminatorColumn = new DiscriminatorColumnMetadata(discriminatorColumn, getAccessibleObject()); 
         } else {
             if (isAnnotationPresent(DiscriminatorColumn.class)) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, discriminatorColumn, getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, discriminatorColumn, getJavaClassName(), getLocation());
             }
         }
         
@@ -1171,11 +1171,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         } else {
             if (secondaryTable != null) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTable, getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTable, getJavaClassName(), getLocation());
             }
             
             if (secondaryTables != null) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTables, getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTables, getJavaClassName(), getLocation());
             }
             
             for (SecondaryTableMetadata table : m_secondaryTables) {
@@ -1228,7 +1228,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             processTable(new TableMetadata(table, getAccessibleObject()));
         } else {
             if (table != null) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, table, getJavaClassName(), getLocation());
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, table, getJavaClassName(), getLocation());
             }
 
             processTable(m_table);                

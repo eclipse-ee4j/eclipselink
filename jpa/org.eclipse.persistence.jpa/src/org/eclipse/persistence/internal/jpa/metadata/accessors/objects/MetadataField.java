@@ -65,7 +65,7 @@ public class MetadataField extends MetadataAnnotatedElement {
     public boolean isValidPersistenceField(MetadataDescriptor descriptor, boolean userDecorated) {
         if (! isValidPersistenceElement(getModifiers())) {
             if (userDecorated) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
             }
             
             return false;

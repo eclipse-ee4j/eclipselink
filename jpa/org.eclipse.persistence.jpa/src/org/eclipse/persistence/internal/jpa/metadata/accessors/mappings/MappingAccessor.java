@@ -213,7 +213,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // 'record', the attribute name will be 'record.date'
             String dotNotationName = getAttributeName() + "." + name;
             if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAssociationOverrideFor(dotNotationName)) {
-                getLogger().logWarningMessage(getLogger().IGNORE_ASSOCIATION_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
+                getLogger().logConfigMessage(getLogger().IGNORE_ASSOCIATION_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
                 associationOverridesMap.put(name, getDescriptor().getAssociationOverrideFor(dotNotationName));
             } else {
                 associationOverridesMap.put(name, associationOverride);
@@ -300,7 +300,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // attribute name will be 'record.date'
             String dotNotationName = getAttributeName() + "." + name;
             if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(dotNotationName)) {
-                getLogger().logWarningMessage(getLogger().IGNORE_ATTRIBUTE_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
+                getLogger().logConfigMessage(getLogger().IGNORE_ATTRIBUTE_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
                 attributeOverridesMap.put(name, getDescriptor().getAttributeOverrideFor(dotNotationName));
             } else {
                 attributeOverridesMap.put(name, attributeOverride);
@@ -1015,7 +1015,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean isSerialized(MetadataClass referenceClass, boolean isForMapKey) {
         if (hasConvert(isForMapKey)) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
             return false;
         } else {
             return isValidSerializedType(referenceClass);

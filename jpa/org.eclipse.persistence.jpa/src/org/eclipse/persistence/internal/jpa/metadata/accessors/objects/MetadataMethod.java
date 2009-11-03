@@ -239,7 +239,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
                     throw ValidationException.noCorrespondingSetterMethodDefined(descriptor.getJavaClass(), this);
                 } else {
                     // General, catch all remaining cases and log a warning message.
-                    getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
+                    getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
                 }
             }
             

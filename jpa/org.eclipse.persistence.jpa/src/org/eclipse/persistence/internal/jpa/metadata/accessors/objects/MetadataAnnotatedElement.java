@@ -176,7 +176,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         MetadataAnnotation annotation = m_annotations.get(annotationClassName);
         
         if (annotation != null && descriptor.ignoreAnnotations()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return null;
         } else {
             return annotation;
@@ -401,7 +401,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         MetadataAnnotation annotation = getAnnotation(annotationClass);
         
         if (annotation != null && descriptor.ignoreAnnotations()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return false;
         } else {
             return annotation != null;
