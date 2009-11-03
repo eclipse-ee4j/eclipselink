@@ -143,6 +143,87 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected boolean shouldValidateExistence;
 
     protected boolean commitWithoutPersistRules;
+    
+    abstract static class PropertyProcessor {
+        abstract void process(String name, Object value, EntityManagerImpl em);
+    }
+    static Map<String, PropertyProcessor> processors = new HashMap() {
+        {
+            put(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.beginEarlyTransaction = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+            }});
+            put(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.referenceMode = ReferenceMode.valueOf(getPropertiesHandlerProperty(name, (String)value));
+                if (em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_property_while_context_is_active", new Object[]{name});
+                }
+            }});
+            put(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.flushMode = FlushModeType.valueOf(getPropertiesHandlerProperty(name, (String)value));
+            }});
+            put(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.closeOnCommit = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!em.closeOnCommit);
+                }
+            }});
+            put(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.persistOnCommit = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setShouldDiscoverNewObjects(em.persistOnCommit);
+                }
+            }});
+            put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.commitWithoutPersistRules = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(em.commitWithoutPersistRules);
+                }
+            }});
+            put(EntityManagerProperties.VALIDATE_EXISTENCE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.shouldValidateExistence = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setShouldValidateExistence(em.shouldValidateExistence);
+                }
+            }});
+            put(EntityManagerProperties.FLUSH_CLEAR_CACHE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.flushClearCache = getPropertiesHandlerProperty(name, (String)value);
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setFlushClearCache(em.flushClearCache);
+                }
+            }});
+            put(QueryHints.CACHE_STORE_MODE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                // This property could be a string or an enum.
+                em.cacheStoreBypass = value.equals(CacheStoreMode.BYPASS) || value.equals(CacheStoreMode.BYPASS.name());
+                if(em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setShouldStoreByPassCache(em.cacheStoreBypass);
+                }
+            }});
+
+            PropertyProcessor connectionPolicyPropertyProcessor = new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                // Property used to create ConnectionPolicy has changed - already existing ConnectionPolicy should be removed.
+                // A new one will be created when the new active persistence context is created.
+                em.connectionPolicy = null;
+                if (em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_property_while_context_is_active", new Object[]{name});
+                }
+            }};
+            put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.EXCLUSIVE_CONNECTION_IS_LAZY, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.JTA_DATASOURCE, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.NON_JTA_DATASOURCE, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.JDBC_DRIVER, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.JDBC_URL, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.JDBC_USER, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.JDBC_PASSWORD, connectionPolicyPropertyProcessor);
+            put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicyPropertyProcessor);
+
+            put(EntityManagerProperties.ORACLE_PROXY_TYPE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                if (em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_property_while_context_is_active", new Object[]{name});
+                }
+            }});
+        }
+    };
 
     /**
      * Constructor returns an EntityManager assigned to the a particular
@@ -221,12 +302,17 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     protected void initialize(Map properties) {
         detectTransactionWrapper();
+        // Cache default ConnectionPolicy. If ConnectionPolicy property(ies) specified 
+        // then connectionPolicy will be set to null and re-created when when active persistence context is created. 
+        this.connectionPolicy = this.serverSession.getDefaultConnectionPolicy();
         // bug 236249: In JPA session.setProperty() throws
         // UnsupportedOperationException.
         if (properties != null) {
             this.properties = new HashMap(properties);
+            if(!properties.isEmpty()) {
+                processProperties();
+            }
         }
-        processProperties();
     }
 
     /**
@@ -1434,6 +1520,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
         // use local uow as it will be local to this EM and not on the txn
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
+            if(this.connectionPolicy == null) {
+                createConnectionPolicy();
+            }
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
@@ -1464,10 +1553,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * rolled back or after clear method was called).
      */
     public void setProperties(Map properties) {
-        if (hasActivePersistenceContext()) {
-            this.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_properties_while_context_is_active");
-        }
         this.properties = properties;
+        if(this.hasActivePersistenceContext()) {
+            this.extendedPersistenceContext.getParent().setProperties(properties);
+        }
+        if(properties == null || properties.isEmpty()) {
+            return;
+        }
         processProperties();
     }
     
@@ -1476,18 +1568,26 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @see EntityManager#setProperty(java.lang.String, java.lang.Object)
      */
     public void setProperty(String propertyName, Object value) {
-        if (hasActivePersistenceContext()) {
-            this.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_properties_while_context_is_active");
+        if(propertyName == null || value == null) {
+            return;
         }
         
         if (this.properties == null) {
-            this.properties = new HashMap();
+            if(this.hasActivePersistenceContext()) {
+                // getProperties method always returns non-null Map
+                this.properties = this.extendedPersistenceContext.getParent().getProperties();
+            } else {
+                this.properties = new HashMap();
+            }
         }
         
         properties.put(propertyName, value);
         
-        // Re-process the properties.
-        processProperties();
+        // Re-process the property.
+        PropertyProcessor processor = processors.get(propertyName);
+        if(processor != null) {
+            processor.process(propertyName, value, this);
+        }
     }
 
     /**
@@ -1495,7 +1595,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * context. If there is no active persistence context the method returns
      * false
      */
-    private boolean hasActivePersistenceContext() {
+    public boolean hasActivePersistenceContext() {
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
             return false;
         } else {
@@ -1540,7 +1640,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void joinTransaction() {
         try {
             verifyOpen();
-            transaction.registerUnitOfWorkWithTxn(getActivePersistenceContext(checkForTransaction(true)));
+            checkForTransaction(true);
+            if(this.hasActivePersistenceContext()) {
+                transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
+            } else {
+                // extendedPersistenceContext will be registered with transaction when created.
+                transaction.verifyRegisterUnitOfWorkWithTxn();
+            }
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1558,48 +1664,15 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Process the local EntityManager properties only. The persistence unit
      * properties are processed by the factory.
      */
-    private void processProperties() {
-        if ((this.properties != null) && !this.properties.isEmpty()) {
-            String beginEarlyTransactionProperty = getPropertiesHandlerProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
-            if (beginEarlyTransactionProperty != null) {
-                this.beginEarlyTransaction = "true".equalsIgnoreCase(beginEarlyTransactionProperty);
-            }
-            String referenceMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
-            if (referenceMode != null) {
-                this.referenceMode = ReferenceMode.valueOf(referenceMode);
-            }
-            String flushMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE);
-            if (flushMode != null) {
-                this.flushMode = FlushModeType.valueOf(flushMode);
-            }
-            String closeOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
-            if (closeOnCommit != null) {
-                this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
-            }
-            String persistOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
-            if (persistOnCommit != null) {
-                this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
-            }
-            String commitWithoutPersist = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
-            if (commitWithoutPersist != null) {
-                this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
-            }
-            String shouldValidateExistence = getPropertiesHandlerProperty(EntityManagerProperties.VALIDATE_EXISTENCE);
-            if (shouldValidateExistence != null) {
-                this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
-            }
-            String flushClearCache = getPropertiesHandlerProperty(EntityManagerProperties.FLUSH_CLEAR_CACHE);
-            if (flushClearCache != null) {
-                this.flushClearCache = flushClearCache;
-            }
-            // This property could be a string or an enum.
-            Object cacheStoreMode = properties.get(QueryHints.CACHE_STORE_MODE);
-            if (cacheStoreMode != null) {
-                this.cacheStoreBypass = cacheStoreMode.equals(CacheStoreMode.BYPASS) || cacheStoreMode.equals(CacheStoreMode.BYPASS.name());
+    protected void processProperties() {
+        Iterator<Map.Entry<String, Object>> it = this.properties.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String, Object> entry = it.next();
+            PropertyProcessor processor = processors.get(entry.getKey());
+            if(processor != null) {
+                processor.process(entry.getKey(), entry.getValue(), this);
             }
         }
-
-        this.connectionPolicy = processConnectionPolicyProperties();
     }
 
     /**
@@ -1609,6 +1682,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     protected String getPropertiesHandlerProperty(String name) {
         return PropertiesHandler.getPropertyValue(name, this.properties, false);
+    }
+
+    /**
+     * Verifies and (if required) translates the value.
+     */
+    protected static String getPropertiesHandlerProperty(String name, String value) {
+        return PropertiesHandler.getPropertyValue(name, value);
     }
 
     protected void setEntityTransactionWrapper() {
@@ -1636,13 +1716,15 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Process properties that define connection policy.
+     * Create connection policy using properties.
+     * Default connection policy created if no connection properties specified.
      */
-    protected ConnectionPolicy processConnectionPolicyProperties() {
+    protected void createConnectionPolicy() {
         ConnectionPolicy policy = serverSession.getDefaultConnectionPolicy();
 
         if (properties == null || properties.isEmpty()) {
-            return policy;
+            this.connectionPolicy = policy;
+            return;
         }
 
         // Search only the properties map - serverSession's properties have been
@@ -1880,9 +1962,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
 
         if (newPolicy != null) {
-            return newPolicy;
+            this.connectionPolicy = newPolicy;
         } else {
-            return policy;
+            this.connectionPolicy = policy;
         }
     }
 

@@ -99,6 +99,19 @@ public class PropertiesHandler {
     
     /**
      * INTERNAL:
+     * Given property name and value verifies and translates the value.
+     * Throws IllegalArgumentException in case the property value is illegal.
+     */
+    public static String getPropertyValue(String name, String value) {
+        return Prop.getPropertyValueToApply(name, value, null);
+    }
+
+    public static String getPropertyValueLogDebug(String name, String value, AbstractSession session) {
+        return Prop.getPropertyValueToApply(name, value, session);
+    }
+    
+    /**
+     * INTERNAL:
      * Gets property value from the map, if none found looks in System properties.
      * Use this to get a value for a prefixed property:
      * for "org.eclipse.persistence.cache-type.Employee"
@@ -255,6 +268,14 @@ public class PropertiesHandler {
             String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
                 return null;
+            }
+            return prop.getValueToApply(value, shouldUseDefault(value), session);
+        }
+                
+        static String getPropertyValueToApply(String name, String value, AbstractSession session) {
+            Prop prop = (Prop)mainMap.get(name);
+            if(prop == null) {
+                throw new IllegalArgumentException(name); 
             }
             return prop.getValueToApply(value, shouldUseDefault(value), session);
         }

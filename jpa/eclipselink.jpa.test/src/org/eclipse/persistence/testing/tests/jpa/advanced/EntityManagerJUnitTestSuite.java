@@ -306,6 +306,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicy"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicySetProperty"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
@@ -7987,36 +7988,46 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testConnectionPolicy() {
-        // Comment out because it's not relevant for getDatabaseProperties() when running in server
-        if (isOnServer()) {
-            return;
-        }
+        internalTestConnectionPolicy(false);
+    }
+    
+    public void testConnectionPolicySetProperty() {
+        internalTestConnectionPolicy(true);
+    }
+    
+    public void internalTestConnectionPolicy(boolean useSetProperty) {
         // setup
         String errorMsg = "";
-        
-        EntityManagerFactory emFactory;
-        if (isOnServer()) {
-            emFactory = null;
-        } else {
-            emFactory = getEntityManagerFactory();
+
+        HashMap properties = null;
+        if(!useSetProperty) { 
+            properties = new HashMap();
+            properties.put(EntityManagerProperties.JDBC_USER, "em_user");
+            properties.put(EntityManagerProperties.JDBC_PASSWORD, "em_password");
+            properties.put(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
+            properties.put(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
+            properties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
         }
-        
-        HashMap properties = new HashMap();
-        properties.put(EntityManagerProperties.JDBC_USER, "em_user");
-        properties.put(EntityManagerProperties.JDBC_PASSWORD, "em_password");
-        properties.put(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
-        properties.put(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
-        properties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
 
         // test
         EntityManager em;
         if (isOnServer()) {
             em = createEntityManager();
+            // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
+            beginTransaction(em);
             ((EntityManagerImpl)em.getDelegate()).setProperties(properties);
         } else {
+            EntityManagerFactory emFactory = getEntityManagerFactory();
             em = emFactory.createEntityManager(properties);
         }
-
+        if(useSetProperty) { 
+            em.setProperty(EntityManagerProperties.JDBC_USER, "em_user");
+            em.setProperty(EntityManagerProperties.JDBC_PASSWORD, "em_password");
+            em.setProperty(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
+            em.setProperty(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
+            em.setProperty(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
+        }
+        
         // verify
         ClientSession clientSession;
         if (isOnServer()) {
@@ -8058,6 +8069,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
             }
         }
+        
+        // clean-up
+        if (isOnServer()) {
+            rollbackTransaction(em);
+        }
+        em.close();
+        
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }

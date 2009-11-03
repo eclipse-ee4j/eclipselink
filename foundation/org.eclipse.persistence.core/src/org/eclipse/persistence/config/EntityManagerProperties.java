@@ -52,6 +52,8 @@ public class EntityManagerProperties {
      * entities will be lost.
      * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
      * in that case it affects all EntityManagers created by the factory. 
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      * @see org.eclipse.persistence.sessions.factories.ReferenceMode
      */
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE;
@@ -115,12 +117,16 @@ public class EntityManagerProperties {
      * writing and reading inside transaction. 
      * If proxy-type and the corresponding proxy property set into EntityManagerFactory then all connections
      * created by the factory will be proxy connections.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String ORACLE_PROXY_TYPE = PersistenceUnitProperties.ORACLE_PROXY_TYPE;
     
     /**
      * Determines when reads are performed through the write connection.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      * @see ExclusiveConnectionMode
      */
     public static final String EXCLUSIVE_CONNECTION_MODE = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE;
@@ -129,6 +135,8 @@ public class EntityManagerProperties {
      * Determines when write connection is acquired lazily.
      * Valid values are case-insensitive "false" and "true"; "true" is default.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String EXCLUSIVE_CONNECTION_IS_LAZY = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY;
     
@@ -140,6 +148,8 @@ public class EntityManagerProperties {
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String JTA_DATASOURCE = PersistenceUnitProperties.JTA_DATASOURCE;
 
@@ -151,6 +161,8 @@ public class EntityManagerProperties {
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String NON_JTA_DATASOURCE = PersistenceUnitProperties.NON_JTA_DATASOURCE;
     
@@ -158,6 +170,8 @@ public class EntityManagerProperties {
      * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
      * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String JDBC_DRIVER = PersistenceUnitProperties.JDBC_DRIVER;
 
@@ -165,6 +179,8 @@ public class EntityManagerProperties {
      * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
      * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String JDBC_URL = PersistenceUnitProperties.JDBC_URL;
 
@@ -173,6 +189,8 @@ public class EntityManagerProperties {
      * empty string value causes removal this property and JDBC_PASSWORD property 
      * specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String JDBC_USER = PersistenceUnitProperties.JDBC_USER;
 
@@ -181,6 +199,8 @@ public class EntityManagerProperties {
      * empty string value causes removal this property 
      * specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String JDBC_PASSWORD = PersistenceUnitProperties.JDBC_PASSWORD;
 
@@ -188,6 +208,8 @@ public class EntityManagerProperties {
      * Allows to specify an entire ConnectionPolicy.
      * Note that in case any other ConnectionPolicy-altering properties are present
      * they will be applied to this ConnectionPolicy. 
+     * The property cannot be applied to existing active persistence unit context.
+     * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String CONNECTION_POLICY = "eclipselink.jdbc.connection-policy";
 

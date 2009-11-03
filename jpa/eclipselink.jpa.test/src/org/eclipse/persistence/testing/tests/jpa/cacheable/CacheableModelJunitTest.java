@@ -230,8 +230,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         int entityToDeleteId = entityToDelete.getId();
         commitTransaction(em1);
         
-        // Clear the EM and set the new property to BYPASS.
-        em1.clear();
+        // No need to clear the EM, just set the new property to BYPASS.
         em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         
         beginTransaction(em1);
@@ -272,9 +271,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         // Find the entities and put them in the shared cache ...
         CacheableTrueEntity cachedEntity1 = findCacheableTrueEntity(em1, m_cacheableTrueEntity1Id);
         CacheableTrueEntity cachedEntity2 = findCacheableTrueEntity(em1, m_cacheableTrueEntity2Id);
+        String staleName = cachedEntity2.getName();
         
-        // Clear the EM and set the new property to BYPASS.
-        em1.clear();
+        // No need to clear the EM, just set the new property to BYPASS.
         em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         String updatedName = "testEMPropertiesOnCommit2";
         
@@ -296,7 +295,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         assertTrue("The shared cache should have been updated", entity21.getName().equals(updatedName));
         
         CacheableTrueEntity entity22 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity2Id);
-        assertTrue("The shared cache should have been updated", entity22.getName().equals(cachedEntity2.getName()));
+        assertTrue("The shared cache should NOT have been updated", entity22.getName().equals(staleName));
         
         em2.refresh(entity22);
         assertTrue("The entity was not refreshed with the updated name.", entity22.getName().equals(updatedName));

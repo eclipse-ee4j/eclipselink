@@ -53,6 +53,8 @@ public abstract class TransactionWrapperImpl  {
     
     public abstract void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow);
     
+    public abstract void verifyRegisterUnitOfWorkWithTxn();
+    
     public UnitOfWorkImpl getLocalUnitOfWork(){
         return localUOW;
     }

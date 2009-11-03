@@ -90,6 +90,9 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         uow.registerWithTransactionIfRequired();
     }
     
+    public void verifyRegisterUnitOfWorkWithTxn(){
+    }
+    
     /**
      * We should only flush the entity manager before the query if the query is
      * joined to a transaction

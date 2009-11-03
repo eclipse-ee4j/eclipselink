@@ -71,6 +71,10 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
         throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
     }
     
+    public void verifyRegisterUnitOfWorkWithTxn(){
+        throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
+    }
+    
     /**
     * Mark the current transaction so that the only possible
     * outcome of the transaction is for the transaction to be

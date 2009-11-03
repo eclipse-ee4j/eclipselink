@@ -291,6 +291,32 @@ public class EntityManagerFactoryProvider {
     }
     
     /**
+     * target is a array of two Maps
+     * the first one contains specified properties;
+     * the second all the rest. 
+     * @param source 
+     * @param keysToBeKept 
+     * @return the target object
+     */
+    public static Map[] splitSpecifiedProperties(Map source, Collection keysToBeKept){
+        HashMap in = new HashMap();
+        HashMap out = new HashMap();
+        Map[] target = new Map[]{in, out};
+        if (source != null){
+            Iterator<Map.Entry> it = source.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = it.next();
+                if(keysToBeKept.contains(entry.getKey())) {
+                    in.put(entry.getKey(), entry.getValue());
+                } else {
+                    out.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return target;
+    }
+    
+    /**
      * This is a TEMPORARY method that will be removed.
      * DON'T USE THIS METHOD - for internal use only.
      * @param Map m

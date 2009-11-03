@@ -141,13 +141,18 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 				// complete.
 				if (this.serverSession == null) {
 					ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
+					// splitProperties[0] contains supportedNonServerSessionProperties; [1] - all the rest.
+					Map[] splitProperties = EntityManagerFactoryProvider.splitSpecifiedProperties(properties, supportedNonServerSessionProperties);
+					// keep only non server session properties - the rest will be either cached in the server session or ignored
+					properties = splitProperties[0];
+					Map serverSessionProperties = splitProperties[1];
 					// the call top setupImpl.deploy() finishes the session
 					// creation
-					ServerSession tempServerSession = setupImpl.deploy(realLoader, properties);
-					// discard all but non server session properties.
-					properties = EntityManagerFactoryProvider.keepSpecifiedProperties(properties, supportedNonServerSessionProperties);
-					// properties override server session properties
-					Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(tempServerSession.getProperties(), properties);
+					ServerSession tempServerSession = setupImpl.deploy(realLoader, serverSessionProperties);
+					// discard all but non server session properties from server session properties.
+					Map tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempServerSession.getProperties(), supportedNonServerSessionProperties);
+					// properties override server session properties 
+					Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
 					processProperties(propertiesToProcess);
 					this.serverSession = tempServerSession;
 				}
