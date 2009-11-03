@@ -144,16 +144,14 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
 
     }
-
-    public void element(String namespaceURI, String localName, String Name) {
-        try {
-            xmlStreamWriter.writeStartElement(Name);
-            xmlStreamWriter.writeEndElement();
-        } catch(XMLStreamException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+   public void element(XPathFragment frag) {
+    try {
+        xmlStreamWriter.writeStartElement(frag.getShortName());
+        xmlStreamWriter.writeEndElement();
+    } catch(XMLStreamException e) {
+        throw XMLMarshalException.marshalException(e);
     }
-
+}
     public void endDocument() {
         try {
             xmlStreamWriter.writeEndDocument();

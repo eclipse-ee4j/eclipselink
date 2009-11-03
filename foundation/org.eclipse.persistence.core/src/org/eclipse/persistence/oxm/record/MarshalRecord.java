@@ -120,7 +120,7 @@ public abstract class MarshalRecord extends XMLRecord {
             String stringValue = (String)xcm.convertObject(value, String.class);
             attribute(lastFragment, xmlField.getNamespaceResolver(), stringValue);
         } else {
-            element(lastFragment.getNamespaceURI(), lastFragment.getLocalName(), lastFragment.getShortName(), lastFragment.getPrefix());
+            element(lastFragment);
         }
     }
 
@@ -211,17 +211,10 @@ public abstract class MarshalRecord extends XMLRecord {
 
     /**
      * Receive notification of an element.
-     * @param namespaceURI The namespace URI, if the element is not namespace
-     * qualified the value of this parameter wil be null.
-     * @param localName The local name of the element.
-     * @param qName The qualified name of the element.
+     * @param frag The XPathFragment of the element
      */
-    public abstract void element(String namespaceURI, String localName, String name);
-
-    public void element(String namespaceURI, String localName, String name, String prefix) {
-        element(namespaceURI, localName, name);
-    }
-
+    public abstract void element(XPathFragment frag);
+    
     /**
      * Receive notification of an attribute.
      * @param xPathFragment The XPathFragment contains the name and prefix
@@ -321,7 +314,7 @@ public abstract class MarshalRecord extends XMLRecord {
                 start = index.intValue();
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
-                element(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), xPathFragment.getPrefix());
+            	element(xPathFragment);
             }
             getPositionalNodes().put(xPathFragment.getShortName(), new Integer(xPathFragment.getIndexValue() + 1));
         }

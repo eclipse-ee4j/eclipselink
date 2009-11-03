@@ -202,34 +202,24 @@ public class XMLEventWriterRecord extends MarshalRecord {
         writePrefixMappings();
     }
     
-    public void element(String namespaceURI, String localName, String name) {
-        try {
-            String prefix = XMLConstants.EMPTY_STRING;
-            if(name.indexOf(':') != -1) {
-                prefix = name.substring(0, name.indexOf(':'));
-            }
-            element(namespaceURI, localName, name, prefix);
-        } catch(Exception e) {
-            throw XMLMarshalException.marshalException(e);
-        }
-    }
-
-    public void element(String namespaceURI, String localName, String Name, String prefix) {
+    public void element(XPathFragment frag) {
         try {
             if(isStartElementOpen) {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
+            String prefix = frag.getPrefix();
             if(null == prefix) {
                 prefix = XMLConstants.EMPTY_STRING;
             }
-            XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, namespaceURI, localName);
+            XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, frag.getNamespaceURI(), frag.getLocalName());
             this.xmlEventWriter.add(startElement);
-            this.xmlEventWriter.add(this.xmlEventFactory.createEndElement(prefix, namespaceURI, localName));
+            this.xmlEventWriter.add(this.xmlEventFactory.createEndElement(prefix, frag.getNamespaceURI(), frag.getLocalName()));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }    
     }
+    
     
     public void endDocument() {
         try {

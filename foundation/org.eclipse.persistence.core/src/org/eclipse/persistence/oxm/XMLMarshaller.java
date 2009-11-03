@@ -42,9 +42,11 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.*;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
+import org.eclipse.persistence.oxm.record.FormattedOutputStreamRecord;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
+import org.eclipse.persistence.oxm.record.OutputStreamRecord;
 import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -84,8 +86,7 @@ import org.xml.sax.ext.LexicalHandler;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller {
-    private final static String DEFAULT_XML_ENCODING = "UTF-8";
+public class XMLMarshaller {    
     private final static String DEFAULT_XML_VERSION = "1.0";
     private String schemaLocation;
     private String noNamespaceSchemaLocation;
@@ -95,7 +96,7 @@ public class XMLMarshaller {
     private XMLAttachmentMarshaller attachmentMarshaller;
     private Properties marshalProperties;
     private Schema schema;
-
+    
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
     private static final String GET_XML_EVENT_WRITER_METHOD_NAME = "getXMLEventWriter";
@@ -156,7 +157,7 @@ public class XMLMarshaller {
     private void initialize() {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         transformer = xmlPlatform.newXMLTransformer();
-        setEncoding(DEFAULT_XML_ENCODING);
+        setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
         marshalProperties = new Properties();
     }
@@ -209,7 +210,7 @@ public class XMLMarshaller {
        * @param newEncoding the encoding to set on this XMLMarshaller
        */
     public void setEncoding(String newEncoding) {
-        transformer.setEncoding(newEncoding);
+        transformer.setEncoding(newEncoding);        
     }
 
     /**
@@ -423,15 +424,78 @@ public class XMLMarshaller {
             throw XMLMarshalException.nullArgumentException();
         }
         try {
+            boolean isXMLRoot = false;
+            String version = DEFAULT_XML_VERSION;
             String encoding = getEncoding();
-            if(object instanceof XMLRoot) {
-                if(((XMLRoot)object).getEncoding() != null) {
-                    encoding = ((XMLRoot)object).getEncoding();
-                }
+            if (object instanceof XMLRoot) {
+                isXMLRoot = true;
+                XMLRoot xroot = (XMLRoot) object;
+                version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
+                encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
             }
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);                      
-            marshal(object, writer);
-            writer.flush();
+            
+            if(encoding.equals(XMLConstants.DEFAULT_XML_ENCODING)){
+                AbstractSession session = null;
+                XMLDescriptor xmlDescriptor = null;
+                if(isXMLRoot){
+                    try{
+            	        session = xmlContext.getSession(((XMLRoot)object).getObject());
+            	        if(session != null){
+            	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+                	    }
+                   }catch (XMLMarshalException marshalException) {
+                        if (!isSimpleXMLRoot((XMLRoot) object)) {
+                        	throw marshalException;    
+                        }                
+                    }
+                }else{
+                	session = xmlContext.getSession(object.getClass());
+                	xmlDescriptor = getDescriptor(object.getClass(), session);
+                }
+            
+                OutputStreamRecord record;
+                if (isFormattedOutput()) {
+                	record = new FormattedOutputStreamRecord();                	
+                } else {
+            	    record = new OutputStreamRecord();                	
+                }
+                       
+                record.setMarshaller(this);
+                record.setOutputStream(outputStream);
+            
+                //if this is a simple xml root, the session and descriptor will be null
+                if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+                    marshal(object, record, session, xmlDescriptor, isXMLRoot);    
+                } else {
+                    try {
+                        Node xmlDocument = null;
+                        if(isXMLRoot && session == null) {
+                            xmlDocument = (Node)((XMLRoot)object).getObject();
+                        } else {
+                            xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
+                        }
+                        record.setSession(session);
+                        if (isFragment()) {
+                            record.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+                        } else {
+                            record.startDocument(encoding, version);
+                            record.node(xmlDocument, record.getNamespaceResolver());
+                            record.endDocument();
+                        }
+                    } catch (XMLPlatformException e) {
+                        throw XMLMarshalException.marshalException(e);
+                    }
+                }
+                try {
+                    outputStream.flush();
+                } catch (IOException e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+            }else{
+            	OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
+                marshal(object, writer);
+                writer.flush();
+            }
         } catch (UnsupportedEncodingException exception) {
             throw XMLMarshalException.marshalException(exception);
         } catch (Exception ex) {

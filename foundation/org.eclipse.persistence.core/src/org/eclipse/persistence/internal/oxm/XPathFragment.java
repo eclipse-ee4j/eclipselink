@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
@@ -46,6 +47,7 @@ public class XPathFragment {
     private int indexValue = -1;//if containsIndex, then this is the value of the index.
     private boolean shouldExecuteSelectNodes = false;
     private String shortName;
+    private byte[] shortNameBytes;
     private String prefix;
     private String localName;
     private String namespaceURI;
@@ -53,7 +55,7 @@ public class XPathFragment {
     protected boolean nameIsText = false;
     protected boolean isSelfFragment = false;
     private QName leafElementType;
-    private boolean generatedPrefix = false;
+    private boolean generatedPrefix = false;   
 
     public XPathFragment(String xpathString) {
         setXPath(xpathString);
@@ -123,6 +125,12 @@ public class XPathFragment {
 
         indexValue = hasIndex(xpathString);
         setupNamespaceInformation(shortName);
+        
+        try {
+            shortNameBytes = shortName.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+        } catch (UnsupportedEncodingException e) {        	        	
+        }
+
     }
     private void setupNamespaceInformation(String xpathString) {
         int nsindex = xpathString.indexOf(XMLConstants.COLON);
@@ -141,6 +149,10 @@ public class XPathFragment {
 
     public String getShortName() {
         return shortName;
+    }
+    
+    public byte[] getShortNameBytes() {
+        return shortNameBytes;
     }
 
     public String getPrefix() {

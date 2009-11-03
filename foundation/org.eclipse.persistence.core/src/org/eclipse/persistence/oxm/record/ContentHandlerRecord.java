@@ -181,15 +181,15 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void element(String namespaceURI, String localName, String qName) {
+    public void element(XPathFragment frag) {
         if (isStartElementOpen) {
             openAndCloseStartElement();
             isStartElementOpen = false;
         }
         try {
             this.attributes = new AttributesImpl();
-            contentHandler.startElement(namespaceURI, localName, qName, attributes);
-            contentHandler.endElement(namespaceURI, localName, qName);
+            contentHandler.startElement(frag.getNamespaceURI(), frag.getLocalName(), frag.getShortName(), attributes);
+            contentHandler.endElement(frag.getNamespaceURI(), frag.getLocalName(), frag.getShortName());
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }

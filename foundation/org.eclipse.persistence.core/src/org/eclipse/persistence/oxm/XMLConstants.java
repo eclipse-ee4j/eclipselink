@@ -51,7 +51,8 @@ public class XMLConstants {
     public static final String XOP_URL = "http://www.w3.org/2004/08/xop/include";
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;
-
+    public final static String DEFAULT_XML_ENCODING = "UTF-8";
+    
     // Built-in Schema Types    
     public static final String ANY = "any";
     public static final String BASE_64_BINARY = "base64Binary";

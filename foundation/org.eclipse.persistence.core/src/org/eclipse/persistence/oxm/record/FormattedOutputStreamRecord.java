@@ -8,13 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *      Denise Smith - November 2, 2009
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -25,33 +26,41 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * <p>Use this type of MarshalRecord when the marshal target is a Writer and the
- * XML should be formatted with carriage returns and indenting.</p>
+ * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the
+ * XML should be formatted with carriage returns and indenting. This type is only 
+ * used if the encoding of the OutputStream is UTF-8</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
  * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
- * FormattedWriterRecord formattedWriterRecord = new FormattedWriterRecord();<br>
- * formattedWriterRecord.setWriter(myWriter);<br>
- * xmlMarshaller.marshal(myObject, formattedWriterRecord);<br>
+ * FormattedOutputStreamRecord record = new FormattedOutputStreamRecord();<br>
+ * record.setOutputStream(myOutputStream);<br>
+ * xmlMarshaller.marshal(myObject, record);<br>
  * </code></p>
- * <p>If the marshal(Writer) and setFormattedOutput(true) method is called on
- * XMLMarshaller, then the Writer is automatically wrapped in a
- * FormattedWriterRecord.</p>
+ * <p>If the marshal(OutputStream) and setFormattedOutput(true) method is called on
+ * XMLMarshaller and the encoding is UTF-8, then the OutputStream is automatically wrapped
+ * in a FormattedOutputStreamRecord.</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
  * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
  * xmlMarshaller xmlMarshaller.setFormattedOutput(true);<br>
- * xmlMarshaller.marshal(myObject, myWriter);<br>
+ * xmlMarshaller.marshal(myObject, myOutputStream);<br>
  * </code></p>
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public class FormattedWriterRecord extends WriterRecord {
-    private static final char[] TAB = "   ".toCharArray();
+public class FormattedOutputStreamRecord extends OutputStreamRecord {
+	private static byte[] TAB;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
-
-    public FormattedWriterRecord() {
+    
+    static {
+        try {
+        	TAB = "   ".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+        }
+    }
+    
+    public FormattedOutputStreamRecord() {
         super();
         numberOfTabs = 0;
         complexType = true;
@@ -63,7 +72,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void endDocument() {
         try {
-        	writer.write(Helper.cr());    
+          getOutputStream().write(CR);    
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -76,19 +85,19 @@ public class FormattedWriterRecord extends WriterRecord {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
         try {
             if (isStartElementOpen) {
-            	writer.write('>');
+            	getOutputStream().write(CLOSE_ELEMENT);
             }
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
-                	writer.write(Helper.cr());                    
+                	getOutputStream().write(CR);                    
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                	writer.write(TAB);
+                	getOutputStream().write(TAB);
                 }
             }
             isStartElementOpen = true;
-            writer.write('<');
-            writer.write(xPathFragment.getShortName());
+            getOutputStream().write(OPEN_START_ELEMENT);
+            getOutputStream().write(xPathFragment.getShortNameBytes());
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {
@@ -103,19 +112,19 @@ public class FormattedWriterRecord extends WriterRecord {
         try {
             isLastEventText = false;
             if (isStartElementOpen) {
-                writer.write('>');
+            	getOutputStream().write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-            writer.write(Helper.cr());
+            getOutputStream().write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	writer.write(TAB);
+            	getOutputStream().write(TAB);
             }
             super.element(frag);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
-    }
-
+    }    
+   
     /**
      * INTERNAL:
      */
@@ -123,16 +132,15 @@ public class FormattedWriterRecord extends WriterRecord {
         try {
             isLastEventText = false;
             numberOfTabs--;
-            if (isStartElementOpen) {
-            	writer.write('/');
-            	writer.write('>');
+            if (isStartElementOpen) {            	
+            	getOutputStream().write(CLOSE_EMPTY_ELEMENT);
                 isStartElementOpen = false;
                 return;
             }
             if (complexType) {
-            	writer.write(Helper.cr());
+            	getOutputStream().write(CR);
                 for (int x = 0; x < numberOfTabs; x++) {
-                	writer.write(TAB);
+                	getOutputStream().write(TAB);
                 }
             } else {
                 complexType = true;
@@ -159,12 +167,12 @@ public class FormattedWriterRecord extends WriterRecord {
         //Format the CDATA on it's own line
         try {
             if(isStartElementOpen) {
-            	writer.write('>');
+            	getOutputStream().write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-            writer.write(Helper.cr());
+            getOutputStream().write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	writer.write(TAB);
+            	getOutputStream().write(TAB);
             }
             super.cdata(value);
             complexType=true;
@@ -199,10 +207,10 @@ public class FormattedWriterRecord extends WriterRecord {
             }
         } else {
             try {
-                FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
+                FormattedOutputStreamRecordContentHandler handler = new FormattedOutputStreamRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
-                xfragReader.setContentHandler(wrcHandler);
-                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
+                xfragReader.setContentHandler(handler);
+                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -219,21 +227,21 @@ public class FormattedWriterRecord extends WriterRecord {
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      * @see org.eclipse.persistence.oxm.record.WriterRecord.WriterRecordContentHandler
      */
-    private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
+    private class FormattedOutputStreamRecordContentHandler extends OutputStreamRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
             	if (isStartElementOpen) {
-            		writer.write('>');
+            		getOutputStream().write(CLOSE_ELEMENT);
             	}
                 if (!isLastEventText) {
-                	writer.write(Helper.cr());
+                	getOutputStream().write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(TAB);
+                    	getOutputStream().write(TAB);
                     }
                 }
-                writer.write('<');
-                writer.write(qName);
+                getOutputStream().write(OPEN_START_ELEMENT);
+                getOutputStream().write(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                 numberOfTabs++;
                 isStartElementOpen = true;
                 isLastEventText = false;
@@ -251,16 +259,15 @@ public class FormattedWriterRecord extends WriterRecord {
                 isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
-                	writer.write('/');
-                	writer.write('>');
+                	getOutputStream().write(CLOSE_EMPTY_ELEMENT);
                     isStartElementOpen = false;
                     complexType = true;
                     return;
                 }
                 if (complexType) {
-                	writer.write(Helper.cr());
+                	getOutputStream().write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(TAB);
+                    	getOutputStream().write(TAB);
                     }
                 } else {
                     complexType = true;
@@ -288,8 +295,8 @@ public class FormattedWriterRecord extends WriterRecord {
 	public void comment(char[] ch, int start, int length) throws SAXException {
             try {
             	if (isStartElementOpen) {
-            		writer.write('>');
-            		writer.write(Helper.cr());
+            		getOutputStream().write(CLOSE_ELEMENT);
+            		getOutputStream().write(CR);
                     isStartElementOpen = false;
                 }
             	writeComment(ch, start, length);

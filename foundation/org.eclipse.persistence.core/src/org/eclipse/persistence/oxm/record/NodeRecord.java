@@ -241,8 +241,8 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void element(String namespaceURI, String localName, String qName) {
-        Element element = document.createElementNS(namespaceURI, qName);
+    public void element(XPathFragment frag) {
+        Element element = document.createElementNS(frag.getNamespaceURI(), frag.getShortName());
         getNode().appendChild(element);
     }
 
