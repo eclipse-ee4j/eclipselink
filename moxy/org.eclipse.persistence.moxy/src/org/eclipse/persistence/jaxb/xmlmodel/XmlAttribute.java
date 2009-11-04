@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-bidirectional"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -50,7 +51,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "xmlSchemaType",
-    "xmlJavaTypeAdapter"
+    "xmlJavaTypeAdapter",
+    "xmlBidirectional"
 })
 public class XmlAttribute
     extends JavaAttribute
@@ -60,6 +62,8 @@ public class XmlAttribute
     protected XmlSchemaType xmlSchemaType;
     @XmlElement(name = "xml-java-type-adapter", required = true)
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
+    @XmlElement(name = "xml-bidirectional", required = true)
+    protected XmlBidirectional xmlBidirectional;
     @javax.xml.bind.annotation.XmlAttribute
     protected String name;
     @javax.xml.bind.annotation.XmlAttribute
@@ -125,6 +129,30 @@ public class XmlAttribute
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
+    }
+
+    /**
+     * Gets the value of the xmlBidirectional property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlBidirectional }
+     *     
+     */
+    public XmlBidirectional getXmlBidirectional() {
+        return xmlBidirectional;
+    }
+
+    /**
+     * Sets the value of the xmlBidirectional property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlBidirectional }
+     *     
+     */
+    public void setXmlBidirectional(XmlBidirectional value) {
+        this.xmlBidirectional = value;
     }
 
     /**

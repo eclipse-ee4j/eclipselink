@@ -326,7 +326,7 @@ public class MappingsGenerator {
                 prefix += ":";
             }
             
-            if (helper.isAnnotationPresent(info.getIDProperty().getElement(), XmlAttribute.class)) {
+            if (info.getIDProperty().isAttribute()) {
                 pkFieldName = ATT + prefix + local;
             } else { // assume element
                 pkFieldName = prefix + local + TXT;

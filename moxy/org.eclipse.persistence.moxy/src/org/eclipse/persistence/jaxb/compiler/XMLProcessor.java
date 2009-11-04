@@ -397,6 +397,10 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
         }
+        // handle xml-bidirectional
+        if (xmlAttribute.getXmlBidirectional() != null) {
+            oldProperty.setBackpointerPropertyName(xmlAttribute.getXmlBidirectional().getTargetAttribute());
+        }
         
         return oldProperty;
     }
@@ -486,6 +490,11 @@ public class XMLProcessor {
                 throw JAXBException.invalidList(oldProperty.getPropertyName());
             }
             oldProperty.setIsXmlList(xmlElement.isXmlList());
+        }
+        
+        // handle xml-bidirectional
+        if (xmlElement.getXmlBidirectional() != null) {
+            oldProperty.setBackpointerPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
         }
         
         return oldProperty;

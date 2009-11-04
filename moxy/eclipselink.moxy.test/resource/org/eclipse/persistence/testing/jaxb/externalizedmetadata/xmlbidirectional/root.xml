@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+    <employee address-id="199">
+        <name>Joe Smith</name>
+    </employee>
+    <address aid="199">
+        <city>Sometown</city>
+    </address>
+    <address aid="99">
+        <city>Anytown</city>
+    </address>
+</root>
