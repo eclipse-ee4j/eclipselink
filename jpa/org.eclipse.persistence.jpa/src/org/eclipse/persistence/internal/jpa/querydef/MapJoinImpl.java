@@ -84,7 +84,10 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     }
 
     public Path<K> key() {
-        return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
+        if (this.getModel().getKeyType().getPersistenceType().equals(PersistenceType.BASIC)){
+            return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
+        }
+        return new JoinImpl(this, (ManagedType)this.getModel().getKeyType(), metamodel, this.getModel().getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
     }
 
     public Path<V> value() {
