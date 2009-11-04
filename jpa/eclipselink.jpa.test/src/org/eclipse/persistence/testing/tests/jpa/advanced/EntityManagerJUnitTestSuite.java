@@ -8010,71 +8010,77 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         // test
-        EntityManager em;
-        if (isOnServer()) {
-            em = createEntityManager();
-            // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
-            beginTransaction(em);
-            ((EntityManagerImpl)em.getDelegate()).setProperties(properties);
-        } else {
-            EntityManagerFactory emFactory = getEntityManagerFactory();
-            em = emFactory.createEntityManager(properties);
-        }
-        if(useSetProperty) { 
-            em.setProperty(EntityManagerProperties.JDBC_USER, "em_user");
-            em.setProperty(EntityManagerProperties.JDBC_PASSWORD, "em_password");
-            em.setProperty(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
-            em.setProperty(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
-            em.setProperty(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
-        }
-        
-        // verify
-        ClientSession clientSession;
-        if (isOnServer()) {
-            clientSession = (ClientSession)((EntityManagerImpl)em.getDelegate()).getActivePersistenceContext(null).getParent();
-        } else {
-            clientSession = (ClientSession)((EntityManagerImpl)em).getActivePersistenceContext(null).getParent();
-        }
-        if(!clientSession.isExclusiveIsolatedClientSession()) {
-            errorMsg += "ExclusiveIsolatedClientSession was expected\n";
-        }
-        ConnectionPolicy policy = clientSession.getConnectionPolicy();
-        if(policy.isPooled()) {
-            errorMsg += "NOT pooled policy was expected\n";
-        }
-        String user = (String)policy.getLogin().getProperty("user");
-        if(!user.equals("em_user")) {
-            errorMsg += "em_user was expected\n";
-        }
-        String password = (String)policy.getLogin().getProperty("password");
-        if(!password.equals("em_password")) {
-            errorMsg += "em_password was expected\n";
-        }
-        if(! (((DatasourceLogin)policy.getLogin()).getConnector() instanceof JNDIConnector)) {
-            errorMsg += "JNDIConnector was expected\n";
-        } else {
-            JNDIConnector jndiConnector = (JNDIConnector)((DatasourceLogin)policy.getLogin()).getConnector();
-            String dataSourceName = jndiConnector.getName();
-            if(dataSourceName == null) {
-                errorMsg += "NON null dataSourceName was expected\n";
+        EntityManager em = null;
+        boolean isInTransaction = false;
+        try {
+            if (isOnServer()) {
+                em = createEntityManager();
+                // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
+                beginTransaction(em);
+                isInTransaction = true;
+                ((EntityManagerImpl)em.getDelegate()).setProperties(properties);
             } else {
-                if(clientSession.getParent().getLogin().shouldUseExternalTransactionController()) {
-                    if(dataSourceName.equals("em_nonjta_datasource")) {
-                        errorMsg += "em_jta_datasource was expected\n";
-                    }
+                EntityManagerFactory emFactory = getEntityManagerFactory();
+                em = emFactory.createEntityManager(properties);
+            }
+            if(useSetProperty) { 
+                em.setProperty(EntityManagerProperties.JDBC_USER, "em_user");
+                em.setProperty(EntityManagerProperties.JDBC_PASSWORD, "em_password");
+                em.setProperty(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
+                em.setProperty(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
+                em.setProperty(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
+            }
+            
+            // verify
+            ClientSession clientSession;
+            if (isOnServer()) {
+                clientSession = (ClientSession)((EntityManagerImpl)em.getDelegate()).getActivePersistenceContext(null).getParent();
+            } else {
+                clientSession = (ClientSession)((EntityManagerImpl)em).getActivePersistenceContext(null).getParent();
+            }
+            if(!clientSession.isExclusiveIsolatedClientSession()) {
+                errorMsg += "ExclusiveIsolatedClientSession was expected\n";
+            }
+            ConnectionPolicy policy = clientSession.getConnectionPolicy();
+            if(policy.isPooled()) {
+                errorMsg += "NOT pooled policy was expected\n";
+            }
+            String user = (String)policy.getLogin().getProperty("user");
+            if(!user.equals("em_user")) {
+                errorMsg += "em_user was expected\n";
+            }
+            String password = (String)policy.getLogin().getProperty("password");
+            if(!password.equals("em_password")) {
+                errorMsg += "em_password was expected\n";
+            }
+            if(! (((DatasourceLogin)policy.getLogin()).getConnector() instanceof JNDIConnector)) {
+                errorMsg += "JNDIConnector was expected\n";
+            } else {
+                JNDIConnector jndiConnector = (JNDIConnector)((DatasourceLogin)policy.getLogin()).getConnector();
+                String dataSourceName = jndiConnector.getName();
+                if(dataSourceName == null) {
+                    errorMsg += "NON null dataSourceName was expected\n";
                 } else {
-                    if(dataSourceName.equals("em_jta_datasource")) {
-                        errorMsg += "em_nonjta_datasource was expected\n";
+                    if(clientSession.getParent().getLogin().shouldUseExternalTransactionController()) {
+                        if(dataSourceName.equals("em_nonjta_datasource")) {
+                            errorMsg += "em_jta_datasource was expected\n";
+                        }
+                    } else {
+                        if(dataSourceName.equals("em_jta_datasource")) {
+                            errorMsg += "em_nonjta_datasource was expected\n";
+                        }
                     }
                 }
             }
+        } finally {
+            // clean-up
+            if (isInTransaction) {
+                rollbackTransaction(em);
+            }
+            if(em != null) {
+                closeEntityManager(em);
+            }
         }
-        
-        // clean-up
-        if (isOnServer()) {
-            rollbackTransaction(em);
-        }
-        em.close();
         
         if(errorMsg.length() > 0) {
             fail(errorMsg);
