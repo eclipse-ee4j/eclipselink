@@ -129,6 +129,13 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, value="23:59:59")
         }
 ),
+@NamedQuery(
+	name="findAllEmployeesByIdAndFirstName",
+	query="Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName",
+    hints={
+                @QueryHint(name=QueryHints.PESSIMISTIC_LOCK_TIMEOUT, value="15")
+    }
+),
 // BUG 259329 - Update named queries have a lock mode type defaulted to NONE need to 
 // internally not only check for null but NONE as well.
 @NamedQuery(

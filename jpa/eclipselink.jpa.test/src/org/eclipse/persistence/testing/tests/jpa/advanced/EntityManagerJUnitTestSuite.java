@@ -335,6 +335,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testTemporalOnClosedEm"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTransientMapping"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGenerateSessionNameFromConnectionProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
         
         return suite;
     }
@@ -1619,8 +1621,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ServerSession session = JUnitTestCase.getServerSession();
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        // It's JPA2.0 feature.
+        if (! isJPA10() && isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
 
@@ -1859,6 +1861,116 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+        }
+    }
+
+    public void testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // It's a JPA2.0 feature
+        if (! isJPA10()) {
+            Department dept = null;
+
+            EntityManager em = createEntityManager();
+            try {
+                beginTransaction(em);
+                dept = new Department();
+                em.persist(dept);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw ex;
+            } 
+
+            try {
+                beginTransaction(em);
+                dept = em.find(Department.class, dept.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                rollbackTransaction(em);
+                fail("An Expected javax.persistence.PersistenceException was not thrown");
+            } catch (PersistenceException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            } finally {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+       }
+    }
+
+    public void testLockWithJoinedInheritanceStrategy () {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && isSelectForUpateSupported()) {
+            Employee emp = null;
+            LargeProject largeProject = null;
+
+            EntityManager em = createEntityManager();
+            
+            try {
+                beginTransaction(em);
+                emp = new Employee();
+                largeProject = new LargeProject();
+                largeProject.setName("Large Project");
+                largeProject.setBudget(50000);
+                emp.addProject(largeProject);
+                em.persist(emp);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw ex;
+            } 
+
+            Exception pessimisticLockException = null;
+
+            try {
+                beginTransaction(em);
+                emp = em.find(Employee.class, emp.getId());
+                Project lp1 = emp.getProjects().iterator().next();
+                em.lock(lp1, LockModeType.PESSIMISTIC_WRITE);
+                lp1.setName("Lock In Additional Table ");
+                
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    LargeProject lp2 = em2.find(LargeProject.class, lp1.getId());
+                    HashMap properties = new HashMap();
+                    // According to the spec a 0 indicates a NOWAIT clause.
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(lp2, LockModeType.PESSIMISTIC_WRITE, properties);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    rollbackTransaction(em2);
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
         }
     }
     

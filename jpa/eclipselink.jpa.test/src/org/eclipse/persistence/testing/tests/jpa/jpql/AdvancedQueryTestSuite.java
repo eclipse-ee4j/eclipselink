@@ -112,6 +112,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
         suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
         suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
+        suite.addTest(new AdvancedQueryTestSuite("testLockWithSecondaryTable"));
+        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
         
         return suite;
     }
@@ -1123,8 +1127,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         ServerSession session = JUnitTestCase.getServerSession();
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        // It's a JPA2.0 feature
+        if (! isJPA10() && isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
             
@@ -1141,7 +1145,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-             
                 closeEntityManager(em);
                 throw ex;
             }
@@ -1159,6 +1162,24 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 commitTransaction(em);
                 
                 assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw ex;
+            } 
+
+            //Verify if the entity has been updated correctly by using PESSIMISTIC_FORCE_INCREMENT as PESSIMISTIC_WRITE
+            try {
+                beginTransaction(em);
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+                rollbackTransaction(em);
+                
+                assertTrue("The last name is not updated by using PESSIMISTIC_FORCE_INCREMENT.", queryResult.getLastName().equals("Auger"));
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -1294,6 +1315,195 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+        }
+    }
+
+    public void testLockWithSecondaryTable() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && isSelectForUpateSupported()) {
+            EntityManager em = createEntityManager();
+            Exception pessimisticLockException = null;
+        
+            try {
+                beginTransaction(em);
+            
+                // Find all the employees and lock them.
+                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
+                Employee employee = (Employee) employees.get(0);
+                employee.setSalary(90000);
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
+                    employee2.setSalary(100000);
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
+        }
+    }
+
+    public void testVersionChangeWithReadLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // It's a JPA2.0 feature.
+        if (! isJPA10() && isSelectForUpateSupported()){
+            Employee employee = null;
+            Integer version1;
+            
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            
+            try {
+                employee = new Employee();
+                employee.setFirstName("Version Change");
+                employee.setLastName("Readlock");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            version1 = employee.getVersion();
+            
+            try {
+                beginTransaction(em);
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_READ);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+                queryResult.setLastName("Burger");
+                commitTransaction(em);
+                
+                assertTrue("The version was not updated on the pessimistic read lock.", version1.intValue() < employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                throw ex;
+            } finally {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    public void testNamedQueryAnnotationOverwritePersistenceXML() throws Exception {
+
+        //It's a JPA2.0 feature
+        if (! isJPA10()){
+            EntityManager em = createEntityManager();
+            try {
+                beginTransaction(em);
+                Query query = em.createNamedQuery("findAllEmployeesByIdAndFirstName");
+                Map<String, Object> hints = query.getHints();
+                assertTrue("query hint", hints.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT).equals("15"));
+                rollbackTransaction(em);
+            } catch(Exception ex){
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                throw ex;
+            } finally{
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    public void testVersionChangeWithWriteLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // It's a JPA2.0 feature
+        if (! isJPA10() && isSelectForUpateSupported()) {
+            Employee employee = null;
+            Integer version1;
+            
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            
+            try {
+                employee = new Employee();
+                employee.setFirstName("Version Change");
+                employee.setLastName("Writelock");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            version1 = employee.getVersion();
+            
+            try {
+                beginTransaction(em);
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+                queryResult.setLastName("Burger");
+                commitTransaction(em);
+                
+                assertTrue("The version was not updated on the pessimistic write lock.", version1.intValue() < employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw ex;
+            } finally {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+            
         }
     }
 }
