@@ -464,13 +464,6 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     */
-     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return " LIKE " + table.getQualifiedNameDelimited(this);
-     }
-     
-    /**
-     * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean shouldAlwaysUseTempStorageForModifyAll() {
