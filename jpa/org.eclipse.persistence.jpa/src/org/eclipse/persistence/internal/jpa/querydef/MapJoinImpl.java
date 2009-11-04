@@ -28,6 +28,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -76,14 +77,14 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     }
 
     public Join<Map<K, V>, K> joinKey(JoinType jt) {
-        if (this.getModel().getKeyType().equals(PersistenceType.BASIC)){
+        if (this.getModel().getKeyType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("attemped_to_join_basic_key"));
         }
-        return null;
+        return new JoinImpl(this, (ManagedType)this.getModel().getKeyType(), metamodel, this.getModel().getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
     }
 
     public Path<K> key() {
-        return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), null);
+        return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
     }
 
     public Path<V> value() {
