@@ -222,7 +222,7 @@ public class FullRegressionTestSuite extends TestSuite {
         // JPA 2.0 BeanValidation integration
         // Commented out till we can checkin a Bean Validation impl to the repository
         // To run these test against Validation RI,
-        // -add refernce to following file from your workspace to run.classpath in build.xml
+        // -add reference to following file from your workspace to run.classpath in build.xml
         //  hibernate-validator-4.0.0.Beta2.jar
         //  slf4j-jdk14.jar
         //  slf4j-api-1.5.6.jar

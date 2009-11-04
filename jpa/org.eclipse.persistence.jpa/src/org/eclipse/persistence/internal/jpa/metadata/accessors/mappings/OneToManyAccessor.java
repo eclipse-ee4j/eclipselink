@@ -23,6 +23,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     11/02/2009-2.0 Michael O'Brien
+ *       - 266912: JPA 2.0 Metamodel support for 1:m as 1:1 in DI 96
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -97,7 +99,7 @@ public class OneToManyAccessor extends CollectionAccessor {
     
     /**
      * INTERNAL:
-     * Process an OneToMany accessor into an EclipseLink OneToManyMapping. If a 
+     * Process a OneToMany accessor into an EclipseLink OneToManyMapping. If a 
      * JoinTable is found however, we must create a ManyToManyMapping.
      */
     @Override
@@ -149,6 +151,9 @@ public class OneToManyAccessor extends CollectionAccessor {
         // first followed by specific metadata.
         ManyToManyMapping mapping = new ManyToManyMapping();
         process(mapping);
+        
+        // 266912: If this 1:n accessor is different than the n:n mapping - track this
+        mapping.setDefinedAsOneToManyMapping(true);
                 
         // Process the JoinTable metadata.
         processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata());

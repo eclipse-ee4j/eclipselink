@@ -37,6 +37,8 @@ import javax.persistence.Version;
 @Entity(name="ManufacturerMetamodel")
 @Table(name="CMP3_MM_MANUF")
 public class Manufacturer extends Corporation implements java.io.Serializable{
+    private static final long serialVersionUID = 5796354087505114955L;
+
     @Version
     @Column(name="MANUF_VERSION")
     private int version;
@@ -114,7 +116,8 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     
     // Define static types
     
-    public Manufacturer() {}
+    public Manufacturer() {
+    }
 
     public int getVersion() { 
         return version; 

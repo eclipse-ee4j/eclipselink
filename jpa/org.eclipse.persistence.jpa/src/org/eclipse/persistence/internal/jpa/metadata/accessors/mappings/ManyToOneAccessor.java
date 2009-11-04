@@ -17,6 +17,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     11/02/2009-2.0 Michael O'Brien
+ *       - 266912: JPA 2.0 Metamodel support for m:1 as m:m in DI 96
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -88,6 +90,9 @@ public class ManyToOneAccessor extends ObjectAccessor {
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
         setMapping(mapping);
+        
+        // 266912: If this n:1 accessor is different than the 1:1 mapping -track this
+        mapping.setDefinedAsManyToOneMapping(true);
         
         // Process the owning keys for this mapping.
         processOwningMappingKeys(mapping);

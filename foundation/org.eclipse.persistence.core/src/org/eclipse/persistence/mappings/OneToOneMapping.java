@@ -63,6 +63,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /** Mechanism holds relationTable and all fields and queries associated with it. */
     protected transient RelationTableMechanism mechanism;
 
+    /**
+     * 266912: Since: EclipseLink 2.0 for the Metamodel API
+     * For 1:1 and m:m mappings - track the original externally defined mapping if different 
+     * Note: This field will provide differentiation for the following 
+     *   external to internal representations for mapping types<br>
+     *   - A OneToManyMapping will be represented by a ManyToManyMapping if unidirectional<br>
+     *   - A ManyToOneMapping will be represented by a OneToOneMapping (without a FK constraint)<br>      
+     */
+    protected boolean isDefinedAsManyToOneMapping = false;
     
     /**
      * PUBLIC:
@@ -1245,6 +1254,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
 
     /**
+     * INTERNAL:
+     * Set whether this mapping was originally defined as a ManyToOne
+     * @param isDefinedAsManyToOneMapping
+     */
+    public void setDefinedAsManyToOneMapping(boolean isDefinedAsManyToOneMapping) {
+        this.isDefinedAsManyToOneMapping = isDefinedAsManyToOneMapping;
+    }
+
+    /**
      * PUBLIC:
      * Define the foreign key relationship in the 1-1 mapping.
      * This method is used for singleton foreign key relationships only,
@@ -1367,6 +1385,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return true;
     }
     
+    /**
+     * INTERNAL:
+     * Return whether this mapping was originally defined as a ManyToOne
+     * @return
+     */
+     public boolean isDefinedAsManyToOneMapping() {
+         return isDefinedAsManyToOneMapping;
+     }
+     
     /**
      * INTERNAL:
      * Return if this mapping support joining.

@@ -124,7 +124,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
-
+    
     /**
      * INTERNAL:
      */
@@ -1674,7 +1674,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * This will do two things:
+     * This will do three things:
      * 1 - process any common level metadata for all mappings.
      * 2 - add the mapping to the internal descriptor.
      * 3 - store the actual database mapping associated with this accessor.
@@ -1694,7 +1694,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         getDescriptor().getClassDescriptor().addMapping(mapping);
         
         // Keep a reference back to this mapping for quick look up.
-        m_mapping = mapping;
+        m_mapping = mapping;  
     }
     
     /**

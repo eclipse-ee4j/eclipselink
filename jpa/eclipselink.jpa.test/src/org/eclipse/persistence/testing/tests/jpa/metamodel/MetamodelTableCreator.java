@@ -734,7 +734,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field4.setIsIdentity(false);
         table.addField(field4);
 
-        // 1:m does not require a JoinTable - only a JoinColumn
+/*        // m:1 requires a JoinTable
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("COMPUTER_COMPUTER_ID");
         field6.setTypeName("NUMERIC");
@@ -745,7 +745,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
         table.addField(field6);        
-        
+*/        
         return table;
     }
 

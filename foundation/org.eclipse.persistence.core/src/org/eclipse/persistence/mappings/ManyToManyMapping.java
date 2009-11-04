@@ -28,7 +28,7 @@ import org.eclipse.persistence.queries.*;
 /**
  * <p><b>Purpose</b>: Many to many mappings are used to represent the relationships
  * between a collection of source objects and a collection of target objects.
- * The mapping require the creation of an intermediate table for managing the
+ * The mapping requires the creation of an intermediate table for managing the
  * associations between the source and target records.
  *
  * @author Sati
@@ -45,6 +45,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected transient RelationTableMechanism mechanism;
     protected HistoryPolicy historyPolicy;
 
+    /**
+     * 266912: Since: EclipseLink 2.0 for the Metamodel API
+     * For 1:1 and m:m mappings - track the original externally defined mapping if different 
+     * Note: This field will provide differentiation for the following 
+     *   external to internal representations for mapping types<br>
+     *   - A OneToManyMapping will be represented by a ManyToManyMapping if unidirectional<br>
+     *   - A ManyToOneMapping will be represented by a OneToOneMapping (without a FK constraint)<br>      
+     */
+    protected boolean isDefinedAsOneToManyMapping = false;
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -696,6 +706,15 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
+     * Return whether this mapping was originally defined as a OneToMany
+     * @return
+     */
+    public boolean isDefinedAsOneToManyMapping() {
+        return isDefinedAsOneToManyMapping;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this mapping support joining.
      */
     public boolean isJoiningSupported() {
@@ -941,6 +960,15 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     public void setDeleteSQLString(String sqlString) {
         this.mechanism.setDeleteSQLString(sqlString);
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether this mapping was originally defined as a OneToMany
+     * @param isDefinedAsOneToManyMapping
+     */
+    public void setDefinedAsOneToManyMapping(boolean isDefinedAsOneToManyMapping) {
+        this.isDefinedAsOneToManyMapping = isDefinedAsOneToManyMapping;
     }
     
     /**

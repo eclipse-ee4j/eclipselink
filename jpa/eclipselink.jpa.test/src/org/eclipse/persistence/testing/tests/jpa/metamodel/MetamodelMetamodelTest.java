@@ -20,21 +20,13 @@ package org.eclipse.persistence.testing.tests.jpa.metamodel;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -46,9 +38,11 @@ import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import junit.framework.Test;
@@ -79,9 +73,6 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
-import org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner;
-import org.eclipse.persistence.testing.models.jpa.metamodel.User;
-import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 
 /**
  * Disclaimer:
@@ -133,15 +124,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
-        // Test has been expanded by interface function below
-        //suite.addTest(new MetamodelMetamodelTest("test_MetamodelFullImplementation"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_BASIC_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_MANY_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_MANY_Method"));
-        // TODO: currently our MANY_TO_ONE is treated as a ONE_TO_ONE - we need an alternate way of getting m:1 state        
-        //suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ELEMENT_COLLECTION_Method"));        
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getName_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getDeclaringType_Method"));
@@ -154,6 +142,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isAssociation_on_Singular_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_false_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_true_Method"));
+        
         suite.addTest(new MetamodelMetamodelTest("testBasicType_Interface"));
         suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableJavaType_Method"));
@@ -173,7 +162,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_handles_possible_null_cmppolicy"));
+        
         suite.addTest(new MetamodelMetamodelTest("testListAttribute_Interface"));
+        
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttributes_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttributes_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_Type_param_Method"));
@@ -191,12 +182,18 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getPluralAttributes_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_internal_entity_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_root_entity_Method"));
-        // Require test model expansion
-        //suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_root_mappedSuperclass_Method"));        
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_root_mappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_doesNotExist_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_doesNotExist_on_MappedSuperclass_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_above_throws_iae_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_doesNotExist_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_BASIC_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_EMBEDDED_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_on_MappedSuperclass_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getCollection_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredCollection_Method"));
         suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSet_Method"));
@@ -240,36 +237,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     public void setUp() {
         super.setUp();
-        // Drop all tables : Thank you Chris
-        /*java.util.Vector v = JUnitTestCase.getServerSession("metamodel1").executeSQL("select tablename from sys.systables where tabletype='T'");
-        for (int i=0; i<v.size(); i++){
-            try{
-                DatabaseRecord dr = (DatabaseRecord)v.get(i);
-                JUnitTestCase.getServerSession().executeNonSelectingSQL("Drop table "+dr.getValues().get(0));
-            } catch (Exception e){
-                System.out.println(e);
-            }
-        }*/        
-        /*JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_HIST_EMPLOY");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_CORPCOMPUTER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_COMPUTER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF_MM_HWDESIGNER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_MM_MEMORY");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_MM_PRO");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_COMPUTER_MM_USER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD_SEQ");
-
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_COMPUTER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_USER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_HWDESIGNER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MEMORY");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_PROC");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_LOCATION");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_BOARD");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_SWDESIGNER");
-        JUnitTestCase.getServerSession(PERSISTENCE_UNIT_NAME).executeNonSelectingSQL("DROP TABLE CMP3_MM_MANUF");
-        */        
     }
     
     /**
@@ -286,18 +253,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         try {
             emf = initialize(overrideEMFCachingForTesting);
             em = emf.createEntityManager();
-            // Unset the metamodel - for repeated runs through this test
-            // 20091016 - turn this off for production - as it is a performance hit - reenable if you wish to debug metamodel pre-processing
-//            if(!isOnServer()) { 
-//                ((EntityManagerFactoryImpl)emf).setMetamodel(null);
-//            }
             metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
         } catch (Exception e) {
             e.printStackTrace();
-            if(null != em) {
-                cleanup(em);
-            }
+            cleanup(em);
         }
         return em;
     }
@@ -341,10 +301,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur on getIdType() here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -369,10 +327,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -412,10 +368,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -450,10 +404,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -488,10 +440,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertTrue("non-declared attribute should throw an IAE", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -537,10 +487,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -578,10 +526,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -618,10 +564,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -659,10 +603,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -694,10 +636,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -730,16 +670,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Attribute anAttribute = entityBoard_.getAttribute("computer");                
                 assertNotNull(anAttribute);
                 assertEquals(Computer.class, anAttribute.getJavaType());
-                // TODO: currently our MANY_TO_ONE is treated as a ONE_TO_ONE - we need an alternate way of getting m:1 state 
+                // Note: internally our MANY_TO_ONE is treated as a ONE_TO_ONE - although with a DB constraint 
                 assertEquals(PersistentAttributeType.MANY_TO_ONE, anAttribute.getPersistentAttributeType());
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -778,10 +716,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -819,10 +755,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -847,10 +781,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -864,21 +796,31 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(em);
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+                
                 /**
                  *  Return the managed type representing the type in which 
                  *  the attribute was declared.
                  *  @return declaring type
                  */
                 //ManagedType<X> getDeclaringType();
+                
+                // Test case
+                Attribute anAttribute = entityManufacturer_.getDeclaredAttribute("hardwareDesignersMapUC4");
+                ManagedType aManagedType = anAttribute.getDeclaringType();
+                assertEquals(entityManufacturer_, aManagedType);
+                
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -908,10 +850,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -941,10 +881,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -983,10 +921,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1025,10 +961,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1065,10 +999,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1101,10 +1033,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1139,10 +1069,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1187,10 +1115,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1223,10 +1149,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1252,10 +1176,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1297,10 +1219,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1351,10 +1271,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }    
@@ -1381,10 +1299,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1404,20 +1320,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityHardwareDesigner_);
                 
                 // Actual Test Case
-                // exercise EntityTypeImpl
-                //System.out.println("_entityManufacturer.getBindableType(): " + entityManufacturer.getBindableType());
-                //System.out.println("_entityManufacturer.getCollections(): " + entityManufacturer.getCollections());
-                //System.out.println("_entityManufacturer.getDeclaredCollection(type): " + entityManufacturer.getDeclaredCollection("computers", Computer.class));
-                //System.out.println("_entityManufacturer.getDeclaredAttribute(type): " + entityManufacturer.getDeclaredSingularAttribute("name", String.class));            
-                //System.out.println("_entityManufacturer.getDeclaredAttribute(): " + entityManufacturer.getDeclaredAttribute("name"));
-                //System.out.println("_entityManufacturer.getDeclaredAttributes(): " + entityManufacturer.getDeclaredAttributes());
-                //System.out.println("_entityManufacturer.getDeclaredId(type): " + entityManufacturer.getDeclaredId(manufacturer.getId().getClass()));
-                //System.out.println("_entityManufacturer.getIdType(): " + entityManufacturer.getIdType());
-                //System.out.println("_entityManufacturer.getJavaType(): " + entityManufacturer.getJavaType());
-                //System.out.println("_entityManufacturer.getName(): " + entityManufacturer.getName());
-                //System.out.println("_entityManufacturer.getSupertype(): " + entityManufacturer.getSupertype());
-                //entityManufacturer.getVersion(manufacturer.getVersion());
-
                 /**
                  *  Return the entity name.
                  *  @return entity name
@@ -1447,10 +1349,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1491,10 +1391,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1538,10 +1436,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1585,10 +1481,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1606,25 +1500,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityManufacturer_);
 
                 // Actual Test Case
-                /**
-                 *  Return the attribute that corresponds to the id attribute 
-                 *  declared by the entity or mapped superclass.
-                 *  @param type  the type of the represented declared id attribute
-                 *  @return declared id attribute
-                 *  @throws IllegalArgumentException if id attribute of the given
-                 *          type is not declared in the identifiable type or if
-                 *          the identifiable type has an id class
-                 */
-                //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
-                // Not declared  - invalid
-//                assertNotNull(aManufacturerType.getDeclaredId(Integer.class));
-                // declared and valid
-                
-                //*********************************************/
-                // Require a version on a MappedSuperclass
-                
-//                assertNotNull(msPerson1_.getDeclaredId(Integer.class));
-
                 /**
                  *  Return the attribute that corresponds to the version 
                  *  attribute declared by the entity or mapped superclass.
@@ -1648,10 +1523,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1726,10 +1599,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1802,10 +1673,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1836,10 +1705,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1885,10 +1752,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -1976,20 +1841,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
                 assertNotNull(msCorporation_);
                 
-                // replaced by testIdentifiableType_getIdType_handles_possible_null_cmppolicy()
-                /*try {
-                    personIdType = msPerson_.getIdType();
-                } catch (IllegalArgumentException iae) {
-                    // expecting no exception
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);
-                assertNotNull(personIdType);
-                assertEquals(PersistenceType.BASIC, personIdType.getPersistenceType());
-                assertEquals(Integer.class, personIdType.getJavaType());
-                */
-                
                 // Verify all types (entities, embeddables, mappedsuperclasses and basic)
                 try {
                     // get all 21 types (a non spec function - for testing introspection)
@@ -2000,17 +1851,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
-                
-                
             } catch (Exception e) {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -2031,10 +1877,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -2190,9 +2034,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityManufacturer_.getAttribute("aChar"));
                 assertTrue(entityManufacturer_.getAttribute("aChar").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
                 assertEquals(char.class, entityManufacturer_.getAttribute("aChar").getJavaType());
-
-                
-
                 
                 /**
                  *  Return the attributes declared by the managed type.
@@ -2256,6 +2097,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     // name is declared 1 level above but is not visible in a ms-->ms hierarchy
                     //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("name"))); //
                     // corporateComputers is declared at this level
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     assertTrue(declaredAttributesSetForCorporation.contains(msCorporation_.getAttribute("corporateComputers"))); //
                     // historicalEmployers is declared 1 level above but is not visible in a ms-->ms hierarchy
                     //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("historicalEmployers"))); //                
@@ -2276,11 +2118,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
-               
                 
                 // Test Entity-->Entity hierarchy
-                
-
                 /**
                  *  Return the single-valued attribute of the managed 
                  *  type that corresponds to the specified name and Java type 
@@ -2697,6 +2536,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 expectedIAExceptionThrown = false;            
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     // UC4 - the attribute is on the immediate superclass and is the correct COLLECTION - we still get an IAE
                     CollectionAttribute<Manufacturer, Computer> anAttribute = 
                         entityManufacturer_.getDeclaredCollection("corporateComputers", entityComputer_.getJavaType());
@@ -2779,6 +2619,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                     // UC4 - the attribute is on the immediate superclass
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     CollectionAttribute<Manufacturer, Computer> anAttribute = 
                         entityManufacturer_.getDeclaredCollection("corporateComputers", entityComputer_.getJavaType());
                 } catch (IllegalArgumentException iae) {
@@ -2880,6 +2721,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                     // UC4 - the attribute is on the immediate superclass
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     Attribute<Manufacturer, ?> anAttribute = 
                         entityManufacturer_.getDeclaredAttribute("corporateComputers");//, entityComputer.getJavaType());
                 } catch (IllegalArgumentException iae) {
@@ -2934,7 +2776,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                     // the attribute is on the class
-                    IdentifiableType corporation = entityManufacturer_.getSupertype();                
+                    IdentifiableType corporation = entityManufacturer_.getSupertype();
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     aCollectionAttribute2 = corporation.getDeclaredAttribute("corporateComputers");//, entityComputer.getJavaType());
                 } catch (IllegalArgumentException iae) {
                     // expecting
@@ -3037,6 +2880,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 expectedIAExceptionThrown = false;            
                 try {
                     // UC4 - the attribute is on the immediate superclass
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     CollectionAttribute<Manufacturer, ?> anAttribute = 
                         entityManufacturer_.getDeclaredCollection("corporateComputers");
                 } catch (IllegalArgumentException iae) {
@@ -3050,6 +2894,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 expectedIAExceptionThrown = false;
                 try {
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     CollectionAttribute<Corporation, ?> anAttribute = 
                         msCorporation_.getDeclaredCollection("corporateComputers");
                 } catch (IllegalArgumentException iae) {
@@ -3064,6 +2909,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                     // UC4 - the attribute is on the immediate superclass
+                    // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     CollectionAttribute<Manufacturer, Computer> anAttribute = 
                         entityManufacturer_.getDeclaredCollection("corporateComputers", entityComputer_.getJavaType());
                 } catch (IllegalArgumentException iae) {
@@ -3110,10 +2956,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3144,10 +2988,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3178,10 +3020,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3212,10 +3052,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3246,10 +3084,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3280,10 +3116,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3314,10 +3148,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3348,10 +3180,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3382,10 +3212,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3416,10 +3244,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3450,10 +3276,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3484,10 +3308,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3518,10 +3340,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3552,10 +3372,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3586,10 +3404,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3633,10 +3449,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3655,7 +3469,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // This also tests getCollections()
                 expectedIAExceptionThrown = false;            
                 try {
-                    Set<PluralAttribute<Computer, ?, ?>> collections = 
+                    Set<PluralAttribute<Computer, ?, ?>> collections =
                         entityComputer_.getDeclaredPluralAttributes();
                     assertNotNull(collections);
                     
@@ -3669,14 +3483,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
 
+    // Requires test model expansion before enabling test
     public void testManagedType_Interface_getDeclaredPluralAttributes_root_mappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
@@ -3693,29 +3506,20 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // This also tests getCollections()
                 expectedIAExceptionThrown = false;
-                // Not implemented yet - we require a plural declared attribute on a root mappedSuperclass
-/*                try {
-                    Set<PluralAttribute<Manufacturer, ?, ?>> collections = 
-                        entityManufacturer_.getDeclaredPluralAttributes();
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-*/
+                // historicalComputers is defined as a plural declared attribute on a root mappedSuperclass
+                Set<PluralAttribute<Person, ?, ?>> collections = 
+                    msPerson_.getDeclaredPluralAttributes();
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
     
-    public void testManagedType_Interface_getAttribute_Method() {
+    public void testManagedType_Interface_getAttribute_on_Entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3726,25 +3530,116 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
                 EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
                 assertNotNull(entityManufacturer_);
-                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
-                assertNotNull(msPerson_);
-                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
-                assertNotNull(msCorporation_);
-                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
-                assertNotNull(entityLocation_);
-                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
-                assertNotNull(entityComputer_);
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
-
+                
+                // Test case
+                Attribute anAttribute = entityManufacturer_.getAttribute("hardwareDesignersMapUC4");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+                assertTrue(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof MapAttribute);
+                assertEquals(entityHardwareDesigner_, ((MapAttribute)anAttribute).getElementType());
+                assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());                
+                assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
+                assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getAttribute_on_MappedSuperclass_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                ManagedType<Corporation> msCorporation_  = metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                
+                
+                // Test case
+                // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass
+                Attribute anAttribute = msCorporation_.getAttribute("corporateComputers");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+                assertTrue(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof CollectionAttribute);
+                assertEquals(entityComputer_, ((CollectionAttribute)anAttribute).getElementType());
+                assertEquals(CollectionType.COLLECTION, ((CollectionAttribute)anAttribute).getCollectionType());                
+                assertEquals(Computer.class, anAttribute.getJavaType());
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getAttribute_doesNotExist_on_Entity_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            Attribute anAttribute = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+                assertNotNull(entityHardwareDesigner_);
+                
+                // Test case
+                anAttribute = entityManufacturer_.getAttribute("does_not_exist");
+            } catch (Exception e) {
+                // We expect and exception
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertNull(anAttribute);                
+                assertTrue("An IAE exception should have occured on a non-existent attribute.", expectedIAExceptionThrown);
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getAttribute_doesNotExist_on_MappedSuperclass_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            Attribute anAttribute = null;            
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                ManagedType<Corporation> msCorporation_  = metamodel.managedType(Corporation.class);
+                assertNotNull(msCorporation_);
+                
+                // Test case
+                anAttribute = msCorporation_.getAttribute("does_not_exist");
+            } catch (Exception e) {
+                // We expect and exception
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertNull(anAttribute);                
+                assertTrue("An IAE exception should have occured on a non-existent attribute.", expectedIAExceptionThrown);
             }
         }
     }
@@ -3760,30 +3655,87 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
                 EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
                 assertNotNull(entityManufacturer_);
-                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
-                assertNotNull(msPerson_);
-                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
-                assertNotNull(msCorporation_);
-                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
-                assertNotNull(entityLocation_);
-                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
-                assertNotNull(entityComputer_);
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
-
+                
+                // Test case
+                Attribute anAttribute = entityManufacturer_.getDeclaredAttribute("hardwareDesignersMapUC4");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+                assertTrue(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof MapAttribute);
+                assertEquals(entityHardwareDesigner_, ((MapAttribute)anAttribute).getElementType());
+                assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());                
+                assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
+                assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getDeclaredAttribute_above_throws_iae_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            Attribute anAttribute = null;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Test case
+                // attribute is declared on a mappedsuperclass 
+                // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                
+                anAttribute = entityManufacturer_.getDeclaredAttribute("corporateComputers ");
+            } catch (Exception e) {
+                // We expect and exception
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertNull(anAttribute);                
+                assertTrue("An IAE exception should have occured on an attribute declared above this entity.", expectedIAExceptionThrown);
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getDeclaredAttribute_doesNotExist_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            Attribute anAttribute = null;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Test case
+                anAttribute = entityManufacturer_.getDeclaredAttribute("does_not_exist");
+            } catch (Exception e) {
+                // We expect and exception
+                //e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertNull(anAttribute);                
+                assertTrue("An IAE exception should have occured on a non-existent attribute.", expectedIAExceptionThrown);
             }
         }
     }
     
-    public void testManagedType_Interface_getSingularAttribute_Method() {
+    
+    public void testManagedType_Interface_getSingularAttribute_BASIC_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3792,32 +3744,29 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(em);
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
-                assertNotNull(entityManufacturer_);
-                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
-                assertNotNull(msPerson_);
-                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
-                assertNotNull(msCorporation_);
                 EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
                 assertNotNull(entityLocation_);
                 EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
                 assertNotNull(entityComputer_);
-                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
-                assertNotNull(entityHardwareDesigner_);
-
+                
+                // Test case
+                Attribute anAttribute = entityComputer_.getSingularAttribute("version");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
+                assertFalse(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof SingularAttribute);
+                assertEquals(int.class, anAttribute.getJavaType());
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSingularAttribute_Method() {
+    public void testManagedType_Interface_getSingularAttribute_EMBEDDED_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3826,27 +3775,76 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(em);
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
-                assertNotNull(entityManufacturer_);
-                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
-                assertNotNull(msPerson_);
-                MappedSuperclassTypeImpl<Corporation> msCorporation_ = (MappedSuperclassTypeImpl)metamodel.managedType(Corporation.class);
-                assertNotNull(msCorporation_);
                 EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
                 assertNotNull(entityLocation_);
                 EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
                 assertNotNull(entityComputer_);
-                EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
-                assertNotNull(entityHardwareDesigner_);
-
+                
+                // not implemented
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
+            }
+        }
+    }
+    
+    public void testManagedType_Interface_getDeclaredSingularAttribute_on_Entity_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+                
+                // Test case
+                Attribute anAttribute = entityComputer_.getSingularAttribute("location");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
+                assertFalse(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof SingularAttribute);
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+            }
+        }
+    }
+
+    public void testManagedType_Interface_getDeclaredSingularAttribute_on_MappedSuperclass_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
+                assertNotNull(msPerson_);
+                
+                // Test case
+                Attribute anAttribute = msPerson_.getSingularAttribute("name");
+                assertNotNull(anAttribute);
+                assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
+                assertFalse(((AttributeImpl)anAttribute).isPlural());
+                assertTrue(anAttribute instanceof SingularAttribute);
+                assertEquals(String.class, anAttribute.getJavaType());
+            } catch (Exception e) {
+                e.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
             }
         }
     }
@@ -3877,10 +3875,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3911,10 +3907,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3940,15 +3934,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityComputer_);
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
+                SetAttribute<? super Manufacturer, Computer> computersAttribute = 
+                    entityManufacturer_.getSet("computers", Computer.class);
+                assertNotNull("computers SetAttribute should not be null in Manufacturer_", computersAttribute);
 
             } catch (Exception e) {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -3979,10 +3974,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4013,10 +4006,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4047,10 +4038,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4081,10 +4070,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4115,10 +4102,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4254,21 +4239,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //Class<K> getKeyJavaType();
 
-                /**
-                 * Return the type representing the key type of the map.
-                 * @return type representing key type
-                 */
-                //Type<K> getKeyType();
-                
-                
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4285,12 +4261,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // Actual Test Case
                 /**
-                 * Return the Java type of the map key.
-                 * @return Java key type
-                 */
-                //Class<K> getKeyJavaType();
-
-                /**
                  * Return the type representing the key type of the map.
                  * @return type representing key type
                  */
@@ -4301,10 +4271,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4326,10 +4294,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4473,10 +4439,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4503,10 +4467,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4535,10 +4497,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4567,10 +4527,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4641,10 +4599,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4705,10 +4661,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4729,10 +4683,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4759,10 +4711,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4789,10 +4739,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4814,10 +4762,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4852,10 +4798,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4891,10 +4835,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4929,10 +4871,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4957,10 +4897,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4989,10 +4927,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5015,10 +4951,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5048,10 +4982,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5075,19 +5007,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   */ 
                  //PersistenceType getPersistenceType();
 
-                 /**
-                  *  Return the represented Java type.
-                  *  @return Java type
-                  */
-                 //Class<X> getJavaType();
             } catch (Exception e) {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5120,10 +5045,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5140,13 +5063,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // Actual Test Case
                 //public static enum PersistenceType { ENTITY,  EMBEDDABLE, MAPPED_SUPERCLASS, BASIC }
-
-                 /**
-                  *  Return the persistence type.
-                  *  @return persistence type
-                  */ 
-                 //PersistenceType getPersistenceType();
-
                  /**
                   *  Return the represented Java type.
                   *  @return Java type
@@ -5156,10 +5072,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -5260,15 +5174,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if(null != em) {
-                        cleanup(em);
-                    }
-                }
             }
         }
     }
@@ -5298,485 +5205,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
                 exceptionThrown = true;
             } finally {
-                assertFalse("An IAE exception should not occur here.", exceptionThrown);
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if(null != em) {
-                        cleanup(em);
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    /**
-     * The following large single test case contains signatures of all the spec functions.
-     * Those that have a test are implemented, the missing ones may still be in development.
-     */
-    public void test_MetamodelFullImplementation() {
-        if(!this.isJPA10()) {
-        EntityManager em = null;
-        Collection<Board> boardCollection = new HashSet<Board>();        
-        Set<Computer> computersList = new HashSet<Computer>();
-        Collection<Memory> vectorMemories = new LinkedHashSet<Memory>();
-        Collection<Memory> arrayMemories = new LinkedHashSet<Memory>();
-        Collection<Processor> vectorProcessors = new HashSet<Processor>();
-        Collection<Processor> arrayProcessors = new HashSet<Processor>();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList<HardwareDesigner>();
-        Map<String, HardwareDesigner> mappedDesigners = new HashMap<String, HardwareDesigner>();
-        Computer arrayComputer1 = null;
-        Computer vectorComputer2 = null;
-        Manufacturer manufacturer = null;
-        User user = null;
-        HardwareDesigner hardwareDesigner1 = null;
-        SoftwareDesigner softwareDesigner1 = null;        
-        Processor vectorProcessor1 = null;
-        Processor arrayProcessor1 = null;
-        Board arrayBoard1 = null;
-        Board vectorBoard2 = null;
-        Memory arrayMemory1 = null;
-        Memory vectorMemory2 = null;
-        GalacticPosition location1 = null;
-        GalacticPosition location2 = null;   
-        
-        // Embedded objects
-        EmbeddedPK embeddedPKforLocation1 = new EmbeddedPK();        
-        EmbeddedPK embeddedPKforLocation2 = new EmbeddedPK();
-        
-        boolean exceptionThrown = false;
-        try {
-            em = privateTestSetup();
-            assertNotNull(em);
-            Metamodel metamodel = em.getMetamodel();
-            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-
-            // SE only            
-            em.getTransaction().begin();
-
-            // setup entity relationships
-            arrayComputer1 = new Computer();
-            vectorComputer2 = new Computer();
-            arrayMemory1 = new Memory();
-            vectorMemory2 = new Memory();
-            manufacturer = new Manufacturer();
-            user = new User();
-            hardwareDesigner1 = new HardwareDesigner();
-            softwareDesigner1 = new SoftwareDesigner();
-            vectorProcessor1 = new VectorProcessor();
-            arrayProcessor1 = new ArrayProcessor();
-            arrayBoard1 = new Board();
-            vectorBoard2 = new Board();
-            location1 = new GalacticPosition();
-            location2 = new GalacticPosition();        
-
-            // setup collections
-            computersList.add(arrayComputer1);
-            computersList.add(vectorComputer2);
-            vectorProcessors.add(vectorProcessor1);
-            arrayProcessors.add(arrayProcessor1);
-            arrayMemories.add(arrayMemory1);
-            vectorMemories.add(vectorMemory2);
-            hardwareDesigners.add(hardwareDesigner1);
-            
-            mappedDesigners.put(hardwareDesigner1.getName(), hardwareDesigner1);
-            //manufacturer.setHardwareDesignersMap(mappedDesigners);
-            //manufacturer.setHardwareDesignersMapUC1a(mappedDesigners);
-            //manufacturer.setHardwareDesignersMapUC2(mappedDesigners);
-            //manufacturer.setHardwareDesignersMapUC4(mappedDesigners);
-            //manufacturer.setHardwareDesignersMapUC7(mappedDesigners);
-            //manufacturer.setHardwareDesignersMapUC8(mappedDesigners);            
-
-            // set owning and inverse sides of 1:m and m:1 relationships
-            manufacturer.setComputers(computersList);
-            manufacturer.setHardwareDesigners(hardwareDesigners);
-            
-            hardwareDesigner1.setEmployer(manufacturer);
-            hardwareDesigner1.setPrimaryEmployer(manufacturer);
-            hardwareDesigner1.setSecondaryEmployer(manufacturer);
-            // both sides of the relationship are set
-            hardwareDesigner1.setMappedEmployer(manufacturer);
-            hardwareDesigner1.setMappedEmployerUC1a(manufacturer);
-            hardwareDesigner1.setMappedEmployerUC2(manufacturer);
-            hardwareDesigner1.setMappedEmployerUC4(manufacturer);
-            hardwareDesigner1.setMappedEmployerUC7(manufacturer);
-            hardwareDesigner1.setMappedEmployerUC8(manufacturer);            
-            
-            arrayComputer1.setManufacturer(manufacturer);
-            vectorComputer2.setManufacturer(manufacturer);
-            arrayBoard1.setMemories(arrayMemories);
-            vectorBoard2.setMemories(vectorMemories);
-            arrayMemory1.setBoard(arrayBoard1);
-            vectorMemory2.setBoard(vectorBoard2);
-            arrayBoard1.setProcessors(arrayProcessors);
-            vectorBoard2.setProcessors(vectorProcessors);
-            arrayProcessor1.setBoard(arrayBoard1);
-            vectorProcessor1.setBoard(vectorBoard2);            
-            
-            softwareDesigner1.setPrimaryEmployer(manufacturer);
-            softwareDesigner1.setSecondaryEmployer(manufacturer);
-            
-            arrayComputer1.setCircuitBoards(boardCollection);
-            arrayBoard1.setComputer(arrayComputer1);
-            vectorBoard2.setComputer(vectorComputer2);
-            
-            // set 1:1 relationships
-            arrayComputer1.setLocation(location1);
-            vectorComputer2.setLocation(location2);
-            // No get/set accessors on purpose for testing
-            //location1.futurePosition = location2;
-            //location2.futurePosition = location1;
-            
-            // set attributes
-            arrayComputer1.setName("CM-5");
-            vectorComputer2.setName("CDC-6600");
-            
-            // setup embedded objects
-            location1.setPrimaryKey(embeddedPKforLocation1);
-            location2.setPrimaryKey(embeddedPKforLocation2);
-                
-            // persist all entities to the database in a single transaction
-            em.persist(arrayComputer1);
-            em.persist(vectorComputer2);
-            em.persist(manufacturer);
-            em.persist(user);
-            em.persist(hardwareDesigner1);
-            em.persist(softwareDesigner1);
-            em.persist(vectorProcessor1);
-            em.persist(arrayProcessor1);
-            em.persist(arrayBoard1);
-            em.persist(vectorBoard2);
-            em.persist(arrayMemory1);
-            em.persist(vectorMemory2);
-            em.persist(location1);
-            em.persist(location2);        
-            
-            em.getTransaction().commit();            
-            
-            // Verify EntityType access to entities in the metamodel
-            // These entities are metamodel entities (1 per type) not JPA entity instances (IdentifiableType)
-            // TODO: temporarily used the impl classes - so F3 resolves in the IDE - revert to the interface for production
-            EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
-            assertNotNull(entityComputer_);
-            EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
-            assertNotNull(entityManufacturer_);
-            EntityTypeImpl<User> entityUser_ = (EntityTypeImpl)metamodel.entity(User.class);
-            assertNotNull(entityUser_);
-            EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
-            assertNotNull(entityHardwareDesigner_);
-            EntityTypeImpl<SoftwareDesigner> entitySoftwareDesigner_ = (EntityTypeImpl)metamodel.entity(SoftwareDesigner.class);
-            assertNotNull(entitySoftwareDesigner_);
-            EntityTypeImpl<Board> entityBoard_ = (EntityTypeImpl)metamodel.entity(Board.class);
-            assertNotNull(entityBoard_);
-            EntityTypeImpl<Memory> entityMemory_ = (EntityTypeImpl)metamodel.entity(Memory.class);
-            assertNotNull(entityMemory_);
-            EntityTypeImpl<GalacticPosition> entityLocation_ =(EntityTypeImpl) metamodel.entity(GalacticPosition.class);
-            assertNotNull(entityLocation_);
-            EntityTypeImpl<Processor> entityProcessor_ =(EntityTypeImpl) metamodel.entity(Processor.class);
-            assertNotNull(entityProcessor_);
-            EntityTypeImpl<VectorProcessor> entityVectorProcessor_ =(EntityTypeImpl) metamodel.entity(VectorProcessor.class);
-            assertNotNull(entityVectorProcessor_);
-            EntityTypeImpl<ArrayProcessor> entityArrayProcessor_ =(EntityTypeImpl) metamodel.entity(ArrayProcessor.class);
-            assertNotNull(entityArrayProcessor_);
-            
-            // Criteria queries (use the Metamodel)
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*            CriteriaBuilder qb = null;
-            List results = null;
-            try {
-                qb = em.getCriteriaBuilder();
-                //CriteriaQuery<String> cq = qb.createQuery(String.class);
-                CriteriaQuery<Computer> criteriaQuery = qb.createQuery(Computer.class);
-                Expression expression = new ClassTypeExpression(); // probably not the right expression impl
-                // somehow add "name" to the expression TBD                
-                //criteriaQuery.select((new SelectionImpl(String.class, expression)));
-                EntityTypeImpl<Computer> entityComputer2 = (EntityTypeImpl)metamodel.entity(Computer.class);                
-                Root from = criteriaQuery.from(entityComputer2);
-                Path path = from.get("name");
-                criteriaQuery.where(qb.equal(path, "CM-5"));  
-                Query query = em.createQuery(criteriaQuery);
-                results = query.getResultList();
-                if(!results.isEmpty()) {
-                    Computer computer = (Computer)results.get(0);
-                    assertNotNull(computer);
-                } else {
-                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER WHERE NAME='CM-5') were expected");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-*/
-            /* uncomment when the CriteriaBuilderImpl function below is implemented
-             * public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name){
-            try {
-                qb = em.getCriteriaBuilder();
-                CriteriaQuery<Computer> cq = qb.createQuery(Computer.class);
-                Root from = cq.from(Computer.class);
-                Path c = from.get("name");
-                cq.where(qb.equal(c, qb.parameter(String.class, "emp_name")));
-                Query query = em.createQuery(cq);
-                results = query.getResultList();
-                Computer computer = (Computer)results.get(0);
-                assertNotNull(computer);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-            
-            // SingularAttributeType
-            // Test getBindableType - this is for SVN rev# 4644
-            //http://fisheye2.atlassian.com/changelog/eclipselink/?cs=4644
-            // Basic
-            Class nameJavaType = ((SingularAttribute<Computer, String>)entityComputer_.getAttribute("name")).getBindableJavaType();
-            assertNotNull(nameJavaType);
-            assertEquals(String.class, nameJavaType);
-            
-            // OneToOne Entity
-            Class locationJavaType = ((SingularAttribute<Computer, GalacticPosition>)entityComputer_.getAttribute("location")).getBindableJavaType();
-            assertNotNull(locationJavaType);
-            assertEquals(GalacticPosition.class, locationJavaType);
-            
-            
-            /*
-             * Metamodel model toString
-             * ************************************************************************************
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Person=MappedSuperclassTypeImpl@9206757 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Person 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Person --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.PERSON_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.NAME]]],
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation=MappedSuperclassTypeImpl@27921979 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Corporation --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.ManyToManyMapping[corporateComputers]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer=EntityTypeImpl@12565475 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_MANUF.PERSON_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->CMP3_MM_MANUF.NAME], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_MANUF.MANUF_VERSION], 
-            org.eclipse.persistence.mappings.OneToManyMapping[
-                computers], 
-            org.eclipse.persistence.mappings.OneToManyMapping[
-                hardwareDesignersMap], 
-            org.eclipse.persistence.mappings.ManyToManyMapping[
-                corporateComputers], 
-            org.eclipse.persistence.mappings.OneToManyMapping[
-                hardwareDesigners]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Memory=EntityTypeImpl@29905988 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Memory 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Memory --> [DatabaseTable(CMP3_MM_MEMORY)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_MEMORY.MEMORY_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_MEMORY.MEMORY_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                board]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Designer=MappedSuperclassTypeImpl@25971327 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Designer 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Designer --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                secondaryEmployer], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                primaryEmployer], 
-            org.eclipse.persistence.mappings.ManyToManyMapping[
-                historicalEmployers]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner=EntityTypeImpl@18107298 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner --> [DatabaseTable(CMP3_MM_HWDESIGNER)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_HWDESIGNER.PERSON_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->CMP3_MM_HWDESIGNER.NAME], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_HWDESIGNER.HWDESIGNER_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                employer], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                mappedEmployer], 
-            org.eclipse.persistence.mappings.ManyToManyMapping[
-                historicalEmployers], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                secondaryEmployer], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                primaryEmployer]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner=EntityTypeImpl@26130360 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner --> [DatabaseTable(CMP3_MM_SWDESIGNER)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_SWDESIGNER.PERSON_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->CMP3_MM_SWDESIGNER.NAME], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_SWDESIGNER.SWDESIGNER_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                secondaryEmployer], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                primaryEmployer], 
-            org.eclipse.persistence.mappings.ManyToManyMapping[
-                historicalEmployers]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Board=EntityTypeImpl@24223536 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Board 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Board --> [DatabaseTable(CMP3_MM_BOARD)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_BOARD.BOARD_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_BOARD.BOARD_VERSION], 
-            org.eclipse.persistence.mappings.OneToManyMapping[
-                memories], 
-            org.eclipse.persistence.mappings.OneToManyMapping[
-                processors]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK=EmbeddableTypeImpl@29441291 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK descriptor: 
-        RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK --> []), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                pk_part1-->LOCATION_ID]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Location=EntityTypeImpl@9050487 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Location 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Location --> [DatabaseTable(CMP3_MM_LOCATION)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_LOCATION.LOCATION_VERSION], 
-            org.eclipse.persistence.mappings.AggregateObjectMapping[
-                primaryKey]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor=EntityTypeImpl@9300338 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor --> [DatabaseTable(CMP3_MM_PROC)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_PROC.VECTPROC_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_PROC.VECTPROC_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                board]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor=EntityTypeImpl@14247087 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor --> [DatabaseTable(CMP3_MM_ARRAYPROC)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_ARRAYPROC.ARRAYPROC_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_ARRAYPROC.ARRAYPROC_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                board]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Computer=EntityTypeImpl@8355938 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Computer 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Computer --> [DatabaseTable(CMP3_MM_COMPUTER)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_COMPUTER.COMPUTER_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->CMP3_MM_COMPUTER.NAME], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_COMPUTER.COMPUTER_VERSION], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                manufacturer], 
-            org.eclipse.persistence.mappings.OneToOneMapping[
-                location]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.User=EntityTypeImpl@12968655 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.User 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.User --> [DatabaseTable(CMP3_MM_USER)]), 
-        mappings: [
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                id-->CMP3_MM_USER.PERSON_ID], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                name-->CMP3_MM_USER.NAME], 
-            org.eclipse.persistence.mappings.DirectToFieldMapping[
-                version-->CMP3_MM_USER.USER_VERSION]]], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.Processor=MappedSuperclassTypeImpl@24044524 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Processor 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Processor --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), 
-        mappings: []], 
-    class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK=EmbeddableTypeImpl@6367194 [ 
-        javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK 
-        descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK --> []), 
-        mappings: []], 
-    class java.lang.Integer=BasicTypeImpl@33083511 [ 
-        javaType: class java.lang.Integer], 
-    class java.lang.String=BasicTypeImpl@4086417 [ 
-        javaType: class java.lang.String], 
-    int=BasicTypeImpl@28057122 [ 
-        javaType: int]}
-                */
-            
-            
-            // get some static (non-runtime) attributes parameterized by <Owning type, return Type>
-            // Note: the String based attribute names are non type-safe
-            /*
-            aMember CollectionAttributeImpl<X,E>  (id=183)  
-             elementType BasicImpl<X>  (id=188)  
-                javaClass   Class<T> (org.eclipse.persistence.testing.models.jpa.metamodel.Computer) (id=126)   
-             managedType EntityTypeImpl<X>  (id=151) 
-                descriptor  RelationalDescriptor  (id=156)  
-                javaClass   Class<T> (org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer) (id=129)   
-                members HashMap<K,V>  (id=157)  
-                metamodel   MetamodelImpl  (id=52)  
-                supertype   null    
-            mapping OneToManyMapping  (id=191)  
-            */
-            // The attributes are in the field ManagedTypeImpl.members
-            // The managedType is the owner of the attribute
-            //hardwareDesigners=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[hardwareDesigners]], 
-            //computers=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[computers]],
-            
-            // 20090707: We are getting a CCE because "all" Collections are defaulting to List 
-            // when they are lazy instantiated as IndirectList if persisted as a List independent of what the OneToOne mapping is defined as
-//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute = 
-//                entityManufacturer.getCollection("computers", Computer.class);
-//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute2 = 
-//                entityManufacturer.getCollection("computers", Computer.class);
-            javax.persistence.metamodel.SetAttribute<? super Manufacturer, Computer> computersAttribute = 
-                entityManufacturer_.getSet("computers", Computer.class);
-            
-            //version=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[version-->CMP3_MM_MANUF.MANUF_VERSION]], 
-            //name=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[name-->CMP3_MM_MANUF.NAME]], 
-            //id=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[id-->CMP3_MM_MANUF.PERSON_ID]]
-            
-            
-            // Variant use cases
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            boolean iae1thrown = false;
-            
-            // A Criteria API query that is expected to fail with an IAE
-            CriteriaBuilder qbForExceptions = null;
-            
-            iae1thrown = false;
-            try {
-                qbForExceptions = em.getCriteriaBuilder();
-                CriteriaQuery<Computer> cq = qbForExceptions.createQuery(Computer.class);
-                Root from = cq.from(Computer.class);
-                Path invalidPath = from.get("____unknown_attribute_name_should_fail_with_IAE_____");
-            } catch (Exception e) {
-                iae1thrown = true;
-                //e.printStackTrace();
-            }
-            assertTrue("We expect an AE exception here", iae1thrown);
-        } catch (Exception e) {
-            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-            e.printStackTrace();
-            exceptionThrown = true;
-        } finally {
-            // Runtime behavior should not affect the metamodel
-            assertFalse(exceptionThrown);
-            if(null != em) {
                 cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
             }
-        }
         }
     }
 }

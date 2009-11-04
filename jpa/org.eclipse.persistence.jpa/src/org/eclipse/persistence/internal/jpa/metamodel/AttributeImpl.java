@@ -12,7 +12,10 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     29/10/2009-2.0  mobrien - m:1 and 1:m relationships require special handling
+ *       in their internal m:m and 1:1 database mapping representations.
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne   
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -27,8 +30,8 @@ import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAcc
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
-import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
  * <p>
@@ -47,13 +50,12 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  */ 
 public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializable {
 
-    /** the ManagedType associated with this attribute **/
+    /** The ManagedType associated with this attribute **/
     private ManagedTypeImpl<X> managedType;
 
     /** The databaseMapping associated with this attribute **/
     private DatabaseMapping mapping;
     
-
     /**
      * INTERNAL:
      * 
@@ -162,38 +164,51 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  Return the persistent attribute type for the attribute.
      *  @return persistent attribute type
      */
-    public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
+    public Attribute.PersistentAttributeType getPersistentAttributeType() {
         /**
-         * process the following mappings
-         * MANY_TO_ONE
-         * ONE_TO_ONE
+         * process the following mappings by referencing the Core API Mapping.
+         * MANY_TO_ONE (ONE_TO_ONE internally)
+         * ONE_TO_ONE (May originally be a MANY_TO_ONE)
          * BASIC
          * EMBEDDED
-         * MANY_TO_MANY
-         * ONE_TO_MANY
+         * MANY_TO_MANY (May originally be a unidirectional ONE_TO_MANY on a mappedSuperclass)
+         * ONE_TO_MANY (MANY_TO_MANY internally for unidirectional mappings on MappedSuperclasses)
          * ELEMENT_COLLECTION
-         */
-        if (getMapping().isDirectToFieldMapping()) {
+         */ 
+        if (mapping.isDirectToFieldMapping()) {
             return PersistentAttributeType.BASIC;
         }
-        if (getMapping().isAggregateObjectMapping()) {
+        if (mapping.isAggregateObjectMapping()) {
             return PersistentAttributeType.EMBEDDED;
         }
-        if (getMapping().isOneToManyMapping()) {
+        if (mapping.isOneToManyMapping()) {
             return PersistentAttributeType.ONE_TO_MANY;
         }
-        if (getMapping().isOneToOneMapping()) {
-            return PersistentAttributeType.ONE_TO_ONE;
+
+        /**
+         * EclipseLink internally processes a ONE_TO_MANY on a MappedSuperclass as a MANY_TO_MANY
+         * because the relationship is unidirectional.
+         */
+        if (mapping.isManyToManyMapping()) {
+            // Check for a OneToMany on a MappedSuperclass being processed internally as a ManyToMany
+            if(((ManyToManyMapping)mapping).isDefinedAsOneToManyMapping()) {
+                return PersistentAttributeType.ONE_TO_MANY;
+            } else {
+                // Test coverage required
+                return PersistentAttributeType.MANY_TO_MANY;
+            }
         }
-        // Internally we treat m:1 as 1:1 - place this before the 1:1 check
-        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne
-        if (getMapping().isRelationalMapping() && 
-                (getMapping() instanceof OneToOneMapping || getMapping() instanceof VariableOneToOneMapping)) {
-            return PersistentAttributeType.MANY_TO_ONE;
-        }
-        // Test coverage required
-        if (getMapping().isManyToManyMapping()) {
-            return PersistentAttributeType.MANY_TO_MANY;
+        
+        /**
+         * EclipseLink internally processes a MANY_TO_ONE as a ONE_TO_ONE without a FK constraint.
+         */
+        if (mapping.isOneToOneMapping()) {
+            // Check for a ManyToOne being processed internally as a OneToOne
+            if(((OneToOneMapping)mapping).isDefinedAsManyToOneMapping()) {
+                return PersistentAttributeType.MANY_TO_ONE;
+            } else {
+                return PersistentAttributeType.ONE_TO_ONE;
+            }
         }
         // Test coverage required
         return PersistentAttributeType.ELEMENT_COLLECTION;
