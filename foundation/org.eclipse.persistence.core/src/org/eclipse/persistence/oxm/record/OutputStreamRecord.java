@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -72,6 +73,8 @@ public class OutputStreamRecord extends MarshalRecord {
     protected static byte[] AMP;
     protected static byte[] LT;
     protected static byte[] ENCODING;
+    protected static byte[] EQUALS;
+    protected static byte[] DOUBLE_QUOTE;
     
     static {
         try {
@@ -80,7 +83,7 @@ public class OutputStreamRecord extends MarshalRecord {
             CLOSE_PI = "?>".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             SPACE = " ".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             CR = Helper.cr().getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            OPEN_ATTRIBUTE_VALUE = "=\"".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            OPEN_ATTRIBUTE_VALUE = "=\"".getBytes(XMLConstants.DEFAULT_XML_ENCODING);             
             CLOSE_ATTRIBUTE_VALUE = "\"".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             OPEN_CDATA = "<![CDATA[".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             CLOSE_CDATA = "]]>".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
@@ -119,11 +122,18 @@ public class OutputStreamRecord extends MarshalRecord {
 
     /**
      * INTERNAL:
+     * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
+     */
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    }
+    
+    /**
+     * INTERNAL:
      */
     public void startDocument(String encoding, String version) {
         try {
             outputStream.write(OPEN_XML_PI_AND_VERSION_ATTRIBUTE);
-            outputStream.write(version.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            outputStream.write(version.getBytes(XMLConstants.DEFAULT_XML_ENCODING));            
             outputStream.write(CLOSE_ATTRIBUTE_VALUE);
             if (null != encoding) {
                 outputStream.write(OPEN_ENCODING_ATTRIBUTE);
@@ -368,7 +378,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 throw XMLMarshalException.marshalException(e);
             }
         }
-
+        
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
             if(namespaceUri == null || !namespaceUri.equals(uri)) {
@@ -397,7 +407,7 @@ public class OutputStreamRecord extends MarshalRecord {
         public void comment(char[] ch, int start, int length) throws SAXException {
             try {
                 if (isStartElementOpen) {
-                    outputStream.write('>');
+                    outputStream.write(CLOSE_ELEMENT);
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);
@@ -420,16 +430,15 @@ public class OutputStreamRecord extends MarshalRecord {
                 if (!prefixMappings.isEmpty()) {
                     for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
                         String prefix = keys.next();
-                        outputStream.write(' ');
+                        outputStream.write(SPACE);
                         outputStream.write(XMLConstants.XMLNS.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                         if(prefix.length() > 0) {
                             outputStream.write(XMLConstants.COLON);
                             outputStream.write(prefix.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
-                        }
-                        outputStream.write('=');
-                        outputStream.write('"');
+                        }                        
+                        outputStream.write(OPEN_ATTRIBUTE_VALUE);
                         outputStream.write(prefixMappings.get(prefix).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
-                        outputStream.write('"');
+                        outputStream.write(CLOSE_ATTRIBUTE_VALUE);
                     }
                     prefixMappings.clear();
                 }
@@ -440,10 +449,11 @@ public class OutputStreamRecord extends MarshalRecord {
         
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
-                if((atts.getQName(i) != null && (atts.getQName(i).startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || atts.getQName(i).equals(XMLConstants.XMLNS)))) {
+            	String qName = atts.getQName(i);
+                if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
                     continue;
                 }
-                attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));
+                attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));
             }
         }
         

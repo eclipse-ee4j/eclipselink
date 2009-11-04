@@ -1291,80 +1291,81 @@ public class XMLMarshaller {
      * return if an xsi:type attribute should be added for the given XMLRootObject
      */
     public boolean shouldWriteTypeAttribute(Object object, XMLDescriptor descriptor, boolean isXMLRoot) {
-        boolean writeTypeAttribute = false;
-        if(isXMLRoot && descriptor == null) {
-            XMLRoot root = (XMLRoot)object;
-            if(root.declaredType != null && root.getObject() != null && root.declaredType != root.getObject().getClass()) {
-                return true;
-            }
-        }
-        if (isXMLRoot && (descriptor != null)) {
-            XMLRoot xr = (XMLRoot) object;
+    	if(isXMLRoot){
+    	    boolean writeTypeAttribute = false;
+    	    if(descriptor == null) {
+    	        XMLRoot root = (XMLRoot)object;
+    	        if(root.declaredType != null && root.getObject() != null && root.declaredType != root.getObject().getClass()) {
+    	            return true;
+    	        }
+    	    }else{
+    	        XMLRoot xr = (XMLRoot) object;
 
-            if (descriptor.hasInheritance()) {
-                XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
-                String classIndicatorUri = null;
-                String classIndicatorLocalName = classIndicatorField.getXPathFragment().getLocalName();
-                String classIndicatorPrefix = classIndicatorField.getXPathFragment().getPrefix();
-                if (classIndicatorPrefix != null) {
-                    classIndicatorUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(classIndicatorPrefix);
-                }
+    	        if (descriptor.hasInheritance()) {
+    	            XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
+    	            String classIndicatorUri = null;
+    	            String classIndicatorLocalName = classIndicatorField.getXPathFragment().getLocalName();
+    	            String classIndicatorPrefix = classIndicatorField.getXPathFragment().getPrefix();
+    	            if (classIndicatorPrefix != null) {
+    	                classIndicatorUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(classIndicatorPrefix);
+    	            }
 
-                if ((classIndicatorLocalName != null) && classIndicatorLocalName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && (classIndicatorUri != null) && classIndicatorUri.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
-                    return false;
-                }
-            }
+    	            if ((classIndicatorLocalName != null) && classIndicatorLocalName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && (classIndicatorUri != null) && classIndicatorUri.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
+    	                return false;
+    	            }
+    	        }
 
-            QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
-            XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
-            if (xdesc != null) {
-                return xdesc.getJavaClass() != descriptor.getJavaClass();
-            }
+    	        QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
+    	        XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
+    	        if (xdesc != null) {
+    	            return xdesc.getJavaClass() != descriptor.getJavaClass();
+    	        }
 
-            if (descriptor.getSchemaReference() == null) {
-                return false;
-            }
+    	        if (descriptor.getSchemaReference() == null) {
+    	            return false;
+    	        }
 
-            String xmlRootLocalName = xr.getLocalName();
-            String xmlRootUri = xr.getNamespaceURI();
-            writeTypeAttribute = true;
-            for (int i = 0; i < descriptor.getTableNames().size(); i++) {
-                if (!writeTypeAttribute) {
-                    break;
-                }
-                String defaultRootQualifiedName = (String) descriptor.getTableNames().get(i);
-                if (defaultRootQualifiedName != null) {
-                    String defaultRootLocalName = null;
-                    String defaultRootUri = null;
+    	        String xmlRootLocalName = xr.getLocalName();
+    	        String xmlRootUri = xr.getNamespaceURI();
+    	        writeTypeAttribute = true;
+    	        for (int i = 0; i < descriptor.getTableNames().size(); i++) {
+    	            if (!writeTypeAttribute) {
+    	                break;
+    	            }
+    	            String defaultRootQualifiedName = (String) descriptor.getTableNames().get(i);
+    	            if (defaultRootQualifiedName != null) {
+    	                String defaultRootLocalName = null;
+                        String defaultRootUri = null;
+  	                    int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
+    	                if (colonIndex > 0) {
+    	                    String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
+    	                    defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
+    	                    if (descriptor.getNamespaceResolver() != null) {
+    	                        defaultRootUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
+    	                    }
+    	                } else {
+    	                    defaultRootLocalName = defaultRootQualifiedName;
+    	                }
 
-                    int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
-                    if (colonIndex > 0) {
-                        String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
-                        defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
-                        if (descriptor.getNamespaceResolver() != null) {
-                            defaultRootUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
-                        }
-                    } else {
-                        defaultRootLocalName = defaultRootQualifiedName;
-                    }
-
-                    if (xmlRootLocalName != null) {
-                        if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
-                                && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
-                            //if both local name and uris are equal then don't need to write type attribute
-                            writeTypeAttribute = false;
-                        }
-                    }
-                } else {
-                    // no default rootElement was set
-                    // if xmlRootName = null then writeTypeAttribute = false
-                    if (xmlRootLocalName == null) {
-                        writeTypeAttribute = false;
-                    }
-                }
-            }
-        }
-        return writeTypeAttribute;
+  	                    if (xmlRootLocalName != null) {
+   	                        if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
+   	                                && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
+   	                            //if both local name and uris are equal then don't need to write type attribute
+   	                            writeTypeAttribute = false;
+   	                        }
+   	                    }
+   	                } else {
+   	                    // no default rootElement was set
+   	                    // if xmlRootName = null then writeTypeAttribute = false
+   	                    if (xmlRootLocalName == null) {
+   	                        writeTypeAttribute = false;
+   	                    }
+   	                }
+   	            }
+   	        }
+   	        return writeTypeAttribute;
+    	}
+    	return false;              
     }
 
     /**

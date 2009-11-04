@@ -72,7 +72,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      */
     public void endDocument() {
         try {
-          getOutputStream().write(CR);    
+          outputStream.write(CR);    
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -85,19 +85,19 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
         try {
             if (isStartElementOpen) {
-            	getOutputStream().write(CLOSE_ELEMENT);
+            	outputStream.write(CLOSE_ELEMENT);
             }
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
-                	getOutputStream().write(CR);                    
+                	outputStream.write(CR);                    
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                	getOutputStream().write(TAB);
+                	outputStream.write(TAB);
                 }
             }
             isStartElementOpen = true;
-            getOutputStream().write(OPEN_START_ELEMENT);
-            getOutputStream().write(xPathFragment.getShortNameBytes());
+            outputStream.write(OPEN_START_ELEMENT);
+            outputStream.write(xPathFragment.getShortNameBytes());
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {
@@ -112,12 +112,12 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         try {
             isLastEventText = false;
             if (isStartElementOpen) {
-            	getOutputStream().write(CLOSE_ELEMENT);
+            	outputStream.write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-            getOutputStream().write(CR);
+            outputStream.write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	getOutputStream().write(TAB);
+            	outputStream.write(TAB);
             }
             super.element(frag);
         } catch (IOException e) {
@@ -133,14 +133,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             isLastEventText = false;
             numberOfTabs--;
             if (isStartElementOpen) {            	
-            	getOutputStream().write(CLOSE_EMPTY_ELEMENT);
+            	outputStream.write(CLOSE_EMPTY_ELEMENT);
                 isStartElementOpen = false;
                 return;
             }
             if (complexType) {
-            	getOutputStream().write(CR);
+            	outputStream.write(CR);
                 for (int x = 0; x < numberOfTabs; x++) {
-                	getOutputStream().write(TAB);
+                	outputStream.write(TAB);
                 }
             } else {
                 complexType = true;
@@ -167,12 +167,12 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         //Format the CDATA on it's own line
         try {
             if(isStartElementOpen) {
-            	getOutputStream().write(CLOSE_ELEMENT);
+            	outputStream.write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-            getOutputStream().write(CR);
+            outputStream.write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	getOutputStream().write(TAB);
+            	outputStream.write(TAB);
             }
             super.cdata(value);
             complexType=true;
@@ -232,16 +232,16 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
             	if (isStartElementOpen) {
-            		getOutputStream().write(CLOSE_ELEMENT);
+            		outputStream.write(CLOSE_ELEMENT);
             	}
                 if (!isLastEventText) {
-                	getOutputStream().write(CR);
+                	outputStream.write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	getOutputStream().write(TAB);
+                    	outputStream.write(TAB);
                     }
                 }
-                getOutputStream().write(OPEN_START_ELEMENT);
-                getOutputStream().write(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                outputStream.write(OPEN_START_ELEMENT);
+                outputStream.write(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                 numberOfTabs++;
                 isStartElementOpen = true;
                 isLastEventText = false;
@@ -259,15 +259,15 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                 isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
-                	getOutputStream().write(CLOSE_EMPTY_ELEMENT);
+                	outputStream.write(CLOSE_EMPTY_ELEMENT);
                     isStartElementOpen = false;
                     complexType = true;
                     return;
                 }
                 if (complexType) {
-                	getOutputStream().write(CR);
+                	outputStream.write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	getOutputStream().write(TAB);
+                    	outputStream.write(TAB);
                     }
                 } else {
                     complexType = true;
@@ -295,8 +295,8 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
 	public void comment(char[] ch, int start, int length) throws SAXException {
             try {
             	if (isStartElementOpen) {
-            		getOutputStream().write(CLOSE_ELEMENT);
-            		getOutputStream().write(CR);
+            		outputStream.write(CLOSE_ELEMENT);
+            		outputStream.write(CR);
                     isStartElementOpen = false;
                 }
             	writeComment(ch, start, length);
