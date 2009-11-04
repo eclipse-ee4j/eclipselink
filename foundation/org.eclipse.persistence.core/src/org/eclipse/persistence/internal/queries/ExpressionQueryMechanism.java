@@ -1740,7 +1740,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     } else {
                         DatabaseField targetField = ((OneToOneMapping)mapping).getSourceToTargetKeyFields().get(fields.get(i));
                         if(valueObject instanceof Expression) {
-                            values.add(((Expression)((Expression)valueObject).clone()).getField(targetField));
+                            Expression exp = ((Expression)((Expression)valueObject).clone()).getField(targetField);
+                            if(exp.isParameterExpression()) {
+                                ((ParameterExpression)exp).setType(targetField.getType());
+                            }
+                            values.add(exp);
                         } else {
                             values.add(((OneToOneMapping)mapping).getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(valueObject, targetField, getSession()));
                         }
