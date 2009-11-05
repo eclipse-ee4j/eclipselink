@@ -375,7 +375,7 @@ public class MappingsGenerator {
             }
         } else if(property.isAny()) {
             if(isCollectionType(property)){
-                generateAnyCollectionMapping(property, descriptor, namespaceInfo, false);
+                generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
             }else{
                 generateAnyObjectMapping(property, descriptor, namespaceInfo);
             }

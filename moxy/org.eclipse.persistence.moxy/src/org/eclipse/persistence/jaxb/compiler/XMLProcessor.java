@@ -313,6 +313,8 @@ public class XMLProcessor {
             AnyProperty anyProp = (AnyProperty) oldProperty;
             anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
             anyProp.setLax(xmlAnyElement.isLax());
+
+            tInfo.setMixed(xmlAnyElement.isXmlMixed());
             anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
             
             if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
@@ -338,6 +340,8 @@ public class XMLProcessor {
         
         anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
         anyProp.setLax(xmlAnyElement.isLax());
+
+        tInfo.setMixed(xmlAnyElement.isXmlMixed());
         anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
         
         if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
