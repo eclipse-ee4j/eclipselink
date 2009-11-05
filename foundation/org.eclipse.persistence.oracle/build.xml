@@ -98,7 +98,9 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="persistence.bundle.path"    value="${oracle.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
+        <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
+        <!-- property name="persistence.bundle.path"    value="${oracle.2.common.plugins.dir}/${persistence.jar}"/ -->
+        <property name="persistence.bundle.path"    value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
         <property name="core.bundle.path"           value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
 
         <!-- dependency tests -->

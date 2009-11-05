@@ -86,7 +86,9 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="persistence.bundle.path"    value="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
+        <property name="persistence.bundle.path"    value="${core.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
+        <!-- property name="persistence.bundle.path"    value="${core.2.common.plugins.dir}/${persistence.jar}"/ -->
 
         <!-- dependency tests -->
         <available file="${persistence.bundle.path}" property="persistence.bundle.exist"/>

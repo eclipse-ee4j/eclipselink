@@ -189,15 +189,15 @@
             <param name="artifactName" value="EclipseLink (non-OSGi)"/>
         </antcall>
         <antcall target="upload-artifact">
-            <!-- eventually this will ship separately, comments for future use -->
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <!-- param name="groupId" value="javax.persistence"/ -->
+            <!-- this will ship separately, comments for past use -->
+            <!-- param name="groupId" value="org.eclipse.persistence"/ -->
+            <param name="groupId" value="javax.persistence"/>
             <param name="artifactId" value="javax.persistence"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <!-- param name="artifactVersion" value="2.0-SNAPSHOT"/ --> 
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0_preview.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0_preview.jar"/>
-            <param name="artifactName" value="Javax Persistence 2.0 Preview"/>
+            <param name="artifactVersion" value="2.0-SNAPSHOT"/> 
+            <!-- param name="artifactVersion" value="${maven.version}"/ -->
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.0.v200911041116.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.0.v200911041116.jar"/>
+            <param name="artifactName" value="Javax Persistence API 2.0"/>
         </antcall>
    </target>
 

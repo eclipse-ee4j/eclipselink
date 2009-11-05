@@ -74,7 +74,7 @@
         <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
         <!-- dependency properties -->
-        <property name="persistence.bundle.path"    value="${modelgen.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
+        <property name="persistence.bundle.path"    value="${modelgen.2.jpa.plugins.dir}/${persistence20.jar}"/>
         <property name="core.bundle.path"           value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="jpa.bundle.path"            value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
@@ -94,9 +94,6 @@
             <pathelement path="${core.bundle.path}"/>
             <pathelement path="${jpa.bundle.path}"/>
             <pathelement path="${modelgen.2.common.plugins.dir}/osgi.core.zip"/>
-            <fileset
-                dir="../${plugins.dir}"
-                includes="${eclipselink.jpa.depend}"/>
             <pathelement path="${persistence.bundle.path}"/>
             <fileset
                 dir="${modelgen.2.common.plugins.dir}"

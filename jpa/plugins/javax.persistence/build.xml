@@ -30,7 +30,7 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="jpaproto.is.local"/>
 
-    <dirname  property="jpaproto.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="jpaproto.build.location" file="${ant.file.javax.persistence}"/>
     <condition property="jpaproto.2.base.dir" value="../../.." else="..">
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
@@ -39,21 +39,23 @@
 
     <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
     <!-- Persistence Version properties -->
+    <tstamp>
+       <format property="jpaproto.build.date" pattern="yyyyMMdd"/>
+       <format property="jpaproto.build.time" pattern="HHmm"/>
+    </tstamp>
+    <property name="jpaproto.qualifier"    value="v${jpaproto.build.date}${jpaproto.build.time}"/>
+    <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
+    <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
     <property name="jpaproto.spec.version" value="2.0 PFD"/>
-    <property name="jpaproto.version"      value="1.99.7"/>
-    <property name="jpaproto.bundle.name"  value="Java Persistence 2.0 - EARLY ACCESS"/>
-    <!-- Compiler flag properties -->
-    <property name="javac.debug"           value="true"/>
-    <property name="javac.optimize"        value="off"/>
-    <property name="javac.deprecation"     value="off"/>
-    <property name="javac.version"         value="1.5"/>
+    <property name="jpaproto.version"      value="2.0.0"/>
+    <property name="jpaproto.bundle.name"  value="Java Persistence API 2.0"/>
     <!-- Project infrastructure properties -->
     <property name="src.dir"               value="src"/>
     <property name="package.dir"           value=".."/>
     <property name="classes.dir"           value="classes"/>
     <property name="jpaproto.resource.dir" value="META-INF"/>
-    <property name="jpaproto.jar"          value="${ant.project.name}_2.0_preview.jar"/>
-    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_2.0_preview.jar"/>
+    <property name="jpaproto.jar"          value="${ant.project.name}_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
+    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
 
     <echo message="Loading ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
@@ -88,15 +90,11 @@
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
-        <!-- versioning -->
-        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-        <tstamp>
-           <format property="build.date" pattern="yyyyMMdd"/>
-           <format property="build.time" pattern="HHmm"/>
-        </tstamp>
-        <property name="jpaproto.qualifier"    value="v${build.date}${build.time}"/>
-        <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
-        <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
+        <!-- Compiler flag properties -->
+        <property name="javac.debug"           value="true"/>
+        <property name="javac.optimize"        value="off"/>
+        <property name="javac.deprecation"     value="off"/>
+        <property name="javac.version"         value="1.5"/>
 
         <!-- Check for BND library -->
         <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
