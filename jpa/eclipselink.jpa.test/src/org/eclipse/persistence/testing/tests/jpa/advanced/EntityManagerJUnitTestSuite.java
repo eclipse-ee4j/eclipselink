@@ -8104,7 +8104,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testConnectionPolicySetProperty() {
-        internalTestConnectionPolicy(true);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            internalTestConnectionPolicy(true);
+        }
     }
     
     public void internalTestConnectionPolicy(boolean useSetProperty) {
