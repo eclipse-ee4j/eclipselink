@@ -1375,7 +1375,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // It's a JPA2.0 feature.
-        if (! isJPA10() && isSelectForUpateSupported()){
+        if (! isJPA10() && isSelectForUpateNoWaitSupported()){
             Employee employee = null;
             Integer version1;
             
@@ -1455,7 +1455,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // It's a JPA2.0 feature
-        if (! isJPA10() && isSelectForUpateSupported()) {
+        if (! isJPA10() && isSelectForUpateNoWaitSupported()) {
             Employee employee = null;
             Integer version1;
             
