@@ -12,10 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+
+import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
@@ -314,6 +318,66 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         objectToXMLDocumentTest(testDocument);
     }
 
+    public void testObjectToOutputStream() throws Exception {
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if(null != xmlRoot.getObject()) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            }
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        xmlMarshaller.marshal(objectToWrite, stream);
+
+        int sizeAfter = getNamespaceResolverSize(desc);
+
+        assertEquals(sizeBefore, sizeAfter);
+    
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+        Document testDocument = parser.parse(is);
+        stream.close();
+        is.close();
+        
+        objectToXMLDocumentTest(testDocument);
+    }
+
+    public void testObjectToOutputStreamASCIIEncoding() throws Exception {
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if(null != xmlRoot.getObject()) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            }
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        
+        xmlMarshaller.marshal(objectToWrite, stream);
+        xmlMarshaller.setEncoding("US-ASCII");
+       
+        int sizeAfter = getNamespaceResolverSize(desc);
+
+        assertEquals(sizeBefore, sizeAfter);
+
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+        Document testDocument = parser.parse(is);
+        stream.close();
+        is.close();
+        
+        objectToXMLDocumentTest(testDocument);
+    }
+    
     public void testObjectToXMLStreamWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();

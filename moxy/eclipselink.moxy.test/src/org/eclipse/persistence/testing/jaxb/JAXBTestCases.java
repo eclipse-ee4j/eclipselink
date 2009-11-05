@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +87,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return new XMLContext(project, classLoader);
     }
 
-    public void setUp() throws Exception {
+    public void setUp() throws Exception {    	
         setupParser();
         setupControlDocs();
     }
@@ -198,6 +200,60 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }    	
     }
 
+    public void testObjectToOutputStream() throws Exception {
+        Object objectToWrite = getWriteControlObject();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        jaxbMarshaller.marshal(objectToWrite, stream);
+
+        int sizeAfter = getNamespaceResolverSize(desc);
+
+        assertEquals(sizeBefore, sizeAfter);
+
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+        Document testDocument = parser.parse(is);
+        stream.close();
+        is.close();
+               
+        objectToXMLDocumentTest(testDocument);
+    }
+    
+    public void testObjectToOutputStreamASCIIEncoding() throws Exception {
+        Object objectToWrite = getWriteControlObject();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+        String originalEncoding = (String)jaxbMarshaller.getProperty(Marshaller.JAXB_ENCODING);
+        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "US-ASCII");
+        jaxbMarshaller.marshal(objectToWrite, stream);
+        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, originalEncoding);
+        int sizeAfter = getNamespaceResolverSize(desc);
+
+        assertEquals(sizeBefore, sizeAfter);
+
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+        Document testDocument = parser.parse(is);
+        stream.close();
+        is.close();
+               
+        objectToXMLDocumentTest(testDocument);
+    }
+    
+    
     public void testObjectToXMLStringWriter() throws Exception {
     	objectToXMLStringWriter(getWriteControlObject());
     }
@@ -214,7 +270,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         int sizeBefore = getNamespaceResolverSize(desc);
 
         jaxbMarshaller.marshal(objectToWrite, writer);
-
+                
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);

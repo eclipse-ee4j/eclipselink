@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.oxm.mappings.simpletypes.documentpreserv
 
 
 // JDK imports
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -148,6 +150,28 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    public void testObjectToOutputStream() throws Exception {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    	XMLMarshaller marshaller = getXMLContext().createMarshaller();
+        marshaller.setFormattedOutput(false);
+        marshaller.marshal(getWriteControlObject(), stream);
+
+        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());        
+        Document testDocument = parser.parse(is);
+        objectToXMLDocumentTest(testDocument);
+    }
+    public void testObjectToOutputStreamASCIIEncoding() throws Exception {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLMarshaller marshaller = getXMLContext().createMarshaller();
+        marshaller.setFormattedOutput(false);
+        marshaller.setEncoding("US-ASCII");
+        marshaller.marshal(getWriteControlObject(), stream);
+
+        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());        
+        Document testDocument = parser.parse(is);
+        objectToXMLDocumentTest(testDocument);
+    }
+    
     public void testObjectToXMLStreamWriter() throws Exception {
     }    
     

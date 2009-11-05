@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -207,6 +210,37 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
         objectToXMLDocumentTest(testDocument);
     }
+	
+	 public void testObjectToOutputStream() throws Exception {
+	        Object objectToWrite = getWriteControlObject();
+	        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	    	    
+	        jaxbMarshaller.marshal(objectToWrite, stream);
+
+	        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+	        Document testDocument = parser.parse(is);
+	        stream.close();
+	        is.close();
+	               
+	        objectToXMLDocumentTest(testDocument);
+	    }
+	    
+	    public void testObjectToOutputStreamASCIIEncoding() throws Exception {
+	        Object objectToWrite = getWriteControlObject();
+	        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	        
+	        String originalEncoding = (String)jaxbMarshaller.getProperty(Marshaller.JAXB_ENCODING);
+	        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "US-ASCII");
+	        jaxbMarshaller.marshal(objectToWrite, stream);
+	        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, originalEncoding);
+	        
+	        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+	        Document testDocument = parser.parse(is);
+	        stream.close();
+	        is.close();
+	               
+	        objectToXMLDocumentTest(testDocument);
+	    }
 	
 	
 	public void testRoundTrip() throws Exception {
