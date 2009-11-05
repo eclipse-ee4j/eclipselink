@@ -227,7 +227,6 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core" depends="clean-runtime-checkedin">
-        <!-- ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/ -->
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
@@ -255,7 +254,6 @@
 
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
-        <!-- ant antfile="build.xml" dir="${jpa.prototype}"                target="build"/ -->
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
@@ -273,8 +271,8 @@
 
     <target name="build-all-core-except-dbws-test">
         <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml"        target="all"/>
+        <ant antfile="${eclipselink.moxy.test}/build.xml"       target="compile-tests"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"  target="compile-sdo-tests"/>
     </target>
 
@@ -362,8 +360,8 @@
                     javax/persistence/ValidationMode.class,
                     javax/persistence/criteria/CriteriaBuilder$Trimspec.class,
                     javax/persistence/criteria/CriteriaBuilder$SimpleCase.class,
-                    javax.persistence/criteria/CriteriaBuilder$Coalesce.class,
-                    javax.persistence/criteria/CriteriaBuilder$In.class,
+                    javax/persistence/criteria/CriteriaBuilder$Coalesce.class,
+                    javax/persistence/criteria/CriteriaBuilder$In.class,
                     javax/persistence/criteria/CriteriaBuilder$Case.class,
                     javax/persistence/PredicateOperand.class,
                     javax/persistence/PathExpression.class,
@@ -437,8 +435,6 @@
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-                <!-- exclude name="${eclipselink.modelgen.processor.prefix}_*.jar"/ -->
-                <!-- exclude name="${eclipselink.modelgen.prefix}*_*.jar"/ -->
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
@@ -610,6 +606,7 @@
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
@@ -635,21 +632,24 @@
             <!-- core XSD files -->
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
-            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*1_0.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${jpa.prototype.xsds}" includes="*2_0.xsd" prefix="eclipselink/xsds"/>
             <!-- dbws XSD files -->
             <zipfileset dir="./${eclipselink.dbws.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar.name}"/>
                 <include name="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-                <include name="${eclipselink.plugins}/${modelgen.processor.jar}"/>
             </zipfileset>
             <zipfileset dir="./${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename.jar}"/>
                 <include name="readme.html"/>
             </zipfileset>
+            <!-- modelgen processor jar -->
+            <zipfileset dir="${eclipselink.plugins}/" includes="${modelgen.processor.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence jar -->
-            <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
+            <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/ -->
+            <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 prototype jar -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${persistence20.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
