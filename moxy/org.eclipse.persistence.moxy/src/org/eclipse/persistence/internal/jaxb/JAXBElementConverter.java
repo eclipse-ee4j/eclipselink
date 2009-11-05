@@ -22,6 +22,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.sessions.Session;
@@ -87,7 +88,10 @@ public class JAXBElementConverter implements XMLConverter {
 
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if(objectValue instanceof JAXBElement) {
-            objectValue = ((JAXBElement)objectValue).getValue();
+        	ClassDescriptor desc = session.getDescriptor(objectValue);
+        	if(desc == null || objectValue instanceof WrappedValue){        		
+                objectValue = ((JAXBElement)objectValue).getValue();
+        	}
         } else if(objectValue instanceof XMLRoot) {
             objectValue = ((XMLRoot) objectValue).getObject();
         }

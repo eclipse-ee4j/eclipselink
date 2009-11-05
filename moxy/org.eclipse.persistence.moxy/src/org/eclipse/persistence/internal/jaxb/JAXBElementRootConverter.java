@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jaxb;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -81,13 +82,17 @@ public class JAXBElementRootConverter implements XMLConverter {
         if(null != nestedConverter) {
             objectValue = nestedConverter.convertObjectValueToDataValue(objectValue, session, marshaller);
         }
-        if(objectValue instanceof JAXBElement) {
-            JAXBElement element = (JAXBElement) objectValue;
-            XMLRoot root = new XMLRoot();
-            root.setLocalName(element.getName().getLocalPart());
-            root.setNamespaceURI(element.getName().getNamespaceURI());
-            root.setObject(element.getValue());
-            return root;
+    
+        if(objectValue instanceof JAXBElement) {        	
+        	ClassDescriptor desc = session.getDescriptor(objectValue);
+        	if(desc == null || objectValue instanceof WrappedValue){
+                JAXBElement element = (JAXBElement) objectValue;
+                XMLRoot root = new XMLRoot();
+                root.setLocalName(element.getName().getLocalPart());
+                root.setNamespaceURI(element.getName().getNamespaceURI());
+                root.setObject(element.getValue());
+                return root;
+        	}
         }
         return objectValue;
     }
