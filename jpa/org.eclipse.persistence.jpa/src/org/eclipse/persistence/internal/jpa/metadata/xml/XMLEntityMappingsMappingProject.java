@@ -31,6 +31,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -40,7 +42,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -49,7 +50,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttrib
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CascadeTypes;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
@@ -93,6 +93,10 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyM
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
@@ -187,6 +191,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildBasicCollectionDescriptor());
         addDescriptor(buildBasicMapDescriptor());
         addDescriptor(buildVariableOneToOneDescriptor());
+        addDescriptor(buildMapKeyDescriptor());
         
         addDescriptor(buildGeneratedValueDescriptor());
         addDescriptor(buildSequenceGeneratorDescriptor());
@@ -236,7 +241,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(AccessMethodsMetadata.class);
     
-        //descriptor.addMapping(getNameAttributeMapping());
         XMLDirectMapping getMethodMapping = new XMLDirectMapping();
         getMethodMapping.setAttributeName("m_getMethodName");
         getMethodMapping.setGetMethodName("getGetMethodName");
@@ -607,7 +611,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected ClassDescriptor buildCascadeTypeDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(CascadeTypes.class);
+        descriptor.setJavaClass(CascadeMetadata.class);
         
         XMLDirectMapping cascadeAllMapping = new XMLDirectMapping();
         cascadeAllMapping.setAttributeName("m_cascadeAll");
@@ -1466,6 +1470,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: map-key
+     */
+    protected ClassDescriptor buildMapKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MapKeyMetadata.class);
+
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: many-to-many
      */
     protected ClassDescriptor buildManyToManyDescriptor() {
@@ -2257,12 +2274,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(UniqueConstraintMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
         XMLCompositeDirectCollectionMapping uniqueConstraintsMapping = new XMLCompositeDirectCollectionMapping();
         uniqueConstraintsMapping.setAttributeName("m_columnNames");
         uniqueConstraintsMapping.setGetMethodName("getColumnNames");
         uniqueConstraintsMapping.setSetMethodName("setColumnNames");
         uniqueConstraintsMapping.setXPath("orm:column-name");
         descriptor.addMapping(uniqueConstraintsMapping);
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
     }
@@ -2455,10 +2476,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLCompositeObjectMapping getCascadeMapping() {
         XMLCompositeObjectMapping cascadeMapping = new XMLCompositeObjectMapping();
-        cascadeMapping.setAttributeName("m_cascadeTypes");
-        cascadeMapping.setGetMethodName("getCascadeTypes");
-        cascadeMapping.setSetMethodName("setCascadeTypes");
-        cascadeMapping.setReferenceClass(CascadeTypes.class);
+        cascadeMapping.setAttributeName("m_cascade");
+        cascadeMapping.setGetMethodName("getCascade");
+        cascadeMapping.setSetMethodName("setCascade");
+        cascadeMapping.setReferenceClass(CascadeMetadata.class);
         cascadeMapping.setXPath("orm:cascade");
         return cascadeMapping;
     }
@@ -3035,12 +3056,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getMapKeyMapping() {
-        XMLDirectMapping mapKeyMapping = new XMLDirectMapping();
+    protected XMLCompositeObjectMapping getMapKeyMapping() {
+        XMLCompositeObjectMapping mapKeyMapping = new XMLCompositeObjectMapping();
         mapKeyMapping.setAttributeName("m_mapKey");
         mapKeyMapping.setGetMethodName("getMapKey");
         mapKeyMapping.setSetMethodName("setMapKey");
-        mapKeyMapping.setXPath("orm:map-key/@name");
+        mapKeyMapping.setReferenceClass(MapKeyMetadata.class);
+        mapKeyMapping.setXPath("orm:map-key");
         return mapKeyMapping;
     }
     

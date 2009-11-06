@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
@@ -24,7 +26,7 @@ import javax.persistence.Column;
  */
 @Entity
 @Table(name="DDL_UCENTITY1", uniqueConstraints = {
-    @UniqueConstraint(columnNames={"column2"}),
+    @UniqueConstraint(name="UCforColumn2", columnNames={"column2"}),
     @UniqueConstraint(columnNames={"column31", "column32"})
 })
 public class UniqueConstraintsEntity1 implements Serializable {

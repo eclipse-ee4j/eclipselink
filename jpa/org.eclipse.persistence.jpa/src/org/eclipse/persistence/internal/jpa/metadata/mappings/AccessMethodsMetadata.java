@@ -12,8 +12,10 @@
  *       - New file introduced for bug 217164.
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 

@@ -27,6 +27,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel 
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -69,6 +71,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
@@ -89,13 +92,8 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since EclipseLink 1.2
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
-    private MetadataClass m_targetClass;
-    private MetadataClass m_mapKeyClass;
-    private MetadataClass m_referenceClass;
-    
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
-    private OrderColumnMetadata m_orderColumn;
     
     private EnumeratedMetadata m_mapKeyEnumerated;
     
@@ -105,7 +103,13 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns; 
     
-    private String m_mapKey;
+    private MapKeyMetadata m_mapKey;
+    private MetadataClass m_targetClass;
+    private MetadataClass m_mapKeyClass;
+    private MetadataClass m_referenceClass;
+    
+    private OrderColumnMetadata m_orderColumn;
+    
     private String m_mapKeyConvert;
     private String m_mapKeyClassName;
     private String m_targetClassName;
@@ -183,7 +187,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the map key if one is defined.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = (String) getAnnotation(MapKey.class).getAttribute("name");
+            m_mapKey = new MapKeyMetadata(getAnnotation(MapKey.class), accessibleObject);
         }
         
         // Set the map key class if one is defined.
@@ -344,7 +348,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public String getMapKey() {
+    @Override
+    public MapKeyMetadata getMapKey() {
         return m_mapKey;
     }
     
@@ -560,6 +565,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean hasMapKey() {
+        return m_mapKey != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor has a map key class specified.
      */
     @Override
@@ -595,6 +608,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Initialize single objects.
         initXMLObject(m_column, accessibleObject);
+        initXMLObject(m_mapKey, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
         
@@ -610,15 +624,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     @Override
     public boolean isDirectEmbeddableCollection() {
         return getEmbeddableAccessor() != null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor is a mapped key map accessor.
-     */
-    @Override
-    public boolean isMappedKeyMapAccessor() {
-        return true && isMapAccessor();
     }
     
     /**
@@ -685,7 +690,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         process(mapping);
         
         // Process the fetch type and set the correct indirection on the mapping.
-        processContainerPolicyAndIndirection(mapping, getMapKey());
+        processContainerPolicyAndIndirection(mapping);
         
         // Make sure to mark the descriptor as an embeddable collection descriptor.
         referenceDescriptor.setIsEmbeddableCollection();
@@ -809,8 +814,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public String setMapKey(String mapKey) {
-        return m_mapKey;
+    public void setMapKey(MapKeyMetadata mapKey) {
+        m_mapKey = mapKey;
     }
     
     /**

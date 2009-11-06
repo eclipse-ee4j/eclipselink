@@ -37,6 +37,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -208,8 +210,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
                     mapKeyClass = accessor.getAccessibleObject().getMapKeyClass(getDescriptor());
                     
-                    if (mapKeyClass == null && mapAccessor.getMapKey() == null) {
-                        // We don't have a map key class or map key, throw an exception.
+                    if (mapKeyClass == null) {
+                        // The map key class has not been specified through 
+                        // either the map key class metadata or generics. Throw
+                        // an exception.
                         throw ValidationException.unableToDetermineMapKeyClass(accessor.getAttributeName(), accessor.getJavaClass());
                     } else {
                         // Set the map key class (note, may still be null)

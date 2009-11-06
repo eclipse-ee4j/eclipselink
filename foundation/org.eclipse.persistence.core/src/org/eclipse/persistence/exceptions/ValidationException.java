@@ -388,6 +388,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_DERIVED_ID_PRIMARY_KEY_FIELD = 7321;
     
     public static final int INVALID_ASSOCIATION_OVERRIDE_REFERENCE_COLUMN_NAME = 7322;
+    public static final int MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED = 7323;
     
     /**
      * INTERNAL:
@@ -1835,6 +1836,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {  };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CANNOT_WRITE_CHANGES_TWICE, args));
         validationException.setErrorCode(CANNOT_WRITE_CHANGES_TWICE);
+        return validationException;
+    }
+    
+    public static ValidationException multipleUniqueConstraintsWithSameNameSpecified(String name, String tableName, Object location) {
+        Object[] args = { name, tableName, location };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED, args));
+        validationException.setErrorCode(MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED);
         return validationException;
     }
     

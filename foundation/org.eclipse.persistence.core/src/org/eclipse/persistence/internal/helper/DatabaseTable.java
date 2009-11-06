@@ -14,8 +14,11 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.persistence.internal.databaseaccess.*;
 
 /**
@@ -31,7 +34,17 @@ public class DatabaseTable implements Cloneable, Serializable {
     protected String name;
     protected String tableQualifier;
     protected String qualifiedName;
-    protected Vector<List<String>> uniqueConstraints; //Element is columnNames
+    
+    /**
+     * Contains the user specified unique constraints. JPA 2.0 introduced 
+     * the name element, therefore, if specified we will use that name
+     * to create the constraint. Constraints with no name will be added to the
+     * map under the null key and generated with a default name.
+     * Therefore, when a name is given the Vector size should only ever be
+     * 1. We will validate. The null key could have multiples however they will
+     * have their names defaulted (as we did before).
+     */
+    protected Map<String, Vector<List<String>>> uniqueConstraints;
     protected boolean useDelimiters = false;
     
     /** 
@@ -41,7 +54,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     public DatabaseTable() {
         name = "";
         tableQualifier = "";
-        uniqueConstraints = new Vector<List<String>>();
+        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
     }
 
     public DatabaseTable(String possiblyQualifiedName) {
@@ -50,7 +63,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     
     public DatabaseTable(String possiblyQualifiedName, String startDelimiter, String endDelimiter) {
         setPossiblyQualifiedName(possiblyQualifiedName, startDelimiter, endDelimiter);
-        uniqueConstraints = new Vector<List<String>>();
+        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
     }
 
     public DatabaseTable(String tableName, String qualifier) {
@@ -60,15 +73,23 @@ public class DatabaseTable implements Cloneable, Serializable {
     public DatabaseTable(String tableName, String qualifier, boolean useDelimiters, String startDelimiter, String endDelimiter) {
         setName(tableName, startDelimiter, endDelimiter);
         this.tableQualifier = qualifier;
-        uniqueConstraints = new Vector<List<String>>();
+        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
         this.useDelimiters = useDelimiters;
     }
 
     /**
      * Add the unique constraint for the columns names. Used for DDL generation.
+     * For now we just add all the unique constraints as we would have before
+     * when we didn't have a name.
      */
-    public void addUniqueConstraints(List<String> columnNames) {
-        uniqueConstraints.add(columnNames);
+    public void addUniqueConstraints(String name, List<String> columnNames) {
+        if (uniqueConstraints.containsKey(name)) {
+            uniqueConstraints.get(name).add(columnNames);
+        } else {
+            Vector<List<String>> v = new Vector<List<String>>();
+            v.add(columnNames);
+            uniqueConstraints.put(name, v);
+        }
     }
     
     /** 
@@ -185,7 +206,7 @@ public class DatabaseTable implements Cloneable, Serializable {
      * Return a vector of the unique constraints for this table.
      * Used for DDL generation.
      */
-    public Vector<List<String>> getUniqueConstraints() {
+    public Map<String, Vector<List<String>>> getUniqueConstraints() {
         return uniqueConstraints;
     }
 

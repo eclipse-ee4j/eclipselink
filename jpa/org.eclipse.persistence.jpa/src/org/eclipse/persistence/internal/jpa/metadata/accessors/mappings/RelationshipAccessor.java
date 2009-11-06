@@ -25,6 +25,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -53,6 +55,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -71,7 +74,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 public abstract class RelationshipAccessor extends MappingAccessor {
     private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
-    private CascadeTypes m_cascadeTypes;
+    private CascadeMetadata m_cascade;
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
     
@@ -98,7 +101,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         m_fetch = (annotation == null) ? getDefaultFetchType() : (String) annotation.getAttribute("fetch");
         m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
-        m_cascadeTypes = (annotation == null) ? null : new CascadeTypes((Object[]) annotation.getAttributeArray("cascade"), accessibleObject);
+        m_cascade = (annotation == null) ? null : new CascadeMetadata((Object[]) annotation.getAttributeArray("cascade"), accessibleObject);
         
         // Set the join fetch if one is present.           
         MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
@@ -186,8 +189,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public CascadeTypes getCascadeTypes() {
-        return m_cascadeTypes;
+    public CascadeMetadata getCascade() {
+        return m_cascade;
     }
     
     /**
@@ -365,7 +368,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         // Initialize single objects.
         initXMLObject(m_joinTable, accessibleObject);
-        initXMLObject(m_cascadeTypes, accessibleObject);
+        initXMLObject(m_cascade, accessibleObject);
         
         // Initialize the target entity name we read from XML.
         m_targetEntity = initXMLClassName(m_targetEntityName);
@@ -414,8 +417,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
-        if (m_cascadeTypes != null) {
-            for (String cascadeType : m_cascadeTypes.getTypes()) {
+        if (m_cascade != null) {
+            for (String cascadeType : m_cascade.getTypes()) {
                 setCascadeType(cascadeType, mapping);
             }
         }
@@ -584,8 +587,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeTypes(CascadeTypes cascadeTypes) {
-        m_cascadeTypes = cascadeTypes;
+    public void setCascade(CascadeMetadata cascade) {
+        m_cascade = cascade;
     }
     
     /**

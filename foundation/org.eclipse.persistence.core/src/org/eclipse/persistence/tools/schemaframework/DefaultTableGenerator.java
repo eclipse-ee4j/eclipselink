@@ -910,13 +910,24 @@ public class DefaultTableGenerator {
         sourceTableDef.addForeignKeyConstraint(fkc);
     }
     
-    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Vector<List<String>> uniqueConstraints) {
+    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, Vector<List<String>>> uniqueConstraintsMap) {
         UniqueKeyConstraint uniqueKeyConstraint;
-        int serialNumber = 0;
-        for (List<String> uniqueConstraint : uniqueConstraints) {
-            if(uniqueConstraint == null) continue;
-            uniqueKeyConstraint = sourceTableDef.buildUniqueKeyConstraint(uniqueConstraint, serialNumber++, databasePlatform);
-            sourceTableDef.addUniqueKeyConstraint(uniqueKeyConstraint);
+        int serialNumber = -1;
+        
+        for (String name : uniqueConstraintsMap.keySet()) {
+            Vector<List<String>> uniqueConstraints = uniqueConstraintsMap.get(name);
+           
+            for (List<String> uniqueConstraint : uniqueConstraints) {
+                if (uniqueConstraint != null) {
+                    // To keep the serialNumber consecutive, increment it only
+                    // if the name is not specified.
+                    if (name == null || name.equals("")) {
+                        serialNumber++;
+                    }
+                    
+                    sourceTableDef.addUniqueKeyConstraint(sourceTableDef.buildUniqueKeyConstraint(name, uniqueConstraint, serialNumber, databasePlatform));
+                }
+            }
         }
     }
 }

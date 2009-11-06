@@ -17,6 +17,8 @@
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel 
  *          getClassForName is now public and referenced by MappingAccessor.getMapKeyReferenceClass()
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -152,18 +154,16 @@ public class MetadataHelper {
      * therefore, don't log a message and return name.
      */
     public static String getName(String name, String defaultName, String context, MetadataLogger logger, Object location) {
-        String actualName = null;
         // Check if a candidate was specified otherwise use the default.
-        if (name != null && !name.equals("")) {
-            actualName =  name;
+        if (name != null && ! name.equals("")) {
+            return name;
         } else if (defaultName == null || defaultName.equals("")) {
             return "";
         } else {
             // Log the defaulting field name based on the given context.
             logger.logConfigMessage(context, location, defaultName);
-            actualName =  defaultName;
+            return defaultName;
         }
-        return actualName;
     }
     
     /**

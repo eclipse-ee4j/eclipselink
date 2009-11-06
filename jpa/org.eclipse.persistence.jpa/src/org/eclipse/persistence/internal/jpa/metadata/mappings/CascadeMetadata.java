@@ -11,8 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
+package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class CascadeTypes extends ORMetadata {
+public class CascadeMetadata extends ORMetadata {
     private boolean m_cascadeAll;
     private boolean m_cascadePersist;
     private boolean m_cascadeMerge;
@@ -42,14 +44,14 @@ public class CascadeTypes extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public CascadeTypes() {
+    public CascadeMetadata() {
         super("<cascade>");
     }
     
     /**
      * INTERNAL:
      */
-    public CascadeTypes(Object[] cascadeTypes, MetadataAccessibleObject accessibleObject) {
+    public CascadeMetadata(Object[] cascadeTypes, MetadataAccessibleObject accessibleObject) {
         super(null, accessibleObject);
         
         m_types = new ArrayList<String>();

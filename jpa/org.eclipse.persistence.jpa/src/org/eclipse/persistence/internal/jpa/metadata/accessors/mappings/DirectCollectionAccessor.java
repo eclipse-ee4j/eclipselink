@@ -18,6 +18,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -303,7 +305,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         process(mapping);
         
         // Process the container and indirection policies.
-        processContainerPolicyAndIndirection(mapping, null);
+        processContainerPolicyAndIndirection(mapping);
         
         // Process the value column (we must process this field before the 
         // call to processConverter, since it may set a field classification)
@@ -327,7 +329,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         process(mapping);
         
         // Process the container and indirection policies.
-        processContainerPolicyAndIndirection(mapping, null);
+        processContainerPolicyAndIndirection(mapping);
         
         // Process the key column (we must process this field before the 
         // call to processConverter, since it may set a field classification)

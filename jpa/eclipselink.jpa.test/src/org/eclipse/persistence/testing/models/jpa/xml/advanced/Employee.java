@@ -13,6 +13,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -53,6 +55,7 @@ import org.eclipse.persistence.sessions.Session;
 })
 public class Employee implements Serializable {
 	public enum Gender { Female, Male }
+	public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
 	
 	private int salary;
 	private int version;
@@ -67,6 +70,7 @@ public class Employee implements Serializable {
 	private Gender gender;
 	private Address address;
 	private Employee manager;
+	private SalaryRate payScale;
 	private EmploymentPeriod period;
     private Collection<Employee> managedEmployees;
     
@@ -276,6 +280,10 @@ public class Employee implements Serializable {
         return overtimeHours;
     }
 
+    public SalaryRate getPayScale() {
+        return payScale;
+    }
+    
 	public EmploymentPeriod getPeriod() {
 		return period;
 	}
@@ -495,6 +503,10 @@ public class Employee implements Serializable {
         this.overtimeHours = overtimeHours;
     }
 
+    public void setPayScale(SalaryRate payScale) {
+        this.payScale = payScale;
+    }
+    
 	public void setPeriod(EmploymentPeriod period) {
 		this.period = period;
 	}

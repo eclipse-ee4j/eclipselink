@@ -11,12 +11,15 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -162,7 +165,11 @@ public class TableMetadata extends ORMetadata {
     public void processUniqueConstraints() {
         if (m_uniqueConstraints != null) {
             for (UniqueConstraintMetadata uniqueConstraint : m_uniqueConstraints) {
-                m_databaseTable.addUniqueConstraints(uniqueConstraint.getColumnNames());
+                if (uniqueConstraint.hasName() && m_databaseTable.getUniqueConstraints().containsKey(uniqueConstraint.getName())) {
+                    throw ValidationException.multipleUniqueConstraintsWithSameNameSpecified(uniqueConstraint.getName(), getName(), getLocation());
+                } else {
+                    m_databaseTable.addUniqueConstraints(uniqueConstraint.getName(), uniqueConstraint.getColumnNames());
+                }
             }
         }
     }
@@ -213,6 +220,9 @@ public class TableMetadata extends ORMetadata {
         m_uniqueConstraints = uniqueConstraints;
     }
     
+    /**
+     * INTERNAL:
+     */
     public void setUseDelimiters(boolean useDelimiters){
         m_databaseTable.setUseDelimiters(useDelimiters);
     }

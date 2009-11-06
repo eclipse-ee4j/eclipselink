@@ -13,6 +13,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -509,6 +511,16 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field10.setUnique(false );
         field10.setIsIdentity(false );
         table.addField(field10);
+        
+        FieldDefinition fieldPayScale = new FieldDefinition();
+        fieldPayScale.setName("PAY_SCALE");
+        fieldPayScale.setTypeName("VARCHAR");
+        fieldPayScale.setSize(40);
+        fieldPayScale.setIsPrimaryKey(false);
+        fieldPayScale.setUnique(false);
+        fieldPayScale.setIsIdentity(false);
+        fieldPayScale.setShouldAllowNull(true);
+        table.addField(fieldPayScale);
         
         return table;
     }

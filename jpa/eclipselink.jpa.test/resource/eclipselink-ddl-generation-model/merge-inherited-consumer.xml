@@ -32,6 +32,7 @@
                 </cascade>
             </one-to-many>
             <one-to-many name="telephoneNumbers" fetch="EAGER" mapped-by="beerConsumer"  target-entity="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.TelephoneNumber">
+                <map-key/>
                 <cascade>
                     <cascade-all/>
                 </cascade>

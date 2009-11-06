@@ -37,6 +37,10 @@
             <basic name="salary">
                 <column table="CMP3_XML_SALARY"/>
             </basic>
+            <basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+            </basic>
             <version name="version">
                 <column name="VERSION"/>
             </version>

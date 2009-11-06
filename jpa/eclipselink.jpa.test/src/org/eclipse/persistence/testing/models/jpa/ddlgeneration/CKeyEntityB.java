@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
@@ -29,7 +31,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "DDL_CKENTB", 
     uniqueConstraints = { 
-        @UniqueConstraint(columnNames={"UNQ2, UNQ1"}) //The order of columns shoud not be changed. See CKeyEntityA. 
+        @UniqueConstraint(columnNames={"UNQ2, UNQ1"}) //The order of columns should not be changed. See CKeyEntityA. 
 })
 public class CKeyEntityB {
     @EmbeddedId

@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -57,7 +59,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     public BasicMapAccessor(MetadataAnnotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicMap, accessibleObject, classAccessor);
-
+        
         m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), accessibleObject, getAttributeName());
 
         MetadataAnnotation keyConvert = (MetadataAnnotation) basicMap.getAttribute("keyConverter");
@@ -141,6 +143,18 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     protected boolean hasConvert(boolean isForMapKey) {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * For all intent and purpose a basic map accessor always uses a map key.
+     * It is used to correctly set the indirection policy. This method is kinda
+     * overkill to make sure isMappedKeyMapAccessor returns false for
+     * BasicMapAccessors.
+     */
+    @Override
+    public boolean hasMapKey() {
         return true;
     }
     

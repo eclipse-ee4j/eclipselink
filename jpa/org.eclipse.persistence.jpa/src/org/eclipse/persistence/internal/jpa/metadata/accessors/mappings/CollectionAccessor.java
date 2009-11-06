@@ -33,6 +33,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -72,6 +74,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -101,10 +104,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns;
     
+    private MapKeyMetadata m_mapKey;
     private MetadataClass m_mapKeyClass;
     private OrderColumnMetadata m_orderColumn;
     
-    private String m_mapKey;
     private String m_mapKeyConvert;
     private String m_mapKeyClassName;
     private String m_mappedBy;
@@ -138,7 +141,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the map key if one is present.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = (String)getAnnotation(MapKey.class).getAttributeString("name");
+            m_mapKey = new MapKeyMetadata(getAnnotation(MapKey.class), accessibleObject);
         }
         
         // Set the map key class if one is defined.
@@ -258,7 +261,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getMapKey() {
+    @Override
+    public MapKeyMetadata getMapKey() {
         return m_mapKey;
     }
     
@@ -430,6 +434,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean hasMapKey() {
+        return m_mapKey != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if the mapped by has been specified.
      */
     protected boolean hasMappedBy() {
@@ -456,15 +468,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
-     * Return true if this accessor is a mapped key map accessor.
-     */
-    @Override
-    public boolean isMappedKeyMapAccessor() {
-        return true && isMapAccessor();
-    }
-    
-    /**
-     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
@@ -476,6 +479,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
         
         // Initialize single ORMetadata objects.
+        initXMLObject(m_mapKey, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
         
@@ -525,7 +529,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // map metadata for a map key value to set on the indirection policy.
         // ** Note the reference class or reference class name needs to be set 
         // on the mapping before setting the indirection policy.
-        processContainerPolicyAndIndirection(mapping, getMapKey());
+        processContainerPolicyAndIndirection(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
@@ -645,7 +649,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setMapKey(String mapKey) {
+    public void setMapKey(MapKeyMetadata mapKey) {
         m_mapKey = mapKey;
     }
     

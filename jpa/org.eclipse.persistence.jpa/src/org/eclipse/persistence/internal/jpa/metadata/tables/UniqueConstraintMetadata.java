@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -26,6 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Object to hold onto a unique constraint metadata.
  */
 public class UniqueConstraintMetadata extends ORMetadata {
+    private String m_name;
     private List<String> m_columnNames;
     
     /**
@@ -41,10 +44,12 @@ public class UniqueConstraintMetadata extends ORMetadata {
     public UniqueConstraintMetadata(MetadataAnnotation uniqueConstraint, MetadataAccessibleObject accessibleObject) {
         super(uniqueConstraint, accessibleObject);
         
+        m_name = (String) uniqueConstraint.getAttribute("name");
+        
         m_columnNames = new ArrayList<String>();
         
         for (Object columnName : (Object[]) uniqueConstraint.getAttributeArray("columnNames")) { 
-            m_columnNames.add((String)columnName);
+            m_columnNames.add((String) columnName);
         }
     }
     
@@ -54,7 +59,13 @@ public class UniqueConstraintMetadata extends ORMetadata {
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof UniqueConstraintMetadata) {
-            return valuesMatch(m_columnNames, ((UniqueConstraintMetadata) objectToCompare).getColumnNames());
+            UniqueConstraintMetadata uniqueConstraint = (UniqueConstraintMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, uniqueConstraint.getName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_columnNames, uniqueConstraint.getColumnNames());
         }
         
         return false;
@@ -62,6 +73,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public List<String> getColumnNames() {
         return m_columnNames;
@@ -69,9 +81,34 @@ public class UniqueConstraintMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if a name has been specified for this unique constraint.
+     */
+    public boolean hasName() {
+        return m_name != null && !m_name.equals("");
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public void setColumnNames(List<String> columnNames) {
         m_columnNames = columnNames;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        m_name = name;
     }
 }
 

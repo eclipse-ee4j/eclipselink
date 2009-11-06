@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -36,6 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetada
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * A direct accessor.
@@ -47,10 +50,12 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata
  */
 public abstract class DirectAccessor extends MappingAccessor {
     private Boolean m_optional;
-    private String m_fetch;
     private EnumeratedMetadata m_enumerated;
     private LobMetadata m_lob;
+    
+    private String m_fetch;
     private String m_convert;
+    
     private TemporalMetadata m_temporal;
     
     /**
@@ -219,6 +224,19 @@ public abstract class DirectAccessor extends MappingAccessor {
     @Override
     public boolean hasTemporal(boolean isForMapKey) {
         return m_temporal != null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize single objects.
+        initXMLObject(m_enumerated, accessibleObject);
+        initXMLObject(m_lob, accessibleObject);
+        initXMLObject(m_temporal, accessibleObject);
     }
     
     /**

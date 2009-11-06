@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
@@ -22,6 +24,7 @@ import java.util.Vector;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.MapKey;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -63,6 +66,7 @@ public class Department implements Serializable {
     @OneToMany(fetch=EAGER, cascade=PERSIST)
     private Collection<Employee> managers;
     @OneToMany(mappedBy="department")
+    @MapKey
     @PrivateOwned
     private Map<Integer, Equipment> equipment;
 

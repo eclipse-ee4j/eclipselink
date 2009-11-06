@@ -39,6 +39,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/06/2009-2.0 Guy Pelletier 
+ *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -66,7 +68,7 @@ import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -86,6 +88,8 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -557,6 +561,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the map key if this mapping accessor employs one. Those accessors
+     * that support it should override this method.
+     * @see CollectionAccessor
+     * @see ElementCollectionAccessor
+     */
+    public MapKeyMetadata getMapKey() {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the map key reference class for this accessor if applicable. It 
      * will try to extract a reference class from a generic specification.<p>
      * Parameterized generic keys on a MappedSuperclass will return void.class.<p>  
@@ -578,7 +593,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
              * A workaround for this is to detect when we are in this state and return a standard top level class.
              * An invalid class will be of the form MetadataClass.m_name="T" 
              */
-            if(this.getClassAccessor().isMappedSuperclass()) {
+            if (getClassAccessor().isMappedSuperclass()) {
                 // Determine whether we are directly referencing a class or using a parameterized generic reference
                 // by trying to load the class and catching any validationException.
                 // If we do not get an exception on getClass then the referenceClass.m_name is valid and should be directly returned
@@ -587,7 +602,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 } catch (ValidationException exception) {
                     // Default to Void for parameterized types
                     // Ideally we would need a MetadataClass.isParameterized() to inform us instead.
-                    return new MetadataClass(this.getMetadataFactory(), Void.class);
+                    return new MetadataClass(getMetadataFactory(), Void.class);
                 }                          
             }
             return referenceClass;
@@ -752,10 +767,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return whether the map key has been set.
-     * @return
+     * Method should be overridden by those accessors that accept and use a map 
+     * key.
+     * @see CollectionAccessor
+     * @see ElementCollectionAccessor
+     * @see BasicMapAccessor
      */
-    public boolean hasMapKey(){
+    public boolean hasMapKey() {
         return false;
     }
     
@@ -954,10 +972,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return true if this accessor is a mapped key map accessor.
+     * Return true if this accessor is a mapped key map accessor. It is a
+     * map key accessor for two reasons, it's a map and it does not have 
+     * a map key specified. NOTE: we can't check for a map key class since
+     * one may not have been explicitly specified. In this case, a generic 
+     * value must be set and we check for one when adding accessors (and in 
+     * turn set the map key class at that point)
      */
     public boolean isMappedKeyMapAccessor() {
-        return false;
+        return MappedKeyMapAccessor.class.isAssignableFrom(getClass()) && isMapAccessor() && ! hasMapKey();
     }
     
     /**
@@ -1166,20 +1189,23 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      * @see ElementCollectionAccessor
      */
-    protected void processContainerPolicyAndIndirection(CollectionMapping mapping, String mapKey) {
+    protected void processContainerPolicyAndIndirection(CollectionMapping mapping) {
         if (isMappedKeyMapAccessor()) {
-            MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
-            MetadataClass mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
-            if (mapKeyClass != null && (getProject().hasEntity(mapKeyClass) || getProject().hasEmbeddable(mapKeyClass) || mapKeyMapAccessor.getMapKeyColumn() != null)) {
-                // TODO: If the map key is specified throw an exception? For now it is silently ignored.
-                processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
-            } else {
-                // Set the indirection policy on the mapping
-                setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
-            }
+            // If we are a map key map accessor then the following is true:
+            // 1 - we implement the mapped key map accessor interface
+            // 2 - we are a map accessor
+            // 3 - there is no map key metadata specified
+            processMapKeyClass(mapping, (MappedKeyMapAccessor) this);
         } else if (isMapAccessor()) {
-            // Set the indirection policy on the mapping.
-            setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
+            // If we are not a mapped key map accessor, but a map accessor,
+            // we need a map key metadata object to process. Default one if
+            // one is not provided.
+            MapKeyMetadata mapKey = getMapKey();
+            if (mapKey == null) {
+                setIndirectionPolicy(mapping, new MapKeyMetadata().process(mapping, this), usesIndirection());
+            } else {
+                setIndirectionPolicy(mapping, mapKey.process(mapping, this), usesIndirection());
+            }
         } else {
             // Set the indirection policy on the mapping.
             setIndirectionPolicy(mapping, null, usesIndirection());
@@ -1215,7 +1241,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected DirectToFieldMapping processDirectMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected DirectToFieldMapping processDirectMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
         DirectToFieldMapping keyMapping = new DirectToFieldMapping();
 
         // Get the map key field, defaulting and looking for attribute 
@@ -1235,8 +1261,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected AggregateObjectMapping processEmbeddableMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected AggregateObjectMapping processEmbeddableMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
+        MetadataClass mapKeyClass = mappedKeyMapAccessor.getMapKeyClass();
         keyMapping.setReferenceClassName(mapKeyClass.getName());
         
         // Tell the embeddable accessor to process itself it is hasn't already.
@@ -1263,15 +1290,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process the map key to be an entity class.
      */
-    protected OneToOneMapping processEntityMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected OneToOneMapping processEntityMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
+        String mapKeyClassName = mappedKeyMapAccessor.getMapKeyClass().getName();
+        
         // Create the one to one map key mapping.
         OneToOneMapping keyMapping = new OneToOneMapping();
-        keyMapping.setReferenceClassName(mapKeyClass.getName());
+        keyMapping.setReferenceClassName(mapKeyClassName);
         keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         // Process the map key join columns.
-        EntityAccessor mapKeyAccessor = getProject().getEntityAccessor(mapKeyClass.getName());
+        EntityAccessor mapKeyAccessor = getProject().getEntityAccessor(mapKeyClassName);
         MetadataDescriptor mapKeyClassDescriptor = mapKeyAccessor.getDescriptor();
         
         // If the pk field (referencedColumnName) is not specified, it 
@@ -1335,51 +1364,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process a map key for a 1-M or M-M mapping. Will return the map key
-     * method name that should be use, null otherwise.
+     * Process a map key class for the given map key map accessor.
      */
-    protected String processMapKey(String mapKey, CollectionMapping mapping) {
-        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-        if ((mapKey == null || mapKey.equals("")) && referenceDescriptor.hasCompositePrimaryKey()) {
-            // No persistent property or field name has been provided, and the 
-            // reference class has a composite primary key class.  Return null,
-            // internally, EclipseLink will use an instance of the composite 
-            // primary key class as the map key.
-            return null;
-        } else {
-            // A persistent property or field name may have have been provided. 
-            // If one has not we will default to the primary key of the reference 
-            // class. The primary key cannot be composite at this point.
-            String fieldOrPropertyName = getName(mapKey, referenceDescriptor.getIdAttributeName(), getLogger().MAP_KEY_ATTRIBUTE_NAME);
-    
-            // Look up the referenceAccessor
-            MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
-            if (referenceAccessor == null) {
-                // 266912: relax validation for MappedSuperclass descriptors when the map key is an unresolved generic type
-                if(!referenceDescriptor.isMappedSuperclass()) {
-                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
-                } else {
-                    return null;
-                }
-            }
-        
-            return referenceAccessor.getAccessibleObjectName();
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a map key class for the given map accessor.
-     */
-    protected void processMapKeyClass(MetadataClass mapKeyClass, CollectionMapping mapping, MappedKeyMapAccessor mapAccessor) {
+    protected void processMapKeyClass(CollectionMapping mapping, MappedKeyMapAccessor mappedKeyMapAccessor) {
         MapKeyMapping keyMapping;
-            
+        MetadataClass mapKeyClass = mappedKeyMapAccessor.getMapKeyClass();
+        
         if (getProject().hasEntity(mapKeyClass)) {
-            keyMapping = processEntityMapKeyClass(mapKeyClass, mapAccessor);
+            keyMapping = processEntityMapKeyClass(mappedKeyMapAccessor);
         } else if (getProject().hasEmbeddable(mapKeyClass)) {
-            keyMapping = processEmbeddableMapKeyClass(mapKeyClass, mapAccessor);
+            keyMapping = processEmbeddableMapKeyClass(mappedKeyMapAccessor);
         } else {
-            keyMapping = processDirectMapKeyClass(mapKeyClass, mapAccessor);
+            keyMapping = processDirectMapKeyClass(mappedKeyMapAccessor);
         }
           
         Class containerClass;
