@@ -1076,6 +1076,8 @@ public class AnnotationsProcessor {
         XmlElements xmlElements = (XmlElements) helper.getAnnotation(javaHasAnnotations, XmlElements.class);
         XmlElement[] elements = xmlElements.value();
         ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+        boolean isIdRef = helper.isAnnotationPresent(javaHasAnnotations, XmlIDREF.class);
+        property.setIsXmlIdRef(isIdRef);
         validateElementIsInPropOrder(info, propertyName);
         for (int i = 0; i < elements.length; i++) {
             XmlElement next = elements[i];
@@ -1111,7 +1113,9 @@ public class AnnotationsProcessor {
             choiceProp.setSchemaName(qName);            
             choiceProp.setSchemaType(getSchemaTypeFor(choiceProp.getType()));
             choiceProp.setElement(javaHasAnnotations);
+            choiceProp.setIsXmlIdRef(isIdRef);
             choiceProperties.add(choiceProp);
+            
         }
         property.setChoiceProperties(choiceProperties);
         return property;
