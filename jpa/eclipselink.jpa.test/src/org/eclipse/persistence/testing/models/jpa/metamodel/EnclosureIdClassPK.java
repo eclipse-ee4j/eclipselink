@@ -17,6 +17,7 @@ public class EnclosureIdClassPK {
     public String type;
     protected String length;
     private String width;
+    private Integer mappedManufacturerUC9;
 
     public String getType() {
         return type;
@@ -42,6 +43,15 @@ public class EnclosureIdClassPK {
         this.width = width;
     }
 
+    
+    public Integer getMappedManufacturerUC9() {
+        return mappedManufacturerUC9;
+    }
+
+    public void setMappedManufacturerUC9(Integer mappedManufacturerUC9) {
+        this.mappedManufacturerUC9 = mappedManufacturerUC9;
+    }
+
     public EnclosureIdClassPK() {}
 
     @Override
@@ -52,13 +62,14 @@ public class EnclosureIdClassPK {
         EnclosureIdClassPK enclosureIdClassPK = (EnclosureIdClassPK) anEnclosureIdClassPK;        
         return (enclosureIdClassPK.getLength().equals(this.getLength()) && 
                 enclosureIdClassPK.getWidth().equals(this.getWidth()) &&
-                enclosureIdClassPK.getType().equals(this.getType()));
+                enclosureIdClassPK.getType().equals(this.getType()) &&
+                enclosureIdClassPK.getMappedManufacturerUC9().equals(this.mappedManufacturerUC9));
     }
 
     @Override
     public int hashCode() {
-        if (null != type && null != length && null != width) {
-            return 9232 * type.hashCode() * length.hashCode() * width.hashCode();
+        if (null != type && null != length && null != width && null != mappedManufacturerUC9) {
+            return 9232 * type.hashCode() * length.hashCode() * width.hashCode() * mappedManufacturerUC9.hashCode();
         } else {
             return super.hashCode();
         }

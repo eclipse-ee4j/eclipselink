@@ -19,13 +19,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity(name="EnclosureMetamodel")
 @Table(name="CMP3_MM_ENCLOSURE")
 @IdClass(org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK.class)
-public class Enclosure implements java.io.Serializable{
+public class Enclosure implements java.io.Serializable {
 
     private static final long serialVersionUID = -8761221910595496687L;
     
@@ -38,6 +39,15 @@ public class Enclosure implements java.io.Serializable{
     @Id
     @Column(name="WIDTH")
     private String width;
+    
+    // The M:1 side is the owning side
+    @Id
+    @ManyToOne
+    @JoinColumn(name="PERSON_ID")
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_ENCLOSURE_MAPUC9", 
+            joinColumns = @JoinColumn(name="ENCLOSURE_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
+    private Manufacturer mappedManufacturerUC9;
     
     public EnclosureIdClassPK buildPK(){
         EnclosureIdClassPK pk = new EnclosureIdClassPK();

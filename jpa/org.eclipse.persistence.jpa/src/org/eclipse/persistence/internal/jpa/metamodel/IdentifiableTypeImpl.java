@@ -216,9 +216,8 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                 // Search the mappings for Id mappings
                 for(DatabaseMapping aMapping : getDescriptor().getMappings()) {                    
                     if(aMapping.isJPAId()) {
-                        String attributeName = aMapping.getAttributeName();
                         // get the attribute Id (declared or not)
-                        Attribute anAttribute = this.getAttribute(attributeName);
+                        Attribute anAttribute = this.getAttribute(aMapping.getAttributeName());
                         if(anAttribute != null) {
                             return this.getMetamodel().getType(anAttribute.getJavaType());
                         }                        
@@ -229,8 +228,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             if (pkMappings.size() == 1) {
                 Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
                 // lookup class in our types map
-                Type<?> aType = this.metamodel.getType(aClass);
-                return aType;
+                return this.metamodel.getType(aClass);
             }
         }
         
@@ -334,7 +332,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                     return false;
                 }
             } else {
-                // MappedSuperclass descriptors do not have a CMP policy
+                // MappedSuperclass descriptors do not have a CMP policy yet because the are not initialized
                 return pkFields.size() < 2;
             }
             List<String> idClasses = getMetamodel().getProject().getMetamodelIdClassMap().get(getJavaType().getCanonicalName());

@@ -110,9 +110,9 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 100;//94;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 102;//100;//94;
     public static final int METAMODEL_ALL_TYPES = 40;//37;
-    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 27;    
+    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
     
     public MetamodelMetamodelTest() {
         super();
@@ -124,111 +124,131 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_BASIC_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ONE_TO_MANY_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_MANY_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getPersistentAttributeType_ELEMENT_COLLECTION_Method"));        
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getName_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getDeclaringType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaType_BasicType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaType_ManagedType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_BasicType_on_MappedSuperclass_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_BasicType_on_Entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_getJavaMember_ManagedType_Method"));        
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isAssociation_on_Plural_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isAssociation_on_Singular_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_false_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testAttribute_Interface_isCollection_true_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_BASIC_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_EMBEDDED_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_ONE_TO_ONE_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_ONE_TO_MANY_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_MANY_TO_MANY_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_MANY_TO_ONE_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_ELEMENT_COLLECTION_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getName_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getDeclaringType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaType_BasicType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaType_ManagedType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_ManagedType_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_isAssociation_on_Plural_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_isAssociation_on_Singular_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_isCollection_false_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testAttribute_isCollection_true_Method"));
         
-        suite.addTest(new MetamodelMetamodelTest("testBasicType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testBindable_Interface_getBindableJavaType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testEmbeddableType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testEntityType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getIdType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getIdClassAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_hasVersionAttribute_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_hasSingleIdAttribute_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getSupertype_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getDeclaredVersion_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getVersion_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getDeclaredId_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_Interface_getId_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testBasicType"));
+        suite.addTest(new MetamodelMetamodelTest("testBindable_getBindableType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testBindable_getBindableJavaType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testEmbeddableType"));
+        suite.addTest(new MetamodelMetamodelTest("testEntityType"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_hasVersionAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_hasSingleIdAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getSupertype_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredVersion_exists_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredVersion_exists_above_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredVersion_does_not_exist_at_all_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getVersion_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getId_Method"));        
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_declared_above"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getDeclaredId_normal_execution_attribute_is_declared"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_handles_possible_null_cmppolicy"));
         
-        suite.addTest(new MetamodelMetamodelTest("testListAttribute_Interface"));
+        suite.addTest(new MetamodelMetamodelTest("testListAttribute"));
         
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getCollection_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredCollection_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSet_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSet_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getList_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredList_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getMap_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredMap_Type_param_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getPluralAttributes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_internal_entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_root_entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredPluralAttributes_root_mappedSuperclass_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_on_Entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_on_MappedSuperclass_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_doesNotExist_on_Entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getAttribute_doesNotExist_on_MappedSuperclass_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_above_throws_iae_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredAttribute_doesNotExist_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_BASIC_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSingularAttribute_EMBEDDED_Method"));        
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_on_Entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSingularAttribute_on_MappedSuperclass_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getCollection_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredCollection_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getSet_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredSet_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getList_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredList_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getMap_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_getDeclaredMap_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testManagedType_Interface_variantCases"));        
-        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_Interface_getKeyJavaType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_Interface_getKeyType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttribute_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSingularAttribute_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSingularAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getCollection_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredCollection_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSet_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSet_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getList_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredList_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getMap_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredMap_Type_param_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredMap_Type_param_not_found_iae_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredMap_Type_param_declared_above_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getPluralAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredPluralAttributes_internal_entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredPluralAttributes_root_entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredPluralAttributes_root_mappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_doesNotExist_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_doesNotExist_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_above_throws_iae_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_doesNotExist_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttribute_BASIC_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttribute_EMBEDDED_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSingularAttribute_on_Entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSingularAttribute_on_MappedSuperclass_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getCollection_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredCollection_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getSet_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredSet_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getList_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredList_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getMap_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredMap_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testManagedType_variantCases"));        
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC0_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC1a_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC2_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC4_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC7_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC8_Method"));
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_86:_20090921:_Handle_Embeddable_Type_keyType_in_MapAttributeImpl_constructor       suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC9_DI86_Embeddable_IdClass_keyType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC0_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC1a_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC2_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC4_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC7_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC8_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC9_DI86_Embeddable_IdClass_keyType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));
-        suite.addTest(new MetamodelMetamodelTest("testMappedSuperclassType_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_entity_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_embeddable_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_managedType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_getEntities_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_getManagedTypes_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testMetamodel_Interface_getEmbeddables_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_Interface_CollectionType_enum"));
-        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_Interface_getCollectionType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_Interface_getElementType_Method"));        
-        suite.addTest(new MetamodelMetamodelTest("testSetAttribute_Interface"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_isOptional_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_isId_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_isVersion_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_getBindableType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_getBindableJavaType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_getJavaType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_Interface_getType_Method"));
+        // Pending implementation
+        //suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeyNotSet_MapKeyColumnSet"));
+        //suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeyNotSet_MapKeyColumnSet")); // JPA 2.0 specific
+        
+        suite.addTest(new MetamodelMetamodelTest("testMappedSuperclassType"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_entity_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_embeddable_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_managedType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_getEntities_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_getManagedTypes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMetamodel_getEmbeddables_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_CollectionType_enum"));
+        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getCollectionType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getElementType_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testSetAttribute"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_isOptional_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_isId_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_isVersion_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_getBindableType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_getBindableJavaType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_getJavaType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_getType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testToStringOverrides"));        
-        suite.addTest(new MetamodelMetamodelTest("testType_Interface_PersistenceType_enum"));
-        suite.addTest(new MetamodelMetamodelTest("testType_Interface_getPersistenceType_Method"));
-        suite.addTest(new MetamodelMetamodelTest("testType_Interface_getJavaType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testType_PersistenceType_enum"));
+        suite.addTest(new MetamodelMetamodelTest("testType_getPersistenceType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testType_getJavaType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testOutOfSpecificationInternalAPI"));        
         // Not implemented yet
         //suite.addTest(new MetamodelMetamodelTest("testObscureInvalidStateUnitTests"));
@@ -284,22 +304,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Type<?> personIdType = null;
                 MappedSuperclassTypeImpl<Person> msPerson_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
                 assertNotNull(msPerson_);
-                
-                try {
-                    personIdType = msPerson_.getIdType();
-                } catch (IllegalArgumentException iae) {
-                    // expecting no exception
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
+              
+                personIdType = msPerson_.getIdType();
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
                 assertNotNull(personIdType);
                 assertEquals(PersistenceType.BASIC, personIdType.getPersistenceType());
                 assertEquals(Integer.class, personIdType.getJavaType());
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                e.printStackTrace();
-                exceptionThrown = true;
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                iae.printStackTrace();
+                exceptionThrown = true;            
             } finally {
                 cleanup(em);
                 assertFalse("An IAE exception should not occur on getIdType() here.", exceptionThrown);
@@ -322,86 +336,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 
                 // Test toString() for a Type without a javaType attribute
                 //Type invalidType = new BasicTypeImpl(null);
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                e.printStackTrace();
-                exceptionThrown = true;
-            } finally {
-                cleanup(em);
-                assertFalse("An IAE exception should not occur here.", exceptionThrown);
-            }
-        }
-    }
-    
-    /**
-     * This test will verify that MapAttribute instance have their elementType set correctly.
-     * The elementType corresponds to the 3rd V parameter on the class definition - which is the Map value.
-     * MapAttributeImpl<X, K, V> 
-     */
-    public void testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted() {
-        if(!this.isJPA10()) {
-            boolean exceptionThrown = false;
-            EntityManager em = null;            
-            try {
-                em = privateTestSetup();
-                assertNotNull(em);
-                Metamodel metamodel = em.getMetamodel();
-                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-                
-                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
-                assertNotNull(entityManufacturer);                
-                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC8");
-                assertNotNull(hardwareDesignersMap);
-                assertTrue(hardwareDesignersMap.isCollection());
-                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
-                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC8");            
-                // Verify owning type
-                assertNotNull(manufactuerHardwareDesignersMap);
-                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
-                // Verify Map Key - should be PK of owning type
-                assertEquals(Integer.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
-                // Verify Map Value
-                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());
-                
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                e.printStackTrace();
-                exceptionThrown = true;
-            } finally {
-                cleanup(em);
-                assertFalse("An IAE exception should not occur here.", exceptionThrown);
-            }
-        }
-    }
-
-    public void testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet() {
-        if(!this.isJPA10()) {
-            EntityManager em = null;
-            boolean exceptionThrown = false;
-            try {
-                em = privateTestSetup();
-                assertNotNull(em);
-                Metamodel metamodel = em.getMetamodel();
-                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-                
-                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
-                assertNotNull(entityManufacturer);                
-                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC4");
-                assertNotNull(hardwareDesignersMap);
-                assertTrue(hardwareDesignersMap.isCollection());
-                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
-                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC4");            
-                // Verify owning type
-                assertNotNull(manufactuerHardwareDesignersMap);
-                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
-                // Verify Map Key - should be PK of owning type
-                assertEquals(String.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
-                // Verify Map Value
-                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());
-                
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -435,9 +371,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
                 // Not declared  - invalid - IAE thrown (actually declared 2 levels above in "Person")
                 Attribute idAttribute = ((IdentifiableType)entityManufacturer_).getDeclaredId(Integer.class);                
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -482,9 +417,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Require a version on a MappedSuperclass
                 
                 //assertNotNull(msPerson1_.getDeclaredId(Integer.class));
-            } catch (Exception e) {
-                // we enter here on a failed commit() - for example if the table schema is incorrectly defined
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -492,8 +426,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
-
-    public void testAttribute_Interface_getPersistentAttributeType_BASIC_Method() {
+    
+    public void testAttribute_getPersistentAttributeType_BASIC_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -522,8 +456,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(int.class, anAttribute.getJavaType());
                 assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -532,7 +466,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_ONE_TO_ONE_Method() {
+    public void testAttribute_getPersistentAttributeType_ONE_TO_ONE_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -560,8 +494,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(GalacticPosition.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -570,7 +504,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_ONE_TO_MANY_Method() {
+    public void testAttribute_getPersistentAttributeType_ONE_TO_MANY_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -599,8 +533,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(Computer.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -609,7 +543,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_MANY_TO_MANY_Method() {
+    public void testAttribute_getPersistentAttributeType_MANY_TO_MANY_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -632,8 +566,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //PersistentAttributeType getPersistentAttributeType();
                 // note: not implemented yet - need a manyToMany in the model
                 //assertEquals(PersistentAttributeType.MANY_TO_MANY, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -642,7 +576,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_MANY_TO_ONE_Method() {
+    public void testAttribute_getPersistentAttributeType_MANY_TO_ONE_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -672,8 +606,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(Computer.class, anAttribute.getJavaType());
                 // Note: internally our MANY_TO_ONE is treated as a ONE_TO_ONE - although with a DB constraint 
                 assertEquals(PersistentAttributeType.MANY_TO_ONE, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -682,7 +616,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_ELEMENT_COLLECTION_Method() {
+    public void testAttribute_getPersistentAttributeType_ELEMENT_COLLECTION_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -712,8 +646,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //assertNotNull(anAttribute);
                 //assertEquals(Computer.class, anAttribute.getJavaType());                
                 //assertEquals(PersistentAttributeType.ELEMENT_COLLECTION, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -722,7 +656,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getPersistentAttributeType_EMBEDDED_Method() {
+    public void testAttribute_getPersistentAttributeType_EMBEDDED_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -751,8 +685,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(EmbeddedPK.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.EMBEDDED, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -761,7 +695,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testAttribute_Interface_getName_Method() {
+    public void testAttribute_getName_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -776,9 +710,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  * @return name
                  */
                 //String getName();
-
-            } catch (Exception e) {
-                //e.printStackTrace();
+                
+                ManagedType<Person> msPerson = metamodel.managedType(Person.class);                
+                assertNotNull(msPerson);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());                
+                Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);                
+                assertNotNull(idAttribute);
+                assertEquals(Integer.class, idAttribute.getJavaType());
+                assertEquals("id", idAttribute.getName());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -787,7 +728,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getDeclaringType_Method() {
+    public void testAttribute_getDeclaringType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -811,12 +752,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Test case
                 Attribute anAttribute = entityManufacturer_.getDeclaredAttribute("hardwareDesignersMapUC4");
                 ManagedType aManagedType = anAttribute.getDeclaringType();
-                assertEquals(entityManufacturer_, aManagedType);
-                
+                assertEquals(entityManufacturer_, aManagedType);                
                 assertNotNull(anAttribute);
                 assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -825,7 +765,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getJavaType_BasicType_Method() {
+    public void testAttribute_getJavaType_BasicType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -846,8 +786,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);                
                 assertNotNull(idAttribute);
                 assertEquals(Integer.class, idAttribute.getJavaType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -856,7 +796,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getJavaType_ManagedType_Method() {
+    public void testAttribute_getJavaType_ManagedType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -877,8 +817,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Attribute anAttribute = entityManufacturer_.getAttribute("computers");                
                 assertNotNull(anAttribute);
                 assertEquals(Computer.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -887,7 +827,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testAttribute_Interface_getJavaMember_BasicType_on_MappedSuperclass_Method() {
+    public void testAttribute_getJavaMember_BasicType_on_MappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -917,8 +857,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals("id", aMember.getName());
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(Integer.class.getName(), ((Field)aMember).getType().getName());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -927,7 +867,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_getJavaMember_BasicType_on_Entity_Method() {
+    public void testAttribute_getJavaMember_BasicType_on_Entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -957,8 +897,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals("anInt", aMember.getName());
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(int.class.getName(), ((Field)aMember).getType().getName());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -967,7 +907,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testAttribute_Interface_getJavaMember_ManagedType_Method() {
+    public void testAttribute_getJavaMember_ManagedType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -995,8 +935,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals("computers", aMember.getName());
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(Set.class.getName(), ((Field)aMember).getType().getName());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1005,7 +945,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_isAssociation_on_Plural_Method() {
+    public void testAttribute_isAssociation_on_Plural_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1029,8 +969,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(Computer.class, anAttribute.getJavaType());
                 boolean isAssociation = anAttribute.isAssociation();
                 assertFalse(isAssociation);
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1039,7 +979,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_isAssociation_on_Singular_Method() {
+    public void testAttribute_isAssociation_on_Singular_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1065,8 +1005,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 boolean isAssociation = anAttribute.isAssociation();
                 // Only a ReferenceMapping that extends ObjectReferenceMapping returns true                
                 assertFalse(isAssociation);
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1075,7 +1015,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testAttribute_Interface_isCollection_false_Method() {
+    public void testAttribute_isCollection_false_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1111,8 +1051,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Type embeddableType = ((SingularAttributeImpl)locationIdAttribute).getType();
                 assertNotNull(embeddableType);
                 assertNotSame(embeddableType, locationIdAttributeManagedType);
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1121,7 +1061,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testAttribute_Interface_isCollection_true_Method() {
+    public void testAttribute_isCollection_true_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1145,8 +1085,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //boolean isCollection();
                 assertTrue(anAttribute.isCollection());
                 assertTrue(((AttributeImpl)anAttribute).isPlural()); // non-spec.
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1155,7 +1095,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testBasicType_Interface() {
+    public void testBasicType() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1172,8 +1112,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 BasicTypeImpl aRandomBasicType = (BasicTypeImpl) aRandomType;
                 assertFalse(aRandomBasicType.isEntity());
                 assertFalse(aRandomBasicType.isMappedSuperclass());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1182,7 +1122,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testBindable_Interface_getBindableType_Method() {
+    public void testBindable_getBindableType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1215,8 +1155,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     entityManufacturer_.getDeclaredList("hardwareDesigners", HardwareDesigner.class);
                 assertNotNull(manufacturer_hardwareDesignersList);
                 assertEquals(Bindable.BindableType.PLURAL_ATTRIBUTE, manufacturer_hardwareDesignersList.getBindableType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1225,7 +1165,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testBindable_Interface_getBindableJavaType_Method() {
+    public void testBindable_getBindableJavaType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1267,8 +1207,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(manufacturer_hardwareDesignersType);
                 assertNotNull(manufacturer_hardwareDesignersType.getJavaType());
                 assertEquals(manufacturer_hardwareDesignersType.getJavaType(), manufacturer_hardwareDesignersList.getBindableJavaType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1277,7 +1217,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }    
     
-    public void testEmbeddableType_Interface() {
+    public void testEmbeddableType() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1295,8 +1235,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse("Expected EmbeddedPK.isMappedSuperclass = false", embeddableType_.isMappedSuperclass());
                 assertEquals(PersistenceType.EMBEDDABLE, embeddableType_.getPersistenceType());
                 assertEquals(EmbeddedPK.class, embeddableType_.getJavaType());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1305,7 +1245,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testEntityType_Interface() {
+    public void testEntityType() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1343,10 +1283,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 
                 // get an Attribute<Container, Type==MappedSuperclass>
                 Attribute employerAttribute = entityHardwareDesigner_.getAttribute("employer");
-                assertTrue(null != employerAttribute);
-                
-            } catch (Exception e) {
-                //e.printStackTrace();
+                assertTrue(null != employerAttribute);                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1355,7 +1294,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testIdentifiableType_Interface_getId_Method() {
+    public void testIdentifiableType_getId_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1387,8 +1326,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // declared and valid
                 MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
                 assertNotNull(msPerson1_.getId(Integer.class));
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1397,7 +1336,52 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_getDeclaredId_Method() {
+    public void testIdentifiableType_getVersion_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+                assertNotNull(entityLocation_);                
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /**
+                 *  Return the attribute that corresponds to the version 
+                 *    attribute of the entity or mapped superclass.
+                 *  @param type  the type of the represented version attribute
+                 *  @return version attribute
+                 *  @throws IllegalArgumentException if version attribute of the 
+                 *          given type is not present in the identifiable type
+                 */
+                //<Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
+//              EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
+//              assertNotNull(anEnclosureType.getVersion(Integer.class));
+                // declared and inherited
+                
+                // declared 
+                assertNotNull(entityManufacturer_.getVersion(int.class));
+                // declared and valid
+                // TODO : require MS version
+//                assertNotNull(msPerson1_.getVersion(Integer.class));
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+            }
+        }
+    }
+
+    public void testIdentifiableType_getDeclaredId_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1441,8 +1425,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
-
-    public void testIdentifiableType_Interface_getVersion_Method() {
+    
+    public void testIdentifiableType_getDeclaredVersion_exists_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1453,32 +1437,36 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(metamodel);
                 EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
                 assertNotNull(entityManufacturer_);
-                EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
-                assertNotNull(entityLocation_);                
-                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
-                assertNotNull(entityComputer_);
 
                 // Actual Test Case
                 /**
                  *  Return the attribute that corresponds to the version 
-                 *    attribute of the entity or mapped superclass.
-                 *  @param type  the type of the represented version attribute
-                 *  @return version attribute
+                 *  attribute declared by the entity or mapped superclass.
+                 *  @param type  the type of the represented declared version 
+                 *               attribute
+                 *  @return declared version attribute
                  *  @throws IllegalArgumentException if version attribute of the 
-                 *          given type is not present in the identifiable type
+                 *          type is not declared in the identifiable type
                  */
-                //<Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
-//              EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
-//              assertNotNull(anEnclosureType.getVersion(Integer.class));
-                // declared and inherited
-                
-                // declared 
-                assertNotNull(entityManufacturer_.getVersion(int.class));
-                // declared and valid
-                // TODO : require MS version
-//                assertNotNull(msPerson1_.getVersion(Integer.class));
-            } catch (Exception e) {
-                //e.printStackTrace();
+                //<Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type);
+                // FUTURE: need an undeclared subclass
+                // Is declared
+                SingularAttribute<Manufacturer,?> anAttribute = entityManufacturer_.getDeclaredVersion(int.class); 
+                assertNotNull(anAttribute);
+                assertNotNull(anAttribute.getType());
+                assertNotNull(anAttribute.getBindableType());
+                assertNotNull(anAttribute.getBindableJavaType());
+                assertNotNull(anAttribute.getDeclaringType());
+                assertEquals(entityManufacturer_, anAttribute.getDeclaringType());
+                assertFalse(anAttribute.isId());
+                assertTrue(anAttribute.isVersion());
+                assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
+                assertTrue(anAttribute.isOptional());
+                assertNotNull(anAttribute.getJavaType());
+                assertFalse(anAttribute.isAssociation());
+                assertFalse(anAttribute.isCollection());                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1487,7 +1475,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_getDeclaredVersion_Method() {
+    public void testIdentifiableType_getDeclaredVersion_exists_above_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1519,8 +1507,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // TODO: need an undeclared subclass
                 // Is declared
 //                assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1529,7 +1517,49 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_getSupertype_Method() {
+    public void testIdentifiableType_getDeclaredVersion_does_not_exist_at_all_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 *  Return the attribute that corresponds to the version 
+                 *  attribute declared by the entity or mapped superclass.
+                 *  @param type  the type of the represented declared version 
+                 *               attribute
+                 *  @return declared version attribute
+                 *  @throws IllegalArgumentException if version attribute of the 
+                 *          type is not declared in the identifiable type
+                 */
+                //<Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type);
+                // Does not exist
+//                EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
+//                assertNotNull(anEnclosureType.getDeclaredVersion(Integer.class));
+                // Is declared
+                assertNotNull(entityManufacturer_.getDeclaredVersion(int.class));
+                
+                // TODO: need an undeclared subclass
+                // Is declared
+//                assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+            }
+        }
+    }
+    
+    public void testIdentifiableType_getSupertype_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1595,8 +1625,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertFalse(expectedIAExceptionThrown);
                 assertNull(superTypeLocation);
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1605,7 +1635,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_hasSingleIdAttribute_Method() {
+    public void testIdentifiableType_hasSingleIdAttribute_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1669,8 +1699,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertFalse(expectedIAExceptionThrown);            
                 assertFalse(hasSingleIdAttribute);
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1679,7 +1709,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_hasVersionAttribute_Method() {
+    public void testIdentifiableType_hasVersionAttribute_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1701,8 +1731,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityType<Enclosure> anEnclosureType = metamodel.entity(Enclosure.class);
                 assertFalse(anEnclosureType.hasVersionAttribute());
                 assertTrue(entityManufacturer_.hasVersionAttribute());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1711,7 +1741,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_getIdClassAttributes_Method() {
+    public void testIdentifiableType_getIdClassAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1733,23 +1763,17 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 expectedIAExceptionThrown = false;
                 boolean hasSingleIdAttribute = true;
                 Set<SingularAttribute<? super Enclosure, ?>> idClassAttributes = null;
-                try {
-                    EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
-                    hasSingleIdAttribute = aType.hasSingleIdAttribute();
-                    // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
-                    assertFalse(hasSingleIdAttribute);
-                    idClassAttributes = aType.getIdClassAttributes();
-                     
-                } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
+                EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
+                hasSingleIdAttribute = aType.hasSingleIdAttribute();
+                // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
+                assertFalse(hasSingleIdAttribute);
+                idClassAttributes = aType.getIdClassAttributes();
                 assertFalse(expectedIAExceptionThrown);            
                 assertFalse(hasSingleIdAttribute);
                 assertNotNull(idClassAttributes);
-                assertEquals(3, idClassAttributes.size());
-            } catch (Exception e) {
-                //e.printStackTrace();
+                assertEquals(4, idClassAttributes.size());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1758,7 +1782,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testIdentifiableType_Interface_getIdType_Method() {
+    public void testIdentifiableType_getIdType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -1842,17 +1866,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(msCorporation_);
                 
                 // Verify all types (entities, embeddables, mappedsuperclasses and basic)
-                try {
-                    // get all 21 types (a non spec function - for testing introspection)
-                    Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
-                    // verify each one
-                    assertNotNull(typesMap);
-                    assertEquals(METAMODEL_ALL_TYPES, typesMap.size());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
+                // get all 21 types (a non spec function - for testing introspection)
+                Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
+                // verify each one
+                assertNotNull(typesMap);
+                assertEquals(METAMODEL_ALL_TYPES, typesMap.size());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1861,7 +1881,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testListAttribute_Interface() {
+    public void testListAttribute() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -1873,8 +1893,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // Actual Test Case
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1883,7 +1903,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getAttributes_Method() {
+    public void testManagedType_getAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -2261,8 +2281,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes();
                 Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer_.getSingularAttributes();
                 assertNotNull(singularAttributeSet);
-                // We should see 3+17 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
-                assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 6, singularAttributeSet.size());
+                // We should see 3+18 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
+                assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 7, singularAttributeSet.size());
                 // for each managed entity we will see 2 entries (one for the Id, one for the Version)
                 assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("id"))); // 
                 assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("version"))); //
@@ -2312,150 +2332,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //<E> ListAttribute<? super X, E> getList(String name, Class<E> elementType);
 
-                /**
-                 *  Return the Map-valued attribute of the managed type that
-                 *  corresponds to the specified name and Java key and value
-                 *  types.
-                 *  @param name  the name of the represented attribute
-                 *  @param keyType  the key type of the represented attribute
-                 *  @param valueType  the value type of the represented attribute
-                 *  @return MapAttribute of the given name and key and value
-                 *  types
-                 *  @throws IllegalArgumentException if attribute of the given
-                 *          name and type is not present in the managed type
-                 */
-                //<K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType);
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMap");
-                    // verify the default key type is the not the Map key - rather that is is the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
-                    //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
-                    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
-                    // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
-                    Type keyType = anAttribute.getKeyType(); 
-                    //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                    
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMapUC1a");
-                    // verify the key type is the Map key - not the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    // UC 1a: Generics KV set, no @MapKey present, PK is singular field
-                    //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
-                    //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
-                    Type keyType = anAttribute.getKeyType(); 
-                    //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMapUC2");
-                    // verify the key type is the Map key - not the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    // UC 2: Generics KV set, @MapKey is present
-                    //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
-                    //@MapKey(name="name")
-                    //private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
-                    Type keyType = anAttribute.getKeyType(); 
-                    assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-                
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMapUC4");
-                    // verify the key type is the Map key - not the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    // UC 4: No Generics KV set, @MapKey is present
-                    //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
-                    //@MapKey(name="name")
-                    //private Map hardwareDesignersMapUC4;
-                    Type keyType = anAttribute.getKeyType(); 
-                    assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMapUC7");
-                    // verify the key type is the Map key - not the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
-                    //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
-                    // Same as UC1a - that is missing the @MapKey
-                    //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
-                    Type keyType = anAttribute.getKeyType(); 
-                    //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-
-                expectedIAExceptionThrown = false;            
-                try {
-                    MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
-                        entityManufacturer_.getMap("hardwareDesignersMapUC8");
-                    // verify the key type is the Map key - not the managedType PK
-                    Class keyJavaType = anAttribute.getKeyJavaType();
-                    // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
-                    //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
-                    // Same as UC1a - that is missing the @MapKey name attribute
-                    //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
-                    Type keyType = anAttribute.getKeyType(); 
-                    //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                    assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
-                    assertNotNull(keyType);
-                    assertTrue(keyType instanceof Type);
-                    assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
                 
                 /**
                  *  Return the Collection-valued attribute declared by the 
@@ -2630,19 +2506,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 
-                /**
-                 *  Return the Map-valued attribute declared by the managed 
-                 *  type that corresponds to the specified name and Java key 
-                 *  and value types.
-                 *  @param name  the name of the represented attribute
-                 *  @param keyType  the key type of the represented attribute
-                 *  @param valueType  the value type of the represented attribute
-                 *  @return declared MapAttribute of the given name and key 
-                 *          and value types
-                 *  @throws IllegalArgumentException if attribute of the given
-                 *          name and type is not declared in the managed type
-                 */
-                //<K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType);
                 
                 /**
                  *  Return all collection-valued attributes of the managed type.
@@ -2952,8 +2815,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //MapAttribute<X, ?, ?> getDeclaredMap(String name);            
                 
                 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -2962,7 +2825,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredAttributes_Method() {
+    public void testManagedType_getDeclaredAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -2984,8 +2847,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -2994,7 +2857,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getSingularAttribute_Type_param_Method() {
+    public void testManagedType_getSingularAttribute_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3016,8 +2879,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3026,7 +2889,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSingularAttribute_Type_param_Method() {
+    public void testManagedType_getDeclaredSingularAttribute_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3048,8 +2911,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3058,7 +2921,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getSingularAttributes_Method() {
+    public void testManagedType_getSingularAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3080,8 +2943,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3090,7 +2953,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSingularAttributes_Method() {
+    public void testManagedType_getDeclaredSingularAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3112,8 +2975,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3122,7 +2985,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getCollection_Type_param_Method() {
+    public void testManagedType_getCollection_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3144,8 +3007,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3154,7 +3017,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredCollection_Type_param_Method() {
+    public void testManagedType_getDeclaredCollection_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3176,8 +3039,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3186,7 +3049,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getSet_Type_param_Method() {
+    public void testManagedType_getSet_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3208,8 +3071,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3218,7 +3081,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSet_Type_param_Method() {
+    public void testManagedType_getDeclaredSet_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3240,8 +3103,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3250,7 +3113,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getList_Type_param_Method() {
+    public void testManagedType_getList_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3272,8 +3135,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3282,7 +3145,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredList_Type_param_Method() {
+    public void testManagedType_getDeclaredList_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3304,8 +3167,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3314,7 +3177,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getMap_Type_param_Method() {
+    public void testManagedType_getMap_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3336,8 +3199,36 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                /**
+                 *  Return the Map-valued attribute of the managed type that
+                 *  corresponds to the specified name and Java key and value
+                 *  types.
+                 *  @param name  the name of the represented attribute
+                 *  @param keyType  the key type of the represented attribute
+                 *  @param valueType  the value type of the represented attribute
+                 *  @return MapAttribute of the given name and key and value
+                 *  types
+                 *  @throws IllegalArgumentException if attribute of the given
+                 *          name and type is not present in the managed type
+                 */
+                //<K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType);
+                expectedIAExceptionThrown = false;            
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
+                // verify the default key type is the not the Map key - rather that is is the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
+                //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
+                // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3346,7 +3237,15 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredMap_Type_param_Method() {
+    public void testManagedType_getDeclaredMap_Type_param_declared_above_Method() {
+    
+    }
+    
+    public void testManagedType_getDeclaredMap_Type_param_not_found_iae_Method() {
+        
+    }
+
+    public void testManagedType_getDeclaredMap_Type_param_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3368,8 +3267,36 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                /**
+                 *  Return the Map-valued attribute declared by the managed 
+                 *  type that corresponds to the specified name and Java key 
+                 *  and value types.
+                 *  @param name  the name of the represented attribute
+                 *  @param keyType  the key type of the represented attribute
+                 *  @param valueType  the value type of the represented attribute
+                 *  @return declared MapAttribute of the given name and key 
+                 *          and value types
+                 *  @throws IllegalArgumentException if attribute of the given
+                 *          name and type is not declared in the managed type
+                 */
+                //<K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType);
+                expectedIAExceptionThrown = false;            
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getDeclaredMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
+                // verify the default key type is the not the Map key - rather that is is the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
+                //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
+                // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());                
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3378,7 +3305,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getPluralAttributes_Method() {
+    public void testManagedType_getPluralAttributes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3400,8 +3327,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3410,7 +3337,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredPluralAttributes_internal_entity_Method() {
+    public void testManagedType_getDeclaredPluralAttributes_internal_entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3445,8 +3372,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertFalse(expectedIAExceptionThrown);            
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3455,7 +3382,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredPluralAttributes_root_entity_Method() {
+    public void testManagedType_getDeclaredPluralAttributes_root_entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3468,19 +3395,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityComputer_);
                 // This also tests getCollections()
                 expectedIAExceptionThrown = false;            
-                try {
-                    Set<PluralAttribute<Computer, ?, ?>> collections =
-                        entityComputer_.getDeclaredPluralAttributes();
-                    assertNotNull(collections);
-                    
-                } catch (IllegalArgumentException iae) {
-                    iae.printStackTrace();
-                    expectedIAExceptionThrown = true;            
-                }
-                assertFalse(expectedIAExceptionThrown);            
-
-            } catch (Exception e) {
-                e.printStackTrace();
+                Set<PluralAttribute<Computer, ?, ?>> collections =
+                    entityComputer_.getDeclaredPluralAttributes();
+                assertNotNull(collections);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3490,7 +3409,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
 
     // Requires test model expansion before enabling test
-    public void testManagedType_Interface_getDeclaredPluralAttributes_root_mappedSuperclass_Method() {
+    public void testManagedType_getDeclaredPluralAttributes_root_mappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3509,8 +3428,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // historicalComputers is defined as a plural declared attribute on a root mappedSuperclass
                 Set<PluralAttribute<Person, ?, ?>> collections = 
                     msPerson_.getDeclaredPluralAttributes();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3519,7 +3438,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getAttribute_on_Entity_Method() {
+    public void testManagedType_getAttribute_on_Entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3543,8 +3462,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());                
                 assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
                 assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3553,7 +3472,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getAttribute_on_MappedSuperclass_Method() {
+    public void testManagedType_getAttribute_on_MappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3578,8 +3497,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(entityComputer_, ((CollectionAttribute)anAttribute).getElementType());
                 assertEquals(CollectionType.COLLECTION, ((CollectionAttribute)anAttribute).getCollectionType());                
                 assertEquals(Computer.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3588,7 +3507,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getAttribute_doesNotExist_on_Entity_Method() {
+    public void testManagedType_getAttribute_doesNotExist_on_Entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3605,9 +3524,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 
                 // Test case
                 anAttribute = entityManufacturer_.getAttribute("does_not_exist");
-            } catch (Exception e) {
-                // We expect and exception
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                // We expect an exception
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3617,7 +3536,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getAttribute_doesNotExist_on_MappedSuperclass_Method() {
+    public void testManagedType_getAttribute_doesNotExist_on_MappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3632,9 +3551,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 
                 // Test case
                 anAttribute = msCorporation_.getAttribute("does_not_exist");
-            } catch (Exception e) {
+            } catch (IllegalArgumentException iae) {
                 // We expect and exception
-                //e.printStackTrace();
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3644,7 +3563,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredAttribute_Method() {
+    public void testManagedType_getDeclaredAttribute_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3668,8 +3587,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());                
                 assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
                 assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3678,7 +3597,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredAttribute_above_throws_iae_Method() {
+    public void testManagedType_getDeclaredAttribute_above_throws_iae_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3695,9 +3614,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // attribute is declared on a mappedsuperclass 
                 // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                
                 anAttribute = entityManufacturer_.getDeclaredAttribute("corporateComputers ");
-            } catch (Exception e) {
+            } catch (IllegalArgumentException iae) {
                 // We expect and exception
-                //e.printStackTrace();
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3707,7 +3626,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredAttribute_doesNotExist_Method() {
+    public void testManagedType_getDeclaredAttribute_doesNotExist_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3722,9 +3641,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // Test case
                 anAttribute = entityManufacturer_.getDeclaredAttribute("does_not_exist");
-            } catch (Exception e) {
+            } catch (IllegalArgumentException iae) {
                 // We expect and exception
-                //e.printStackTrace();
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3735,7 +3654,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
     
     
-    public void testManagedType_Interface_getSingularAttribute_BASIC_Method() {
+    public void testManagedType_getSingularAttribute_BASIC_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3756,8 +3675,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(((AttributeImpl)anAttribute).isPlural());
                 assertTrue(anAttribute instanceof SingularAttribute);
                 assertEquals(int.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3766,7 +3685,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getSingularAttribute_EMBEDDED_Method() {
+    public void testManagedType_getSingularAttribute_EMBEDDED_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3781,8 +3700,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityComputer_);
                 
                 // not implemented
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3791,7 +3710,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSingularAttribute_on_Entity_Method() {
+    public void testManagedType_getDeclaredSingularAttribute_on_Entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3810,8 +3729,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
                 assertFalse(((AttributeImpl)anAttribute).isPlural());
                 assertTrue(anAttribute instanceof SingularAttribute);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3820,7 +3739,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredSingularAttribute_on_MappedSuperclass_Method() {
+    public void testManagedType_getDeclaredSingularAttribute_on_MappedSuperclass_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3839,8 +3758,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(((AttributeImpl)anAttribute).isPlural());
                 assertTrue(anAttribute instanceof SingularAttribute);
                 assertEquals(String.class, anAttribute.getJavaType());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3849,7 +3768,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getCollection_Method() {
+    public void testManagedType_getCollection_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3871,8 +3790,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3881,7 +3800,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredCollection_Method() {
+    public void testManagedType_getDeclaredCollection_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3903,8 +3822,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3913,7 +3832,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getSet_Method() {
+    public void testManagedType_getSet_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3938,8 +3857,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     entityManufacturer_.getSet("computers", Computer.class);
                 assertNotNull("computers SetAttribute should not be null in Manufacturer_", computersAttribute);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3948,7 +3867,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredSet_Method() {
+    public void testManagedType_getDeclaredSet_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -3970,8 +3889,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3980,7 +3899,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getList_Method() {
+    public void testManagedType_getList_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4002,8 +3921,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4012,7 +3931,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getDeclaredList_Method() {
+    public void testManagedType_getDeclaredList_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4034,8 +3953,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4044,7 +3963,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_getMap_Method() {
+    public void testManagedType_getMap_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4066,8 +3985,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4076,7 +3995,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testManagedType_Interface_getDeclaredMap_Method() {
+    public void testManagedType_getDeclaredMap_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4098,8 +4017,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
                 assertNotNull(entityHardwareDesigner_);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4108,7 +4027,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testManagedType_Interface_variantCases() {
+    public void testManagedType_variantCases() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4210,8 +4129,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 }
                 assertTrue(count > 0);
                 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
@@ -4222,25 +4141,37 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testMapAttribute_Interface_getKeyJavaType_Method() {
+    /**
+     * This test will verify that MapAttribute instance have their elementType set correctly.
+     * The elementType corresponds to the 3rd V parameter on the class definition - which is the Map value.
+     * MapAttributeImpl<X, K, V> 
+     */
+    public void testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted() {
         if(!this.isJPA10()) {
-            EntityManager em = null;
             boolean exceptionThrown = false;
+            EntityManager em = null;            
             try {
                 em = privateTestSetup();
                 assertNotNull(em);
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-
-                // Actual Test Case
-                /**
-                 * Return the Java type of the map key.
-                 * @return Java key type
-                 */
-                //Class<K> getKeyJavaType();
-
-            } catch (Exception e) {
-                //e.printStackTrace();
+                
+                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer);                
+                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC8");
+                assertNotNull(hardwareDesignersMap);
+                assertTrue(hardwareDesignersMap.isCollection());
+                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
+                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC8");            
+                // Verify owning type
+                assertNotNull(manufactuerHardwareDesignersMap);
+                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
+                // Verify Map Key - should be PK of owning type
+                assertEquals(Integer.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
+                // Verify Map Value
+                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());                
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4249,7 +4180,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testMapAttribute_Interface_getKeyType_Method() {
+    public void testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4258,6 +4189,645 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(em);
                 Metamodel metamodel = em.getMetamodel();
                 assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                
+                EntityType<Manufacturer> entityManufacturer = metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer);                
+                Attribute hardwareDesignersMap = entityManufacturer.getAttribute("hardwareDesignersMapUC4");
+                assertNotNull(hardwareDesignersMap);
+                assertTrue(hardwareDesignersMap.isCollection());
+                assertTrue(hardwareDesignersMap instanceof MapAttributeImpl);
+                MapAttribute<? super Manufacturer, ?, ?> manufactuerHardwareDesignersMap = entityManufacturer.getMap("hardwareDesignersMapUC4");            
+                // Verify owning type
+                assertNotNull(manufactuerHardwareDesignersMap);
+                assertEquals(entityManufacturer, manufactuerHardwareDesignersMap.getDeclaringType());            
+                // Verify Map Key - should not be PK of owning type
+                assertEquals(String.class, manufactuerHardwareDesignersMap.getKeyJavaType());            
+                // Verify Map Value
+                assertEquals(HardwareDesigner.class, manufactuerHardwareDesignersMap.getElementType().getJavaType());
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyJavaType_UC0_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMap");
+                // verify the default key type is the not the Map key - rather that is is the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
+                //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
+                // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    public void testMapAttribute_getKeyJavaType_UC1a_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC1a");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 1a: Generics KV set, no @MapKey present, PK is singular field
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    public void testMapAttribute_getKeyJavaType_UC2_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC2");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 2: Generics KV set, @MapKey is present
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
+                //@MapKey(name="name")
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    public void testMapAttribute_getKeyJavaType_UC4_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC4");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 4: No Generics KV set, @MapKey is present
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
+                //@MapKey(name="name")
+                //private Map hardwareDesignersMapUC4;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    public void testMapAttribute_getKeyJavaType_UC7_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC7");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
+                // Same as UC1a - that is missing the @MapKey
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyJavaType_UC8_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC8");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
+                // Same as UC1a - that is missing the @MapKey name attribute
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    // See
+    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_86:_20090921:_Handle_Embeddable_Type_keyType_in_MapAttributeImpl_constructor
+    public void testMapAttribute_getKeyJavaType_UC9_DI86_Embeddable_IdClass_keyType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the Java type of the map key.
+                 * @return Java key type
+                 */
+                //Class<K> getKeyJavaType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("enclosureByBoardMapUC9");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
+                //@OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
+                //private Map<Board, Enclosure> enclosureByBoardMapUC9;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(Board.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.ENTITY, keyType.getPersistenceType());
+
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC0_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMap");
+                // verify the default key type is the not the Map key - rather that is is the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
+                //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
+                // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+                
+                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    public void testMapAttribute_getKeyType_UC1a_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC1a");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 1a: Generics KV set, no @MapKey present, PK is singular field
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC2_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC2");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 2: Generics KV set, @MapKey is present
+                //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
+                //@MapKey(name="name")
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC4_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC4");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 4: No Generics KV set, @MapKey is present
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
+                //@MapKey(name="name")
+                //private Map hardwareDesignersMapUC4;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+                
+                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC7_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC7");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
+                // Same as UC1a - that is missing the @MapKey
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+                
+                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC8_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("hardwareDesignersMapUC8");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC 8: Generics KV set, targetEntity not set, @MapKey is set but name attribute is defaulted
+                //@OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC8")
+                // Same as UC1a - that is missing the @MapKey name attribute
+                //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
+                Type keyType = anAttribute.getKeyType(); 
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
+                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
+                
+                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    // see
+    // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_86:_20090921:_Handle_Embeddable_Type_keyType_in_MapAttributeImpl_constructor
+    public void testMapAttribute_getKeyType_UC9_DI86_Embeddable_IdClass_keyType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Manufacturer, ?, ?> anAttribute = 
+                    entityManufacturer_.getMap("enclosureByBoardMapUC9");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
+                //@OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
+                //private Map<Board, Enclosure> enclosureByBoardMapUC9;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(Board.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+                assertTrue(keyType instanceof Type);
+                assertEquals(Type.PersistenceType.ENTITY, keyType.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
+    public void testMapAttribute_getKeyType_UC9_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+                assertNotNull(entityManufacturer_);
 
                 // Actual Test Case
                 /**
@@ -4267,8 +4837,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //Type<K> getKeyType();
                 
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4277,7 +4847,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testMappedSuperclassType_Interface() {
+    public void testMappedSuperclassType() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4290,8 +4860,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Actual Test Case
                 // Interface is empty - however we will test native functionality
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4300,7 +4870,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testMetamodel_Interface_managedType_Method() {
+    public void testMetamodel_managedType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4435,8 +5005,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //name=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[name-->CMP3_MM_MANUF.NAME]], 
                 //id=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[id-->CMP3_MM_MANUF.PERSON_ID]]
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4445,7 +5015,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testMetamodel_Interface_getEmbeddables_Method() {
+    public void testMetamodel_getEmbeddables_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4463,8 +5033,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  * @return the metamodel embeddable types
                  */
                 //java.util.Set<EmbeddableType<?>> getEmbeddables();            
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4473,7 +5043,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testMetamodel_Interface_getEntities_Method() {
+    public void testMetamodel_getEntities_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4493,8 +5063,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //java.util.Set<EntityType<?>> getEntities();
 
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4503,7 +5073,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testMetamodel_Interface_getManagedTypes_Method() {
+    public void testMetamodel_getManagedTypes_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4523,8 +5093,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //java.util.Set<ManagedType<?>> getManagedTypes();
 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4533,7 +5103,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testMetamodel_Interface_embeddable_Method() {
+    public void testMetamodel_embeddable_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4595,8 +5165,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 // reset state
                 expectedIAExceptionThrown = false;
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4606,7 +5176,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
     
     
-    public void testMetamodel_Interface_entity_Method() {
+    public void testMetamodel_entity_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4657,8 +5227,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 // reset exception flag
                 expectedIAExceptionThrown = false;
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4667,7 +5237,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testPluralAttribute_Interface_CollectionType_enum() {
+    public void testPluralAttribute_CollectionType_enum() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4679,8 +5249,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 // Actual Test Case
                 //public static enum CollectionType {COLLECTION, SET, LIST, MAP}
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4689,7 +5259,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testPluralAttribute_Interface_getCollectionType_Method() {
+    public void testPluralAttribute_getCollectionType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4707,8 +5277,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  * @return collection type
                  */
                 //CollectionType getCollectionType();
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4717,7 +5287,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testPluralAttribute_Interface_getElementType_Method() {
+    public void testPluralAttribute_getElementType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4735,8 +5305,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //Type<E> getElementType();
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4745,7 +5315,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSetAttribute_Interface() {
+    public void testSetAttribute() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -4758,8 +5328,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Actual Test Case
                 // The interface is empty - we will test native functionality
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4768,7 +5338,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testSingularAttribute_Interface_isOptional_Method() {
+    public void testSingularAttribute_isOptional_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4794,8 +5364,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //boolean isOptional();                
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4804,7 +5374,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSingularAttribute_Interface_isId_Method() {
+    public void testSingularAttribute_isId_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4831,8 +5401,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //boolean isId();
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4841,7 +5411,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSingularAttribute_Interface_isVersion_Method() {
+    public void testSingularAttribute_isVersion_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4867,8 +5437,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //public boolean isVersion() {
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4877,7 +5447,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSingularAttribute_Interface_getBindableType_Method() {
+    public void testSingularAttribute_getBindableType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4893,8 +5463,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  *  @return bindable type
                  */ 
                 //BindableType getBindableType();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4903,7 +5473,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSingularAttribute_Interface_getBindableJavaType_Method() {
+    public void testSingularAttribute_getBindableJavaType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4923,8 +5493,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //Class<T> getBindableJavaType();
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4933,7 +5503,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testSingularAttribute_Interface_getJavaType_Method() {
+    public void testSingularAttribute_getJavaType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4947,8 +5517,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  *  @return Java type
                  */
                 //public Class<T> getJavaType() {
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4957,7 +5527,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testSingularAttribute_Interface_getType_Method() {
+    public void testSingularAttribute_getType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean expectedIAExceptionThrown = false;
@@ -4978,8 +5548,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //public String toString() {
                 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4988,7 +5558,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
-    public void testType_Interface_PersistenceType_enum() {
+    public void testType_PersistenceType_enum() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -5007,8 +5577,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   */ 
                  //PersistenceType getPersistenceType();
 
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5017,7 +5587,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testType_Interface_getPersistenceType_Method() {
+    public void testType_getPersistenceType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -5041,8 +5611,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   *  @return Java type
                   */
                  //Class<X> getJavaType();
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5051,7 +5621,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
-    public void testType_Interface_getJavaType_Method() {
+    public void testType_getJavaType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -5068,8 +5638,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   *  @return Java type
                   */
                  //Class<X> getJavaType();
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5170,8 +5740,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
                 Set<Attribute<Processor, ?>> entityProcessorDeclaredAttributes = entityProcessor_.getDeclaredAttributes();
                 assertEquals(3, entityProcessorDeclaredAttributes.size());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5201,8 +5771,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(entityManufacturer_.getList("hardwareDesigners").toString());
                 assertNotNull(entityManufacturer_.getMap("hardwareDesignersMap").toString());
                 assertNotNull(entityManufacturer_.getSet("computers").toString());
-            } catch (Exception e) {
-                //e.printStackTrace();
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);

@@ -12,7 +12,9 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     11/05/2009-2.0  mobrien - DI 86: MapKey support when only generics
+ *         are used to determine the keyType for an IdClass that used an embeddable   
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -74,6 +76,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         // Override the elementType (V or Map value)
         // We need to set the keyType Type that represents the type of the Map key for this mapping
         ContainerPolicy policy = mapping.getContainerPolicy();
+        ClassDescriptor policyElementDescriptor = policy.getElementDescriptor();
         Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
         Type<?> aKeyType = null;
         // Default to Object class for any variant cases that are not handled
@@ -82,28 +85,23 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
             // No policy key type = IdClass (use CMP3Policy.pkClass)
             if(managedType.isIdentifiableType()) {
                 // Use the CMPPolicy on the element not the one on the managedType
-                if(policy.getElementDescriptor() != null && policy.getElementDescriptor().getCMPPolicy() != null) {
+                if(policyElementDescriptor != null && 
+                        policyElementDescriptor.getCMPPolicy() != null) {
                     javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
                 }
                 if(null == javaClass) {
                     // check for a @MapKeyClass annotation
                     if(policy.isMappedKeyMapPolicy()) {                            
-                        javaClass = getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted((MappedKeyMapContainerPolicy)policy);
+                        javaClass = getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(
+                                (MappedKeyMapContainerPolicy)policy);
                     }
                 }
-            } else {
-                // TODO: Handle EmbeddableType
-                javaClass = Object.class;
             }
         } else {            
             if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping
                 javaClass = ((ClassDescriptor)policyKeyType).getJavaClass();
             } else {
-                if(policy.isMappedKeyMapPolicy()) {                            
-                    javaClass = getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted((MappedKeyMapContainerPolicy)policy);
-                } else {                                        
-                    javaClass = (Class<?>)policyKeyType;
-                }
+                javaClass = (Class<?>)policyKeyType;
             }            
         }
         if(null == javaClass) {
@@ -120,7 +118,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
      * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
      * @return
      */
-    private Class getOwningPrimaryKeyTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
+    private Class getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
         Class<?> javaClass = null;;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
         RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();

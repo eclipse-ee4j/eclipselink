@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.MapKey;
@@ -87,6 +88,10 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC8")
     @MapKey // name attribute will default to "id"
     private Map<Integer, HardwareDesigner> hardwareDesignersMapUC8;
+    
+    // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
+    private Map<Board, Enclosure> enclosureByBoardMapUC9;
     
     // Define Uppercase Object non-java.lang Basic types
     //private Object anObject; // Not supported in JPA
@@ -391,4 +396,13 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         this.aBigDecimalObject = aBigDecimalObject;
     }
     
+    public Map<Board, Enclosure> getEnclosureByBoardMapUC9() {
+        return enclosureByBoardMapUC9;
+    }
+
+    public void setEnclosureByBoardMapUC9(Map<Board, Enclosure> enclosureByBoardMapUC9) {
+        this.enclosureByBoardMapUC9 = enclosureByBoardMapUC9;
+    }
+
+
 }

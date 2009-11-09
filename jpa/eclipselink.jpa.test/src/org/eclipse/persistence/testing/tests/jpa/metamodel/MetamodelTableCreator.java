@@ -79,6 +79,7 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC4_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC7_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable());        
+        addTableDefinition(buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable());        
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
         addTableDefinition(buildBOARD_PROCESSOR_JOINTable());
@@ -1460,6 +1461,35 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
+        table.addField(field2);        
+
+        return table;
+    }
+
+    public static TableDefinition buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_MANUF_MM_ENCL_MAPUC9");
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("MANUF_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field1);        
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("ENCLOSURE_MAP_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        field2.setForeignKeyFieldName("CMP3_MM_ENCLOSURE.PERSON_ID");
         table.addField(field2);        
 
         return table;

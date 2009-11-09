@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.invalidation;
 
-import java.util.Random;
-
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
