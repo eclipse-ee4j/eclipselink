@@ -190,6 +190,9 @@
         <delete failonerror="false">
             <fileset dir="${trunk.build.location}" includes="${eclipselink.jar.name}*"/>
         </delete>
+        <delete failonerror="false">
+            <fileset dir="${trunk.build.location}" includes="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}*"/>
+        </delete>
          <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
@@ -211,7 +214,6 @@
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
