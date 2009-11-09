@@ -67,6 +67,11 @@
                 <column table="CMP3_XML_SALARY"/>
                 <property name="attributeName" value="salary"/>
             </basic>
+            <basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+                <property name="attributeName" value="payScale"/>
+            </basic>
             <basic-collection name="responsibilities">
                 <value-column name="DESCRIPTION"/>
                 <convert>String2String</convert>

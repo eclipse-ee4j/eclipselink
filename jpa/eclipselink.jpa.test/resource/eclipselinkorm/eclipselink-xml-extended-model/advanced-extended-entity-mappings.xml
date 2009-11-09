@@ -38,6 +38,10 @@
             <basic name="salary">
                 <column table="CMP3_XML_SALARY"/>
             </basic>
+            <basic name="payScale">
+                <!--  Overridden in eclipselink-orm.xml -->
+                <column name="INVALID_PAY_SCALE"/>
+            </basic>
             <basic name="version">
                 <column name="VERSION"/>
             </basic>
