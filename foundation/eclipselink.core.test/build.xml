@@ -22,18 +22,20 @@
 *
 * Contributors:
 *     tware - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
-
 <!-- This ant project includes the following tasks:
-        - all (default) : compiles all tests, translates resources
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
         - compile : compiles all tests
+        - package : packages test jar
         - process.resource : translates login info in resources into run directory
         - test : runs LRG
         - test-lrg : runs LRG
         - test-srg : runs SRG
 
         It requires some configuration of the build.properties and test.properties to run.
-    -->
+-->
 <project name="eclipselink.core.test" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
@@ -62,7 +64,7 @@
     <property name="core_test.classes.dir"  value="${core_test.build.location}/${classes.dir}"/>
     <property name="core_test.report.dir"   value="${core_test.build.location}/${report.dir}"/>
     <property name="core_test.run.dir"      value="${core_test.build.location}/${run.dir}"/>
-        
+
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="build" depends="clean, compile, package" description="build EclipseLink jar"/>
 
@@ -106,7 +108,7 @@
         <property name="version.qualifier" value="qualifier"/>
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
-    
+
         <!-- Determine availability of compile dependencies   -->
         <available file="${core_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
         <available file="${core_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
