@@ -403,7 +403,7 @@ public class XMLProcessor {
         }
         // handle xml-bidirectional
         if (xmlAttribute.getXmlBidirectional() != null) {
-            oldProperty.setBackpointerPropertyName(xmlAttribute.getXmlBidirectional().getTargetAttribute());
+            oldProperty.setBidirectionalPropertyName(xmlAttribute.getXmlBidirectional().getTargetAttribute());
         }
         
         return oldProperty;
@@ -498,7 +498,7 @@ public class XMLProcessor {
         
         // handle xml-bidirectional
         if (xmlElement.getXmlBidirectional() != null) {
-            oldProperty.setBackpointerPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
+            oldProperty.setBidirectionalPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
         }
         
         return oldProperty;

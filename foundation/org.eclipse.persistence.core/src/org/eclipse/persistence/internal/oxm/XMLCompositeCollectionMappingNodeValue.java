@@ -185,7 +185,16 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         unmarshalRecord.addAttributeValue(this, objectValue, collection);
         
         if(xmlCompositeCollectionMapping.getContainerAccessor() != null) {
-            xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
+            if(xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy() == null) {
+                xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
+            } else {
+                Object backpointerContainer = xmlCompositeCollectionMapping.getContainerAccessor().getAttributeValueFromObject(objectValue);
+                if(backpointerContainer == null) {
+                    backpointerContainer = xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().containerInstance();
+                    xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, backpointerContainer);
+                }
+                xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
+            }
         }
         unmarshalRecord.setChildRecord(null);
 

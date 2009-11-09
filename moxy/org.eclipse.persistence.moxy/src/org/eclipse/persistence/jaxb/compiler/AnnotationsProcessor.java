@@ -1174,18 +1174,18 @@ public class AnnotationsProcessor {
         }
         if(helper.isAnnotationPresent(javaHasAnnotations, XmlContainerProperty.class)) {
             XmlContainerProperty container = (XmlContainerProperty)helper.getAnnotation(javaHasAnnotations, XmlContainerProperty.class);
-            property.setBackpointerPropertyName(container.value());
-            property.setBackpointerGetMethodName(container.getMethodName());
-            property.setBackpointerSetMethodName(container.setMethodName());
+            property.setBidirectionalPropertyName(container.value());
+            property.setBidirectionalPropertyGetMethodName(container.getMethodName());
+            property.setBidirectionalPropertySetMethodName(container.setMethodName());
         } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlBidirectional.class)) {
             XmlBidirectional backpointer = (XmlBidirectional)helper.getAnnotation(javaHasAnnotations, XmlBidirectional.class);
-            property.setBackpointerPropertyName(backpointer.targetAttribute());
+            property.setBidirectionalPropertyName(backpointer.targetAttribute());
             TypeInfo targetInfo = this.getTypeInfo().get(property.getActualType().getName());
             if(targetInfo != null && targetInfo.getXmlAccessType() == XmlAccessType.PROPERTY) {
                 String propName = property.getPropertyName();
                 propName = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
-                property.setBackpointerGetMethodName("get" + propName);
-                property.setBackpointerSetMethodName("set" + propName);
+                property.setBidirectionalPropertyGetMethodName("get" + propName);
+                property.setBidirectionalPropertySetMethodName("set" + propName);
             }
         }
         processXmlJavaTypeAdapter(property, info);

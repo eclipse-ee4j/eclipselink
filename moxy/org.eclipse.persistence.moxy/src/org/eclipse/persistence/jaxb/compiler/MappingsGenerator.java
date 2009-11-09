@@ -685,14 +685,28 @@ public class MappingsGenerator {
         	mapping.setReferenceClassName(referenceClassName);
         }
                 
-        if(property.getBackpointerPropertyName() != null) {
-            mapping.setContainerAttributeName(property.getBackpointerPropertyName());
-            if(!property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
-                mapping.setContainerGetMethodName(property.getBackpointerSetMethodName());
-                mapping.setContainerSetMethodName(property.getBackpointerSetMethodName());
+        if(property.getBidirectionalPropertyName() != null) {
+            mapping.setContainerAttributeName(property.getBidirectionalPropertyName());
+            JavaClass backPointerPropertyType = null;
+            JavaClass referenceClass = property.getActualType();
+            if(property.getBidirectionalPropertyGetMethodName() != null && property.getBidirectionalPropertySetMethodName() != null && !property.getBidirectionalPropertyGetMethodName().equals("") && !property.getBidirectionalPropertySetMethodName().equals("")) {
+                mapping.setContainerGetMethodName(property.getBidirectionalPropertySetMethodName());
+                mapping.setContainerSetMethodName(property.getBidirectionalPropertySetMethodName());
+                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getContainerGetMethodName(), new JavaClass[]{});
+                if(getMethod != null) {
+                    backPointerPropertyType = getMethod.getReturnType();
+                }
+            } else {
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBidirectionalPropertyName());
+                if(backpointerField != null) {
+                    backPointerPropertyType = backpointerField.getResolvedType();
+                }
+            }
+            if(isCollectionType(backPointerPropertyType)) {
+                mapping.getBidirectionalPolicy().setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        
+
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
@@ -1194,14 +1208,27 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setRequired(true);
         }
         
-        if(property.getBackpointerPropertyName() != null) {
-            mapping.setContainerAttributeName(property.getBackpointerPropertyName());
-            if(!property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
-                mapping.setContainerGetMethodName(property.getBackpointerSetMethodName());
-                mapping.setContainerSetMethodName(property.getBackpointerSetMethodName());
+        if(property.getBidirectionalPropertyName() != null) {
+            mapping.setContainerAttributeName(property.getBidirectionalPropertyName());
+            JavaClass backPointerPropertyType = null;
+            JavaClass referenceClass = property.getActualType();
+            if(property.getBidirectionalPropertyGetMethodName() != null && property.getBidirectionalPropertySetMethodName() != null && !property.getBidirectionalPropertyGetMethodName().equals("") && !property.getBidirectionalPropertySetMethodName().equals("")) {
+                mapping.setContainerGetMethodName(property.getBidirectionalPropertySetMethodName());
+                mapping.setContainerSetMethodName(property.getBidirectionalPropertySetMethodName());
+                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getContainerGetMethodName(), new JavaClass[]{});
+                if(getMethod != null) {
+                    backPointerPropertyType = getMethod.getReturnType();
+                }
+            } else {
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBidirectionalPropertyName());
+                if(backpointerField != null) {
+                    backPointerPropertyType = backpointerField.getResolvedType();
+                }
+            }
+            if(isCollectionType(backPointerPropertyType)) {
+                mapping.getBidirectionalPolicy().setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        
         descriptor.addMapping(mapping);
         
         return mapping;
@@ -1506,18 +1533,18 @@ public class MappingsGenerator {
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
         
-        if(property.getBackpointerPropertyName() != null) {
-            mapping.setBidirectionalTargetAttributeName(property.getBackpointerPropertyName());
+        if(property.getBidirectionalPropertyName() != null) {
+            mapping.setBidirectionalTargetAttributeName(property.getBidirectionalPropertyName());
             JavaClass backPointerPropertyType = null;
-            if(property.getBackpointerGetMethodName() != null && property.getBackpointerSetMethodName() != null && !property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
-                mapping.setBidirectionalTargetGetMethodName(property.getBackpointerSetMethodName());
-                mapping.setBidirectionalTargetSetMethodName(property.getBackpointerSetMethodName());
+            if(property.getBidirectionalPropertyGetMethodName() != null && property.getBidirectionalPropertySetMethodName() != null && !property.getBidirectionalPropertyGetMethodName().equals("") && !property.getBidirectionalPropertySetMethodName().equals("")) {
+                mapping.setBidirectionalTargetGetMethodName(property.getBidirectionalPropertySetMethodName());
+                mapping.setBidirectionalTargetSetMethodName(property.getBidirectionalPropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getBidirectionalTargetGetMethodName(), new JavaClass[]{});
                 if(getMethod != null) {
                     backPointerPropertyType = getMethod.getReturnType();
                 }
             } else {
-                JavaField backpointerField = referenceClass.getDeclaredField(property.getBackpointerPropertyName());
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBidirectionalPropertyName());
                 if(backpointerField != null) {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
@@ -1568,18 +1595,18 @@ public class MappingsGenerator {
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
-        if(property.getBackpointerPropertyName() != null) {
-            mapping.setBidirectionalTargetAttributeName(property.getBackpointerPropertyName());
+        if(property.getBidirectionalPropertyName() != null) {
+            mapping.setBidirectionalTargetAttributeName(property.getBidirectionalPropertyName());
             JavaClass backPointerPropertyType = null;
-            if(property.getBackpointerGetMethodName() != null && property.getBackpointerSetMethodName() != null && !property.getBackpointerGetMethodName().equals("") && !property.getBackpointerSetMethodName().equals("")) {
-                mapping.setBidirectionalTargetGetMethodName(property.getBackpointerSetMethodName());
-                mapping.setBidirectionalTargetSetMethodName(property.getBackpointerSetMethodName());
+            if(property.getBidirectionalPropertyGetMethodName() != null && property.getBidirectionalPropertySetMethodName() != null && !property.getBidirectionalPropertyGetMethodName().equals("") && !property.getBidirectionalPropertySetMethodName().equals("")) {
+                mapping.setBidirectionalTargetGetMethodName(property.getBidirectionalPropertySetMethodName());
+                mapping.setBidirectionalTargetSetMethodName(property.getBidirectionalPropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getBidirectionalTargetGetMethodName(), new JavaClass[]{});
                 if(getMethod != null) {
                     backPointerPropertyType = getMethod.getReturnType();
                 }
             } else {
-                JavaField backpointerField = referenceClass.getDeclaredField(property.getBackpointerPropertyName());
+                JavaField backpointerField = referenceClass.getDeclaredField(property.getBidirectionalPropertyName());
                 if(backpointerField != null) {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
@@ -2015,7 +2042,6 @@ public class MappingsGenerator {
         return generatedMapEntryClasses;
     }
 
-    @SuppressWarnings("unused")
     private class MapEntryGeneratedKey {
         String keyClassName;
 		String valueClassName;

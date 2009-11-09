@@ -418,7 +418,17 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             Object objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != getContainerAccessor()) {
-                getContainerAccessor().setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
+                Object currentObject = ((XMLRecord)row).getCurrentObject();
+                if(this.bidirectionalPolicy.getBidirectionalTargetContainerPolicy() == null) {
+                    getContainerAccessor().setAttributeValueInObject(objectToAdd, currentObject);
+                } else {
+                    Object backpointerContainer = getContainerAccessor().getAttributeValueFromObject(objectToAdd);
+                    if(backpointerContainer == null) {
+                        backpointerContainer = bidirectionalPolicy.getBidirectionalTargetContainerPolicy().containerInstance();
+                        getContainerAccessor().setAttributeValueInObject(objectToAdd, backpointerContainer);
+                    }
+                    bidirectionalPolicy.getBidirectionalTargetContainerPolicy().addInto(currentObject, backpointerContainer, executionSession);
+                }
             }
         }
         return result;
@@ -694,6 +704,14 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
+    }
+    
+    public BidirectionalPolicy getBidirectionalPolicy() {
+        return this.bidirectionalPolicy;
+    }
+    
+    public void setBidirectionalPolicy(BidirectionalPolicy policy) {
+        this.bidirectionalPolicy = policy;
     }
 
 }

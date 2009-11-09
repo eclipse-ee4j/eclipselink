@@ -71,10 +71,10 @@ public class Property {
     private boolean isXmlId = false;
     private boolean isXmlIdRef = false;
     
-    private String backpointerPropertyName;
-    private String backpointerGetMethodName;
-    private String backpointerSetMethodName;
-    private JavaClass backpointerContainerClass;
+    private String bidirectionalPropertyName;
+    private String bidirectionalPropertyGetMethodName;
+    private String bidirectionalPropertySetMethodName;
+    private JavaClass bidirectionalPropertyContainerClass;
     
     public Property() {}
 
@@ -457,36 +457,36 @@ public class Property {
         return this.isXmlList;
     }
     
-    public String getBackpointerPropertyName() {
-        return this.backpointerPropertyName;
+    public String getBidirectionalPropertyName() {
+        return this.bidirectionalPropertyName;
     }
     
-    public void setBackpointerPropertyName(String name) {
-        this.backpointerPropertyName = name;
+    public void setBidirectionalPropertyName(String name) {
+        this.bidirectionalPropertyName = name;
     }
     
-    public String getBackpointerGetMethodName() {
-        return this.backpointerGetMethodName;
+    public String getBidirectionalPropertyGetMethodName() {
+        return this.bidirectionalPropertyGetMethodName;
     }
     
-    public String getBackpointerSetMethodName() {
-        return this.backpointerSetMethodName;
+    public String getBidirectionalPropertySetMethodName() {
+        return this.bidirectionalPropertySetMethodName;
     }
     
-    public void setBackpointerGetMethodName(String methodName) {
-        this.backpointerGetMethodName = methodName;
+    public void setBidirectionalPropertyGetMethodName(String methodName) {
+        this.bidirectionalPropertyGetMethodName = methodName;
     }
     
-    public void setBackpointerSetMethodName(String methodName) {
-        this.backpointerSetMethodName = methodName;
+    public void setBidirectionalPropertySetMethodName(String methodName) {
+        this.bidirectionalPropertySetMethodName = methodName;
     }
     
-    public JavaClass getBackpointerContainerClass() {
-        return this.backpointerContainerClass;
+    public JavaClass getBidirectionalPropertyContainerClass() {
+        return this.bidirectionalPropertyContainerClass;
     }
     
-    public void setBackpointerContainerClass(JavaClass cls) {
-        this.backpointerContainerClass = cls;
+    public void setBidirectionalPropertyContainerClass(JavaClass cls) {
+        this.bidirectionalPropertyContainerClass = cls;
     }
     
     /**

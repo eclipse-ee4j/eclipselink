@@ -426,7 +426,16 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         Object attributeValue = valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
         setAttributeValueInObject(targetObject, attributeValue);
         if(null != getContainerAccessor()) {
-            getContainerAccessor().setAttributeValueInObject(attributeValue, targetObject);
+            if(this.bidirectionalPolicy.getBidirectionalTargetContainerPolicy() == null) {
+                getContainerAccessor().setAttributeValueInObject(attributeValue, targetObject);
+            } else {
+                Object backpointerContainer = getContainerAccessor().getAttributeValueFromObject(attributeValue);
+                if(backpointerContainer == null) {
+                    backpointerContainer = bidirectionalPolicy.getBidirectionalTargetContainerPolicy().containerInstance();
+                    getContainerAccessor().setAttributeValueInObject(attributeValue, backpointerContainer);
+                }
+                bidirectionalPolicy.getBidirectionalTargetContainerPolicy().addInto(targetObject, backpointerContainer, executionSession);
+            }
         }
         return attributeValue;
     }
@@ -732,7 +741,15 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }    
+    }  
+    
+    public BidirectionalPolicy getBidirectionalPolicy() {
+        return this.bidirectionalPolicy;
+    }
+    
+    public void setBidirectionalPolicy(BidirectionalPolicy policy) {
+        this.bidirectionalPolicy = policy;
+    }
     
     
 }
