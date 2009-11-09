@@ -81,7 +81,6 @@ public class TypeInfo {
     private boolean isPreBuilt;
     private boolean isPostBuilt;
     private boolean isSetXmlTransient;
-    private boolean isAnyAttributeProperty;
 
     private List<String> xmlSeeAlso;
     private XmlRootElement xmlRootElement;
@@ -91,6 +90,7 @@ public class TypeInfo {
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private String xmlCustomizer;
 
+    private String anyAttributePropertyName;
     private String anyElementPropertyName;
 
     /**
@@ -393,6 +393,16 @@ public class TypeInfo {
         this.factoryMethodParamTypes = paramTypes;
     }
 
+    /**
+     * Indicates if an xmlValueProperty is set on this TypeInfo, i.e.
+     * is non-null.
+     *  
+     * @return
+     */
+    public boolean isSetXmlValueProperty() {
+        return xmlValueProperty != null;
+    }
+
     public Property getXmlValueProperty() {
         return xmlValueProperty;
     }
@@ -654,24 +664,6 @@ public class TypeInfo {
     public void setPostBuilt(boolean isPostBuilt) {
         this.isPostBuilt = isPostBuilt;
     }
-
-    /**
-     * Return isAnyAttributeProperty.
-     * 
-     * @return
-     */
-    public boolean isAnyAttributeProperty() {
-        return isAnyAttributeProperty;
-    }
-
-    /**
-     * Set the isAnyAttributeProperty.
-     * 
-     * @param isAnyAttributeProperty
-     */
-    public void setAnyAttributeProperty(boolean isAnyAttributeProperty) {
-        this.isAnyAttributeProperty = isAnyAttributeProperty;
-    }
     
     /**
      * Indicates if an XmlJavaTypeAdapter has been set, i.e. the
@@ -750,5 +742,32 @@ public class TypeInfo {
      */
     public void setAnyElementPropertyName(String anyElementPropertyName) {
         this.anyElementPropertyName = anyElementPropertyName;
+    }
+
+    /**
+     * Indicates if the name of the XmlAnyAttribute property has been set.
+     * 
+     * @return
+     */
+    public boolean isSetAnyAttributePropertyName() {
+        return getAnyAttributePropertyName() != null;
+    }
+
+    /**
+     * Return the name of the XmlAnyAttribute property, if one is set.
+     * 
+     * @return
+     */
+    public String getAnyAttributePropertyName() {
+        return anyAttributePropertyName;
+    }
+
+    /**
+     * Set the name of the XmlAnyAttribute property
+     * 
+     * @param anyAttributePropertyName
+     */
+    public void setAnyAttributePropertyName(String anyAttributePropertyName) {
+        this.anyAttributePropertyName = anyAttributePropertyName;
     }
 }

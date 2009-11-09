@@ -8,16 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - October 27/2009 - 2.0 - Initial implementation
+ * dmccann - November 05/2009 - 2.0 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute;
+
+import javax.xml.namespace.QName;
 
 @javax.xml.bind.annotation.XmlRootElement
 public class Employee {
     public int a;
     public String b;
     
-    //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomAdapter.class)
-    //@javax.xml.bind.annotation.XmlAnyElement(lax=false, value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomHandler.class)
-    public java.util.List<Object> stuff;
+    public java.util.Map<QName, Object> stuff;
+
+    @javax.xml.bind.annotation.XmlAnyAttribute
+    public java.util.Map<QName, Object> stuffs;
 }

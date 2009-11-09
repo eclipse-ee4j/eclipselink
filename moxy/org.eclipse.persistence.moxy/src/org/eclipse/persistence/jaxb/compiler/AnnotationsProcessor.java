@@ -354,9 +354,14 @@ public class AnnotationsProcessor {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
             for (Property property : tInfo.getPropertyList()) {
-                // if there is an XmlValue, only XmlAttributes are allowed
-                if (tInfo.getXmlValueProperty() != null && (!property.equals(tInfo.getXmlValueProperty()) && !property.isAttribute())) {
-                    throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
+                // only one XmlValue is allowed per class, and if there is one only XmlAttributes are allowed
+                if (tInfo.isSetXmlValueProperty()) {
+                    if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
+                        throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
+                    }
+                    if (!property.isXmlValue() && !property.isAttribute()) {
+                        throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
+                    }
                 }
                 // if the property is an XmlIDREF, the target must have an XmlID set
                 if (property.isXmlIdRef()) {
@@ -369,6 +374,14 @@ public class AnnotationsProcessor {
                 // there can only be one XmlID per type info 
                 if (property.isXmlId() && tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
                     throw JAXBException.idAlreadySet(property.getPropertyName(), tInfo.getIDProperty().getPropertyName(), jClass.getName());
+                }
+                // there can only be one XmlAnyAttribute per type info
+                if (property.isAnyAttribute() && tInfo.isSetAnyAttributePropertyName() && !(tInfo.getAnyAttributePropertyName().equals(property.getPropertyName()))) {
+                    throw JAXBException.multipleAnyAttributeMapping(jClass.getName());
+                }
+                // there can only be one XmlAnyElement per type info
+                if (property.isAny() && tInfo.isSetAnyElementPropertyName() && !(tInfo.getAnyElementPropertyName().equals(property.getPropertyName()))) {
+                    throw JAXBException.xmlAnyElementAlreadySet(property.getPropertyName(), tInfo.getAnyElementPropertyName(), jClass.getName());
                 }
             }
         }
@@ -1017,10 +1030,13 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElements.class)) {
             property = buildChoiceProperty(info, cls, javaHasAnnotations, propertyName, ptype);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {                	
-            property = new AnyProperty(helper);
             XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
-            ((AnyProperty) property).setDomHandlerClassName(anyElement.value().getName());
-            ((AnyProperty) property).setLax(anyElement.lax());
+            property = new Property(helper);
+            property.setIsAny(true);
+            if (anyElement.value() != null) {
+                property.setDomHandlerClassName(anyElement.value().getName());
+            }
+            property.setLax(anyElement.lax());
             info.setAnyElementPropertyName(propertyName);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
             property = buildReferenceProperty(info, cls, javaHasAnnotations, propertyName, ptype);
@@ -1221,14 +1237,14 @@ public class AnnotationsProcessor {
         }
 
         if (helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
-            if (info.isAnyAttributeProperty()) {
+            if (info.isSetAnyAttributePropertyName()) {
                 throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
             if (!property.getType().getName().equals("java.util.Map")) {
                 throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
             property.setIsAnyAttribute(true);
-            info.setAnyAttributeProperty(true);
+            info.setAnyAttributePropertyName(property.getPropertyName());
         }               
         
         // Make sure XmlElementWrapper annotation is on a collection or array
@@ -1254,10 +1270,7 @@ public class AnnotationsProcessor {
         }
 
         if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
-            if (info.getXmlValueProperty() != null && info.getXmlValueProperty() != property) {
-                // only one XmlValue annotation is allowed per class
-                throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), info.getXmlValueProperty().getPropertyName(), cls.getRawName());
-            }
+            property.setIsXmlValue(true);
             info.setXmlValueProperty(property);
         }
     }

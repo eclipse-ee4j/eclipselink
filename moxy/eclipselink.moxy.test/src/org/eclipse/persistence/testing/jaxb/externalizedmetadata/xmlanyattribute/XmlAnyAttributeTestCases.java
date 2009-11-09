@@ -10,7 +10,7 @@
  * Contributors:
  * dmccann - October 26/2009 - 2.0 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,11 +33,11 @@ import org.w3c.dom.Element;
  * Tests XmlAnyElement via eclipselink-oxm.xml
  *
  */
-public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
+public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
     private boolean shouldGenerateSchema = true;
     private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/";
+    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute";
+    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/";
     public static final String RETURN_STRING = "Giggity";
     
     /**
@@ -45,7 +45,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * 
      * @param name
      */
-    public XmlAnyElementTestCases(String name) {
+    public XmlAnyAttributeTestCases(String name) {
         super(name);
         outputResolver = new MySchemaOutputResolver();
     }
@@ -58,56 +58,18 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
             compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
             shouldGenerateSchema = false;
         }
-    }    
+    }
     
     /**
-     * Tests that the DomHandler is set properly.  This will make use of a DomHandler that
-     * returns the string "Giggity" in the getElement() method.  This will allow us to
-     * detect that the handler was used during unmarshal.
+     * Tests @XmlAnyAttribute override via eclipselink-oxm.xml.  This test will also
+     * verify that an @XmlAnyAttribute in code can be overridden with 
+     * xml-any-element in XML, while a second property can be set as an 
+     * xml-any-attribute in XML.  Two xml-any-attributes would cause an
+     * exception if the overrides don't work properly.   
      * 
      * Positive test.
      */
-    public void testDomHandler() {
-        String metadataFile = PATH + "eclipselink-oxm-dom-handler.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
-        // test unmarshal
-        Employee emp = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            String src = PATH + "employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-            assertNotNull("The Employee object is null after unmarshal.", emp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred unmarshalling the document.");
-        }
-
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff.0' is null.", emp.stuff.get(0));
-        assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be [" + RETURN_STRING + "] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0).equals(RETURN_STRING));
-    }
-
-    /**
-     * Tests @XmlAnyElement override via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlAnyElement() {
+    public void testXmlAnyAttribute() {
         doSchemaGeneration();
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
@@ -121,7 +83,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * processed correctly.
      * 
      * Positive test.
-     */
+     *
     public void testXmlAnyElementUnmarshalThenMarshal() {
         doSchemaGeneration();
 
@@ -173,7 +135,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * known, i.e. can be eagerly marshalled to.
      * 
      * Positive test.
-     */
+     *
     public void testLaxTrue() {
         String metadataFile = PATH + "eclipselink-oxm-lax.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
@@ -214,7 +176,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * unmarshalled to an Element, since lax is false.
      * 
      * Positive test.
-     */
+     *
     public void testLaxFalse() {
         String metadataFile = PATH + "eclipselink-oxm.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
@@ -250,9 +212,6 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be an [Element] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof Element);
     }
 
-    /**
-     * This test can be enabled when we have support for XmlAdapter with XmlAnyElement
-     */
     public void xtestXmlAdapter() {
         try {
             javax.xml.bind.JAXBContext jCtx = javax.xml.bind.JAXBContext.newInstance(new Class[] {Employee.class});
@@ -280,5 +239,5 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

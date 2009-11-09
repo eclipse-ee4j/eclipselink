@@ -259,7 +259,7 @@ public class XMLProcessor {
      */
     private Property processJavaAttribute(TypeInfo typeInfo, JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo, JavaType javaType) {
         if (javaAttribute instanceof XmlAnyAttribute) {
-            return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty);
+            return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlAnyElement) {
             return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlAttribute) {
@@ -295,7 +295,32 @@ public class XMLProcessor {
         return oldProperty;
     }
 
-    private Property processXmlAnyAttribute(XmlAnyAttribute xmlAnyAttribute, Property oldProperty) {
+    /**
+     * Handle xml-any-attribute.
+     * 
+     * @param xmlAnyAttribute
+     * @param oldProperty
+     * @param tInfo
+     * @param javaType
+     * @return
+     */
+    private Property processXmlAnyAttribute(XmlAnyAttribute xmlAnyAttribute, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
+        // if oldProperty is already an Any (via @XmlAnyAttribute annotation) there's nothing to do
+        if (oldProperty.isAnyAttribute()) {
+            return oldProperty;
+        }
+        
+        // type has to be a java.util.Map
+        if (!oldProperty.getType().getName().equals("java.util.Map")) {
+            throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
+        }
+        
+        // reset any existing values
+        resetProperty(oldProperty, tInfo);
+        
+        oldProperty.setIsAnyAttribute(true);
+        tInfo.setAnyAttributePropertyName(oldProperty.getPropertyName());
+
         return oldProperty;
     }
 
@@ -305,50 +330,26 @@ public class XMLProcessor {
      * 
      * @param xmlAnyElement
      * @param oldProperty
+     * @param tInfo
+     * @param javaType
      * @return
      */
     private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
-        // if there was an @XmlAnyElement annotation in the class, override the values
-        if (oldProperty.isAny()) {
-            AnyProperty anyProp = (AnyProperty) oldProperty;
-            anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
-            anyProp.setLax(xmlAnyElement.isLax());
-
-            tInfo.setMixed(xmlAnyElement.isXmlMixed());
-            anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
-            
-            if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
-                anyProp.setXmlJavaTypeAdapter(xmlAnyElement.getXmlJavaTypeAdapter());
-            } else if (oldProperty.isSetXmlJavaTypeAdapter()) {
-                anyProp.setXmlJavaTypeAdapter(null);
-            }
-            
-            return anyProp;
-        }
-
-        // if oldProperty is not an Any property and the TypeInfo has one set, throw an error
-        if (tInfo.isSetAnyElementPropertyName()) {
-            throw JAXBException.xmlAnyElementAlreadySet(oldProperty.getPropertyName(), tInfo.getAnyElementPropertyName(), javaType.getName());
-        }
+        // reset any existing values
+        resetProperty(oldProperty, tInfo);
         
-        // need to create a new AnyProperty and copy over existing values
-        AnyProperty anyProp = new AnyProperty(aProcessor.getHelper());
-        anyProp.setPropertyName(oldProperty.getPropertyName());
-        anyProp.setElement(oldProperty.getElement());
-        anyProp.setType(oldProperty.getType());
-        anyProp.setSchemaName(oldProperty.getSchemaName());
-        
-        anyProp.setDomHandlerClassName(xmlAnyElement.getDomHandler());
-        anyProp.setLax(xmlAnyElement.isLax());
+        // set xml-any-element specific properties
+        oldProperty.setIsAny(true);
+        oldProperty.setDomHandlerClassName(xmlAnyElement.getDomHandler());
+        oldProperty.setLax(xmlAnyElement.isLax());
+        oldProperty.setMixedContent(xmlAnyElement.isXmlMixed());
+        oldProperty.setXmlJavaTypeAdapter(xmlAnyElement.getXmlJavaTypeAdapter());
 
+        // update TypeInfo
         tInfo.setMixed(xmlAnyElement.isXmlMixed());
-        anyProp.setMixedContent(xmlAnyElement.isXmlMixed());
+        tInfo.setAnyElementPropertyName(oldProperty.getPropertyName());
         
-        if (xmlAnyElement.getXmlJavaTypeAdapter() != null) {
-            anyProp.setXmlJavaTypeAdapter(xmlAnyElement.getXmlJavaTypeAdapter());
-        }
-        
-        return anyProp;
+        return oldProperty;
     }
 
     /**
@@ -360,6 +361,9 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+        // reset any existing values
+        resetProperty(oldProperty, typeInfo);
+        
         // handle xml-id
         if (xmlAttribute.isXmlId()) {
             typeInfo.setIDProperty(oldProperty);
@@ -417,6 +421,9 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+        // reset any existing values
+        resetProperty(oldProperty, typeInfo);
+        
         // handle xml-id
         if (xmlElement.isXmlId()) {
             typeInfo.setIDProperty(oldProperty);
@@ -522,10 +529,10 @@ public class XMLProcessor {
     }
 
     private Property processXmlValue(XmlValue xmlValue, Property oldProperty, TypeInfo info, JavaType javaType) {
-        if (info.getXmlValueProperty() != null && info.getXmlValueProperty() != oldProperty) {
-            // only one XmlValue is allowed per class
-            throw JAXBException.xmlValueAlreadySet(oldProperty.getPropertyName(), info.getXmlValueProperty().getPropertyName(), javaType.getName());
-        }
+        // reset any existing values
+        resetProperty(oldProperty, info);
+        
+        oldProperty.setIsXmlValue(true);
         info.setXmlValueProperty(oldProperty);
         return oldProperty;
     }
@@ -659,5 +666,76 @@ public class XMLProcessor {
     		return true;
     	}
     	return false;
+    }
+    
+    /**
+     * Convenience method for resetting a number of properties on a
+     * given property.
+     * 
+     * @param oldProperty
+     * @return
+     */
+    private Property resetProperty(Property oldProperty, TypeInfo tInfo) {
+        oldProperty.setIsAttribute(false);
+        oldProperty.setHasXmlElementType(false);
+        oldProperty.setIsRequired(false);
+        oldProperty.setIsXmlList(false);
+        oldProperty.setXmlJavaTypeAdapter(null);
+        oldProperty.setBidirectionalPropertyName(null);
+        oldProperty.setDefaultValue(null);
+        oldProperty.setDomHandlerClassName(null);
+        oldProperty.setIsMtomAttachment(false);
+        oldProperty.setIsSwaAttachmentRef(false);
+        oldProperty.setIsXmlId(false);
+        oldProperty.setIsXmlIdRef(false);
+        oldProperty.setXmlElementWrapper(null);
+        oldProperty.setLax(false);
+        oldProperty.setNillable(false);
+        oldProperty.setMixedContent(false);
+        oldProperty.setMimeType(null);
+        oldProperty.setTransient(false);
+        unsetXmlAnyAttribute(oldProperty, tInfo);
+        unsetXmlAnyElement(oldProperty, tInfo);
+        unsetXmlValue(oldProperty, tInfo);
+        return oldProperty;
+    }
+    
+    /**
+     * Ensure that a given property is not set as an xml-any-attribute.
+     *  
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlAnyAttribute(Property oldProperty, TypeInfo tInfo) {
+        oldProperty.setIsAnyAttribute(false);
+        if (tInfo.isSetAnyAttributePropertyName() && tInfo.getAnyAttributePropertyName().equals(oldProperty.getPropertyName())) {
+            tInfo.setAnyAttributePropertyName(null);
+        }
+    }
+    
+    /**
+     * Ensure that a given property is not set as an xml-any-element.
+     *  
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlAnyElement(Property oldProperty, TypeInfo tInfo) {
+        oldProperty.setIsAny(false);
+        if (tInfo.isSetAnyElementPropertyName() && tInfo.getAnyElementPropertyName().equals(oldProperty.getPropertyName())) {
+            tInfo.setAnyElementPropertyName(null);
+        }
+    }
+    
+    /**
+     * Ensure that a given property is not set as an xml-value.
+     *  
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlValue(Property oldProperty, TypeInfo tInfo) {
+        oldProperty.setIsXmlValue(false);
+        if (tInfo.isSetXmlValueProperty() && tInfo.getXmlValueProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
+            tInfo.setXmlValueProperty(null);
+        }
     }
 }

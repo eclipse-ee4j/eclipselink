@@ -53,6 +53,7 @@ public class Property {
     private JavaClass genericType;
     private boolean isAttribute = false;
     private boolean isAnyAttribute = false;
+    private boolean isAnyElement = false;
     private Helper helper;
     private String getMethodName;
     private String setMethodName;
@@ -76,6 +77,10 @@ public class Property {
     private String bidirectionalPropertySetMethodName;
     private JavaClass bidirectionalPropertyContainerClass;
     
+    // XmlAnyElement specific attributes
+    private boolean lax;
+    private String domHandlerClassName;
+  
     public Property() {}
 
     public Property(Helper helper) {
@@ -248,9 +253,24 @@ public class Property {
     public boolean isChoice() {
         return false;
     }
-    
+
+    /**
+     * Returns indicator for XmlAnyElement
+     * 
+     * @return
+     */
     public boolean isAny() {
-    	return false;
+    	return isAnyElement;
+    }
+    
+    /**
+     * Set indicator for XmlAnyElement.
+     * 
+     * @param isAnyElement
+     * @return
+     */
+    public void setIsAny(boolean isAnyElement) {
+        this.isAnyElement = isAnyElement;
     }
     
     public boolean isReference() {
@@ -524,5 +544,45 @@ public class Property {
      */
     public void setIsXmlIdRef(boolean isXmlIdRef) {
         this.isXmlIdRef = isXmlIdRef;
+    }
+
+    // XmlAnyElement specific methods
+    
+    /**
+     * Used with XmlAnyElement.
+     * 
+     * @return
+     */
+    public boolean isLax() {
+        return lax;
+    }
+
+    /**
+     * Used with XmlAnyElement.
+     * 
+     * @param b
+     */
+    public void setLax(boolean b) {
+        lax = b;
+    }
+    
+    /**
+     * Return the DomHandler class name.
+     * Used with XmlAnyElement.
+     * 
+     * @return
+     */
+    public String getDomHandlerClassName() {
+        return domHandlerClassName;
+    }
+
+    /**
+     * Set the DomHandler class name.
+     * Used with XmlAnyElement.
+     * 
+     * @param domHandlerClassName
+     */
+    public void setDomHandlerClassName(String domHandlerClassName) {
+        this.domHandlerClassName = domHandlerClassName;
     }
 }

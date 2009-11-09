@@ -487,9 +487,10 @@ public class SchemaGenerator {
                             parentType.getOrderedAttributes().add(attribute);
                         }
                     }
-                } else if (helper.isAnnotationPresent(next.getElement(), XmlAnyAttribute.class)) {
+                } else if (next.isAnyAttribute()) {
                     AnyAttribute anyAttribute = new AnyAttribute();
-                    anyAttribute.setProcessContents(AnyAttribute.LAX);
+                    anyAttribute.setProcessContents("skip");
+                    anyAttribute.setNamespace("##other");
                     if (type.getSimpleContent() != null) {
                         SimpleContent content = type.getSimpleContent();
                         content.getRestriction().setAnyAttribute(anyAttribute);
@@ -511,8 +512,7 @@ public class SchemaGenerator {
                 } else if (next.isAny()) {
                 	Any any = new Any();
                 	any.setNamespace("##other");
-                	AnyProperty anyProp = (AnyProperty)next;
-                	if (anyProp.isLax()) {
+                	if (next.isLax()) {
                 		any.setProcessContents(Any.LAX);
                 	} else {
                 	    any.setProcessContents("skip");
@@ -855,7 +855,7 @@ public class SchemaGenerator {
             if (xmlValueProperty != null && xmlValueProperty == prop) {
                 foundValue = true;
                 valueField = prop;
-            } else if (!prop.isAttribute() && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !helper.isAnnotationPresent(prop.getElement(), XmlAnyAttribute.class)) {
+            } else if (!prop.isAttribute() && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !prop.isAnyAttribute()) {
                 foundNonAttribute = true;
             }
         }

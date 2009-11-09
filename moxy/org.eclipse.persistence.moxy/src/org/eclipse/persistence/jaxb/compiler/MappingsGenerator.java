@@ -383,7 +383,7 @@ public class MappingsGenerator {
         } else if(property.isReference()) {
             generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);            
         } else if (isMapType(property)){
-        	if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+        	if(property.isAnyAttribute()) {
         		generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         	}else{
         		generateMapMapping(property, descriptor, namespaceInfo);
@@ -602,10 +602,9 @@ public class MappingsGenerator {
         boolean isLax = false;
         String domHandlerClassName = null;
         
-        if (property instanceof AnyProperty) {
-            AnyProperty prop = (AnyProperty)property;
-            isLax = prop.isLax();
-            domHandlerClassName = prop.getDomHandlerClassName();
+        if (property.isAny()) {
+            isLax = property.isLax();
+            domHandlerClassName = property.getDomHandlerClassName();
         }
         
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
@@ -1726,7 +1725,7 @@ public class MappingsGenerator {
             if (helper.isAnnotationPresent(prop.getElement(), XmlValue.class)) {
                 foundValue = true;
                 valueField = prop;
-            } else if (!helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class) && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !helper.isAnnotationPresent(prop.getElement(), XmlAnyAttribute.class)) {
+            } else if (!helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class) && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !prop.isAnyAttribute()) {
                 foundNonAttribute = true;
             }
         }
