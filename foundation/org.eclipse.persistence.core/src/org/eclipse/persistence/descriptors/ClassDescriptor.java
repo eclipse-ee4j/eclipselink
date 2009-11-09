@@ -222,6 +222,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** stores a list of mappings that require preDelete as a group prior to the delete individually */
     protected List<DatabaseMapping> preDeleteMappings;
     
+    /** stores fields that are written by Map key mappings so they can be checked for multiple writable mappings */
+    protected transient List<DatabaseField> additionalWritableMapKeyFields;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -257,6 +260,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
         this.cascadeLockingPolicies = NonSynchronizedVector.newInstance();
+        
+        this.additionalWritableMapKeyFields = new ArrayList(2);
     }
 
     /**
@@ -1675,6 +1680,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return additionalTablePrimaryKeyFields;
     }
 
+    /**
+     * INTERNAL:
+     * Return a list of fields that are written by map keys
+     * Used to determine if there is a multiple writable mappings issue
+     * @return
+     */
+    public List<DatabaseField> getAdditionalWritableMapKeyFields() {
+        return additionalWritableMapKeyFields;
+    }
+    
     /**
      * PUBLIC:
      * Get the alias

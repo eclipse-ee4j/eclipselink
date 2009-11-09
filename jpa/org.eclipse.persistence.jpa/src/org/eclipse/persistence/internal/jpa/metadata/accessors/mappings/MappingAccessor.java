@@ -1248,6 +1248,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // overrides. Set the field before applying a converter.
         DatabaseField mapKeyField = getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.MAP_KEY_COLUMN);
         keyMapping.setField(mapKeyField);
+        keyMapping.setIsReadOnly(mapKeyField.isReadOnly());
         
         // Process a convert key or jpa converter for the map key if specified.
         processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());

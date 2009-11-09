@@ -122,6 +122,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param session
      */
     public Map getKeyMappingDataForWriteQuery(Object object, AbstractSession session){
+        if (((DatabaseMapping)keyMapping).isReadOnly()){
+            return null;
+        }
         Object keyValue = ((Map.Entry)object).getKey();
         return keyMapping.extractIdentityFieldsForQuery(keyValue, session);
     }
@@ -142,6 +145,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @see MappedKeyMapContainerPolicy
      */
     public void addFieldsForMapKey(AbstractRecord joinRow){
+        if (((DatabaseMapping)keyMapping).isReadOnly()){
+            return;
+        }
         keyMapping.addFieldsForMapKey(joinRow);
     }
     
@@ -643,6 +649,32 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
 
     /**
      * INTERNAL:
+     * This method is used to check the key mapping to ensure that it does not write to
+     * a field that is written by another mapping.  There are two possibilities:
+     * 
+     * 1. The conflicting mapping has already been processed.  In that case, we add MultipleWritableMappings
+     * exception to the integrity checker right away
+     * 2. There are no conflicting mappings.  In that case, we store the list of fields that this mapping
+     * has processed on the descriptor for the target so they can be checked as the descriptor initializes
+     * @param session
+     */
+    public void processAdditionalWritableMapKeyFields(AbstractSession session){
+        if (!((DatabaseMapping)getKeyMapping()).isReadOnly()){
+            CollectionMapping mapping = (CollectionMapping)valueMapping;
+            Iterator<DatabaseField> i = getIdentityFieldsForMapKey().iterator();
+            while (i.hasNext()){
+                DatabaseField field = i.next();
+                if (mapping.getReferenceDescriptor().getObjectBuilder().getMappingsByField().containsKey(field) || mapping.getReferenceDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {  
+                    session.getIntegrityChecker().handleError(DescriptorException.multipleWriteMappingsForField(field.toString(), mapping));
+                } else {
+                    mapping.getReferenceDescriptor().getAdditionalWritableMapKeyFields().add(field);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Add the key and value from provided association to the deleted objects list on the commit manager.
      * 
      * @see ContainerPolicy
@@ -872,7 +904,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @return
      */
     public boolean shouldUpdateForeignKeysPostInsert(){
-        return true;
+        return !((DatabaseMapping)keyMapping).isReadOnly();
     }
 
     /**

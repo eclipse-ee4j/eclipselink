@@ -31,6 +31,7 @@ public class EntityMapValue {
         definition.addField("ID", java.math.BigDecimal.class, 15);
         definition.addField("HOLDER_ID", Integer.class, 15);
         definition.addField("MAP_KEY", Integer.class, 15);
+        definition.addField("MAP_KEY_1", Integer.class, 15);
         definition.addField("KEY_ID", Integer.class, 15);
         definition.addForeignKeyConstraint("ENT_MAP_VALUE_U1M_AGG_ENT_HOLDER_FK", "HOLDER_ID", "ID", "AGG_ENT_U1M_MAP_HOLDER");
         definition.addForeignKeyConstraint("ENT_MAP_VALUE_U1M_DIR_ENT_HOLDER_FK", "HOLDER_ID", "ID", "DIR_ENT_U1M_MAP_HOLDER");

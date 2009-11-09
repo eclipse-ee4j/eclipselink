@@ -2298,6 +2298,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!mapping.isLazy())) {
                 getEagerMappings().add(mapping);
             }
+            
+            if (mapping.getReferenceDescriptor() != null && mapping.isCollectionMapping()){
+                // only process writable mappings on the defining class in the case of inheritance
+                if (getDescriptor() == mapping.getDescriptor()){
+                    ((ContainerMapping)mapping).getContainerPolicy().processAdditionalWritableMapKeyFields(session);
+                }
+            }
+            
             // Cache relationship mappings.
             if (!mapping.isDirectToFieldMapping()) {
                 getRelationshipMappings().add(mapping);
@@ -2337,7 +2345,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             getMappingsByField().put(field, mapping);
                         }
                     } else { // Not an embeddable mapping
-                        if (getMappingsByField().containsKey(field)) {  
+                        if (getMappingsByField().containsKey(field) || mapping.getDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {  
                             session.getIntegrityChecker().handleError(DescriptorException.multipleWriteMappingsForField(field.toString(), mapping));
                         } else {
                             getMappingsByField().put(field, mapping);

@@ -1274,6 +1274,16 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * This method is used to check the key mapping to ensure that it does not write to
+     * a field that is written by another mapping.
+     * This method will be overridden by subclasses that deal MapKeys
+     * 
+     */
+    public void processAdditionalWritableMapKeyFields(AbstractSession session){
+    }
+    
+    /**
+     * INTERNAL:
      * Propagate the postDeleteEvent to any additional objects the query is aware of
      * This method will be overridden by subclasses that deal MapKeys
      */

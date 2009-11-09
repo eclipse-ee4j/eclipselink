@@ -369,7 +369,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
-        keyMapping.addFieldNameTranslation("ENT_MAP_VALUE.MAP_KEY", "key->DIRECT");
+        keyMapping.addFieldNameTranslation("ENT_MAP_VALUE.MAP_KEY_1", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
         
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);

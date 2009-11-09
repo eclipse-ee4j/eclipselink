@@ -76,6 +76,8 @@ import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -4243,7 +4245,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             EntityManager em = factory.createEntityManager();
             em.close();
         } catch (javax.persistence.PersistenceException e)  {
-            // Ignore - it's expected exception type
+            ArrayList expectedExceptions = new ArrayList();
+            expectedExceptions.add(48);
+            expectedExceptions.add(48);
+            IntegrityException integrityException = (IntegrityException)e.getCause();
+            Iterator i = integrityException.getIntegrityChecker().getCaughtExceptions().iterator();
+            while (i.hasNext()){
+                expectedExceptions.remove((Object)((EclipseLinkException)i.next()).getErrorCode());
+            }
+            if (expectedExceptions.size() > 0){
+                fail("Not all expected exceptions were caught");
+            }
         } finally {
             factory.close();
         }

@@ -1917,7 +1917,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 } else {
                     container = containerPolicy.containerInstance(containerPolicy.sizeFor(attributeValue));
                     for (Object iterator = containerPolicy.iteratorFor(attributeValue); containerPolicy.hasNext(iterator);) {
-                        containerPolicy.addInto(containerPolicy.next(iterator, uow), container, uow);
+                        containerPolicy.addInto(containerPolicy.nextEntry(iterator, uow), container, uow);
                     }
                 }
                 setRealAttributeValueInObject(clone, container);
