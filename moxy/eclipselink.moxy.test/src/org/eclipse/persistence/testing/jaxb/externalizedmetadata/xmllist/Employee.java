@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlList;
 
 public class Employee {
     public java.util.List<String> data;
-    @XmlList
     public String[] stringData;
     
     public boolean equals(Object obj) {

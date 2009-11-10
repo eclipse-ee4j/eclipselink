@@ -67,7 +67,7 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      * 
      * Positive test.
      */
-    public void xtestXmlList() {
+    public void testXmlList() {
         if (shouldGenerateSchema) {
             doSchemaGeneration();
         }
@@ -84,7 +84,7 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      * 
      * Negative test.
      */
-    public void xtestXmlListInvalid() {
+    public void testXmlListInvalid() {
         String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -96,10 +96,10 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        MySchemaOutputResolver msor = new MySchemaOutputResolver();
         try {
             JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
-            jaxbContext.generateSchema(outputResolver);
+            jaxbContext.generateSchema(msor);
         } catch (Exception ex) {
             exception = true;
         }
@@ -119,11 +119,11 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        outputResolver = generateSchema(CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver msor = generateSchema(CONTEXT_PATH, iStream, 1);
 
         // validate schema
         String controlSchema = PATH + "schema-no-stringdata.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        compareSchemas(msor.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 
     /**
@@ -132,7 +132,7 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      * 
      * Positive test.
      */
-    public void xtestXmlListMarshal() {
+    public void testXmlListMarshal() {
         if (shouldGenerateSchema) {
             doSchemaGeneration();
         }
@@ -172,7 +172,7 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      * 
      * Positive test.
      */
-    public void xtestXmlListUnmarshal() {
+    public void testXmlListUnmarshal() {
         if (shouldGenerateSchema) {
             doSchemaGeneration();
         }
@@ -196,5 +196,35 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
         ctrlEmp.data = data;
         
         assertTrue("The unmarshalled Employee did not match the control Employee object.", ctrlEmp.equals(emp));
+    }
+    
+    /**
+     * Tests xml-list use with xml-attribute via eclipselink-oxm.xml.
+     * 
+     * Positive test.
+     */
+    public void testXmlListOnXmlAttribute() {
+        String metadataFile = PATH + "eclipselink-oxm-data-attribute.xml";
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+
+        MySchemaOutputResolver msor = generateSchema(CONTEXT_PATH, iStream, 1);
+
+        /*
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
+
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        */
+        
+        // validate schema
+        String controlSchema = PATH + "schema-data-attribute.xsd";
+        compareSchemas(msor.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        String src = PATH + "employee-data-attribute.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, msor);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 }
