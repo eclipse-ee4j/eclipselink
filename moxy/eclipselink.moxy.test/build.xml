@@ -103,7 +103,6 @@
     </path>
     <path id="oxm.compile.path.against.jar">
         <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
-        <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
