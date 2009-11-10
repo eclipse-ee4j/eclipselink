@@ -221,6 +221,25 @@ public class MetamodelImpl implements Metamodel, Serializable {
 
     /**
      * INTERNAL:
+     * This function is a wrapper around a Map.put(K,V)<br>
+     * We return a boolean that is unused but provides a way to add a 
+     * breakpoint for the false condition.
+     * @param javaClassKey
+     * @param typeValue
+     * @return
+     */
+    private boolean putType(Class javaClassKey, TypeImpl typeValue) {
+        boolean isValid = true;
+        // DI99: Check for an invalid key without reporting it (a non-Fail-Fast pattern)
+        if(null == javaClassKey) {
+            isValid = false;
+        }
+        this.types.put(javaClassKey, typeValue);
+        return isValid;
+    }
+    
+    /**
+     * INTERNAL:
      * Return a Type representation of a java Class for use by the Metamodel Attributes.<p>
      * If a type does not yet exist - one will be created and added to the Metamodel - this usually only for Basic types.<p>
      * This function will handle all Metamodel defined and core java classes.
@@ -238,10 +257,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 // check for a cached type right after we synchronize
                 type = this.types.get(javaClass);
                 // If a type is not found (not created during metamodel.initialize() - it is usually a Basic type
-                if(null == type) {                    
+                if(null == type) {
                     type = new BasicTypeImpl<X>(javaClass);
                     // add the type to the types map keyed on Java class
-                    this.types.put(javaClass, type);
+                    putType(javaClass, type);
                 }
             } // synchronized end
         }        
@@ -299,7 +318,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
         for (Object descriptor : this.getSession().getDescriptors().values()) {
             // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (RelationalDescriptor)descriptor);
-            this.types.put(managedType.getJavaType(), managedType);
+            putType(managedType.getJavaType(), managedType);
             this.managedTypes.put(managedType.getJavaType(), managedType);
             
             if (managedType.getPersistenceType().equals(PersistenceType.ENTITY)) {
@@ -315,7 +334,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_54:_20090803:_Metamodel.type.28Clazz.29_should_differentiate_between_null_and_BasicType
         }
         
-        // TODO: verify that all entities or'd with embeddables matches the number of types
+        // Future: verify that all entities or'd with embeddables matches the number of types
         
         // Handle all MAPPED_SUPERCLASS types
         // Get mapped superclass types (separate from descriptors on the session from the native project (not a regular descriptor)
@@ -326,7 +345,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             this.mappedSuperclasses.add(mappedSuperclassType);
 
             // Add this MappedSuperclass to the Collection of Types
-            this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
+            putType(mappedSuperclassType.getJavaType(), mappedSuperclassType);
             // Add the MappedSuperclass to the Map of ManagedTypes
             // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
             this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);

@@ -15,12 +15,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.InheritanceType.JOINED;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -51,6 +53,17 @@ public class GalacticPosition implements java.io.Serializable {
     @Version
     @Column(name="GALACTIC_VERSION")
     private int version;
+    
+    // The M:1 side is the owning side for "positionUC12"
+    @ManyToOne(fetch=EAGER)
+/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_GALACTIC", 
+            joinColumns = @JoinColumn(name="GALACTIC_ID"), 
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
+    private Computer computerUC12;
+
+    // Unidirectional ManyToOne becomes a ManyToMany (no mappedBy on the inverse side)
+    @ManyToOne(fetch=EAGER)
+    private Computer computerUniUC13;
     
     // Unidirectional OneToOne
     // There is no get/set method on purpose - for testing

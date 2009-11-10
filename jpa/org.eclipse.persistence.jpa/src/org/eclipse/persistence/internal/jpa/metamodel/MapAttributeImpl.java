@@ -14,7 +14,12 @@
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *     11/05/2009-2.0  mobrien - DI 86: MapKey support when only generics
- *         are used to determine the keyType for an IdClass that used an embeddable   
+ *         are used to determine the keyType for an IdClass that used an embeddable 
+ *     11/10/2009-2.0  mobrien - DI 98: Use keyMapping on MappedKeyMappedContainerPolicy
+ *         keep workaround for bug# 294765 for Basic keyType when MapKey annotation not specified.
+ *         keep workaround for bug# 294811 for Entity, Embeddable, Transient keyType support 
+ *           when MapKey name attribute not specified (MapContainerPolicy) 
+ *         add BasicMap support via DirectMapContainerPolicy         
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -60,56 +65,156 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
      * @param managedType
      * @param mapping
      */
-    protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
+    protected MapAttributeImpl(IdentifiableTypeImpl<X> managedType, CollectionMapping mapping) {
         this(managedType, mapping, false);
     }
 
     /**
      * INTERNAL:
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
+     * Create a new MapAttribute instance.
+     * The elementType field is instantiated in the superclass.
+     * The keyType field is instantiated in this constructor by using one of the following
+     * A) MapContainerPolicy by consulting the keyField or PK class
+     * B) MappedKeyMapContainerPolicy by using the mapKeyTargetType on the keyMapping or the attributeClassification on the attributeAccessor 
+     * @param managedType - the owning type (EmbeddableTypes do not support mappings)
+     * @param mapping - contains the mapping policy
+     * @param validationEnabled - report errors in the metamodel
      */
-    protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
-        // Set the managedType (X or owning Type)
+    protected MapAttributeImpl(IdentifiableTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+        // Set the managedType (X or owning Type) - Note: EmbeddableTypes are only supported as Map keys here
         super(managedType, mapping, validationEnabled);
-        // Override the elementType (V or Map value)
         // We need to set the keyType Type that represents the type of the Map key for this mapping
         ContainerPolicy policy = mapping.getContainerPolicy();
-        ClassDescriptor policyElementDescriptor = policy.getElementDescriptor();
-        Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
-        Type<?> aKeyType = null;
-        // Default to Object class for any variant cases that are not handled
         Class<?> javaClass = null;
-        if(null == policyKeyType) {
-            // No policy key type = IdClass (use CMP3Policy.pkClass)
-            if(managedType.isIdentifiableType()) {
-                // Use the CMPPolicy on the element not the one on the managedType
-                if(policyElementDescriptor != null && 
-                        policyElementDescriptor.getCMPPolicy() != null) {
-                    javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
+        MapKeyMapping keyMapping = null; 
+        ClassDescriptor policyElementDescriptor = policy.getElementDescriptor();
+        Object policyKeyType = null;
+  
+        /**
+         * Note: the (at) sign for annotations has been replaced by the & sign for javadoc processing.
+         * 
+         * We have the following policy structure and behavior
+         * ContainerPolicy (A)
+         *    +=== InterfaceContainerPolicy (A)
+         *             +=== DirectMapContainerPolicy
+         *             +=== MapContainerPolicy (use keyField or PK class)
+         *                      +=== MappedKeyMapContainerPolicy (use keyMapping.mapKeyTargetType or attributeClassification) 
+         *   
+         *   Use Case segmentation for keyType 
+                A) MapContainerPolicy 
+                    A1) keyField set (lazy loaded) 
+                        UC2 - name attribute defines mapKey, generics are not required and are secondary 
+                            &OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2") 
+                            &MapKey(name="name") 
+                            private Map<String, HardwareDesigner> hardwareDesignersMapUC2; 
+                        UC4 - name attribute defines mapKey, generics are not required 
+                            &OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4") 
+                            &MapKey(name="name") 
+                            private Map hardwareDesignersMapUC4; 
+                        UC8 - mapKey defined via generics  
+                            &OneToMany(cascade=ALL, mappedBy="mappedEmployerUC8") 
+                            &MapKey // name attribute will default to "id" 
+                            private Map<Integer, HardwareDesigner> hardwareDesignersMapUC8; 
+                    A2) Use mapPolicy.elementDescriptor.cmppolicy.pkClass (since KeyField == null) 
+                        UC10 - mapKey defined via generics and is a java class defined as an IdClass on the element(value) class - here Enclosure 
+                            &OneToMany(mappedBy="computer", cascade=ALL, fetch=EAGER) 
+                            &MapKey // key defaults to an instance of the composite pk class 
+                            private Map<EnclosureIdClassPK, Enclosure> enclosures;
+                            &Entity &IdClass(EnclosureIdClassPK.class) public class Enclosure {}
+                        UC11 - or (get keyClass from mapping if the Id is a get() function) 
+                            TBD - use reflection 
+                B) MappedKeyMapContainerPolicy 
+                    B1) mapKeyTargetType set on the keyMapping - normal processing 
+                        UC9 - mapKey defined by generics in the absence of a MapKey annotation
+                            &OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9") 
+                            private Map<Board, Enclosure> enclosureByBoardMapUC9; 
+                        UC13 - mapKey defined by generics in the absence of a MapKey name attribute (unidirectional M:1 becomes M:M)                        
+                           &MapKey // on Computer inverse
+                           private Map<EmbeddedPK, GalacticPosition> position;
+                           &ManyToOne(fetch=EAGER) // on GalacticPosition owner
+                           private Computer computer;
+                    B2) - secondary processing for Basic (DirectToField) mappings
+                    Use AttributeClassification (since keyMapping.attributeAccessor.attributeClass == null) 
+                        UC1a - mapKey defined by generics in the absence of a MapKey annotation
+                            &OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a") 
+                            private Map<String, HardwareDesigner> hardwareDesignersMapUC1a; 
+                        UC7 - mapKey defined by generics in the absence of a MapKey annotation 
+                            &OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7") 
+                            private Map<String, HardwareDesigner> hardwareDesignersMapUC7; 
+         */        
+        // Step 1: We check via the ContainerPolicy interface for a mapPolicy for the keyMapping (covers MappedKeyMapContainerPolicy and its superclass MapContainerPolicy
+        if(policy.isMapPolicy() || policy.isDirectMapPolicy()) {
+            // check for Either a generic Map (MapContainerPolicy) or specific MappedKeyMapContainerPolicy subclass
+            if(policy.isMappedKeyMapPolicy()) {
+                // See UC9
+                // The cast below is unavoidable because getKeyMapping() is not overridden from the MapContainerPolicy superclass
+                keyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
+                policyKeyType = keyMapping.getMapKeyTargetType();
+                /**
+                 * If the policyKeyType is not found - it is because the keyMapping is a Basic (DirectToFieldMapping implements MapKeyMapping).
+                 * Normally we get the pk type via the referenceClass on a OneToOneMapping for example.
+                 * However, in this case MappedKeyMapContainerPolicy.keyMapping.attributeAccessor.attributeField is null - 
+                 * we workaround this by getting the key from the attributeClassification instead.
+                 * See UC1a, UC7
+                 */
+                if(null == policyKeyType) {
+                    // This workaround for bug# 294765 should be moved up into AbstractDirectMapping.getMapKeyTargetType
+                    policyKeyType = ((DatabaseMapping)keyMapping).getAttributeClassification();
                 }
-                if(null == javaClass) {
-                    // check for a @MapKeyClass annotation
-                    if(policy.isMappedKeyMapPolicy()) {                            
-                        javaClass = getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(
-                                (MappedKeyMapContainerPolicy)policy);
-                    }
+            } else {
+                /**
+                 * Assume we have a MapContainerPolicy general superclass with a lazy-loaded keyType 
+                 *   or a DirectMapContainerPolicy using a &BasicMap
+                 * See UC2, UC4, UC8, UC13 (unidirectional ManyToOne becomes ManyToMany)
+                 * returns a Class<?> or descriptor (via AggregateObjectMapping) or null in 2 cases -
+                 *   1 - if the ContainerPolicy does not support maps
+                 *   2 - If the keyField is null (we handle this below by consulting the CMPPolicy)
+                 */
+                policyKeyType = policy.getKeyType(); 
+            }
+        }
+        
+        /**
+         * Step 2: We determine the java class from the policyKeyType (class or ClassDecriptor) 
+         * We also perform alternate keyType lookup for the case where 
+         * the name attribute is not specified in a MapKey annotation where 
+         * the map key is one of the following (via the MapContainerPolicy superclass of MappedKeyMapContainerPolicy)
+         * - map key is an Entity with an IdClass
+         * - map key is Java class that is defined as the IdClass of an Entity (above)
+         */
+        if(null == policyKeyType) {
+            // The keyType will be null on a MapContainerPolicy when the keyField is null - usually a composite key
+            // Use the PK of the element - not the one on the managedType
+            // Case: @MapKey private Map<K,V> // no name column specified
+            if(policyElementDescriptor != null && policyElementDescriptor.getCMPPolicy() != null) {
+                // See UC9, UC10, UC12(embeddable), UC13
+                // This workaround for bug# 294811 should be moved up into the MapKeyMapping.getMapKeyTargetType() interface method
+                javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
+            }
+            // Pending reproduction case: @MapKey private Map<K,V> // no name column specified and the PK is defined by a method
+            if(null == javaClass) {
+                if(policy.isMappedKeyMapPolicy()) {
+                    // See UC10, UC11
+                    javaClass = getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(
+                            (MappedKeyMapContainerPolicy)policy);
                 }
             }
-        } else {            
+        } else {
+            // Process the policyKeyType normally
             if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping
                 javaClass = ((ClassDescriptor)policyKeyType).getJavaClass();
             } else {
                 javaClass = (Class<?>)policyKeyType;
             }            
         }
+ 
+        // Optional: catch any holes in our keyType logic (8 hits in clover coverage)
         if(null == javaClass) {
             javaClass = Object.class;
         }                                
         
-        aKeyType = getMetamodel().getType(javaClass);
-        this.keyType = (Type<K>) aKeyType;
+        // Step 3: We wrap the java type in a Metamodel Type instance or retrieve an existing Type
+        this.keyType = (Type<K>) getMetamodel().getType(javaClass);
     }
 
     /**

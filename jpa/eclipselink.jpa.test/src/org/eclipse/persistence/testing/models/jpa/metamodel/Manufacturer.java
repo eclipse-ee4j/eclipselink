@@ -65,10 +65,12 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     // UC 1a: Generics KV set, no @MapKey present, PK is singular field
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
+    
     // UC 2: Generics KV set, @MapKey is present
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
     @MapKey(name="name")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
+    
     // UC 4: No Generics KV set, @MapKey is present
     @OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
     @MapKey(name="name")
@@ -92,6 +94,8 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
     @OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
     private Map<Board, Enclosure> enclosureByBoardMapUC9;
+    
+    // UC12:  mapKey defined via generics and is a java class defined as an IdClass on the element(value) class 
     
     // Define Uppercase Object non-java.lang Basic types
     //private Object anObject; // Not supported in JPA

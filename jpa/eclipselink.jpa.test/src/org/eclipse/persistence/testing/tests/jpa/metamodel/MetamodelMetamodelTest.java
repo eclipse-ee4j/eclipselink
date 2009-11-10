@@ -110,7 +110,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 102;//100;//94;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 108;//102;//100;//94;
     public static final int METAMODEL_ALL_TYPES = 40;//37;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
     
@@ -3222,8 +3222,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -3290,8 +3290,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());                
@@ -4241,8 +4241,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4283,8 +4283,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4412,8 +4412,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Same as UC1a - that is missing the @MapKey
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4455,8 +4455,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Same as UC1a - that is missing the @MapKey name attribute
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4542,8 +4542,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4585,8 +4585,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
@@ -4674,8 +4674,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                
-                
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
                 exceptionThrown = true;
@@ -4713,13 +4711,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Same as UC1a - that is missing the @MapKey
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
+                assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                
-                
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
                 exceptionThrown = true;

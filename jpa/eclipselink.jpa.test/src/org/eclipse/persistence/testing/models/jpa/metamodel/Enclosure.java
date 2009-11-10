@@ -48,7 +48,33 @@ public class Enclosure implements java.io.Serializable {
             joinColumns = @JoinColumn(name="ENCLOSURE_MAP_ID"), 
             inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
     private Manufacturer mappedManufacturerUC9;
+  
+/*    @Id
+    @GeneratedValue(strategy=TABLE, generator="ENCLOSURE_MM_TABLE_GENERATOR")
+    @TableGenerator(
+        name="ENCLOSURE_MM_TABLE_GENERATOR", 
+        table="CMP3_MM_ENCLOSURE_SEQ", 
+        pkColumnName="SEQ_MM_NAME", 
+        valueColumnName="SEQ_MM_COUNT",
+        pkColumnValue="CUST_MM_SEQ"
+    )
+    @Column(name="ENCLOSURE_ID")    
+    private Integer id;
+*/
     
+    //@Version
+    //@Column(name="ENCLOSURE_VERSION")
+    //private int version;
+    
+    // The M:1 side is the owning side for "enclosureUC10"
+    @ManyToOne(fetch=EAGER)
+/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
+            joinColumns = @JoinColumn(name="ENCLOSURE_ID"), 
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
+    private Computer computerUC10;
+    
+    public Enclosure() {}
+
     public EnclosureIdClassPK buildPK(){
         EnclosureIdClassPK pk = new EnclosureIdClassPK();
         pk.setLength(this.getLength());
@@ -98,33 +124,6 @@ public class Enclosure implements java.io.Serializable {
         this.width = width;
     }
     
-    
-/*    @Id
-    @GeneratedValue(strategy=TABLE, generator="ENCLOSURE_MM_TABLE_GENERATOR")
-    @TableGenerator(
-        name="ENCLOSURE_MM_TABLE_GENERATOR", 
-        table="CMP3_MM_ENCLOSURE_SEQ", 
-        pkColumnName="SEQ_MM_NAME", 
-        valueColumnName="SEQ_MM_COUNT",
-        pkColumnValue="CUST_MM_SEQ"
-    )
-    @Column(name="ENCLOSURE_ID")    
-    private Integer id;
-*/
-    
-    //@Version
-    //@Column(name="ENCLOSURE_VERSION")
-    //private int version;
-    
-    // The M:1 side is the owning side for "circuitBoards"
-    @ManyToOne(fetch=EAGER)
-/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
-            joinColumns = @JoinColumn(name="ENCLOSURE_ID"), 
-            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
-    private Computer computer;
-    
-    public Enclosure() {}
-
 /*    public int getVersion() { 
         return version; 
     }
@@ -143,11 +142,11 @@ public class Enclosure implements java.io.Serializable {
 */
 
     public Computer getComputer() {
-        return computer;
+        return computerUC10;
     }
 
     public void setComputer(Computer computer) {
-        this.computer = computer;
+        this.computerUC10 = computer;
     }
 
     

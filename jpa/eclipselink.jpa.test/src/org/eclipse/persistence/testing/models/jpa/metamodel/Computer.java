@@ -86,14 +86,27 @@ public class Computer implements java.io.Serializable {
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
     private Collection<Board> circuitBoards;
 
-    @OneToMany(mappedBy="computer", cascade=ALL, fetch=EAGER)
+    // UC10:  mapKey defined via generics and is a java class defined as an IdClass on the element(value) class
+    @OneToMany(mappedBy="computerUC10", cascade=ALL, fetch=EAGER)
     @MapKey // key defaults to an instance of the composite pk class
     //@MapKey(name="name")
-    private Map<EnclosureIdClassPK, Enclosure> enclosures;
+    private Map<EnclosureIdClassPK, Enclosure> enclosuresUC10;
 
+    // UC12:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
+    @OneToMany(mappedBy="computerUC12", cascade=ALL, fetch=EAGER)
+    @MapKey // key defaults to an instance of the composite pk class
+    //@MapKey(name="primaryKey")
+    private Map<EmbeddedPK, GalacticPosition> positionUC12;
+
+    // UC13:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
+    // However, here we make the owning OneToMany - unidirectional and an effective ManyToMany
+    //@OneToMany(mappedBy="computerUniUC13", cascade=ALL, fetch=EAGER)
+    @MapKey // key defaults to an instance of the composite pk class
+    private Map<EmbeddedPK, GalacticPosition> positionUniUC13;
+    
     public void addEnclosure(Enclosure enclosure) {
         enclosure.setComputer(this);
-        enclosures.put(enclosure.buildPK(), enclosure);
+        enclosuresUC10.put(enclosure.buildPK(), enclosure);
     }
     
     public Computer() {

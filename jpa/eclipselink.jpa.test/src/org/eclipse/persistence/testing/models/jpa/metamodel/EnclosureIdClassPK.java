@@ -19,6 +19,29 @@ public class EnclosureIdClassPK {
     private String width;
     private Integer mappedManufacturerUC9;
 
+    public EnclosureIdClassPK() {}
+
+    @Override
+    public boolean equals(Object anEnclosureIdClassPK) {
+        if (anEnclosureIdClassPK.getClass() != EnclosureIdClassPK.class) {
+            return false;
+        }        
+        EnclosureIdClassPK enclosureIdClassPK = (EnclosureIdClassPK) anEnclosureIdClassPK;        
+        return (enclosureIdClassPK.getLength().equals(this.getLength()) && 
+                enclosureIdClassPK.getWidth().equals(this.getWidth()) &&
+                enclosureIdClassPK.getType().equals(this.getType()) &&
+                enclosureIdClassPK.getMappedManufacturerUC9().equals(this.mappedManufacturerUC9));
+    }
+
+    @Override
+    public int hashCode() {
+        if (null != type && null != length && null != width && null != mappedManufacturerUC9) {
+            return 9232 * type.hashCode() * length.hashCode() * width.hashCode() * mappedManufacturerUC9.hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
+    
     public String getType() {
         return type;
     }
@@ -51,27 +74,5 @@ public class EnclosureIdClassPK {
     public void setMappedManufacturerUC9(Integer mappedManufacturerUC9) {
         this.mappedManufacturerUC9 = mappedManufacturerUC9;
     }
-
-    public EnclosureIdClassPK() {}
-
-    @Override
-    public boolean equals(Object anEnclosureIdClassPK) {
-        if (anEnclosureIdClassPK.getClass() != EnclosureIdClassPK.class) {
-            return false;
-        }        
-        EnclosureIdClassPK enclosureIdClassPK = (EnclosureIdClassPK) anEnclosureIdClassPK;        
-        return (enclosureIdClassPK.getLength().equals(this.getLength()) && 
-                enclosureIdClassPK.getWidth().equals(this.getWidth()) &&
-                enclosureIdClassPK.getType().equals(this.getType()) &&
-                enclosureIdClassPK.getMappedManufacturerUC9().equals(this.mappedManufacturerUC9));
-    }
-
-    @Override
-    public int hashCode() {
-        if (null != type && null != length && null != width && null != mappedManufacturerUC9) {
-            return 9232 * type.hashCode() * length.hashCode() * width.hashCode() * mappedManufacturerUC9.hashCode();
-        } else {
-            return super.hashCode();
-        }
-    }
+    
 }
