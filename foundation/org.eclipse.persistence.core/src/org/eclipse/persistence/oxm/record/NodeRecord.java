@@ -12,10 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -54,7 +52,7 @@ import org.xml.sax.SAXException;
  */
 public class NodeRecord extends MarshalRecord {
     private Document document;
-    private List<Node> nodes;
+    private Node node;
 
     /**
      * INTERNAL:
@@ -64,6 +62,7 @@ public class NodeRecord extends MarshalRecord {
         super();
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         document = xmlPlatform.createDocument();
+        node = document;
     }
 
     /**
@@ -118,26 +117,16 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      * Create a record with the element.
      */
-    public NodeRecord(Element element) {
-        this();
-        setDOM(element);
-    }
-
-    /**
-     * INTERNAL:
-     * Create a record with the element.
-     */
-    public NodeRecord(Document document) {
-        this();
-        setDOM(document.getDocumentElement());
+    public NodeRecord(Node node) {
+        setDOM(node);
     }
 
     public String getLocalName() {
-        return getNode().getLocalName();
+        return node.getLocalName();
     }
 
     public String getNamespaceURI() {
-        return getNode().getNamespaceURI();
+        return node.getNamespaceURI();
     }
 
     public void clear() {
@@ -152,11 +141,7 @@ public class NodeRecord extends MarshalRecord {
      * @return The marshal target.
      */
     public Element getDOM() {
-        return (Element)nodes.get(nodes.size() - 1);
-    }
-
-    private Node getNode() {
-        return nodes.get(nodes.size() - 1);
+        return (Element) node;
     }
 
     /**
@@ -164,12 +149,13 @@ public class NodeRecord extends MarshalRecord {
      * @param writer The marshal target.
      */
     public void setDOM(Node dom) {
-        nodes = new ArrayList();
-        if (dom.getNodeType() == Node.DOCUMENT_NODE) {
+        int nodeType = dom.getNodeType();
+        if (Node.DOCUMENT_NODE == nodeType) {
             document = (Document)dom;
-        } else if ((dom.getNodeType() == Node.ELEMENT_NODE) || (dom.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
+            node = dom;
+        } else if (Node.ELEMENT_NODE == nodeType || Node.DOCUMENT_FRAGMENT_NODE == nodeType) {
             document = dom.getOwnerDocument();
-            nodes.add(dom);
+            node = dom;
             getNamespaceResolver().setDOM(dom);
         } else {
             throw XMLMarshalException.marshalException(null);
@@ -221,21 +207,14 @@ public class NodeRecord extends MarshalRecord {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         Element element = document.createElementNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName());
-        try {
-            getNode().appendChild(element);
-            nodes.add(element);
-        } catch (Exception e) {
-            document.appendChild(element);
-            setDOM(element);
-            nodes.add(element);
-        }
+        node = node.appendChild(element);
     }
 
     /**
@@ -243,14 +222,14 @@ public class NodeRecord extends MarshalRecord {
      */
     public void element(XPathFragment frag) {
         Element element = document.createElementNS(frag.getNamespaceURI(), frag.getShortName());
-        getNode().appendChild(element);
+        node.appendChild(element);
     }
 
     /**
      * INTERNAL:
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
-        if (getNode().getNodeType() == Node.ELEMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
             getDOM().setAttributeNS(xPathFragment.getNamespaceURI(), xPathFragment.getShortName(), value);
         }
     }
@@ -259,7 +238,7 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
-        if (getNode().getNodeType() == Node.ELEMENT_NODE) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
             getDOM().setAttributeNS(namespaceURI, qName, value);
         }
     }
@@ -274,7 +253,7 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        nodes.remove(nodes.size() - 1);
+        node = node.getParentNode();
     }
 
     /**
@@ -282,13 +261,13 @@ public class NodeRecord extends MarshalRecord {
      */
     public void characters(String value) {
         if (value.length() > 0) {
-            getNode().appendChild(document.createTextNode(value));
+            node.appendChild(document.createTextNode(value));
         }
     }
-    
+
     public void cdata(String value) {
         CDATASection cdata = document.createCDATASection(value);
-        getNode().appendChild(cdata);
+        node.appendChild(cdata);
     }
 
     /**
@@ -311,32 +290,33 @@ public class NodeRecord extends MarshalRecord {
             String prefix = localName.substring(0, colonIndex);
             String uri = namespaceResolver.resolveNamespacePrefix(prefix);
             if (uri == null) {
-                //throw an exception if the prefix is not found in the namespaceresolver 
+                //throw an exception if the prefix is not found in the namespaceresolver
                 throw XMLMarshalException.namespaceNotFound(prefix);
             }
             return uri;
         }
     }
-    
+
     /**
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
      */
-    public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
     }
+
     /**
      * INTERNAL:
      * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
      */
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
-    
+
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
      * to this class - the event's data is then used to create required attributes
      * and elements which are appended to the the enclosing class' document.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
     protected class NodeRecordContentHandler extends MarshalRecordContentHandler {
@@ -346,7 +326,7 @@ public class NodeRecord extends MarshalRecord {
             super(nRec, resolver);
             prefixMappings = new HashMap<String, String>();
         }
-        
+
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             Element element;
             if (namespaceURI == null) {
@@ -354,22 +334,15 @@ public class NodeRecord extends MarshalRecord {
             } else {
                 element = document.createElementNS(namespaceURI, qName);
             }
-            
-            try {
-                getNode().appendChild(element);
-                nodes.add(element);
-            } catch (Exception e) {
-                document.appendChild(element);
-                setDOM(element);
-                nodes.add(element);
-            }
+
+            node = node.appendChild(element);
             // Handle attributes
             for (int i = 0; i < atts.getLength(); i++) {
                 marshalRecord.attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));
             }
             // Handle prefix mappings
             if (!prefixMappings.isEmpty()) {
-            	for (Iterator<Map.Entry<String, String>> entries = prefixMappings.entrySet().iterator(); entries.hasNext();) {
+                for (Iterator<Map.Entry<String, String>> entries = prefixMappings.entrySet().iterator(); entries.hasNext();) {
                     Map.Entry<String, String> entry = entries.next();
                     element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + entry.getKey(), entry.getValue());
                 }
@@ -377,12 +350,13 @@ public class NodeRecord extends MarshalRecord {
             }
             marshalRecord.closeStartElement();
         }
-        
+
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
             if(namespaceUri == null || !namespaceUri.equals(uri)) {
                 prefixMappings.put(prefix, uri);
             }
         }
-    }        
+    }
+
 }

@@ -698,9 +698,8 @@ public class XMLMarshaller {
             
             //if this is a simple xml root, descriptor and session will be null
             if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-                NodeRecord nodeRecord = new NodeRecord();
+                NodeRecord nodeRecord = new NodeRecord(node);
                 nodeRecord.setMarshaller(this);
-                nodeRecord.setDOM(node);
 
                 if (!isXMLRoot) {
                     if ((null == xmlDescriptor.getDefaultRootElement()) && (node.getNodeType() == Node.ELEMENT_NODE) && (xmlDescriptor.getSchemaReference() != null) && (xmlDescriptor.getSchemaReference().getType() == XMLSchemaReference.COMPLEX_TYPE)) {
