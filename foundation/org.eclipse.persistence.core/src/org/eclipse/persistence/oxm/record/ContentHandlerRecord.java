@@ -46,9 +46,12 @@ import org.xml.sax.helpers.AttributesImpl;
 public class ContentHandlerRecord extends MarshalRecord {
     private ContentHandler contentHandler;
     private LexicalHandler lexicalHandler;
-    private String namespaceURI;
     private XPathFragment xPathFragment;
     private AttributesImpl attributes;
+
+    public ContentHandlerRecord() {
+        attributes = new AttributesImpl();
+    }
 
     // bug#5035551 - content handler record will act more like writer 
     // record in that startElement is called with any attributes that
@@ -127,7 +130,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
         if(null != namespaceURI) {
-            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
+            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
         }
 
         for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
@@ -157,7 +160,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     private void openAndCloseStartElement() {
         try {
-            contentHandler.startElement(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+            contentHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -171,10 +174,9 @@ public class ContentHandlerRecord extends MarshalRecord {
         if (isStartElementOpen) {
             openAndCloseStartElement();
         }
-        isStartElementOpen = true;
-        this.namespaceURI = xPathFragment.getNamespaceURI();
+        this.isStartElementOpen = true;
         this.xPathFragment = xPathFragment;
-        this.attributes = new AttributesImpl();
+        this.attributes.clear();
         
     }
 
@@ -187,9 +189,12 @@ public class ContentHandlerRecord extends MarshalRecord {
             isStartElementOpen = false;
         }
         try {
-            this.attributes = new AttributesImpl();
-            contentHandler.startElement(frag.getNamespaceURI(), frag.getLocalName(), frag.getShortName(), attributes);
-            contentHandler.endElement(frag.getNamespaceURI(), frag.getLocalName(), frag.getShortName());
+            this.attributes.clear();
+            String namespaceURI = frag.getNamespaceURI();
+            String localName = frag.getLocalName();
+            String shortName = frag.getShortName();
+            contentHandler.startElement(namespaceURI, localName, shortName, attributes);
+            contentHandler.endElement(namespaceURI, localName, shortName);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -243,7 +248,8 @@ public class ContentHandlerRecord extends MarshalRecord {
             isStartElementOpen = false;
         }
         try {
-            contentHandler.characters(value.toCharArray(), 0, value.length());
+            char[] characters = value.toCharArray();
+            contentHandler.characters(characters, 0, characters.length);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
