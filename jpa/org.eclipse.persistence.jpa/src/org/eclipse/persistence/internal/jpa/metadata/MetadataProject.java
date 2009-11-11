@@ -146,7 +146,7 @@ public class MetadataProject {
     private HashMap<String, XMLEntityMappings> m_entityMappings;
     
     // Map of mapped-superclasses found in XML for this project/persistence unit.
-    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
+    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasseAccessors;
 
     // All the class accessors for this project (Entities and Embeddables).
     private HashMap<String, ClassAccessor> m_allAccessors;
@@ -230,12 +230,12 @@ public class MetadataProject {
         m_queries = new HashMap<String, NamedQueryMetadata>();
         m_sqlResultSetMappings = new HashMap<String, SQLResultSetMappingMetadata>();
 
-        m_mappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
         m_allAccessors = new HashMap<String, ClassAccessor>();
         m_entityAccessors = new HashMap<String, EntityAccessor>();
         m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
         m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
-
+        m_mappedSuperclasseAccessors = new HashMap<String, MappedSuperclassAccessor>();
+        
         m_idClasses = new HashSet<String>();
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
         m_relationshipAccessors = new HashSet<RelationshipAccessor>();
@@ -419,7 +419,7 @@ public class MetadataProject {
      * model processor will populate all mapped superclasses in this map.
      */
     public void addMappedSuperclass(MappedSuperclassAccessor mappedSuperclass) {
-        m_mappedSuperclasses.put(mappedSuperclass.getJavaClassName(), mappedSuperclass);
+        m_mappedSuperclasseAccessors.put(mappedSuperclass.getJavaClassName(), mappedSuperclass);
     }
 
     /**
@@ -782,22 +782,22 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor getMappedSuperclass(MetadataClass cls) {
-        return getMappedSuperclass(cls.getName());
+    public MappedSuperclassAccessor getMappedSuperclassAccessor(MetadataClass cls) {
+        return getMappedSuperclassAccessor(cls.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor getMappedSuperclass(String className) {
-        return m_mappedSuperclasses.get(className);
+    public MappedSuperclassAccessor getMappedSuperclassAccessor(String className) {
+        return m_mappedSuperclasseAccessors.get(className);
     }
     
     /**
      * INTERNAL:
      */
     public Collection<MappedSuperclassAccessor> getMappedSuperclasses() {
-        return m_mappedSuperclasses.values();
+        return m_mappedSuperclasseAccessors.values();
     }
     
     /**
@@ -925,7 +925,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public boolean hasMappedSuperclass(String className) {
-        return m_mappedSuperclasses.containsKey(className);
+        return m_mappedSuperclasseAccessors.containsKey(className);
     }
     
     /**
@@ -1388,6 +1388,38 @@ public class MetadataProject {
         
         // Process the unique constraints
         table.processUniqueConstraints();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used from the canonical model generator. Specifically when the user
+     * removes the embeddable designation or changes the embeddable to either 
+     * a mapped superclass or entity. 
+     */
+    public void removeEmbeddableAccessor(MetadataClass metadataClass) {
+        m_allAccessors.remove(metadataClass.getName());
+        m_embeddableAccessors.remove(metadataClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used from the canonical model generator. Specifically when the user
+     * removes the entity designation or changes the entity to either 
+     * a mapped superclass or embeddable. 
+     */
+    public void removeEntityAccessor(MetadataClass metadataClass) {
+        m_allAccessors.remove(metadataClass.getName());
+        m_entityAccessors.remove(metadataClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used from the canonical model generator. Specifically when the user
+     * removes the mapped superclass designation or changes the mapped 
+     * superclass to either an entity or embeddable. 
+     */
+    public void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
+        m_mappedSuperclasseAccessors.remove(metadataClass.getName());
     }
     
     /** 

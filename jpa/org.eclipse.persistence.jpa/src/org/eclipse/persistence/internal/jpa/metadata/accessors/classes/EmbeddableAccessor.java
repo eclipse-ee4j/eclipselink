@@ -43,6 +43,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -289,8 +290,16 @@ public class EmbeddableAccessor extends ClassAccessor {
             
             // Set the default access type on the descriptor and log a message
             // that we are defaulting the access type for this embeddable.
-            getDescriptor().setDefaultAccess(embeddingAccessor.getAccessType());
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, embeddingAccessor.getAccessType(), getJavaClass());
+            if (embeddingAccessor == null) {
+                // No class embedded this embeddable and we have no explicit 
+                // access type set, just default it to FIELD.
+                getDescriptor().setDefaultAccess(MetadataConstants.FIELD);
+            } else {
+                // Use the access type from the embedding accessor.
+                getDescriptor().setDefaultAccess(embeddingAccessor.getAccessType());
+            }
+            
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, getDescriptor().getDefaultAccess(), getJavaClass());
         } 
     }
 }

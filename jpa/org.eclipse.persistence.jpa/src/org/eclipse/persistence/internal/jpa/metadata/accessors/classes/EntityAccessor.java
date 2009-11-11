@@ -183,7 +183,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     protected void addPotentialMappedSuperclass(MetadataClass metadataClass, boolean addMappedSuperclassAccessors) {
         // Get the mappedSuperclass that was stored previously on the project
-        MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(metadataClass);
+        MappedSuperclassAccessor accessor = getProject().getMappedSuperclassAccessor(metadataClass);
 
         if (accessor == null) {
             // If the mapped superclass was not defined in XML then check 

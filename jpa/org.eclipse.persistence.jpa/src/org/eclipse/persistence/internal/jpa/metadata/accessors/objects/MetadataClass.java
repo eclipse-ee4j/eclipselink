@@ -61,6 +61,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
         super(factory);
         setName(name);
         
+        // By default, set the type to be the same as the name. The canonical
+        // model generator relies on types which in most cases is the name, but
+        // the generator resolves generic types a little differently to 
+        // correctly generate model classes.
+        setType(name); 
+        
         m_interfaces = new ArrayList<String>();
         m_enclosedClasses = new ArrayList<MetadataClass>();
         m_fields = new HashMap<String, MetadataField>(); 

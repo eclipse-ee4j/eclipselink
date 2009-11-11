@@ -47,12 +47,15 @@ import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
  */
 public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnotatedElement, MetadataClass> {
     private ProcessingEnvironment processingEnv;
+    private TypeVisitor<MetadataAnnotatedElement, MetadataAnnotatedElement> typeVisitor;
     
     /**
      * INTERNAL:
      */
     public ElementVisitor(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
+        
+        typeVisitor = new TypeVisitor<MetadataAnnotatedElement, MetadataAnnotatedElement>();
     }
     
     /**
@@ -142,8 +145,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         method.setModifiers(getModifiers(executableElement.getModifiers()));
 
         // Visit executable element for the parameters, return type and generic type.
-        TypeVisitor<MetadataMethod, MetadataMethod> visitor = new TypeVisitor<MetadataMethod, MetadataMethod>();
-        executableElement.asType().accept(visitor, method);
+        executableElement.asType().accept(typeVisitor, method);
         
         // Set the annotations.
         buildMetadataAnnotations(method, executableElement.getAnnotationMirrors());
@@ -176,24 +178,19 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataClass visitType(TypeElement typeElement, MetadataClass metadataClass) {
-        //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Visiting class: " + typeElement);
-        
+        //processingEnv.getMessager().printMessage(Kind.NOTE, "Visiting class: " + typeElement);
         MetadataMirrorFactory factory = ((MetadataMirrorFactory) metadataClass.getMetadataFactory());
         
         // Set the qualified name.
         metadataClass.setName(typeElement.getQualifiedName().toString());
         
-        // Set the modifiers.
-        metadataClass.setModifiers(getModifiers(typeElement.getModifiers()));
-        
-        // Visit the enclosed elements.
-        for (Element enclosedElement : typeElement.getEnclosedElements()) {
-            if (enclosedElement.getKind().isClass()) {
-                metadataClass.addEnclosedClass(factory.getMetadataClass(enclosedElement));
-            } else {
-                enclosedElement.accept(this, metadataClass);
-            }
-        }
+        // By default, set the type to be the same as the name, which in most
+        // cases is correct. For round elements we'll visit the typeElement 
+        // further (see below). This will further process any generic types, 
+        // e.g. Employee<Integer>. For the most part I don't think we need to 
+        // care, certainly not with library classes but for round elements we'll 
+        // set them anyway.
+        metadataClass.setType(metadataClass.getName());
         
         // Add the interfaces.
         for (TypeMirror interfaceCls : typeElement.getInterfaces()) {
@@ -206,23 +203,40 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
             metadataClass.setSuperclassName(factory.getMetadataClass(superclass).getName());
         }
         
-        // Visit the type element for type and generic type.
-        TypeVisitor<MetadataClass, MetadataClass> visitor = new TypeVisitor<MetadataClass, MetadataClass>();
-        typeElement.asType().accept(visitor, metadataClass);
+        // As a performance gain, limit what is visited by non-round elements.
+        if (factory.isRoundElement(typeElement)) {
+            // Set the modifiers.
+            metadataClass.setModifiers(getModifiers(typeElement.getModifiers()));
+            
+            // Visit the type element for type and generic type.
+            typeElement.asType().accept(typeVisitor, metadataClass);
+            
+            // Visit the enclosed elements.
+            for (Element enclosedElement : typeElement.getEnclosedElements()) {
+                if (enclosedElement.getKind().isClass()) {
+                    metadataClass.addEnclosedClass(factory.getMetadataClass(enclosedElement));
+                } else {
+                    enclosedElement.accept(this, metadataClass);
+                }
+            }
         
-        // Set the annotations.
-        buildMetadataAnnotations(metadataClass, typeElement.getAnnotationMirrors());
+            // Visit the annotations only if it is a round element.
+            buildMetadataAnnotations(metadataClass, typeElement.getAnnotationMirrors());
+        }
         
         return metadataClass;
     }
 
     /**
      * INTERNAL:
+     * Visit a generic type parameter (either to a field or method)
+     * e.g Collection<X>, the type parameter being X.
      */
     @Override
-    public MetadataClass visitTypeParameter(TypeParameterElement arg0, MetadataClass metadataClass) {
-        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor TypeParameter NOT IMPLEMENTED : " + arg0);
-        return null;
+    public MetadataClass visitTypeParameter(TypeParameterElement typeParameterElement, MetadataClass metadataClass) {
+        metadataClass.setName(typeParameterElement.getSimpleName().toString());
+        metadataClass.setType(TypeVisitor.GENERIC_TYPE);
+        return metadataClass;
     }
 
     /**
@@ -240,8 +254,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         field.setAttributeName(field.getName());
         
         // Visit the variable element for type and generic type.
-        TypeVisitor<MetadataField, MetadataField> visitor = new TypeVisitor<MetadataField, MetadataField>();
-        variableElement.asType().accept(visitor, field);
+        variableElement.asType().accept(typeVisitor, field);
         
         // Set the modifiers.
         field.setModifiers(getModifiers(variableElement.getModifiers()));
@@ -251,6 +264,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         
         // Add the field to the class and return the field.
         metadataClass.addField(field);
+        
         return field;
     }
 }

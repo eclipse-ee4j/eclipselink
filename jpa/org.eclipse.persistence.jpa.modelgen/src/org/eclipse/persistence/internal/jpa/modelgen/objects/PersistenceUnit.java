@@ -32,7 +32,6 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitProperty;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -92,26 +91,31 @@ public class PersistenceUnit {
      * 1 - New element and not exclude unlisted classes - add it
      * 2 - New element but exclude unlisted classes - ignore it.
      * 3 - Existing element, but accessor loaded from XML (it's a new accessor then) - don't touch it
-     * 4 - Existing element, but accessor loaded from Annotations - add new accessor overridding the old.
+     * 4 - Existing element, but accessor loaded from Annotations - add new accessor overriding the old.
      */
     public void addEmbeddableAccessor(Element element) {
-        MetadataClass cls = factory.getMetadataClass(element);
+        MetadataClass metadataClass = factory.getMetadataClass(element);
         
-        if (project.hasEmbeddable(cls)) {
-            EmbeddableAccessor embeddableAccessor = project.getEmbeddableAccessor(cls);
+        // Remove the accessor from other maps if the type changed.
+        removeEntityAccessor(metadataClass);
+        removeMappedSuperclassAccessor(metadataClass);
+        
+        if (project.hasEmbeddable(metadataClass)) {
+            EmbeddableAccessor embeddableAccessor = project.getEmbeddableAccessor(metadataClass);
             
             // Don't touch it if it was loaded from XML.
             if (! embeddableAccessor.loadedFromXML()) {
-                if (excludeUnlistedClasses(cls)) {
+                if (excludeUnlistedClasses(metadataClass)) {
                     // remove it!
+                    removeEmbeddableAccessor(metadataClass);
                 } else {
                     // override it!
-                    addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
+                    addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), metadataClass, project));
                 }
             }
-        } else if (! excludeUnlistedClasses(cls)) {
+        } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            addEmbeddableAccessor(new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, project));
+            addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), metadataClass, project));
         }
     }
     
@@ -145,26 +149,31 @@ public class PersistenceUnit {
      * 1 - New element and not exclude unlisted classes - add it
      * 2 - New element but exclude unlisted classes - ignore it.
      * 3 - Existing element, loaded from XML - don't touch it (it's already a new un-processed accessor)
-     * 4 - Existing element, loaded from Annotations - add new accessor overridding the old.
+     * 4 - Existing element, loaded from Annotations - add new accessor overriding the old.
      */
     public void addEntityAccessor(Element element) {
-        MetadataClass cls = factory.getMetadataClass(element);
+        MetadataClass metadataClass = factory.getMetadataClass(element);
         
-        if (project.hasEntity(cls)) {
-            EntityAccessor entityAccessor = project.getEntityAccessor(cls);
+        // Remove the accessor from other maps if the type changed.
+        removeEmbeddableAccessor(metadataClass);
+        removeMappedSuperclassAccessor(metadataClass);
+        
+        if (project.hasEntity(metadataClass)) {
+            EntityAccessor entityAccessor = project.getEntityAccessor(metadataClass);
             
             // Don't touch it if it was loaded from XML.
             if (! entityAccessor.loadedFromXML()) {
-                if (excludeUnlistedClasses(cls)) {
+                if (excludeUnlistedClasses(metadataClass)) {
                     // remove it!
+                    removeEntityAccessor(metadataClass);
                 } else {
                     // override it!
-                    project.addEntityAccessor(new EntityAccessor(cls.getAnnotation(Entity.class), cls, project));
+                    project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
                 }
             }
-        } else if (! excludeUnlistedClasses(cls)) {
+        } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            project.addEntityAccessor(new EntityAccessor(cls.getAnnotation(Entity.class), cls, project));
+            project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
         }
     }
     
@@ -177,23 +186,28 @@ public class PersistenceUnit {
      * 4 - Existing element, but accessor loaded from Annotations - add new accessor overridding the old.
      */
     public void addMappedSuperclassAccessor(Element element) {
-        MetadataClass cls = factory.getMetadataClass(element);
+        MetadataClass metadataClass = factory.getMetadataClass(element);
         
-        if (project.hasMappedSuperclass(cls)) {
-            MappedSuperclassAccessor mappedSuperclassAccessor = project.getMappedSuperclass(cls);
+        // Remove the accessor from other maps if the type changed.
+        removeEntityAccessor(metadataClass);
+        removeEmbeddableAccessor(metadataClass);
+        
+        if (project.hasMappedSuperclass(metadataClass)) {
+            MappedSuperclassAccessor mappedSuperclassAccessor = project.getMappedSuperclassAccessor(metadataClass);
             
             // Don't touch it if it was loaded from XML.
             if (! mappedSuperclassAccessor.loadedFromXML()) {
-                if (excludeUnlistedClasses(cls)) {
+                if (excludeUnlistedClasses(metadataClass)) {
                     // remove it!
+                    project.removeMappedSuperclassAccessor(metadataClass);
                 } else {
                     // override it!
-                    project.addMappedSuperclass(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
+                    project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, project));
                 }
             }
-        } else if (! excludeUnlistedClasses(cls)) {
+        } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            project.addMappedSuperclass(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, project));
+            project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, project));
         }
     }
     
@@ -270,7 +284,7 @@ public class PersistenceUnit {
         }
         
         if (project.hasMappedSuperclass(cls)) {
-            return isValidAccessor(project.getMappedSuperclass(cls), element.getAnnotation(javax.persistence.MappedSuperclass.class));
+            return isValidAccessor(project.getMappedSuperclassAccessor(cls), element.getAnnotation(javax.persistence.MappedSuperclass.class));
         }
         
         return false;
@@ -300,7 +314,7 @@ public class PersistenceUnit {
         }
         
         if (project.hasMappedSuperclass(elementString)) {
-            return project.getMappedSuperclass(elementString);
+            return project.getMappedSuperclassAccessor(elementString);
         }
         
         return null;
@@ -445,7 +459,7 @@ public class PersistenceUnit {
         }
         
         // 3 - Pre-process the list of root embeddable accessors. This list will
-        // have been build from step 1. Root embeddable accessors will have
+        // have been built from step 1. Root embeddable accessors will have
         // an owning descriptor (used to determine access type).
         for (EmbeddableAccessor embeddableAccessor : project.getRootEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
@@ -461,11 +475,6 @@ public class PersistenceUnit {
         for (EmbeddableAccessor embeddableAccessor : project.getEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
                 //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
-                // Need to set a default access type if one is not explicitly set.
-                if (embeddableAccessor.getAccessType() == null) {
-                    embeddableAccessor.getDescriptor().setDefaultAccess(MetadataConstants.FIELD);
-                }
-                
                 embeddableAccessor.preProcessForCanonicalModel();
             }
         }
@@ -476,6 +485,36 @@ public class PersistenceUnit {
      */
     protected boolean shouldPreProcess(ClassAccessor accessor) {
         return ! accessor.isPreProcessed() && factory.isRoundElement((MetadataClass) accessor.getAccessibleObject());
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove the entity accessor for the given metadata class if one exists.
+     */
+    protected void removeEntityAccessor(MetadataClass metadataClass) {
+        if (project.hasEntity(metadataClass)) {
+            project.removeEntityAccessor(metadataClass);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove the embeddable accessor for the given metadata class if one exists.
+     */
+    protected void removeEmbeddableAccessor(MetadataClass metadataClass) {
+        if (project.hasEmbeddable(metadataClass)) {
+            project.removeEmbeddableAccessor(metadataClass);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove the embeddable accessor for the given metadata class if one exists.
+     */
+    protected void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
+        if (project.hasMappedSuperclass(metadataClass)) {
+            project.removeMappedSuperclassAccessor(metadataClass);
+        }
     }
     
     /**

@@ -26,7 +26,9 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 
 /**
  * A type visitor. 
@@ -36,27 +38,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
  */
 public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
-    private StringTypeVisitor<String, Object> stringTypeVisitor;
     
     /**
      * INTERNAL:
      */
-    public TypeVisitor() {
-        stringTypeVisitor = new StringTypeVisitor<String, Object>();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    private String getRawClass(String type) {
-        // This seems ridiculous ... there must be API to extract just the 
-        // raw class??? Using simpleName hacks off the package ...
-        if (type.indexOf("<") > -1) {
-            return type.substring(0, type.indexOf("<"));
-        }
-        
-        return type;
-    }
+    public TypeVisitor() {}
     
     /**
      * INTERNAL:
@@ -64,23 +50,31 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitArray(ArrayType arrayType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(arrayType.accept(stringTypeVisitor, null));
+        annotatedElement.setType(arrayType.toString());
         return annotatedElement;
     }
     
     /**
      * INTERNAL:
-     * Visit a declared field.
+     * Visit a declared field or Class.
      */
     @Override
     public MetadataAnnotatedElement visitDeclared(DeclaredType declaredType, MetadataAnnotatedElement annotatedElement) {
-        // Set the type, which is the raw class.
-        annotatedElement.setType(getRawClass(declaredType.accept(stringTypeVisitor, null)));
-        // Internally, Eclipselink also wants this (raw class in the 0 position of the generic list).
-        annotatedElement.addGenericType(annotatedElement.getType());
+        // Get the metadata class of the declared type from the factory.
+        MetadataMirrorFactory factory = (MetadataMirrorFactory) annotatedElement.getMetadataFactory();
+        MetadataClass cls = factory.getMetadataClass(declaredType);
         
-        for (TypeMirror typeArgument : declaredType.getTypeArguments()) {
-            annotatedElement.addGenericType(typeArgument.accept(stringTypeVisitor, null));
+        // Set the type, which is the class name.
+        annotatedElement.setType(cls.getName());
+        
+        // Set the generic types. Internally EclipseLink wants the class name 
+        // in the 0 position of the generic list.
+        annotatedElement.addGenericType(cls.getName());
+        
+        for (TypeMirror typeArgument : declaredType.getTypeArguments()) { 
+            // Set the type from the metadata class as it may be a generic and
+            // we don't want to set the letter type, rather our default GENERIC_TYPE.
+            annotatedElement.addGenericType(factory.getMetadataClass(typeArgument).getType());
         }
         
         return annotatedElement;
@@ -96,7 +90,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         // therefore want to ensure our annotatedElement still has a type set
         // on it and not null. This will avoid exceptions when we go through 
         // the pre-processing of our metadata classes.
-        annotatedElement.setType(errorType.accept(stringTypeVisitor, null));
+        annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;
     }
 
@@ -106,11 +100,12 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitExecutable(ExecutableType executableType, MetadataAnnotatedElement annotatedElement) {
+        MetadataMirrorFactory factory = ((MetadataMirrorFactory) annotatedElement.getMetadataFactory());
         MetadataMethod method = (MetadataMethod) annotatedElement;
         
         // Set the parameters.
         for (TypeMirror parameter : executableType.getParameterTypes()) {
-            method.addParameter(getRawClass(parameter.accept(stringTypeVisitor, null)));
+            method.addParameter(factory.getMetadataClass(parameter).getType());
         }
         
         // Visit the return type (will set the type and generic types).
@@ -126,7 +121,8 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitNoType(NoType noType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(noType.accept(stringTypeVisitor, null));
+        // Should this be Void.class?
+        annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;
     }
 
@@ -140,7 +136,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         // therefore want to ensure our annotatedElement still has a type set
         // on it and not null. This will avoid exceptions when we go through 
         // the pre-processing of our metadata classes.
-        annotatedElement.setType(nullType.accept(stringTypeVisitor, null));
+        annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;
     }
 
@@ -164,7 +160,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitTypeVariable(TypeVariable typeVariable, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(typeVariable.accept(stringTypeVisitor, null));
+        annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;
     }
 
@@ -173,92 +169,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitWildcard(WildcardType wildcardType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(wildcardType.accept(stringTypeVisitor, null));
+        annotatedElement.setType(wildcardType.toString());
         return annotatedElement;
-    }
-    
-    /**
-     * A generic type visitor. The main purpose of this visitor is to allow 
-     * finer grain settings to be handled. For example, A generic type T. For 
-     * all generic types we return/set the type of "? extends Object". 
-     */
-    class StringTypeVisitor<E, A> extends SimpleTypeVisitor6<String, Object> {
-        /**
-         * INTERNAL:
-         */
-        public StringTypeVisitor() {}
-        
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitArray(ArrayType arrayType, Object obj) {
-            return arrayType.toString();
-        }
-        
-        /**
-         * INTERNAL:
-         * Visit a declared field.
-         */
-        @Override
-        public String visitDeclared(DeclaredType declaredType, Object obj) {
-            return declaredType.toString();
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitError(ErrorType errorType, Object obj) {
-            return GENERIC_TYPE;
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitExecutable(ExecutableType executableType, Object obj) {
-            return executableType.toString();
-        }
-        
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitNoType(NoType noType, Object obj) {
-            return GENERIC_TYPE;
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitNull(NullType nullType, Object obj) {
-            return GENERIC_TYPE;
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitPrimitive(PrimitiveType primitiveType, Object obj) {
-            return primitiveType.toString();
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitTypeVariable(TypeVariable typeVariable, Object obj) {
-            return GENERIC_TYPE;
-        }
-
-        /**
-         * INTERNAL:
-         */
-        @Override
-        public String visitWildcard(WildcardType wildcardType, Object obj) {
-            return wildcardType.toString();
-        }
     }
 }

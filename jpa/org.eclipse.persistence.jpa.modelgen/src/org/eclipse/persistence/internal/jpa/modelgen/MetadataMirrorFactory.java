@@ -44,13 +44,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @since EclipseLink 1.2
  */
 public class MetadataMirrorFactory extends MetadataFactory {
-    private ProcessingEnvironment processingEnv;
-    private HashSet<String> roundElements;
+    private ElementVisitor<MetadataClass, MetadataClass> elementVisitor;
+    private HashSet<MetadataClass> roundElements;
     
     // Per persistence unit.
     private Map<String, MetadataProject> metadataProjects;
+    private Map<Element, MetadataClass> metadataClassesFromElements;
     
-    private Map<String, MetadataClass> metadataClassesFromElements;
+    private ProcessingEnvironment processingEnv;
+    private RoundEnvironment roundEnv;
 
     /**
      * INTERNAL:
@@ -63,9 +65,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     protected MetadataMirrorFactory(MetadataLogger logger, ClassLoader loader) {
         super(logger, loader);
-        roundElements = new HashSet<String>();
+        roundElements = new HashSet<MetadataClass>();
         metadataProjects = new HashMap<String, MetadataProject>();
-        metadataClassesFromElements = new HashMap<String, MetadataClass>();
+        metadataClassesFromElements = new HashMap<Element, MetadataClass>();
     }
     
     /**
@@ -73,31 +75,36 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     protected MetadataClass buildMetadataClass(Element element) {
         MetadataClass metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
-                
+        
+        // We keep our own map of classes for a couple reasons:
+        // 1- Most importantly, we use this map to avoid an infinite loop. Once
+        // we kick off the visiting of this class, it snow balls into visiting
+        // the other classes.
+        // 2- For our own safety we cache metadata class keyed on the Element we 
+        // built it for. This ensures we are always dealing with the correct 
+        // related metadata class.
+        // 3- we can't call addMetadataClass here since it adds the class to the
+        // map keyed on its name. We won't know the class name till we visit it.
+        metadataClassesFromElements.put(element, metadataClass);
+        
         // Kick off the visiting of elements.
-        ElementVisitor<MetadataClass, MetadataClass> visitor = new ElementVisitor<MetadataClass, MetadataClass>(processingEnv);
-        element.accept(visitor, metadataClass);
-            
+        element.accept(elementVisitor, metadataClass);
+        
         // The name off the metadata class is a qualified name from a type
         // element. Set this on the MetadataFactory map.
         addMetadataClass(metadataClass);
-        
-        // For our own safety we cache another map of metadata class keyed on 
-        // the toString value the Element we built it for. This ensures we are 
-        // always dealing with the correct related metadata class.
-        metadataClassesFromElements.put(element.toString(), metadataClass);
         
         return metadataClass;
     }
     
     /**
      * INTERNAL:
-     * If the adds a new element will build it and add it to our list of
-     * MetadataClasses.
+     * If the element doesn't exist we will build it and add it to our list of
+     * MetadataClasses before returning it.
      */
     public MetadataClass getMetadataClass(Element element) {
-        if (metadataClassesFromElements.containsKey(element.toString())) {
-            return metadataClassesFromElements.get(element.toString());
+        if (metadataClassesFromElements.containsKey(element)) {
+            return metadataClassesFromElements.get(element);
         } else {
             return buildMetadataClass(element);
         }
@@ -109,15 +116,15 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * methods will have a class metadata built for them already. That is,
      * our visitor must visit every class that the pre-process will want to
      * look at. All return types and field types need a metadata class or
-     * else kaboom ... null pointer!
+     * else kaboom, null pointer!
      */
     @Override
     public MetadataClass getMetadataClass(String className) {
         if (! metadataClassExists(className)) {
             // By the time this method is called we should have built a 
-            // MetadataClass for all the model elements (and then some ... ) 
-            // which are the only classes we really care about. This is acting 
-            // like a catch all and for any jdk classes just return a 
+            // MetadataClass for all the model elements (and then some) which 
+            // are the only classes we really care about. This is acting like a 
+            // catch all for any jdk classes we didn't visit and just returns a 
             // MetadataClass with the same class name.
             addMetadataClass(new MetadataClass(this, className));
         }
@@ -134,6 +141,10 @@ public class MetadataMirrorFactory extends MetadataFactory {
         Element element = processingEnv.getTypeUtils().asElement(typeMirror);
         
         if (element == null) {
+            // This case hits when we are passed a TypeMirror of <none>. Not
+            // 100% on the whole story here, either way we create a metadata 
+            // class with that name and carry on. The case also hits when we 
+            // ask for a metadata class for array types.  
             return getMetadataClass(typeMirror.toString());
         } else {
             return getMetadataClass(element);
@@ -165,8 +176,15 @@ public class MetadataMirrorFactory extends MetadataFactory {
     /**
      * INTENAL:
      */
+    public boolean isRoundElement(Element element) {
+        return roundEnv.getRootElements().contains(element);
+    }
+    
+    /**
+     * INTENAL:
+     */
     public boolean isRoundElement(MetadataClass cls) {
-        return roundElements.contains(cls.getName());
+        return roundElements.contains(cls);
     }
     
     /**
@@ -176,7 +194,13 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public void setEnvironments(ProcessingEnvironment processingEnvironment, RoundEnvironment roundEnvironment) {
         processingEnv = processingEnvironment;
+        roundEnv = roundEnvironment;
         roundElements.clear();
+        
+        // Initialize the element visitor if it is null.
+        if (elementVisitor == null) {
+            elementVisitor = new ElementVisitor<MetadataClass, MetadataClass>(processingEnv);
+        }
         
         // Visit all the root elements now. These may be new elements or 
         // existing elements that were changed. We must build or re-build the 
@@ -185,7 +209,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         for (Element element : roundEnvironment.getRootElements()) {
             if (element.getAnnotation(javax.annotation.Generated.class) == null) { 
                 processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
-                roundElements.add(buildMetadataClass(element).getName());
+                roundElements.add(buildMetadataClass(element));
             }
         }
     }
