@@ -160,7 +160,7 @@ public class Generator {
 
     public Project generateProject() throws Exception {
     	
-        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
+        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.isDefaultNamespaceAllowed());
         
         annotationsProcessor.getArrayClassesToGeneratedClasses().putAll(mappingsGenerator.getClassToGeneratedClasses());
         

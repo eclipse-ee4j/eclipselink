@@ -328,24 +328,26 @@ public class XMLField extends DatabaseField {
         isInitialized = true;
     }
 
-    private void initializeXPathFragment(XPathFragment xPathFragment) {
-        if(null == xPathFragment.getNamespaceURI()) {
-            if(xPathFragment.hasNamespace()) {
-                if(null == namespaceResolver) {
-                    throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
-                } else {
-                    String uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-                    if(null == uri && null != xPathFragment.getPrefix()) {
-                        throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
-                    }
-                    xPathFragment.setNamespaceURI(uri);
-                }
-                xPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix()));
-            }
-            else if(!xPathFragment.isAttribute() && null != namespaceResolver) {
-                xPathFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
-            }
-        }
+    private void initializeXPathFragment(XPathFragment xPathFragment) {    
+    	String localName = xPathFragment.getLocalName();
+    	if(localName !=null && !localName.equals(XMLConstants.EMPTY_STRING)){
+	        if(null == xPathFragment.getNamespaceURI()) {
+	            if(xPathFragment.hasNamespace()) {
+	                if(null == namespaceResolver) {
+	                    throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+	                } else {
+	                    String uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+	                    if(null == uri && null != xPathFragment.getPrefix()) {
+	                        throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+	                    }
+	                    xPathFragment.setNamespaceURI(uri);
+	                }
+	            }
+	            else if(!xPathFragment.isAttribute() && null != namespaceResolver) {
+	                xPathFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+	            }
+	        }
+    	}
         XPathFragment nextXPathFragment = xPathFragment.getNextFragment();
         if(null != nextXPathFragment) {
             initializeXPathFragment(nextXPathFragment);

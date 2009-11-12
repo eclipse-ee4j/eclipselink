@@ -136,8 +136,11 @@ public class AnnotationsProcessor {
 
     private JAXBMetadataLogger logger;
     
+    private boolean isDefaultNamespaceAllowed;
+    
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
+        isDefaultNamespaceAllowed = true;
     }
 
     public AnnotationsProcessor(Helper helper, Map<JavaClass, java.lang.reflect.Type> javaClassToType) {
@@ -1672,7 +1675,7 @@ public class AnnotationsProcessor {
             }
             info.setAttributeFormQualified(xmlSchema.attributeFormDefault() == XmlNsForm.QUALIFIED);
             info.setElementFormQualified(xmlSchema.elementFormDefault() == XmlNsForm.QUALIFIED);
-
+                              
             // reflectively load XmlSchema class to avoid dependency
             try {
                 Method locationMethod = PrivilegedAccessHelper.getDeclaredMethod(XmlSchema.class, "location", new Class[] {});
@@ -1689,6 +1692,9 @@ public class AnnotationsProcessor {
             } catch (Exception ex) {
             }
 
+        }
+        if(!info.isElementFormQualified() || info.isAttributeFormQualified()){
+        	isDefaultNamespaceAllowed = false;            
         }
         return info;
     }
@@ -1743,7 +1749,8 @@ public class AnnotationsProcessor {
             }
 
             if (!namespace.equals("##default")) {
-                qName = new QName(namespace, name);
+                qName = new QName(namespace, name);             
+                isDefaultNamespaceAllowed = false;                               
             } else {
                 if (namespaceInfo.isAttributeFormQualified()) {
                     qName = new QName(uri, name);
@@ -1764,6 +1771,9 @@ public class AnnotationsProcessor {
 
             if (!namespace.equals("##default")) {
                 qName = new QName(namespace, name);
+                if(namespace.equals(XMLConstants.EMPTY_STRING)){
+                	isDefaultNamespaceAllowed = false;                	
+                }
             } else {
                 if (namespaceInfo.isElementFormQualified()) {
                 	qName = new QName(uri, name);
@@ -2032,10 +2042,17 @@ public class AnnotationsProcessor {
                     if (namespaceInfo == null) {
                         rootElemName = new QName(elementName);
                     } else {
-                        rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
-                    }
+                    	String rootNS = namespaceInfo.getNamespace();
+                        rootElemName = new QName(rootNS, elementName);
+                        if(rootNS.equals(XMLConstants.EMPTY_STRING)){
+                        	isDefaultNamespaceAllowed = false;                	
+                        }
+                    }                    
                 } else {
                     rootElemName = new QName(rootNamespace, elementName);
+                    if(rootNamespace.equals(XMLConstants.EMPTY_STRING)){
+                    	isDefaultNamespaceAllowed = false;                	
+                    }
                 }
                 ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getQualifiedName(), false);
                 declaration.setIsXmlRootElement(true);
@@ -2968,5 +2985,9 @@ public class AnnotationsProcessor {
      */
     Helper getHelper() {
         return this.helper;
+    }
+
+    public boolean isDefaultNamespaceAllowed() {
+        return isDefaultNamespaceAllowed;
     }
 }

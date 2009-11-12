@@ -539,24 +539,26 @@ public class XMLContext {
             if (null != defaultRootName) {
                 int index = defaultRootName.indexOf(':');
                 String defaultRootLocalName = defaultRootName.substring(index + 1);
-                if (index > -1) {
-                    String defaultRootPrefix = defaultRootName.substring(0, index);
-                    String defaultRootNamespaceURI = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
-                    descriptorQName = new QName(defaultRootNamespaceURI, defaultRootLocalName);
-                } else {
-                    if(xmlDescriptor.getNamespaceResolver() != null) {
-                        descriptorQName = new QName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName);
+                if(defaultRootLocalName != null && !(defaultRootLocalName.equals(XMLConstants.EMPTY_STRING))){
+                    if (index > -1) {
+                        String defaultRootPrefix = defaultRootName.substring(0, index);
+                        String defaultRootNamespaceURI = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
+                        descriptorQName = new QName(defaultRootNamespaceURI, defaultRootLocalName);
                     } else {
-                        descriptorQName = new QName(defaultRootLocalName);
+                        if(xmlDescriptor.getNamespaceResolver() != null) {
+                            descriptorQName = new QName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName);
+                        } else {
+                            descriptorQName = new QName(defaultRootLocalName);
+                        }
                     }
-                }
-                if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                    descriptorsByQName.put(descriptorQName, xmlDescriptor);
-                } else {
-                    //this means we have a descriptor that is a child in an inheritance hierarchy
-                    XMLDescriptor existingDescriptor = (XMLDescriptor) descriptorsByQName.get(descriptorQName);
-                    if (existingDescriptor == null) {
+                    if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
                         descriptorsByQName.put(descriptorQName, xmlDescriptor);
+                    } else {
+                        //this means we have a descriptor that is a child in an inheritance hierarchy
+                        XMLDescriptor existingDescriptor = (XMLDescriptor) descriptorsByQName.get(descriptorQName);
+                        if (existingDescriptor == null) {
+                            descriptorsByQName.put(descriptorQName, xmlDescriptor);
+                        }
                     }
                 }
             }

@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlMixed;
@@ -119,6 +118,7 @@ public class MappingsGenerator {
     private Map<MapEntryGeneratedKey, Class> generatedMapEntryClasses;
     private Project project;
     private NamespaceResolver globalNamespaceResolver;
+    private boolean isDefaultNamespaceAllowed;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -128,12 +128,14 @@ public class MappingsGenerator {
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
         classToGeneratedClasses = new HashMap<String, Class>();       
         globalNamespaceResolver = new NamespaceResolver();
+        isDefaultNamespaceAllowed = true;
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
+        this.isDefaultNamespaceAllowed = isDefaultNamespaceAllowed;
         this.globalElements = globalElements;
         project = new Project();
 
@@ -227,7 +229,11 @@ public class MappingsGenerator {
             if (namespace.length() == 0) {
                 descriptor.setDefaultRootElement(elementName);
             } else {
-                descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + elementName);
+            	if(isDefaultNamespaceAllowed && globalNamespaceResolver.getDefaultNamespaceURI() == null){
+            		globalNamespaceResolver.setDefaultNamespaceURI(namespace);
+            	    namespaceInfo.getNamespaceResolver().setDefaultNamespaceURI(namespace);
+            	}
+                descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null), elementName));
             }
         }
         
@@ -292,7 +298,7 @@ public class MappingsGenerator {
                 schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
             } else {
             	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null);
-                schemaRef.setSchemaContext("/" + generatedPrefix + ":" + info.getSchemaTypeName());
+            	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));
             }
             schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
         }
@@ -1028,7 +1034,9 @@ public class MappingsGenerator {
             desc.addMapping(generateMappingForType(valueType, "value"));
             NamespaceResolver newNr = new NamespaceResolver();
             String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, nr, XMLConstants.SCHEMA_INSTANCE_PREFIX, false);
-            newNr.put(prefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            if(prefix != null){
+                newNr.put(prefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            }
             desc.setNamespaceResolver(newNr);
             project.addDescriptor(desc);            
         }		        
@@ -1337,6 +1345,12 @@ public class MappingsGenerator {
     	return getPrefixForNamespace(URI, namespaceResolver, suggestedPrefix, true);
     }
     public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
+    	String defaultNS = namespaceResolver.getDefaultNamespaceURI();
+    	if(defaultNS != null && URI.equals(defaultNS)){
+    		return null;
+    	}
+    	
+    	
         Enumeration keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
             String next = (String) keys.nextElement();
@@ -1417,8 +1431,7 @@ public class MappingsGenerator {
             
             if(rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
             	String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                                
-                XMLField classIndicatorField = new XMLField("@"+ prefix + ":type");                 
+            	XMLField classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));                
                 rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);                  
             }
                         
@@ -1635,7 +1648,8 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 xPath += (wrapper.getName() + "/");
             } else {
-                xPath += (getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null) + ":" + wrapper.getName() + "/");
+            	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+            	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
             }
         }
         if (property.isAttribute()) {
@@ -1651,7 +1665,7 @@ public class MappingsGenerator {
                 xPath += ("@" + name.getLocalPart());
             } else {
                 String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
-                xPath += ("@" + prefix + ":" + name.getLocalPart());
+            	xPath += "@" + getQualifiedString(prefix, name.getLocalPart());
             }
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getClass());
             if (property.getSchemaType() != null) {
@@ -1707,7 +1721,7 @@ public class MappingsGenerator {
             }
         } else {
             String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
-            path += prefix + ":" + elementName.getLocalPart();
+        	path += getQualifiedString(prefix, elementName.getLocalPart());
             if (isText) {
                 path += "/text()";
             }
@@ -1799,7 +1813,7 @@ public class MappingsGenerator {
                     XMLDescriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
                     String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
-                    descriptor.addRootElement(prefix + ":" + next.getLocalPart());
+                    descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
                 }
             }
         }
@@ -1936,9 +1950,8 @@ public class MappingsGenerator {
   				NamespaceResolver resolver = info.getNamespaceResolver();
   				String prefix = resolver.resolveNamespaceURI(namespaceUri);
   				desc.setNamespaceResolver(resolver);
-                  //desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
   				desc.setDefaultRootElement("");
-                desc.addRootElement(prefix + ":" + next.getLocalPart());
+  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
               } else {
                   if(namespaceUri.equals("")) {
                       desc.setDefaultRootElement(next.getLocalPart());                      
@@ -1948,13 +1961,19 @@ public class MappingsGenerator {
                       
                       desc.setNamespaceResolver(resolver);
                       desc.setDefaultRootElement("");
-                      desc.addRootElement(prefix + ":" + next.getLocalPart());
-
+                      desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
   				}
   			}
           }
           project.addDescriptor(desc);
           return generatedClass;
+    }
+    
+    private String getQualifiedString(String prefix, String localPart){
+    	if(prefix == null){
+    		return localPart;
+    	}
+    	return prefix + XMLConstants.COLON + localPart;
     }
     
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {

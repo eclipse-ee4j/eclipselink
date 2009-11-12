@@ -220,8 +220,12 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         prefixesToNamespaces.remove(prefix);
     }
 
-    public void setDefaultNamespaceURI(String namespaceUri) {
-        defaultNamespaceURI = namespaceUri;
+    public void setDefaultNamespaceURI(String namespaceUri) {    	        
+        if(namespaceUri == null){
+        	defaultNamespaceURI = namespaceUri;        	
+    	}else{
+    		defaultNamespaceURI = namespaceUri.intern();
+    	}
     }
 
     public String getDefaultNamespaceURI() {
