@@ -41,7 +41,7 @@ public class XMLStreamReaderReader extends XMLReader {
     private ErrorHandler errorHandler;
     private int depth = 0;
     private UnmarshalNamespaceContext unmarshalNamespaceContext;
-    
+
     public XMLStreamReaderReader() {
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
     }
@@ -50,8 +50,9 @@ public class XMLStreamReaderReader extends XMLReader {
     public ContentHandler getContentHandler() {
         return contentHandler;
     }
+
     @Override
-    public void setContentHandler (ContentHandler handler) {    
+    public void setContentHandler (ContentHandler handler) {
         this.contentHandler = handler;
         if(handler.getClass() == UnmarshalRecord.class){
             ((UnmarshalRecord)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
@@ -79,6 +80,9 @@ public class XMLStreamReaderReader extends XMLReader {
 
     @Override
     public void parse(InputSource input) throws SAXException {
+        if(null == contentHandler) {
+            return;
+        }
         if(input instanceof XMLStreamReaderInputSource) {
             XMLStreamReader xmlStreamReader = ((XMLStreamReaderInputSource) input).getXmlStreamReader();
             unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
@@ -89,40 +93,49 @@ public class XMLStreamReaderReader extends XMLReader {
     public void parse(String systemId) throws SAXException {}
 
     private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
-    	try{    
-            getContentHandler().startDocument();
-            parseEvent(xmlStreamReader);	
-            while(depth > 0 && xmlStreamReader.hasNext()) {
+        try {
+            contentHandler.startDocument();
+            parseEvent(xmlStreamReader);
+            while(depth > 0) {
                 xmlStreamReader.next();
-                parseEvent(xmlStreamReader);                            
+                parseEvent(xmlStreamReader);
             }
-            getContentHandler().endDocument();
+            contentHandler.endDocument();
         }catch(XMLStreamException e) {
             throw new RuntimeException(e);
         }
     }
-    
-    private void parseEvent(XMLStreamReader xmlStreamReader) throws SAXException {
-        if(null == getContentHandler()) {
-            return;
-        }
 
+    private void parseEvent(XMLStreamReader xmlStreamReader) throws SAXException {
         switch (xmlStreamReader.getEventType()) {
-            case XMLStreamReader.ATTRIBUTE:  {
-                break;
-            }
-            case XMLStreamReader.CDATA: {
-                if(null == lexicalHandler) {
-                    getContentHandler().characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+            case XMLStreamReader.START_ELEMENT: {
+                depth++;
+                String prefix = xmlStreamReader.getPrefix();
+                String localName = xmlStreamReader.getLocalName();
+                if(null == prefix || prefix.length() == 0) {
+                    contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, localName, new IndexedAttributeList(xmlStreamReader));
                 } else {
-                    lexicalHandler.startCDATA();
-                    getContentHandler().characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
-                    lexicalHandler.endCDATA();
+                    contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName, new IndexedAttributeList(xmlStreamReader));
                 }
                 break;
             }
+            case XMLStreamReader.END_ELEMENT: {
+                depth--;
+                String prefix = xmlStreamReader.getPrefix();
+                String localName = xmlStreamReader.getLocalName();
+                if(null == prefix || prefix.length() == 0) {
+                    contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, localName);
+                } else {
+                    contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName);
+                }
+                break;
+            }
+            case XMLStreamReader.PROCESSING_INSTRUCTION: {
+                contentHandler.processingInstruction(xmlStreamReader.getPITarget(), xmlStreamReader.getPIData());
+                break;
+            }
             case XMLStreamReader.CHARACTERS: {
-                getContentHandler().characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
                 break;
             }
             case XMLStreamReader.COMMENT: {
@@ -131,59 +144,39 @@ public class XMLStreamReaderReader extends XMLReader {
                 }
                 break;
             }
-            case XMLStreamReader.DTD: {
-                break;
-            }
-            case XMLStreamReader.END_DOCUMENT: {
-                depth--;
-                return;
-            }
-            case XMLStreamReader.END_ELEMENT: {
-                depth--;
-                String prefix = xmlStreamReader.getPrefix();
-                if(null == prefix || prefix.length() == 0) {
-                    getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName());                    
-                } else {
-                    getContentHandler().endElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + XMLConstants.COLON + xmlStreamReader.getLocalName());                    
-                }
-                break;
-            }
-            case XMLStreamReader.ENTITY_DECLARATION: {
-                break;
-            }
-            case XMLStreamReader.ENTITY_REFERENCE: {
-                break;
-            }
-            case XMLStreamReader.NAMESPACE: {
-                break;
-            }
-            case XMLStreamReader.NOTATION_DECLARATION: {
-                break;
-            }
-            case XMLStreamReader.PROCESSING_INSTRUCTION: {
-                getContentHandler().processingInstruction(xmlStreamReader.getPITarget(), xmlStreamReader.getPIData());
-                break;
-            }
             case XMLStreamReader.SPACE: {
-                char[] characters = xmlStreamReader.getTextCharacters(); 
-                getContentHandler().characters(characters, 0, characters.length);
+                contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
                 break;
             }
             case XMLStreamReader.START_DOCUMENT: {
                 depth++;
                 break;
             }
-            case XMLStreamReader.START_ELEMENT: {
-                depth++;
-                String prefix = xmlStreamReader.getPrefix();
-                if(null == prefix || prefix.length() == 0) {
-                    getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
+            case XMLStreamReader.END_DOCUMENT: {
+                depth--;
+                return;
+            }
+            case XMLStreamReader.ENTITY_REFERENCE: {
+                break;
+            }
+            case XMLStreamReader.ATTRIBUTE: {
+                break;
+            }
+            case XMLStreamReader.DTD: {
+                break;
+            }
+            case XMLStreamReader.CDATA: {
+                char[] characters = xmlStreamReader.getText().toCharArray();
+                if(null == lexicalHandler) {
+                    contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
                 } else {
-                    getContentHandler().startElement(xmlStreamReader.getNamespaceURI(), xmlStreamReader.getLocalName(), prefix + XMLConstants.COLON + xmlStreamReader.getLocalName(), new IndexedAttributeList(xmlStreamReader));                    
+                    lexicalHandler.startCDATA();
+                    contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                    lexicalHandler.endCDATA();
                 }
                 break;
             }
-        }       
+        }
     }
 
     private static class IndexedAttributeList implements Attributes {
