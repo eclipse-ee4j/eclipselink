@@ -580,6 +580,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             mapping.setCascadeRefresh(true);
         } else if(type.equals(CascadeType.REMOVE.name())) {
             mapping.setCascadeRemove(true);
+        } else if (type.equals(CascadeType.DETACH.name())) {
+            mapping.setCascadeDetach(true);
         }
     }
     

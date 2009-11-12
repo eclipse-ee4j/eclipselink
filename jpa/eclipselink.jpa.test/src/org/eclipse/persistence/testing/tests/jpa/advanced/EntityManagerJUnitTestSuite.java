@@ -253,6 +253,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
@@ -2482,6 +2483,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp = em.find(Employee.class, id);
             em.remove(emp);
             commitTransaction(em);
+        }
+    }
+
+    public void testCascadeDetach() {
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+            Employee emp = (Employee)em.createQuery("Select e from Employee e where e.managedEmployees is not empty").getResultList().get(0);
+            emp.getManagedEmployees().size();
+            em.detach(emp);
+            assertFalse("Did not cascade detach", em.contains(emp.getManagedEmployees().iterator().next()));
         }
     }
 

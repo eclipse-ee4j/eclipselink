@@ -51,6 +51,7 @@ public abstract class DescriptorIterator {
     protected boolean shouldIterateOnPrimitives;
     protected boolean shouldBreak;
     protected int cascadeDepth;// see static constants below
+    protected CascadeCondition cascadeCondition;
 
     /**
      * Construct a typical iterator:
@@ -74,6 +75,7 @@ public abstract class DescriptorIterator {
         this.shouldIterateOnAggregates = false;
         this.shouldIterateOnPrimitives = false;
         this.shouldBreak = false;
+        this.cascadeCondition = new CascadeCondition();
     }
 
     public int getCascadeDepth() {
@@ -250,7 +252,7 @@ public abstract class DescriptorIterator {
      * reference objects.
      */
     public void iterateReferenceObjectForMapping(Object referenceObject, DatabaseMapping mapping) {
-        if (!(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()))) {
+        if (this.cascadeCondition.shouldNotCascade(mapping)) {
             return;
         }
 
@@ -312,6 +314,10 @@ public abstract class DescriptorIterator {
 
     public void setCascadeDepth(int cascadeDepth) {
         this.cascadeDepth = cascadeDepth;
+    }
+    
+    public void setCascadeCondition(CascadeCondition cascadeCondition){
+        this.cascadeCondition = cascadeCondition;
     }
 
     public void setCurrentDescriptor(ClassDescriptor currentDescriptor) {
@@ -466,6 +472,12 @@ public abstract class DescriptorIterator {
         // start the recursion
         if ((getCurrentDescriptor() != null) && (!shouldCascadeNoParts())  && !this.shouldBreak()) {
             iterateReferenceObjects(sourceObject);
+        }
+    }
+    
+    public class CascadeCondition{
+        public boolean shouldNotCascade(DatabaseMapping mapping){
+            return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));
         }
     }
 }

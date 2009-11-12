@@ -33,6 +33,7 @@ import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator.CascadeCondition;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
@@ -46,6 +47,7 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -5245,6 +5247,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      */
     public void unregisterObject(Object clone, int cascadeDepth) {
+        unregisterObject(clone, cascadeDepth, false);
+    }
+    /**
+     * INTERNAL:
+     * Unregister the object with the unit of work.
+     * This can be used to delete an object that was just created and is not yet persistent.
+     * Delete object can also be used, but will result in inserting the object and then deleting it.
+     */
+    public void unregisterObject(Object clone, int cascadeDepth, boolean forDetach) {
         // Allow register to be called with null and just return true
         if (clone == null) {
             return;
@@ -5267,6 +5278,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // If object exists in IM remove it from the IM and also from clone mapping.
                 getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, object.getClass(), getCurrentDescriptor(), object);
                 getCloneMapping().remove(object);
+                
+                //remove from deleted objects.
+                getDeletedObjects().remove(object);
 
                 // Remove object from the new object cache				
                 // PERF: Avoid initialization of new objects if none.
@@ -5281,6 +5295,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         iterator.setSession(this);
         iterator.setCascadeDepth(cascadeDepth);
+        if (forDetach){
+            CascadeCondition detached = iterator.new CascadeCondition(){
+                public boolean shouldNotCascade(DatabaseMapping mapping){
+                    return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
+                }
+            };
+            iterator.setCascadeCondition(detached);
+            iterator.setShouldIterateOverUninstantiatedIndirectionObjects(false);
+        }
         iterator.startIterationOn(implementation);
     }
 

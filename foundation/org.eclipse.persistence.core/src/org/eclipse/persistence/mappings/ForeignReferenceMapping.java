@@ -76,6 +76,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected boolean cascadeMerge;
     protected boolean cascadeRefresh;
     protected boolean cascadeRemove;
+    protected boolean cascadeDetach;
     
     /** Flag used to determine if we need to weave the transient annotation on weaved fields.*/
     protected boolean requiresTransientWeavedFields;
@@ -890,6 +891,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * PUBLIC:
+     * Check cascading value for the detach operation.
+     */
+    public boolean isCascadeDetach() {
+        return this.cascadeDetach;
+    }
+
+    /**
+     * PUBLIC:
      * Check cascading value for the CREATE operation.
      */
     public boolean isCascadePersist() {
@@ -1016,6 +1025,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         setCascadeMerge(value);
         setCascadeRefresh(value);
         setCascadeRemove(value);
+        setCascadeDetach(value);
+    }
+
+    /**
+     * PUBLIC:
+     * Sets the cascading for the JPA detach operation.
+     */
+    public void setCascadeDetach(boolean value) {
+        this.cascadeDetach = value;
     }
 
     /**

@@ -2047,8 +2047,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) getUnitOfWork();
-            uowImpl.getDeletedObjects().remove(entity);
-            uowImpl.unregisterObject(entity);
+            uowImpl.unregisterObject(entity, 0, true);
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw exception;
