@@ -114,6 +114,11 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
 
+        <!-- Create needed directories -->
+        <mkdir dir="${oracle_test.classes.dir}"/>
+        <mkdir dir="${oracle_test.run.dir}"/>
+        <mkdir dir="${oracle_test.report.dir}"/>
+        
         <!-- Determine availability of compile dependencies   -->
         <available file="${oracle_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
