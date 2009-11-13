@@ -733,9 +733,15 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // return new ClassType(factory);
         cv_new.visitTypeInsn(NEW, classDetails.getClassName());
         cv_new.visitInsn(DUP);
-        cv_new.visitVarInsn(ALOAD, 1);
-        cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
-        
+        if (!classDetails.canWeaveConstructorOptimization()){
+            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V");
+            cv_new.visitInsn(ARETURN);
+            cv_new.visitMaxs(0, 0);
+            return;
+        } else {
+            cv_new.visitVarInsn(ALOAD, 1);
+            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
+        }
         cv_new.visitInsn(ARETURN);
         cv_new.visitMaxs(0, 0);
         

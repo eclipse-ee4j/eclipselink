@@ -38,6 +38,7 @@ public class LargeProject extends Project {
     
     public LargeProject () {
         super();
+        fieldOnlySetThroughConstructor = 2;
     }
     
     public LargeProject (String name) {

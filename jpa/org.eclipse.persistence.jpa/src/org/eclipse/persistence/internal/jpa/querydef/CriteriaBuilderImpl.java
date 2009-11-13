@@ -1378,7 +1378,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
             if (((Collection)((ConstantExpression)((InternalSelection)collection).getCurrentNode()).getValue()).isEmpty()){
                 return conjunction();
             }else{
-            return disjunction();
+                return disjunction();
             }
         }
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER).equal(0), buildList(collection), "isEmpty");

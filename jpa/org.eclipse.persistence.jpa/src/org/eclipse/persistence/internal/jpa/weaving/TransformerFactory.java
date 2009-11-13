@@ -131,7 +131,7 @@ public class TransformerFactory {
     public void buildClassDetailsAndModifyProject() {
         if (entityClasses != null && entityClasses.size() > 0) {
             // scan thru list building details of persistent classes
-            for (MetadataClass metaClass : entityClasses) {                
+            for (MetadataClass metaClass : entityClasses) {
                 // check to ensure that class is present in project
                 ClassDescriptor descriptor = findDescriptor(session.getProject(), metaClass.getName());
                 if (descriptor == null) {
@@ -149,6 +149,8 @@ public class TransformerFactory {
                     }
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);
+                     
+                    classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);
 
                     if (!unMappedAttributes.isEmpty()){
                         addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
@@ -318,7 +320,7 @@ public class TransformerFactory {
 
     /**
      *  INTERNAL:
-     *  Store a set of attribute mappings on the given ClassDetails that correspont to the given class.
+     *  Store a set of attribute mappings on the given ClassDetails that correspond to the given class.
      *  Return the list of mappings that is not specifically found on the given class.  These attributes will 
      *  be found on MappedSuperclasses.
      */

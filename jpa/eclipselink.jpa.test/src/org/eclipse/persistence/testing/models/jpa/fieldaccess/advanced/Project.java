@@ -48,6 +48,9 @@ public class Project implements Serializable {
     @Transient
     public int post_load_count = 0;
     
+    @Transient
+    public int fieldOnlySetThroughConstructor=0;
+    
     @Id
     @GeneratedValue(strategy=SEQUENCE, generator="FA_PROJ_SEQ_GENERATOR")
     @SequenceGenerator(name="FA_PROJ_SEQ_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
@@ -69,6 +72,8 @@ public class Project implements Serializable {
     private Collection<Employee> teamMembers;
 
     public Project () {
+        fieldOnlySetThroughConstructor = 1;
+        //setting collections is bad practice as it reduces performance (see 292385)
         this.teamMembers = new Vector<Employee>();
     }
     
@@ -167,5 +172,9 @@ public class Project implements Serializable {
     @PostLoad
     public void postLoad() {
         ++post_load_count;
+    }
+    
+    public int getFieldOnlySetThroughConstructor(){
+        return fieldOnlySetThroughConstructor;
     }
 }
