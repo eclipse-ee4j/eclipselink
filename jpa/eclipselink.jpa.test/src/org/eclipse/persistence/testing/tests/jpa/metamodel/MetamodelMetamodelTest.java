@@ -17,6 +17,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.math.BigInteger;
@@ -67,6 +68,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
+import org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
@@ -110,8 +112,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 108;//102;//100;//94;
-    public static final int METAMODEL_ALL_TYPES = 40;//37;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 121;//108;//102;//100;//94;
+    public static final int METAMODEL_ALL_TYPES = 43;//40;//37;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
     
     public MetamodelMetamodelTest() {
@@ -221,6 +223,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC7_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC8_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC9_DI86_Embeddable_IdClass_keyType_Method"));
+        // These 3 test verify the workaround for 294811
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_294811_UC10_DI86_Embeddable_IdClass_keyType_Method"));        
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_294811_UC12_DI86_Embedded_keyType_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_294811_UC13_DI86_Embedded_keyType_Method"));        
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetButNameAttributeIsDefaulted"));
         suite.addTest(new MetamodelMetamodelTest("testMapAtributeElementTypeWhenMapKeySetAndNameAttributeSet"));
         // Pending implementation
@@ -4812,7 +4818,130 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
-    
+
+    // This test verifies the workaround for 294811
+    public void testMapAttribute_getKeyType_294811_UC10_DI86_Embeddable_IdClass_keyType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Computer, ?, ?> anAttribute = 
+                    entityComputer_.getMap("enclosuresUC10");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC10: no targetEntity, no MapKey attribute, but generics are set (MapKey has an IdClass with an Embeddable)
+                //@OneToMany(mappedBy="computerUC10", cascade=ALL, fetch=EAGER)
+                //@MapKey // key defaults to an instance of the composite pk class
+                //private Map<EnclosureIdClassPK, Enclosure> enclosuresUC10;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(EnclosureIdClassPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    // This test verifies the workaround for 294811
+    public void testMapAttribute_getKeyType_294811_UC13_DI86_Embedded_keyType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Computer, ?, ?> anAttribute = 
+                    entityComputer_.getMap("positionUniUC13");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC13:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
+                // However, here we make the owning OneToMany - unidirectional and an effective ManyToMany
+                //@MapKey // key defaults to an instance of the composite pk class
+                //private Map<EmbeddedPK, GalacticPosition> positionUniUC13;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(EmbeddedPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
+    // This test verifies the workaround for 294811
+    public void testMapAttribute_getKeyType_294811_UC12_DI86_Embedded_keyType_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+                assertNotNull(entityComputer_);
+
+                // Actual Test Case
+                /**
+                 * Return the type representing the key type of the map.
+                 * @return type representing key type
+                 */
+                //Type<K> getKeyType();
+                MapAttribute<? super Computer, ?, ?> anAttribute = 
+                    entityComputer_.getMap("positionUC12");
+                // verify the key type is the Map key - not the managedType PK
+                Class keyJavaType = anAttribute.getKeyJavaType();
+                // UC12:  mapKey defined via generics and is an Embeddable (EmbeddedId) java class defined as an IdClass on the element(value) class
+                //@OneToMany(mappedBy="computerUC12", cascade=ALL, fetch=EAGER)
+                //@MapKey // key defaults to an instance of the composite pk class
+                //private Map<EmbeddedPK, GalacticPosition> positionUC12;
+                Type keyType = anAttribute.getKeyType(); 
+                assertEquals(EmbeddedPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
+                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
+                assertNotNull(keyType);
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+
     public void testMapAttribute_getKeyType_UC9_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;
@@ -5657,7 +5786,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Actual Test Case
                 EntityTypeImpl<ArrayProcessor> entityArrayProcessor_ =(EntityTypeImpl) metamodel.entity(ArrayProcessor.class);
                 assertNotNull(entityArrayProcessor_);
-                EntityTypeImpl<Processor> entityProcessor_ =(EntityTypeImpl) metamodel.entity(Processor.class);
+                EntityTypeImpl<Processor> entityProcessor_ = (EntityTypeImpl) metamodel.entity(Processor.class);
                 assertNotNull(entityProcessor_);
                 
                 // verify all Types have their javaClass set

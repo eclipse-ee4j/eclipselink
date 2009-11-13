@@ -24,6 +24,7 @@ public class MetamodelTableCreator extends TableCreator {
      * 
      * DDL schema cleanup order
 DROP TABLE CMP3_MM_HIST_EMPLOY
+DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC8
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC7
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAPUC4
@@ -70,6 +71,10 @@ DROP TABLE CMP3_MM_COMPUTER
         //addTableDefinition(buildARRAYPROCESSORTable());
         //addTableDefinition(buildLOCATIONTable());
         addTableDefinition(buildGALACTICPOSITIONTable());
+        // Test ms-ms-entity chain with idclass above id
+        addTableDefinition(buildMS_MS_Entity_Leaf_Table());
+
+        
         // 1:n
         addTableDefinition(buildMANUFACTURER_COMPUTER_JOINTable());
         addTableDefinition(buildMANUFACTURER_CORPCOMPUTER_JOINTable());
@@ -79,13 +84,14 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC4_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC7_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable());        
-        addTableDefinition(buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable());        
+        //addTableDefinition(buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable());        
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
         addTableDefinition(buildBOARD_PROCESSOR_JOINTable());
         addTableDefinition(buildCOMPUTER_BOARD_JOINTable());
         // n:n
-        addTableDefinition(buildCOMPUTER_USER_JOINTable());        
+        //addTableDefinition(buildCOMPUTER_USER_JOINTable());
+        
     }
  	
 
@@ -799,6 +805,86 @@ DROP TABLE CMP3_MM_COMPUTER
         
         return table;
     }
+
+    public static TableDefinition buildMS_MS_Entity_Leaf_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_MSMSENTITY_LEAF");
+
+        // From (MS)-MS-Entity root
+        FieldDefinition field13 = new FieldDefinition();
+        field13.setName("TYPE");
+        field13.setTypeName("VARCHAR");
+        field13.setSize(80);
+        field13.setShouldAllowNull(false);
+        field13.setIsPrimaryKey(true);
+        field13.setUnique(false);
+        field13.setIsIdentity(true);
+        table.addField(field13);
+
+        FieldDefinition field14 = new FieldDefinition();
+        field14.setName("LENGTH");
+        field14.setTypeName("VARCHAR");
+        field14.setSize(80);
+        field14.setShouldAllowNull(false);
+        field14.setIsPrimaryKey(true);
+        field14.setUnique(false);
+        field14.setIsIdentity(true);
+        table.addField(field14);
+
+        FieldDefinition field15 = new FieldDefinition();
+        field15.setName("WIDTH");
+        field15.setTypeName("VARCHAR");
+        field15.setSize(80);
+        field15.setShouldAllowNull(false);
+        field15.setIsPrimaryKey(true);
+        field15.setUnique(false);
+        field15.setIsIdentity(true);
+        table.addField(field15);
+
+        // From MS-(MS)-Entity center
+        FieldDefinition field = new FieldDefinition();
+        field.setName("MSMSENTITY_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);//true);
+        //field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);//true);
+        //field.setIsIdentity(true);
+        table.addField(field);
+        
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("DECLAREDCENTERSTRINGFIELD");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(80);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);
+
+        FieldDefinition field3 = new FieldDefinition();
+        field3.setName("DECLAREDLEAFSTRINGFIELD");
+        field3.setTypeName("VARCHAR");
+        field3.setSize(80);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        table.addField(field3);
+
+        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("MSMSENTITY_VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);        
+        return table;
+    }
     
     public static TableDefinition buildMEMORYTable() {
         TableDefinition table = new TableDefinition();
@@ -1490,7 +1576,7 @@ DROP TABLE CMP3_MM_COMPUTER
         return table;
     }
 
-    public static TableDefinition buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable() {
+/*    public static TableDefinition buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_ENCL_MAPUC9");
 
@@ -1513,11 +1599,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setIsPrimaryKey(false);
         field2.setUnique(false);
         field2.setIsIdentity(false);
-        field2.setForeignKeyFieldName("CMP3_MM_ENCLOSURE.PERSON_ID");
-        table.addField(field2);        
+        //field2.setForeignKeyFieldName("CMP3_MM_ENCLOSURE.PERSON_ID"); // need composite PK reference
+        //table.addField(field2);        
 
         return table;
-    }
+    }*/
     
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable() {
         TableDefinition table = new TableDefinition();

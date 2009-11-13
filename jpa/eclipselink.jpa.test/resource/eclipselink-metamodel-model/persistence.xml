@@ -16,6 +16,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor</class>
         <!-- class>org.eclipse.persistence.testing.models.jpa.metamodel.ScalarProcessor</class-->                
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor</class>        
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf</class>        
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
              <property name="eclipselink.session-name" value="metamodel"/>

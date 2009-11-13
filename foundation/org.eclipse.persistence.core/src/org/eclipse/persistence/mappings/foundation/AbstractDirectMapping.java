@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing 
+ *       should return attributeClassification class in getMapKeyTargetType when 
+ *       accessor.attributeField is null in the absence of a MapKey annotation
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
@@ -852,7 +855,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * @return
      */
     public Class getMapKeyTargetType(){
-        return getAttributeAccessor().getAttributeClass();
+        Class aClass = getAttributeAccessor().getAttributeClass();
+        // 294765: check the attributeClassification when the MapKey annotation is not specified
+        if(null == aClass) {
+            aClass = getAttributeClassification();
+        }
+        return aClass;
     }
     
     /**

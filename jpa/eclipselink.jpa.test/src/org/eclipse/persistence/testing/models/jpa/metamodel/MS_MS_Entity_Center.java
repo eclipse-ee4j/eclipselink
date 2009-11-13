@@ -8,28 +8,40 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
- *       of the Metamodel implementation for EclipseLink 2.0 release involving
- *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *     09/23/2009-2.0  mobrien 
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static javax.persistence.CascadeType.ALL;
-
-import java.util.Collection;
-import java.util.HashSet;
-
+import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
 
 @MappedSuperclass
-public abstract class Corporation extends Person {
+public abstract class MS_MS_Entity_Center extends MS_MS_Entity_Root {
+    
+    //@Id // see 288972
+    // InstanceVariableAttributeAccessor testing
+    @Column(name="MSMSENTITY_ID")    
+    private Integer ident;
 
-    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    // Internally processed as a @ManyToMany because it is on a MappedSuperclass
-    @OneToMany(cascade=ALL)//, mappedBy="corporation")
-    //@JoinColumn(name="CORP_COMPUTERS")
-    private Collection<Computer> corporateComputers = new HashSet<Computer>();
+    private String declaredCenterStringField;
+    
+    public Integer getIdent() {
+        return ident;
+    }
+
+    public void setIdent(Integer ident) {
+        this.ident = ident;
+    }
+
+    public String getDeclaredCenterStringField() {
+        return declaredCenterStringField;
+    }
+
+    public void setDeclaredCenterStringField(String declaredCenterStringField) {
+        this.declaredCenterStringField = declaredCenterStringField;
+    }
+    
     
 }

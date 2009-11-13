@@ -19,7 +19,9 @@
  *         keep workaround for bug# 294765 for Basic keyType when MapKey annotation not specified.
  *         keep workaround for bug# 294811 for Entity, Embeddable, Transient keyType support 
  *           when MapKey name attribute not specified (MapContainerPolicy) 
- *         add BasicMap support via DirectMapContainerPolicy         
+ *         add BasicMap support via DirectMapContainerPolicy
+ *     13/10/2009-2.0  mobrien - 294765 - fix allows removal of workaround for
+ *        when MapKey annotation not specified          
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -150,17 +152,6 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
                 // The cast below is unavoidable because getKeyMapping() is not overridden from the MapContainerPolicy superclass
                 keyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
                 policyKeyType = keyMapping.getMapKeyTargetType();
-                /**
-                 * If the policyKeyType is not found - it is because the keyMapping is a Basic (DirectToFieldMapping implements MapKeyMapping).
-                 * Normally we get the pk type via the referenceClass on a OneToOneMapping for example.
-                 * However, in this case MappedKeyMapContainerPolicy.keyMapping.attributeAccessor.attributeField is null - 
-                 * we workaround this by getting the key from the attributeClassification instead.
-                 * See UC1a, UC7
-                 */
-                if(null == policyKeyType) {
-                    // This workaround for bug# 294765 should be moved up into AbstractDirectMapping.getMapKeyTargetType
-                    policyKeyType = ((DatabaseMapping)keyMapping).getAttributeClassification();
-                }
             } else {
                 /**
                  * Assume we have a MapContainerPolicy general superclass with a lazy-loaded keyType 
@@ -187,7 +178,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
             // Use the PK of the element - not the one on the managedType
             // Case: @MapKey private Map<K,V> // no name column specified
             if(policyElementDescriptor != null && policyElementDescriptor.getCMPPolicy() != null) {
-                // See UC9, UC10, UC12(embeddable), UC13
+                // See UC10, UC12(embeddable), UC13
                 // This workaround for bug# 294811 should be moved up into the MapKeyMapping.getMapKeyTargetType() interface method
                 javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
             }
