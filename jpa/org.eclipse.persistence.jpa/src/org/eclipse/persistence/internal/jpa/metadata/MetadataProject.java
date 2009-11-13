@@ -39,6 +39,8 @@
  *         1 or more PK fields already exist on the descriptor. 
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/13/2009-2.0 Guy Pelletier 
+ *       - 293629: An attribute referenced from orm.xml is not recognized correctly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -262,21 +264,8 @@ public class MetadataProject {
     protected void addAccessor(ClassAccessor accessor) {
         MetadataDescriptor descriptor = accessor.getDescriptor();
         
-        // Set the persistence unit meta data (if there is any) on the descriptor.
-        if (m_persistenceUnitMetadata != null) {
-            descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
-            descriptor.setIgnoreDefaultMappings(m_persistenceUnitMetadata.excludeDefaultMappings());
-            
-            // Set the persistence unit defaults (if there are any) on the descriptor.
-            XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
-            
-            if (persistenceUnitDefaults != null) {
-                descriptor.setDefaultAccess(persistenceUnitDefaults.getAccess());
-                descriptor.setDefaultSchema(persistenceUnitDefaults.getSchema());
-                descriptor.setDefaultCatalog(persistenceUnitDefaults.getCatalog());
-                descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
-            }
-        }
+        // Process the persistence unit meta data (if there is any).
+        processPersistenceUnitMetadata(descriptor);
 
         // Add the descriptor to the actual EclipseLink Project.
         m_session.getProject().addDescriptor(descriptor.getClassDescriptor());
@@ -444,15 +433,24 @@ public class MetadataProject {
         
         // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
         if (null != className && ! m_metamodelMappedSuperclasses.containsKey(className)) {
+            MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
+            
             // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
-            accessor.getDescriptor().setClassAccessor(accessor);
+            metadataDescriptor.setClassAccessor(accessor);
+            
+            // Make sure you apply the persistence unit metadata and defaults.
+            processPersistenceUnitMetadata(metadataDescriptor);
+            
+            // After the pu metadata and defaults have been applied, it is safe to process the access type.
             accessor.processAccessType();
+            
             // Set the referenceClass for Id mappings
             // Generics Handler: Check if the referenceType is not set for Collection accessors            
             accessor.addAccessors();
+            
             // Add the accessor to our custom Map keyed on className for separate processing in stage2
             m_metamodelMappedSuperclasses.put(className, accessor);
-            MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
+            
             // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
             RelationalDescriptor relationalDescriptor = (RelationalDescriptor)metadataDescriptor.getClassDescriptor();
             
@@ -461,6 +459,7 @@ public class MetadataProject {
             // There will be no conflict with customer values
             // The descriptor is assumed never to be null
             metadataDescriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
+            
             // Add PK field to the relationalDescriptor only if there are none yet - or "will be none"
             // Check accessor collection on the metadataDescriptor (note: getIdAttributeName() and getIdAttributeNames() are not populated yet - so are unavailable
             // We will check for an IdAccessor instance as one of the accessors directly
@@ -1035,6 +1034,29 @@ public class MetadataProject {
                 if (m_interfaceAccessors.containsKey(interfaceClass)) {
                     m_interfaceAccessors.get(interfaceClass).addEntityAccessor(accessor);
                 }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process any and all persistence unit metadata and defaults to the given 
+     * descriptor.
+     */
+    protected void processPersistenceUnitMetadata(MetadataDescriptor descriptor) {
+        // Set the persistence unit meta data (if there is any) on the descriptor.
+        if (m_persistenceUnitMetadata != null) {
+            descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
+            descriptor.setIgnoreDefaultMappings(m_persistenceUnitMetadata.excludeDefaultMappings());
+            
+            // Set the persistence unit defaults (if there are any) on the descriptor.
+            XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
+            
+            if (persistenceUnitDefaults != null) {
+                descriptor.setDefaultAccess(persistenceUnitDefaults.getAccess());
+                descriptor.setDefaultSchema(persistenceUnitDefaults.getSchema());
+                descriptor.setDefaultCatalog(persistenceUnitDefaults.getCatalog());
+                descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
             }
         }
     }

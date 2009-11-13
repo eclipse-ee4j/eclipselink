@@ -45,7 +45,7 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     public AttributeOverrideMetadata(MetadataAnnotation attributeOverride, MetadataAccessibleObject accessibleObject) {
         super(attributeOverride, accessibleObject);
 
-        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessibleObject, getName());
+        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessibleObject);
     }
 
     /**
@@ -92,12 +92,7 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
         super.initXMLObject(accessibleObject, entityMappings);
 
         // Initialize single objects.
-        // NOTE: We must do this first since this will set the attribute name
-        // on the column to be the attribute name from the accessible object.
         initXMLObject(m_column, accessibleObject);
-        
-        // Now, make sure the correct attribute name is set on the column.
-        m_column.setAttributeName(getName());
     }
     
     /**

@@ -60,7 +60,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     public BasicMapAccessor(MetadataAnnotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicMap, accessibleObject, classAccessor);
         
-        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), accessibleObject, getAttributeName());
+        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), accessibleObject);
 
         MetadataAnnotation keyConvert = (MetadataAnnotation) basicMap.getAttribute("keyConverter");
         if (keyConvert != null) {
@@ -72,7 +72,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
             m_valueConverter = (String)valueConvert.getAttribute("value");
         }
         
-        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), accessibleObject, getAttributeName()));
+        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), accessibleObject));
         setFetch((String) basicMap.getAttribute("fetch"));
     }
    

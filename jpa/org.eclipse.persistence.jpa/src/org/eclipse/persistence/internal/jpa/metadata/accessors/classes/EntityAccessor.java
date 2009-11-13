@@ -186,19 +186,18 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         MappedSuperclassAccessor accessor = getProject().getMappedSuperclassAccessor(metadataClass);
 
         if (accessor == null) {
-            // If the mapped superclass was not defined in XML then check 
-            // for a MappedSuperclass annotation unless the 
-            // addMappedSuperclassAccessors flag is false, meaning we are
-            // pre-processing for the canonical model and any and all 
-            // mapped superclasses should have been discovered and we need
-            // not investigate this class further.
+            // If the mapped superclass was not defined in XML then check for a 
+            // MappedSuperclass annotation unless the addMappedSuperclassAccessors 
+            // flag is false, meaning we are pre-processing for the canonical 
+            // model and any and all mapped superclasses should have been 
+            // discovered and we need not investigate this class further.
             if (addMappedSuperclassAccessors) {
                 if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
                     m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
-                    // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
-                    MappedSuperclassAccessor msAccessor = new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject());
-                    // process what type of access is on the superclass (in case inheriting members differ in their access type)
-                    getProject().addMetamodelMappedSuperclass(metadataClass, msAccessor);
+                    
+                    // 266912: process and store mappedSuperclass descriptors on 
+                    // the project for later use by the Metamodel API.
+                    getProject().addMetamodelMappedSuperclass(metadataClass, new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject()));
                 }
             }
         } else {
@@ -209,11 +208,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // superclass accessor is reloaded for a sub entity, its descriptor 
             // is set to that entity's descriptor.
             if (addMappedSuperclassAccessors) {
-                // Reload the accessor from XML to get our own instance not already on the project
-                MappedSuperclassAccessor msAccessor = reloadMappedSuperclass(accessor, getDescriptor());
-                m_mappedSuperclasses.add(msAccessor);
-                // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
-                // Note: we must again reload our accessor from XML or we will be sharing instances of the descriptor
+                // Reload the accessor from XML to get our own instance not 
+                // already on the project
+                m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
+                
+                // 266912: process and store mappedSuperclass descriptors on the 
+                // project for later use by the Metamodel API Note: we must 
+                // again reload our accessor from XML or we will be sharing 
+                // instances of the descriptor
                 getProject().addMetamodelMappedSuperclass(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
             } else {
                 m_mappedSuperclasses.add(accessor);

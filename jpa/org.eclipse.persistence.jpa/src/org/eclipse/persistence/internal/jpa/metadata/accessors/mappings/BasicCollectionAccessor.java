@@ -77,7 +77,7 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
 
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata((MetadataAnnotation) basicCollection.getAttribute("valueColumn"), accessibleObject, getAttributeName());
+            m_valueColumn = new ColumnMetadata((MetadataAnnotation) basicCollection.getAttribute("valueColumn"), accessibleObject);
         }
         
         // Set the collection table if one is present.

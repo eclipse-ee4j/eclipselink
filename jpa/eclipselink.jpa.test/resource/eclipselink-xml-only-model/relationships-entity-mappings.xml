@@ -18,6 +18,11 @@
     <named-query name="findAllXMLItemsByName">
         <query>SELECT OBJECT(item) FROM XMLItem item WHERE item.name = ?1</query>
     </named-query>
+    <mapped-superclass class="Human">
+        <attributes>
+            <transient name="new"/>
+        </attributes>
+    </mapped-superclass>
     <entity name="XMLCustomer" class="Customer">
         <table name="XML_CUSTOMER"/>
         <table-generator name="CUSTOMER_GENERATOR_TABLE" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>

@@ -17,10 +17,8 @@
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -34,7 +32,6 @@ public class ColumnMetadata extends DirectColumnMetadata {
     private Integer m_scale;
     private Integer m_length;
     private Integer m_precision;
-    private String m_attributeName;
     private String m_table;
     
     /**
@@ -44,21 +41,12 @@ public class ColumnMetadata extends DirectColumnMetadata {
     public ColumnMetadata() {
         super("<column>");
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public ColumnMetadata(MetadataAnnotation column, MetadataAccessibleObject accessibleObject) {
-        this(column, accessibleObject, "");
-    }
 
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(MetadataAnnotation column, MetadataAccessibleObject accessibleObject, String attributeName) {
+    public ColumnMetadata(MetadataAnnotation column, MetadataAccessibleObject accessibleObject) {    
 		super(column, accessibleObject);
-        
-        m_attributeName = attributeName;
         
         if (column != null) {
             // Apply the values from the column annotation.
@@ -80,8 +68,8 @@ public class ColumnMetadata extends DirectColumnMetadata {
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(MetadataAccessibleObject accessibleObject, String attributeName) {
-        this(null, accessibleObject, attributeName);
+    public ColumnMetadata(MetadataAccessibleObject accessibleObject) {
+        this(null, accessibleObject);
     }
     
     /**
@@ -112,13 +100,6 @@ public class ColumnMetadata extends DirectColumnMetadata {
         }
         
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getAttributeName() {
-        return m_attributeName;
     }
 
     /**
@@ -172,36 +153,6 @@ public class ColumnMetadata extends DirectColumnMetadata {
 	 */
 	public Boolean getUnique() {
 		return m_unique;
-	}
-
-    /**
-     * INTERNAL:
-     */
-    public String getDefaultAttributeName(MetadataProject project) {
-        if (project != null && project.getPersistenceUnitMetadata() != null && project.getPersistenceUnitMetadata().isDelimitedIdentifiers()){
-            return getAttributeName();
-        }
-        return m_attributeName.toUpperCase();
-    }
-	
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
-        super.initXMLObject(accessibleObject, entityMappings);
-        
-        m_attributeName = accessibleObject.getAttributeName();
-    }
-
-    /**
-	 * INTERNAL:
-     * The attribute name is used when logging messages. Users should call this 
-     * method if they would like to override the attribute name for this column
-     * @see AttributeOverrideMetadata initXMLObject.
-	 */
-	public void setAttributeName(String attributeName) {
-		m_attributeName = attributeName;
 	}
 	
 	/**

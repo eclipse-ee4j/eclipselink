@@ -111,7 +111,7 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Set the column metadata if one if present.
-        m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject, getAttributeName());
+        m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject);
         
         // Set the mutable value if one is present.
         MetadataAnnotation mutable = getAnnotation(Mutable.class);
@@ -225,7 +225,7 @@ public class BasicAccessor extends DirectAccessor {
 
         // Default a column if necessary.
         if (m_column == null) {
-            m_column = new ColumnMetadata(accessibleObject, getAttributeName());
+            m_column = new ColumnMetadata(accessibleObject);
         } else {
             // Initialize single objects.
             initXMLObject(m_column, accessibleObject);

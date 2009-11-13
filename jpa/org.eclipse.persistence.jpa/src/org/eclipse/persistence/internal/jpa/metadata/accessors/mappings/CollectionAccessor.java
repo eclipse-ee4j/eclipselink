@@ -151,7 +151,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
-            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
+            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject);
         }
         
         // Set the map key join columns if some are present.
@@ -229,7 +229,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     protected ColumnMetadata getColumn(String loggingCtx) {
         if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
             if (m_mapKeyColumn == null) {
-                return new ColumnMetadata(getAnnotation(MapKeyColumn.class), getAccessibleObject(), getAttributeName());
+                return new ColumnMetadata(getAnnotation(MapKeyColumn.class), getAccessibleObject());
             } else {
                 return m_mapKeyColumn;
             }

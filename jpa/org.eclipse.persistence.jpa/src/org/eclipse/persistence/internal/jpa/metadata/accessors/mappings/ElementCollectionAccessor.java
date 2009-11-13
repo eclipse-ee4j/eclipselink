@@ -168,7 +168,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the column if one if defined.
         if (isAnnotationPresent(Column.class)) {
-            m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject, getAttributeName());
+            m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject);
         }
         
         // Set the collection table if one is defined.
@@ -220,7 +220,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
-            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
+            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject);
         }
         
         // Set the convert key if one is defined.

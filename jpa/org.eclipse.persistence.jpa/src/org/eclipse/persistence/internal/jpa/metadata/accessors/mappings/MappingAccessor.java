@@ -355,7 +355,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return new ColumnMetadata(getAccessibleObject(), getAttributeName());
+        return new ColumnMetadata(getAccessibleObject());
     }
     
     /**
@@ -383,7 +383,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
           
         // Set the correct field name, defaulting and logging when necessary.
-        String defaultName = column.getDefaultAttributeName(getProject());
+        String defaultName = getDefaultAttributeName();
            
         // If this is for a map key column, append a suffix.
         if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
