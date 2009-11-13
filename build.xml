@@ -162,7 +162,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -479,7 +479,7 @@
     </target>
 
     <!-- Packages the eclipselink JPA testing source jar. -->
-    <target name="package-tst-src-jar" description="build EclipseLink JPA and SDO testing source jar">
+    <target name="package-tst-src-zip" description="build EclipseLink JPA and SDO testing source jar">
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <!--   Cannot use ${eclipselink.extension.oracle.test} because autobuild   -->
         <!--          has to nullify it to keep from running Oracle tests          -->
