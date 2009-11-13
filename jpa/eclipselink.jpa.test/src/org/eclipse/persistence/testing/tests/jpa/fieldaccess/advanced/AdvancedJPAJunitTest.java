@@ -133,9 +133,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Project project = new Project();
         LargeProject lproject = new LargeProject();
         SmallProject sproject = new SmallProject();
-        project.setName("TransientConstructorSetFieldsProject");
-        lproject.setName("TransientConstructorSetFieldsLProject");
-        sproject.setName("TransientConstructorSetFieldsSProject");
+        project.setName("TCSetFieldsProject");
+        lproject.setName("TCSetFieldsLProject");
+        sproject.setName("TCSetFieldsSProject");
         
         beginTransaction(em);
         project = em.merge(project);
