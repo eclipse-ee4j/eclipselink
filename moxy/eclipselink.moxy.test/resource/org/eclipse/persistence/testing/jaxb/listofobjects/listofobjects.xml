@@ -60,4 +60,24 @@
         <value>30</value>
       </entry>
    </stringIntegerHashMap>
+   <integerLinkedList>5</integerLinkedList>
+   <integerLinkedList>15</integerLinkedList>
+   <integerLinkedList>25</integerLinkedList>
+   <stringEmployeeHashtable>
+      <entry>
+         <key>string1</key>
+         <value id="10">
+            <firstName>Bob</firstName>
+            <lastName>Smith</lastName>
+            <responsibilities>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+            </responsibilities>
+         </value>        
+      </entry>
+   </stringEmployeeHashtable>
+   <bigDecimalStack>1</bigDecimalStack>
+   <bigDecimalStack>5</bigDecimalStack>
+   <bigDecimalStack>10</bigDecimalStack>
 </x:root>

@@ -12,12 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,13 +37,17 @@ public class ListofObjects {
 	public int[] intArray;
 	public boolean[] booleanArray;
 	public HashMap<String, Integer> stringIntegerHashMap;
-	@XmlTransient
-	public Map<String, Employee> stringEmployeeMap;	
+	public LinkedList<Integer> integerLinkedList;
+	public Hashtable<String, Employee> stringEmployeeHashtable;	
+	public Stack<BigDecimal> bigDecimalStack;
 
 	public ListofObjects() {
 		empList = new ArrayList<Employee>();
 		empArrayList = new ArrayList<Employee>();
 		empTreeSet = new TreeSet();
+		integerLinkedList = new LinkedList<Integer>();
+		stringEmployeeHashtable = new Hashtable();
+		bigDecimalStack = new Stack();
 	}
 
 	public List<Employee> getEmpList() {
@@ -101,6 +109,17 @@ public class ListofObjects {
 		}
 		if (empList.size() == compareListofObjects.getEmpList().size()) {
 			if (!empList.containsAll(compareListofObjects.getEmpList())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		
+		if (integerLinkedList == null && compareListofObjects.getIntegerLinkedList() != null) {
+			return false;
+		}
+		if (integerLinkedList.size() == compareListofObjects.getIntegerLinkedList().size()) {
+			if (!integerLinkedList.containsAll(compareListofObjects.getIntegerLinkedList())) {
 				return false;
 			}
 		} else {
@@ -206,6 +225,26 @@ public class ListofObjects {
 			return false;
 		}
 		
+		if(stringEmployeeHashtable.size() == compareListofObjects.stringEmployeeHashtable.size()){
+			if(!stringEmployeeHashtable.entrySet().containsAll(compareListofObjects.stringEmployeeHashtable.entrySet())){
+				return false;
+			}		
+		}else{
+			return false;
+		}
+		
+		if (bigDecimalStack == null && compareListofObjects.getBigDecimalStack() != null) {
+			return false;
+		}
+		if (bigDecimalStack.size() == compareListofObjects.getBigDecimalStack().size()) {
+			if (!bigDecimalStack.containsAll(compareListofObjects.getBigDecimalStack())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		
+		
 		return true;
 	}
 
@@ -224,5 +263,29 @@ public class ListofObjects {
 	public void setStringIntegerHashMap(
 			HashMap<String, Integer> stringIntegerHashMap) {
 		this.stringIntegerHashMap = stringIntegerHashMap;
+	}
+
+	public LinkedList<Integer> getIntegerLinkedList() {
+		return integerLinkedList;
+	}
+
+	public void setIntegerLinkedList(LinkedList<Integer> integerLinkedList) {
+		this.integerLinkedList = integerLinkedList;
+	}
+
+	public Hashtable<String, Employee> getStringEmployeeHashtable() {
+		return stringEmployeeHashtable;
+	}
+
+	public void setStringEmployeeHashtable(Hashtable<String, Employee> stringEmployeeHashtable) {
+		this.stringEmployeeHashtable = stringEmployeeHashtable;
+	}
+
+	public Stack<BigDecimal> getBigDecimalStack() {
+		return bigDecimalStack;
+	}
+
+	public void setBigDecimalStack(Stack<BigDecimal> bigDecimalStack) {
+		this.bigDecimalStack = bigDecimalStack;
 	}
 }

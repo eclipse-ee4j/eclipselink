@@ -15,18 +15,21 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBListOfObjectsNonRootTestCases extends
-		JAXBListOfObjectsTestCases {
+public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsTestCases {
 
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	protected final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
@@ -115,11 +118,26 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		stringIntegerMap.put("string2", new Integer(20));
 		stringIntegerMap.put("string3", new Integer(30));
 		listofObjects.setStringIntegerHashMap(stringIntegerMap);
-				
+
+		LinkedList<Integer> integersLinkedList = new LinkedList<Integer>();
+		integersLinkedList.add(new Integer(5));
+		integersLinkedList.add(new Integer(15));
+		integersLinkedList.add(new Integer(25));
+		listofObjects.setIntegerLinkedList(integersLinkedList);
+		
+		Hashtable<String, Employee> stringEmployeeTable = new Hashtable<String, Employee>();	
+		stringEmployeeTable.put("string1", getEmployee1());
+		listofObjects.setStringEmployeeHashtable(stringEmployeeTable);
+		
+		Stack<BigDecimal> theStack = new Stack<BigDecimal>();
+		theStack.push(new BigDecimal("1"));
+		theStack.push(new BigDecimal("5"));
+		theStack.push(new BigDecimal("10"));
+		listofObjects.setBigDecimalStack(theStack);
+		
 		QName qname = new QName("listOfObjectsNamespace", "root");
 		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(listofObjects);
-
 		return jaxbElement;
 	}
 		

@@ -25,6 +25,22 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="integerLinkedList" type="xsd:int"/>
+         <xsd:element name="stringEmployeeHashtable" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="key" type="xsd:string" minOccurs="0"/>
+                           <xsd:element name="value" type="x:employee" minOccurs="0"/>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="bigDecimalStack" type="xsd:decimal"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="employee">

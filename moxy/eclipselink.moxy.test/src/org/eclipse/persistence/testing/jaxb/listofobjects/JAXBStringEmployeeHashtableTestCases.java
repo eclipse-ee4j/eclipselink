@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith  June 05, 2009 - Initial implementation
+ *     Denise Smith  November 13, 2009 
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,8 +25,8 @@ import java.util.TreeMap;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap.xml";
+public class JAXBStringEmployeeHashtableTestCases extends JAXBListOfObjectsTestCases {
+	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeHashtable.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMapNoXsiType.xml";
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	protected final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
@@ -34,8 +34,8 @@ public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String CONTROL_FIRST_NAME = "Bob";
 	protected final static String CONTROL_LAST_NAME = "Smith";
 	protected final static int CONTROL_ID = 10;
-	public Map<String, Employee> stringEmployeeMap;	
-	public JAXBStringEmployeeMapTestCases(String name) throws Exception {
+
+	public JAXBStringEmployeeHashtableTestCases(String name) throws Exception {
 		super(name);
 		init();
 	}
@@ -58,8 +58,8 @@ public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
 	}	 
    
 	public List< InputStream> getControlSchemaFiles(){		
-		InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap.xsd");
-		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap2.xsd");
+		InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeHashtable.xsd");
+		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeHashtable2.xsd");
 		List<InputStream> controlSchema= new ArrayList<InputStream>();
 				
 		controlSchema.add(instream1);
@@ -98,7 +98,7 @@ protected Object getControlObject() {
 	responsibilities2.add(CONTROL_RESPONSIBILITY1);
 	employee2.responsibilities = responsibilities2;	
 	
-	Map<String, Employee> emps = new TreeMap<String, Employee>();
+	Hashtable<String, Employee> emps = new Hashtable<String, Employee>();
 	emps.put(employee.firstName, employee);
 	emps.put(employee2.firstName, employee2);
 
@@ -109,8 +109,8 @@ protected Object getControlObject() {
 	return jaxbElement;
 }
 
-protected Type getTypeToUnmarshalTo() throws Exception {
-	Field fld = this.getClass().getField("stringEmployeeMap");
+protected Type getTypeToUnmarshalTo() throws Exception {	
+	Field fld = ListofObjects.class.getField("stringEmployeeHashtable");
 	Type fieldType =  fld.getGenericType();
 	return fieldType;
 }
@@ -118,5 +118,4 @@ protected Type getTypeToUnmarshalTo() throws Exception {
 protected String getNoXsiTypeControlResourceName() {
 	return XML_RESOURCE_NO_XSI_TYPE;
 }
-
 }

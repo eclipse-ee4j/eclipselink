@@ -2246,14 +2246,17 @@ public class AnnotationsProcessor {
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         String internalKeyName = keyClass.getRawName().replace('.', '/');
         String internalValueName = valueClass.getRawName().replace('.', '/');
+        
+        Type mapType = Type.getType("L" + mapClass.getRawName().replace('.', '/') + ";");
+        
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/MapValue", null, "StringEmployeeMap.java");
 
         // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Map<L" + internalKeyName + ";L" + internalValueName + ";>;");
-        cw.visitField(Constants.ACC_PUBLIC, "entry", "Ljava/util/Map;", null, fieldAttrs1);
+        SignatureAttribute fieldAttrs1 = new SignatureAttribute("L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;");
+        cw.visitField(Constants.ACC_PUBLIC, "entry", "L"+ mapType.getInternalName()+ ";", null, fieldAttrs1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -2267,14 +2270,14 @@ public class AnnotationsProcessor {
         Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        SignatureAttribute methodAttrs2 = new SignatureAttribute("(Ljava/util/Map<L" + internalKeyName + ";L" + internalValueName + ";>;)V");
+        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;)V");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(Ljava/util/Map;)V", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(L"+ mapType.getInternalName()+ ";)V", null, methodAttrs1);
         Label l0 = new Label();
         cv.visitLabel(l0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "entry", "Ljava/util/Map;");
+        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "entry", "L"+ mapType.getInternalName()+ ";");
         cv.visitInsn(Constants.RETURN);
         Label l1 = new Label();
         cv.visitLabel(l1);
@@ -2291,30 +2294,30 @@ public class AnnotationsProcessor {
         methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        methodAttrs2 = new SignatureAttribute("()Ljava/util/Map<L" + internalKeyName + ";L" + internalValueName + ";>;");
+        methodAttrs2 = new SignatureAttribute("()L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()Ljava/util/Map;", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L"+ mapType.getInternalName()+ ";", null, methodAttrs1);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "entry", "Ljava/util/Map;");
+        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "entry", "L"+ mapType.getInternalName()+ ";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()Ljava/util/Map;");
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L"+ mapType.getInternalName()+ ";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, "java/util/Map");
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(Ljava/util/Map;)V");
+        cv.visitTypeInsn(Constants.CHECKCAST, mapType.getInternalName());
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L"+ mapType.getInternalName()+ ";)V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
 
         // CLASS ATRIBUTE
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/MapValue<Ljava/util/Map<L" + internalKeyName + ";L" + internalValueName + ";>;>;");
+        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;>;");
         cw.visitAttribute(attr);
 
         cw.visitEnd();
@@ -2637,11 +2640,13 @@ public class AnnotationsProcessor {
         int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
         String name = componentClass.getName().substring(beginIndex);
 
-        String collectionClassShortName = collectionClass.getRawName().substring(collectionClass.getRawName().lastIndexOf('.') + 1);
+        String collectionClassRawName = collectionClass.getRawName();
+        String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf('.') + 1);
         String className = collectionClassShortName + "Of" + name;
 
         String qualifiedClassName = packageName + "." + className;
 
+        Type collectionType = Type.getType("L" + collectionClassRawName.replace('.', '/') + ";");
         Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         ClassWriter cw = new ClassWriter(false);
@@ -2650,9 +2655,10 @@ public class AnnotationsProcessor {
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
 
         // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
-        cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);
-
+        String internalName = collectionType.getInternalName();
+        SignatureAttribute fieldAttrs1 = new SignatureAttribute("L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;");
+        cw.visitField(Constants.ACC_PUBLIC, "item", "L"+collectionType.getInternalName()+";", null, fieldAttrs1);
+        
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", "<init>", "()V");
@@ -2665,14 +2671,14 @@ public class AnnotationsProcessor {
         Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        SignatureAttribute methodAttrs2 = new SignatureAttribute("(Ljava/util/Collection<L" + componentType.getInternalName() + ";>;)V");
+        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;)V");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(Ljava/util/Collection;)V", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(L"+collectionType.getInternalName()+";)V", null, methodAttrs1);
         Label l0 = new Label();
         cv.visitLabel(l0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
+        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "item", "L"+collectionType.getInternalName()+";");
         cv.visitInsn(Constants.RETURN);
         Label l1 = new Label();
         cv.visitLabel(l1);
@@ -2689,30 +2695,30 @@ public class AnnotationsProcessor {
         methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        methodAttrs2 = new SignatureAttribute("()Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
+        methodAttrs2 = new SignatureAttribute("()L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()Ljava/util/Collection;", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L"+collectionType.getInternalName()+";", null, methodAttrs1);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
+        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "L"+collectionType.getInternalName()+";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()Ljava/util/Collection;");
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L"+collectionType.getInternalName()+";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, "java/util/Collection");
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(Ljava/util/Collection;)V");
+        cv.visitTypeInsn(Constants.CHECKCAST, ""+collectionType.getInternalName()+"");
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L"+collectionType.getInternalName()+";)V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
 
         // CLASS ATRIBUTE
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<Ljava/util/Collection<L" + componentType.getInternalName() + ";>;>;");
+        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;>;");
         cw.visitAttribute(attr);
 
         cw.visitEnd();

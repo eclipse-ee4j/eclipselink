@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith  June 05, 2009 - Initial implementation
+ *     Denise Smith  November 13, 2009 
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
@@ -16,19 +16,17 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerList.xml";
-	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerListNoXsiType.xml";
+public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedList.xml";
+	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedListNoXsiType.xml";
 
-	public JAXBIntegerListTestCases(String name) throws Exception {
+	public JAXBIntegerLinkedListTestCases(String name) throws Exception {
 		super(name);
 	}
 
@@ -41,12 +39,12 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 	}
 
 	protected Type getTypeToUnmarshalTo() throws Exception {
-		Field fld = ListofObjects.class.getField("integerList");
+		Field fld = ListofObjects.class.getField("integerLinkedList");
 		return fld.getGenericType();
 	}
 
 	protected Object getControlObject() {
-		ArrayList<Integer> integers = new ArrayList<Integer>();
+		LinkedList<Integer> integers = new LinkedList<Integer>();
 		integers.add(new Integer("10"));
 		integers.add(new Integer("20"));
 		integers.add(new Integer("30"));
@@ -61,7 +59,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 	
 	public  List<InputStream> getControlSchemaFiles(){
 		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
+		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/linkedListInteger.xsd");
 			
 		List<InputStream> controlSchema = new ArrayList<InputStream>();
 			controlSchema.add(instream);

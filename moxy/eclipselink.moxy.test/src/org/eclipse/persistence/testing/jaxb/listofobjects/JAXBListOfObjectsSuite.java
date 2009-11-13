@@ -35,6 +35,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBEmployeeListTestCases.class);
 		suite.addTestSuite(JAXBIntegerArrayTestCases.class);
 		suite.addTestSuite(JAXBIntegerListTestCases.class);
+		suite.addTestSuite(JAXBIntegerLinkedListTestCases.class);
 		suite.addTestSuite(JAXBIntArrayTestCases.class);
 		suite.addTestSuite(JAXBCharArrayTestCases.class);
 		suite.addTestSuite(JAXBBooleanArrayTestCases.class);
@@ -43,6 +44,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBEmployeesAndIntegersTestCases.class);
 		suite.addTestSuite(JAXBStringIntegerHashMapTestCases.class);
 		suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
+		suite.addTestSuite(JAXBStringEmployeeHashtableTestCases.class);
 		suite.addTestSuite(JAXBListOfObjectsNonRootTestCases.class);
 		suite.addTestSuite(JAXBObjectCollectionsTestCases.class);
 		suite.addTestSuite(JAXBMultipleMapsTestCases.class);
