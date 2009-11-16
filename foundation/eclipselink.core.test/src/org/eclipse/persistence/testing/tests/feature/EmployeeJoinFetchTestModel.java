@@ -26,6 +26,10 @@ public class EmployeeJoinFetchTestModel extends TestModel {
     }
 
     public void addForcedRequiredSystems() {
+        if (getSession().getPlatform().isHSQL()) {
+            throw new TestWarningException("HSQL does not support complex outer joins correctly.");
+        }
+        
         EmployeeSystem system = new EmployeeSystem();
         ClassDescriptor descriptor = system.project.getClassDescriptor(Employee.class);
         ((ForeignReferenceMapping)descriptor.getMappingForAttributeName("address")).useInnerJoinFetch();

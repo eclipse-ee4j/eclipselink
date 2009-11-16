@@ -48,7 +48,7 @@ public class ReturningPolicyTestModel extends TestModel {
         // SubstituteSequencingWithReturningPolicyAdapter works with Oracle only.
         // We should also have tests that return the optimistic lock value for Oracle,
         // once returning supports optimistic locking.
-        if (getSession().getPlatform().isOracle()) {
+        if (getSession().getPlatform().canBuildCallWithReturning()) {
             addTest(new TestModelAdapted(new ComplexUpdateAndUnitOfWorkTestModel(), new SubstituteSequencingWithReturningPolicyAdapter(false)));
             addTest(new TestModelAdapted(new EmployeeBasicTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
 
@@ -62,7 +62,7 @@ public class ReturningPolicyTestModel extends TestModel {
 
             addTest(new TestModelAdapted(new InheritanceTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
         }
-        if (getSession().getPlatform().isOracle()) {
+        if (getSession().getPlatform().canBuildCallWithReturning()) {
             AdapterForReturningProject adapter1 = new AdapterForReturningProject();
             adapter1.addInsertSequenceReadOnly("RETURNING.ID");
             adapter1.addInsert("RETURNING.A1", new BigDecimal(1.5), true);

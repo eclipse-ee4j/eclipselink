@@ -15,11 +15,12 @@ package org.eclipse.persistence.platform.database;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 
 /**
- *    <B>Purpose</B>: Provides DB2 Mainframe specific behavior.<P>
- *    <B>Responsibilities</B>:
- *        <UL>
- *            <LI>Specialized CONCAT syntax
- *        </UL>
+ * <b>Purpose</b>: Provides DB2 Mainframe specific behavior.<p>
+ * This provides for some additional compatibility in certain DB2 versions on OS390.
+ * <b>Responsibilities</b>:
+ * <ul>
+ *  <li>Specialized CONCAT syntax
+ * </ul>
  *
  * @since TopLink 3.0.3
  */
@@ -32,10 +33,20 @@ public class DB2MainframePlatform extends DB2Platform {
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
 
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "CONCAT"));
     }
-
+    
+    /**
+     * INTERNAL:
+     * Return if brackets can be used in the ON clause for outer joins.
+     * Some DB2 versions on OS390 do not allow this.
+     */
+    @Override
+    public boolean supportsOuterJoinsWithBrackets() {
+        return false;
+    }
 }

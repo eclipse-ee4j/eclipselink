@@ -1007,6 +1007,8 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             system.useDerby();
         } else if (platform.equals("H2")) {
             system.useH2();
+        } else if (platform.equals("HSQL")) {
+            system.useHSQL();
         } else if (platform.equals("PostgreSQL")) {
             system.usePostgres();
         } else if (platform.equals("Informix IDS 11.1")) {
@@ -1016,9 +1018,9 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         } else if (platform.equals("Sybase (DataDirect)")) {
             system.useSybaseDataDirect();
         } else if (platform.equals("MySQL (Connector/J) - COREDEV1")) {
-            system.useMySQL("COREDEV1");
+            system.useMySQL("qa3");
         } else if (platform.equals("MySQL (Connector/J) - COREDEV2")) {
-            system.useMySQL("COREDEV2");
+            system.useMySQL("qa4");
         } else if (platform.equals("SQLServer (Weblogic Thin)")) {
             system.useSQLServerWeblogicThin();
         } else if (platform.equals("SQLServer (MS JDBC)")) {
@@ -1154,6 +1156,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         getLoginChoice().addItem("DB2 (Universal Driver)");
         getLoginChoice().addItem("DB2 (DataDirect)");
         getLoginChoice().addItem("Derby");
+        getLoginChoice().addItem("HSQL");
         getLoginChoice().addItem("H2");
         getLoginChoice().addItem("PostgreSQL");
         getLoginChoice().addItem("Informix IDS 11.1");        

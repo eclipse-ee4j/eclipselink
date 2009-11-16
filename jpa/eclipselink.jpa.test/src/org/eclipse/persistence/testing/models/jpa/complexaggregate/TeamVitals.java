@@ -35,7 +35,7 @@ public class TeamVitals implements Serializable {
         roles = new ArrayList<Role>();
     }
 
-    @Column(name="POSITION")
+    @Column(name="PLAYER_POSITION")
     public String getPosition() {
         return position;
     }

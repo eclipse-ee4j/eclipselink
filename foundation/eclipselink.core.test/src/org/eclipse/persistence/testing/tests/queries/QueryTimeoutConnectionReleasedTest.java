@@ -49,7 +49,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         preConnectionsAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();
         try {
             DataReadQuery query = new DataReadQuery();
-            String sqlString = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE c, EMPLOYEE b, EMPLOYEE c, EMPLOYEE c";
+            String sqlString = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h";
             query.setSQLString(sqlString);
             query.setQueryTimeout(1);
             query.useCursoredStream(1, 1);

@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -24,20 +25,24 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
+/**
+ * Database platform for the TimesTen database product.
+ */
 public class TimesTenPlatform extends DatabasePlatform {
 
-    //supportsForeignKeyConstraints is settable because TimesTen does not support circular referencing/self referencing
+    // supportsForeignKeyConstraints is configurable because TimesTen does not support circular references/self references.
     private boolean supportsForeignKeyConstraints;
     
     public TimesTenPlatform() {
-        supportsForeignKeyConstraints = true;
-        printOuterJoinInWhereClause = true;
+        this.supportsForeignKeyConstraints = true;
+        this.printOuterJoinInWhereClause = true;
     }
 
     /**
-     *    If using native SQL then print a byte[] literally as a hex string otherwise use ODBC format
-     *    as provided in DatabasePlatform.
+     * If using native SQL then print a byte[] literally as a hex string otherwise use ODBC format
+     * as provided in DatabasePlatform.
      */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("Ox");
@@ -48,9 +53,10 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends an MySQL specific date if usesNativeSQL is true otherwise use the ODBC format.
+     * Appends an TimesTen specific date if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'YYYY-MM-DD'
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("DATE '");
@@ -62,9 +68,10 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends an MySQL specific time if usesNativeSQL is true otherwise use the ODBC format.
+     * Appends an TimesTen specific time if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'HH:MM:SS'.
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("TIME '");
@@ -76,9 +83,10 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends an MySQL specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
+     * Appends an TimesTen specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: 'YYYY-MM-DD HH:MM:SS' 
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("TIMESTAMP '");
@@ -90,9 +98,10 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends an MySQL specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
+     * Appends an TimesTen specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: 'YYYY-MM-DD HH:MM:SS'
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("TIMESTAMP '");
@@ -106,6 +115,7 @@ public class TimesTenPlatform extends DatabasePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -141,10 +151,11 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     *  Produce a DataReadQuery which updates(!) the sequence number in the db
-     *  and returns it. 
-     *  @param qualifiedSeqName known by TimesTen to be a defined sequence
+     * Produce a DataReadQuery which updates(!) the sequence number in the db
+     * and returns it. 
+     * @param qualifiedSeqName known by TimesTen to be a defined sequence
      */
+    @Override
     public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
         return new ValueReadQuery("SELECT " + qualifiedSeqName + ".NEXTVAL FROM DUAL");
     }
@@ -153,6 +164,7 @@ public class TimesTenPlatform extends DatabasePlatform {
      * INTERNAL:
      * Used for view creation.
      */
+    @Override
     public String getCreateViewString() {
         return "CREATE MATERIALIZED VIEW ";
     }
@@ -161,26 +173,28 @@ public class TimesTenPlatform extends DatabasePlatform {
      * INTERNAL:
      * Used for pessimistic locking.
      */
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
     
     /**
      * PUBLIC:
-     * This method returns the query to select the timestamp
-     * from the server for TimesTen.
+     * TimesTen uses the Oracle syntax for getting the current timestamp.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
-        if (timestampQuery == null) {
-            timestampQuery = new ValueReadQuery();
-            timestampQuery.setSQLString("SELECT SYSDATE FROM DUAL");
+        if (this.timestampQuery == null) {
+            this.timestampQuery = new ValueReadQuery();
+            this.timestampQuery.setSQLString("SELECT SYSDATE FROM DUAL");
         }
-        return timestampQuery;
+        return this.timestampQuery;
     }
 
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
@@ -188,15 +202,13 @@ public class TimesTenPlatform extends DatabasePlatform {
         addOperator(ExpressionOperator.ifNull());
     }
 
-    /**
-     * Answers whether platform is TimesTen
-     */
+    @Override
     public boolean isTimesTen() {
         return true;
     }
 
     /**
-     *  Create the outer join operator for this platform
+     * TimesTen uses the Oracle where clause style outer join.
      */
     protected ExpressionOperator operatorOuterJoin() {
         ExpressionOperator result = new ExpressionOperator();
@@ -213,12 +225,13 @@ public class TimesTenPlatform extends DatabasePlatform {
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports sequence objects.
-     *  This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsSequenceObjects() {
         return true;
     }
 
+    @Override
     public boolean supportsForeignKeyConstraints() {
         return supportsForeignKeyConstraints;
     }
@@ -229,12 +242,15 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * TimesTen and DB2 require cast around parameter markers if both operands of certain
+     * TimesTen and requires cast around parameter markers if both operands of certain
      * operators are parameter markers
      * This method generates CAST for parameter markers whose type is correctly
-     * identified by the query compiler
+     * identified by the query compiler.
+     * This is not used by default, only if isCastRequired is set to true,
+     * by default dynamic SQL is used to avoid the issue in only the required cases.
      */
-    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record) throws IOException {
+    @Override
+    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record, DatabaseCall call) throws IOException {
         String parameterMarker = "?";
         Object type = parameter.getType();
         if (this.isCastRequired && (type != null)) {
@@ -245,13 +261,5 @@ public class TimesTenPlatform extends DatabasePlatform {
             }
         }
         writer.write(parameterMarker);
-    }
-
-    /**
-     * INTERNAL
-     * Allows platform to choose whether to bind literals in DatabaseCalls or not.
-     */
-    public boolean shouldBindLiterals() {
-        return false;
     }
 }

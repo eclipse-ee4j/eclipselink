@@ -35,7 +35,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
-        fieldID.setSize(28);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -46,7 +46,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldNUMBER = new FieldDefinition();
         fieldNUMBER.setName("EXTRA_NUMBER");
         fieldNUMBER.setTypeName("NUMERIC");
-        fieldNUMBER.setSize(28);
+        fieldNUMBER.setSize(18);
         fieldNUMBER.setSubSize(0);
         fieldNUMBER.setIsPrimaryKey(false);
         fieldNUMBER.setIsIdentity(false);
@@ -64,7 +64,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
-        fieldID.setSize(28);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -75,7 +75,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldNUMBER = new FieldDefinition();
         fieldNUMBER.setName("EXTRA_NUMBER");
         fieldNUMBER.setTypeName("NUMERIC");
-        fieldNUMBER.setSize(28);
+        fieldNUMBER.setSize(18);
         fieldNUMBER.setSubSize(0);
         fieldNUMBER.setIsPrimaryKey(false);
         fieldNUMBER.setIsIdentity(false);
@@ -93,7 +93,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
-        fieldID.setSize(28);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);
@@ -104,7 +104,7 @@ public class AboutToInsertProjectTableCreator extends TableCreator {
         FieldDefinition fieldNUMBER = new FieldDefinition();
         fieldNUMBER.setName("EXTRA_NUMBER");
         fieldNUMBER.setTypeName("NUMERIC");
-        fieldNUMBER.setSize(28);
+        fieldNUMBER.setSize(18);
         fieldNUMBER.setSubSize(0);
         fieldNUMBER.setIsPrimaryKey(false);
         fieldNUMBER.setIsIdentity(false);

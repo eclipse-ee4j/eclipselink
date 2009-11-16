@@ -128,7 +128,7 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
             return false;
         }
         boolean match = (getStartDate() == null && empPeriod.getStartDate() == null) || (getStartDate().equals(empPeriod.getStartDate()));
-        match = match && (getEndDate() == null && empPeriod.getEndDate() == null) || getEndDate().equals(empPeriod.getEndDate());
+        match = match && ((getEndDate() == null && empPeriod.getEndDate() == null) || getEndDate().equals(empPeriod.getEndDate()));
         return  match;
     }
     

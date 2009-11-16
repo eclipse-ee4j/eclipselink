@@ -637,23 +637,22 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
      * Some of the other platforms may have some support for select for update, but the databases we test with
      * for these do not have sufficient support to pass the tests.
-     * TODO: Need to recheck tests on DB2 as it has some support for this.
-     * Derby has some support, but does not work with joins (2008-12-01).
+     * Derby, Firebird have some support, but does not work with joins (2008-12-01).
      */
     public void checkSelectForUpateSupported() {
         DatabasePlatform platform = getSession().getPlatform();
-        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby()) {
+        if (platform.isFirebird() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isHSQL()) {
             throw new TestWarningException("This database does not support FOR UPDATE");
         }
     }
 
     /**
      * Throws a warning of pessimistic locking/select for update nowait is not supported for this test platform.
-     * Currently testing supports nowait on Oracle, SQLServer.
+     * Currently testing supports nowait on Oracle, SQLServer, PostgreSQL.
      */
     public void checkNoWaitSupported() {
         DatabasePlatform platform = getSession().getPlatform();
-        if (platform.isH2() || platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
+        if (!(platform.isOracle() || platform.isSQLServer() || platform.isPostgreSQL())) {
             throw new TestWarningException("This database does not support NOWAIT");        
         }
     }

@@ -163,7 +163,7 @@ public class ProxyIndirectionTableCreator extends org.eclipse.persistence.tools.
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field3.setName("LENGTH");
+        field3.setName("CUB_LENGTH");
         field3.setTypeName("REAL");
         field3.setShouldAllowNull(true);
         field3.setIsPrimaryKey(false);

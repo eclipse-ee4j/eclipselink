@@ -462,7 +462,7 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
 
     public void buildQueryTimeOutQuery(DescriptorQueryManager queryManager) {
         DataReadQuery namedQuery = new DataReadQuery();
-        namedQuery.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE c, EMPLOYEE b, EMPLOYEE c, EMPLOYEE c");
+        namedQuery.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h");
         namedQuery.setQueryTimeout(1);
         queryManager.addQuery("queryTimeOutQuery", namedQuery);
     }

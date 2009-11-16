@@ -399,6 +399,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.least());
         
         addOperator(ExpressionOperator.standardDeviation());
+        addOperator(ExpressionOperator.variance());
 
         // Object-relational
         addOperator(ExpressionOperator.deref());
@@ -474,6 +475,10 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    public boolean isFirebird() {
+        return false;
+    }    
+    
     public boolean isSQLServer() {
         return false;
     }

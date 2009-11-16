@@ -512,10 +512,10 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean isSelectForUpateSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
-        // Both DB2 and Derby support pessimistic locking only for a single-table queries.
+        // Both DB2, Derby and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
-        if (platform.isH2() || platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
+        if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
             warning("This database does not support FOR UPDATE.");
             return false;
         }
@@ -525,12 +525,13 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Return if pessimistic locking/select for update nowait is supported for this test platform.
      * Currently testing supports nowait on Oracle, SQLServer.
+     * PostgreSQL also supports NOWAIT, but doesn't support the outer joins used in the tests.
      */
     public boolean isSelectForUpateNoWaitSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
-        if (platform.isH2() || platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL() || platform.isMySQL() || platform.isTimesTen()) {
+        if (!(platform.isOracle() || platform.isSQLServer())) {
             warning("This database does not support NOWAIT.");
-            return false;        
+            return false;
         }
         return true;
     }

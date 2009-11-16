@@ -1763,10 +1763,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
+        // Lock timeout is only supported on Oracle.
+        if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -1816,10 +1816,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITE_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
+        // Lock timeout is only supported on Oracle.
+        if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -1932,9 +1932,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 closeEntityManager(em);
                 throw ex;
-            } 
-
-            Exception pessimisticLockException = null;
+            }
 
             try {
                 beginTransaction(em);
@@ -1953,9 +1951,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(lp2, LockModeType.PESSIMISTIC_WRITE, properties);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
-                        pessimisticLockException = ex;
-                    } else {
+                    if (!(ex instanceof javax.persistence.PessimisticLockException)) {
                         throw ex;
                     } 
                 } finally {
@@ -8757,7 +8753,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.clear();
                 clearCache();
             
-                emp = (Employee)em.find(Employee.class, emp.getId());
+                emp = em.find(Employee.class, emp.getId());
                 PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
                 assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
             } finally {
@@ -8796,7 +8792,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.clear();
                 clearCache();
                 
-                emp = (Employee)em.find(Employee.class, emp.getId());
+                emp = em.find(Employee.class, emp.getId());
                 PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
                 if (emp instanceof PersistenceWeaved){
                     assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
@@ -8839,7 +8835,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.clear();
                 clearCache();
                 
-                emp = (Employee)em.find(Employee.class, emp.getId());
+                emp = em.find(Employee.class, emp.getId());
                 PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
                 Object retrievedId = util.getIdentifier(emp);
                 assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
@@ -8873,7 +8869,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             em.persist(emp);
             em.flush();
-            Integer id = emp.getId();
             
             em.clear();
             clearCache();
@@ -8919,7 +8914,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             em.persist(emp);
             em.flush();
-            Integer id = emp.getId();
             
             em.clear();
             clearCache();

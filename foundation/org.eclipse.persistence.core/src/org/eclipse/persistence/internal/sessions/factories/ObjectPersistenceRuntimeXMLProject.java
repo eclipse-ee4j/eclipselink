@@ -1237,7 +1237,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Minimum)));
         // standardDeviation is platform specific.
         operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("variance", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Variance)));
+        operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, NonSynchronizedVector.newInstance(0)));
         operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Distinct)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@function");

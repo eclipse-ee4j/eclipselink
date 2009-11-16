@@ -47,9 +47,9 @@ public abstract class CompoundExpression extends Expression {
             return false;
         }
         CompoundExpression expression = (CompoundExpression) object;
-        return ((getOperator() == expression.getOperator()) || ((getOperator() != null) && getOperator().equals(expression.getOperator())))
-            && ((getFirstChild() == expression.getFirstChild()) || ((getFirstChild() != null) && getFirstChild().equals(expression.getFirstChild())))
-            && ((getSecondChild() == expression.getSecondChild()) || ((getSecondChild() != null) && getSecondChild().equals(expression.getSecondChild())));
+        return ((this.operator == expression.operator) || ((this.operator != null) && this.operator.equals(expression.operator)))
+            && ((this.firstChild == expression.firstChild) || ((this.firstChild != null) && this.firstChild.equals(expression.firstChild)))
+            && ((this.secondChild == expression.secondChild) || ((this.secondChild != null) && this.secondChild.equals(expression.secondChild)));
     }
         
     /**
@@ -59,14 +59,14 @@ public abstract class CompoundExpression extends Expression {
      */
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
-        if (getOperator() != null) {
-            hashCode = hashCode + getOperator().hashCode();
+        if (this.operator != null) {
+            hashCode = hashCode + this.operator.hashCode();
         }
-        if (getFirstChild() != null) {
-            hashCode = hashCode + getFirstChild().hashCode();
+        if (this.firstChild != null) {
+            hashCode = hashCode + this.firstChild.hashCode();
         }
-        if (getSecondChild() != null) {
-            hashCode = hashCode + getSecondChild().hashCode();
+        if (this.secondChild != null) {
+            hashCode = hashCode + this.secondChild.hashCode();
         }
         return hashCode;
     }
@@ -77,12 +77,12 @@ public abstract class CompoundExpression extends Expression {
      */
     public DatabaseTable aliasForTable(DatabaseTable table) {
         DatabaseTable alias = null;
-        if (getFirstChild() != null) {
-            alias = getFirstChild().aliasForTable(table);
+        if (this.firstChild != null) {
+            alias = this.firstChild.aliasForTable(table);
         }
 
-        if ((alias == null) && (getSecondChild() != null)) {
-            alias = getSecondChild().aliasForTable(table);
+        if ((alias == null) && (this.secondChild != null)) {
+            alias = this.secondChild.aliasForTable(table);
         }
 
         return alias;
@@ -143,9 +143,9 @@ public abstract class CompoundExpression extends Expression {
     public ExpressionBuilder getBuilder() {
         // PERF: Cache builder.
         if (this.builder == null) {
-            this.builder = getFirstChild().getBuilder();
+            this.builder = this.firstChild.getBuilder();
             if (this.builder == null) {
-                this.builder = getSecondChild().getBuilder();
+                this.builder = this.secondChild.getBuilder();
             }
         }
         return this.builder;
@@ -174,13 +174,13 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      */
     public void initializePlatformOperator(DatabasePlatform platform) {
-        if (getOperator().isComplete()) {
-            platformOperator = getOperator();
+        if (this.operator.isComplete()) {
+            platformOperator = this.operator;
             return;
         }
-        platformOperator = platform.getOperator(getOperator().getSelector());
+        platformOperator = platform.getOperator(this.operator.getSelector());
         if (platformOperator == null) {
-            throw QueryException.invalidOperator(getOperator().toString());
+            throw QueryException.invalidOperator(this.operator.toString());
         }
     }
 
@@ -194,11 +194,11 @@ public abstract class CompoundExpression extends Expression {
      */
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
-        if (getFirstChild() != null) {
-            getFirstChild().iterateOn(iterator);
+        if (this.firstChild != null) {
+            this.firstChild.iterateOn(iterator);
         }
-        if (getSecondChild() != null) {
-            getSecondChild().iterateOn(iterator);
+        if (this.secondChild != null) {
+            this.secondChild.iterateOn(iterator);
         }
     }
 
@@ -209,29 +209,29 @@ public abstract class CompoundExpression extends Expression {
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
         validateNode();
-        if (getFirstChild() != null) {
+        if (this.firstChild != null) {
             //let's make sure a session is available in the case of a parallel expression
-            ExpressionBuilder builder = getFirstChild().getBuilder();
+            ExpressionBuilder builder = this.firstChild.getBuilder();
             if (builder != null){
                 builder.setSession(normalizer.getSession().getRootSession(null));
             }
-            setFirstChild(getFirstChild().normalize(normalizer));
+            setFirstChild(this.firstChild.normalize(normalizer));
         }
-        if (getSecondChild() != null) {
+        if (this.secondChild != null) {
             //let's make sure a session is available in the case of a parallel expression
-             ExpressionBuilder builder = getSecondChild().getBuilder();
+             ExpressionBuilder builder = this.secondChild.getBuilder();
              if (builder != null){
                  builder.setSession(normalizer.getSession().getRootSession(null));
              }
-            setSecondChild(getSecondChild().normalize(normalizer));
+            setSecondChild(this.secondChild.normalize(normalizer));
         }
 
         // For CR2456, it is now possible for normalize to remove redundant
         // conditions from the where clause.
-        if (getFirstChild() == null) {
-            return getSecondChild();
-        } else if (getSecondChild() == null) {
-            return getFirstChild();
+        if (this.firstChild == null) {
+            return this.secondChild;
+        } else if (this.secondChild == null) {
+            return this.firstChild;
         }
         return this;
     }
@@ -241,13 +241,13 @@ public abstract class CompoundExpression extends Expression {
      * Ensure that both sides are not data expressions.
      */
     public void validateNode() {
-        if (getFirstChild() != null) {
-            if (getFirstChild().isDataExpression() || getFirstChild().isConstantExpression()) {
+        if (this.firstChild != null) {
+            if (this.firstChild.isDataExpression() || this.firstChild.isConstantExpression()) {
                 throw QueryException.invalidExpression(this);
             }
         }
-        if (getSecondChild() != null) {
-            if (getSecondChild().isDataExpression() || getSecondChild().isConstantExpression()) {
+        if (this.secondChild != null) {
+            if (this.secondChild.isDataExpression() || this.secondChild.isConstantExpression()) {
                 throw QueryException.invalidExpression(this);
             }
         }
@@ -259,11 +259,11 @@ public abstract class CompoundExpression extends Expression {
      */
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (getFirstChild() != null) {
-            setFirstChild(getFirstChild().copiedVersionFrom(alreadyDone));
+        if (this.firstChild != null) {
+            setFirstChild(this.firstChild.copiedVersionFrom(alreadyDone));
         }
-        if (getSecondChild() != null) {
-            setSecondChild(getSecondChild().copiedVersionFrom(alreadyDone));
+        if (this.secondChild != null) {
+            setSecondChild(this.secondChild.copiedVersionFrom(alreadyDone));
         }
     }
 
@@ -274,7 +274,7 @@ public abstract class CompoundExpression extends Expression {
     public void printSQL(ExpressionSQLPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         printer.printString("(");
-        realOperator.printDuo(getFirstChild(), getSecondChild(), printer);
+        realOperator.printDuo(this.firstChild, this.secondChild, printer);
         printer.printString(")");
     }
 
@@ -284,7 +284,7 @@ public abstract class CompoundExpression extends Expression {
      */
     public void printJava(ExpressionJavaPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
-        realOperator.printJavaDuo(getFirstChild(), getSecondChild(), printer);
+        realOperator.printJavaDuo(this.firstChild, this.secondChild, printer);
     }
 
     /**
@@ -295,14 +295,14 @@ public abstract class CompoundExpression extends Expression {
     public Expression rebuildOn(Expression newBase) {
         Vector arguments;
 
-        Expression first = getFirstChild().rebuildOn(newBase);
-        if (getSecondChild() == null) {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
+        Expression first = this.firstChild.rebuildOn(newBase);
+        if (this.secondChild == null) {
+            arguments = NonSynchronizedVector.newInstance(0);
         } else {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            arguments.addElement(getSecondChild().rebuildOn(newBase));
+            arguments = NonSynchronizedVector.newInstance(1);
+            arguments.add(this.secondChild.rebuildOn(newBase));
         }
-        return first.performOperator(getOperator(), arguments);
+        return first.performOperator(this.operator, arguments);
     }
 
     /**
@@ -312,9 +312,9 @@ public abstract class CompoundExpression extends Expression {
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
-        getFirstChild().resetPlaceHolderBuilder(queryBuilder);
-        if (getSecondChild() != null){
-            getSecondChild().resetPlaceHolderBuilder(queryBuilder);
+        this.firstChild.resetPlaceHolderBuilder(queryBuilder);
+        if (this.secondChild != null){
+            this.secondChild.resetPlaceHolderBuilder(queryBuilder);
         }
     }
 
@@ -340,15 +340,15 @@ public abstract class CompoundExpression extends Expression {
     public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
         Vector arguments;
 
-        if (getSecondChild() == null) {
+        if (this.secondChild == null) {
             arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
         } else {
             arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            arguments.addElement(getSecondChild().twistedForBaseAndContext(newBase, context));
+            arguments.addElement(this.secondChild.twistedForBaseAndContext(newBase, context));
         }
 
-        Expression first = getFirstChild().twistedForBaseAndContext(newBase, context);
-        return first.performOperator(getOperator(), arguments);
+        Expression first = this.firstChild.twistedForBaseAndContext(newBase, context);
+        return first.performOperator(this.operator, arguments);
     }
 
     /**
@@ -364,11 +364,11 @@ public abstract class CompoundExpression extends Expression {
      * Used for toString for debugging only.
      */
     public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {
-        if (getFirstChild() != null) {
-            getFirstChild().toString(writer, indent);
+        if (this.firstChild != null) {
+            this.firstChild.toString(writer, indent);
         }
-        if (getSecondChild() != null) {
-            getSecondChild().toString(writer, indent);
+        if (this.secondChild != null) {
+            this.secondChild.toString(writer, indent);
         }
     }
     

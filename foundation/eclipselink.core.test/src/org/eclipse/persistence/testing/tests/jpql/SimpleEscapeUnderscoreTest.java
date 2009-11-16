@@ -33,7 +33,7 @@ public class SimpleEscapeUnderscoreTest extends JPQLTestCase {
         //test the apostrophe
         ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
-        if (getSession().getLogin().getPlatform().isMySQL()) {
+        if (getSession().getLogin().getPlatform().isMySQL() || getSession().getLogin().getPlatform().isPostgreSQL()) {
             ejbqlString = ejbqlString + "address.street LIKE '234 Wandering $_Way' ESCAPE '$'";
         } else {
             ejbqlString = ejbqlString + "address.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";

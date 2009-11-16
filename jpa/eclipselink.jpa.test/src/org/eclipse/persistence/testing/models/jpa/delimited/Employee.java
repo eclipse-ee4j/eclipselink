@@ -54,7 +54,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
 @NamedNativeQuery(
     name="findAllSQLEmployees", 
-    query="select * from CMP3_DEL_EMPLOYEE",
+    query="select * from \"CMP3_DEL_EMPLOYEE\"",
     resultClass=org.eclipse.persistence.testing.models.jpa.delimited.Employee.class
 )
 @OptimisticLocking(

@@ -404,8 +404,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.getArguments().add(new Integer(1));
         test.setName("ConstantEqualConstantTest");
         test.setDescription("Test meaningless selection criteria like 1 == 1.");
-        // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
-        test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.DB2Platform.class);
+
         addTest(test);
     }
 
@@ -1607,8 +1606,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("ValueEqualValueTest");
         test.setDescription("Test query with no fields in where clause works.");
-        // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
-        test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.DB2Platform.class);
+
         addTest(test);
     }
     

@@ -361,7 +361,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     // public String getSelectForUpdateString() { return " FOR UPDATE"; }
     @Override
     public String getSelectForUpdateString() {
-        return " FOR UPDATE WITH RS";
+        return " FOR READ ONLY WITH RS";
+        //return " FOR UPDATE WITH RS";
     }
 
     /**
@@ -630,28 +631,32 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public boolean isNullAllowedInSelectClause() {
         return false;
     }
+    
+    /**
+     * INTERNAL
+     * DB2 has some issues with using parameters on certain functions and relations.
+     * This allows statements to disable binding only in these cases.
+     * If users set casting on, then casting is used instead of dynamic SQL.
+     */
+    @Override
+    public boolean isDynamicSQLRequiredForFunctions() {
+        return !isCastRequired();
+    }
 
     /**
      * INTERNAL:
      * DB2 requires casting on certain operations, such as the CONCAT function,
      * and parameterized queries of the form, ":param = :param". This method
-     * will write CAST operation to parameters if the type is known. The type is
-     * only currently set by JPQL (always) and Criteria (some cases), as this
-     * causes the CAST to always be written even though it is rarely required,
-     * the CAST can be disabled using the isCastRequired property. Note, this
-     * method doesn't actually solve the ":param = :param", as the type is
-     * unknown in this case, to resolve that case binding of literals is also
-     * disabled, but this only resolves the issue for JPQL literals, not for
-     * parameters. For parameters, binding must be disabled through the query
-     * hint.
-     * TODO: Reconsider always writing out CAST, perhaps only write when
-     * required, or auto make query not bind.
+     * will write CAST operation to parameters if the type is known.
+     * This is not used by default, only if isCastRequired is set to true,
+     * by default dynamic SQL is used to avoid the issue in only the required cases.
      */
     @Override
-    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record) throws IOException {
+    public void writeParameterMarker(Writer writer, ParameterExpression parameter, AbstractRecord record, DatabaseCall call) throws IOException {
         String paramaterMarker = "?";
         Object type = parameter.getType();
-        if (this.isCastRequired && (type != null)) {
+        // Update-all query requires casting of null parameter values in select into.
+        if ((type != null) && (this.isCastRequired || ((call.getQuery() != null) && call.getQuery().isUpdateAllQuery()))) {
             BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
             String castType = null;
             if (typeHelper.isBooleanType(type) || typeHelper.isByteType(type) || typeHelper.isShortType(type)) {
@@ -673,16 +678,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             }
         }
         writer.write(paramaterMarker);
-    }
-
-    /**
-     * INTERNAL:
-     * Binding of literals is disabled on DB2 to resolve queries like "1 = 1", and some functions,
-     * which DB2 requires a CAST to perform.
-     */
-    @Override
-    public boolean shouldBindLiterals() {
-        return false;
     }
 
     /**

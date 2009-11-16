@@ -555,7 +555,7 @@ public class InheritedTableManager extends TableCreator {
     
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
-        ID_field.setTypeName("NUMERIC");
+        ID_field.setTypeName("VARCHAR");
         ID_field.setSize(15);
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
@@ -911,7 +911,7 @@ public class InheritedTableManager extends TableCreator {
         
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOCATION_ID");
-        LOCATION_ID_field.setTypeName("NUMERIC");
+        LOCATION_ID_field.setTypeName("VARCHAR");
         LOCATION_ID_field.setSize(15);
         LOCATION_ID_field.setIsPrimaryKey(true);
         LOCATION_ID_field.setUnique(false);
@@ -1160,7 +1160,7 @@ public class InheritedTableManager extends TableCreator {
         
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOC_ID");
-        LOCATION_ID_field.setTypeName("NUMERIC");
+        LOCATION_ID_field.setTypeName("VARCHAR");
         LOCATION_ID_field.setSize(15);
         LOCATION_ID_field.setIsPrimaryKey(true);
         LOCATION_ID_field.setUnique(false);

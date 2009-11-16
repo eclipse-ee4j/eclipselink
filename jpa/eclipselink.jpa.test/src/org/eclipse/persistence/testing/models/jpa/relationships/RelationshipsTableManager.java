@@ -263,7 +263,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("CUST_VERSION");
-        field10.setTypeName("NUMERIC");
+        field10.setTypeName("NUMBER");
         field10.setSize(15);
         field10.setShouldAllowNull(true );
         field10.setIsPrimaryKey(false );

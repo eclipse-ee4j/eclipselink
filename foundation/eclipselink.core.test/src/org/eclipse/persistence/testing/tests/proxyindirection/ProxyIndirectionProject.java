@@ -322,7 +322,7 @@ public class ProxyIndirectionProject extends org.eclipse.persistence.sessions.Pr
         directtofieldmapping.setIsReadOnly(false);
         directtofieldmapping.setGetMethodName("getLength");
         directtofieldmapping.setSetMethodName("setLength");
-        directtofieldmapping.setFieldName("PROXY_CUBICLE.LENGTH");
+        directtofieldmapping.setFieldName("PROXY_CUBICLE.CUB_LENGTH");
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING

@@ -28,8 +28,8 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * @since TOPLink/Java 1.0
  */
 public class AccessPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
-    protected Hashtable buildClassTypes() {
-        Hashtable classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class> buildClassTypes() {
+        Map<String, Class> classTypeMapping = super.buildClassTypes();
 
         // In access LONG means numeric not CLOB like in Oracle
         classTypeMapping.put("LONG", Long.class);

@@ -274,12 +274,12 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      */
     public void appendTranslationParameter(Writer writer, ParameterExpression expression, DatabasePlatform platform, AbstractRecord record) throws IOException {
         try {
-            platform.writeParameterMarker(writer, expression, record);
+            platform.writeParameterMarker(writer, expression, record, this);
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(expression);
-        getParameterTypes().addElement(TRANSLATION);
+        getParameters().add(expression);
+        getParameterTypes().add(TRANSLATION);
     }
 
     /**

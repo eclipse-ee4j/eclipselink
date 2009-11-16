@@ -94,7 +94,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 public class DatabasePlatform extends DatasourcePlatform {
 
     /** Holds a map of values used to map JAVA types to database types for table creation */
-    protected transient Hashtable fieldTypes;
+    protected transient Map<Class, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
     Only used with Oracle, Sybase & DB2 */
@@ -161,7 +161,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean shouldOptimizeDataConversion;
 
     /** Stores mapping of class types to database types for schema creation. */
-    protected transient Hashtable classTypes;
+    protected transient Map<String, Class> classTypes;
 
     /** Allow for case in field names to be ignored as some databases are not case sensitive and when using custom this can be an issue. */
     protected static boolean shouldIgnoreCaseOnFieldComparisons = false;
@@ -191,9 +191,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean useRownumFiltering = true;
     
     /** 
-     * Allow platform specific cast to be disabled.
+     * Allow platform specific cast to be enabled.
      */ 
-    protected boolean isCastRequired = true;
+    protected boolean isCastRequired = false;
+    
+    /** 
+     * Allow user to require literals to be bound.
+     */ 
+    protected boolean shouldBindLiterals = false;
 
     /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
      * Redefined here for backward compatibility:
@@ -537,16 +542,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
-    protected Hashtable buildClassTypes() {
-        Hashtable classTypeMapping;
-
-        classTypeMapping = new Hashtable();
-        //Key the Map the other way for table creation
+    protected Map<String, Class> buildClassTypes() {
+        Map<String, Class> classTypeMapping = new HashMap<String, Class>();
+        // Key the Map the other way for table creation.
         classTypeMapping.put("NUMBER", java.math.BigInteger.class);
         classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
         classTypeMapping.put("INTEGER", Integer.class);
         classTypeMapping.put("INT", Integer.class);
-        classTypeMapping.put("NUMERIC", Long.class);
+        classTypeMapping.put("NUMERIC", java.math.BigInteger.class);
         classTypeMapping.put("FLOAT(16)", Float.class);
         classTypeMapping.put("FLOAT(32)", Double.class);
         classTypeMapping.put("NUMBER(1) default 0", Boolean.class);
@@ -859,7 +862,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the class type to database type mapping for the schema framework.
      */
-    public Hashtable getClassTypes() {
+    public Map<String, Class> getClassTypes() {
         if (classTypes == null) {
             classTypes = buildClassTypes();
         }
@@ -914,17 +917,17 @@ public class DatabasePlatform extends DatasourcePlatform {
      * of the Java primitive class name.
      */
     public FieldTypeDefinition getFieldTypeDefinition(Class javaClass) {
-        return (FieldTypeDefinition)getFieldTypes().get(javaClass);
+        return getFieldTypes().get(javaClass);
     }
 
     /**
      * Return the class type to database type mappings for the schema framework.
      */
-    public Hashtable getFieldTypes() {
-        if (fieldTypes == null) {
-            fieldTypes = buildFieldTypes();
+    public Map<Class, FieldTypeDefinition> getFieldTypes() {
+        if (this.fieldTypes == null) {
+            this.fieldTypes = buildFieldTypes();
         }
-        return fieldTypes;
+        return this.fieldTypes;
     }
 
     /**
@@ -1213,7 +1216,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * By default the wait timeout is ignored.
      */
     public String getSelectForUpdateWaitString(Integer waitTimeout) {
-        return " FOR UPDATE";
+        return getSelectForUpdateString();
     }
 
     public String getSequenceCounterFieldName() {
@@ -2661,6 +2664,13 @@ public class DatabasePlatform extends DatasourcePlatform {
             writer.write(")");
         }
     }
+
+    /**
+     * Allows unique columns to be defined as constraint if the UNIQUE keyword is not support on a column defintion.
+     */
+    public boolean supportsUniqueColumns() {
+        return true;
+    }
     
     public void printFieldUnique(Writer writer,  boolean shouldPrintFieldIdentityClause) throws IOException {
         printFieldUnique(writer);
@@ -2672,7 +2682,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
-    public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record) throws IOException {
+    public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record, DatabaseCall call) throws IOException {
         writer.write("?");
     }
 
@@ -2728,11 +2738,28 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * INTERNAL
+     * PUBLIC:
      * Allows platform to choose whether to bind literals in DatabaseCalls or not.
      */
     public boolean shouldBindLiterals() {
-        return true;
+        return this.shouldBindLiterals;
+    }
+
+    /**
+     * PUBLIC:
+     * Allows user to choose whether to bind literals in DatabaseCalls or not.
+     */
+    public void setShouldBindLiterals(boolean shouldBindLiterals) {
+        this.shouldBindLiterals = shouldBindLiterals;
+    }
+
+    /**
+     * INTERNAL:
+     * Some databases have issues with using parameters on certain functions and relations.
+     * This allows statements to disable binding only in these cases.
+     */
+    public boolean isDynamicSQLRequiredForFunctions() {
+        return false;
     }
     
     /**
@@ -2886,5 +2913,21 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean isAlterSequenceObjectSupported() {
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if nesting outer joins is supported, i.e. each join must be followed by the ON clause.
+     */
+    public boolean supportsNestingOuterJoins() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if brackets can be used in the ON clause for outer joins.
+     */
+    public boolean supportsOuterJoinsWithBrackets() {
+        return true;
     }
 }

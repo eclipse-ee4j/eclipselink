@@ -25,25 +25,16 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.platform.database.HSQLPlatform;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.NativeSequence;
 
-public class H2Platform extends HSQLPlatform {
+public class H2Platform extends DatabasePlatform {
     private static final long serialVersionUID = -2935483687958482934L;
 
     public H2Platform() {
         super();
         setPingSQL("SELECT 1");
-        setSupportsAutoCommit(true);
-    }
-
-    @Override
-    public final boolean isHSQL() {
-        return false;
     }
 
     /**
@@ -68,7 +59,6 @@ public class H2Platform extends HSQLPlatform {
         call.setIgnoreFirstRowMaxResultsSettings(true);
     }
     
-    
     /**
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
@@ -85,17 +75,32 @@ public class H2Platform extends HSQLPlatform {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = super.buildFieldTypes();
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN", false));
+
+        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(Float.class, new FieldTypeDefinition("DOUBLE", false));
         fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN", false));
+        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
+        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 38));
+        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
+        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
+        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));
+        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONGVARCHAR", false));
+        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
+        
+        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP", false));
+        
         return fieldTypeMapping;
     }
 
@@ -104,14 +109,19 @@ public class H2Platform extends HSQLPlatform {
         return true;
     }
 
+    /**
+     * INTERNAL
+     * H2 has some issues with using parameters on certain functions and relations.
+     * This allows statements to disable binding only in these cases.
+     */
     @Override
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery(new StringBuilder(20 + seqName.length()).append("CALL NEXT VALUE FOR ").append(seqName).toString());
+    public boolean isDynamicSQLRequiredForFunctions() {
+        return true;
     }
 
     @Override
-    protected Sequence createPlatformDefaultSequence() {
-        return new NativeSequence();
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
+        return new ValueReadQuery(new StringBuilder(20 + seqName.length()).append("CALL NEXT VALUE FOR ").append(seqName).toString());
     }
 
     @Override
@@ -193,7 +203,11 @@ public class H2Platform extends HSQLPlatform {
 
     @Override
     public ValueReadQuery getTimestampQuery() {
-        return new ValueReadQuery("SELECT CURRENT_TIMESTAMP()");
+        if (timestampQuery == null) {
+            timestampQuery = new ValueReadQuery();
+            timestampQuery.setSQLString("SELECT CURRENT_TIMESTAMP()");
+        }
+        return timestampQuery;
     }
 
     @Override
@@ -241,15 +255,8 @@ public class H2Platform extends HSQLPlatform {
         return exOperator;
     }
 
-    /**
-     * INTERNAL
-     * H2 has some issue with un-typed parameters, this allows a workaround to these issues using literals.
-     */
-    public boolean shouldBindLiterals() {
-        return false;
-    }
-
+    @Override
     public boolean isH2() {
         return true;
-    }
+    }    
 }

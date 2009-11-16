@@ -17,11 +17,13 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.delimited.*;
 
@@ -111,7 +113,13 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     public void testNativeQuery(){
         clearCache("delimited");
         EntityManager em = createEntityManager("delimited");
-        List result = em.createNamedQuery("findAllSQLEmployees").getResultList();
+        Query query = em.createNamedQuery("findAllSQLEmployees");
+        // Native SQL may need to be different on some platforms.
+        DatabasePlatform platform = getServerSession("delimited").getPlatform();
+        if (platform.getStartDelimiter() != "\"") {
+            query = em.createNativeQuery("select * from " + platform.getStartDelimiter() + "CMP3_DEL_EMPLOYEE" + platform.getEndDelimiter(), Employee.class);
+        }
+        List result = query.getResultList();
         Assert.assertTrue("testNativeQuery did not return result ", result.size() == 2);
         closeEntityManager(em);
     }

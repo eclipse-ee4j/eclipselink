@@ -78,7 +78,7 @@ public class ExpressionSQLPrinter {
         this.shouldPrintQualifiedNames = printQualifiedNames;
         // reference session's platform directly if builder or builder's descriptor is null
         if (builder == null || builder.getDescriptor() == null) {
-            this.platform = (DatabasePlatform) getSession().getPlatform();
+            this.platform = getSession().getPlatform();
         } else {
             this.platform = (DatabasePlatform) getSession().getPlatform(builder.getDescriptor().getJavaClass());
         }
@@ -89,7 +89,7 @@ public class ExpressionSQLPrinter {
     /**
      * Return the call.
      */
-    protected SQLCall getCall() {
+    public SQLCall getCall() {
         return call;
     }
 

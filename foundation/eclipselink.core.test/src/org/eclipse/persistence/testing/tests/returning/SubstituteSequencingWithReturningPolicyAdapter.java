@@ -113,7 +113,7 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
     }
 
     public void createSequences(Session session) {
-        if (!session.getPlatform().isOracle()) {
+        if (session.getPlatform().supportsSequenceObjects()) {
             throw new TestWarningException("Currently supports Oracle platform only");
         }
         SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);

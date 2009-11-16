@@ -97,6 +97,10 @@ public class NonSynchronizedProperties extends Properties {
 
     @Override
     public Object put(Object key, Object value) {
+        // Properties cannot store null.
+        if (value == null) {
+            return this.values.remove(key);
+        }
         return this.values.put(key, value);
     }
 

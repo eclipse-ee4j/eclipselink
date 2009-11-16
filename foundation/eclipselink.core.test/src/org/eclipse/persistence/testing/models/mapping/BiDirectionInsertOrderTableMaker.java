@@ -53,7 +53,7 @@ public class BiDirectionInsertOrderTableMaker extends org.eclipse.persistence.to
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("ID");
-        field.setTypeName("NUMERIC");
+        field.setTypeName("NUMBER");
         field.setSize(10);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
@@ -147,7 +147,7 @@ public class BiDirectionInsertOrderTableMaker extends org.eclipse.persistence.to
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("ID");
-        field3.setTypeName("NUMERIC");
+        field3.setTypeName("NUMBER");
         field3.setSize(10);
         field3.setShouldAllowNull(false);
         field3.setIsPrimaryKey(true);
@@ -171,7 +171,7 @@ public class BiDirectionInsertOrderTableMaker extends org.eclipse.persistence.to
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("ID");
-        field.setTypeName("NUMERIC");
+        field.setTypeName("NUMBER");
         field.setSize(10);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);

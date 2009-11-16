@@ -31,7 +31,7 @@ public class QueryTimeoutTest extends TestCase {
     public void test() {
         try {
             DataReadQuery query = new DataReadQuery();
-            query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE c, EMPLOYEE b, EMPLOYEE c, EMPLOYEE c");
+            query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h");
             query.setQueryTimeout(1);
             getSession().executeQuery(query);
         } catch (Exception e) {

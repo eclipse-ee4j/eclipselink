@@ -147,14 +147,14 @@ public class OrderListTestModel extends TestModel {
         // Platforms like Oracle that support both ways of joining (in from and where clause) should have switched to joining in from clause in setup.
         // Platforms like TimesTen that support joining only in where clause cannot run this test model. See comments in setup method.
         if (useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
-            if(platform.isH2() || platform.shouldPrintOuterJoinInWhereClause()) {
+            if (platform.isH2() || platform.isHSQL() || platform.shouldPrintOuterJoinInWhereClause()) {
                 return false;
             }
         }
         if (useVarcharOrder && !platform.supportsAutoConversionToNumericForArithmeticOperations()) {
             return false;
         }
-            
+
         // listOrderField is not used 
         if(!useListOrderField) {
             // explicitly asked not to run the model that don't use listOrderField.

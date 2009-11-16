@@ -32,6 +32,7 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -758,7 +759,7 @@ public class InheritedTableManager extends TableCreator {
     
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
-        ID_field.setTypeName("NUMERIC");
+        ID_field.setTypeName("VARCHAR");
         ID_field.setSize(15);
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
@@ -801,7 +802,6 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
         FieldDefinition field1 = new FieldDefinition();
@@ -813,6 +813,8 @@ public class InheritedTableManager extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
+        
+        table.addForeignKeyConstraint("FK_EC_ACC", "ID", "ID", "EXPERT_CONSUMER");
     
         return table;
     }
@@ -858,7 +860,6 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
         FieldDefinition fieldAUDIO = new FieldDefinition();
@@ -871,6 +872,8 @@ public class InheritedTableManager extends TableCreator {
         fieldAUDIO.setUnique(false);
         fieldAUDIO.setShouldAllowNull(true);
         table.addField(fieldAUDIO);
+        
+        table.addForeignKeyConstraint("FK_EC_AUD", "ID", "ID", "EXPERT_CONSUMER");
     
         return table;
     }
@@ -887,7 +890,6 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
@@ -909,6 +911,8 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
+        
+        table.addForeignKeyConstraint("FK_EC_AWD", "ID", "ID", "EXPERT_CONSUMER");
     
         return table;
     }
@@ -925,7 +929,6 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
         FieldDefinition fieldDESIGNATION = new FieldDefinition();
@@ -947,6 +950,8 @@ public class InheritedTableManager extends TableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
+        
+        table.addForeignKeyConstraint("FK_EC_DESG", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
         
         return table;
     }
@@ -1099,7 +1104,6 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
         
         FieldDefinition fieldQ_DATE = new FieldDefinition();
@@ -1124,7 +1128,7 @@ public class InheritedTableManager extends TableCreator {
         
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOCATION_ID");
-        LOCATION_ID_field.setTypeName("NUMERIC");
+        LOCATION_ID_field.setTypeName("VARCHAR");
         LOCATION_ID_field.setSize(15);
         LOCATION_ID_field.setIsPrimaryKey(true);
         LOCATION_ID_field.setUnique(false);
@@ -1172,6 +1176,8 @@ public class InheritedTableManager extends TableCreator {
         YEAR_BUILT_field.setIsIdentity(false);
         YEAR_BUILT_field.setShouldAllowNull(true);
         table.addField(YEAR_BUILT_field);
+        
+        table.addForeignKeyConstraint("FK_EC_REC", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
         
         return table;
     }
@@ -1423,7 +1429,7 @@ public class InheritedTableManager extends TableCreator {
         
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOC_ID");
-        LOCATION_ID_field.setTypeName("NUMERIC");
+        LOCATION_ID_field.setTypeName("VARCHAR");
         LOCATION_ID_field.setSize(15);
         LOCATION_ID_field.setIsPrimaryKey(true);
         LOCATION_ID_field.setUnique(false);
@@ -1641,5 +1647,27 @@ public class InheritedTableManager extends TableCreator {
         }
         
         return InheritedTableManager.tableCreator;
+    }
+
+    /**
+     * Drop tables manually because constraints changed.
+     */
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
+        try {
+            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_ACCLAIMS");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AUDIO");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AWARDS");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_DESIGNATIONS");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_RECORDS");
+        } catch (Exception ignore) {}
+        super.replaceTables(session, schemaManager);
     }
 }

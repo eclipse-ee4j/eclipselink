@@ -273,6 +273,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //preload employees into the cache so that phonenumbers are not prefetched
         String ejbqlString = "SELECT e FROM Employee e";
         List result = em.createQuery(ejbqlString).getResultList();
+        result.size();
         // run the simpleJoinFetchTest and verify all employees have phonenumbers fetched.
         simpleJoinFetchTest(em);
     }
@@ -912,8 +913,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-            //passing a collection to IN might not be supported in criteria api
-            cq.where( qb.in(cq.from(Employee.class).get("id")).value(qb.parameter(List.class, "result")) );
+            cq.where(cq.from(Employee.class).get("id").in(qb.parameter(List.class, "result")));
             List result = em.createQuery(cq).setParameter("result", expectedResultList).getResultList();
 
             Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
@@ -933,7 +933,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             clearCache();
 
-            String ejbqlString;
             //"SELECT OBJECT(emp) FROM Employee emp WHERE LENGTH ( emp.firstName     ) = " + expectedResult.getFirstName().length();
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -1288,10 +1287,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.addArgument(parameterName);
 
-        Vector parameters = new Vector();
+        List parameters = new ArrayList();
         parameters.add(expectedResult.getFirstName());
 
-        Vector employees = (Vector)getServerSession().executeQuery(raq, parameters);
+        List employees = (List)getServerSession().executeQuery(raq, parameters);
+        employees.size();
 
         clearCache();
 
@@ -1538,7 +1538,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         String firstNamePart;
-        String ejbqlString;
 
         firstNamePart = expectedResult.getFirstName().substring(0, 2);
         //"SELECT OBJECT(emp) FROM Employee emp WHERE \"" + firstNamePart + "\" = SUBSTRING(emp.firstName, 1, 2)";
@@ -1908,7 +1907,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE '234 Wandering "
             //+escapeString+"_Way' ESCAPE "+escapeString
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
-        if (getServerSession().getPlatform().isMySQL()) {
+        if (getServerSession().getPlatform().isMySQL() || getServerSession().getPlatform().isPostgreSQL()) {
             escapeChar = '$';
         } else {
             escapeChar = '\\';
@@ -2370,8 +2369,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleEnumTest() {
         EntityManager em = createEntityManager();
 
-        String ejbqlString;
-
         //"SELECT emp FROM Employee emp WHERE emp.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -2379,6 +2376,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             List result = em.createQuery(cq).getResultList();
+            result.size();
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

@@ -327,7 +327,7 @@ public class TestSystem {
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
-        login.setDatabaseURL("//tlsvrdb4.ca.oracle.com/"+userName);
+        login.setDatabaseURL("//qaott51.ca.oracle.com:3309/"+userName);
         login.useByteArrayBinding();
         setLogin(login);
     }
@@ -338,7 +338,7 @@ public class TestSystem {
     public void useHSQL() {
         DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.HSQLPlatform());
         login.useHSQLDriver();
-        login.setDatabaseURL("hsql://localhost");
+        login.setDatabaseURL("file:test");
         login.setUserName("sa");
         setLogin(login);
     }

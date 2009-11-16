@@ -2429,7 +2429,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         statements.addElement(createTempTableStatement);
                 
         SQLSelectStatement selectStatement = createSQLSelectStatementForModifyAllForTempTable(databaseFieldsToValuesForInsert);
-        SQLCall selectCall = (SQLCall)selectStatement.buildCall(getSession());
+        SQLCall selectCall = (SQLCall)selectStatement.buildCall(getSession(), getQuery());
         SQLUpdateAllStatementForTempTable insertStatement = new SQLUpdateAllStatementForTempTable();
         insertStatement.setMode(SQLModifyAllStatementForTempTable.INSERT_INTO_TEMP_TABLE);
         insertStatement.setTable(table);

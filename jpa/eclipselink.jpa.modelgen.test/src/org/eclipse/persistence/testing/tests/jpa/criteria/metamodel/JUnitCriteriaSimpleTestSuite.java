@@ -1898,7 +1898,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE '234 Wandering "
             //+escapeString+"_Way' ESCAPE "+escapeString
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
-        if (getServerSession().getPlatform().isMySQL()) {
+        if (getServerSession().getPlatform().isMySQL() || getServerSession().getPlatform().isPostgreSQL()) {
             escapeChar = '$';
         } else {
             escapeChar = '\\';

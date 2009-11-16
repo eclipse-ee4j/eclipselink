@@ -33,7 +33,6 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -223,10 +222,6 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
 	        query.setParameter("arg1", 1);
 	        query.setParameter("arg2", 1);
-	        if (getServerSession().getPlatform().isDB2() || getServerSession().getPlatform().isH2() || getServerSession().getPlatform().isDerby()) {
-        	        warning(":param=:param fail on Derby/Db2/H2, disabling binding");
-        	        query.setHint(QueryHints.BIND_PARAMETERS, "false");
-	        }
 	        emps = query.getResultList();
 	
 	        Assert.assertNotNull(emps);
@@ -1578,7 +1573,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         //test the apostrophe
         String ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
-        if (getServerSession().getPlatform().isMySQL()) {
+        if (getServerSession().getPlatform().isMySQL() || getServerSession().getPlatform().isPostgreSQL()) {
             ejbqlString = ejbqlString + "address.street LIKE '234 Wandering $_Way' ESCAPE '$'";
         } else {
             ejbqlString = ejbqlString + "address.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";

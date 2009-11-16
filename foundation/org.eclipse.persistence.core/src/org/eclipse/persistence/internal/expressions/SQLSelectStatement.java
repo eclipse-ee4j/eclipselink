@@ -238,18 +238,17 @@ public class SQLSelectStatement extends SQLStatement {
 
     /**
      * ADVANCED:
-     * If a platform is DB2 or MySQL, then the outer join must be in the FROM clause.
-     * This is used internally by EclipseLink for building DB2 outer join syntax which differs from
-     * other platforms(Oracle,Sybase) that print the outer join in the WHERE clause.
-     * OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given
+     * Appends the SQL standard outer join clause, and some variation per platform.
+     * Most platforms use this syntax, support is also offered for Oracle to join in the where clause (although it should use the FROM clause as the WHERE clause is obsolete).
      */
     public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, Vector outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables) throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
+        DatabasePlatform platform = session.getPlatform();
 
         // Print outer joins
         boolean firstTable = true;
-        boolean requiresEscape = false;//checks if the jdbc closing escape syntax is needed
+        boolean requiresEscape = false; // Checks if the JDBC closing escape syntax is needed.
 
         OuterJoinExpressionHolders outerJoinExpressionHolders = new OuterJoinExpressionHolders();
         for (int index = 0; index < getOuterJoinExpressions().size(); index++) {
@@ -260,7 +259,7 @@ public class SQLSelectStatement extends SQLStatement {
             DatabaseTable sourceTable = null;
             DatabaseTable sourceAlias = null;
             DatabaseTable targetAlias = null;
-            if(outerExpression != null) {
+            if (outerExpression != null) {
                 targetTable = outerExpression.getReferenceTable();
                 sourceTable = outerExpression.getSourceTable();
                 sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
@@ -272,10 +271,8 @@ public class SQLSelectStatement extends SQLStatement {
                 sourceAlias = exp.aliasForTable(sourceTable);
                 targetAlias = exp.aliasForTable(targetTable);
             }
-
             outerJoinExpressionHolders.add(
-                new OuterJoinExpressionHolder(outerExpression, index, targetTable, 
-                                              sourceTable, targetAlias, sourceAlias));
+                new OuterJoinExpressionHolder(outerExpression, index, targetTable, sourceTable, targetAlias, sourceAlias));
         }
         
         for (Iterator i = outerJoinExpressionHolders.linearize(this).iterator(); i.hasNext();) {
@@ -292,31 +289,26 @@ public class SQLSelectStatement extends SQLStatement {
                     if (requiresEscape && session.getPlatform().shouldUseJDBCOuterJoinSyntax()) {
                         writer.write("}");
                     }
-
                     if (!firstTable) {
                         writer.write(",");
                     }
-
-                    if (session.getPlatform().shouldUseJDBCOuterJoinSyntax()) {
-                        writer.write(session.getPlatform().getJDBCOuterJoinString());
+                    if (platform.shouldUseJDBCOuterJoinSyntax()) {
+                        writer.write(platform.getJDBCOuterJoinString());
                     }
-
                     requiresEscape = true;
                     firstTable = false;
                     writer.write(sourceTable.getQualifiedNameDelimited(printer.getPlatform()));
                     outerJoinedAliases.addElement(sourceAlias);
                     writer.write(" ");
                     writer.write(sourceAlias.getQualifiedNameDelimited(printer.getPlatform()));
-                    if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(sourceAlias))) {
-                        getForUpdateClause().printSQL(printer, this);
-                    }
+                    printForUpdateClauseOnJoin(sourceAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
                 }
 
-                if(outerExpression == null) {
+                if (outerExpression == null) {
                     printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index), aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                 } else {
                     DatabaseTable relationTable = outerExpression.getRelationTable();
-                    if(relationTable == null) {
+                    if (relationTable == null) {
                         if (outerExpression.isDirectCollection()) {
                             // Append the join clause,
                             // If this is a direct collection, join to direct table.
@@ -328,16 +320,8 @@ public class SQLSelectStatement extends SQLStatement {
                             writer.write(" ");
                             outerJoinedAliases.addElement(newAlias);
                             writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
-                            if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(newAlias))) {
-                                getForUpdateClause().printSQL(printer, this);
-                            }
-                            writer.write(" ON ");
-        
-                            if (session.getPlatform() instanceof DB2MainframePlatform) {
-                                ((RelationExpression)onExpression).printSQLNoParens(printer);
-                            } else {
-                                onExpression.printSQL(printer);
-                            }
+                            printForUpdateClauseOnJoin(newAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
+                            printOnClause(onExpression, printer, platform);
                         } else {
                             // Must outerjoin each of the targets tables.
                             // The first table is joined with the mapping join criteria,
@@ -345,46 +329,33 @@ public class SQLSelectStatement extends SQLStatement {
                             writer.write(" LEFT OUTER JOIN ");
                             Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
                             boolean hasAdditionalJoinExpressions = tablesJoinExpression != null && !tablesJoinExpression.isEmpty();
-                            if(hasAdditionalJoinExpressions) {
+                            if (hasAdditionalJoinExpressions && platform.supportsNestingOuterJoins()) {
                                 writer.write("(");
                             }
                             writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                             writer.write(" ");
                             outerJoinedAliases.addElement(targetAlias);
                             writer.write(targetAlias.getQualifiedNameDelimited(printer.getPlatform()));
-                            if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
-                                getForUpdateClause().printSQL(printer, this);
-                            }
-                            if(hasAdditionalJoinExpressions) {
+                            printForUpdateClauseOnJoin(targetAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
+                            if (hasAdditionalJoinExpressions && platform.supportsNestingOuterJoins()) {
                                 printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                                 writer.write(")");
                             }
-                            writer.write(" ON ");
                             Expression sourceToTargetJoin = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
-                            if (session.getPlatform() instanceof DB2MainframePlatform) {
-                                ((RelationExpression)sourceToTargetJoin).printSQLNoParens(printer);
-                            } else {
-                                sourceToTargetJoin.printSQL(printer);
+                            printOnClause(sourceToTargetJoin, printer, platform);
+                            if (hasAdditionalJoinExpressions && !platform.supportsNestingOuterJoins()) {
+                                printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                             }
                         }
                     } else {
-                        //Bug#4240751 Treat ManyToManyMapping separately for out join
+                        // Bug#4240751 Treat ManyToManyMapping separately for out join
                         // Must outer join each of the targets tables.
                         // The first table is joined with the mapping join criteria,
                         // the rest of the tables are joined with the additional join criteria.
                         // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
                         // Now OneToOneMapping also may have relation table.
-                        DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);
-                        writer.write(" LEFT OUTER JOIN (");
-                        writer.write(relationTable.getQualifiedNameDelimited(printer.getPlatform()));
-                        writer.write(" ");
-                        outerJoinedAliases.addElement(relationAlias);
-                        if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(relationAlias))) {
-                            getForUpdateClause().printSQL(printer, this);
-                        }
-                        writer.write(relationAlias.getQualifiedNameDelimited(printer.getPlatform()));
-                        
-                        Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+                        DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);                        
+                        Vector tablesInOrder = NonSynchronizedVector.newInstance(3);
                         // glassfish issue 2440: store aliases instead of tables
                         // in the tablesInOrder. This allows to distinguish source
                         // and target table in case of an self referencing relationship.
@@ -396,30 +367,34 @@ public class SQLSelectStatement extends SQLStatement {
                         Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(new Integer(1));
                         Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(new Integer(2));
                         
+                        writer.write(" LEFT OUTER JOIN ");
+                        if (platform.supportsNestingOuterJoins()) {
+                            writer.write("(");                            
+                        }
+                        writer.write(relationTable.getQualifiedNameDelimited(printer.getPlatform()));
+                        writer.write(" ");
+                        outerJoinedAliases.add(relationAlias);
+                        printForUpdateClauseOnJoin(relationAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
+                        writer.write(relationAlias.getQualifiedNameDelimited(printer.getPlatform()));
+                        if (!platform.supportsNestingOuterJoins()) {
+                            printOnClause(sourceToRelationJoin, printer, platform);                            
+                        }
+                        
                         writer.write(" JOIN ");
                         writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                         writer.write(" ");
-                        outerJoinedAliases.addElement(targetAlias);
+                        outerJoinedAliases.add(targetAlias);
                         writer.write(targetAlias.getQualifiedNameDelimited(printer.getPlatform()));
-                        if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(targetAlias))) {
-                            getForUpdateClause().printSQL(printer, this);
-                        }
-                        writer.write(" ON ");
-                        if (session.getPlatform() instanceof DB2MainframePlatform) {
-                            ((RelationExpression)relationToTargetJoin).printSQLNoParens(printer);
-                        } else {
-                            relationToTargetJoin.printSQL(printer);
-                        }
+                        printForUpdateClauseOnJoin(targetAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
+                        printOnClause(relationToTargetJoin, printer, platform);
                         
                         Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
                         if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
                             printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                         }
-                        writer.write(") ON ");
-                        if (session.getPlatform() instanceof DB2MainframePlatform) {
-                            ((RelationExpression)sourceToRelationJoin).printSQLNoParens(printer);
-                        } else {
-                            sourceToRelationJoin.printSQL(printer);
+                        if (platform.supportsNestingOuterJoins()) {
+                            writer.write(")");
+                            printOnClause(sourceToRelationJoin, printer, platform);
                         }
                     }
                 }
@@ -428,6 +403,28 @@ public class SQLSelectStatement extends SQLStatement {
 
         if (requiresEscape && session.getPlatform().shouldUseJDBCOuterJoinSyntax()) {
             writer.write("}");
+        }
+    }
+    
+    /**
+     * Print the outer join ON clause.
+     * Some databases do not allow brackets.
+     */
+    protected void printOnClause(Expression onClause, ExpressionSQLPrinter printer, DatabasePlatform platform) throws IOException {
+        printer.getWriter().write(" ON ");
+        if (!platform.supportsOuterJoinsWithBrackets()) {
+            ((RelationExpression)onClause).printSQLNoParens(printer);
+        } else {
+            onClause.printSQL(printer);
+        }
+    }
+    
+    /**
+     * Print the FOR UPDATE clause after each join if required.
+     */
+    protected void printForUpdateClauseOnJoin(DatabaseTable alias, ExpressionSQLPrinter printer, boolean shouldPrintUpdateClauseForAllTables, Collection aliasesOfTablesToBeLocked, DatabasePlatform platform) {
+        if (shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(alias))) {
+            getForUpdateClause().printSQL(printer, this);
         }
     }
 
@@ -740,10 +737,11 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
-     * Print the SQL representation of the statement on a stream.
+     * Build the call, setting the query first, this is required in some cases when the query info is required to print the SQL.
      */
-    public DatabaseCall buildCall(AbstractSession session) {
+    public DatabaseCall buildCall(AbstractSession session, DatabaseQuery query) {
         SQLCall call = new SQLCall();
+        call.setQuery(query);
         call.returnManyRows();
 
         Writer writer = new CharArrayWriter(200);
@@ -755,6 +753,13 @@ public class SQLSelectStatement extends SQLStatement {
         call.setSQLString(writer.toString());
 
         return call;
+    }
+
+    /**
+     * Print the SQL representation of the statement on a stream.
+     */
+    public DatabaseCall buildCall(AbstractSession session) {
+        return buildCall(session, null);
     }
 
     /**

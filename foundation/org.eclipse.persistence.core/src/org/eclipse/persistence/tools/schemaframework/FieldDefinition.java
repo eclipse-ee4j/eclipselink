@@ -13,7 +13,7 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -113,21 +113,22 @@ public class FieldDefinition implements Serializable, Cloneable {
                 writer.write(getTypeDefinition());
 
             } else {
+                DatabasePlatform platform = session.getPlatform();
                 // compose type definition - type name, size, unique, identity, constraints...
                 FieldTypeDefinition fieldType;
                 
                 if (getType() != null) { //translate Java 'type'
-                    fieldType = session.getPlatform().getFieldTypeDefinition(getType());
+                    fieldType = platform.getFieldTypeDefinition(getType());
                     if (fieldType == null) {
                         throw ValidationException.javaTypeIsNotAValidDatabaseType(getType());
                     }
                 } else if (getTypeName() != null) { //translate generic type name
-                    Hashtable fieldTypes = session.getPlatform().getClassTypes();
-                    Class type = (Class)fieldTypes.get(getTypeName());
+                    Map<String, Class> fieldTypes = platform.getClassTypes();
+                    Class type = fieldTypes.get(getTypeName());
                     if (type == null) { // if unknown type name, use as it is
                         fieldType = new FieldTypeDefinition(getTypeName());
                     } else {
-                        fieldType = session.getPlatform().getFieldTypeDefinition(type);
+                        fieldType = platform.getFieldTypeDefinition(type);
                         if (fieldType == null) {
                             throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
                         }
@@ -138,19 +139,27 @@ public class FieldDefinition implements Serializable, Cloneable {
                 }
 
                 String qualifiedName = table.getFullName() + '.' + getName();
-                boolean shouldPrintFieldIdentityClause = isIdentity() && session.getPlatform().shouldPrintFieldIdentityClause(session, qualifiedName);
-                session.getPlatform().printFieldTypeSize(writer, this, fieldType, shouldPrintFieldIdentityClause);
-                if(isUnique()) {
-                    session.getPlatform().printFieldUnique(writer, shouldPrintFieldIdentityClause);
-                }
+                boolean shouldPrintFieldIdentityClause = isIdentity() && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
+                platform.printFieldTypeSize(writer, this, fieldType, shouldPrintFieldIdentityClause);
+                
                 if (shouldPrintFieldIdentityClause) {
-                    session.getPlatform().printFieldIdentityClause(writer);
+                    platform.printFieldIdentityClause(writer);
                 }
                 if (shouldAllowNull() && fieldType.shouldAllowNull()) {
-                    session.getPlatform().printFieldNullClause(writer);
+                    platform.printFieldNullClause(writer);
                 } else {
-                    session.getPlatform().printFieldNotNullClause(writer);
+                    platform.printFieldNotNullClause(writer);
                 }
+                if (isUnique()) {
+                    if (platform.supportsUniqueColumns()) {
+                        platform.printFieldUnique(writer, shouldPrintFieldIdentityClause);
+                    } else {
+                        // Need to move the unique column to be a constraint.
+                        setUnique(false);
+                        String constraintName = table.buildUniqueKeyConstraintName(table.getName(), table.getFields().indexOf(this), platform.getMaxUniqueKeyNameSize());
+                        table.addUniqueKeyConstraint(constraintName, getName());
+                    }
+                }                
                 if (getConstraint() != null) {
                     writer.write(" " + getConstraint());
                 }

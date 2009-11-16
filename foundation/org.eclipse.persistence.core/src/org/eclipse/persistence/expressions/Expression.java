@@ -620,20 +620,21 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseStatement() {
-        ListExpressionOperator anOperator = new ListExpressionOperator();
-        anOperator.setSelector(ExpressionOperator.Case);
-        anOperator.setNodeClass(FunctionExpression.class);
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        anOperator.bePrefix();
+        ListExpressionOperator operator = new ListExpressionOperator();
+        operator.setSelector(ExpressionOperator.Case);
+        operator.setNodeClass(FunctionExpression.class);
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.bePrefix();
+        operator.setIsBindingSupported(false);
 
-        anOperator.setStartString("Case ");
-        anOperator.setSeparators(new String[]{" WHEN ", " THEN "});
-        anOperator.setTerminationStrings(new String[]{" ELSE ", " END"});
+        operator.setStartString("CASE ");
+        operator.setSeparators(new String[]{" WHEN ", " THEN "});
+        operator.setTerminationStrings(new String[]{" ELSE ", " END"});
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
 
-        expression.setOperator(anOperator);
+        expression.setOperator(operator);
         return expression;
     }
     
@@ -706,20 +707,21 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseConditionStatement() {
-        ListExpressionOperator anOperator = new ListExpressionOperator();
-        anOperator.setSelector(ExpressionOperator.Case);
-        anOperator.setNodeClass(FunctionExpression.class);
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        anOperator.bePrefix();
+        ListExpressionOperator operator = new ListExpressionOperator();
+        operator.setSelector(ExpressionOperator.Case);
+        operator.setNodeClass(FunctionExpression.class);
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.bePrefix();
+        operator.setIsBindingSupported(false);
 
-        anOperator.setStartStrings(new String[]{"CASE WHEN ", " THEN "});
-        anOperator.setSeparators(new String[]{" WHEN ", " THEN "});
-        anOperator.setTerminationStrings(new String[]{" ELSE ", " END "});
+        operator.setStartStrings(new String[]{"CASE WHEN ", " THEN "});
+        operator.setSeparators(new String[]{" WHEN ", " THEN "});
+        operator.setTerminationStrings(new String[]{" ELSE ", " END "});
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
 
-        expression.setOperator(anOperator);
+        expression.setOperator(operator);
         return expression;
     }
     

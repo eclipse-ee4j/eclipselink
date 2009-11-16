@@ -241,6 +241,9 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     }
 
     public void testPessimisticLocking() throws Exception {
+        if (!isSelectForUpateSupported()) {
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         SmallProject smallProject = (SmallProject)getServerSession("fieldaccess").readObject(SmallProject.class);
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("PessimisticLocking");

@@ -14,6 +14,7 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
@@ -50,8 +51,8 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
         writer.write("TIMESTAMP '" + timestamp + "'");
     }
 
-    protected Hashtable buildClassTypes() {
-        Hashtable classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class> buildClassTypes() {
+        Map<String, Class> classTypeMapping = super.buildClassTypes();
 
         classTypeMapping.put("FLOAT", Double.class);
         classTypeMapping.put("DOUBLE PRECISION", Double.class);

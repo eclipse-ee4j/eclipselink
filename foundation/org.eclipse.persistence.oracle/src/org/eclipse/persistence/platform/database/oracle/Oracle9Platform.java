@@ -271,8 +271,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
-    protected Hashtable buildClassTypes() {
-        Hashtable classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class> buildClassTypes() {
+        Map<String, Class> classTypeMapping = super.buildClassTypes();
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
