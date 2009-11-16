@@ -192,7 +192,7 @@ public class DynamicTypeBuilder {
             ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
             return frMapping.usesIndirection() || frMapping.isCollectionMapping();
         }
-        if (mapping.isAggregateMapping()) {
+        if (mapping.isAggregateMapping() && !mapping.isXMLMapping()) {
             return !((AggregateObjectMapping) mapping).isNullAllowed();
         }
         return false;

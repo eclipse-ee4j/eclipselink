@@ -29,7 +29,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Map;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -41,6 +40,7 @@ import javax.persistence.spi.ProviderUtil;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+//EclipseLink imports
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -116,9 +116,9 @@ public class DynamicTestHelper {
             }
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
-                    EntityManagerSetupImpl entityManagerSetupImpl = new EntityManagerSetupImpl();
+                    EntityManagerSetupImpl entityManagerSetupImpl = 
+                        new EntityManagerSetupImpl(DYNAMIC_PERSISTENCE_NAME,DYNAMIC_PERSISTENCE_NAME);
                     map.put(PersistenceUnitProperties.WEAVING, "false");
-                    map.put(PersistenceUnitProperties.SESSION_NAME, DYNAMIC_PERSISTENCE_NAME);
                     puInfo.getProperties().put(
                         PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE, "true");
                     entityManagerSetupImpl.predeploy(puInfo, map);
