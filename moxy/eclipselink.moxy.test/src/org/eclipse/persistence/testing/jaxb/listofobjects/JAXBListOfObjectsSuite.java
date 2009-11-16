@@ -31,10 +31,12 @@ public class JAXBListOfObjectsSuite extends TestCase {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("JAXBListOfObjectsSuite Test Suite");
+		suite.addTestSuite(JAXBBigDecimalStackTestCases.class);
 		suite.addTestSuite(JAXBEmployeeArrayTestCases.class);
 		suite.addTestSuite(JAXBEmployeeListTestCases.class);
 		suite.addTestSuite(JAXBIntegerArrayTestCases.class);
 		suite.addTestSuite(JAXBIntegerListTestCases.class);
+		suite.addTestSuite(JAXBIntegerMyListTestCases.class);
 		suite.addTestSuite(JAXBIntegerLinkedListTestCases.class);
 		suite.addTestSuite(JAXBIntArrayTestCases.class);
 		suite.addTestSuite(JAXBCharArrayTestCases.class);

@@ -86,11 +86,17 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         nestedAccessor.initializeAttributes(theJavaClass);
+        
         if(mapClassName.equals("java.util.Map")){
             mapClassName = "java.util.HashMap";
+        } else if(mapClassName.equals("java.util.concurrent.ConcurrentMap")){
+            mapClassName = "java.util.concurrent.ConcurrentHashMap";
+        } else if(mapClassName.equals("java.util.SortedMap")){
+            mapClassName = "java.util.TreeMap";
         }
+      
         try{            
-            mapClass =PrivilegedAccessHelper.getClassForName(mapClassName);         
+            mapClass =PrivilegedAccessHelper.getClassForName(mapClassName);
         }catch (ClassNotFoundException e){
             throw XMLMarshalException.unmarshalException(e);
         }     

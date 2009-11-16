@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith  June 05, 2009 - Initial implementation
+ *     Denise Smith  November 16, 2009 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
@@ -16,22 +16,20 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCases{
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xml";
-	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMapNoXsiType.xml";
+public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerMyList.xml";
+	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerMyListNoXsiType.xml";
 
-	public HashMap<String, Integer> test;
+	public MyList<Integer> integerMyList;
 	
-	public JAXBStringIntegerHashMapTestCases(String name) throws Exception {
+	public JAXBIntegerMyListTestCases(String name) throws Exception {
 		super(name);
-		init();
 	}
 
 	public void init() throws Exception {
@@ -41,44 +39,36 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCase
 		types[0] = getTypeToUnmarshalTo();
 		setTypes(types);
 	}
-	
-	public void setUp() throws Exception{
-		super.setUp();
-		getXMLComparer().setIgnoreOrder(true);
-	}
-	
-	public void tearDown(){
-		super.tearDown();
-		getXMLComparer().setIgnoreOrder(false);
-	}
-	
-	protected Type getTypeToUnmarshalTo() throws Exception {		
-		Field fld = getClass().getField("test");
-		
+
+	protected Type getTypeToUnmarshalTo() throws Exception {
+		Field fld = getClass().getField("integerMyList");
 		return fld.getGenericType();
 	}
-	
+
 	protected Object getControlObject() {
-		HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-		theMap.put("thekey", new Integer(10));
-		theMap.put("thekey2", new Integer(20));
-		theMap.put("thekey3", new Integer(30));
-				
+		MyList<Integer> integers = new MyList<Integer>();
+		integers.add(new Integer("10"));
+		integers.add(new Integer("20"));
+		integers.add(new Integer("30"));
+		integers.add(new Integer("40"));
+
 		QName qname = new QName("examplenamespace", "root");
 		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
-		jaxbElement.setValue(theMap);
+		jaxbElement.setValue(integers);
 
 		return jaxbElement;
 	}
 	
-	public List< InputStream> getControlSchemaFiles(){			 		   
-	   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
-				
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+	public  List<InputStream> getControlSchemaFiles(){
 		
+		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerMyList.xsd");
+			
+		List<InputStream> controlSchema = new ArrayList<InputStream>();
+			controlSchema.add(instream);
+			return controlSchema;
+		}
+		
+
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}

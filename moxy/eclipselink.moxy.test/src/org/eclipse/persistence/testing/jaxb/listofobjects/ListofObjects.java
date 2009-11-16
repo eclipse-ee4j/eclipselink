@@ -14,17 +14,16 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ListofObjects {
 	public List<Employee> empList;
@@ -36,11 +35,15 @@ public class ListofObjects {
 	public Float[] floatArray;
 	public int[] intArray;
 	public boolean[] booleanArray;
-	public HashMap<String, Integer> stringIntegerHashMap;
+	public Map<String, Integer> stringIntegerHashMap;
 	public LinkedList<Integer> integerLinkedList;
 	public Hashtable<String, Employee> stringEmployeeHashtable;	
 	public Stack<BigDecimal> bigDecimalStack;
-
+	public MyList<String> stringMyList;
+	public ConcurrentMap<String, Integer> stringIntegerConcurrentMap;
+	public Set<Integer> integerSet;
+	public Queue<String> stringQueue;
+	
 	public ListofObjects() {
 		empList = new ArrayList<Employee>();
 		empArrayList = new ArrayList<Employee>();
@@ -48,6 +51,10 @@ public class ListofObjects {
 		integerLinkedList = new LinkedList<Integer>();
 		stringEmployeeHashtable = new Hashtable();
 		bigDecimalStack = new Stack();
+		stringMyList = new MyList();	
+		stringIntegerConcurrentMap = new ConcurrentHashMap<String, Integer>();
+		integerSet = new TreeSet();
+		stringQueue = new LinkedList<String>();
 	}
 
 	public List<Employee> getEmpList() {
@@ -125,12 +132,35 @@ public class ListofObjects {
 		} else {
 			return false;
 		}
+		
+		if (stringQueue == null && compareListofObjects.getStringQueue() != null) {
+			return false;
+		}
+		if (stringQueue.size() == compareListofObjects.getStringQueue().size()) {
+			if (!stringQueue.containsAll(compareListofObjects.getStringQueue())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 
 		if (empTreeSet == null && compareListofObjects.getEmpTreeSet() != null) {
 			return false;
 		}
 		if (empTreeSet.size() == compareListofObjects.getEmpTreeSet().size()) {
 			if (!empTreeSet.containsAll(compareListofObjects.getEmpTreeSet())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		
+		
+		if (integerSet == null && compareListofObjects.getIntegerSet() != null) {
+			return false;
+		}
+		if (integerSet.size() == compareListofObjects.getIntegerSet().size()) {
+			if (!integerSet.containsAll(compareListofObjects.getIntegerSet())) {
 				return false;
 			}
 		} else {
@@ -225,6 +255,14 @@ public class ListofObjects {
 			return false;
 		}
 		
+		if(stringIntegerConcurrentMap.size() == compareListofObjects.stringIntegerConcurrentMap.size()){
+			if(!stringIntegerConcurrentMap.entrySet().containsAll(compareListofObjects.stringIntegerConcurrentMap.entrySet())){
+				return false;
+			}		
+		}else{
+			return false;
+		}
+		
 		if(stringEmployeeHashtable.size() == compareListofObjects.stringEmployeeHashtable.size()){
 			if(!stringEmployeeHashtable.entrySet().containsAll(compareListofObjects.stringEmployeeHashtable.entrySet())){
 				return false;
@@ -244,6 +282,19 @@ public class ListofObjects {
 			return false;
 		}
 		
+		if (stringMyList == null
+				&& compareListofObjects.getStringMyList() != null) {			
+			return false;
+		}
+		if (stringMyList.size() == compareListofObjects.getStringMyList()
+				.size()) {
+			if (!stringMyList.containsAll(compareListofObjects
+					.getStringMyList())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 		
 		return true;
 	}
@@ -256,12 +307,12 @@ public class ListofObjects {
 		this.empTreeSet = empSet;
 	}
 
-	public HashMap<String, Integer> getStringIntegerHashMap() {
+	public Map<String, Integer> getStringIntegerHashMap() {
 		return stringIntegerHashMap;
 	}
 
 	public void setStringIntegerHashMap(
-			HashMap<String, Integer> stringIntegerHashMap) {
+			Map<String, Integer> stringIntegerHashMap) {
 		this.stringIntegerHashMap = stringIntegerHashMap;
 	}
 
@@ -287,5 +338,38 @@ public class ListofObjects {
 
 	public void setBigDecimalStack(Stack<BigDecimal> bigDecimalStack) {
 		this.bigDecimalStack = bigDecimalStack;
+	}
+
+	public MyList<String> getStringMyList() {
+		return stringMyList;
+	}
+
+	public void setStringMyList(MyList<String> stringMyList) {
+		this.stringMyList = stringMyList;
+	}
+
+	public ConcurrentMap<String, Integer> getStringIntegerConcurrentMap() {
+		return stringIntegerConcurrentMap;
+	}
+
+	public void setStringIntegerConcurrentMap(
+			ConcurrentMap<String, Integer> stringIntegerConcurrentMap) {
+		this.stringIntegerConcurrentMap = stringIntegerConcurrentMap;
+	}
+
+	public Set<Integer> getIntegerSet() {
+		return integerSet;
+	}
+
+	public void setIntegerSet(Set<Integer> integerSet) {
+		this.integerSet = integerSet;
+	}
+
+	public Queue<String> getStringQueue() {
+		return stringQueue;
+	}
+
+	public void setStringQueue(Queue<String> stringQueue) {
+		this.stringQueue = stringQueue;
 	}
 }

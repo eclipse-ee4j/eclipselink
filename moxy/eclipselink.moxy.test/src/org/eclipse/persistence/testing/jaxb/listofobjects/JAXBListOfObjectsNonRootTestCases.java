@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,9 +21,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -84,6 +84,13 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsTestCase
 
 		listofObjects.setIntegerList(integers);
 
+		
+		TreeSet<Integer> integerSet = new TreeSet<Integer>();
+		integerSet.add(new Integer("20"));
+		integerSet.add(new Integer("40"));
+		integerSet.add(new Integer("60"));
+		listofObjects.setIntegerSet(integerSet);
+		
 		Integer[] integerArray = new Integer[4];
 		integerArray[0] = 10;
 		integerArray[1] = 20;
@@ -118,6 +125,12 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsTestCase
 		stringIntegerMap.put("string2", new Integer(20));
 		stringIntegerMap.put("string3", new Integer(30));
 		listofObjects.setStringIntegerHashMap(stringIntegerMap);
+		
+		ConcurrentHashMap<String, Integer> stringIntegerConcurrentMap = new ConcurrentHashMap<String, Integer>();	
+		stringIntegerConcurrentMap.put("string1", new Integer(10));
+		stringIntegerConcurrentMap.put("string2", new Integer(20));
+		stringIntegerConcurrentMap.put("string3", new Integer(30));
+		listofObjects.setStringIntegerConcurrentMap(stringIntegerConcurrentMap);
 
 		LinkedList<Integer> integersLinkedList = new LinkedList<Integer>();
 		integersLinkedList.add(new Integer(5));
@@ -134,6 +147,17 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsTestCase
 		theStack.push(new BigDecimal("5"));
 		theStack.push(new BigDecimal("10"));
 		listofObjects.setBigDecimalStack(theStack);
+		
+		MyList<String> test = new MyList<String>();
+		test.add("aaa");
+		test.add("bbb");
+		test.add("ccc");
+		listofObjects.setStringMyList(test);
+		
+		LinkedList stringQueue = new LinkedList<String>();
+		stringQueue.add("ddd");
+		stringQueue.add("eee");
+		listofObjects.setStringQueue(stringQueue);
 		
 		QName qname = new QName("listOfObjectsNamespace", "root");
 		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

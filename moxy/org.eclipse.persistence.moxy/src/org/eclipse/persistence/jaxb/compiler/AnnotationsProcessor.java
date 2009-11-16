@@ -454,7 +454,7 @@ public class AnnotationsProcessor {
 	                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
 	                generatedClassesToArrayClasses.put(generatedClass, javaClass);            	
             } else if (isCollectionType(javaClass)) {
-                JavaClass componentClass;
+                JavaClass componentClass;                
                 if (javaClass.hasActualTypeArguments()) {
                     componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
                     if (!componentClass.isPrimitive()) {
@@ -968,6 +968,9 @@ public class AnnotationsProcessor {
         }
         if (helper.isBuiltInJavaType(javaClass)) {
             return false;
+        }
+        if (isCollectionType(javaClass) || isMapType(javaClass)){
+        	return false;
         }
         return true;
     }
@@ -2655,7 +2658,6 @@ public class AnnotationsProcessor {
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
 
         // FIELD ATTRIBUTES
-        String internalName = collectionType.getInternalName();
         SignatureAttribute fieldAttrs1 = new SignatureAttribute("L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;");
         cw.visitField(Constants.ACC_PUBLIC, "item", "L"+collectionType.getInternalName()+";", null, fieldAttrs1);
         
