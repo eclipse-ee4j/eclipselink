@@ -1897,14 +1897,7 @@ public class MappingsGenerator {
                   Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
                   mapping.setAttributeClassification(attributeClassification);
                   
-                  if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE)){
-                	  mapping.setShouldInlineBinaryData(true);
-                  } else if(areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)){
-                	  mapping.setShouldInlineBinaryData(true);
-                  } else{
-                	  mapping.setShouldInlineBinaryData(false);
-                  }
-                  
+              	  mapping.setShouldInlineBinaryData(false);
                   desc.addMapping(mapping);
                   
               }else{                  

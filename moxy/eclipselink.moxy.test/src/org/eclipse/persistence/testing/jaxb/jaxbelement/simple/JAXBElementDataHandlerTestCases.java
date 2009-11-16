@@ -31,7 +31,7 @@ public class JAXBElementDataHandlerTestCases extends JAXBElementTestCases {
 
 	public void setUp() throws Exception{
 		super.setUp();			
-		jaxbMarshaller.setAttachmentMarshaller(new MyJAXBAttachmentMarshaller());
+		jaxbMarshaller.setAttachmentMarshaller(new MyJAXBAttachmentMarshaller(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text")));
 	    jaxbUnmarshaller.setAttachmentUnmarshaller(new MyJAXBAttachmentUnmarshaller());
 	}
 	

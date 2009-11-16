@@ -23,9 +23,8 @@ public class MyJAXBAttachmentMarshaller extends javax.xml.bind.attachment.Attach
     public boolean returnNull = false;
 
     
-    public MyJAXBAttachmentMarshaller(){
+    public MyJAXBAttachmentMarshaller(Object data){
     	super();
-    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
     	
     	attachments.put(MyJAXBAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
     }
