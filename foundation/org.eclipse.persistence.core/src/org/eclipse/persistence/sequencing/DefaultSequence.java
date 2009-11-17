@@ -99,6 +99,18 @@ public class DefaultSequence extends Sequence {
 
     /**
      * INTERNAL:
+     * Indicates whether several sequencing values should be acquired at a time
+     * and be kept by TopLink. This in only possible in case sequencing numbers should
+     * be acquired before insert (shouldAcquireValueAfterInsert()==false).
+     * In default implementation, it is true for table sequencing and native
+     * sequencing on Oracle platform, false for native sequencing on other platforms.
+     */
+    public boolean shouldUsePreallocation() {
+        return getDefaultSequence().shouldUsePreallocation();
+    }
+
+    /**
+     * INTERNAL:
      * Indicates whether EclipseLink should internally call beginTransaction() before
      * getGeneratedValue/Vector, and commitTransaction after.
      * In default implementation, it is true for table sequencing and
