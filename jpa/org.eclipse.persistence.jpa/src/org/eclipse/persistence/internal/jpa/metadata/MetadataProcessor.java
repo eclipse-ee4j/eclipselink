@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.internal.jpa.deployment.Archive;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 
@@ -61,6 +60,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.ArchiveFactory;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -247,12 +248,12 @@ public class MetadataProcessor {
 
         // Add all the classes from the <jar> specifications.
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
-            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url));
+            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url, m_loader));
         }
 
         // Add all the classes off the classpath at the persistence unit root url.
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
-            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl()));
+            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader));
         }
         
         // 5 - Go through all the class names we found and add those classes 
@@ -348,7 +349,7 @@ public class MetadataProcessor {
 
             Archive par = null;
             try {
-                par = new ArchiveFactoryImpl().createArchive(rootURL);
+                par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL);
                 ormURL = par.getEntryAsURL(ormXMLFile);
 
                 if (ormURL != null) {

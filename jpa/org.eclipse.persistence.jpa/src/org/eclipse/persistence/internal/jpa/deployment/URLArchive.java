@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.eclipse.persistence.jpa.Archive;
+
 /**
  * This is an implementation of {@link Archive} when container returns a url
  * that is not one of the familiar URL types like file or jar URLs. So, we can

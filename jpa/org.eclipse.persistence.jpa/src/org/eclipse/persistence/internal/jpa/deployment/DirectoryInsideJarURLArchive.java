@@ -25,6 +25,8 @@ import java.util.jar.JarEntry;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.persistence.jpa.Archive;
+
 /**
  * This is an implementation of {@link Archive} which is used when container
  * returns a jar: URL. e.g. jar:file:/tmp/a_ear/b.war!/WEB-INF/classes/

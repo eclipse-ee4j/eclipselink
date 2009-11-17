@@ -176,14 +176,6 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
          * - map key is Java class that is defined as the IdClass of an Entity (above)
          */
         if(null == policyKeyType) {
-            // The keyType will be null on a MapContainerPolicy when the keyField is null - usually a composite key
-            // Use the PK of the element - not the one on the managedType
-            // Case: @MapKey private Map<K,V> // no name column specified
-            if(policyElementDescriptor != null && policyElementDescriptor.getCMPPolicy() != null) {
-                // See UC10, UC12(embeddable), UC13
-                // This workaround for bug# 294811 should be moved up into the MapKeyMapping.getMapKeyTargetType() interface method
-                javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
-            }
             // Pending reproduction case: @MapKey private Map<K,V> // no name column specified and the PK is defined by a method
             if(null == javaClass) {
                 if(policy.isMappedKeyMapPolicy()) {

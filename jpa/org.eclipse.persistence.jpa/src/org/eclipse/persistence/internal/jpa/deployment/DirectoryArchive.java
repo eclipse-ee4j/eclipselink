@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import org.eclipse.persistence.jpa.Archive;
+
 /**
  * This is an implementation of {@link Archive} when container returns a file:
  * url that refers to a directory that contains an exploded jar file.

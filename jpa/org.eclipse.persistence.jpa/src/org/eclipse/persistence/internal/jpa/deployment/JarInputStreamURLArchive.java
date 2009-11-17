@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
+import org.eclipse.persistence.jpa.Archive;
+
 /**
  * This is an implementation of {@link Archive} which is used when container
  * returns some form of URL from which an InputStream in jar format can be

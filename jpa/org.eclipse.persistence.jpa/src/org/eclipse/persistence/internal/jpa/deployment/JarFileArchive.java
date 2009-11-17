@@ -26,6 +26,8 @@ import java.io.File;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import org.eclipse.persistence.jpa.Archive;
+
 /**
  * This is an implementation of {@link Archive} when container returns a
  * file: url that refers to a jar file. e.g. file:/tmp/a_ear/lib/pu.jar

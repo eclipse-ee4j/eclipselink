@@ -22,6 +22,7 @@ import java.io.File;
 import javax.persistence.spi.ClassTransformer;
 
 // ASM imports
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.Attributes;
 
@@ -39,9 +40,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  * original attribute's type for ValueHolderInterface. 
  */
 public class PersistenceWeaver implements ClassTransformer {
-    
-    public static final String WEAVING_OUTPUT_PATH = "eclipselink.weaving.output.path";
-    public static final String WEAVING_SHOULD_OVERWRITE = "eclipselink.weaving.overwrite.existing";
+
     public static final String WEAVER_NOT_OVERWRITING = "weaver_not_overwriting";
     public static final String WEAVER_COULD_NOT_WRITE = "weaver_could_not_write";
     public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
@@ -101,7 +100,7 @@ public class PersistenceWeaver implements ClassTransformer {
     
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
-                    String outputPath = System.getProperty(WEAVING_OUTPUT_PATH, "");
+                    String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
     
                     if (!outputPath.equals("")) {
                         outputFile(className, bytes, outputPath);
@@ -152,7 +151,7 @@ public class PersistenceWeaver implements ClassTransformer {
             if (!file.exists()){
                 file.createNewFile();
             } else {
-                if (!System.getProperty(WEAVING_SHOULD_OVERWRITE, "false").equalsIgnoreCase("true")){
+                if (!System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false").equalsIgnoreCase("true")){
                     ((AbstractSession)session).log(
                             SessionLog.WARNING, SessionLog.WEAVER, WEAVER_NOT_OVERWRITING, className);
                     return;

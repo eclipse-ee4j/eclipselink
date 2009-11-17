@@ -27,6 +27,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -75,7 +77,7 @@ public abstract class JPAInitializer {
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
         
-        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
+        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
         ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);

@@ -16,6 +16,8 @@ import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Enumeration;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +37,11 @@ import java.io.UnsupportedEncodingException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
@@ -45,6 +50,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.ArchiveFactory;
 
 /**
  * INTERNAL:
@@ -76,10 +85,10 @@ public class PersistenceUnitProcessor {
         set.addAll(persistenceUnitInfo.getManagedClassNames());
         Iterator i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
-            set.addAll(getClassNamesFromURL((URL)i.next()));
+            set.addAll(getClassNamesFromURL((URL)i.next(), loader));
         }
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
-            set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl()));
+            set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader));
         }
         // No longer need to add classes from XML, as temp class loader is only used for sessions.xml.
         return set;
@@ -203,7 +212,7 @@ public class PersistenceUnitProcessor {
             while (resources.hasMoreElements()){
                 URL pxmlURL = resources.nextElement();
                 URL puRootURL = computePURootURL(pxmlURL);
-                Archive archive = new ArchiveFactoryImpl().createArchive(puRootURL);
+                Archive archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootURL);
                 pars.add(archive);
             }
         } catch (java.io.IOException exc){
@@ -223,11 +232,43 @@ public class PersistenceUnitProcessor {
         return pars;
     }
 
-    public static Set<String> getClassNamesFromURL(URL url) {
+    public static ArchiveFactory getArchiveFactory(ClassLoader loader){
+        String factoryClassName = System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
+        if (factoryClassName == null){
+            return new ArchiveFactoryImpl();
+        }
+        try{
+            if (factoryClassName != null){
+                ArchiveFactory factory = null;
+                if (loader != null) {
+                    Class archiveClass = loader.loadClass(factoryClassName);
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        try {
+                            factory = (ArchiveFactory)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(archiveClass));
+                      } catch (PrivilegedActionException exception) {
+                          throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, exception);
+                      }
+                    } else {
+                        factory = (ArchiveFactory)PrivilegedAccessHelper.newInstanceFromClass(archiveClass);
+                    }
+                }
+                return factory;
+            }
+            return new ArchiveFactoryImpl();
+        } catch (ClassNotFoundException cnfe) {
+            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, cnfe);
+        } catch (IllegalAccessException iae) {
+            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, iae);
+        } catch (InstantiationException ie) {
+            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
+        }
+    }
+    
+    public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader) {
         Set<String> classNames = new HashSet<String>();
         Archive archive = null;
         try {
-            archive = new ArchiveFactoryImpl().createArchive(url);
+            archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(url);
         
             for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
                 String entry = entries.next();

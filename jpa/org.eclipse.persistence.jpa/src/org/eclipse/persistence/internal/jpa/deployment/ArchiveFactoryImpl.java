@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.ArchiveFactory;
 
 /**
  * This class is written to deal with various URLs that can be returned by
@@ -33,7 +35,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ArchiveFactoryImpl {
+public class ArchiveFactoryImpl implements ArchiveFactory {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
@@ -75,7 +77,7 @@ public class ArchiveFactoryImpl {
                 // e.g. file:/tmp/a_ear/ejb_jar
                 result = new DirectoryArchive(f);
             } else {
-                // e.g. file:/tmp/a_ear/lib/pu.jar
+                // e.g. file:/tmp/a_ear/lib/pu.jarlo
                 // It's not a directory. Then it must be a jar file.
                 result = new JarFileArchive(new JarFile(f));
             }

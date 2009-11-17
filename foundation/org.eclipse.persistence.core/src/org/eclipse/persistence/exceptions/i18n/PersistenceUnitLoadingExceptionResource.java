@@ -33,7 +33,8 @@ public class PersistenceUnitLoadingExceptionResource extends ListResourceBundle 
                                            { "30014", "The persistence unit specifies validation-mode as 'CALLBACK' but a Bean Validation ValidatorFactory could not be initialized. Please refer to the nested exception for details. Please ensure that Bean Validation API and Bean Validation Provider is available in classpath."},
                                            { "30015", "An exception was thrown while loading validation group class: {0}."},
                                            { "30016", "Session name {0} cannot be used by persistence unit {1}, it is already used by persistence unit {2}"},
-                                           { "30017", "Persistence unit {0} is defined in both URL:{1} and URL:{2}. Cannot have several persistence units with the same name loaded by the same classloader."}
+                                           { "30017", "Persistence unit {0} is defined in both URL:{1} and URL:{2}. Cannot have several persistence units with the same name loaded by the same classloader."},
+                                           { "30018", "Exception: {1} occured while trying to instantiate user-specified ArchiveFactory: {0}."}
     };
 
     /**

@@ -29,7 +29,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.deployment.Archive;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
@@ -38,6 +37,7 @@ import org.eclipse.persistence.internal.jpa.weaving.AbstractStaticWeaveOutputHan
 import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveClassTransformer;
 import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveDirectoryOutputHandler;
 import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveJAROutputHandler;
+import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
