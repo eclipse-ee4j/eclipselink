@@ -13,11 +13,13 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.Arrays;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -26,6 +28,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.advanced.Golfer;
 import org.eclipse.persistence.testing.models.jpa.advanced.GolferPK;
@@ -55,6 +58,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testGF894"));
         suite.addTest(new AdvancedJunitTest("testManAndWoman"));
         suite.addTest(new AdvancedJunitTest("testStringArrayField"));
+        suite.addTest(new AdvancedJunitTest("testCreateDerivedPKFromPKValues"));
         
         return suite;
     }
@@ -207,6 +211,36 @@ public class AdvancedJunitTest extends JUnitTestCase {
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
         
+        closeEntityManager(em);
+    }
+
+    
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=279634
+    public void testCreateDerivedPKFromPKValues() {
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            PartnerLink pLink3 = new PartnerLink();
+            pLink3.setMan(new Man());
+            pLink3.setWoman(new Woman());
+            em.persist(pLink3);
+            commitTransaction(em);
+            ClassDescriptor descriptor = getServerSession().getClassDescriptor(PartnerLink.class);
+            Vector pks = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(pLink3, getServerSession());
+            PartnerLinkPK createdPK = (PartnerLinkPK) descriptor.getCMPPolicy().createPrimaryKeyInstance(pks, getServerSession());
+            PartnerLinkPK usedPk = new PartnerLinkPK(pLink3.getManId(), pLink3.getWomanId());
+            assertTrue("PK's do not match.", usedPk.equals(createdPK));
+
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            closeEntityManager(em);
+            fail("An exception was caught: [" + e.getMessage() + "]");
+        }
+
         closeEntityManager(em);
     }
 

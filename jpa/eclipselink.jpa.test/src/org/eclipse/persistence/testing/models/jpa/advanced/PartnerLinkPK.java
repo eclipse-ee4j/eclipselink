@@ -19,7 +19,13 @@ public class PartnerLinkPK {
     private Integer womanId;
 
 	public PartnerLinkPK() {}
-    
+
+	   public PartnerLinkPK(int manId, Integer womanId) {
+	       this.manId = manId;
+	       this.womanId = womanId;
+	   }
+
+	
     @Id
 	public int getMan() { 
         return manId; 

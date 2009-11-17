@@ -258,12 +258,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while(iterator.hasNext()){
             Object target = iterator.next();
             if (target != null){
-                Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
                 CMPPolicy policy = referenceDescriptor.getCMPPolicy();
                 if (policy != null && policy.isCMP3Policy()){
-                    result[index] = policy.createPrimaryKeyInstance(pks);
+                    result[index] = policy.createPrimaryKeyInstance(target, session);
                 }else{
-                    result[index] = pks;
+                    result[index] = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
                 }
                 ++index;
             }

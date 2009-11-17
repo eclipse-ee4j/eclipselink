@@ -1095,12 +1095,11 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         Object target = this.indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
         Object[] result = new Object[1];
         if (target != null){
-            Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
             CMPPolicy policy = referenceDescriptor.getCMPPolicy();
             if (policy != null && policy.isCMP3Policy()) {
-                result[0] = policy.createPrimaryKeyInstance(pks);
+                result[0] = policy.createPrimaryKeyInstance(target, session);
             } else {
-                result[0] = pks;
+                result[0] = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
             }
         }
         return result;
