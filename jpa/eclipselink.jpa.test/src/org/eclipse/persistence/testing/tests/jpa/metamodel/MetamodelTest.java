@@ -80,7 +80,7 @@ public class MetamodelTest extends JUnitTestCase {
     
     public EntityManagerFactory initialize(boolean overrideEMFCachingForTesting) {
         try {
-            if(null == entityManagerFactory || overrideEMFCachingForTesting) {
+            if(null == entityManagerFactory || overrideEMFCachingForTesting || !entityManagerFactory.isOpen()) {
                 entityManagerFactory = getEntityManagerFactory(PERSISTENCE_UNIT_NAME);
             }
         } catch (Exception e) {

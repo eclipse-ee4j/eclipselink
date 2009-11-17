@@ -279,6 +279,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         try {
             emf = initialize(overrideEMFCachingForTesting);
             em = emf.createEntityManager();
+            
             metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
         } catch (Exception e) {
