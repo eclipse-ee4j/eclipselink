@@ -121,7 +121,7 @@
         <available file="${eclipselink.core}/${resource.dir}" type="dir" property="core.resources.exist"/>
         <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
         <available file="${tools.lib}"       property="tools.jar.exist"/>
-    
+
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
                 <isset property="eclipselink.jar.exist"/>
@@ -146,7 +146,7 @@
             <and>
                 <not> <isset property="use.eclipselink"/> </not>
                 <not> <isset property="use.bundles"/>     </not>
-                <not> <isset property="use.classes"/>     </not>            
+                <not> <isset property="use.classes"/>     </not>
             </and>
         </condition>
         <!-- Determine where to get product classes, based upon availability  -->
@@ -158,7 +158,7 @@
             </and>
         </condition>
     </target>
-        
+
     <target name="init_eclipselink" if="use.eclipselink">
         <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
         <path id="core_test.product.path">
@@ -392,7 +392,7 @@
         <mkdir dir="${core_test.report.dir}"/>
 		<!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
 		<!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-		<junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+		<junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>

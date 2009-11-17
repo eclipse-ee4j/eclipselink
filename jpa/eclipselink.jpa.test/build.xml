@@ -336,7 +336,7 @@
             </classpath>
         </javac>
     </target>
-    
+
     <target name="compile-fullregression">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
@@ -444,7 +444,7 @@
             replace='property name="eclipselink.weaving" value="${TEST_WEAVING}"'
         />
     </target>
-	
+
 	<target name="package-annotation" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
@@ -1096,7 +1096,7 @@
             </not>
         </condition>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
@@ -1129,7 +1129,7 @@
             </not>
         </condition>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <jvmarg value="${TEST_AGENT}"/>
@@ -1630,7 +1630,7 @@
         </path>
         <echo>Running test ${EAR_NAME} on ${server.name}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
@@ -1708,7 +1708,7 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
-        <!-- criteria api server tests need the server supports jpa 2.0--> 
+        <!-- criteria api server tests need the server supports jpa 2.0-->
         <!--antcall target="server-test-criteria" inheritRefs="true"/-->
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>

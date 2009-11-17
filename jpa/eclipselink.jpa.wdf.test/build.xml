@@ -81,7 +81,7 @@
             <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
             <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
                 includes="${eclipselink.jpa.depend}"/>
-                
+
             <pathelement path="${eclipselink.core.lib.dir}/${persistence.jar.testing}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
@@ -182,7 +182,7 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.wdf.jpa1.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.wdf.jpa2.model}.jar"/>
-	    </delete>
+        </delete>
     </target>
 
     <!-- Testing -->

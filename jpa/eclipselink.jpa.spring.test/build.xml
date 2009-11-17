@@ -170,7 +170,7 @@
             <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/spring" includes="**"/>
         </copy>
     </target>
-    
+
     <!-- Classpath used for running tests. -->
     <target name="config-run-path">
         <path id="run.classpath">
@@ -190,7 +190,7 @@
     <target name="test-jpa-spring" depends="test-jpa-spring-local, test-jpa-spring-container"/>
 
     <target name="test-jpa-spring-local" depends="clean-run, config-trunk, config-flat">
-        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
@@ -216,7 +216,7 @@
     </target>
 
     <target name="test-jpa-spring-container" depends="clean-run, config-trunk, config-flat">
-        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
             <jvmarg value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>

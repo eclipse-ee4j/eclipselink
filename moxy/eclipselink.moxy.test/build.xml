@@ -93,6 +93,7 @@
         <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="jaxb.run.path.against.jar">
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
@@ -110,6 +111,7 @@
         <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="oxm.run.path.against.jar">
+        <pathelement path="${junit.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>

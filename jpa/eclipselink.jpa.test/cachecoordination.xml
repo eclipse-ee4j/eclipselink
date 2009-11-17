@@ -43,10 +43,10 @@
        <ant antfile="${eclipselink.jpa.test}/build.xml" target="generate-report" inheritRefs="true"/>
        <antcall target="server-undeploy-cachecoordination-server2" inheritRefs="true">
             <param name="application.name" value="eclipselink-sessionbean-model-server2"/>
-        </antcall>  
+        </antcall>
        <antcall target="server-undeploy-cachecoordination-server1" inheritRefs="true">
             <param name="application.name" value="eclipselink-sessionbean-model-server1"/>
-        </antcall>  
+        </antcall>
         <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${weblogic.domain}/servers/${rcm.wls.server3.name}/tmp"/>
@@ -57,7 +57,7 @@
 
     <target name="build-deploy-cachecoordination-wls">
         <sequential>
-            <antcall target="config-persistence-xml"/>  
+            <antcall target="config-persistence-xml"/>
             <antcall target="cachecoordination-build-and-deploy-server1" inheritRefs="true">
                 <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
                 <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
@@ -162,12 +162,12 @@
 
     <condition property="is.rmi">
         <contains string="${cachecoordination.protocol}" substring="rmi"/>
-    </condition>    
+    </condition>
 
     <!-- Build and deploy to Server1 -->
     <target name="config-persistence-xml">
         <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml" />
-        <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>   
+        <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%data-source-name%%' value="jdbc/EclipseLinkDS"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-host-url%%' value="${rcm.wls.jms.topichost.url}"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-name%%' value="${rcm.wls.jms.topicname}"/>
@@ -176,7 +176,7 @@
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%server-pwd%%' value="${server.pwd}"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
     </target>
-  
+
     <target name="session-customizer-rmi" if="is.rmi">
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%current-server-url%%' value="${current.server.url}"/>
@@ -185,7 +185,7 @@
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%rcm-multicastport%%' value="${rcm.multicastport}"/>
         <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%rcm-packet-timetolive%%' value="${rcm.packet.timetolive}"/>
     </target>
-    
+
     <target name="cachecoordination-build-and-deploy-server1" depends="set-app-name-cachecoordination">
         <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
         <antcall target="session-customizer-rmi" inheritRefs="true">
@@ -196,7 +196,7 @@
         <antcall target="server-deploy-cachecoordination-server1" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
-        </antcall>  
+        </antcall>
     </target>
     <target name="cachecoordination-build-and-deploy-server2" depends="set-app-name-cachecoordination">
         <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
@@ -222,7 +222,7 @@
             <param name="application.name" value="${EAR_NAME}"/>
         </antcall>
     </target>
-    
+
     <target name="server-deploy-cachecoordination-server1">
         <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
@@ -270,7 +270,7 @@
         </path>
         <echo>Running "** ${cachecoordination.protocol} **" Cache Coordination tests: ${EAR_NAME} on ${server.name}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
             <sysproperty key="server.password" value="${server.pwd}"/>
@@ -282,7 +282,7 @@
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
         </junit>
     </target>
-    
+
     <target name="config-compile-path">
         <path id="compile.path">
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>

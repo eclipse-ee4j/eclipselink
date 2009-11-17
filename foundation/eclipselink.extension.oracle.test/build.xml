@@ -118,7 +118,7 @@
         <mkdir dir="${oracle_test.classes.dir}"/>
         <mkdir dir="${oracle_test.run.dir}"/>
         <mkdir dir="${oracle_test.report.dir}"/>
-        
+
         <!-- Determine availability of compile dependencies   -->
         <available file="${oracle_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
@@ -183,7 +183,7 @@
         <condition property="xmlparser.path" value="${extensions.depend.dir}/${xmlparser.lib}">
                 <isset property="xmlparser.lib.exist"/>
         </condition>
-    
+
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
                 <isset property="eclipselink.jar.exist"/>
@@ -214,7 +214,7 @@
             <and>
                 <not> <isset property="use.eclipselink"/> </not>
                 <not> <isset property="use.bundles"/>     </not>
-                <not> <isset property="use.classes"/>     </not>            
+                <not> <isset property="use.classes"/>     </not>
             </and>
         </condition>
         <!-- Determine availability of other dependencies -->
@@ -237,7 +237,7 @@
             </and>
         </condition>
     </target>
-        
+
     <target name="init_eclipselink" if="use.eclipselink">
         <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
         <path id="oracle_test.product.path">
@@ -282,7 +282,7 @@
         <path id="oracle_test.public.dependency.path">
             <pathelement path="${oracle_test.2.common.plugins.dir}/${persistence.jar.testing}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
-        </path>                  
+        </path>
     </target>
     <target name="init_paths" depends="init, init_eclipselink, init_bundles, init_classes, init_dependency">
         <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
@@ -322,7 +322,7 @@
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
     </target>
-    
+
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink Oracle tests">
         <echo message="Using the following oracle dependencies:"/>
@@ -444,7 +444,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
              fork="true"
              maxmemory="512m"
              failonerror="false"
-             dir="${oracle_test.run.dir}">
+             dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -464,7 +464,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <echo>Running test on ${DB_URL}</echo>
         <mkdir dir="${oracle_test.run.dir}"/>
         <mkdir dir="${oracle_test.report.dir}"/>
-        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${oracle_test.2.core.test.dir}/${oracle_test.run.dir}">
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
@@ -477,17 +477,17 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
                 <path refid="oracle_test.run.path"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${oracle_test.report.dir}/${TEST_CLASS}-test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
     </target>
 
     <target name="generate-report">
-        <junitreport todir="${oracle_test.report.dir}">
-            <fileset dir="${oracle_test.report.dir}">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
                 <include name="*test-results.xml"/>
             </fileset>
-            <report format="noframes" todir="${oracle_test.report.dir}"/>
+            <report format="noframes" todir="${report.dir}"/>
         </junitreport>
     </target>
 
@@ -511,7 +511,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <jvmarg value="${test.security-manager.policy}"/>
             <arg value="pfile=../test.properties" />
             <arg value="testmodel=${TEST_CLASS}" />
-            <arg value="regressionlog=../${oracle_test.report.dir}/${TEST_CLASS}-test.log" />
+            <arg value="regressionlog=${report.dir}/${TEST_CLASS}-test.log" />
             <arg value="saveresults=true" />
             <classpath>
                 <path refid="oracle_test.run.path"/>
