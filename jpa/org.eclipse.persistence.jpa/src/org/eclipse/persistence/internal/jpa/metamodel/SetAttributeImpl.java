@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.Set;
+
 import javax.persistence.metamodel.SetAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -36,7 +38,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * @param <V> The element type of the represented Set
  *  
  */ 
-public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set<V>, V> implements SetAttribute<X, V> {
+public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, Set<V>, V> implements SetAttribute<X, V> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
     private static final long serialVersionUID = -976576715364078445L;

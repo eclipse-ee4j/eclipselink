@@ -511,7 +511,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Return the field associated with this mapping if there is exactly one.
      * This is required for object relational mapping to print them, but because
-     * they are defined in Enterprise they cannot be cast to.
+     * they are defined in in an Enterprise context they cannot be cast to.
      * Mappings that have a field include direct mappings and object relational mappings.
      */
     public DatabaseField getField() {

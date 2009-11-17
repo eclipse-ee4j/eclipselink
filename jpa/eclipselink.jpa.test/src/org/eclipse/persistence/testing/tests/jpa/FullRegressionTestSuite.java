@@ -210,7 +210,8 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCriteriaQueryTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedQueryTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
+        // Addition of the following suite requires classpath work - as it currently does not allow the JPA Testing Browser.launch to run in the Eclipse IDE
+        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
         fullSuite.addTest(suite);
         
         // JPA 2.0 Cacheable model

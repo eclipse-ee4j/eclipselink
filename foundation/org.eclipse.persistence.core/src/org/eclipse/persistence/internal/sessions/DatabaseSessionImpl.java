@@ -439,7 +439,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 }
             }
 
-            // Second basic initialize mappings
+            // Second initialize basic mappings
             iterator = descriptors.values().iterator();
             while (iterator.hasNext()) {
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();

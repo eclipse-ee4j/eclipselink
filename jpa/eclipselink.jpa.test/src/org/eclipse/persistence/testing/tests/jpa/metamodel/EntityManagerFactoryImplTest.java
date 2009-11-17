@@ -48,7 +48,9 @@ public class EntityManagerFactoryImplTest extends MetamodelTest {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("EntityManagerImplFactoryTest");
-        suite.addTest(new EntityManagerFactoryImplTest("testIllegalStateExceptionOnClosedEntityManagerFactory"));        
+        if(!isJPA10() && !isOnServer()) {
+            suite.addTest(new EntityManagerFactoryImplTest("testIllegalStateExceptionOnClosedEntityManagerFactory"));
+        }
         return suite;
     }
     

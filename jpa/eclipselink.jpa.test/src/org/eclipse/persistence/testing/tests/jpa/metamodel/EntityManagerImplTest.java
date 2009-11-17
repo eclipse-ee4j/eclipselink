@@ -44,8 +44,10 @@ public class EntityManagerImplTest extends MetamodelTest {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite("EntityManagerImplTest");        
-        suite.addTest(new EntityManagerImplTest("testIllegalStateExceptionOnClosedEntityManager"));        
+        TestSuite suite = new TestSuite("EntityManagerImplTest");
+        if(!isJPA10() && !isOnServer()) {
+            suite.addTest(new EntityManagerImplTest("testIllegalStateExceptionOnClosedEntityManager"));
+        }
         return suite;
     }
     

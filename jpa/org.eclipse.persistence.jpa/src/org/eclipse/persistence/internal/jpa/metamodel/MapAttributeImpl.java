@@ -25,6 +25,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.Map;
+
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -54,7 +56,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
  * @param <V> The type of the value of the represented Map
 
  */ 
-public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V> implements MapAttribute<X, K, V> {
+public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>, V> implements MapAttribute<X, K, V> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
     private static final long serialVersionUID = 5702748112869113135L;
