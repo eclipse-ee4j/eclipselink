@@ -13,12 +13,14 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -340,26 +342,34 @@ public class CMPPolicy implements java.io.Serializable {
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor){
             DatabaseMapping mapping = builder.getMappingForAttributeName(pkElementArray[0].getAttributeName());
-            return mapping.getRealAttributeValueFromObject(key, session);
+            Object fieldValue = mapping.getRealAttributeValueFromObject(key, session);
+            if (mapping.isObjectReferenceMapping()){
+                fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(fieldValue, session);
+            }
+            return  fieldValue;
         }
         
         Object keyInstance = getPKClassInstance();
+        Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<ObjectReferenceMapping>();
         for (int index = 0; index < pkElementArray.length; index++) {
             Object keyObj = key;
             KeyElementAccessor accessor = pkElementArray[index];
             DatabaseField field = accessor.getDatabaseField();
             DatabaseMapping mapping = builder.getMappingForField(field);
-            
             // With session validation, the mapping shouldn't be null at this 
             // point, don't bother checking.
-            
-            while (mapping.isAggregateObjectMapping()) {
-                keyObj = mapping.getRealAttributeValueFromObject(keyObj, session);
-                mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+            if (!mapping.isObjectReferenceMapping() || !usedObjectReferenceMappings.contains(mapping)){
+                while (mapping.isAggregateObjectMapping()) {
+                    keyObj = mapping.getRealAttributeValueFromObject(keyObj, session);
+                    mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(field);
+                }
+                Object fieldValue = mapping.getRealAttributeValueFromObject(keyObj, session);
+                if (mapping.isObjectReferenceMapping()){
+                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(fieldValue, session);
+                    usedObjectReferenceMappings.add((ObjectReferenceMapping)mapping);
+                }
+                accessor.setValue(keyInstance, fieldValue);
             }
-            
-            Object fieldValue = mapping.getRealAttributeValueFromObject(keyObj, session);
-            accessor.setValue(keyInstance, fieldValue);
         }
         
         return keyInstance;

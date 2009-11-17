@@ -296,8 +296,12 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return null;
         }
         ClassDescriptor descriptor = baseMapping.getReferenceDescriptor();
-        DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
-        return mapping.getFields();
+        if (keyName != null){
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
+            return mapping.getFields();
+        } else {
+            return descriptor.getPrimaryKeyFields();
+        }
     }
     
     /**
@@ -362,7 +366,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return keyField.getType();
         } else if (keyMethod != null){
             return keyMethod.getReturnType();
-        }
+        }else if (elementDescriptor != null){
+            return elementDescriptor.getCMPPolicy().getPKClass();
+        }     
         return null;
     }
     
@@ -390,7 +396,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * @return
      */
     public boolean isMapKeyAttribute(){
-        if (elementDescriptor != null){
+        if (elementDescriptor != null && keyName != null){
             DatabaseMapping mapping = elementDescriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
             if (mapping != null){
                 return mapping.isDirectToFieldMapping();

@@ -46,6 +46,7 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildLACKEYTable());
         addTableDefinition(buildLACKEYCREWTable());
         addTableDefinition(buildOFFICETable());
+        addTableDefinition(buildADMINPOOLTable());
     }
     
     public static TableDefinition buildADMIN_CONTRACTTable(){
@@ -316,6 +317,16 @@ public class CompositePKTableCreator extends TableCreator {
         fieldEMP.setIsIdentity(false);
         //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
+        
+        FieldDefinition fieldPOOL_ID = new FieldDefinition();
+        fieldPOOL_ID.setName("POOL_ID");
+        fieldPOOL_ID.setTypeName("NUMERIC");
+        fieldPOOL_ID.setSize(15);
+        fieldPOOL_ID.setShouldAllowNull(true);
+        fieldPOOL_ID.setIsPrimaryKey(false);
+        fieldPOOL_ID.setUnique(false);
+        fieldPOOL_ID.setIsIdentity(false);
+        table.addField(fieldPOOL_ID);
 
         return table;   
     }
@@ -820,6 +831,33 @@ public class CompositePKTableCreator extends TableCreator {
         return table;
     }
     
+    
+    public static TableDefinition buildADMINPOOLTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ADMIN_POOL");
+   
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setShouldAllowNull(false);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(true);
+        table.addField(ID_field);
+        
+        FieldDefinition DESCRIPTION_field = new FieldDefinition();
+        DESCRIPTION_field.setName("DESCRIPTION");
+        DESCRIPTION_field.setTypeName("VARCHAR");
+        DESCRIPTION_field.setSize(40);
+        DESCRIPTION_field.setShouldAllowNull(true);
+        DESCRIPTION_field.setIsPrimaryKey(false);
+        DESCRIPTION_field.setUnique(false);
+        DESCRIPTION_field.setIsIdentity(false);
+        table.addField(DESCRIPTION_field);
+
+        return table;
+    }
     /**
      * Dropping old foreign keys from schema change.
      */

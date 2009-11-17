@@ -1274,8 +1274,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //String getName();
                 String entityNameWithNameAttribute = entityManufacturer_.getName();
                 assertNotNull("EntityType.getName() should not be null", entityNameWithNameAttribute);
-                // this should match the @Entity(name="ManufacturerMetamodel")
-                assertEquals("ManufacturerMetamodel", entityNameWithNameAttribute);
+                // this should match the @Entity(name="ManuMetamodel")
+                assertEquals("ManuMetamodel", entityNameWithNameAttribute);
 
                 String entityNameWithoutAttribute = entityHardwareDesigner_.getName();
                 assertNotNull("EntityType.getName() should not be null", entityNameWithoutAttribute);
@@ -1963,8 +1963,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC7"))); //            
                 assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC8"))); //            
                 // ManyToMany Collection Attribute from Person MappedSuperclass
-                assertTrue(attributeSet.contains(entityManufacturer_.getCollection("historicalEmployers"))); //
-                assertTrue(entityManufacturer_.getCollection("historicalEmployers").isCollection()); //
+                assertTrue(attributeSet.contains(entityManufacturer_.getCollection("historicalEmps"))); //
+                assertTrue(entityManufacturer_.getCollection("historicalEmps").isCollection()); //
                 // Basic java.lang and java.math primitive and primitive object types
         //private Object anObject; - invalid
                 //assertTrue(attributeSet.contains(entityManufacturer.getAttribute("anObject"))); //
@@ -2076,7 +2076,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                      *     +
                      *     +- id : Integer
                      *     +- name : String
-                     *     +- historicalEmployers : Manufacturer
+                     *     +- historicalEmps : Manufacturer
                      *     
                      *     Corporation : MappedSuperclass extends Person
                      *       +
@@ -2112,8 +2112,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC4"))); //
                     assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC7"))); //
                     assertTrue(declaredAttributesSet.contains(entityManufacturer_.getAttribute("hardwareDesignersMapUC8"))); //                
-                    // historicalEmployers is declared 2 levels above
-                    assertFalse(declaredAttributesSet.contains(entityManufacturer_.getAttribute("historicalEmployers"))); //
+                    // historicalEmps is declared 2 levels above
+                    assertFalse(declaredAttributesSet.contains(entityManufacturer_.getAttribute("historicalEmps"))); //
                     
                     Set<Attribute<Corporation, ?>> declaredAttributesSetForCorporation = msCorporation_.getDeclaredAttributes();
                     assertNotNull(declaredAttributesSetForCorporation);
@@ -2126,8 +2126,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     // corporateComputers is declared at this level
                     // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     assertTrue(declaredAttributesSetForCorporation.contains(msCorporation_.getAttribute("corporateComputers"))); //
-                    // historicalEmployers is declared 1 level above but is not visible in a ms-->ms hierarchy
-                    //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("historicalEmployers"))); //                
+                    // historicalEmps is declared 1 level above but is not visible in a ms-->ms hierarchy
+                    //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("historicalEmps"))); //                
 
                     Set<Attribute<Person, ?>> declaredAttributesSetForPerson = msPerson_.getDeclaredAttributes();
                     assertNotNull(declaredAttributesSetForPerson);
@@ -2137,8 +2137,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     assertTrue(declaredAttributesSetForPerson.contains(msPerson_.getAttribute("id"))); //
                     // name is declared at this level
                     assertTrue(declaredAttributesSetForPerson.contains(msPerson_.getAttribute("name"))); //
-                    // historicalEmployers is declared at this level
-                    assertTrue(declaredAttributesSetForPerson.contains(msPerson_.getAttribute("historicalEmployers"))); //
+                    // historicalEmps is declared at this level
+                    assertTrue(declaredAttributesSetForPerson.contains(msPerson_.getAttribute("historicalEmps"))); //
 
                 } catch (IllegalArgumentException iae) {
                     iae.printStackTrace();
@@ -2625,7 +2625,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
                     // the attribute is on the class
                     IdentifiableType person = entityManufacturer_.getSupertype().getSupertype();
-                    aCollectionAttribute = person.getDeclaredAttribute("historicalEmployers");//, entityComputer.getJavaType());
+                    aCollectionAttribute = person.getDeclaredAttribute("historicalEmps");//, entityComputer.getJavaType());
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.

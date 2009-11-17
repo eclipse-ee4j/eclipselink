@@ -35,4 +35,8 @@ public class DepartmentPK {
         
         return false;
     }
+    
+    public int hashCode(){
+        return name.hashCode() + role.hashCode() + location.hashCode();
+    }
 }

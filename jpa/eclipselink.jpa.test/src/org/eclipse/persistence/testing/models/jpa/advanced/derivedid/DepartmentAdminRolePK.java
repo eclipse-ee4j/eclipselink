@@ -20,6 +20,9 @@ public class DepartmentAdminRolePK {
 
     public Integer admin;
 
+    public DepartmentAdminRolePK(){
+    }
+    
     public DepartmentAdminRolePK(String depName, String depRole, String depLocation, Integer employeeId) {
         this.department = new DepartmentPK(depName, depRole, depLocation);
         this.admin = employeeId;
@@ -39,5 +42,17 @@ public class DepartmentAdminRolePK {
 
     public void setDepartment(DepartmentPK department){
         this.department = department;
+    }
+    
+    public boolean equals(Object object){
+        if (!(object instanceof DepartmentAdminRolePK)){
+            return false;
+        }
+        DepartmentAdminRolePK pk = (DepartmentAdminRolePK)object;
+        return pk.getAdmin().equals(admin) && pk.getDepartment().equals(department);
+    }
+    
+    public int hashCode(){
+        return department.hashCode() + admin;
     }
 }

@@ -20,6 +20,7 @@ import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -111,7 +112,7 @@ public class Computer implements java.io.Serializable {
     
     public Computer() {
         super();
-        //enclosures = new Hashtable<EnclosureIdClassPK, Enclosure>();
+        enclosuresUC10 = new HashMap<EnclosureIdClassPK, Enclosure>();
     }
 
     public Manufacturer getManufacturer() {
@@ -160,5 +161,13 @@ public class Computer implements java.io.Serializable {
 
     public void setCircuitBoards(Collection<Board> circuitBoards) {
         this.circuitBoards = circuitBoards;
+    }
+    
+    public Map<EnclosureIdClassPK, Enclosure> getEnclosures() {
+        return enclosuresUC10;
+    }
+
+    public void setEnclosuresUC10(Map<EnclosureIdClassPK, Enclosure> enclosures) {
+        this.enclosuresUC10 = enclosures;
     }
 }

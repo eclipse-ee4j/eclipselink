@@ -68,6 +68,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
 import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa.inherited.TelephoneNumber;
 
 /**
  * <p>
@@ -198,6 +199,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("sizeInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mathInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("paramNoVariableTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedContainerPolicyCompoundMapKeyTest"));
         
         return suite;
     }
@@ -2490,6 +2492,38 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).setParameter("arg", 2).getResultList();
         
         assertTrue("The wrong number of employees returned, expected:" + expectedResult + " got:" + result, result.size() == expectedResult.size());
+    }
+    
+    public void mappedContainerPolicyCompoundMapKeyTest(){
+        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        TelephoneNumber number = new TelephoneNumber();
+        number.setType("Home");
+        number.setAreaCode("975");
+        number.setNumber("1234567");
+        em.persist(number);
+        consumer.addTelephoneNumber(number);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(number);
+        
+        clearCache();
+        String ejbqlString = "SELECT KEY(number) from BeerConsumer bc join bc.telephoneNumbers number where bc.name = 'Marvin Monroe'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("mappedContainerPolicyCompoundMapKeyTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
 }

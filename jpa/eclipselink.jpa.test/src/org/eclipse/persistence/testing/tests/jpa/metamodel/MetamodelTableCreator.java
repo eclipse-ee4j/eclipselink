@@ -91,7 +91,9 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildCOMPUTER_BOARD_JOINTable());
         // n:n
         //addTableDefinition(buildCOMPUTER_USER_JOINTable());
-        
+        addTableDefinition(buildCMP3_MM_BOARD_SEQTable());
+        addTableDefinition(buildCMP3_MM_PERSON_SEQTable());
+        addTableDefinition(buildCMP3_MM_MANUF_CMP3_MM_MANUFTable());
     }
  	
 
@@ -694,7 +696,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field5.setName("GALACTIC_GALACTIC_ID");
         field5.setTypeName("NUMERIC");
         field5.setSize(15);
-        field5.setShouldAllowNull(false);
+        field5.setShouldAllowNull(true);
         field5.setIsPrimaryKey(false);
         field5.setUnique(false);
         field5.setIsIdentity(false);
@@ -707,7 +709,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setName("MANUFACTURER_PERSON_ID");
         field6.setTypeName("NUMERIC");
         field6.setSize(15);
-        field6.setShouldAllowNull(false);
+        field6.setShouldAllowNull(true);
         field6.setIsPrimaryKey(false);
         field6.setUnique(false);
         field6.setIsIdentity(false);
@@ -793,15 +795,25 @@ DROP TABLE CMP3_MM_COMPUTER
 
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
-        field6.setName("COMPUTER_COMPUTER_ID");
+        field6.setName("COMPUTERUC10_COMPUTER_ID");
         field6.setTypeName("NUMERIC");
         field6.setSize(15);
-        field6.setShouldAllowNull(false);
+        field6.setShouldAllowNull(true);
         field6.setIsPrimaryKey(false);
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
         table.addField(field6);        
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("PERSON_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
         
         return table;
     }
@@ -1210,6 +1222,35 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
         table.addField(field7);        
         
+        FieldDefinition field8 = new FieldDefinition();
+        field8.setName("ELEVATION");
+        field8.setTypeName("NUMERIC");
+        field8.setSize(15);
+        field8.setShouldAllowNull(true);
+        field8.setIsPrimaryKey(false);
+        field8.setUnique(false);
+        field8.setIsIdentity(false);
+        table.addField(field8);
+        
+        FieldDefinition field9 = new FieldDefinition();
+        field9.setName("LATTITUDE");
+        field9.setTypeName("NUMERIC");
+        field9.setSize(15);
+        field9.setShouldAllowNull(true);
+        field9.setIsPrimaryKey(false);
+        field9.setUnique(false);
+        field9.setIsIdentity(false);
+        table.addField(field9);
+        
+        FieldDefinition field10 = new FieldDefinition();
+        field10.setName("LONGITUDE");
+        field10.setTypeName("NUMERIC");
+        field10.setSize(15);
+        field10.setShouldAllowNull(true);
+        field10.setIsPrimaryKey(false);
+        field10.setUnique(false);
+        field10.setIsIdentity(false);
+        table.addField(field10);
         
         return table;
     }
@@ -2180,4 +2221,90 @@ DROP TABLE CMP3_MM_COMPUTER
         return table;
     }
         
+    public static TableDefinition buildCMP3_MM_BOARD_SEQTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_BOARD_SEQ");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("SEQ_MM_COUNT");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("SEQ_MM_NAME");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(40);
+        fieldDESCRIPTION.setSubSize(0);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_MM_PERSON_SEQTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_PERSON_SEQ");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("SEQ_MM_COUNT");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("SEQ_MM_NAME");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(40);
+        fieldDESCRIPTION.setSubSize(0);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+        
+        return table;
+    }
+    
+    public static TableDefinition     buildCMP3_MM_MANUF_CMP3_MM_MANUFTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_MM_MANUF_CMP3_MM_MANUF");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ManuMetamodel_PERSON_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("historicalEmps_PERSON_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(false);
+        field2.setIsPrimaryKey(true);
+        field2.setUnique(false);
+        field2.setIsIdentity(true);
+        table.addField(field2);
+        
+        return table;
+    }
+
 }
+

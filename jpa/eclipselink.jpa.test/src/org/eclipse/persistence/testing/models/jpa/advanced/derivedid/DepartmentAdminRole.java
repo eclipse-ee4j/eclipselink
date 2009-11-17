@@ -19,6 +19,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.Table;
+import javax.persistence.ManyToOne;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
 
@@ -34,6 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Departmen
 public class DepartmentAdminRole {
     private Administrator admin;
     private Department department;
+    private AdminPool pool;
 
     public DepartmentAdminRole () {
     }
@@ -60,5 +62,19 @@ public class DepartmentAdminRole {
 
     public void setDepartment(Department department){
         this.department = department;
+    }
+    
+    @ManyToOne
+    @JoinColumn(name="POOL_ID")
+    public AdminPool getPool() {
+        return pool;
+    }
+
+    public void setPool(AdminPool pool) {
+        this.pool = pool;
+    }
+    
+    public DepartmentAdminRolePK buildDepartmentAdminRolePK(){
+        return new DepartmentAdminRolePK(department.getName(), department.getRole(), department.getLocation(), admin.getEmployee().getId());
     }
 }

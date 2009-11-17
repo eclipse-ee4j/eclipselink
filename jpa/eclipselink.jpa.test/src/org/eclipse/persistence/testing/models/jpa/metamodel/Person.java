@@ -56,7 +56,7 @@ public abstract class Person implements Serializable {
                 joinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"), 
                 inverseJoinColumns = @JoinColumn(name="PERSON_ID", referencedColumnName="PERSON_ID"))*/   
     //private Collection<Manufacturer> historicalEmployers = new HashSet<Manufacturer>();
-    private Collection<Manufacturer> historicalEmployers = new ArrayList<Manufacturer>();
+    private Collection<Manufacturer> historicalEmps = new ArrayList<Manufacturer>();
     
     private String name;
 
@@ -78,11 +78,11 @@ public abstract class Person implements Serializable {
     }
 
     public Collection<Manufacturer> getHistoricalEmployers() {
-        return historicalEmployers;
+        return historicalEmps;
     }
 
     public void setHistoricalEmployers(Collection<Manufacturer> historicalEmployers) {
-        this.historicalEmployers = historicalEmployers;
+        this.historicalEmps = historicalEmployers;
     }
     
 }

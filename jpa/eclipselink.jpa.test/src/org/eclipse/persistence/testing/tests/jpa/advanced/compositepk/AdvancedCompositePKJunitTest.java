@@ -37,6 +37,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.DepartmentPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.AdminPool;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.BrigadierGeneral;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Captain;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CaptainId;
@@ -102,6 +103,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
+        
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapWithDerivedId"));
         
         return suite;
     }
@@ -704,6 +707,55 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             fail("Exception thrown while inserting an object with a read-only column in a foreign key." + e);
         } finally {
             rollbackTransaction(em);
+        }
+    }
+    
+    public void testMapWithDerivedId(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("George");
+            em.persist(emp);
+
+            Administrator adminEmp = new Administrator();
+            adminEmp.setContractCompany("George's consulting");
+            adminEmp.setEmployee(emp);
+            em.persist(adminEmp);
+
+            Department support = new Department();
+            support.setLocation("Ottawa");
+            support.setName("Support");
+            support.setRole("Support Customers");
+            em.persist(support);
+
+            DepartmentAdminRole depAdmin = new DepartmentAdminRole();
+            depAdmin.setAdmin(adminEmp);
+            depAdmin.setDepartment(support);
+
+            em.persist(depAdmin);
+            
+            AdminPool pool = new AdminPool();
+            pool.setId(1);
+            pool.addAdmin(depAdmin);
+            depAdmin.setPool(pool);
+            em.persist(pool);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            pool = em.find(AdminPool.class, pool.getId());
+            
+            assertTrue("The AdminPool was not found.", pool != null);
+            assertTrue("The map did not contain the correct elements.", pool.getAdmins().get(depAdmin.buildDepartmentAdminRolePK()) != null);
+            
+        } catch (Exception e) {
+            fail("Exception caught while testing maps with derived ids." + e);
+        } finally {
+            rollbackTransaction(em);
+            em.close();
         }
     }
     

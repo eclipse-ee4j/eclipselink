@@ -65,7 +65,7 @@ public class Enclosure implements java.io.Serializable {
     //@Version
     //@Column(name="ENCLOSURE_VERSION")
     //private int version;
-    
+
     // The M:1 side is the owning side for "enclosureUC10"
     @ManyToOne(fetch=EAGER)
 /*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
@@ -80,6 +80,7 @@ public class Enclosure implements java.io.Serializable {
         pk.setLength(this.getLength());
         pk.setWidth(this.getWidth());
         pk.setType(this.getType());
+        pk.setMappedManufacturerUC9(this.getMappedManufacturer().getId());
         return pk;
     }
 
@@ -149,5 +150,13 @@ public class Enclosure implements java.io.Serializable {
         this.computerUC10 = computer;
     }
 
+    
+    public Manufacturer getMappedManufacturer() {
+        return mappedManufacturerUC9;
+    }
+
+    public void setMappedManufacturer(Manufacturer mappedManufacturer) {
+        this.mappedManufacturerUC9 = mappedManufacturer;
+    }
     
 }

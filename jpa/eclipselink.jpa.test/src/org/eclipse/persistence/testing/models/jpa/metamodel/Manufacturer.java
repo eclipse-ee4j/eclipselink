@@ -35,7 +35,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 // retain name attribute for testing
-@Entity(name="ManufacturerMetamodel")
+@Entity(name="ManuMetamodel")
 @Table(name="CMP3_MM_MANUF")
 public class Manufacturer extends Corporation implements java.io.Serializable{
     private static final long serialVersionUID = 5796354087505114955L;
