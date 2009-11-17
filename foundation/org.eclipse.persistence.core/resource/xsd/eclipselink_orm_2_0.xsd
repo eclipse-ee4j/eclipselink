@@ -2587,26 +2587,26 @@
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
-    <xsd:attribute name="validation-mode" type="orm:order-column-validation-mode"/>
+    <xsd:attribute name="correction-type" type="orm:order-column-correction-type"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
 
-  <xsd:simpleType name="order-column-validation-mode">
+  <xsd:simpleType name="order-column-correction-type">
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum OrderColumnValidationMode {
-          NONE,
-          CORRECTION,
+        public enum OrderCorrectionType {
+          READ,
+          READ_WRITE,
           EXCEPTION
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:token">
-      <xsd:enumeration value="NONE"/>
-      <xsd:enumeration value="CORRECTION"/>
+      <xsd:enumeration value="READ"/>
+      <xsd:enumeration value="READ_WRITE"/>
       <xsd:enumeration value="EXCEPTION"/>
     </xsd:restriction>
   </xsd:simpleType>
