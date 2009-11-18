@@ -127,18 +127,18 @@ public class SimpleTypes_MultiTable {
         DynamicType simpleTypeA = helper.getType("SimpleA");
         assertNotNull(simpleTypeA);
         assertEquals(6, simpleTypeA.getNumberOfProperties());
-        assertEquals("id", simpleTypeA.getPropertiesNames().get(0));
-        assertEquals(int.class, simpleTypeA.getPropertyType(0));
-        assertEquals("value1", simpleTypeA.getPropertiesNames().get(1));
-        assertEquals(String.class, simpleTypeA.getPropertyType(1));
-        assertEquals("value2", simpleTypeA.getPropertiesNames().get(2));
-        assertEquals(boolean.class, simpleTypeA.getPropertyType(2));
-        assertEquals("value3", simpleTypeA.getPropertiesNames().get(3));
-        assertEquals(String.class, simpleTypeA.getPropertyType(3));
-        assertEquals("value4", simpleTypeA.getPropertiesNames().get(4));
-        assertEquals(double.class, simpleTypeA.getPropertyType(4));
-        assertEquals("value5", simpleTypeA.getPropertiesNames().get(5));
-        assertEquals(String.class, simpleTypeA.getPropertyType(5));
+        assertTrue(simpleTypeA.getPropertiesNames().contains("id"));
+        assertEquals(int.class, simpleTypeA.getPropertyType("id"));
+        assertTrue("value1", simpleTypeA.getPropertiesNames().contains("value1"));
+        assertEquals(String.class, simpleTypeA.getPropertyType("value1"));
+        assertTrue("value2", simpleTypeA.getPropertiesNames().contains("value2"));
+        assertEquals(boolean.class, simpleTypeA.getPropertyType("value2"));
+        assertTrue("value3", simpleTypeA.getPropertiesNames().contains("value3"));
+        assertEquals(String.class, simpleTypeA.getPropertyType("value3"));
+        assertTrue("value4", simpleTypeA.getPropertiesNames().contains("value4"));
+        assertEquals(double.class, simpleTypeA.getPropertyType("value4"));
+        assertTrue("value5", simpleTypeA.getPropertiesNames().contains("value5"));
+        assertEquals(String.class, simpleTypeA.getPropertyType("value5"));
     }
 
     @Test

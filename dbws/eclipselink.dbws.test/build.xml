@@ -289,6 +289,25 @@
     </sequential>
   </macrodef>
   <macrodef
+    name="CompileRun"
+    >
+    <attribute name="testsuite-name"/>
+    <sequential>
+      <toLower
+        input="@{testsuite-name}"
+        property="package-name"
+      />
+      <CompileTestsuite
+        testsuite-name="@{testsuite-name}"
+        package-name="${package-name}"
+      />
+      <RunTestsuite
+        testsuite-name="@{testsuite-name}"
+        package-name="${package-name}"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef
     name="SetupCompileRunTeardown"
     >
     <attribute name="testsuite-name"/>
@@ -300,13 +319,8 @@
       <SetupDatabase
         testsuite-name="${package-name}"
       />
-      <CompileTestsuite
+      <CompileRun
         testsuite-name="@{testsuite-name}"
-        package-name="${package-name}"
-      />
-      <RunTestsuite
-        testsuite-name="@{testsuite-name}"
-        package-name="${package-name}"
       />
       <TeardownDatabase
         testsuite-name="${package-name}"
@@ -355,5 +369,6 @@
         <mkdir dir="./${report.dir}"/>
         <SetupCompileRunTeardown testsuite-name="KeyMappings"/>
         <SetupCompileRunTeardown testsuite-name="Relationships"/>
+        <CompileRun testsuite-name="XRDynamicEntity"/>
     </target>
 </project>
