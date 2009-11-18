@@ -198,7 +198,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** 
      * Allow user to require literals to be bound.
      */ 
-    protected boolean shouldBindLiterals = false;
+    protected boolean shouldBindLiterals = true;
 
     /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
      * Redefined here for backward compatibility:

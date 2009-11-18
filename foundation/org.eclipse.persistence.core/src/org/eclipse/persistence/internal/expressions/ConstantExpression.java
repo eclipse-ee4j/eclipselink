@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -197,6 +198,9 @@ public class ConstantExpression extends Expression {
      * Append the constant value into the printer
      */
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
+            printer.getCall().setUsesBinding(false);
+        }
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");

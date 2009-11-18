@@ -59,6 +59,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new QueryExecutionTimeSetOnBuildObjectTest());
         // EL Bug 245986 - Add regression testing for queries using custom SQL and partial attribute population
         addTest(new PartialAttributeWithCustomSQLTest());
+        addTest(buildArgumentValuesTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
@@ -167,7 +168,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(buildPredefinedNestedParameterTest());
         addTest(buildPredefinedRedirectorTest());
         addTest(buildPredefinedMethodRedirectorTest());
-        addTest(buildPredefinedRedirectorTestSessionVector());
         addTest(new PredefinedQueryInheritanceTest());
         addTest(new PredefinedQueryToUpperOnParameterTest(PopulationManager.getDefaultManager().getObject(Employee.class, "0001")));
         addTest(new ReloadSelectionObjectTest(new EmployeePopulator().basicEmployeeExample1(), true));
@@ -313,6 +313,30 @@ public class QueryFrameworkTestSuite extends TestSuite {
             }
         };
         test.setName("ReadOnlyQueryTest");
+        return test;
+    }
+
+    /**
+     * Query argument values.
+     */
+    public TestCase buildArgumentValuesTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                // Test read alls.
+                ReadAllQuery query = new ReadAllQuery(Employee.class);
+                query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal(
+                        query.getExpressionBuilder().getParameter("firstName")));
+                query.addArgument("firstName");
+                query.addArgumentValue("Bob");                
+                List<Employee> result = (List) getSession().executeQuery(query);
+                for (Employee employee : result) {
+                    if (!employee.getFirstName().equals("Bob")) {
+                        throwError("Incorrect result: " + employee);
+                    }
+                }
+            }
+        };
+        test.setName("ArgumentValuesTest");
         return test;
     }
     
@@ -545,33 +569,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedRedirectorTest");
-        test.setDescription("Test query redirectors.");
-
-        return test;
-    }
-
-    public PredefinedQueryTest buildPredefinedRedirectorTestSessionVector() {
-        final Employee employee = (Employee)PopulationManager.getDefaultManager().getObject(Employee.class, "0002");
-
-        MethodBaseQueryRedirector redirector = (new MethodBaseQueryRedirector() {
-            public Object invokeQuery(org.eclipse.persistence.sessions.Session session, Vector arguments) {
-                return arguments.firstElement();
-            }
-        });
-
-        redirector.setMethodClass(QueryFrameworkTestSuite.class);
-        redirector.setMethodName("findEmployeeByAnEmployee");
-
-        ReadObjectQuery query = new ReadObjectQuery(Employee.class);
-        query.setName("findEmployeeByEmployee");
-        query.addArgument("employee");
-        query.setRedirector(redirector);
-
-        Vector arguments = new Vector();
-        arguments.addElement(employee);
-
-        PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
-        test.setName("PredefinedRedirectorTest - Session, Vector");
         test.setDescription("Test query redirectors.");
 
         return test;

@@ -68,8 +68,7 @@ public abstract class DatasourceCall implements Call {
 
     public DatasourceCall() {
         this.isPrepared = false;
-        this.shouldProcessTokenInQuotes=true;
-        this.returnType = RETURN_MANY_ROWS;
+        this.shouldProcessTokenInQuotes = true;
     }
 
     /**
@@ -260,6 +259,13 @@ public abstract class DatasourceCall implements Call {
      */
     public void returnCursor() {
         setReturnType(RETURN_CURSOR);
+    }
+
+    /**
+     * Return if the call's return type has been set.
+     */
+    public boolean isReturnSet() {
+        return this.returnType != 0;
     }
 
     /**

@@ -514,6 +514,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
+        call.returnOneRow();
         Writer writer = new CharArrayWriter(sqlCall.getSQLString().length() + 32);
         try {
             writer.write(sqlCall.getSQLString());
@@ -521,14 +522,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
             for (int i = 0; i < returnFields.size(); i++) {
                 DatabaseField field = (DatabaseField)returnFields.elementAt(i);
                 writer.write(field.getNameDelimited(this));
-                if ((i + 1) < returnFields.size()) {
-                    writer.write(", ");
-                }
-            }
-            writer.write(" INTO ");
-            for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = (DatabaseField)returnFields.elementAt(i);
-                call.appendOut(writer, field);
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
                 }

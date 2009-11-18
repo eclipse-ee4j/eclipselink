@@ -361,7 +361,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     // public String getSelectForUpdateString() { return " FOR UPDATE"; }
     @Override
     public String getSelectForUpdateString() {
-        return " FOR READ ONLY WITH RS";
+        return " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS";
+        //return " FOR READ ONLY WITH RR";
+        //return " FOR READ ONLY WITH RS";
         //return " FOR UPDATE WITH RS";
     }
 

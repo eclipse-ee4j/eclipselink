@@ -1577,6 +1577,7 @@ public class ExpressionOperator implements Serializable {
         argumentIndices[0] = 1;
         argumentIndices[1] = 0;
         expOperator.setArgumentIndices(argumentIndices);
+        expOperator.setIsBindingSupported(false);
         return expOperator;
     }
 
@@ -1592,6 +1593,7 @@ public class ExpressionOperator implements Serializable {
         argumentIndices[1] = 0;
         argumentIndices[2] = 2;
         expOperator.setArgumentIndices(argumentIndices);
+        expOperator.setIsBindingSupported(false);
         return expOperator;
     }
 
@@ -1624,7 +1626,9 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator mod() {
-        return simpleTwoArgumentFunction(Mod, "MOD");
+        ExpressionOperator operator = simpleTwoArgumentFunction(Mod, "MOD");
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
@@ -2023,7 +2027,9 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator replace() {
-        return simpleThreeArgumentFunction(Replace, "REPLACE");
+        ExpressionOperator operator = simpleThreeArgumentFunction(Replace, "REPLACE");
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
@@ -2399,7 +2405,9 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator substring() {
-        return simpleThreeArgumentFunction(Substring, "SUBSTR");
+        ExpressionOperator operator = simpleThreeArgumentFunction(Substring, "SUBSTR");
+        operator.setIsBindingSupported(false);
+        return operator;
     }
     
     /**
@@ -2665,7 +2673,9 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator translate() {
-        return simpleThreeArgumentFunction(Translate, "TRANSLATE");
+        ExpressionOperator operator = simpleThreeArgumentFunction(Translate, "TRANSLATE");
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**

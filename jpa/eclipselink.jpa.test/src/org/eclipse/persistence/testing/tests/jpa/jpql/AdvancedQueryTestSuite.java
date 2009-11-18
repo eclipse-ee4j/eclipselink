@@ -1016,9 +1016,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_READLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1070,9 +1067,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_WRITELock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1124,9 +1118,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
         // It's a JPA2.0 feature
         if (! isJPA10() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -1194,10 +1185,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     
     public void testQueryPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
+        // Lock timeout only supported on Oracle.
+        if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -1257,10 +1248,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     
     public void testQueryPESSIMISTIC_WRITE_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
+        // Lock timeout only supported on Oracle.
+        if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);

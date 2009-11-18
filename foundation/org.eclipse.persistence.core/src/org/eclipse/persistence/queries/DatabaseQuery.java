@@ -650,7 +650,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (!queryToExecute.isExecutionClone()) {
             queryToExecute = (DatabaseQuery)queryToExecute.clone();
         }
+        // Check for query argument values.
+        if ((this.argumentValues != null) && (!this.argumentValues.isEmpty()) && translationRow.isEmpty()) {
+            translationRow = rowFromArguments(this.argumentValues);
+        }
         queryToExecute.setTranslationRow(translationRow);
+        
         // If the prepare has been disable the clone is prepare dynamically to not parameterize the SQL.
         if (!queryToExecute.shouldPrepare()) {
             queryToExecute.checkPrepare(session, translationRow);
@@ -781,10 +786,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Return the argumentValues for use with argumented queries.
      */
     public List<Object> getArgumentValues() {
-        if (argumentValues == null) {
-            argumentValues = new ArrayList<Object>();
+        if (this.argumentValues == null) {
+            this.argumentValues = new ArrayList<Object>();
         }
-        return argumentValues;
+        return this.argumentValues;
     }
 
     /**
@@ -792,7 +797,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Set the argumentValues for use with argumented queries.
      */
     public void setArgumentValues(List<Object> theArgumentValues) {
-        argumentValues = theArgumentValues;
+        this.argumentValues = theArgumentValues;
     }
 
     /**

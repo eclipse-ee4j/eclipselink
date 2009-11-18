@@ -106,11 +106,10 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected String sqlString;
     
     public DatabaseCall() {
-        super.shouldProcessTokenInQuotes=false;
+        super.shouldProcessTokenInQuotes = false;
         this.usesBinding = null;
         this.shouldCacheStatement = null;
         this.isFieldMatchingRequired = false;
-        this.returnType = RETURN_MANY_ROWS;
         this.queryTimeout = 0;
         this.maxRows = 0;
         this.resultSetFetchSize = 0;

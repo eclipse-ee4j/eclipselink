@@ -318,7 +318,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             int size = getCalls().size();
             for (int index = 0; index < size; index++) {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().get(index);
-                executeCall(databseCall);
+                Object result = executeCall(databseCall);
+                // Set the return row if one was returned (Postgres).
+                if (result instanceof AbstractRecord) {
+                    this.query.setProperty("output", result);
+                }
                 if (returnFields != null) {
                     updateObjectAndRowWithReturnRow(returnFields, index == 0);
                 }
@@ -327,7 +331,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 }
             }
         } else {
-            executeCall();
+            Object result = executeCall();
+            // Set the return row if one was returned (Postgres).
+            if (result instanceof AbstractRecord) {
+                this.query.setProperty("output", result);
+            }
             if (returnFields != null) {
                 updateObjectAndRowWithReturnRow(returnFields, true);
             }
@@ -476,11 +484,17 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     public void prepareInsertObject() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                ((DatasourceCall)callsEnum.nextElement()).returnNothing();
+            int size = this.calls.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                if (!call.isReturnSet()) {
+                    call.returnNothing();
+                }
             }
         } else {
-            getCall().returnNothing();
+            if (!this.call.isReturnSet()) {
+                this.call.returnNothing();
+            }
         }
         prepareCall();
     }
@@ -560,12 +574,17 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     public void prepareUpdateObject() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
-                call.returnNothing();
+            int size = this.calls.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                if (!call.isReturnSet()) {
+                    call.returnNothing();
+                }
             }
         } else if (getCall() != null) {
-            getCall().returnNothing();
+            if (!call.isReturnSet()) {
+                this.call.returnNothing();
+            }
         }
         prepareCall();
     }
@@ -672,9 +691,18 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         }
         Integer returnedRowCount = null;
         if (hasMultipleCalls()) {
-            for (int index = 0; index < getCalls().size(); index++) {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
-                Integer rowCount = (Integer)executeCall(databseCall);
+            int size = this.calls.size();
+            for (int index = 0; index < size; index++) {
+                DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
+                Object result = executeCall(databseCall);
+                // Set the return row if one was returned (Postgres).
+                Integer rowCount;
+                if (result instanceof AbstractRecord) {
+                    this.query.setProperty("output", result);
+                    rowCount = Integer.valueOf(1);
+                } else {
+                    rowCount = (Integer)result;
+                }
                 if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
@@ -683,7 +711,14 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 }
             }
         } else {
-            returnedRowCount = (Integer)executeCall();
+            Object result = executeCall();
+            // Set the return row if one was returned (Postgres).
+            if (result instanceof AbstractRecord) {
+                this.query.setProperty("output", result);
+                returnedRowCount = Integer.valueOf(1);
+            } else {
+                returnedRowCount = (Integer)result;
+            }
             if (returnFields != null) {
                 updateObjectAndRowWithReturnRow(returnFields, false);
             }

@@ -3287,7 +3287,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 }
                 if (!isAbstract()) {
                     try {
-                        setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().newInstance()));
+                        if (this.instantiationPolicy == null) {
+                            setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().newInstance()));
+                        }
                     } catch (Exception ignore) { }
                 }
             }

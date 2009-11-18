@@ -428,6 +428,9 @@ public class ParameterExpression extends BaseExpression {
      * it's used during construction of insert call into temporary storage.
      */
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
+            printer.getCall().setUsesBinding(false);
+        }
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");

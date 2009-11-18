@@ -50,9 +50,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
-     * then, by default, TopLink will place a null in the appropriate source object
+     * then, by default, the mapping will place a null in the appropriate source object
      * (as opposed to an aggregate object filled with nulls).
-     * To change this behavior, set the value of this variable to false. Then TopLink
+     * To change this behavior, set the value of this variable to false. Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
      */
@@ -211,13 +211,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * PUBLIC:
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
-     * then, by default, TopLink will place a null in the appropriate source object
+     * then, by default, the mapping will place a null in the appropriate source object
      * (as opposed to an aggregate object filled with nulls). This behavior can be
      * explicitly set by calling #allowNull().
-     * To change this behavior, call #dontAllowNull(). Then TopLink
+     * To change this behavior, call #dontAllowNull(). Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
-     * In either situation, when writing, TopLink will place a NULL in all the
+     * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
      */
     public void allowNull() {
@@ -734,13 +734,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * PUBLIC:
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
-     * then, by default, TopLink will place a null in the appropriate source object
+     * then, by default, the mapping will place a null in the appropriate source object
      * (as opposed to an aggregate object filled with nulls). This behavior can be
      * explicitly set by calling #allowNull().
-     * To change this behavior, call #dontAllowNull(). Then TopLink
+     * To change this behavior, call #dontAllowNull(). Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
-     * In either situation, when writing, TopLink will place a NULL in all the
+     * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
      */
     public void dontAllowNull() {
@@ -749,8 +749,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
-     * Extract the fields for the Map key from the object to use in a query
-     * @return
+     * Extract the fields for the Map key from the object to use in a query.
      */
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
@@ -1158,8 +1157,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
     
     /**
-     * INTERNAL:
-     * Return setting.
+     * PUBLIC:
+     * Return if all the fields in the database row for the aggregate object are NULL,
+     * then, by default, the mapping will place a null in the appropriate source object
+     * (as opposed to an aggregate object filled with nulls).
+     * To change this behavior, set the value of this variable to false. Then the mapping
+     * will build a new instance of the aggregate object that is filled with nulls
+     * and place it in the source object.
      */
     public boolean isNullAllowed() {
         return isNullAllowed;
@@ -1316,18 +1320,22 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
 
     /**
-     * INTERNAL:
-     * Will be used by Gromit only.
+     * PUBLIC:
+     * Configure if all the fields in the database row for the aggregate object are NULL,
+     * then, by default, the mapping will place a null in the appropriate source object
+     * (as opposed to an aggregate object filled with nulls).
+     * To change this behavior, set the value of this variable to false. Then the mapping
+     * will build a new instance of the aggregate object that is filled with nulls
+     * and place it in the source object.
      */
-    public void setIsNullAllowed(boolean aBoolean) {
-        isNullAllowed = aBoolean;
+    public void setIsNullAllowed(boolean isNullAllowed) {
+        this.isNullAllowed = isNullAllowed;
     }
 
     /** 
      * INTERNAL:
      * If this mapping is used as the key of a CollectionTableMapMapping, the table used by this
-     * mapping will be the relation table.  Set this table
-     * @return
+     * mapping will be the relation table.  Set this table.
      */
     public void setTableForAggregateMappingKey(DatabaseTable table){
         aggregateKeyTable = table;

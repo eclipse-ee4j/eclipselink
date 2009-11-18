@@ -2111,7 +2111,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/structconverter"/>
             <param name="TEST_NAME" value="eclipselink-structconverter-model"/>
             <param name="EAR_NAME" value="eclipselink-structconverter-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterServerTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
         </antcall>
     </target>
