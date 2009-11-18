@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.tests.jpa.criteria;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
@@ -23,13 +25,14 @@ public class CriteriaServerTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Criteria ServerTestSuite");
-        suite.addTest(AdvancedCompositePKJunitTest.suite());
-        suite.addTest(AdvancedCriteriaQueryTestSuite.suite());
-        suite.addTest(AdvancedQueryTestSuite.suite());
-        suite.addTest(JUnitCriteriaSimpleTestSuite.suite());
-        suite.addTest(JUnitCriteriaUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
-        
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(AdvancedCompositePKJunitTest.suite());
+            suite.addTest(AdvancedCriteriaQueryTestSuite.suite());
+            suite.addTest(AdvancedQueryTestSuite.suite());
+            suite.addTest(JUnitCriteriaSimpleTestSuite.suite());
+            suite.addTest(JUnitCriteriaUnitTestSuite.suite());
+            suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
+        }        
         return suite;
     }
 }

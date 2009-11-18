@@ -45,12 +45,30 @@
     <property file="${user.home}/glassfish.properties"/>
     <property file="./test.properties"/>
     <property file="./glassfish.properties"/>
-    
-    <!-- 
-        This copies libraries to domain1. 
-        Installing GlassFish and setting up domain1 should have been done beforehand.
-    -->
-    <target name="glassfish-install">
+
+    <!-- Check the os -->
+    <condition property="extension" value=".bat" else="">
+        <os family="Windows"/>
+    </condition>
+
+    <!-- Install the latest glassfish nightly build -->
+    <target name="install-latest-glassfish" if="install.latest.glassfish">
+        <echo message="set the proxy to ${proxy.host}:${proxy.port}"/>
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
+        <echo message="getting the latest glassfish nightly build from ${nightly-build-url}..."/>
+        <get src="${nightly-build-url}/${latest-glassfish-file-name}" 
+             dest="${installer.dir}/${latest-glassfish-file-name}" 
+             ignoreerrors="true"
+             verbose="true"
+             usetimestamp="true"/>
+        <echo message="Unzip the latest glassfish nightly build from ${latest-glassfish-file-name}"/>
+        <delete dir="${install.dir}"/>
+        <unzip src="${installer.dir}/${latest-glassfish-file-name}" dest="${install.dir}/.."/>
+        <chmod dir="${glassfish.home}/bin" perm="ugo+rx"  includes="**/*"/>
+    </target>
+
+    <!-- Copies libraries to domain1 -->
+    <target name="glassfish-install" depends="install-latest-glassfish">
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
@@ -59,10 +77,12 @@
     
     <!-- Start the server. -->
     <target name="glassfish-start">
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
             <arg value="start-domain"/>
             <arg value="domain1"/>
         </exec>
+        <echo message="I'm going to sleep 2 minutes waiting for glassfish domain1 to be started up ..."/>
+        <sleep minutes="2"/>
     </target>
     
     <!--
@@ -70,22 +90,33 @@
         Note: SunAS9 server must be running.
     -->
     <target name="glassfish-setup">
-        <exec executable="${glassfish.home}/bin/asadmin">
-            <arg value="start-database"/>
-        </exec>
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <echo message="Removing the ${user.home}/.asadminpass"/>
+        <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
+        <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
+        <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
+        <echo message="glassfish.db.url == ${glassfish.db.url}"/>
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--restype"/>
+            <arg value="javax.sql.XADataSource"/>
             <arg value="--datasourceclassname"/>
-            <arg value="org.apache.derby.jdbc.ClientDataSource"/>
-
+            <arg value="oracle.jdbc.xa.client.OracleXADataSource"/>
             <arg value="--property"/>
-            <arg value="user=anyUser:password=anyPassword:portNumber=1527:dataBaseName=anyDatabase:serverName=localhost:connectionAttributes=\;create\=true"/>
-            <arg value="jdbc-derby-pool"/>
+            <arg value="URL=${glassfish.db.url}:User=${db.user}:Password=${db.pwd}"/>
+            <arg value="jdbc-oracle-pool"/>
         </exec> 
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="--connectionpoolid"/>
-            <arg value="jdbc-derby-pool"/>
+            <arg value="jdbc-oracle-pool"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec> 
     </target>
@@ -96,22 +127,27 @@
     -->
     
     <target name="glassfish-reset">
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec> 
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-connection-pool"/>
-            <arg value="jdbc-derby-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="jdbc-oracle-pool"/>
         </exec>  
-        <exec executable="${glassfish.home}/bin/asadmin">
-            <arg value="stop-database"/>
-        </exec>
     </target>
              
     <!-- Stop the server. -->
     <target name="glassfish-stop">
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="stop-domain"/>
             <arg value="domain1"/>
         </exec>
@@ -122,8 +158,12 @@
         Note: SunAS9 server must be running.
     -->
     <target name="glassfish-deploy">
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="deploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="--name"/>
             <arg value="${application.name}"/>
             <arg value="${ear.name}"/>
@@ -135,8 +175,12 @@
         Note: SunAS9 server must be running.
     -->
     <target name="glassfish-undeploy">
-        <exec executable="${glassfish.home}/bin/asadmin">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="undeploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="${application.name}"/> 
         </exec>
     </target>
