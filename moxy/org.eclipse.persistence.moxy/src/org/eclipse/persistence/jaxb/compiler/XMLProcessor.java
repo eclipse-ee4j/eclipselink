@@ -42,6 +42,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 
 public class XMLProcessor {
     private Map<String, XmlBindings> xmlBindingMap;
@@ -409,7 +410,12 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlBidirectional() != null) {
             oldProperty.setBidirectionalPropertyName(xmlAttribute.getXmlBidirectional().getTargetAttribute());
         }
-        
+
+        // handle xml-mime-type
+        if (xmlAttribute.getXmlMimeType() != null) {
+            oldProperty.setMimeType(xmlAttribute.getXmlMimeType());
+        }
+
         return oldProperty;
     }
 
@@ -506,6 +512,11 @@ public class XMLProcessor {
         // handle xml-bidirectional
         if (xmlElement.getXmlBidirectional() != null) {
             oldProperty.setBidirectionalPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
+        }
+        
+        // handle xml-mime-type
+        if (xmlElement.getXmlMimeType() != null) {
+            oldProperty.setMimeType(xmlElement.getXmlMimeType());
         }
         
         return oldProperty;
@@ -684,7 +695,6 @@ public class XMLProcessor {
         oldProperty.setBidirectionalPropertyName(null);
         oldProperty.setDefaultValue(null);
         oldProperty.setDomHandlerClassName(null);
-        oldProperty.setIsMtomAttachment(false);
         oldProperty.setIsSwaAttachmentRef(false);
         oldProperty.setIsXmlId(false);
         oldProperty.setIsXmlIdRef(false);

@@ -801,7 +801,11 @@ public class MappingsGenerator {
             mapping.setShouldInlineBinaryData(true);
         }
         // use a non-dynamic implementation of MimeTypePolicy to wrap the MIME string
-        mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
+        if (property.getMimeType() != null) {
+            mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
+        } else {
+            mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        }
         descriptor.addMapping(mapping);
         
         return mapping;

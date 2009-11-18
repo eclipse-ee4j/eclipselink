@@ -591,6 +591,10 @@ public class SchemaGenerator {
                         if (next.isSetDefaultValue()) {
                             element.setDefaultValue(next.getDefaultValue());
                         }
+                        // handle mime-type
+                        if (next.getMimeType() != null) {
+                            element.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, next.getMimeType());
+                        }
                         
                         QName elementName = next.getSchemaName();
                         JavaClass javaType = next.getActualType();

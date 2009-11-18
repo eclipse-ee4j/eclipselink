@@ -52,6 +52,8 @@ public class XMLConstants {
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;
     public final static String DEFAULT_XML_ENCODING = "UTF-8";
+    public final static String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
+    public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     
     // Built-in Schema Types    
     public static final String ANY = "any";
@@ -121,6 +123,7 @@ public class XMLConstants {
     public static final QName UNSIGNED_SHORT_QNAME = new QName(SCHEMA_URL, UNSIGNED_SHORT);
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final String JAXB_FRAGMENT = "jaxb.fragment";
+    public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
           
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
     

@@ -1226,8 +1226,6 @@ public class AnnotationsProcessor {
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlMimeType.class)) {
             property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
-        } else {
-            property.setMimeType("application/octet-stream");
         }
     
         // Get schema-type info if specified and set it on the property for later use:
