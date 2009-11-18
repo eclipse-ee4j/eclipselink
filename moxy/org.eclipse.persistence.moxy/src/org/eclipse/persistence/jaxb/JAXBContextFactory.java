@@ -192,7 +192,17 @@ public class JAXBContextFactory {
             throw new JAXBException(ex.getMessage(), ex);
         }
     }
-
+    
+    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+        Type[] types = new Type[typesToBeBound.length];
+        
+        for(int i = 0; i < typesToBeBound.length; i++) {
+            TypeMappingInfo next = typesToBeBound[i];
+            types[i] = next.getType();
+        }
+        
+        return createContext(types, properties, classLoader);
+    }
     private static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);    	
         try {

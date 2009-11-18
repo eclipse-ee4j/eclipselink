@@ -274,5 +274,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
         return typeToSchemaType;
     }
+    
+    public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
+        return new HashMap<TypeMappingInfo, QName>();
+    }
 
 }

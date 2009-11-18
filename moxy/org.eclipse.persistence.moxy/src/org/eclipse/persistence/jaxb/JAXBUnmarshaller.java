@@ -272,6 +272,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	}
     	return null;    	    	
     }
+    
+    public JAXBElement unmarshal(Source source, TypeMappingInfo type) throws JAXBException {
+        return unmarshal(source, type.getType());
+    }
 
     public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
     	
@@ -307,6 +311,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return  unmarshal(streamReader, (Class)type);
         }
         return null;
+    }
+    
+    public JAXBElement unmarshal(XMLStreamReader streamReader, TypeMappingInfo type) throws JAXBException {
+        return unmarshal(streamReader, type.getType());
     }
 
     public Object unmarshal(XMLStreamReader streamReader) throws JAXBException {
@@ -351,6 +359,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return  unmarshal(eventReader, (Class)type);
         }
         return null;
+    }
+    
+    public JAXBElement unmarshal(XMLEventReader eventReader, TypeMappingInfo type) throws JAXBException {
+        return unmarshal(eventReader, type.getType());
     }
     
     public Object unmarshal(XMLEventReader eventReader) throws JAXBException {
