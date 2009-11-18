@@ -755,7 +755,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             fail("Exception caught while testing maps with derived ids." + e);
         } finally {
             rollbackTransaction(em);
-            em.close();
+            closeEntityManager(em);
         }
     }
     
