@@ -20,6 +20,8 @@ public class Employee {
     @XmlElementWrapper(name="my-digits", nillable=true, required=true)
     public int[] digits;
 
+    public Object thing;
+    
     /**
      * Assumes the contents of the array is relevant, but not ordering.
      * 

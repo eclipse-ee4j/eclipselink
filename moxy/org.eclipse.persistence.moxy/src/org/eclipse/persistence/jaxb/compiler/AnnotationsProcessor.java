@@ -390,7 +390,12 @@ public class AnnotationsProcessor {
                 if (property.isSwaAttachmentRef() && !areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
                     throw JAXBException.invalidAttributeRef(property.getPropertyName(), jClass.getQualifiedName());
                 }
-
+                // an XmlElementWrapper can only appear on a Collection or Array
+                if (property.getXmlElementWrapper() != null) {
+                    if (!isCollectionType(property) && !property.getType().isArray()) {
+                        throw JAXBException.invalidElementWrapper(property.getPropertyName());
+                    }
+                }
             }
         }
     }
@@ -1258,9 +1263,6 @@ public class AnnotationsProcessor {
         
         // Make sure XmlElementWrapper annotation is on a collection or array
         if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
-            if (!isCollectionType(property) && !property.getType().isArray()) {
-                throw JAXBException.invalidElementWrapper(property.getPropertyName());
-            }
             XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(property.getElement(), XmlElementWrapper.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper xmlEltWrapper = new org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper();
             xmlEltWrapper.setName(wrapper.name());
