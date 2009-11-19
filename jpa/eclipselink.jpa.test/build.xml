@@ -1098,7 +1098,7 @@
 
         <!-- default values for proxy test -->
         <property name="pa.connection.user" value="PA_CONN"/>
-        <property name="pa.connection.pwssword" value="PA_CONN"/>
+        <property name="pa.connection.password" value="PA_CONN"/>
         <property name="pa.proxyuser" value="PA_PROXY"/>
         <property name="pa.proxyuser2" value="PA_PROXY2"/>
 

@@ -5,7 +5,9 @@
     <property name="db.sys.user" value="sys as sysdba"/>
     <property name="db.sys.pwd" value="orasys9"/>
     <property name="oracle.proxy.user" value="${db.user}_PROXY"/>
+    <property name="oracle.proxy.user2" value="${db.user}_PROXY2"/>
     <property name="oracle.proxy.pwd" value="password"/>
+    <property name="oracle.proxy.pwd2" value="password"/>
 
 
     <target name="clean-schema">
@@ -56,12 +58,16 @@ GRANT execute on dbms_session TO ${db.user};
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
 DROP USER ${oracle.proxy.user} CASCADE;
-
+DROP USER ${oracle.proxy.user2} CASCADE;
+  
 CREATE USER ${oracle.proxy.user} IDENTIFIED BY ${oracle.proxy.pwd} ACCOUNT UNLOCK;
+CREATE USER ${oracle.proxy.user2} IDENTIFIED BY ${oracle.proxy.pwd2} ACCOUNT UNLOCK;
 GRANT CONNECT TO ${oracle.proxy.user};
+GRANT CONNECT TO ${oracle.proxy.user2};
 GRANT RESOURCE TO ${oracle.proxy.user};
 GRANT CREATE SESSION TO ${oracle.proxy.user};
 ALTER USER ${oracle.proxy.user} GRANT CONNECT THROUGH ${db.user};
+ALTER USER ${oracle.proxy.user2} GRANT CONNECT THROUGH ${db.user};
         </sql>
 
         <sql driver="${db.driver}"
