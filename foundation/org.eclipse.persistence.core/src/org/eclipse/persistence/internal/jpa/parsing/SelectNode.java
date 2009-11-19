@@ -165,10 +165,10 @@ public class SelectNode extends QueryNode {
             if (selectingRelationshipField(node, context)) {
                 selectContext.useOuterJoins();
             }
-            if (node.isDotNode() && identifiers != null){
+            if (node.isAliasableNode() && identifiers != null){
                 String alias = (String)identifiers.get(i);
                 if (alias != null){
-                    ((DotNode)node).setAlias(alias);
+                    ((AliasableNode)node).setAlias(alias);
                 }
             }
             node.applyToQuery(readQuery, context); 

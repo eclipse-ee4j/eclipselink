@@ -92,6 +92,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexSelectAggregateTest"));
 
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexAVGTest"));
+        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexAVGOrderTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByAndHavingTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByTest2"));
@@ -171,6 +172,44 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Double result = (Double) em.createQuery(ejbqlString).getSingleResult();
  
         Assert.assertEquals("Complex AVG test failed", expectedResult, result);
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void complexAVGOrderTest()
+    {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        ExpressionBuilder expbldr = new ExpressionBuilder();
+            
+        ReportQuery rq = new ReportQuery(Employee.class, expbldr);
+        
+        Expression exp = expbldr.get("lastName").equal("Smith");
+        
+        rq.setReferenceClass(Employee.class);
+        rq.setSelectionCriteria(exp);
+        rq.dontRetrievePrimaryKeys();
+        rq.useDistinct();
+        
+        Expression avgSal = expbldr.get("salary").average();
+        rq.addAttribute("salary", avgSal);
+        rq.addOrdering(avgSal);
+        
+        Expression gender = expbldr.get("gender");
+        rq.addAttribute("gender", gender);
+        rq.addGrouping(gender);
+        
+        
+        
+        String ejbqlString = "SELECT emp.gender, AVG(DISTINCT emp.salary) sal FROM Employee emp WHERE emp.lastName = \"Smith\" group by emp.gender order by sal";
+        
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
+        
+        clearCache();
+        
+        List result =  em.createQuery(ejbqlString).getResultList();
+ 
+        Assert.assertTrue("complexAVGOrderTest test failed", comparer.compareObjects(result, expectedResultVector));
         rollbackTransaction(em);
         closeEntityManager(em);
     }

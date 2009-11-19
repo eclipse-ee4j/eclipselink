@@ -153,6 +153,14 @@ public class Node {
 
     /**
      * INTERNAL
+     * can this node accept an alias
+     */
+    public boolean isAliasableNode(){
+        return true;
+    }
+    
+    /**
+     * INTERNAL
      * Is this node a Dot node
      */
     public boolean isDotNode() {

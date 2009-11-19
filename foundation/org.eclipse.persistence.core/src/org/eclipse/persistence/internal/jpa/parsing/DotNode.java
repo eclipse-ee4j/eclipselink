@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
-public class DotNode extends LogicalOperatorNode {
+public class DotNode extends LogicalOperatorNode implements AliasableNode {
 
     private Object enumConstant;
     private String alias;
@@ -298,5 +298,9 @@ public class DotNode extends LogicalOperatorNode {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

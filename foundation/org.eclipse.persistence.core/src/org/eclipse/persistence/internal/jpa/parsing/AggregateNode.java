@@ -24,9 +24,10 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.expressions.Expression;
 
-public abstract class AggregateNode extends Node {
+public abstract class AggregateNode extends Node implements AliasableNode {
 
     private boolean distinct = false;
+    private String alias = null;
 
     /**
      * INTERNAL
@@ -66,15 +67,17 @@ public abstract class AggregateNode extends Node {
      * Return a EclipseLink expression generated using the left node
      */
     public Expression generateExpression(GenerationContext context) {
-        String name = getAsString();
-        Expression aggregateExpr = context.expressionFor(name);
+        if (alias == null){
+            alias = getAsString();
+        }
+        Expression aggregateExpr = context.expressionFor(alias);
         if (aggregateExpr == null) {
             Expression arg = getLeft().generateExpression(context);
             if (usesDistinct()) {
                 arg = arg.distinct();
             }
             aggregateExpr = addAggregateExression(arg);
-            context.addExpression(aggregateExpr, name);
+            context.addExpression(aggregateExpr, alias);
         }
         return aggregateExpr;
     }
@@ -83,5 +86,18 @@ public abstract class AggregateNode extends Node {
      * INTERNAL
      */
     protected abstract Expression addAggregateExression(Expression expr);
+    
+
+    public String getAlias(){
+        return this.alias;
+    }
+    
+    public void setAlias(String alias){
+        this.alias = alias;
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
+    }
 
 }
