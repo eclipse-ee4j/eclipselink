@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
@@ -61,7 +60,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.Archive;
-import org.eclipse.persistence.jpa.ArchiveFactory;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
