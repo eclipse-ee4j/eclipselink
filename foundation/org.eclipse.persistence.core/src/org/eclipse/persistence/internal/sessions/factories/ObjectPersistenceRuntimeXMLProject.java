@@ -2702,6 +2702,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         eventListenersMapping.setAttributeName("eventListeners");
         eventListenersMapping.setGetMethodName("getEventListeners");
         eventListenersMapping.setSetMethodName("setEventListeners");
+        eventListenersMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
         eventListenersMapping.setValueConverter(new ClassInstanceConverter());
         eventListenersMapping.setXPath(getSecondaryNamespaceXPath() + "event-listeners/" + getSecondaryNamespaceXPath() + "event-listener/text()");
         descriptor.addMapping(eventListenersMapping);
