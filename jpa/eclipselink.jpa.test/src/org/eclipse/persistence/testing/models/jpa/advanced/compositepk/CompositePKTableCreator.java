@@ -46,7 +46,74 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildLACKEYTable());
         addTableDefinition(buildLACKEYCREWTable());
         addTableDefinition(buildOFFICETable());
+        addTableDefinition(buildBOOKIETable());
+        addTableDefinition(buildCELLNUMBERTable());
         addTableDefinition(buildADMINPOOLTable());
+	}
+
+    public static TableDefinition buildBOOKIETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_BOOKIE");
+        
+        FieldDefinition fieldBOOKIE_ID = new FieldDefinition();
+        fieldBOOKIE_ID.setName("BOOKIE_ID");
+        fieldBOOKIE_ID.setTypeName("NUMERIC");
+        fieldBOOKIE_ID.setSize(15);
+        fieldBOOKIE_ID.setShouldAllowNull(false);
+        fieldBOOKIE_ID.setIsPrimaryKey(true);
+        fieldBOOKIE_ID.setUnique(false);
+        fieldBOOKIE_ID.setIsIdentity(true);
+        table.addField(fieldBOOKIE_ID);
+    
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCELLNUMBERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CELLNUMBER");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("BOOKIE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA_BOOKIE.BOOKIE_ID");
+        table.addField(field);
+    
+        FieldDefinition fieldNUMBER = new FieldDefinition();
+        fieldNUMBER.setName("NUMB");
+        fieldNUMBER.setTypeName("VARCHAR");
+        fieldNUMBER.setSize(15);
+        fieldNUMBER.setShouldAllowNull(false);
+        fieldNUMBER.setIsPrimaryKey(true);
+        fieldNUMBER.setUnique(false);
+        fieldNUMBER.setIsIdentity(false);
+        table.addField(fieldNUMBER);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIP");
+        fieldDESCRIPTION.setTypeName("VARCHAR");
+        fieldDESCRIPTION.setSize(40);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);
+
+        return table;
     }
     
     public static TableDefinition buildADMIN_CONTRACTTable(){

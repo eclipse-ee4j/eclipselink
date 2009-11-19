@@ -38,9 +38,12 @@ import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Departmen
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.DepartmentPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.AdminPool;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Bookie;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.BrigadierGeneral;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Captain;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CaptainId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CellNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CellNumberPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Corporal;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CorporalId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRole;
@@ -105,6 +108,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testMapWithDerivedId"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testIdentitySequencingForDerivedId"));
         
         return suite;
     }
@@ -759,4 +763,61 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         }
     }
     
+    public void testIdentitySequencingForDerivedId() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Bookie bookie = new Bookie();
+        
+        try {
+            bookie.setName("Bookie Joe");
+            CellNumber cellNumber1 = new CellNumber();
+            cellNumber1.setNumber("613-765-6452");
+            cellNumber1.setDescription("NHL bets");
+            bookie.addCellNumber(cellNumber1);
+        
+            CellNumber cellNumber2 = new CellNumber();
+            cellNumber2.setNumber("613-765-6222");
+            cellNumber2.setDescription("NB@ bets");
+            bookie.addCellNumber(cellNumber2);
+        
+            // Bookie has cascade persist to cell number;
+            em.persist(bookie);
+        
+            // Flush the changes.
+            em.flush();
+        
+            // Make some changes.
+            CellNumber cellNumber3 = new CellNumber();
+            cellNumber3.setNumber("613-765-7422");
+            cellNumber3.setDescription("PGA bets");
+            bookie.addCellNumber(cellNumber3);
+            em.persist(cellNumber3);
+        
+            // Flush the changes.
+            em.flush();
+        
+            // Make some changes.
+            bookie.setName("Bookie Jo");
+            cellNumber2.setDescription("NBA bets");;
+        
+            // Flush the changes.
+            em.flush();
+        
+            // Do some finds
+            CellNumber findCellNumber1 = em.find(CellNumber.class, cellNumber1.buildPK());
+            assertNotNull(findCellNumber1);
+        
+            CellNumberPK key = cellNumber2.buildPK();
+            CellNumber findCellNumber2 = em.find(CellNumber.class, key);
+            assertNotNull(findCellNumber2);
+        
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    } 
 }

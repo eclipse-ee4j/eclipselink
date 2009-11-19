@@ -22,6 +22,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 import org.eclipse.persistence.sessions.Project;
 
@@ -64,7 +65,13 @@ public class PersistenceXMLMappings {
         
         descriptor.addDirectMapping("persistenceUnitName", "@name");
         
-        descriptor.addDirectMapping("excludeUnlistedClasses", "exclude-unlisted-classes/text()");
+        // For the canonical model generation we don't exclude the unlisted
+        // classes unless explicitly set by the user.
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("excludeUnlistedClasses");
+        mapping.setXPath("exclude-unlisted-classes/text()");
+        mapping.setNullValue(false);
+        descriptor.addMapping(mapping);
         
         XMLCompositeDirectCollectionMapping classesMapping = new XMLCompositeDirectCollectionMapping();
         classesMapping.setAttributeName("managedClassNames");
