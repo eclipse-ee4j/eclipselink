@@ -45,6 +45,7 @@ public class EmployeeSystem extends TestSystem {
     boolean useListOrderField;
     // if true all collection mappings use TransparentIndirection; otherwise collection mappings use no indirection.
     boolean useIndirection;
+    boolean isPrivatelyOwned;
     boolean useSecondaryTable;
     boolean useVarcharOrder;
     ChangeTracking changeTracking;
@@ -52,16 +53,17 @@ public class EmployeeSystem extends TestSystem {
     boolean shouldOverrideContainerPolicy;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
-    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
-        this.useIndirection = useIndirection;
+    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
+        this.useIndirection = useIndirection;
+        this.isPrivatelyOwned = isPrivatelyOwned;
         this.useSecondaryTable = useSecondaryTable;
         this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
         this.orderCorrectionType = orderCorrectionType;
         this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        this.project = new EmployeeProject(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead);
+        this.project = new EmployeeProject(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead);
     }
 
     public void createTables(DatabaseSession session) {

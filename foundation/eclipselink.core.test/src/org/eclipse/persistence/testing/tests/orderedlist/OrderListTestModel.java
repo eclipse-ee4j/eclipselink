@@ -66,7 +66,8 @@ public class OrderListTestModel extends TestModel {
      * Top level model loops through all possible combinations of the attributes below and decides whether the combination should run.
      * Foe each combination of values that should run a model is created and added to the top level model. 
      */
-    boolean useListOrderField; 
+    boolean useListOrderField;
+    boolean isPrivatelyOwned;
     boolean useIndirection; 
     boolean useSecondaryTable;
     boolean useVarcharOrder;
@@ -113,26 +114,29 @@ public class OrderListTestModel extends TestModel {
             do {
                 do {
                     do {
-                        for(int i=0; i < ChangeTracking.values().length; i++) {
-                            changeTracking = ChangeTracking.values()[i];
-                            for(int j=0; j < OrderCorrectionType.values().length; j++) {
-                                orderCorrectionType = OrderCorrectionType.values()[j];
-                                do{ 
-                                    for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
-                                        joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
-                                        if(shouldAddModel(platform)) {
-                                            addTest(new OrderListTestModel(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
+                        do {
+                            for(int i=0; i < ChangeTracking.values().length; i++) {
+                                changeTracking = ChangeTracking.values()[i];
+                                for(int j=0; j < OrderCorrectionType.values().length; j++) {
+                                    orderCorrectionType = OrderCorrectionType.values()[j];
+                                    do{ 
+                                        for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
+                                            joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
+                                            if(shouldAddModel(platform)) {
+                                                addTest(new OrderListTestModel(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
+                                            }
                                         }
-                                    }
-                                    shouldOverrideContainerPolicy = !shouldOverrideContainerPolicy;
-                                } while(shouldOverrideContainerPolicy);
+                                        shouldOverrideContainerPolicy = !shouldOverrideContainerPolicy;
+                                    } while(shouldOverrideContainerPolicy);
+                                }
                             }
-                        }
-                        useVarcharOrder = !useVarcharOrder;
-                    } while(useVarcharOrder);
-                useSecondaryTable = !useSecondaryTable;
-                } while(useSecondaryTable);
-            useIndirection = !useIndirection;
+                            useVarcharOrder = !useVarcharOrder;
+                        } while(useVarcharOrder);
+                        useSecondaryTable = !useSecondaryTable;
+                    } while(useSecondaryTable);
+                    isPrivatelyOwned = !isPrivatelyOwned;
+                } while(isPrivatelyOwned);
+                useIndirection = !useIndirection;
             } while(useIndirection);
             useListOrderField = !useListOrderField;
         } while(useListOrderField);
@@ -223,9 +227,10 @@ public class OrderListTestModel extends TestModel {
         return true;
     }
     
-    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
-        this.useIndirection = useIndirection; 
+        this.useIndirection = useIndirection;
+        this.isPrivatelyOwned = isPrivatelyOwned;
         this.useSecondaryTable = useSecondaryTable;
         this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
@@ -238,6 +243,7 @@ public class OrderListTestModel extends TestModel {
         setName("");
         addToName(useListOrderField ? "" : "NO_ORDER_LIST");
         addToName(useIndirection ? "" : "NO_INDIRECTION");
+        addToName(isPrivatelyOwned ? "PRIVATE" : "");
         addToName(useSecondaryTable ? "SECONDARY_TABLE" : "");
         addToName(useVarcharOrder ? "VARCHAR_ORDER" : "");
         addToName(changeTracking.toString());
@@ -254,7 +260,7 @@ public class OrderListTestModel extends TestModel {
     
     public void addRequiredSystems() {
         if(!isTopLevel) {
-            addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
+            addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
         }
     }
 
@@ -278,6 +284,10 @@ public class OrderListTestModel extends TestModel {
             addTest(new SimpleSetListTest(true));
             addTest(new TranspositionTest(new int[]{0, 1}, new int[]{1, 0}, false));
             addTest(new TranspositionTest(new int[]{0, 1}, new int[]{1, 0}, true));
+            addTest(new TranspositionMergeTest(new int[]{0, 1}, new int[]{1, 0}));
+            addTest(new TranspositionTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}, false));
+            addTest(new TranspositionTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}, true));
+            addTest(new TranspositionMergeTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}));
             // currently only DirectCollectionMapping supports nulls. 
             // bug 278126: Aggregate and Direct collections containing nulls read incorrectly if join is used.
             // When the bug is fixed the tests should work and condition should be removed.
@@ -834,7 +844,7 @@ public class OrderListTestModel extends TestModel {
         }
         
         /*
-         * Registers in uow a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * Registers in uow a list of mapped non-aggregated objects that could be added to manager: Employee, Child, Project.
          * Returns a list that contains clones that could be updated.
          */
         List register(List list, UnitOfWork uow) {
@@ -853,7 +863,7 @@ public class OrderListTestModel extends TestModel {
                 throw new TestProblemException("Can't register a String in uow. Set useResponsibilities to false");
             }
             if(usePhones) {
-                throw new TestProblemException("Can't register aggragate in uow. Set usePhones to false");
+                throw new TestProblemException("Can't register aggregate in uow. Set usePhones to false");
             }
             return listClone;
         }
@@ -1218,6 +1228,42 @@ public class OrderListTestModel extends TestModel {
             }
         }
 
+        // verifies that listToVerify is not in cache and not in db. listToVerify contains mapped object only (can't contain, say String).
+        protected void verifyListRemoved(List listToVerify) {
+            if(listToVerify == null) {
+                throw new TestErrorException("listToVerify is null. Nothing to verify");
+            }
+            int size = listToVerify.size();
+            String textNameExt;
+            Object objectToCompare;
+            for(int k=0; k<2; k++) {
+                if(k == 0) {
+                    textNameExt = "Cache";
+
+                    for(int i=0; i < size; i++) {
+                        ReadObjectQuery query = new ReadObjectQuery();
+                        query.setSelectionObject(listToVerify.get(i));
+                        query.checkCacheOnly();
+                        Object readObject = getSession().executeQuery(query);
+                        if(readObject != null) {
+                            errorMsg += textNameExt + ": " + readObject + " was not removed\n";
+                        }
+                    }
+                } else {
+                    textNameExt = "DB";
+
+                    // Read back the objects from db
+                    getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                    for(int i=0; i < size; i++) {
+                        Object readObject = getSession().readObject(listToVerify.get(i));
+                        if(readObject != null) {
+                            errorMsg += textNameExt + ": " + readObject + " was not removed\n";
+                        }
+                    }
+                }
+            }
+        }
+
         public void reset() {
             super.reset();
             manager = null;
@@ -1337,7 +1383,7 @@ public class OrderListTestModel extends TestModel {
         String toString(int[] array) {
             String str = "[";
             for(int i=0; i<array.length; i++) {
-                str += Integer.toString(i);
+                str += Integer.toString(array[i]);
                 if(i < array.length-1) {
                     str += ", ";
                 } else {
@@ -1349,8 +1395,7 @@ public class OrderListTestModel extends TestModel {
         void setName() {
             setName(getName() + " " + toString(oldIndexes) + " -> " + toString(newIndexes) + (useSet ? " set" : " remove/add"));
         }
-        public void test() {
-            UnitOfWork uow = getSession().acquireUnitOfWork();
+        public void transpose(UnitOfWork uow) {
             managerClone = (Employee)uow.registerObject(manager);
             
             int n = oldIndexes.length;
@@ -1367,6 +1412,37 @@ public class OrderListTestModel extends TestModel {
                     addTo_NoRelMaintanence(managerClone, newIndex, lists[i]);
                 }
             }
+        }
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            transpose(uow);
+            uow.commit();
+        }
+    }
+    
+    /*
+     * Same as TranspositionTest, but the owner of transposed lists is detached, then merged.
+     */
+    class TranspositionMergeTest extends TranspositionTest {
+        // This test transposes objects in detached collection, doesn't care whether set or remove/add 
+        TranspositionMergeTest(int nSize, int[] oldIndexes, int[] newIndexes) {
+            super(nSize, oldIndexes, newIndexes, true);
+        }
+        TranspositionMergeTest(int[] oldIndexes, int[] newIndexes) {
+            // This test transposes objects in detached collection, doesn't care whether set or remove/add 
+            super(oldIndexes, newIndexes, true);
+        }
+        void setName() {
+            setName(getName() + " " + toString(oldIndexes) + " -> " + toString(newIndexes));
+        }
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            transpose(uow);
+            uow.unregisterObject(this.managerClone);
+            uow.release();
+            
+            uow = getSession().acquireUnitOfWork();
+            this.managerClone = (Employee)uow.mergeCloneWithReferences(this.managerClone);
             uow.commit();
         }
     }
@@ -1436,7 +1512,11 @@ public class OrderListTestModel extends TestModel {
         
         public void verify() {
             super.verify();
-            verifyList(removedList, removedListClone);
+            if(isPrivatelyOwned) {
+                verifyListRemoved(removedList);
+            } else {
+                verifyList(removedList, removedListClone);
+            }
             if(errorMsg.length() > 0) {
                 throw new TestErrorException('\n' + errorMsg);
             }

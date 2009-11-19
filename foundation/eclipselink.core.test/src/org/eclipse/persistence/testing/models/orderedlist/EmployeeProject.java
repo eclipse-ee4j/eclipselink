@@ -31,6 +31,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
     boolean useListOrderField;
     boolean useIndirection;
+    boolean isPrivatelyOwned;
     boolean useSecondaryTable;
     boolean useVarcharOrder;
     ChangeTracking changeTracking;
@@ -38,9 +39,10 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     boolean shouldOverrideContainerPolicy; 
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
-    public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection;
+        this.isPrivatelyOwned = isPrivatelyOwned;
         this.useSecondaryTable = useSecondaryTable;
         this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
@@ -190,7 +192,6 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             OneToOneMapping managerMapping = new OneToOneMapping();
             managerMapping.setAttributeName("manager");
             managerMapping.setReferenceClass(Employee.class);
-            managerMapping.useBasicIndirection();
             if(useSecondaryTable) {
                 managerMapping.addForeignKeyFieldName("OL_SALARY.MANAGER_ID", "EMP_ID");
             } else {
@@ -201,6 +202,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             OneToManyMapping managedEmployeesMapping = new OneToManyMapping();
             managedEmployeesMapping.setAttributeName("managedEmployees");
             managedEmployeesMapping.setReferenceClass(Employee.class);
+            if(isPrivatelyOwned) {
+                managedEmployeesMapping.privateOwnedRelationship();
+            }
             if(useIndirection) {
                 managedEmployeesMapping.useTransparentList();
             } else {
@@ -241,6 +245,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         OneToManyMapping childrenMapping = new UnidirectionalOneToManyMapping();
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Child.class);
+        if(isPrivatelyOwned) {
+            childrenMapping.privateOwnedRelationship();
+        }
         if(useListOrderField) {
             // target foreign key and listOrderField must be in the same table, so
             // either specify listOrderField with target foreign key table
@@ -316,6 +323,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         ManyToManyMapping projectsMapping = new ManyToManyMapping();
         projectsMapping.setAttributeName("projects");
         projectsMapping.setReferenceClass(Project.class);
+        if(isPrivatelyOwned) {
+            projectsMapping.privateOwnedRelationship();
+        }
         if(useIndirection) {
             projectsMapping.useTransparentList();
         } else {
@@ -458,36 +468,43 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         teamLeaderMapping.addForeignKeyFieldName("LEADER_ID", "OL_EMPLOYEE.EMP_ID");
         descriptor.addMapping(teamLeaderMapping);
 
-        ManyToManyMapping employeesMapping = new ManyToManyMapping();
-        employeesMapping.setAttributeName("employees");
-        employeesMapping.setReferenceClass(Employee.class);
-        if(useListOrderField) {
-            // target foreign key and listOrderField must be in the same table, so
-            // either specify listOrderField with target foreign key table
-//            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
-            // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-            if(useVarcharOrder) {
-                employeesMapping.setListOrderFieldName("EMP_ORDER_VARCHAR");
-            } else {
-                employeesMapping.setListOrderFieldName("EMP_ORDER");
+        // ReadOnly - mapped employees attribute on Project is not automatically updated,
+        // but only in case of privatelyOwned mapping it fails (many) tests:
+        // that happens because compare operates differently on privately owned objects -
+        // it compares objects (instead of comparing just their pks in non privately owned case).
+        // May be this mapping should be excluded for all configurations.
+        if(!isPrivatelyOwned) {
+            ManyToManyMapping employeesMapping = new ManyToManyMapping();
+            employeesMapping.setAttributeName("employees");
+            employeesMapping.setReferenceClass(Employee.class);
+            if(useListOrderField) {
+                // target foreign key and listOrderField must be in the same table, so
+                // either specify listOrderField with target foreign key table
+    //            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
+                // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+                if(useVarcharOrder) {
+                    employeesMapping.setListOrderFieldName("EMP_ORDER_VARCHAR");
+                } else {
+                    employeesMapping.setListOrderFieldName("EMP_ORDER");
+                }
+                employeesMapping.setOrderCorrectionType(orderCorrectionType);
             }
-            employeesMapping.setOrderCorrectionType(orderCorrectionType);
-        }
-        if(useIndirection) {
-            employeesMapping.useTransparentList();
-        } else {
-            if(changeTracking == ChangeTracking.ATTRIBUTE) {
-                employeesMapping.useCollectionClass(IndirectList.class);
+            if(useIndirection) {
+                employeesMapping.useTransparentList();
             } else {
-                employeesMapping.useCollectionClass(ArrayList.class);
+                if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                    employeesMapping.useCollectionClass(IndirectList.class);
+                } else {
+                    employeesMapping.useCollectionClass(ArrayList.class);
+                }
+                employeesMapping.dontUseIndirection();
             }
-            employeesMapping.dontUseIndirection();
+            employeesMapping.readOnly();
+            employeesMapping.setRelationTableName("OL_PROJ_EMP");
+            employeesMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "PROJ_ID");
+            employeesMapping.addTargetRelationKeyFieldName("OL_PROJ_EMP.PROJ_ID", "OL_EMPLOYEE.EMP_ID");
+            descriptor.addMapping(employeesMapping);
         }
-        employeesMapping.readOnly();
-        employeesMapping.setRelationTableName("OL_PROJ_EMP");
-        employeesMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "PROJ_ID");
-        employeesMapping.addTargetRelationKeyFieldName("OL_PROJ_EMP.PROJ_ID", "OL_EMPLOYEE.EMP_ID");
-        descriptor.addMapping(employeesMapping);
 
         return descriptor;
     }

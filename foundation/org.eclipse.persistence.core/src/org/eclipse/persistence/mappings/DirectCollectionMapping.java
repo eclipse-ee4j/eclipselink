@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
+import java.beans.PropertyChangeEvent;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
@@ -1816,32 +1817,38 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // trigger instantiation of target attribute
         Object valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
         Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
-        boolean fireChangeEvents = false;
+        boolean fireCollectionChangeEvents = false;
+        boolean firePropertyChangeEvent = false;
         if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
-            fireChangeEvents = true;
-            //Collections may not be indirect list or may have been replaced with user collection.
-            Object iterator = containerPolicy.iteratorFor(valueOfTarget);
-            while (containerPolicy.hasNext(iterator)) {
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE));// make the remove change event fire.
-            }
-            if (newContainer instanceof ChangeTracker) {
-                ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
-            }
-            if (valueOfTarget instanceof ChangeTracker) {
-                ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener 
+            if(this.listOrderField == null) {
+                fireCollectionChangeEvents = true;
+                //Collections may not be indirect list or may have been replaced with user collection.
+                Object iterator = containerPolicy.iteratorFor(valueOfTarget);
+                while (containerPolicy.hasNext(iterator)) {
+                    ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                }
+                if (newContainer instanceof ChangeTracker) {
+                    ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
+                }
+                if (valueOfTarget instanceof ChangeTracker) {
+                    ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener 
+                }
+            } else {
+                firePropertyChangeEvent = true;
             }
         }
+        Object originalValueOfTarget = valueOfTarget;
         valueOfTarget = newContainer;
         for (Object sourceValuesIterator = containerPolicy.iteratorFor(valueOfSource);
                  containerPolicy.hasNext(sourceValuesIterator);) {
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
-            if (fireChangeEvents) {
+            if (fireCollectionChangeEvents) {
                 //Collections may not be indirect list or may have been replaced with user collection.
                 ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD));// make the add change event fire.
             }
             containerPolicy.addInto(sourceValue, valueOfTarget, mergeManager.getSession());
         }
-        if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
+        if (fireCollectionChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             // check that there were changes, if not then remove the record.
             ObjectChangeSet changeSet = ((AttributeChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).getObjectChangeSet();
             if (changeSet != null) {
@@ -1859,6 +1866,16 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         }
 
+        if(firePropertyChangeEvent) {
+            ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new PropertyChangeEvent(target, getAttributeName(), originalValueOfTarget, valueOfTarget));
+            if (valueOfTarget instanceof ChangeTracker) {
+                ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
+            }
+            if (originalValueOfTarget instanceof ChangeTracker) {
+                ((ChangeTracker)originalValueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener 
+            }
+        }
+        
         // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.
         setRealAttributeValueInObject(target, valueOfTarget);
     }

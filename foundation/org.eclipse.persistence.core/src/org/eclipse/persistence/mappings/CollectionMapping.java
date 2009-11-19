@@ -1362,9 +1362,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
                 PropertyChangeListener listener = ((ChangeTracker)target)._persistence_getPropertyChangeListener();
                 if (fireChangeEvents) {
+                    // Objects removed from the first position in the list, so the index of the removed object is always 0. 
+                    // When event is processed the index is used only in listOrderField case, ignored otherwise.  
+                    Integer zero = new Integer(0);
                     while (containerPolicy.hasNext(iterator)) {
-                        ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE));// make the remove change event fire.
-                    }
+                        ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero));// make the remove change event fire.
+                    }                        
                 }
                 if (newContainer instanceof ChangeTracker) {
                     ((CollectionChangeTracker)newContainer).setTrackedAttributeName(getAttributeName());
@@ -1384,6 +1387,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         synchronized (valueOfSource) {
             Object sourceIterator = containerPolicy.iteratorFor(valueOfSource);
+            // Index of the added object - objects are added to the end of the list. 
+            // When event is processed the index is used only in listOrderField case, ignored otherwise.  
+            int i = 0;
             while (containerPolicy.hasNext(sourceIterator)) {
                 Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
                 Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
@@ -1402,7 +1408,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
-                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD));// make the add change event fire.
+                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++));// make the add change event fire.
                     }
                     containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
                 }
