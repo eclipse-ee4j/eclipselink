@@ -63,6 +63,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transien
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
 
@@ -98,6 +99,7 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetad
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.queries.DefaultRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
@@ -153,6 +155,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildPrimaryKeyDescriptor());
         addDescriptor(buildOptimisticLockingDescriptor());
         addDescriptor(buildCacheDescriptor());
+        addDescriptor(buildCacheInterceptorDescriptor());
         addDescriptor(buildTimeOfDayDescriptor());
         
         addDescriptor(buildColumnDescriptor());
@@ -173,6 +176,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildQueryHintDescriptor());
         addDescriptor(buildEntityResultDescriptor());
         addDescriptor(buildFieldResultDescriptor());
+        addDescriptor(buildDefaultRedirectorsDescriptor());
         
         addDescriptor(buildIdDescriptor());
         addDescriptor(buildEmbeddedIdDescriptor());
@@ -607,6 +611,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: cache-interceptor
+     */
+    protected ClassDescriptor buildCacheInterceptorDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CacheInterceptorMetadata.class);
+        
+        XMLDirectMapping interceptorClassName = new XMLDirectMapping();
+        interceptorClassName.setAttributeName("m_interceptorClassName");
+        interceptorClassName.setGetMethodName("getInterceptorClassName");
+        interceptorClassName.setSetMethodName("setInterceptorClassName");
+        interceptorClassName.setXPath("@class");
+        descriptor.addMapping(interceptorClassName);
+      
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
      * XSD: cascade-type
      */
     protected ClassDescriptor buildCascadeTypeDescriptor() {
@@ -1037,6 +1059,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getDiscriminatorColumnMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
+        
+        descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1050,6 +1074,17 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
+        
+        XMLCompositeObjectMapping redirectorsMapping = new XMLCompositeObjectMapping();
+        redirectorsMapping.setAttributeName("m_defaultRedirectors");
+        redirectorsMapping.setGetMethodName("getDefaultRedirectors");
+        redirectorsMapping.setSetMethodName("setDefaultRedirectors");
+        redirectorsMapping.setReferenceClass(DefaultRedirectorsMetadata.class);
+        redirectorsMapping.setXPath("orm:query-redirectors");
+        descriptor.addMapping(redirectorsMapping);
+
+        
+        
         descriptor.addMapping(getExcludeDefaultListenersMapping());
         descriptor.addMapping(getExcludeSuperclassListenersMapping());
         descriptor.addMapping(getEntityListenersMapping());
@@ -1441,6 +1476,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrimaryKeyMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
+        descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1921,6 +1957,66 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }    
     
+    /**
+     * INTERNAL:
+     * XSD: cache-interceptor
+     */
+    protected ClassDescriptor buildDefaultRedirectorsDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DefaultRedirectorsMetadata.class);
+        
+        XMLDirectMapping allQueries = new XMLDirectMapping();
+        allQueries.setAttributeName("defaultQueryRedirector");
+        allQueries.setGetMethodName("getDefaultQueryRedirector");
+        allQueries.setSetMethodName("setDefaultQueryRedirector");
+        allQueries.setXPath("@all-queries");
+        descriptor.addMapping(allQueries);
+      
+        XMLDirectMapping readAllQuery = new XMLDirectMapping();
+        readAllQuery.setAttributeName("defaultReadAllQueryRedirector");
+        readAllQuery.setGetMethodName("getDefaultReadAllQueryRedirector");
+        readAllQuery.setSetMethodName("setDefaultReadAllQueryRedirector");
+        readAllQuery.setXPath("@read-all");
+        descriptor.addMapping(readAllQuery);
+
+        XMLDirectMapping readObjectQuery = new XMLDirectMapping();
+        readObjectQuery.setAttributeName("defaultReadObjectQueryRedirector");
+        readObjectQuery.setGetMethodName("getDefaultReadObjectQueryRedirector");
+        readObjectQuery.setSetMethodName("setDefaultReadObjectQueryRedirector");
+        readObjectQuery.setXPath("@read-object");
+        descriptor.addMapping(readObjectQuery);
+
+        XMLDirectMapping reportQuery = new XMLDirectMapping();
+        reportQuery.setAttributeName("defaultReportQueryRedirector");
+        reportQuery.setGetMethodName("getDefaultReportQueryRedirector");
+        reportQuery.setSetMethodName("setDefaultReportQueryRedirector");
+        reportQuery.setXPath("@report");
+        descriptor.addMapping(reportQuery);
+
+        
+        XMLDirectMapping updateQuery = new XMLDirectMapping();
+        updateQuery.setAttributeName("defaultUpdateObjectQueryRedirector");
+        updateQuery.setGetMethodName("getDefaultUpdateObjectQueryRedirector");
+        updateQuery.setSetMethodName("setDefaultUpdateObjectQueryRedirector");
+        updateQuery.setXPath("@update");
+        descriptor.addMapping(updateQuery);
+
+        XMLDirectMapping insertQuery = new XMLDirectMapping();
+        insertQuery.setAttributeName("defaultInsertObjectQueryRedirector");
+        insertQuery.setGetMethodName("getDefaultInsertObjectQueryRedirector");
+        insertQuery.setSetMethodName("setDefaultInsertObjectQueryRedirector");
+        insertQuery.setXPath("@insert");
+        descriptor.addMapping(insertQuery);
+
+        XMLDirectMapping deleteQuery = new XMLDirectMapping();
+        deleteQuery.setAttributeName("defaultDeleteObjectQueryRedirector");
+        deleteQuery.setGetMethodName("getDefaultDeleteObjectQueryRedirector");
+        deleteQuery.setSetMethodName("setDefaultDeleteObjectQueryRedirector");
+        deleteQuery.setXPath("@delete");
+        descriptor.addMapping(deleteQuery);
+        
+        return descriptor;
+    }
     /**
      * INTERNAL:
      * XSD: read-transformer
@@ -2471,6 +2567,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return cacheMapping;
     }
     
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getCacheInterceptorMapping() {
+        XMLCompositeObjectMapping cacheMapping = new XMLCompositeObjectMapping();
+        cacheMapping.setAttributeName("m_cacheInterceptor");
+        cacheMapping.setGetMethodName("getCacheInterceptor");
+        cacheMapping.setSetMethodName("setCacheInterceptor");
+        cacheMapping.setReferenceClass(CacheInterceptorMetadata.class);
+        cacheMapping.setXPath("orm:cache-interceptor");
+        return cacheMapping;
+    }
     /**
      * INTERNAL:
      */

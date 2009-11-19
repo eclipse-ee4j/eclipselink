@@ -205,6 +205,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public DefaultRedirectorsMetadata getDefaultRedirectors() {
+        return m_defaultRedirectors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<EntityListenerMetadata> getEntityListeners() {
         return m_entityListeners;
     }
@@ -406,6 +414,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ORMetadata object merging.
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
         m_cacheInterceptor = (CacheInterceptorMetadata)mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
+        m_defaultRedirectors = (DefaultRedirectorsMetadata)mergeORObjects(m_defaultRedirectors, accessor.getDefaultRedirectors());
         m_optimisticLocking = (OptimisticLockingMetadata) mergeORObjects(m_optimisticLocking, accessor.getOptimisticLocking());
         m_primaryKey = (PrimaryKeyMetadata) mergeORObjects(m_primaryKey, accessor.getPrimaryKey());
         
@@ -1112,6 +1121,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setCacheInterceptor(CacheInterceptorMetadata cacheInterceptor) {
         m_cacheInterceptor = cacheInterceptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDefaultRedirectors(DefaultRedirectorsMetadata redirectors) {
+        m_defaultRedirectors = redirectors;
     }
     
     /**

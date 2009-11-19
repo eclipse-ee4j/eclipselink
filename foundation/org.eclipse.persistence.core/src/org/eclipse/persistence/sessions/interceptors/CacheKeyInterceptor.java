@@ -97,14 +97,14 @@ public class CacheKeyInterceptor extends CacheKey{
          * Acquire the read lock on the cache key object.
          */
         public void acquireReadLock() {
-            getMutex().acquireReadLock();
+            wrappedKey.acquireReadLock();
         }
 
         /**
          * Acquire the read lock on the cache key object.
          */
         public boolean acquireReadLockNoWait() {
-            return getMutex().acquireReadLockNoWait();
+            return wrappedKey.acquireReadLockNoWait();
         }
 
         public Object clone() {

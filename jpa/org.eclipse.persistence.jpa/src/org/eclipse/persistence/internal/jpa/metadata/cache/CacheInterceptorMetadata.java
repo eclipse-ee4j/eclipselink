@@ -65,7 +65,7 @@ public class CacheInterceptorMetadata extends ORMetadata {
         return m_interceptorClassName;
     }
 
-    public void setInterceptorClass(String interceptorClass) {
+    public void setInterceptorClassName(String interceptorClass) {
         m_interceptorClassName = interceptorClass;
     }
 }

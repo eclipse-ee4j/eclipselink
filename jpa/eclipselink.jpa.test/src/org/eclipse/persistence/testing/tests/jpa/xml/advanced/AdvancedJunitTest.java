@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -56,6 +57,9 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testEL254937", persistenceUnit));
         suite.addTest(new AdvancedJunitTest("testGF1894", persistenceUnit));
         suite.addTest(new AdvancedJunitTest("testManAndWoman", persistenceUnit));
+        if (persistenceUnit.equals("extended-advanced")) {            
+            suite.addTest(new AdvancedJunitTest("testForRedirectorsAndInterceptors", persistenceUnit));
+        }
         
         return suite;
     }
@@ -164,6 +168,18 @@ public class AdvancedJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    public void testForRedirectorsAndInterceptors() {
+        ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Address.class);
+        assertTrue("CacheInterceptor was not set on decriptor", descriptor.getCacheInterceptorClassName() != null);
+        assertTrue("All queries default redirector was not set on decriptor", descriptor.getDefaultQueryRedirector() != null);
+        assertTrue("Read All queries default redirector was not set on decriptor", descriptor.getDefaultReadAllQueryRedirector() != null);
+        assertTrue("Read Object queries default redirector was not set on decriptor", descriptor.getDefaultReadObjectQueryRedirector() != null);
+        assertTrue("Report queries default redirector was not set on decriptor", descriptor.getDefaultReportQueryRedirector() != null);
+        assertTrue("Insert queries default redirector was not set on decriptor", descriptor.getDefaultInsertObjectQueryRedirector() != null);
+        assertTrue("Update queries default redirector was not set on decriptor", descriptor.getDefaultUpdateObjectQueryRedirector() != null);
+        assertTrue("Delete queries default redirector was not set on decriptor", descriptor.getDefaultDeleteObjectQueryRedirector() != null);
     }
 
 }
