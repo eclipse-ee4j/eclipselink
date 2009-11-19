@@ -500,8 +500,11 @@
                        sdo/plugins/commonj.sdo_*.jar"
              excludes="**/.svn/**,
                        **/.settings/**,
+                       **/eclipselink.moxy.test/moxy/**,
+                       **/eclipselink.sdo.test/sdo/**,
                        **/build/**,
                        **/classes/**,
+                       **/reports/**,
                        **/report/**,
                        **/run/**,
                        **/*.test/*.jar,
