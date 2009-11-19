@@ -61,7 +61,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int XMLVALUE_ALREADY_SET = 50031;
     public static final int XMLANYELEMENT_ALREADY_SET = 50032;
     public static final int COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER = 50033;
-    
+    public static final int INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY = 50034;
+
     protected JAXBException(String message) {
         super(message);
     }
@@ -70,138 +71,139 @@ public class JAXBException extends EclipseLinkException {
         super(message, internalException);
     }
 
-    
     public static JAXBException noObjectFactoryOrJaxbIndexInPath(String path) {
         Object[] args = { path };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH, args));
         exception.setErrorCode(NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
         return exception;
     }
-    
+
     public static JAXBException factoryMethodOrConstructorRequired(String className) {
         Object[] args = { className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, args));
         exception.setErrorCode(FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ);
         return exception;
     }
-    
+
     public static JAXBException factoryClassWithoutFactoryMethod(String className) {
-        Object[] args = {className };
+        Object[] args = { className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_CLASS_WITHOUT_FACTORY_METHOD, args));
         exception.setErrorCode(FACTORY_CLASS_WITHOUT_FACTORY_METHOD);
         return exception;
     }
-    
+
     public static JAXBException factoryMethodNotDeclared(String methodName, String className) {
-        Object[] args = {methodName, className};
+        Object[] args = { methodName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_METHOD_NOT_DECLARED, args));
         exception.setErrorCode(FACTORY_METHOD_NOT_DECLARED);
         return exception;
 
     }
-    
+
     public static JAXBException multipleAnyAttributeMapping(String className) {
-        Object[] args = {className};
+        Object[] args = { className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MULTIPLE_ANY_ATTRIBUTE_MAPPING, args));
         exception.setErrorCode(MULTIPLE_ANY_ATTRIBUTE_MAPPING);
         return exception;
     }
-    
+
     public static JAXBException anyAttributeOnNonMap(String propertyName) {
-        Object[] args = {propertyName};
+        Object[] args = { propertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY, args));
         exception.setErrorCode(ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY);
         return exception;
     }
-    
+
     public static JAXBException invalidElementRef(String propertyName, String className) {
-        Object[] args = {propertyName, className};
+        Object[] args = { propertyName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_ELEMENT_REF, args));
         exception.setErrorCode(INVALID_XML_ELEMENT_REF);
         return exception;
-    }    
-    
+    }
+
     public static JAXBException invalidElementWrapper(String propertyName) {
         Object[] args = { propertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_ELEMENT_WRAPPER, args));
         exception.setErrorCode(INVALID_XML_ELEMENT_WRAPPER);
         return exception;
-    }    
+    }
 
     public static JAXBException invalidId(String propertyName) {
         Object[] args = { propertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ID, args));
         exception.setErrorCode(INVALID_ID);
         return exception;
-    }    
+    }
 
     public static JAXBException invalidIdRef(String propertyName, String className) {
-        Object[] args = {propertyName, className};
+        Object[] args = { propertyName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_IDREF, args));
         exception.setErrorCode(INVALID_IDREF);
         return exception;
-    }    
-    
+    }
+
     public static JAXBException invalidList(String propertyName) {
         Object[] args = { propertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_LIST, args));
         exception.setErrorCode(INVALID_LIST);
         return exception;
-    }    
+    }
 
     public static JAXBException nameCollision(String uri, String name) {
-        Object[] args = {uri, name};
+        Object[] args = { uri, name };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NAME_COLLISION, args));
         exception.setErrorCode(NAME_COLLISION);
         return exception;
-    }    
-    
+    }
+
     public static JAXBException unsupportedNodeClass(String className) {
-        Object[] args = {className};
+        Object[] args = { className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNSUPPORTED_NODE_CLASS, args));
         exception.setErrorCode(UNSUPPORTED_NODE_CLASS);
         return exception;
     }
+
     public static JAXBException transientInProporder(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSIENT_IN_PROP_ORDER, args));
         exception.setErrorCode(TRANSIENT_IN_PROP_ORDER);
         return exception;
-    }   
-    
+    }
+
     public static JAXBException nonExistentPropertyInPropOrder(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NON_EXISTENT_PROPERTY_IN_PROP_ORDER, args));
         exception.setErrorCode(NON_EXISTENT_PROPERTY_IN_PROP_ORDER);
         return exception;
-    } 
-    
+    }
+
     public static JAXBException missingPropertyInPropOrder(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MISSING_PROPERTY_IN_PROP_ORDER, args));
         exception.setErrorCode(MISSING_PROPERTY_IN_PROP_ORDER);
         return exception;
-    }     
-    
+    }
+
     public static JAXBException propertyOrFieldShouldBeAnAttribute(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLVALUE_ATTRIBUTE_CONFLICT, args));
         exception.setErrorCode(XMLVALUE_ATTRIBUTE_CONFLICT);
         return exception;
-    }  
+    }
+
     public static JAXBException propertyOrFieldCannotBeXmlValue(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SUBCLASS_CANNOT_HAVE_XMLVALUE, args));
         exception.setErrorCode(SUBCLASS_CANNOT_HAVE_XMLVALUE);
         return exception;
-    }  
-    
+    }
+
     public static JAXBException invalidTypeForXmlValueField(String fieldName) {
-        Object[] args = {fieldName};
+        Object[] args = { fieldName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_XMLVALUE_PROPERTY, args));
         exception.setErrorCode(INVALID_TYPE_FOR_XMLVALUE_PROPERTY);
         return exception;
-    }  
+    }
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
@@ -239,7 +241,7 @@ public class JAXBException extends EclipseLinkException {
      * @return
      */
     public static JAXBException incorrectValueParameterTypeForOxmXmlKey() {
-        Object[] args = { };
+        Object[] args = {};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, VALUE_PARAMETER_TYPE_INCORRECT_FOR_OXM_XML, args));
         exception.setErrorCode(VALUE_PARAMETER_TYPE_INCORRECT_FOR_OXM_XML);
         return exception;
@@ -259,7 +261,7 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NULL_METADATA_SOURCE);
         return exception;
     }
-    
+
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where the Key (in the package name 
@@ -268,7 +270,7 @@ public class JAXBException extends EclipseLinkException {
      * @return
      */
     public static JAXBException nullMapKey() {
-        Object[] args = { };
+        Object[] args = {};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_MAP_KEY, args));
         exception.setErrorCode(NULL_MAP_KEY);
         return exception;
@@ -297,7 +299,7 @@ public class JAXBException extends EclipseLinkException {
      * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel() {
-        Object[] args = { };
+        Object[] args = {};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL, args));
         exception.setErrorCode(COULD_NOT_CREATE_CONTEXT_FOR_XML_MODEL);
         return exception;
@@ -327,7 +329,7 @@ public class JAXBException extends EclipseLinkException {
      * @return
      */
     public static JAXBException couldNotUnmarshalMetadata(Exception e) {
-        Object[] args = {  };
+        Object[] args = {};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_UNMARSHAL_METADATA, args), e);
         exception.setErrorCode(COULD_NOT_UNMARSHAL_METADATA);
         return exception;
@@ -347,7 +349,7 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_CREATE_CUSTOMIZER_INSTANCE);
         return exception;
     }
-    
+
     /**
      * This exception would typically be thrown when a customizer class is set
      * that is not an instance of DescriptorCustomizer. 
@@ -362,7 +364,7 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(INVALID_CUSTOMIZER_CLASS);
         return exception;
     }
-    
+
     /**
      * This exception should be used when an attempt is made to set an ID property
      * when one has already been set.
@@ -378,7 +380,7 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(ID_ALREADY_SET);
         return exception;
     }
-    
+
     /**
      * This exception should be used when an attempt is made to set an XmlValue property
      * when one has already been set.
@@ -410,7 +412,7 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(XMLANYELEMENT_ALREADY_SET);
         return exception;
     }
-    
+
     /**
      * This exception should be used when DomHandlerConverter initialization fails.
      *  
@@ -423,6 +425,21 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { domHandlerClassName, propertyName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER, args), nestedException);
         exception.setErrorCode(COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER);
+        return exception;
+    }
+
+    /**
+     * This exception should be used when an @XmlAttributeRef or xml-attribute-ref appears 
+     * on a non-DataHandler property.
+     * 
+     * @param propertyName
+     * @param className
+     * @return
+     */
+    public static JAXBException invalidAttributeRef(String propertyName, String className) {
+        Object[] args = { propertyName, className };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY, args));
+        exception.setErrorCode(INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY);
         return exception;
     }
 }

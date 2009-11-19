@@ -52,7 +52,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50030", "An attempt was made to set more than one XmlID property on class [{1}].  Property [{0}] cannot be set as XmlID, because property [{2}] is already set as XmlID."},
         {"50031", "An attempt was made to set more than one XmlValue property on class [{0}].  Property [{1}] cannot be set as XmlValue, because property [{2}] is already set as XmlValue."},
         {"50032", "An attempt was made to set more than one XmlAnyElement property on class [{0}].  Property [{1}] cannot be set as XmlAnyElement, because property [{2}] is already set as XmlAnyElement."},
-        {"50033", "The DomHandlerConverter for DomHandler [{0}] set on property [{1}] could not be initialized."}
+        {"50033", "The DomHandlerConverter for DomHandler [{0}] set on property [{1}] could not be initialized."},
+        {"50034", "The property or field [{0}] can not be annotated with XmlAttachmentRef since it is not a DataHandler."}
     };
     
     /**

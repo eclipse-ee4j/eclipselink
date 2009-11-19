@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -416,6 +417,12 @@ public class XMLProcessor {
             oldProperty.setMimeType(xmlAttribute.getXmlMimeType());
         }
 
+        // handle xml-attachment-ref
+        if (xmlAttribute.isXmlAttachmentRef()) {
+            oldProperty.setIsSwaAttachmentRef(true);
+            oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+        }
+        
         return oldProperty;
     }
 
@@ -424,6 +431,8 @@ public class XMLProcessor {
      * 
      * @param xmlElement
      * @param oldProperty
+     * @param typeInfo
+     * @param nsInfo
      * @return
      */
     private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
@@ -518,7 +527,13 @@ public class XMLProcessor {
         if (xmlElement.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlElement.getXmlMimeType());
         }
-        
+
+        // handle xml-attachment-ref
+        if (xmlElement.isXmlAttachmentRef()) {
+            oldProperty.setIsSwaAttachmentRef(true);
+            oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+        }
+
         return oldProperty;
     }
 

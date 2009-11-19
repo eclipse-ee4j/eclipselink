@@ -386,6 +386,11 @@ public class AnnotationsProcessor {
                 if (property.isAny() && tInfo.isSetAnyElementPropertyName() && !(tInfo.getAnyElementPropertyName().equals(property.getPropertyName()))) {
                     throw JAXBException.xmlAnyElementAlreadySet(property.getPropertyName(), tInfo.getAnyElementPropertyName(), jClass.getName());
                 }
+                // an XmlAttachmentRef can only appear on a DataHandler property
+                if (property.isSwaAttachmentRef() && !areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
+                    throw JAXBException.invalidAttributeRef(property.getPropertyName(), jClass.getQualifiedName());
+                }
+
             }
         }
     }
