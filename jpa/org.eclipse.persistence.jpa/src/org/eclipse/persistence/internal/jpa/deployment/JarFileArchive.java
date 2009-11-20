@@ -93,11 +93,13 @@ public class JarFileArchive implements Archive {
     }
 
     public void close() {
-        try {
-            jarFile.close();
-        } catch (IOException e) {
-            // ignore
-        }
+    // Commented out to fix https://bugs.eclipse.org/bugs/show_bug.cgi?id=295124
+    // Ideally the fix should be in WAS such that exception mentioned in the isssue is not raied     
+//        try {
+//            jarFile.close();
+//        } catch (IOException e) {
+//            // ignore
+//        }
     }
 }
 
