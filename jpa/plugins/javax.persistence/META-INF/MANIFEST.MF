@@ -1,25 +1,25 @@
 Manifest-Version: 1.0
 Export-Package: javax.persistence.spi;uses:="javax.persistence,javax.s
- ql";version="1.99.7",javax.persistence;uses:="javax.persistence.crite
- ria,javax.persistence.metamodel,javax.persistence.spi";version="1.99.
- 7",javax.persistence.criteria;uses:="javax.persistence.metamodel,java
- x.persistence";version="1.99.7",javax.persistence.metamodel;version="
- 1.99.7"
+ ql";version="2.0.0",javax.persistence;uses:="javax.persistence.criter
+ ia,javax.persistence.metamodel,javax.persistence.spi";version="2.0.0"
+ ,javax.persistence.criteria;uses:="javax.persistence.metamodel,javax.
+ persistence";version="2.0.0",javax.persistence.metamodel;version="2.0
+ .0"
 Private-Package: .,org.eclipse.persistence.javax.persistence.osgi
-Implementation-Version: 1.99.7
+Implementation-Version: 2.0.0
 Bundle-ClassPath: .
 Specification-Vendor: Sun Microsystems Inc.
 Tool: Bnd-0.0.366
-DSTAMP: 20091021
-Bundle-Name: Java Persistence 2.0 - EARLY ACCESS
-TODAY: October 21 2009
-Created-By: 1.6.0_06 (Sun Microsystems Inc.)
-TSTAMP: 1412
+DSTAMP: 20091104
+Bundle-Name: Java Persistence API 2.0
+TODAY: November 4 2009
+Created-By: 1.6.0_04 (Sun Microsystems Inc.)
+TSTAMP: 1116
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 1.99.7.v200910211412
-Bnd-LastModified: 1256148773934
+Bundle-Version: 2.0.0.v200911041116
+Bnd-LastModified: 1257351401813
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activ
  ator
