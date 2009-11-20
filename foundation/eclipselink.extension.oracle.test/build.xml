@@ -407,6 +407,7 @@
             </classpath>
 CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY);
         </sql>
+        <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_test.run.dir}" overwrite="true"/>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleTestModel"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -452,7 +453,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <jvmarg value="-Djava.security.policy=../java.policy.allpermissions"/>
             <classpath>
                 <path refid="oracle_test.run.path"/>
             </classpath>
@@ -464,6 +465,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <echo>Running test on ${DB_URL}</echo>
         <mkdir dir="${oracle_test.run.dir}"/>
         <mkdir dir="${oracle_test.report.dir}"/>
+        <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_test.run.dir}" overwrite="true"/>
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
