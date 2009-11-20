@@ -472,23 +472,16 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // but only in case of privatelyOwned mapping it fails (many) tests:
         // that happens because compare operates differently on privately owned objects -
         // it compares objects (instead of comparing just their pks in non privately owned case).
+        //
+        // Also excluded this mapping from inner and outer joins and batch reading configurations.
+        // If the mapping is enabled, in case of outer joins SimpleIndexTest keeps running out of memory;
+        // inner joins and batch reading configuration generate more queries as well (but not as bad as outer join case).
+        //
         // May be this mapping should be excluded for all configurations.
-        if(!isPrivatelyOwned) {
+        if(!isPrivatelyOwned && this.joinFetchOrBatchRead == JoinFetchOrBatchRead.NONE) {
             ManyToManyMapping employeesMapping = new ManyToManyMapping();
             employeesMapping.setAttributeName("employees");
             employeesMapping.setReferenceClass(Employee.class);
-            if(useListOrderField) {
-                // target foreign key and listOrderField must be in the same table, so
-                // either specify listOrderField with target foreign key table
-    //            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
-                // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-                if(useVarcharOrder) {
-                    employeesMapping.setListOrderFieldName("EMP_ORDER_VARCHAR");
-                } else {
-                    employeesMapping.setListOrderFieldName("EMP_ORDER");
-                }
-                employeesMapping.setOrderCorrectionType(orderCorrectionType);
-            }
             if(useIndirection) {
                 employeesMapping.useTransparentList();
             } else {
@@ -501,8 +494,8 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             }
             employeesMapping.readOnly();
             employeesMapping.setRelationTableName("OL_PROJ_EMP");
-            employeesMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "PROJ_ID");
-            employeesMapping.addTargetRelationKeyFieldName("OL_PROJ_EMP.PROJ_ID", "OL_EMPLOYEE.EMP_ID");
+            employeesMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.PROJ_ID", "PROJ_ID");
+            employeesMapping.addTargetRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "OL_EMPLOYEE.EMP_ID");
             descriptor.addMapping(employeesMapping);
         }
 
