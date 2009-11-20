@@ -86,7 +86,7 @@ public interface BeanValidationInitializationHelper {
          */
         private Class[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
             Class[] validationGroupsClasses = null;
-            if(validationGroups != null && !validationGroups.isEmpty()) {
+            if(validationGroups != null && validationGroups.length() != 0 ) {
                 String[] validationGroupClassNames = validationGroups.split(",");
                 validationGroupsClasses = new Class[validationGroupClassNames.length];
                 for(int i = 0; i < validationGroupClassNames.length; i++) {
