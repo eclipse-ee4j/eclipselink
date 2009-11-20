@@ -385,7 +385,7 @@
 
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
-    <target name="test">
+    <target name="test" depends="init_paths">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -394,7 +394,7 @@
     </target>
 
     <!-- Runs Core Oracle-specific tests. -->
-    <target name="test-oracle">
+    <target name="test-oracle" depends="init_paths">
         <echo message="Creating MY_GEOMETRY datatype for spatial tests: ${db.url}..."/>
         <sql driver="${db.driver}"
             url="${db.url}"
@@ -427,7 +427,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is OracleTestModel). -->
-    <target name="test-prompt">
+    <target name="test-prompt" depends="init_paths">
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="DB_URL" value="${db.url}"/>
