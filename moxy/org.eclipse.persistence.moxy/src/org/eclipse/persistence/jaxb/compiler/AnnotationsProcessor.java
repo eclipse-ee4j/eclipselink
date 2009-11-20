@@ -1056,9 +1056,13 @@ public class AnnotationsProcessor {
             info.setAnyElementPropertyName(propertyName);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
             property = buildReferenceProperty(info, cls, javaHasAnnotations, propertyName, ptype);
-        } else {
+        } else{
             property = new Property(helper);
         }
+        if(isMapType(ptype)) {
+            property.setIsMap(true);     
+        }
+        
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
 

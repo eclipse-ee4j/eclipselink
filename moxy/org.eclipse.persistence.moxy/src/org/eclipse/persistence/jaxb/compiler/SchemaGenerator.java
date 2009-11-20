@@ -593,8 +593,7 @@ public class SchemaGenerator {
                     }
 
                     QName elementName = next.getSchemaName();
-                    JavaClass javaType = next.getActualType();
-                    boolean isMapType = isMapType(next);
+                    JavaClass javaType = next.getActualType();                    
                     boolean isComplexType = false;
 
                     element.setName(elementName.getLocalPart());
@@ -634,7 +633,7 @@ public class SchemaGenerator {
                                     typeName = prefix + ":" + typeName;
                                 }
                             }
-                        } else if (!isMapType) {
+                        } else if (!next.isMap()) {
                             QName schemaType = next.getSchemaType();
                             if (schemaType == null) {
                                 schemaType = getSchemaTypeFor(javaType);
@@ -672,22 +671,26 @@ public class SchemaGenerator {
                             element.setMaxOccurs(Occurs.UNBOUNDED);
                             element.setType(typeName);
                         }
-                    } else if (isMapType) {
+                    } else if (next.isMap()) {
+                    	                    	
                         ComplexType entryComplexType = new ComplexType();
                         Sequence entrySequence = new Sequence();
 
                         Element keyElement = new Element();
-                        keyElement.setName("key");
+                        keyElement.setName(Property.DEFAULT_KEY_NAME);
                         keyElement.setMinOccurs(Occurs.ZERO);
 
-                        JavaClass keyType = helper.getJavaClass(Object.class);
-                        JavaClass valueType = helper.getJavaClass(Object.class);
-
-                        if (javaType.hasActualTypeArguments()) {
-                            Object[] params = javaType.getActualTypeArguments().toArray();
-                            keyType = (JavaClass) params[0];
-                            valueType = (JavaClass) params[1];
+                        JavaClass keyType = next.getKeyType();
+                        JavaClass valueType = next.getValueType();
+                                          
+                        if(keyType == null){
+                        	keyType = helper.getJavaClass(Object.class);
                         }
+                        
+                        if(valueType == null){
+                        	valueType = helper.getJavaClass(Object.class);
+                        }
+                        
                         QName keySchemaType = getSchemaTypeFor(keyType);
                         if (keySchemaType != null) {
                             TypeInfo targetInfo = this.typeInfo.get(keyType.getQualifiedName());
@@ -713,7 +716,7 @@ public class SchemaGenerator {
                         entrySequence.addElement(keyElement);
 
                         Element valueElement = new Element();
-                        valueElement.setName("value");
+                        valueElement.setName(Property.DEFAULT_VALUE_NAME);
                         valueElement.setMinOccurs(Occurs.ZERO);
                         QName valueSchemaType = getSchemaTypeFor(valueType);
                         if (valueSchemaType != null) {
@@ -874,11 +877,6 @@ public class SchemaGenerator {
         return (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type));
-    }
-
-    public boolean isMapType(Property field) {
-        JavaClass type = field.getType();
-        return helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
     }
 
     private Schema getSchemaForNamespace(String namespace) {

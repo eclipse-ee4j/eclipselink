@@ -80,7 +80,14 @@ public class Property {
     // XmlAnyElement specific attributes
     private boolean lax;
     private String domHandlerClassName;
-  
+      
+    // XmlMap specific attributes
+    private JavaClass keyType;
+	private JavaClass valueType;	
+	public static final String DEFAULT_KEY_NAME =  "key";
+	public static final String DEFAULT_VALUE_NAME =  "value";
+	private boolean isMap = false;
+	
     public Property() {}
 
     public Property(Helper helper) {
@@ -157,13 +164,25 @@ public class Property {
         	}
             type = cls;  
                 	
-        }
-        else if(cls.isArray()  && !clsName.equals("byte[]")  && !clsName.equals("java.lang.Byte[]")){
+        }else if(cls.isArray()  && !clsName.equals("byte[]")  && !clsName.equals("java.lang.Byte[]")){
         	type = cls;
         	genericType = cls.getComponentType();
         }else{
             type = cls;
-        }          	
+        }
+        
+        if(isMap()){
+        	Object[] types = type.getActualTypeArguments().toArray();
+        	
+     	    if(types.length >=2){        	        	
+     	        keyType = (JavaClass)types[0];     	        
+     	        valueType = (JavaClass)types[1];
+     	    }else{
+     	    	keyType = helper.getJavaClass(Object.class);     	        
+     	        valueType = helper.getJavaClass(Object.class);	    
+             }
+        }
+       
     }
     
     public JavaClass getType() {
@@ -252,7 +271,7 @@ public class Property {
     
     public boolean isChoice() {
         return false;
-    }
+    }    
 
     /**
      * Returns indicator for XmlAnyElement
@@ -338,6 +357,7 @@ public class Property {
         }
         return false;
     }
+    
 
     /**
      * Return the generic type if it was set (collection or array item type) otherwise return the
@@ -585,4 +605,30 @@ public class Property {
     public void setDomHandlerClassName(String domHandlerClassName) {
         this.domHandlerClassName = domHandlerClassName;
     }
+    
+    public JavaClass getKeyType() {
+		return keyType;
+	}
+
+	public void setKeyType(JavaClass keyType) {
+		this.keyType = keyType;
+	}
+
+	public JavaClass getValueType() {
+		return valueType;
+	}
+
+	public void setValueType(JavaClass valueType) {
+		this.valueType = valueType;
+	}
+
+    public boolean isMap() {
+        return isMap;
+    }
+	
+	public void setIsMap(boolean isMap) {
+		this.isMap = isMap;
+	}
+
+
 }

@@ -183,6 +183,29 @@ public class ObjectFactory {
     public XmlElement createXmlElement() {
         return new XmlElement();
     }
+    
+    /**
+     * Create an instance of {@link XmlMap }
+     * 
+     */
+    public XmlMap createXmlMap() {
+        return new XmlMap();
+    }
+    /**
+     * Create an instance of {@link XmlMap.Value }
+     * 
+     */
+    public XmlMap.Value createXmlMapValue() {
+        return new XmlMap.Value();
+    }
+    /**
+     * Create an instance of {@link XmlMap.Key }
+     * 
+     */
+    public XmlMap.Key createXmlMapKey() {
+        return new XmlMap.Key();
+    }
+
 
     /**
      * Create an instance of {@link XmlType }

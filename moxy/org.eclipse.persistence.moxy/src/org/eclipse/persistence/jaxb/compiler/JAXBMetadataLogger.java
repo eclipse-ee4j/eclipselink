@@ -20,6 +20,7 @@ public class JAXBMetadataLogger {
     public static String INVALID_BOUND_TYPE = "jaxb_metadata_warning_invalid_bound_type";
     public static String NO_CLASSES_TO_PROCESS = "jaxb_metadata_warning_no_classes_to_process";
     public static String INVALID_JAVA_ATTRIBUTE = "jaxb_metadata_warning_invalid_java_attribute";
+    public static String INVALID_TYPE_ON_MAP = "jaxb_metadata_warning_ignoring_type_on_map";
 
     /**
      * This is the default constructor.

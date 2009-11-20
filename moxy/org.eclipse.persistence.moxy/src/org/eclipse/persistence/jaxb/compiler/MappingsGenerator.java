@@ -388,7 +388,7 @@ public class MappingsGenerator {
             
         } else if(property.isReference()) {
             generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);            
-        } else if (isMapType(property)){
+        } else if (property.isMap()){
         	if(property.isAnyAttribute()) {
         		generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         	}else{
@@ -1001,7 +1001,7 @@ public class MappingsGenerator {
         	mapping.setXPath(field.getXPath() + "/entry");
         }
 
-        Class generatedClass = generateMapEntryClassAndDescriptor(property.getType(), descriptor.getNonNullNamespaceResolver());
+        Class generatedClass = generateMapEntryClassAndDescriptor(property, descriptor.getNonNullNamespaceResolver());
         mapping.setReferenceClass(generatedClass);
         String mapClassName = property.getType().getRawName();
         mapping.useCollectionClass(ArrayList.class);
@@ -1012,17 +1012,15 @@ public class MappingsGenerator {
         return mapping;
     }
     
-    private Class generateMapEntryClassAndDescriptor(JavaClass type, NamespaceResolver nr){
-        Object[] types = type.getActualTypeArguments().toArray();
-        JavaClass keyType;
-        JavaClass valueType;
-        if(types.length >=2){        	        	
-            keyType = (JavaClass)types[0];     	        
-            valueType = (JavaClass)types[1];
-        }else{
-            return null;
+    private Class generateMapEntryClassAndDescriptor(Property property, NamespaceResolver nr){
+    	JavaClass keyType = property.getKeyType();
+        JavaClass valueType = property.getValueType();
+        if(keyType == null){
+        	keyType = helper.getJavaClass("java.lang.Object");        	
         }
-     	
+        if(valueType == null){
+        	valueType = helper.getJavaClass("java.lang.Object");        	
+        }
         String mapEntryClassName = WRAPPER_CLASS + wrapperCounter++; 
         
         MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getRawName(),valueType.getRawName());
@@ -1034,8 +1032,8 @@ public class MappingsGenerator {
             XMLDescriptor desc = new XMLDescriptor();
             desc.setJavaClass(generatedClass);            
                        
-            desc.addMapping(generateMappingForType(keyType, "key"));            	
-            desc.addMapping(generateMappingForType(valueType, "value"));
+            desc.addMapping(generateMappingForType(keyType, Property.DEFAULT_KEY_NAME));            	
+            desc.addMapping(generateMappingForType(valueType, Property.DEFAULT_VALUE_NAME));
             NamespaceResolver newNr = new NamespaceResolver();
             String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, nr, XMLConstants.SCHEMA_INSTANCE_PREFIX, false);
             if(prefix != null){

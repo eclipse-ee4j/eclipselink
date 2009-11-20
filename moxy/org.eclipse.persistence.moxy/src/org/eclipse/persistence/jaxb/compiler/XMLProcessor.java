@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -36,6 +35,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
@@ -439,6 +439,10 @@ public class XMLProcessor {
         // reset any existing values
         resetProperty(oldProperty, typeInfo);
         
+        if(xmlElement.getXmlMap() != null){
+        	processXmlMap(xmlElement.getXmlMap(), oldProperty);
+        }       
+        
         // handle xml-id
         if (xmlElement.isXmlId()) {
             typeInfo.setIDProperty(oldProperty);
@@ -491,7 +495,11 @@ public class XMLProcessor {
                 oldProperty.setType(oldProperty.getOriginalType());
             }
         } else {
-            oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
+        	if(xmlElement.getXmlMap() != null){
+                    getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
+        	}else{
+                    oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
+        	}
         }
 
         // handle XmlJavaTypeAdapter
@@ -522,7 +530,7 @@ public class XMLProcessor {
         if (xmlElement.getXmlBidirectional() != null) {
             oldProperty.setBidirectionalPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
         }
-        
+
         // handle xml-mime-type
         if (xmlElement.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlElement.getXmlMimeType());
@@ -536,7 +544,27 @@ public class XMLProcessor {
 
         return oldProperty;
     }
-
+    
+    private Property processXmlMap(XmlMap xmlMap, Property oldProperty){
+        XmlMap.Key mapKey = xmlMap.getKey();
+        XmlMap.Value mapValue = xmlMap.getValue();
+        
+        if (mapKey != null && mapKey.getType() !=null){
+        	oldProperty.setKeyType(jModelInput.getJavaModel().getClass(mapKey.getType()));
+        } else{
+        	oldProperty.setKeyType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+        }
+                
+        if (mapValue != null && mapValue.getType() !=null) {        	
+        	oldProperty.setValueType(jModelInput.getJavaModel().getClass(mapValue.getType()));        	
+        } else{
+        	oldProperty.setValueType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+        }
+        
+    	return oldProperty;
+    }
+    
+    
     private Property processXmlElements(XmlElements xmlElements, Property oldProperty) {
         return oldProperty;
     }

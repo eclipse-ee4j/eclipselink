@@ -57,7 +57,8 @@ import javax.xml.bind.annotation.XmlType;
     "xmlSchemaType",
     "xmlElementWrapper",
     "xmlJavaTypeAdapter",
-    "xmlBidirectional"
+    "xmlBidirectional",
+    "xmlMap"
 })
 public class XmlElement
     extends JavaAttribute
@@ -71,6 +72,8 @@ public class XmlElement
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @javax.xml.bind.annotation.XmlElement(name = "xml-bidirectional", required = true)
     protected XmlBidirectional xmlBidirectional;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-map", required = true)
+    protected XmlMap xmlMap;
     @XmlAttribute
     protected String name;
     @XmlAttribute
@@ -95,7 +98,7 @@ public class XmlElement
     protected Boolean xmlAttachmentRef;
     @XmlAttribute(name = "xml-mime-type")
     protected String xmlMimeType;
-
+  
     /**
      * Gets the value of the xmlSchemaType property.
      * 
@@ -190,6 +193,30 @@ public class XmlElement
      */
     public void setXmlBidirectional(XmlBidirectional value) {
         this.xmlBidirectional = value;
+    }
+
+    /**
+     * Gets the value of the xmlMap property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlMap }
+     *     
+     */
+    public XmlMap getXmlMap() {
+        return xmlMap;
+    }
+
+    /**
+     * Sets the value of the xmlMap property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlMap }
+     *     
+     */
+    public void setXmlMap(XmlMap value) {
+        this.xmlMap = value;
     }
 
     /**
