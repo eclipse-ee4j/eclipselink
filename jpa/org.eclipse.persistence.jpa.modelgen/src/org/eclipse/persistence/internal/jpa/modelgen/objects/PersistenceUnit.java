@@ -10,10 +10,11 @@
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani 
+ *       - 295376: Improve usability of MetaModel generator       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import javax.lang.model.element.Element;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.tools.FileObject;
 import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -223,20 +223,21 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected void addXMLEntityMappings(FileObject fileObject, String mappingFile, XMLContext context) throws IOException {
-        InputStream in = null;
-            
-        try {
-            in = fileObject.openInputStream();
-            XMLEntityMappings entityMappings = (XMLEntityMappings) context.createUnmarshaller().unmarshal(in);
-            // For eclipselink-orm merging and overriding these need to be set.
-            entityMappings.setIsEclipseLinkORMFile(mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
-            entityMappings.setMappingFile(mappingFile);
-            processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
-            xmlEntityMappings.add(entityMappings);
-        } finally {
-            if (in != null) {
-                in.close();
+    protected void addXMLEntityMappings(String mappingFile, XMLContext context) {
+        // If the input stream is null, we didn't find the mapping file, so 
+        // don't bother trying to read it.
+        InputStream inputStream = persistenceUnitReader.getInputStream(mappingFile, false);
+        
+        if (inputStream != null) {
+            try {
+                XMLEntityMappings entityMappings = (XMLEntityMappings) context.createUnmarshaller().unmarshal(inputStream);
+                // For eclipselink-orm merging and overriding these need to be set.
+                entityMappings.setIsEclipseLinkORMFile(mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
+                entityMappings.setMappingFile(mappingFile);
+                processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
+                xmlEntityMappings.add(entityMappings);
+            } finally {
+                persistenceUnitReader.closeInputStream(inputStream);
             }
         }
     }
@@ -246,31 +247,24 @@ public class PersistenceUnit {
      */
     protected void addXMLEntityMappings(String mappingFile) {
         try {
-            FileObject fileObject = null;
-            
+            // Try eclipselink project
+            addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getEclipseLinkOrmProject());
+        } catch (XMLMarshalException e) {
             try {
-                fileObject = persistenceUnitReader.getFileObject(mappingFile, processingEnv);
-                // Try eclipselink project
-                addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getEclipseLinkOrmProject());
-            } catch (XMLMarshalException e) {
-                try {
-                    // Try JPA 2.0 project
-                    addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getOrm2Project());
-                } catch (XMLMarshalException ee) {
-                    // Try JPA 1.0 project, don't catch any exception at this point and throw it.
-                    addXMLEntityMappings(fileObject, mappingFile, XMLEntityMappingsReader.getOrm1Project());
-                }
+                // Try JPA 2.0 project
+                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2Project());
+            } catch (XMLMarshalException ee) {
+                // Try JPA 1.0 project (don't catch exceptions at this point)
+                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm1Project());
             }
-        } catch (IOException exception) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + mappingFile);
         }
     }
     
     /**
      * INTERNAL:
      * If the accessor is no longer valid it we should probably look into
-     * removing the accessor from the project. For now I don't think its a big
-     * deal.
+     * removing the accessor from the project. For now I don't think it's 
+     * a big deal.
      */
     public boolean containsElement(Element element) {
         MetadataClass cls = factory.getMetadataClass(element);
