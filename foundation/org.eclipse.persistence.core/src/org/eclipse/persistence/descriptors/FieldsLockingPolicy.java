@@ -14,6 +14,7 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -251,6 +252,17 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     }
 
     /**
+     * ADVANCED:
+     * returns the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
+     * Unfortunately this locking policy can not enforce an optimistic write lock unless a FK or DTF field
+     * has changed so this type returns LockOnChange.NONE
+     */
+    public LockOnChange getLockOnChangeMode(){
+        return LockOnChange.NONE;
+    }
+
+    /**
      * INTERNAL:
      * Return the value that should be stored in the identity map.  If the value
      * is stored in the object, then return a null.
@@ -377,6 +389,15 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     }
 
     /**
+     * ADVANCED:
+     * Sets the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
+     * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
+     */
+    public void setLockOnChangeMode(LockOnChange lockOnChangeMode){
+        //no-op for this type
+    }
+    /**
      * INTERNAL:
      * Put the initial writelock value into the modifyRow.
      * There is nothing to do because all the lock values are in the mappings.
@@ -393,6 +414,23 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
         //nothing to do
     }
 
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
+     * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
+     */
+    public boolean shouldUpdateVersionOnOwnedMappingChange(){
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
+     * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
+     */
+    public boolean shouldUpdateVersionOnMappingChange(){
+        return false;
+    }
     /**
      * INTERNAL:
      * Check the row count for lock failure.

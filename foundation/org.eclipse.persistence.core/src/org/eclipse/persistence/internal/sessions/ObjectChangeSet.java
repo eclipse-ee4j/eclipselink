@@ -146,9 +146,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         
         // now let's do some house keeping.
         DatabaseMapping mapping = changeRecord.getMapping();
-        if (getDescriptor().hasCMPPolicy() && getDescriptor().getCMPPolicy().isCMP3Policy()){
-            //JPA
-            if (mapping.isOwned()){
+        OptimisticLockingPolicy olp = getDescriptor().getOptimisticLockingPolicy();
+        if (olp != null){
+            if ((olp.shouldUpdateVersionOnOwnedMappingChange() && mapping.isOwned()) || (olp.shouldUpdateVersionOnMappingChange())){
                 this.shouldModifyVersionField = true;  // must update version field when owned mapping changes
             }
         }

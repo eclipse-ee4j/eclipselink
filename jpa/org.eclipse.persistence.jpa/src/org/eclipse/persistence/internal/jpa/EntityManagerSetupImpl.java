@@ -45,6 +45,8 @@ import javax.persistence.PersistenceException;
 import javax.persistence.ValidationMode;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -462,6 +464,10 @@ public class EntityManagerSetupImpl {
             
             if(descriptor.getCMPPolicy() == null) {
                 descriptor.setCMPPolicy(new CMP3Policy());
+            }
+            OptimisticLockingPolicy olp = descriptor.getOptimisticLockingPolicy();
+            if (olp != null && olp.getLockOnChangeMode() == null){
+                olp.setLockOnChangeMode(LockOnChange.OWNING);
             }
         }
 

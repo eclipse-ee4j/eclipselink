@@ -110,6 +110,13 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
     abstract public Object getBaseValue();
 
     /**
+     * ADVANCED:
+     * returns the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
+     */
+    public LockOnChange getLockOnChangeMode();
+    
+    /**
      * INTERNAL:
      * Return the value that should be stored in the identity map.
      * If the value is not stored in the cache, then return a null.
@@ -209,6 +216,13 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * provide a way to set the descriptor for this policy
      */
     public void setDescriptor(ClassDescriptor descriptor);
+    
+    /**
+     * ADVANCED:
+     * Sets the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
+     */
+    public void setLockOnChangeMode(LockOnChange lockOnChangeMode);
 
     /**
      * INTERNAL:
@@ -228,9 +242,35 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * #see this method in VersionLockingPolicy
      */
     public void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object object);
+    
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
+     */
+    public boolean shouldUpdateVersionOnOwnedMappingChange();
+
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
+     */
+    public boolean shouldUpdateVersionOnMappingChange();
 
     public void validateDelete(int rowCount, Object object, DeleteObjectQuery query);
 
     public void validateUpdate(int rowCount, Object object, WriteObjectQuery query);
+    
+    /**
+     * Advanced:
+     * <p>
+     * <b>Purpose</b>: Provides the configuration options to force an Optimistic Write Lock
+     * When a set of mappings have changes.  This enum defines what mappings are within that set.
+     * @author Gordon Yorke
+     * @since EclipseLink 2.0
+     */
+    public enum LockOnChange{
+        OWNING, // update version when an owning mapping changes
+        NONE,
+        ALL;
+    }
 
 }

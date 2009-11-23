@@ -21,12 +21,15 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+
+import com.sun.org.apache.bcel.internal.generic.LCONST;
 
 /**
  * <p><b>Purpose</b>: Used to allow a single version number to be used for optimistic locking.
@@ -44,6 +47,8 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     
     /** PERF: Cache the lock mapping if mapped with a direct mapping. */
     protected AbstractDirectMapping lockMapping;
+
+    protected LockOnChange lockOnChangeMode;
 
     /**
      * PUBLIC:
@@ -223,6 +228,17 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      */
     protected Object getInitialWriteValue(AbstractSession session) {
         return new Long(1);
+    }
+
+    /**
+     * ADVANCED:
+     * returns the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
+     * Unfortunately this locking policy can not enforce an optimistic write lock unless a FK or DTF field
+     * has changed so this type returns LockOnChange.NONE
+     */
+    public LockOnChange getLockOnChangeMode(){
+        return this.lockOnChangeMode;
     }
 
     /**
@@ -574,6 +590,22 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         updateObjectWithWriteValue(query, lockValue);
     }
     
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
+     */
+    public boolean shouldUpdateVersionOnOwnedMappingChange(){
+        return this.lockOnChangeMode == LockOnChange.OWNING;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
+     */
+    public boolean shouldUpdateVersionOnMappingChange(){
+        return this.lockOnChangeMode == LockOnChange.ALL;
+    }
+
     public void updateObjectWithWriteValue(ObjectLevelModifyQuery query, Object lockValue){
         AbstractSession session = query.getSession();
         Object object = query.getObject();
@@ -606,6 +638,15 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
                 query.getQueryMechanism().updateChangeSet(this.descriptor, objectChangeSet, record, object);
             }
         }
+    }
+
+    /**
+     * ADVANCED:
+     * Sets the LockOnChange mode for this policy.  This mode specifies if a 
+     * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
+     */
+    public void setLockOnChangeMode(LockOnChange lockOnChangeMode){
+        this.lockOnChangeMode = lockOnChangeMode;
     }
 
     /**
