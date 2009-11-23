@@ -1224,6 +1224,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public boolean isOneToOneMapping() {
         return true;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isOwned(){
+        return this.hasRelationTable() && ! this.isReadOnly;
+    }
 
     /**
      * INTERNAL:

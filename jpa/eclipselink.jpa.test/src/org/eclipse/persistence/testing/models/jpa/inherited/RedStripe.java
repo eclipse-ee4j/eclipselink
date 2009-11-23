@@ -21,6 +21,10 @@ public class RedStripe {
     
     public RedStripe() {}
     
+    public RedStripe(Double content) {
+        this.alcoholContent = content;
+    }
+
     public Double getAlcoholContent() {
         return alcoholContent;
     }

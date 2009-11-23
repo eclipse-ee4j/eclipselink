@@ -1737,6 +1737,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      */
+    public boolean isOwned(){
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
     public boolean isPrivateOwned() {
         return true;
     }

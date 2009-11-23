@@ -1643,6 +1643,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     
     /**
      * INTERNAL:
+     */
+    public boolean isOwned(){
+        return true;
+    }
+
+    /**
+     * INTERNAL:
      * Direct collection is always private owned.
      */
     public boolean isPrivateOwned() {

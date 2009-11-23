@@ -159,6 +159,13 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * INTERNAL:
      */
+    public boolean isOwned(){
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
     public boolean isUnidirectionalOneToManyMapping() {
         return true;
     }

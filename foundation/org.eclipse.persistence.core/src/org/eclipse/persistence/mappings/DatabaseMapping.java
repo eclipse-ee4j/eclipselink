@@ -877,6 +877,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public boolean isOptional() {
         return isOptional;
     }
+    
+    /**
+     * Returns true if this mapping is owned by the parent descriptor.  This is generally based on mapping type
+     */
+    public boolean isOwned(){
+        return false;
+    }
 
     /**
      * INTERNAL:

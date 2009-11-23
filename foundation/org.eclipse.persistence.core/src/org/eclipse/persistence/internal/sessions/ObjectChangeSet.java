@@ -143,6 +143,15 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         changes.add(changeRecord);
         attributeToChanges.put(attributeName, changeRecord);
         dirtyUOWChangeSet();
+        
+        // now let's do some house keeping.
+        DatabaseMapping mapping = changeRecord.getMapping();
+        if (getDescriptor().hasCMPPolicy() && getDescriptor().getCMPPolicy().isCMP3Policy()){
+            //JPA
+            if (mapping.isOwned()){
+                this.shouldModifyVersionField = true;  // must update version field when owned mapping changes
+            }
+        }
     }
 
     /**

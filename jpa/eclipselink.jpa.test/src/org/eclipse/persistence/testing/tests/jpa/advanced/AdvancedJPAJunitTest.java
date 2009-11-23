@@ -120,6 +120,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testBuyerOptimisticLocking"));
         suite.addTest(new AdvancedJPAJunitTest("testOptimisticLockExceptionOnMerge"));
         suite.addTest(new AdvancedJPAJunitTest("testOptimisticLockExceptionOnMergeWithAssumeExists"));
+        suite.addTest(new AdvancedJPAJunitTest("testVersionUpdateForOwnedMappings"));
 
         suite.addTest(new AdvancedJPAJunitTest("testGiveFredASexChange"));
         suite.addTest(new AdvancedJPAJunitTest("testUpdatePenelopesPhoneNumberStatus"));
@@ -415,6 +416,39 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             assertTrue("The new responsibility was not added.", found);
             assertTrue("The basic collection using enums was not persisted correctly.", emp.worksMondayToFriday());
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    public void testVersionUpdateForOwnedMappings(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Employee emp = em.find(Employee.class, empId);
+            int currentVersion = emp.getVersion();
+            assertNotNull("The employee was not found for Id.", empId);
+            
+            emp.getResponsibilities().add("UpdateVersionField");
+            commitTransaction(em);
+            assertTrue("Did not increment version for change to direct collection", emp.getVersion() == ++currentVersion);
+            beginTransaction(em);
+            emp.getDealers().add(em.merge(new Dealer("update", "version")));
+            commitTransaction(em);
+            assertTrue("Did not increment version for change to uni-directional one to many with join table", emp.getVersion() == ++currentVersion);
+            beginTransaction(em);
+            emp.getProjects().add(em.merge(new LargeProject("versionUpdate")));
+            commitTransaction(em);
+            assertTrue("Did not increment version for change to owned ManyToMany", emp.getVersion() == ++currentVersion);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

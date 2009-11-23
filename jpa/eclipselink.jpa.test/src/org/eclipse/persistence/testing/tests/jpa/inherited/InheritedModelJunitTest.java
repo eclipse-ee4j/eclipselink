@@ -43,6 +43,10 @@ import junit.framework.*;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -124,6 +128,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testMapOrphanRemoval"));
         
         suite.addTest(new InheritedModelJunitTest("testSerializedElementCollectionMap"));
+        suite.addTest(new InheritedModelJunitTest("testVersionUpdateOnElementCollectionChange"));
         return suite;
     }
     
@@ -744,6 +749,32 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    public void testVersionUpdateOnElementCollectionChange() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            BeerConsumer beerConsumer = (BeerConsumer) em.createQuery("select b from BeerConsumer b join b.redStripes r").getResultList().get(0);
+            int currentVersion = beerConsumer.getVersion();
+            beerConsumer.getRedStripes().put("version", new RedStripe(Double.valueOf("343")));
+            commitTransaction(em);
+            assertTrue("Did not increment version for change to element collection", beerConsumer.getVersion() == ++currentVersion);
+            
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+
     }
     
     // Test the clone method works with LAZY attributes at multiple levels of an inheritance hierarchy

@@ -67,6 +67,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     /**
      * INTERNAL:
      */
+    public boolean isOwned(){
+        return !isReadOnly;
+    }
+
+    /**
+     * INTERNAL:
+     */
     public boolean isRelationalMapping() {
         return true;
     }
