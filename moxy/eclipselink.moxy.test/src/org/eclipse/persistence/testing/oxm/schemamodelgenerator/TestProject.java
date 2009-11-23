@@ -19,10 +19,15 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -146,6 +151,29 @@ public class TestProject extends Project {
         orMapping.addSourceToTargetKeyFieldAssociation("@bill-address-id", "@aid");
         orMapping.addSourceToTargetKeyFieldAssociation("bill-address-city/text()", "city/text()");
         descriptor.addMapping(orMapping);
+        
+        // create data mapping
+        XMLBinaryDataMapping dataMapping = new XMLBinaryDataMapping();
+        dataMapping.setAttributeName("data");
+        XMLField field = new XMLField("data");
+        field.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        dataMapping.setField(field);
+        dataMapping.setShouldInlineBinaryData(false);
+        dataMapping.setSwaRef(true);
+        dataMapping.setMimeType("application/binary");
+        descriptor.addMapping(dataMapping);
+      
+        // create bytes mapping
+        XMLBinaryDataCollectionMapping bytesMapping = new XMLBinaryDataCollectionMapping();
+        bytesMapping.setAttributeName("bytes");
+        XMLField theField = new XMLField("bytes");
+        theField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        bytesMapping.setField(theField);
+        bytesMapping.setShouldInlineBinaryData(false);
+        bytesMapping.setSwaRef(false);
+        bytesMapping.setMimeType("text/plain");
+        descriptor.addMapping(bytesMapping);
+
         return descriptor;
     }
 

@@ -137,6 +137,9 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
+            // debugging
+            //writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_NO_CTX_RESOURCE);
         } catch (Exception ex) {
@@ -171,6 +174,9 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
+            // debugging
+            //writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_NO_DRE_RESOURCE);
         } catch (Exception ex) {
@@ -232,6 +238,9 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
             
+            // debugging
+            //writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_RESOURCE);
         } catch (Exception ex) {
@@ -267,7 +276,10 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
-            
+
+            // debugging
+            //writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_NO_CTX_RESOURCE);
         } catch (Exception ex) {
@@ -304,6 +316,9 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
+
+            // debugging
+            //writeSchema(generatedSchema);
 
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_NO_DRE_RESOURCE);

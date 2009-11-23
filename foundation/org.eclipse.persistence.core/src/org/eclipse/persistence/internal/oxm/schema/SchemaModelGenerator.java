@@ -62,6 +62,8 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -583,6 +585,91 @@ public class SchemaModelGenerator {
     }    
     
     /**
+     * Process a given XMLBinaryDataMapping.
+     * 
+     * @param mapping
+     * @param seq
+     * @param ct
+     * @param workingSchema
+     */
+    protected void processXMLBinaryDataMapping(XMLBinaryDataMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+        XMLField xmlField = (XMLField) mapping.getField();
+        XPathFragment frag = xmlField.getXPathFragment();
+        
+        String schemaTypeString;
+        if (mapping.isSwaRef()) {
+            schemaTypeString = getSchemaTypeString(XMLConstants.SWA_REF_QNAME, workingSchema);
+        } else {
+            schemaTypeString = getSchemaTypeString(XMLConstants.BASE_64_BINARY_QNAME, workingSchema);
+        }
+        
+        seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
+        frag = getTargetXPathFragment(frag);
+
+        Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
+        if (elem == null) {
+            if (frag.getNamespaceURI() != null) {
+                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+            } else {
+                elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
+            }
+            if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+                elem.setNillable(true);
+            }
+            if (xmlField.isRequired()) {
+                elem.setMinOccurs("1");
+            }
+            if (mapping.getMimeType() != null) {
+                elem.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
+            }
+            seq.addElement(elem);
+        }
+    }
+
+    /**
+     * Process a given XMLBinaryDataCollectionMapping.
+     * 
+     * @param mapping
+     * @param seq
+     * @param ct
+     * @param workingSchema
+     */
+    protected void processXMLBinaryDataCollectionMapping(XMLBinaryDataCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+        XMLField xmlField = (XMLField) mapping.getField();
+        XPathFragment frag = xmlField.getXPathFragment();
+        
+        String schemaTypeString;
+        if (mapping.isSwaRef()) {
+            schemaTypeString = getSchemaTypeString(XMLConstants.SWA_REF_QNAME, workingSchema);
+        } else {
+            schemaTypeString = getSchemaTypeString(XMLConstants.BASE_64_BINARY_QNAME, workingSchema);
+        }
+        
+        seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
+        frag = getTargetXPathFragment(frag);
+
+        Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
+        if (elem == null) {
+            if (frag.getNamespaceURI() != null) {
+                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+                elem.setMaxOccurs(Occurs.UNBOUNDED);
+            } else {
+                elem = buildElement(frag, schemaTypeString, Occurs.ZERO, Occurs.UNBOUNDED);
+            }
+            if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+                elem.setNillable(true);
+            }
+            if (xmlField.isRequired()) {
+                elem.setMinOccurs("1");
+            }
+            if (mapping.getMimeType() != null) {
+                elem.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
+            }
+            seq.addElement(elem);
+        }
+    }
+
+    /**
      * Process a given XMLDirectMapping.
      * 
      * @param mapping
@@ -889,7 +976,11 @@ public class SchemaModelGenerator {
      * @param descriptors
      */
     protected void processMapping(DatabaseMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
-        if (mapping instanceof XMLDirectMapping) {
+        if (mapping instanceof XMLBinaryDataMapping) {
+            processXMLBinaryDataMapping((XMLBinaryDataMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof XMLBinaryDataCollectionMapping) {
+            processXMLBinaryDataCollectionMapping((XMLBinaryDataCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof XMLDirectMapping) {
             processXMLDirectMapping((XMLDirectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
         } else if (mapping instanceof XMLCompositeDirectCollectionMapping) {
             processXMLCompositeDirectCollectionMapping((XMLCompositeDirectCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
@@ -1190,6 +1281,8 @@ public class SchemaModelGenerator {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
             } else if (uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            } else if (uri.equals(XMLConstants.REF_URL)) {
+                prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.REF_PREFIX);
             } else {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix();
             }
@@ -1382,10 +1475,20 @@ public class SchemaModelGenerator {
         if (seq.isEmpty()) {
             return null;
         }
-        List<Element> existingElements = seq.getOrderedElements();
-        for (Element element : existingElements) {
-        	if ((element.getRef() != null && element.getRef().equals(refString)) || (element.getName() != null && element.getName().equals(elementName))) {
-                return element;
+        List existingElements = seq.getOrderedElements();
+        if (existingElements != null) {
+            Iterator elementIt = existingElements.iterator();
+            while (elementIt.hasNext()) {
+                Element element;
+                // could be other components in the list, like Any, but we only care about Element
+                try {
+                    element = (Element) elementIt.next();
+                } catch (ClassCastException cce) {
+                    continue;
+                }
+                if ((element.getRef() != null && element.getRef().equals(refString)) || (element.getName() != null && element.getName().equals(elementName))) {
+                    return element;
+                }
             }
         }
         return null;
