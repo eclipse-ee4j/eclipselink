@@ -31,6 +31,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/23/2009-2.0 Guy Pelletier 
+ *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -415,46 +417,43 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         if (embeddedIdAccessor == null) {
             // Case #4: a simple id association
             MappingAccessor idAccessor = getDescriptor().getAccessorFor(getDescriptor().getIdAttributeName());
-            DatabaseMapping primaryKeyMapping = idAccessor.getMapping();
+            DatabaseMapping idMapping = idAccessor.getMapping();
                         
             // Grab the foreign key field and set it as the descriptor's id field.
             DatabaseField foreignKeyField = oneToOneMapping.getForeignKeyFields().elementAt(0);
             updatePrimaryKeyField(idAccessor, foreignKeyField);
             
             // Update the field on the mapping.
-            ((DirectToFieldMapping) primaryKeyMapping).setField(foreignKeyField);
+            ((DirectToFieldMapping) idMapping).setField(foreignKeyField);
             
             // Set the primary key mapping as read only.
-            primaryKeyMapping.setIsReadOnly(true);
+            idMapping.setIsReadOnly(true);
             
             // Set the maps id mapping.
-            oneToOneMapping.setDerivedIdMapping(primaryKeyMapping);
+            oneToOneMapping.setDerivedIdMapping(idMapping);
         } else {
             if (embeddedIdAccessor.getReferenceClassName().equals(getReferenceDescriptor().getPKClassName())) {
-                // Embedded id class is the same as the parents parents id class.
-                // Case #5: Parent uses id class == to dependent's embedded id class
+                // Case #5: Parent's id class is the same as dependent's embedded id class
                 // Case #6: Both parent and dependent use same embedded id class.            
-                processMapsIdFields(oneToOneMapping, embeddedIdAccessor, null);
+                processMapsIdFields(oneToOneMapping, embeddedIdAccessor, embeddedIdAccessor);
             } else {
                 if (m_mapsId.equals("")) {
                     // User didn't specify a mapsId value. By default the attribute name from this object accessor is used.
                     m_mapsId = getAttributeName();
                 }
                 
+                // Set the maps id value on the mapping.
+                oneToOneMapping.setMapsIdValue(m_mapsId);
                 MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getAccessorFor(m_mapsId);
         
                 if (mappingAccessor == null) {
                     throw ValidationException.invalidMappedByIdValue(m_mapsId, getAnnotatedElementName(), embeddedIdAccessor.getReferenceClass());
-                } else if (mappingAccessor.isBasic()) {
-                    // Case #1: basic mapping from embedded id to parent entity.
+                } else {
+                    // Case #1: Dependent's embedded id maps a basic mapping to parent entity.
+                    // Case #2: Dependent's embedded id maps the parent's id class
+                    // Case #3: Dependent's embedded if maps the parent's embedded id class
                     processMapsIdFields(oneToOneMapping, embeddedIdAccessor, mappingAccessor);
-                } else if (mappingAccessor.isDerivedIdClass()) {
-                    // Case #2 and case #3 (Id class or embedded id used as the derived id)
-                    processMapsIdFields(oneToOneMapping, (DerivedIdClassAccessor) mappingAccessor, null);
                 }
-            
-                // Set the maps id value on the mapping.
-                oneToOneMapping.setMapsIdValue(m_mapsId);
             }
             
             // Set the maps id mapping.
@@ -467,22 +466,41 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * We're going to add field name translations where necessary. If the user
      * specified (erroneously that is) attribute overrides this will override
      * them.
-     * The embedded accessor passed in is either the root embedded id accessor
-     * or the derived (embedded accessor) within the embedded id accessor.
      */
-    protected void processMapsIdFields(OneToOneMapping oneToOneMapping, EmbeddedAccessor embeddedAccessor, MappingAccessor basicAccessor) { 
+    protected void processMapsIdFields(OneToOneMapping oneToOneMapping, EmbeddedIdAccessor embeddedIdAccessor, MappingAccessor mapsIdAccessor) { 
         // At this point we have a one to one mapping to the reference class 
         // with specified join columns or defaulted ones. The foreign key
         // fields are the fields we want to use to map our id fields.
         for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
-            MappingAccessor idAccessor = null;
-            DatabaseMapping idMapping = null;
-            
-            // If we were not given an basic accessor we need to look it up on
-            // our derived id accessor.
-            if (basicAccessor == null) {
-                // Step 1 - for this foreign key relation, get the primary key
-                // accessor from the reference descriptor.
+            if (mapsIdAccessor.isBasic()) {
+                // Case #1: Dependent's embedded id maps a basic mapping to parent entity.
+                
+                // Add the maps id accessor to the embedded id accessor's list 
+                // of mappings that need to be set to read only at initialize
+                // time on the cloned aggregate descriptor.
+                embeddedIdAccessor.addMapsIdAccessor(mapsIdAccessor);
+
+                // Add a field name translation to the mapping.
+                embeddedIdAccessor.updateDerivedIdField((EmbeddableMapping) embeddedIdAccessor.getMapping(), mapsIdAccessor.getAttributeName(), fkField, mapsIdAccessor);
+            } else {
+                if (mapsIdAccessor.isDerivedIdClass()) {
+                    // Case #2: Dependent's embedded id maps the parent's id class
+                    // Case #3: Dependent's embedded if maps the parent's embedded id class
+                    
+                    // Add the maps id accessor to the embedded id accessor's 
+                    // list  of mappings that need to be set to read only at 
+                    // initialize time on the cloned aggregate descriptor.
+                    embeddedIdAccessor.addMapsIdAccessor(mapsIdAccessor);
+                } else {
+                    // Case #5: Parent's id class is the same as dependent's embedded id class
+                    // Case #6: Both parent and dependent use same embedded id class.
+                    
+                    // Set the mapping to read only.
+                    embeddedIdAccessor.getMapping().setIsReadOnly(true);
+                }
+                
+                // For this foreign key relation, get the primary key accessor 
+                // from the reference descriptor.
                 DatabaseField referencePKField = oneToOneMapping.getSourceToTargetKeyFields().get(fkField);
                 MappingAccessor referencePKAccessor = getReferenceDescriptor().getPrimaryKeyAccessorForField(referencePKField);
         
@@ -490,26 +508,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 // specified an incorrect reference column name. Throw an exception.
                 if (referencePKAccessor == null) {
                     throw ValidationException.invalidDerivedIdPrimaryKeyField(getReferenceClassName(), referencePKField.getQualifiedName(), getAttributeName(), getJavaClassName());
-                }
-            
-                // The reference primary key accessor will tell us which attribute
-                // accessor we need to map a field name translation for.
-                idAccessor = embeddedAccessor.getReferenceDescriptor().getAccessorFor(referencePKAccessor.getAttributeName());
-                idMapping = idAccessor.getMapping();
-                
-                if (idAccessor == referencePKAccessor) {
-                    embeddedAccessor.getMapping().setIsReadOnly(true);
                 } else {
-                    idMapping.setIsReadOnly(true);
+                    // The reference primary key accessor will tell us which attribute 
+                    // accessor we need to map a field name translation for.
+                    MappingAccessor idAccessor = mapsIdAccessor.getReferenceDescriptor().getAccessorFor(referencePKAccessor.getAttributeName());
+                
+                    // Add a field name translation to the mapping.
+                    ((EmbeddedAccessor) mapsIdAccessor).updateDerivedIdField((EmbeddableMapping) mapsIdAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);
                 }
-            } else {
-                idAccessor = basicAccessor;
-                idMapping = idAccessor.getMapping();
-                idMapping.setIsReadOnly(true);
             }
-            
-            // Add a field name translation to the mapping.
-            embeddedAccessor.updateDerivedIdField((EmbeddableMapping) embeddedAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);
         }
     }
     

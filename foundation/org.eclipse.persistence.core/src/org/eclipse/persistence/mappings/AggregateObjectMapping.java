@@ -76,10 +76,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected transient List<UnidirectionalOneToManyMapping> overrideUnidirectionalOneToManyMappings;
     
     /**
+     * List of maps id mappings that need to be set to read only at initialize
+     * time on their cloned aggregate mappings.
+     */
+    protected transient List<DatabaseMapping> mapsIdMappings; 
+    
+    /**
      * Default constructor.
      */
     public AggregateObjectMapping() {
         aggregateToSourceFieldNames = new HashMap(5);
+        mapsIdMappings = new ArrayList<DatabaseMapping>();
         overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
         isNullAllowed = true;
@@ -141,6 +148,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
         String unQualifiedAggregateFieldName = aggregateFieldName.substring(aggregateFieldName.lastIndexOf('.') + 1);// -1 is returned for no ".".
         getAggregateToSourceFieldNames().put(unQualifiedAggregateFieldName, sourceFieldName);
+    }
+    
+    /**
+     * INTERNAL:
+     * In JPA users may specify a maps id mapping on a shared embeddable 
+     * descriptor. These mappings need to be set to read-only at initialize 
+     * time, after the reference descriptor is cloned.
+     */
+    public void addMapsIdMapping(DatabaseMapping mapping) {
+        mapsIdMappings.add(mapping);
     }
     
     /**
@@ -979,10 +996,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 mappingClone.setSourceRelationKeyFields(overrideMapping.getSourceRelationKeyFields());
                 mappingClone.setTargetKeyFields(overrideMapping.getTargetKeyFields());
                 mappingClone.setTargetRelationKeyFields(overrideMapping.getTargetRelationKeyFields());
-            } else {
-                // Silently ignored for now. These override mappings are set and
-                // controlled through JPA metadata processing.
-            }
+            } 
+            
+            // Else, silently ignored for now. These override mappings are set 
+            // and controlled through JPA metadata processing.
         }
         
         // Apply any override uni-directional 12m mappings to their cloned mappings.
@@ -993,10 +1010,22 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 UnidirectionalOneToManyMapping mappingClone = (UnidirectionalOneToManyMapping) mapping;
                 mappingClone.setSourceKeyFields(overrideMapping.getSourceKeyFields());
                 mappingClone.setTargetForeignKeyFields(overrideMapping.getTargetForeignKeyFields());
-            } else {
-                // Silently ignored for now. These override mappings are set and
-                // controlled through JPA metadata processing.
             }
+            
+            // Else, silently ignored for now. These override mappings are set 
+            // and controlled through JPA metadata processing.
+        }
+        
+        // Mark any mapsId mappings as read-only.
+        for (DatabaseMapping mapsIdMapping : mapsIdMappings) {
+            DatabaseMapping mapping = clonedDescriptor.getMappingForAttributeName(mapsIdMapping.getAttributeName());
+            
+            if (mapping != null) {
+                mapping.setIsReadOnly(true);
+            }
+            
+            // Else, silently ignored for now. Maps id mappings are set and 
+            // controlled through JPA metadata processing.
         }
         
         initializeReferenceDescriptor(clonedDescriptor);

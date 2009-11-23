@@ -23,6 +23,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     11/23/2009-2.0 Guy Pelletier 
+ *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -111,6 +113,13 @@ public class EmbeddedAccessor extends MappingAccessor {
         if (associationOverride != null) {
             m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addMapsIdAccessor(MappingAccessor mapsIdAccessor) {
+        ((AggregateObjectMapping) getMapping()).addMapsIdMapping(mapsIdAccessor.getMapping());
     }
     
     /**

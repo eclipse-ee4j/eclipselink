@@ -8,40 +8,32 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     04/24/2009-2.0 Guy Pelletier 
- *       - 270011: JPA 2.0 MappedById support
  *     11/23/2009-2.0 Guy Pelletier 
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-@Embeddable
-public class MasterCorporalId {
-    @Column(name="NAME")
-    String name;
-    
-    // In the derived id case from MasterCorporal this column name is ignored
-    // In the non derived id case from MasterCorporalClone, this column name is used.
-    @Column(name="SARGEANTPK")
-    long sargeantPK;
-    
-    public String getName() {
-        return name;
+/**
+ * This model tests Example #1 of the mapsId cases.
+ * 
+ * @author gpelleti
+ */
+@Entity
+@Table(name="JPA_MASTER_CORPORAL_CLONE")
+public class MasterCorporalClone {
+    @EmbeddedId 
+    MasterCorporalId id;
+        
+    public MasterCorporalId getId() {
+        return id;
     }
     
-    public long getSargeantPK() {
-        return sargeantPK;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public void setSargeantPK(long sargeantPK) {
-        this.sargeantPK = sargeantPK;
+    public void setId(MasterCorporalId id) {
+        this.id = id;
     }
 }
 

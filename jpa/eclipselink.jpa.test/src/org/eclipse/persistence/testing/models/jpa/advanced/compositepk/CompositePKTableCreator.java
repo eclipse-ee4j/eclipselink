@@ -13,6 +13,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/23/2009-2.0 Guy Pelletier 
+ *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -32,6 +34,7 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildCUBICLETable());
         addTableDefinition(buildSARGEANTTable());
         addTableDefinition(buildMASTERCORPORALTable());
+        addTableDefinition(buildMASTERCORPORALCLONETable());
         addTableDefinition(buildMAJORTable());
         addTableDefinition(buildMAJORGENERALTable());
         addTableDefinition(buildCAPTAINTable());
@@ -594,6 +597,33 @@ public class CompositePKTableCreator extends TableCreator {
         
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("SARGEANT_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(true);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildMASTERCORPORALCLONETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASTER_CORPORAL_CLONE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("SARGEANTPK");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);

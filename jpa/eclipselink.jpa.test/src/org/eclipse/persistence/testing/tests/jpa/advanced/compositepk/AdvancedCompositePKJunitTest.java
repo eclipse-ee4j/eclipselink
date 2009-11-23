@@ -13,6 +13,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     11/23/2009-2.0 Guy Pelletier 
+ *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -60,6 +62,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Major;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorGeneral;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporal;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporalClone;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporalId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.OfficerCadet;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
@@ -109,6 +112,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedCompositePKJunitTest("testMapWithDerivedId"));
         suite.addTest(new AdvancedCompositePKJunitTest("testIdentitySequencingForDerivedId"));
+        
+        suite.addTest(new AdvancedCompositePKJunitTest("testSharedDerivedIdEmbeddableClass"));
         
         return suite;
     }
@@ -820,4 +825,31 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             throw e;
         }
     } 
+    
+    public void testSharedDerivedIdEmbeddableClass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        MasterCorporalClone masterCorporal = new MasterCorporalClone();
+        
+        try {
+            MasterCorporalId masterCorporalId = new MasterCorporalId();
+            masterCorporalId.setName("MCC " + System.currentTimeMillis());
+            masterCorporalId.setSargeantPK(System.currentTimeMillis());
+            masterCorporal.setId(masterCorporalId);
+            em.persist(masterCorporal);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        MasterCorporalClone refreshedMasterCorporal = em.find(MasterCorporalClone.class, masterCorporal.getId());
+        assertTrue("The master corporal clone read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));
+    }
 }
