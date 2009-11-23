@@ -17,6 +17,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.complexaggregate;
 
+import java.util.Iterator;
+
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
@@ -530,6 +533,23 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         table.addField(fieldID);
         
         return table;
+    }
+
+    /**
+     * Remove pk constraint as there is a identity field, and H2, HSQL do not allow this.
+     */
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
+        if (session.getPlatform().isH2() || session.getPlatform().isHSQL()) {
+            for (Iterator iterator = getTableDefinitions().iterator(); iterator.hasNext(); ) {
+                TableDefinition table = (TableDefinition)iterator.next();
+                if (table.getName().equals("XML_CITYSLICKER") || table.getName().equals("XML_COUNTRY_DWELLER")) {
+                    for (Iterator fields = table.getFields().iterator(); fields.hasNext(); ) {
+                        ((FieldDefinition)fields.next()).setIsPrimaryKey(false);
+                    }
+                }
+            }
+        }
+        super.replaceTables(session, schemaManager);
     }
 
 }

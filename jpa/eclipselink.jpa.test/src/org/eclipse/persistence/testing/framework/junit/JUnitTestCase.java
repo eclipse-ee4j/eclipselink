@@ -510,8 +510,12 @@ public abstract class JUnitTestCase extends TestCase {
      * TODO: Need to recheck tests on DB2 as it has some support for this.
      * Derby has some support, but does not work with joins (2008-12-01).
      */
-    public boolean isSelectForUpateSupported() {
-        DatabasePlatform platform = getServerSession().getPlatform();
+    public boolean isSelectForUpateSupported(){
+        return isSelectForUpateSupported("default");
+    }
+
+    public boolean isSelectForUpateSupported(String puName) {
+        DatabasePlatform platform = getServerSession(puName).getPlatform();
         // Both DB2, Derby and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
@@ -527,8 +531,12 @@ public abstract class JUnitTestCase extends TestCase {
      * Currently testing supports nowait on Oracle, SQLServer.
      * PostgreSQL also supports NOWAIT, but doesn't support the outer joins used in the tests.
      */
-    public boolean isSelectForUpateNoWaitSupported() {
-        DatabasePlatform platform = getServerSession().getPlatform();
+    public boolean isSelectForUpateNoWaitSupported(){
+        return isSelectForUpateNoWaitSupported("default");
+    }
+
+    public boolean isSelectForUpateNoWaitSupported(String puName) {
+        DatabasePlatform platform = getServerSession(puName).getPlatform();
         if (!(platform.isOracle() || platform.isSQLServer())) {
             warning("This database does not support NOWAIT.");
             return false;
@@ -539,8 +547,12 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Return if stored procedures are supported for the database platform for the test database.
      */
-    public boolean supportsStoredProcedures() {
-        DatabasePlatform platform = getServerSession().getPlatform();
+    public boolean supportsStoredProcedures(){
+        return supportsStoredProcedures("default");
+    }
+
+    public boolean supportsStoredProcedures(String puName) {
+        DatabasePlatform platform = getServerSession(puName).getPlatform();
         // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
         // TODO: DB2 should be in this list.
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer()) {

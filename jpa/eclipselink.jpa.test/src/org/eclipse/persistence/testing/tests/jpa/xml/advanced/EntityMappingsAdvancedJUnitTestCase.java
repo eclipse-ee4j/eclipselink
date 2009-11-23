@@ -746,6 +746,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Tests a named-stored-procedure-query setting
      */
     public void testNamedStoredProcedureQuery() {
+        if (!supportsStoredProcedures(m_persistenceUnit)) {
+            return;
+        }
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         
@@ -782,6 +785,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Tests a named-stored-procedure-query setting
      */
     public void testNamedStoredProcedureQueryInOut() {
+        if (!supportsStoredProcedures(m_persistenceUnit)) {
+            return;
+        }
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         
