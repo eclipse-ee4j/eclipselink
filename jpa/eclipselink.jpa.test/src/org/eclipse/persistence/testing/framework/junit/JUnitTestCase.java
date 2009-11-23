@@ -519,12 +519,25 @@ public abstract class JUnitTestCase extends TestCase {
         // Both DB2, Derby and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
-        if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
+        if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
             warning("This database does not support FOR UPDATE.");
             return false;
         }
         return true;
     }
+
+    /**
+     * @return true if database supports pessimistic write lock false other wise
+     */
+    public boolean isPessimisticWriteLockSupported() {
+        DatabasePlatform platform = getServerSession().getPlatform();
+        if (platform.isSybase()) { //Sybase supports getting Pessimistic Read locks but does not support getting Perssimistic Write locks
+            warning("This database does not support Pessimistic Write Lock.");
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Return if pessimistic locking/select for update nowait is supported for this test platform.

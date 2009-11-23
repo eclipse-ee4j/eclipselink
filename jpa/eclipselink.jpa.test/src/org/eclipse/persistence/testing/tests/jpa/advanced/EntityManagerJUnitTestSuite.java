@@ -322,7 +322,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testUnWrapClass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
-        
+
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
@@ -340,7 +340,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testGenerateSessionNameFromConnectionProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
-        
+
         return suite;
     }
 
@@ -518,7 +518,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
@@ -583,7 +582,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
@@ -1488,8 +1486,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // This test issues a LOCK and a LOCK NOWAIT.
     public void testPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
@@ -1555,7 +1552,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
@@ -1622,8 +1618,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // It's JPA2.0 feature.
         if (! isJPA10() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -1669,8 +1664,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_READLockWithNoChanges() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {             
             Employee employee = null;
@@ -1716,8 +1710,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITELockWithNoChanges() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -1869,8 +1862,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // It's a JPA2.0 feature
         if (! isJPA10()) {
             Department dept = null;
@@ -1909,7 +1901,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testLockWithJoinedInheritanceStrategy () {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee emp = null;
@@ -2005,7 +1996,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPESSIMISTIC_ExtendedScope() {
         ServerSession session = JUnitTestCase.getServerSession();
         // Cannot create parallel entity managers in the server. Uses FOR UPDATE clause which SQLServer doesn't support.
-        if (isOnServer() || !isSelectForUpateSupported()) {
+        if (isOnServer() || !isSelectForUpateSupported() || !isPessimisticWriteLockSupported()) {
             return;
         }
             

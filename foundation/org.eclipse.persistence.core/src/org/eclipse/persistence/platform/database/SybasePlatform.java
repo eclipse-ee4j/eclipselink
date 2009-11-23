@@ -289,6 +289,19 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * The sybase syntax for obtaining pessimistic lock is "SELECT ADDRESS_ID, ... FROM ADDRESS WITH (HOLDLOCK) WHERE (ADDRESS_ID = ?)"
+     * Please note that above only obtains shared lock. Apparently there is no way to obtain exclusive lock on Sybase
+     * using only a select statement
+     */
+    public boolean shouldPrintLockingClauseAfterWhereClause() {
+        return false;
+    }
+
+    public String getSelectForUpdateString() {
+        return " HOLDLOCK";
+    }
+
+    /**
      * Used for batch writing and sp defs.
      */
     public String getBatchDelimiterString() {

@@ -1311,8 +1311,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     public void testLockWithSecondaryTable() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1363,8 +1362,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     public void testVersionChangeWithReadLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // It's a JPA2.0 feature.
         if (! isJPA10() && isSelectForUpateNoWaitSupported()){
             Employee employee = null;
@@ -1443,8 +1441,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     public void testVersionChangeWithWriteLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
-        
+
         // It's a JPA2.0 feature
         if (! isJPA10() && isSelectForUpateNoWaitSupported()) {
             Employee employee = null;
