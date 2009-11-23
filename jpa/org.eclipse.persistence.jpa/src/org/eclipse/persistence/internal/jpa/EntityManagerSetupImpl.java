@@ -19,7 +19,7 @@
  *        partially fixed partially worked around this - see a big comment in predeploy method.
  *     12/23/2008-1.1M5 Michael O'Brien 
  *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
- *     10/14/2008-2.0      Michael O'Brien 
+ *     10/14/2009-2.0      Michael O'Brien 
  *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete

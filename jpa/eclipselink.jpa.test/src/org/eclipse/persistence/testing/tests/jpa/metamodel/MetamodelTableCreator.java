@@ -818,6 +818,13 @@ DROP TABLE CMP3_MM_COMPUTER
         return table;
     }
 
+    /**
+     * This table defines a MappedSuperclass chain that defines a composite PK
+     * that is distributed along the MappedSuperclass hierarchy of the form.
+     * Root (MappedSuperclass)
+     *   --> Center (MappedSuperclass)
+     *             --> Leaf (Entity)
+     */
     public static TableDefinition buildMS_MS_Entity_Leaf_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MSMSENTITY_LEAF");
@@ -855,15 +862,16 @@ DROP TABLE CMP3_MM_COMPUTER
 
         // From MS-(MS)-Entity center
         FieldDefinition field = new FieldDefinition();
-        field.setName("MSMSENTITY_ID");
+        //field.setName("MSMSENTITY_ID");
+        field.setName("IDENTITY");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
-        field.setIsPrimaryKey(false);//true);
-        //field.setIsPrimaryKey(true);
+        //field.setIsPrimaryKey(false);//true);
+        field.setIsPrimaryKey(true);
         field.setUnique(false);
-        field.setIsIdentity(false);//true);
-        //field.setIsIdentity(true);
+        //field.setIsIdentity(false);//true);
+        field.setIsIdentity(true);
         table.addField(field);
         
         FieldDefinition field2 = new FieldDefinition();

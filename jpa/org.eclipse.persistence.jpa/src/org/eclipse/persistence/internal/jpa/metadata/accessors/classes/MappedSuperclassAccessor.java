@@ -378,6 +378,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Return whether this accessor represents a MappedSuperclass 
      */
     @Override
     public boolean isMappedSuperclass() {

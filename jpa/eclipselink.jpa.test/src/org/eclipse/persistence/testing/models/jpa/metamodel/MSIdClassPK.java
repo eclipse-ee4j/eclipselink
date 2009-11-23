@@ -13,22 +13,36 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-public class MSIdClassPK {
+import java.io.Serializable;
+
+public class MSIdClassPK implements Serializable {
+    private static final long serialVersionUID = -5653212238687275498L;
+    
     public String type;
     protected String length;
     private String width;
+    private Integer identity;
+
+    public Integer getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Integer identity) {
+        this.identity = identity;
+    }
 
     public MSIdClassPK() {}
 
     @Override
-    public boolean equals(Object anEnclosureIdClassPK) {
-        if (anEnclosureIdClassPK.getClass() != EnclosureIdClassPK.class) {
+    public boolean equals(Object anidClassPK) {
+        if (anidClassPK instanceof MSIdClassPK) {
             return false;
         }        
-        EnclosureIdClassPK enclosureIdClassPK = (EnclosureIdClassPK) anEnclosureIdClassPK;        
-        return (enclosureIdClassPK.getLength().equals(this.getLength()) && 
-                enclosureIdClassPK.getWidth().equals(this.getWidth()) &&
-                enclosureIdClassPK.getType().equals(this.getType()));
+        MSIdClassPK idClassPK = (MSIdClassPK) anidClassPK;        
+        return (idClassPK.getLength().equals(this.getLength()) && 
+                idClassPK.getWidth().equals(this.getWidth()) &&
+                idClassPK.getType().equals(this.getType()) &&
+                idClassPK.getIdentity().equals(this.getIdentity()));
     }
 
     @Override

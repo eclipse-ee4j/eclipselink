@@ -883,7 +883,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Flags that this mapping is part of a JPA id mapping. It should be
      * temporary though, as the CMP3Policy should be able to figure things 
      * out on its own. The problem being that the JPA mapped superclass
-     * descriptors are not initialize and do not have a CMP3Policy set by
+     * descriptors are not initialized and do not have a CMP3Policy set by
      * default. 
      */
     public boolean isJPAId() {
@@ -916,7 +916,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Flags that this mapping is part of a JPA id mapping. It should be
      * temporary though, as the CMP3Policy should be able to figure things 
      * out on its own. The problem being that the JPA mapped superclass
-     * descriptors are not initialize and do not have a CMP3Policy set by
+     * descriptors are not initialized and do not have a CMP3Policy set by
      * default. 
      */
     public void setIsJPAId() {

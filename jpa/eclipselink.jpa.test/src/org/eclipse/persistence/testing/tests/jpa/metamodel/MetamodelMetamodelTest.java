@@ -37,6 +37,7 @@ import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.MappedSuperclassType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
@@ -71,6 +72,9 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Center;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Root;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
@@ -152,6 +156,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testEntityType"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributes_Method"));
+        suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributesAcrossMappedSuperclassChain_Method")); // 288792        
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_hasVersionAttribute_Method"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_hasSingleIdAttribute_Method"));
         suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getSupertype_Method"));
@@ -295,6 +300,30 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     
     private void privateTestTeardown() {        
     }
+
+    
+/*    public void testValidation_relaxed_for_composite_pk_on_mappedSuperclass_chain() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                ManagedType<Person> msPerson = metamodel.managedType(Person.class);                
+                assertNotNull(msPerson);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());                
+            } catch (IllegalArgumentException iae) {
+                //iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }*/
+    
     
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_93:_20091014:_Single_PK_support_in_IdentifiableTypeImpl.getIdType.28.29_does_not_fully_handle_a_null_CMPPolicy_on_the_Descriptor
     public void testIdentifiableType_getIdType_handles_possible_null_cmppolicy() {
@@ -1775,12 +1804,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
                 assertFalse(hasSingleIdAttribute);
                 idClassAttributes = aType.getIdClassAttributes();
-                assertFalse(expectedIAExceptionThrown);            
-                assertFalse(hasSingleIdAttribute);
                 assertNotNull(idClassAttributes);
                 assertEquals(4, idClassAttributes.size());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1789,6 +1816,69 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    public void testIdentifiableType_getIdClassAttributesAcrossMappedSuperclassChain_Method() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean expectedIAExceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull(metamodel);
+                
+                // Actual Test Case
+                /**
+                 *   Return the attributes corresponding to the id class of the
+                 *   identifiable type.
+                 *   @return id attributes
+                 *   @throws IllegalArgumentException if the identifiable type
+                 *           does not have an id class
+                 */
+                 //java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
+                // @IdClass - test normal path
+                expectedIAExceptionThrown = false;
+                boolean hasSingleIdAttribute = true;
+                // 0 id attributes here
+                Set<SingularAttribute<? super MS_MS_Entity_Leaf, ?>> idClassAttributesLeaf = null;                
+                IdentifiableType<MS_MS_Entity_Leaf> aTypeLeaf = metamodel.entity(MS_MS_Entity_Leaf.class);
+                // 1 id attribute here
+                Set<SingularAttribute<? super MS_MS_Entity_Center, ?>> idClassAttributesCenter = null;
+                MappedSuperclassType<MS_MS_Entity_Center> aTypeCenter = (MappedSuperclassType)metamodel.managedType(MS_MS_Entity_Center.class);
+                // 3 id attributes here
+                Set<SingularAttribute<? super MS_MS_Entity_Root, ?>> idClassAttributesRoot = null;
+                MappedSuperclassType<MS_MS_Entity_Root> aTypeRoot = (MappedSuperclassType)metamodel.managedType(MS_MS_Entity_Root.class);
+                
+                hasSingleIdAttribute = aTypeLeaf.hasSingleIdAttribute();
+                // We verify that an an @IdClass exists above
+                assertFalse(hasSingleIdAttribute); // This tests the IdentifiableType part of the transaction for DI 78
+                hasSingleIdAttribute = aTypeCenter.hasSingleIdAttribute();
+                // We verify that an one part of an @IdClass exists 
+                assertTrue(hasSingleIdAttribute); // This tests the IdentifiableType part of the transaction for DI 78
+                hasSingleIdAttribute = aTypeRoot.hasSingleIdAttribute();
+                // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
+                assertFalse(hasSingleIdAttribute); // This tests the IdentifiableType part of the transaction for DI 78
+                //idClassAttributesLeaf = aTypeLeaf.getIdClassAttributes(); // expected IAE
+                idClassAttributesCenter = aTypeCenter.getIdClassAttributes();
+                assertNotNull(idClassAttributesCenter);
+                assertEquals(1, idClassAttributesCenter.size());
+                // The following call is not valid because the IdClass attribute is defined one level below
+                try {
+                    idClassAttributesRoot = aTypeRoot.getIdClassAttributes();
+                } catch (IllegalArgumentException iae) {
+                    expectedIAExceptionThrown = true;
+                }
+                assertTrue(expectedIAExceptionThrown);
+                expectedIAExceptionThrown = false;
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+            }
+        }
+    }
+    
     public void testIdentifiableType_getIdType_Method() {
         if(!this.isJPA10()) {
             EntityManager em = null;

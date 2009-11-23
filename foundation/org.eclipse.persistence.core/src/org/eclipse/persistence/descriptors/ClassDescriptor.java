@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     stardif - updates for Cacaded locking and inheritance
+ *     stardif - updates for Cascaded locking and inheritance
  *     02/20/2009-1.1 Guy Pelletier 
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
  ******************************************************************************/  

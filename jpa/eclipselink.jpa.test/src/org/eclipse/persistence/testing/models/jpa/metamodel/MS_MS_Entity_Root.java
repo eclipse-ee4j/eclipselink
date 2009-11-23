@@ -15,12 +15,17 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
+/**
+ * Use Case: IdClass identifiers declared across multiple mappedSuperclasses in an inheritance hierarchy.
+ * Note: The following MappedSuperclass defines 3 of 4 of the Id fields as part of the IdClass MSIdClassPK.
+ * The 4th field is declared on the subclass.
+ * The IdClass annotation can go on the subclass or the entity but not on this root.
+ * As long as resolution of all fields in the IdClass are available - the configuration is good. 
+ */
 @MappedSuperclass
-@IdClass(org.eclipse.persistence.testing.models.jpa.metamodel.MSIdClassPK.class)
 public abstract class MS_MS_Entity_Root implements java.io.Serializable {
     
     @Id
@@ -31,39 +36,12 @@ public abstract class MS_MS_Entity_Root implements java.io.Serializable {
     protected String length;
     @Id
     @Column(name="WIDTH")
-    private String width;
+    protected String width;
   
     
     @Version
     @Column(name="MSMSENTITY_VERSION")
     private int version;
-    
-    public MS_MS_Entity_Root() {}
-
-    public MSIdClassPK buildPK(){
-        MSIdClassPK pk = new MSIdClassPK();
-        pk.setLength(this.getLength());
-        pk.setWidth(this.getWidth());
-        pk.setType(this.getType());
-        return pk;
-    }
-
-    @Override
-    public boolean equals(Object anMSMSEntity) {
-        if (anMSMSEntity.getClass() != MS_MS_Entity_Root.class) {
-            return false;
-        }        
-        return ((MS_MS_Entity_Root) anMSMSEntity).buildPK().equals(buildPK());
-    }
-    
-    @Override
-    public int hashCode() {
-        if (null != type && null != length && null != width) {
-            return 9232 * type.hashCode() * length.hashCode() * width.hashCode();
-        } else {
-            return super.hashCode();
-        }
-    }
     
     public String getType() {
         return type;

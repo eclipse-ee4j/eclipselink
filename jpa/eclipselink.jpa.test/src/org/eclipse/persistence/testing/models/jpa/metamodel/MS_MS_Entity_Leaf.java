@@ -16,6 +16,12 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * Use Case: IdClass identifiers declared across multiple mappedSuperclasses in an inheritance hierarchy.
+ * Note: The following Entity inherits 4 of 4 of the Id fields declared across 2 mappedSuperclasses above as part of the IdClass MSIdClassPK.
+ * The IdClass annotation can go on the first mappedSuperclass superclass or this entity but not on the root.
+ * As long as resolution of all fields in the IdClass are available - the configuration is good. 
+ */
 @Entity(name="MS_MS_EntityLeafMetamodel")
 @Table(name="CMP3_MM_MSMSENTITY_LEAF")
 public class MS_MS_Entity_Leaf extends MS_MS_Entity_Center {
@@ -29,6 +35,4 @@ public class MS_MS_Entity_Leaf extends MS_MS_Entity_Center {
     public void setDeclaredLeafStringField(String declaredLeafStringField) {
         this.declaredLeafStringField = declaredLeafStringField;
     }
-
-
 }

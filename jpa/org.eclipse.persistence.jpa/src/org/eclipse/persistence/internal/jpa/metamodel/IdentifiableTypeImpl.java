@@ -155,8 +155,8 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         // Get the list of IdClass attributes previously stored on the core project during metadata processing
         List<String> idClassNamesList = getMetamodel().getProject().getMetamodelIdClassMap()
             .get(getJavaType().getCanonicalName());
-        // Check for IdClass existence - either check is sufficient
-        if(!this.hasSingleIdAttribute() && (null != idClassNamesList)) {
+        // Check for IdClass existence
+        if(null != idClassNamesList) {
             // All Id attributes are part of an IdClass
             return this.idAttributes;
         } else {
@@ -335,13 +335,14 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                 // MappedSuperclass descriptors do not have a CMP policy yet because the are not initialized
                 return pkFields.size() < 2;
             }
-            List<String> idClasses = getMetamodel().getProject().getMetamodelIdClassMap().get(getJavaType().getCanonicalName());
-            if(null != idClasses) {            
-                for(String idClass : idClasses) {                
-                    if(idClass.equalsIgnoreCase(pkClass.getName())) {
+            
+            // 288792: Search the values of the list of IdClass attribute names stored on the project
+            for (List<String> idClassNamesList : getMetamodel().getProject().getMetamodelIdClassMap().values()) {
+                for(String idClassName : idClassNamesList) {
+                    if(idClassName.equals(pkClass.getCanonicalName())) {                                        
                         return false;
                     }
-                }
+                }                            
             }
         }
         return true;        

@@ -147,9 +147,11 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     public boolean isId() {
         if(this.getManagedTypeImpl().isMappedSuperclass()) {
             // The field on the mapping is the same field in the pkFields list on the descriptor
+            // 288792: We can use the new isJPAId field here 
             return (this.getDescriptor().getPrimaryKeyFields().contains(this.getMapping().getField()));
         } else {
-            return getMapping().isPrimaryKeyMapping();
+            // 288792: Some id mappings will return false for isPrimaryKeyMapping but true for isJPAId
+            return getMapping().isPrimaryKeyMapping() || getMapping().isJPAId();
         }
     }
 

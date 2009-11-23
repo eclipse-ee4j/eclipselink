@@ -27,20 +27,7 @@ public class MetamodelTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("Metamodel");
         suite.addTest(EntityManagerFactoryImplTest.suite());
         suite.addTest(EntityManagerImplTest.suite());
-/*        suite.addTest(MetamodelAbstractCollectionTest.suite());
-        suite.addTest(MetamodelAttributeTest.suite());
-        suite.addTest(MetamodelBasicTest.suite());
-        suite.addTest(MetamodelCollectionAttributeTest.suite());
-        suite.addTest(MetamodelEmbeddableTypeTest.suite());
-        suite.addTest(MetamodelEntityTypeTest.suite());
-        suite.addTest(MetamodelListAttributeTest.suite());
-        suite.addTest(MetamodelManagedTypeTest.suite());
-        suite.addTest(MetamodelMapAttributeTest.suite());
-        suite.addTest(MetamodelMappedSuperclassTypeTest.suite());
-        suite.addTest(MetamodelMemberTest.suite());
-*/        suite.addTest(MetamodelMetamodelTest.suite());
-/*        suite.addTest(MetamodelSetAttributeTest.suite());
-        suite.addTest(MetamodelTypeTest.suite());
-*/        return suite;
+        suite.addTest(MetamodelMetamodelTest.suite());
+        return suite;
     }
 }
