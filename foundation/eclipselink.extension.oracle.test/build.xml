@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -139,10 +146,33 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
 
-        <!-- Create needed directories -->
+        <!-- Determine appropriate settings for Oracle lib variables (overrides of .lib variables won't get reset) -->
+        <!-- Check first in oracle extensions dir   -->
+        <condition property="xdb.lib" value="${oracle.extensions.depend.dir}/${xdb.jar}"
+                                       else="${extensions.depend.dir}/${xdb.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
+        </condition>
+        <condition property="ojdbc.lib" value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
+                                         else="${extensions.depend.dir}/${ojdbc.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+        </condition>
+        <condition property="aqapi.lib" value="${oracle.extensions.depend.dir}/${aqapi.jar}"
+                                         else="${extensions.depend.dir}/${aqapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${aqapi.jar}"/>
+        </condition>
+        <condition property="sdoapi.lib" value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
+                                          else="${extensions.depend.dir}/${sdoapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
+        </condition>
+        <condition property="xmlparser.lib" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
+                                             else="${extensions.depend.dir}/${xmlparser.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
+        </condition>
+
+        <!-- Create needed directories
         <mkdir dir="${oracle_test.classes.dir}"/>
         <mkdir dir="${oracle_test.run.dir}"/>
-        <mkdir dir="${oracle_test.report.dir}"/>
+        <mkdir dir="${oracle_test.report.dir}"/ -->
 
         <!-- Determine availability of compile dependencies   -->
         <available file="${oracle_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
@@ -166,48 +196,12 @@
         <!-- Determine availability and location of Oracle dependencies   -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
         <available file="${extensions.depend.dir}"        type="dir" property="ext.depend.dir.exist"/>
-            <!-- Check first in oracle extensions dir   -->
-        <available file="${oracle.extensions.depend.dir}/${xdb.lib}"       property="xdb.lib.exist"/>
-        <available file="${oracle.extensions.depend.dir}/${ojdbc.lib}"     property="ojdbc.lib.exist"/>
-        <available file="${oracle.extensions.depend.dir}/${aqapi.lib}"     property="aqapi.lib.exist"/>
-        <available file="${oracle.extensions.depend.dir}/${sdoapi.lib}"    property="sdoapi.lib.exist"/>
-        <available file="${oracle.extensions.depend.dir}/${xmlparser.lib}" property="xmlparser.lib.exist"/>
-        <condition property="xdb.path" value="${oracle.extensions.depend.dir}/${xdb.lib}">
-                <isset property="xdb.lib.exist"/>
-        </condition>
-        <condition property="ojdbc.path" value="${oracle.extensions.depend.dir}/${ojdbc.lib}">
-                <isset property="ojdbc.lib.exist"/>
-        </condition>
-        <condition property="aqapi.path" value="${oracle.extensions.depend.dir}/${aqapi.lib}">
-                <isset property="aqapi.lib.exist"/>
-        </condition>
-        <condition property="sdoapi.path" value="${oracle.extensions.depend.dir}/${sdoapi.lib}">
-                <isset property="sdoapi.lib.exist"/>
-        </condition>
-        <condition property="xmlparser.path" value="${oracle.extensions.depend.dir}/${xmlparser.lib}">
-                <isset property="xmlparser.lib.exist"/>
-        </condition>
             <!-- Now retest using the regular extensions dir, if already found variables will not be reset   -->
-        <available file="${extensions.depend.dir}/${xdb.lib}"       property="xdb.lib.exist"/>
-        <available file="${extensions.depend.dir}/${ojdbc.lib}"     property="ojdbc.lib.exist"/>
-        <available file="${extensions.depend.dir}/${aqapi.lib}"     property="aqapi.lib.exist"/>
-        <available file="${extensions.depend.dir}/${sdoapi.lib}"    property="sdoapi.lib.exist"/>
-        <available file="${extensions.depend.dir}/${xmlparser.lib}" property="xmlparser.lib.exist"/>
-        <condition property="xdb.path" value="${extensions.depend.dir}/${xdb.lib}">
-                <isset property="xdb.lib.exist"/>
-        </condition>
-        <condition property="ojdbc.path" value="${extensions.depend.dir}/${ojdbc.lib}">
-                <isset property="ojdbc.lib.exist"/>
-        </condition>
-        <condition property="aqapi.path" value="${extensions.depend.dir}/${aqapi.lib}">
-                <isset property="aqapi.lib.exist"/>
-        </condition>
-        <condition property="sdoapi.path" value="${extensions.depend.dir}/${sdoapi.lib}">
-                <isset property="sdoapi.lib.exist"/>
-        </condition>
-        <condition property="xmlparser.path" value="${extensions.depend.dir}/${xmlparser.lib}">
-                <isset property="xmlparser.lib.exist"/>
-        </condition>
+        <available file="${xdb.lib}"       property="xdb.lib.exist"/>
+        <available file="${ojdbc.lib}"     property="ojdbc.lib.exist"/>
+        <available file="${aqapi.lib}"     property="aqapi.lib.exist"/>
+        <available file="${sdoapi.lib}"    property="sdoapi.lib.exist"/>
+        <available file="${xmlparser.lib}" property="xmlparser.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -292,12 +286,12 @@
     </target>
     <target name="init_dependency" if="dependency.ok" depends="announce_missing_dependencies">
         <path id="oracle_test.oracle.dependency.path">
-            <pathelement path="${xdb.path}"/>
-            <pathelement path="${ojdbc.path}"/>
-            <pathelement path="${aqapi.path}"/>
-            <pathelement path="${sdoapi.path}"/>
-            <pathelement path="${xmlparser.path}"/>
-            <pathelement path="${junit.path}"/>
+            <pathelement path="${xdb.lib}"/>
+            <pathelement path="${ojdbc.lib}"/>
+            <pathelement path="${aqapi.lib}"/>
+            <pathelement path="${sdoapi.lib}"/>
+            <pathelement path="${xmlparser.lib}"/>
+            <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
             <pathelement path="${oracle_test.2.core.test.dir}/${eclipselink.tests.jar}"/>
@@ -351,11 +345,11 @@
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink Oracle tests">
         <echo message="Using the following oracle dependencies:"/>
-        <echo message="    '${xdb.path}'"/>
-        <echo message="    '${ojdbc.path}'"/>
-        <echo message="    '${aqapi.path}'"/>
-        <echo message="    '${sdoapi.path}'"/>
-        <echo message="    '${xmlparser.path}'"/>
+        <echo message="    '${xdb.lib}'"/>
+        <echo message="    '${ojdbc.lib}'"/>
+        <echo message="    '${aqapi.lib}'"/>
+        <echo message="    '${sdoapi.lib}'"/>
+        <echo message="    '${xmlparser.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>
         <javac srcdir="${oracle_test.src.dir}"
                destdir="${oracle_test.classes.dir}"
