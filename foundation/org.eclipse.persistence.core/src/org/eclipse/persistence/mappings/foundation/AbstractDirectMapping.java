@@ -249,7 +249,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             } else if (attributeValue instanceof Calendar) {
                 newAttributeValue = ((Calendar)attributeValue).clone();
             } else {
-                newAttributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);                    
+                newAttributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);
             }
         }
         return newAttributeValue;
@@ -990,7 +990,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Merge changes from the source to the target object.
      */
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        setAttributeValueInObject(target, ((DirectToFieldChangeRecord)changeRecord).getNewValue());
+        setAttributeValueInObject(target, buildCloneValue(((DirectToFieldChangeRecord)changeRecord).getNewValue(), mergeManager.getSession()));
     }
 
     /**
@@ -1006,14 +1006,13 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             Object attributeValue = getAttributeValueFromObject(source);
             Object targetAttribute = getAttributeValueFromObject(target);
             if (!compareObjectValues(attributeValue, targetAttribute, mergeManager.getSession())) {
-                setAttributeValueInObject(target, attributeValue);
+                setAttributeValueInObject(target, buildCloneValue(attributeValue, mergeManager.getSession()));
                 //set the value first, if the owner is new ( or aggregate) the change set may be created directly
                 //from the target.
                 this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attributeValue);
             }
         } else {
-            //just set the value and continue
-            setAttributeValueInObject(target, getAttributeValueFromObject(source));
+            setAttributeValueInObject(target, buildCloneValue(getAttributeValueFromObject(source), mergeManager.getSession()));
         }
     }
 

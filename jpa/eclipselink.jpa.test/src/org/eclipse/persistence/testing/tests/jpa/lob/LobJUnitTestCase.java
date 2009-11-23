@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.testing.models.jpa.lob.Image;
 import org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator;
 import org.eclipse.persistence.testing.models.jpa.lob.LobTableCreator;
+import org.eclipse.persistence.testing.models.jpa.lob.SerializableNonEntity;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -44,10 +45,12 @@ public class LobJUnitTestCase extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Lob Model");
         suite.addTest(new LobJUnitTestCase("testSetup"));
+        suite.addTest(new LobJUnitTestCase("testMerge"));
         suite.addTest(new LobJUnitTestCase("testCreate"));
         suite.addTest(new LobJUnitTestCase("testRead"));
         suite.addTest(new LobJUnitTestCase("testUpdate"));
         suite.addTest(new LobJUnitTestCase("testDelete"));
+        suite.addTest(new LobJUnitTestCase("testMerge"));
         
         return suite;
     }
@@ -153,6 +156,45 @@ public class LobJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
     }
 
+    public void testMerge() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Image image = new Image();
+            image.setId(5001);
+            SerializableNonEntity sne = new SerializableNonEntity();
+            sne.setSomeValue(1l);
+            image.setCustomAttribute1(sne);
+            em.persist(image);
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            image.getCustomAttribute1().setSomeValue(2l);
+            em = createEntityManager();
+            beginTransaction(em);
+            em.merge(image);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache();
+            
+            image = em.find(Image.class, 5001);
+            assertTrue("Image.customAttribute1 not correctly updated.", image.getCustomAttribute1().getSomeValue() == 2l);
+            
+            beginTransaction(em);
+            em.remove(image);
+            commitTransaction(em);
+            clearCache();
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+        closeEntityManager(em);
+    }
+    
     public static void main(String[] args) {
         junit.textui.TestRunner.run(LobJUnitTestCase.suite());
     }
