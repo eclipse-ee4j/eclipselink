@@ -1498,6 +1498,10 @@ public class EntityManagerSetupImpl {
         if (sessionString != null) {
             log.setShouldPrintSession(Boolean.parseBoolean(sessionString));
         }
+        String connectionString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_CONNECTION, m, session);
+        if (connectionString != null) {
+            log.setShouldPrintConnection(Boolean.parseBoolean(sessionString));
+        }
         String exString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_EXCEPTIONS, m, session);
         if (exString != null) {
             log.setShouldLogExceptionStackTrace(Boolean.parseBoolean(exString));

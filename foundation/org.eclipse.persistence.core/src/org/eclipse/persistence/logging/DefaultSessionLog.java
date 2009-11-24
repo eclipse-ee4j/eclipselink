@@ -84,6 +84,19 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
         }
     }
 
+    @Override
+    public int getLevel(String category) {
+        if (category != null) {
+            Integer level = this.categoryLogLevelMap.get(category);
+            
+            if (level != null) {
+                return level;
+            }
+        }
+        
+        return super.getLevel(category);
+    }
+
     /**
      * PUBLIC:
      * <p>
