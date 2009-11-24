@@ -488,15 +488,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
     
     /**
-     * @see javax.persistence.EntityManagerFactory#getSupportedProperties()
-     * @since Java Persistence API 2.0
-     */
-    public Set<String> getSupportedProperties() {
-        // TODO
-        throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    /**
      * Determine the load state of a given persistent attribute
      * of an entity belonging to the persistence unit.
      * @param entity containing the attribute
