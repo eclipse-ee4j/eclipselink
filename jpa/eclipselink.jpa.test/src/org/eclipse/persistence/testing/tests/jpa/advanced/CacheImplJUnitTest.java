@@ -54,6 +54,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testEvictClassObject"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass"));
         suite.addTest(new CacheImplJUnitTest("testEvictAll"));
+        suite.addTest(new CacheImplJUnitTest("testEvictContains"));
         
         return suite;
     }
@@ -183,6 +184,29 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             e.printStackTrace();
         } finally {
             closeEntityManager(em9);
+        }
+
+    }
+    
+    public void testEvictContains() {
+        EntityManager em =  createEntityManager("default1");
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("evictContains");
+        em.persist(emp);
+        commitTransaction(em);
+
+        try{
+            assertTrue(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
+    
+            em.clear();
+            Employee findEmp = em.find(Employee.class, emp.getId());
+            assertNotNull(findEmp);
+    
+            em.getEntityManagerFactory().getCache().evict(Employee.class, emp.getId());
+            assertFalse(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
+        } finally {
+            this.closeEntityManager(em);
         }
 
     }

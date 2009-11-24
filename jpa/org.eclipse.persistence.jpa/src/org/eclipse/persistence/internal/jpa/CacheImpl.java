@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa;
 import java.util.Vector;
 import javax.persistence.Cache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -36,7 +37,11 @@ public class CacheImpl implements Cache {
 
     public boolean contains(Class cls, Object primaryKey) {
         this.emf.verifyOpen();
-        return this.accessor.containsObjectInIdentityMap(createPKVector(cls, primaryKey), cls);
+        Vector pk =  createPKVector(cls, primaryKey);
+        ClassDescriptor descriptor = this.serversession.getDescriptor(cls);
+        CacheKey key = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)this.accessor).getCacheKeyForObject(pk, cls, descriptor);
+
+        return key != null && !descriptor.getCacheInvalidationPolicy().isInvalidated(key); 
     }
 
     public void evict(Class cls, Object primaryKey) {
