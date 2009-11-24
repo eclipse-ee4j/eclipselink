@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -353,6 +354,8 @@ public class DefaultTableGenerator {
                 }
             } else if (mapping.isTransformationMapping()) {
                 resetTransformedFieldType((TransformationMapping) mapping);
+            } else if (mapping.isAggregateObjectMapping()){
+                postInitTableSchema(((AggregateObjectMapping)mapping).getReferenceDescriptor());
             }
         }
         

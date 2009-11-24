@@ -236,6 +236,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * and place it in the source object.
      * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
+     * 
+     * Note: Any aggregate that has a relationship mapping automatically does not allow
+     * null.
      */
     public void allowNull() {
         setIsNullAllowed(true);
@@ -759,6 +762,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * and place it in the source object.
      * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
+     * 
+     * Note: Any aggregate that has a relationship mapping automatically does not allow
+     * null.
      */
     public void dontAllowNull() {
         setIsNullAllowed(false);
@@ -1028,6 +1034,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             // controlled through JPA metadata processing.
         }
         
+        // disallow null for aggregates with relationships
+        for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
+            if (mapping.isForeignReferenceMapping() || mapping.isAbstractCompositeDirectCollectionMapping()){
+                isNullAllowed = false;
+            }
+        }
+        
         initializeReferenceDescriptor(clonedDescriptor);
         clonedDescriptor.preInitialize(session);
         clonedDescriptor.initialize(session);
@@ -1193,6 +1206,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * To change this behavior, set the value of this variable to false. Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
+     * 
+     * Note: Any aggregate that has a relationship mapping automatically does not allow
+     * null.
      */
     public boolean isNullAllowed() {
         return isNullAllowed;
@@ -1356,6 +1372,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * To change this behavior, set the value of this variable to false. Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
+     * 
+     * Note: Any aggregate that has a relationship mapping automatically does not allow
+     * null.
      */
     public void setIsNullAllowed(boolean isNullAllowed) {
         this.isNullAllowed = isNullAllowed;

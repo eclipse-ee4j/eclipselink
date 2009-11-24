@@ -644,6 +644,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         beginTransaction(em);
         
         ExpertBeerConsumer initialEBC = new ExpertBeerConsumer();
+        initialEBC.setAccredidation(new Accredidation());
         int beerConsumerId = 0;
         
         try {
@@ -684,6 +685,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         beginTransaction(em);
         
         NoviceBeerConsumer initialNBC = new NoviceBeerConsumer();
+        initialNBC.setAccredidation(new Accredidation());
         int beerConsumerId = 0;
         
         try {
@@ -968,6 +970,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);        
         NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
+        beerConsumer.setAccredidation(new Accredidation());
         beerConsumer.setName("Broken order");        
         beerConsumer.getDesignations().add("0");
         beerConsumer.getDesignations().add("1");
@@ -1047,7 +1050,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);        
         ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
-        beerConsumer.setName("Beer order");        
+        beerConsumer.setName("Beer order");
+        beerConsumer.setAccredidation(new Accredidation());
 
         Committee committee0 = new Committee();
         committee0.setDescription("Broken Order 0");

@@ -59,6 +59,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
@@ -2081,6 +2082,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         beginTransaction(em);
 
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.setAccredidation(new Accredidation());
         consumer.setName("Marvin Monroe");
         Birthday bday = new Birthday();
         bday.setDay(25);
@@ -2255,6 +2257,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         beginTransaction(em);
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.setAccredidation(new Accredidation());
         consumer.getDesignations().add("guru");
         consumer.getDesignations().add("beer-meister");
         em.persist(consumer);
@@ -2275,6 +2278,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         beginTransaction(em);
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.setAccredidation(new Accredidation());
         consumer.getDesignations().add("guru");
         consumer.getDesignations().add("beer-meister");
         em.persist(consumer);

@@ -875,6 +875,33 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testEmbeddedManyToMany(){
+        EntityManager em = createEntityManager(DDL_PU);
+        try{
+            beginTransaction(em);
+            Inventor inventor = new Inventor();
+            inventor.setId(1);
+            Patent patent = new Patent();
+            patent.setId(1);
+            PatentCollection patents = new PatentCollection();
+            patents.getPatents().add(patent);
+            inventor.setPatentCollection(patents);
+            em.persist(inventor);
+            em.persist(patent);
+            em.flush();
+            em.clear();
+            clearCache(DDL_PU);
+            
+            inventor = em.find(Inventor.class, 1);
+            assertTrue("Embeddable is null", inventor.getPatentCollection() != null);
+            assertFalse("Collection is empty", inventor.getPatentCollection().getPatents().isEmpty());
+            assertTrue("Target is incorrect", ((Patent)inventor.getPatentCollection().getPatents().get(0)).getId() == 1);
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
     protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
         EntityManager em = null;
         
