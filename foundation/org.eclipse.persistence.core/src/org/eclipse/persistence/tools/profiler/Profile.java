@@ -208,7 +208,7 @@ public class Profile implements Serializable, Cloneable {
             profiler.writeNestingTabs(writer);
             writer.write(")");
 
-        } catch (IOException stupidException) {
+        } catch (IOException e) {
         }
     }
 }

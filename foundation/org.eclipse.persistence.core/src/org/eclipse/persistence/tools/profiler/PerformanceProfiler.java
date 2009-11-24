@@ -272,7 +272,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                     profile.write(writer, this);
                     writer.write(Helper.cr());
                     writer.flush();
-                } catch (IOException stupidException) {
+                } catch (IOException ioe) {
                 }
             }
         }
@@ -358,7 +358,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         try {
             writer.write(buildProfileSummary().toString());
             writer.write(Helper.cr());
-        } catch (IOException stupidException) {
+        } catch (IOException ioe) {
         }
     }
 
@@ -375,7 +375,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
             try {
                 writer.write(summaries.get(domainClass).toString());
                 writer.write(Helper.cr());
-            } catch (IOException stupidException) {
+            } catch (IOException ioe) {
             }
         }
     }
@@ -393,7 +393,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
             try {
                 writer.write(summaries.get(queryType).toString());
                 writer.write(Helper.cr());
-            } catch (IOException stupidException) {
+            } catch (IOException ioe) {
             }
         }
     }
@@ -489,7 +489,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                     startTimingsBeforeExecution.put(timingName, new Long(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
                 }
             }
-        } catch (IOException stupidException) {
+        } catch (IOException ioe) {
         }
 
         return result;
@@ -567,7 +567,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
             for (int index = 0; index < getNestLevel(); index++) {
                 writer.write("\t");
             }
-        } catch (IOException stupidException) {
+        } catch (IOException ioe) {
         }
     }
 
