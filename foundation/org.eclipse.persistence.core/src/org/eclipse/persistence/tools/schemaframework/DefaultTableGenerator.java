@@ -88,7 +88,6 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  *     and  -Declipselink.defaultmapping.autodelete-tables='true|false'
  *
  * - Non-CMP:
- *      TODO: sessions.xml support (CR 4355200)
  *  1.  Configuration: through sessions.xml
  *  2.  Directly runtime call through schema framework:
  *      SchemaManager mgr = new SchemaManager(session);
