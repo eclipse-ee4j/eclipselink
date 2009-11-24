@@ -98,6 +98,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
       
         // MappedById tests (see spec page 30 for more info)
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample1"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample1b"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample2"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample3"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample4"));
@@ -376,6 +377,48 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("The sargeant read back did not match the original", getServerSession().compareObjects(sargeant, refreshedSargeant));
 
         MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporalId);
+        assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
+    }
+    
+    public void testMapsIdExample1b() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Sargeant sargeant = new Sargeant();
+        MasterCorporal masterCorporal = new MasterCorporal();
+        
+        try {    
+            sargeant.setName("SargeB");
+            masterCorporal.setSargeant(sargeant);
+            
+            // We don't set the master corporal id, only the maps id mapping
+            // sargeant. After persist, the master corporal id should be 
+            // created for us with the derived id set.
+            
+            // Sargeant is cascade persist.
+            em.persist(masterCorporal);
+            
+            // Now set the other part of the master corporal id (name) before
+            // commit.
+            masterCorporal.getId().setName("CorpieB");
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();
+        
+        Sargeant refreshedSargeant = em.find(Sargeant.class, sargeant.getSargeantId());       
+        assertTrue("The sargeant read back did not match the original", getServerSession().compareObjects(sargeant, refreshedSargeant));
+
+        MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporal.getId());
         assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
     }
     

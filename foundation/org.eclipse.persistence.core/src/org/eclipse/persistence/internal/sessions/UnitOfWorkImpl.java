@@ -5350,6 +5350,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             // Case #1b, #2b and #3b from the JPA spec. The derived id is within our 
                             // embedded id. We need to deal with that object and its mapping within the clone.
                             Object aggregateClone = derivedIdMapping.getRealAttributeValueFromObject(clone, this);
+                            
+                            // If the aggregate clone is null, create one and set it on the clone.
+                            if (aggregateClone == null) {
+                                aggregateClone = derivedIdMapping.getReferenceDescriptor().getObjectBuilder().buildNewInstance();
+                                derivedIdMapping.setRealAttributeValueInObject(clone, aggregateClone);
+                            }
+                            
+                            // Now get the actual derived id mapping from the aggregate and populate it on the aggregate clone.
                             DatabaseMapping aggregateMapping = derivedIdMapping.getReferenceDescriptor().getMappingForAttributeName(derivesIdMapping.getMapsIdValue());
                             aggregateMapping.setRealAttributeValueInObject(aggregateClone, key);
                         } else {
