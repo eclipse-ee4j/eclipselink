@@ -22,7 +22,6 @@ public class CacheAuditor extends CacheInterceptor {
         return new CacheKeyInterceptor(wrappedCacheKey);
     }
 
-    @Override
     public void release() {
     }
 
