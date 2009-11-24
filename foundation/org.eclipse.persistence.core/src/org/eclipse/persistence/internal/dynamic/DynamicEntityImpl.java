@@ -27,19 +27,18 @@ import java.util.Vector;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
@@ -64,109 +63,69 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
-public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker, PersistenceEntity, FetchGroupTracker, Cloneable {
+public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
+    ChangeTracker, FetchGroupTracker {
+
     /**
      * The persistent values indexed by the descriptor's mappings and the
      * EntityType's corresponding property list.
      */
     protected Object[] values;
-
     /**
-     * Type of this entity
+     * Dynamic type of this entity
      */
     protected transient DynamicTypeImpl type;
-
-    /**
-     * ChangeListener used for attribute change tracking processed in the
-     * property. Set through
-     * {@link ChangeTracker#_persistence_setPropertyChangeListener(PropertyChangeListener)}
-     */
-    private PropertyChangeListener changeListener = null;
-
-    /**
-     * FetchGroup cached by
-     * {@link FetchGroupTracker#_persistence_setFetchGroup(FetchGroup)}
-     */
-    private FetchGroup fetchGroup;
-
-    /**
-     * Session cached by
-     * {@link FetchGroupTracker#_persistence_setSession(Session)}
-     */
-    private Session session;
-
-    /**
-     * {@link FetchGroupTracker#_persistence_setShouldRefreshFetchGroup(boolean)}
-     */
-    private boolean refreshFetchGroup = false;
-
-    /**
-     * Cache the CacheKey within the entity
-     * 
-     * @see PersistenceEntity#_persistence_setCacheKey(CacheKey)
-     */
-    private CacheKey cacheKey;
-
-    /**
-     * Cache the primary key within the entity
-     * 
-     * @see PersistenceEntity#_persistence_setPKVector(Vector)
-     */
-    private Vector<Object> primaryKey;
-
+    
+    // must use InstantiationPolicy: ensures attributes get appropriate defaults
     protected DynamicEntityImpl(DynamicTypeImpl type) {
         this.type = type;
         this.values = new Object[type.getNumberOfProperties()];
     }
-
+    
     /**
-     * TODO
+     * Gets internal impl class of {@link DynamicType}
      * 
-     * @return
-     * @throws DynamicException
+     * @return Dynamic type of this entity
+     * @throws DynamicException if type is null
      */
     public DynamicTypeImpl getType() throws DynamicException {
         if (this.type == null) {
             throw DynamicException.entityHasNullType(this);
         }
-
         return this.type;
     }
 
+    //DynamicEntity API
     @SuppressWarnings("unchecked")
     public <T> T get(String propertyName) {
         DatabaseMapping mapping = getType().getMapping(propertyName);
         Object value = mapping.getAttributeValueFromObject(this);
-
         if (mapping.isForeignReferenceMapping() && mapping.isLazy()) {
             // Force basic indirection to be instantiated
             if (value instanceof ValueHolderInterface) {
                 value = ((ValueHolderInterface) value).getValue();
             }
-
             // Force transparent indirection to be instantiated
             if (value instanceof IndirectContainer) {
                 ((IndirectContainer) value).getValueHolder().getValue();
             }
         }
-
         try {
             return (T) value;
-        } catch (ClassCastException cce) {
+        }
+        catch (ClassCastException cce) {
             throw DynamicException.invalidGetPropertyType(mapping, cce);
         }
     }
 
     public DynamicEntity set(String propertyName, Object value) {
         DatabaseMapping mapping = getType().getMapping(propertyName);
-
         checkSetType(mapping, value);
-
         Object currentValue = mapping.getAttributeValueFromObject(this);
-
         if (currentValue instanceof ValueHolderInterface) {
             ((ValueHolderInterface) currentValue).setValue(value);
-        } else {
+        }
+        else {
             mapping.setAttributeValueInObject(this, value);
         }
         return this;
@@ -177,7 +136,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
      * direct/basic and the mapping's type is primitive ensure the non-primitive
      * type is allowed.
      */
-    // Is this check a performance issue? Should it be optional?
     protected void checkSetType(DatabaseMapping mapping, Object value) {
         if (value == null) {
             if (mapping.isCollectionMapping() || 
@@ -187,9 +145,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
             }
             return;
         }
-
         Class<?> expectedType = mapping.getAttributeClassification();
-
         if (mapping.isForeignReferenceMapping()) {
             if (mapping.isCollectionMapping()) {
                 if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
@@ -204,22 +160,108 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
         if (expectedType != null && expectedType.isPrimitive() && !value.getClass().isPrimitive()) {
             expectedType = Helper.getObjectClass(expectedType);
         }
-
         if (expectedType != null && !expectedType.isAssignableFrom(value.getClass())) {
             throw DynamicException.invalidSetPropertyType(mapping, value);
         }
-
     }
 
     public boolean isSet(DatabaseMapping mapping) {
         ValuesAccessor accessor = (ValuesAccessor) mapping.getAttributeAccessor();
         return accessor.isSet(this);
     }
-
     public boolean isSet(String propertyName) {
         return isSet(getType().getMapping(propertyName));
     }
 
+    //PersistenceEntity API
+    /**
+     * Cache the CacheKey within the entity
+     * 
+     * @see PersistenceEntity#_persistence_setCacheKey(CacheKey)
+     */
+    private CacheKey cacheKey;
+    /**
+     * Cache the primary key within the entity
+     * 
+     * @see PersistenceEntity#_persistence_setPKVector(Vector)
+     */
+    private Vector<Object> primaryKey;
+    public CacheKey _persistence_getCacheKey() {
+        return this.cacheKey;
+    }
+    public void _persistence_setCacheKey(CacheKey key) {
+        this.cacheKey = key;
+    }
+    @SuppressWarnings("unchecked")
+    public Vector _persistence_getPKVector() {
+        return this.primaryKey;
+    }
+    @SuppressWarnings("unchecked")
+    public void _persistence_setPKVector(Vector pk) {
+        this.primaryKey = pk;
+    }
+    
+    //ChangeTracker API
+    /**
+     * ChangeListener used for attribute change tracking processed in the
+     * property. Set through
+     * {@link ChangeTracker#_persistence_setPropertyChangeListener(PropertyChangeListener)}
+     */
+    private PropertyChangeListener changeListener = null;
+    public PropertyChangeListener _persistence_getPropertyChangeListener() {
+        return this.changeListener;
+    }
+    public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
+        this.changeListener = listener;
+    }
+
+    //FetchGroup API
+    /**
+     * FetchGroup cached by
+     * {@link FetchGroupTracker#_persistence_setFetchGroup(FetchGroup)}
+     */
+    private FetchGroup fetchGroup;
+    /**
+     * {@link FetchGroupTracker#_persistence_setShouldRefreshFetchGroup(boolean)}
+     */
+    private boolean refreshFetchGroup = false;
+    public FetchGroup _persistence_getFetchGroup() {
+        return this.fetchGroup;
+    }
+    public void _persistence_setFetchGroup(FetchGroup group) {
+        this.fetchGroup = group;
+    }
+    public void _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup) {
+        this.refreshFetchGroup = shouldRefreshFetchGroup;
+    }
+    public boolean _persistence_shouldRefreshFetchGroup() {
+        return this.refreshFetchGroup;
+    }
+    /**
+     * Return true if the attribute is in the fetch group being tracked.
+     */
+    public boolean _persistence_isAttributeFetched(String attribute) {
+        return this.fetchGroup == null || this.fetchGroup.containsAttribute(attribute);
+    }
+    /**
+     * Reset all attributes of the tracked object to the un-fetched state with
+     * initial default values.
+     */
+    public void _persistence_resetFetchGroup() {
+        throw new UnsupportedOperationException("DynamicEntityImpl._persistence_resetFetchGroup:: NOT SUPPORTED");
+    }
+    /**
+     * Session cached by
+     * {@link FetchGroupTracker#_persistence_setSession(Session)}
+     */
+    private Session session;
+    public Session _persistence_getSession() {
+        return this.session;
+    }
+    public void _persistence_setSession(Session session) {
+        this.session = session;
+    }
+    
     /**
      * String representation of the dynamic entity using the entity type name
      * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}
@@ -239,112 +281,4 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
         sb.append('}');
         return sb.toString();
     }
-
-    public PropertyChangeListener _persistence_getPropertyChangeListener() {
-        return this.changeListener;
-    }
-
-    public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
-        this.changeListener = listener;
-    }
-
-    public FetchGroup _persistence_getFetchGroup() {
-        return this.fetchGroup;
-    }
-
-    public Session _persistence_getSession() {
-        return this.session;
-    }
-
-    /**
-     * Return true if the attribute is in the fetch group being tracked.
-     */
-    public boolean _persistence_isAttributeFetched(String attribute) {
-        return this.fetchGroup == null || this.fetchGroup.containsAttribute(attribute);
-    }
-
-    /**
-     * Reset all attributes of the tracked object to the un-fetched state with
-     * initial default values.
-     */
-    public void _persistence_resetFetchGroup() {
-        // TODO: Clear all values that are not to be fetched ensuring that any
-        // values that require initialization are properly initialized
-        throw new UnsupportedOperationException("DynamicEntityImpl._persistence_resetFetchGroup:: NOT SUPPORTED");
-    }
-
-    public void _persistence_setFetchGroup(FetchGroup group) {
-        this.fetchGroup = group;
-    }
-
-    public void _persistence_setSession(Session session) {
-        this.session = session;
-    }
-
-    public void _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup) {
-        this.refreshFetchGroup = shouldRefreshFetchGroup;
-    }
-
-    public boolean _persistence_shouldRefreshFetchGroup() {
-        return this.refreshFetchGroup;
-    }
-
-    /**
-     * 
-     * @param attribute
-     */
-    protected void _persistence_checkFetched(String attribute) {
-        if (!_persistence_isAttributeFetched(attribute)) {
-            ReadObjectQuery query = new ReadObjectQuery(this);
-            query.setShouldUseDefaultFetchGroup(false);
-            Object result = _persistence_getSession().executeQuery(query);
-            if (result == null) {
-                Object[] args = { query.getSelectionKey() };
-                String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
-                throw DynamicException.entityNotFoundException(message);
-            }
-        }
-    }
-
-    // Methods for PersistenceEntity
-    public CacheKey _persistence_getCacheKey() {
-        return this.cacheKey;
-    }
-
-    public void _persistence_setCacheKey(CacheKey key) {
-        this.cacheKey = key;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Vector _persistence_getPKVector() {
-        return this.primaryKey;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void _persistence_setPKVector(Vector pk) {
-        this.primaryKey = pk;
-    }
-
-    public Object _persistence_shallow_clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("DynamicEntity._persistence_shallow_clone failed on super.clone", e);
-        }
-    }
-    
-    @Override
-    //Cloneable
-    public Object clone() {
-        Object entity = null;
-        try {
-            entity = super.clone();
-        }
-        catch (Exception error) {
-            throw new Error(error);
-        }
-        ((DynamicEntityImpl)entity).values = this.values.clone();
-        return entity;
-    }
-
 }

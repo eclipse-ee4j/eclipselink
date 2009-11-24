@@ -2,8 +2,8 @@
 <xsd:schema version="1.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <xsd:simpleType name="binaryAttachmentType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="swaRef" />
-      <xsd:enumeration value="mtom" />
+      <xsd:enumeration value="SWAREF" />
+      <xsd:enumeration value="MTOM" />
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="operation-attrs">

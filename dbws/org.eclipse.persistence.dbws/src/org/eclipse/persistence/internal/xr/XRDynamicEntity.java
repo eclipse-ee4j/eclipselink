@@ -48,7 +48,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  */
 @SuppressWarnings("unchecked")
 public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntity, ChangeTracker,
-    FetchGroupTracker, Cloneable {
+    FetchGroupTracker {
 
     public static final String XR_FIELD_INFO_STATIC = "XRFI";
     
@@ -174,7 +174,8 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
      * initial default values.
      */
     public void _persistence_resetFetchGroup() {
-        throw new UnsupportedOperationException("XRDynamicEntity._persistence_resetFetchGroup:: NOT SUPPORTED");
+        throw new UnsupportedOperationException(
+            "XRDynamicEntity._persistence_resetFetchGroup:: NOT SUPPORTED");
     }
     public void _persistence_setFetchGroup(FetchGroup group) {
         this.__fetchGroup = group;
@@ -187,19 +188,6 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
     }
     public boolean _persistence_shouldRefreshFetchGroup() {
         return this.__refreshFetchGroup;
-    }
-
-    //Cloneable
-    public Object clone() {
-        Object entity = null;
-        try {
-            entity = (XRDynamicEntity)super.clone();
-        }
-        catch (Exception error) {
-            throw new Error(error);
-        }
-        ((XRDynamicEntity)entity)._fields = this._fields.clone();
-        return entity;
     }
     
     @Override
