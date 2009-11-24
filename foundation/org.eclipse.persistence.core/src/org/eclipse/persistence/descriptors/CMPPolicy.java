@@ -289,6 +289,25 @@ public class CMPPolicy implements java.io.Serializable {
     }
 
     /**
+     * INTERNAL: Create an instance of the composite primary key class for the
+     * key object.
+     */
+    @Deprecated //replaced by method below but may still be used by older clients.
+    public Object createPrimaryKeyInstance(Vector key) {
+        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
+        if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor) {
+            return key.get(0);
+        }
+        Object keyInstance = getPKClassInstance();
+        for (int index = 0; index < pkElementArray.length; index++) {
+            KeyElementAccessor accessor = pkElementArray[index];
+            Object fieldValue = key.get(index);
+            accessor.setValue(keyInstance, fieldValue);
+        }
+        return keyInstance;
+    }  
+
+    /**
      * INTERNAL:
      * Create an instance of the composite primary key class for the key object.
      */
