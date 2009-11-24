@@ -3,7 +3,6 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.customfeatures.Employee</class>
         <!--property name="eclipselink.logging.level" value="FINEST"/-->
-        <property name="eclipselink.descriptor.customizer" value="org.eclipse.persistence.testing.models.jpa.customfeatures.XmlDataCustomizer"/>
         <property name="eclipselink.jdbc.batch-writing" value="Oracle-JDBC"/>
     </persistence-unit>
     

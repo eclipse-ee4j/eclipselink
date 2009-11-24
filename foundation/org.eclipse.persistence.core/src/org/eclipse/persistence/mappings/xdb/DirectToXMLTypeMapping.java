@@ -16,16 +16,13 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -56,12 +53,27 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * Used to convert the String to a DOM
      */
     private  XMLParser xmlParser;
-
+    
+    /**
+     * INTERNAL:
+     * Default to mutable if mapped as a DOM.
+     */
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        if (this.attributeClassification == null) {
+            this.attributeClassification = getAttributeAccessor().getAttributeClass();
+        }
+        if ((this.isMutable == null) && (this.attributeClassification != ClassConstants.STRING)) {
+            setIsMutable(true);            
+        }
+        super.preInitialize(session);
+    }
+    
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         setFieldClassification(XMLTypePlaceholder.class);
@@ -69,10 +81,10 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
 
     public DirectToXMLTypeMapping() {
         super();
-        xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-        xmlTransformer.setFormattedOutput(false);
-        xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-        xmlComparer = new XMLComparer();
+        this.xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        this.xmlTransformer.setFormattedOutput(false);
+        this.xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+        this.xmlComparer = new XMLComparer();
     }
 
     /**
@@ -98,70 +110,79 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * Document, we need to check if we should return the Oracle DOM or build a
      * new one.
      */
-    public Object getAttributeValue(Object fieldValue, AbstractSession session) throws DescriptorException {
+    @Override
+    public Object getAttributeValue(Object fieldValue, Session session) throws ConversionException {
         Object attributeValue = fieldValue;
         try {
             if (attributeValue != null) {
-                if (getAttributeClassification() != ClassConstants.STRING) {
+                if (this.attributeClassification != ClassConstants.STRING) {
                     String xml = (String)attributeValue;
                     java.io.StringReader reader = new java.io.StringReader(xml);
-                    return xmlParser.parse(reader);
+                    return this.xmlParser.parse(reader);
                 }
             }
         } catch (Exception ex) {
-            throw ConversionException.couldNotBeConverted(fieldValue, getAttributeClassification(), ex);
+            throw ConversionException.couldNotBeConverted(fieldValue, this.attributeClassification, ex);
+        }
+
+        if ((attributeValue == null) && (this.nullValue != null)) {// Translate default null value
+            return this.nullValue;
+        }
+
+        // Allow for user defined conversion to the object value.
+        if (this.converter != null) {
+            attributeValue = this.converter.convertDataValueToObjectValue(attributeValue, session);
         }
         return attributeValue;
     }
 
+    @Override
     public boolean isDirectToXMLTypeMapping() {
         return true;
     }
 
     /**
      * INTERNAL:
-     * Build a clone of the Document for comparision at commit time.
+     * Clone the DOM Document if required.
      */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
-        Object attributeValue = getAttributeValueFromObject(original);
-        if (attributeValue != null) {
+    @Override
+    protected Object buildCloneValue(Object attributeValue, AbstractSession session) {
+        Object newAttributeValue = attributeValue;
+        if (isMutable() && attributeValue != null) {
             if ((getAttributeClassification() == ClassConstants.DOCUMENT) || (getAttributeClassification() == ClassConstants.NODE)) {
                 Document doc = (Document)attributeValue;
-                setAttributeValueInObject(clone, doc.cloneNode(true));
-            } else {
-                super.buildClone(original, clone, unitOfWork);
+                newAttributeValue = doc.cloneNode(true);
             }
         }
+        return newAttributeValue;
     }
 
     /**
      * INTERNAL:
-     * Compare the objects to see if an update is required. This is probably not
-     * the best way to do this.
+     * Compare the attribute values.
+     * Compare Nodes if mapped as a DOM.
      */
-    public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
+    @Override
+    protected boolean compareObjectValues(Object firstValue, Object secondValue, AbstractSession session) {
+        // PERF: Check identity before conversion.
+        if (firstValue == secondValue) {
+            return true;
+        }
+        if ((firstValue == null) && (secondValue == null)) {
+            return true;
+        }
+        if ((firstValue == null) || (secondValue == null)) {
+            return false;
+        }
         if (getAttributeClassification() == ClassConstants.STRING) {
-            return firstObject.equals(secondObject);
+            return firstValue.equals(secondValue);
         } else {
-            Object one = getFieldValue(getAttributeValueFromObject(firstObject), session);
-            Object two = getFieldValue(getAttributeValueFromObject(secondObject), session);
-            if ((one == null) && (two == null)) {
-                return true;
-            }
-            if ((one == null) || (two == null)) {
-                return false;
-            }
+            Object one = getFieldValue(firstValue, session);
+            Object two = getFieldValue(secondValue, session);
             if (one instanceof Node && two instanceof Node) {
-                return xmlComparer.isNodeEqual((Node)one, (Node)two);
+                return this.xmlComparer.isNodeEqual((Node)one, (Node)two);
             }
             return one.equals(two);
-        }
+        }        
     }
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
-        // PERF: Direct variable access.
-        Object fieldValue = row.get(this.field);
-        Object attributeValue = getAttributeValue(fieldValue, executionSession);
-
-        return attributeValue;
-    }      
 }

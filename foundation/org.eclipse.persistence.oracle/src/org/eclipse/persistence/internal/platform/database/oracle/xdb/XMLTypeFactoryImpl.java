@@ -42,8 +42,10 @@ public class XMLTypeFactoryImpl implements XMLTypeFactory {
     }
     
     public String getString(oracle.sql.OPAQUE opaque) throws java.sql.SQLException {
-        XMLType xml = XMLType.createXML(opaque);
-        return xml.getStringVal();
+        XMLType xmlType = XMLType.createXML(opaque);
+        String xmlString = xmlType.getStringVal();
+        xmlType.close();
+        return xmlString;
     }
 
     public boolean isXDBDocument(Object obj) {

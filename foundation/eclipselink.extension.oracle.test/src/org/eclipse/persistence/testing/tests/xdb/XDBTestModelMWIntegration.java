@@ -50,7 +50,7 @@ public class XDBTestModelMWIntegration extends TestModel {
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new XMLTypeEmployeeSystemXML());
         oldPlatform = getSession().getPlatform();
-        if ((!(oldPlatform instanceof OraclePlatform)) || (getSession().getLogin().getConnectionString().indexOf("oci") == -1)) {
+        if (!(oldPlatform instanceof OraclePlatform)) {
             throw new TestProblemException("This model is intended for Oracle databases through OCI");
         }
         this.getSession().getLogin().setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());

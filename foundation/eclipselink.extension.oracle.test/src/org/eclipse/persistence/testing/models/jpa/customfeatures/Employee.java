@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.models.jpa.customfeatures;
 
 import java.io.Serializable;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,12 +22,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.w3c.dom.*;
 
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.StoredProcedureParameter;
@@ -55,7 +57,7 @@ import org.eclipse.persistence.platform.database.oracle.NString;
         @StoredProcedureParameter(direction=IN, name="employee_id_v", queryParameter="ID", type=Integer.class),
         @StoredProcedureParameter(direction=OUT_CURSOR, queryParameter="RESULT_CURSOR")})
 })
-
+@Customizer(XmlDataCustomizer.class)
 public class Employee implements Serializable {
 
     @SequenceGenerator(
@@ -82,11 +84,11 @@ public class Employee implements Serializable {
     @TypeConverter(name="NChar", dataType=NString.class)
     private Character empNChar;
     
-    @Column(name="XMLData")
+    @Column(name="XMLDATA")
     private String resume_xml;
 
-    //@Column(name="XMLDom") wait for fix for bug 265468 to use this annotation
-    @Transient
+    @Basic
+    @Column(name="XMLDOM")
     private Document resume_dom;
  
     public Employee() {}

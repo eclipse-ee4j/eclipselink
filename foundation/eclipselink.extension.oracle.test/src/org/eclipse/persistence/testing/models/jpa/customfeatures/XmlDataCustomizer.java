@@ -12,11 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.customfeatures;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.factories.DescriptorCustomizer;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 
-@SuppressWarnings("deprecation")
 public class XmlDataCustomizer implements DescriptorCustomizer {
 
     public void customize(final ClassDescriptor descriptor) throws Exception{
@@ -29,9 +28,8 @@ public class XmlDataCustomizer implements DescriptorCustomizer {
          descriptor.removeMappingForAttributeName("resume_dom");
          DirectToXMLTypeMapping mapping2 = new DirectToXMLTypeMapping();
          mapping2.setAttributeName("resume_dom");
-         mapping2.setFieldName("XMLDom");
+         mapping2.setFieldName("XMLDOM");
          descriptor.addMapping(mapping2);
-
      }
 }
 

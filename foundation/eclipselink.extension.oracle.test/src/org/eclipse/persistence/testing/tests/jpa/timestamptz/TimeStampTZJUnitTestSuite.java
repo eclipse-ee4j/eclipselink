@@ -43,15 +43,16 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testSetup() {
-        new TimestampTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new TimestampTableCreator().replaceTables(JUnitTestCase.getServerSession("timestamptz"));
     }
-/* Test TimeStampTZ with no zone set */
+    
+    /* Test TimeStampTZ with no zone set */
     public void testNoZone() {
         int year = 2000, month = 1, date = 10, hour = 11, minute = 21, second = 31;
         Integer tsId = null;
         java.util.Calendar originalCal = null, dbCal = null;
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("timestamptz");
         beginTransaction(em);
         try {
             TStamp ts = new TStamp();
@@ -87,7 +88,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
         Calendar originalCal = null, dbCal = null;
         String zoneId = "Europe/London";
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("timestamptz");
         beginTransaction(em);
         try {
             TStamp ts = new TStamp();
@@ -100,23 +101,25 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             em.flush();
             tsId = ts.getId();
             commitTransaction(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            rollbackTransaction(em);
-        } finally {
+            closeEntityManager(em);
             clearCache();
+            em = createEntityManager("timestamptz");
             dbCal = em.find(TStamp.class, tsId).getTsTZ();
+            
+            assertEquals("The timezone id is not the one set to the field",  dbCal.getTimeZone().getID(), zoneId);
+            assertTrue("The AM is not match", Calendar.AM == dbCal.get(java.util.Calendar.AM_PM));
+            assertTrue("The year is not macth", year == dbCal.get(java.util.Calendar.YEAR));
+            assertTrue("The month is not match", month == dbCal.get(java.util.Calendar.MONTH));
+            assertTrue("The date is not match", date == dbCal.get(java.util.Calendar.DATE));
+            assertTrue("The hour is not match", hour == dbCal.get(java.util.Calendar.HOUR));
+            assertTrue("The minute is not match", minute == dbCal.get(java.util.Calendar.MINUTE));
+            assertTrue("The second is not match", second == dbCal.get(java.util.Calendar.SECOND));
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
-
-        assertEquals("The timezone id is not the one set to the field",  dbCal.getTimeZone().getID(), zoneId);
-        assertTrue("The AM is not match", Calendar.AM == dbCal.get(java.util.Calendar.AM_PM));
-        assertTrue("The year is not macth", year == dbCal.get(java.util.Calendar.YEAR));
-        assertTrue("The month is not match", month == dbCal.get(java.util.Calendar.MONTH));
-        assertTrue("The date is not match", date == dbCal.get(java.util.Calendar.DATE));
-        assertTrue("The hour is not match", hour == dbCal.get(java.util.Calendar.HOUR));
-        assertTrue("The minute is not match", minute == dbCal.get(java.util.Calendar.MINUTE));
-        assertTrue("The second is not match", second == dbCal.get(java.util.Calendar.SECOND));
     }
     
     /* Test TimeStampLTZ */
@@ -126,7 +129,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
         Calendar originalCal = null, dbCal = null;
         String zoneId = "America/Los_Angeles";
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("timestamptz");
         beginTransaction(em);
         try {
             TStamp ts = new TStamp();
@@ -165,7 +168,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
         Calendar originalCal = null, dbCal = null;
         String zoneIdRemote = "Europe/London";
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("timestamptz");
         beginTransaction(em);
         try {
             TStamp ts = new TStamp();
@@ -178,17 +181,19 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             em.flush();
             tsId = ts.getId();
             commitTransaction(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            rollbackTransaction(em);
-        } finally {
+            closeEntityManager(em);
             clearCache();
+            em = createEntityManager("timestamptz");
+            dbCal = em.find(TStamp.class, tsId).getTsLTZ();
+            int hourDiffFromDB = dbCal.get(Calendar.HOUR_OF_DAY) - originalCal.get(Calendar.HOUR_OF_DAY);
+            int hourDiffFromZone = (dbCal.get(Calendar.ZONE_OFFSET) - originalCal.get(Calendar.ZONE_OFFSET))/ 3600000;
+            assertTrue("The yhour is not macth", (hourDiffFromZone + dbCal.get(Calendar.DST_OFFSET)/3600000) == hourDiffFromDB);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
-        dbCal = em.find(TStamp.class, tsId).getTsLTZ();
-        int hourDiffFromDB = dbCal.get(Calendar.HOUR_OF_DAY) - originalCal.get(Calendar.HOUR_OF_DAY);
-        int hourDiffFromZone = (dbCal.get(Calendar.ZONE_OFFSET) - originalCal.get(Calendar.ZONE_OFFSET))/ 3600000;
-        assertTrue("The yhour is not macth", (hourDiffFromZone + dbCal.get(Calendar.DST_OFFSET)/3600000) == hourDiffFromDB);
     }
 
 }

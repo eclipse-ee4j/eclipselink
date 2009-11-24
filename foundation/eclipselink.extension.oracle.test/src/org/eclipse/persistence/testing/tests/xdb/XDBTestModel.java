@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.tests.xdb;
 
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.testing.framework.*;
 
 public class XDBTestModel extends TestModel {
@@ -52,12 +52,10 @@ public class XDBTestModel extends TestModel {
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new XMLTypeEmployeeSystem());
         oldPlatform = getSession().getPlatform();
-        if ((!(oldPlatform instanceof OraclePlatform))
-                    || ((getSession().getLogin().getConnector() instanceof DefaultConnector)
-                            && (getSession().getLogin().getConnectionString().indexOf("oci") == -1))) {
+        if (!(oldPlatform instanceof OraclePlatform)) {
             throw new TestProblemException("This model is intended for Oracle databases through OCI");
         }
-        this.getSession().getLogin().setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());
+        this.getSession().getLogin().setPlatform(new Oracle9Platform());
         getDatabaseSession().logout();
         getDatabaseSession().login();
         try {

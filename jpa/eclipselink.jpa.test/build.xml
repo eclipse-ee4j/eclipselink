@@ -733,6 +733,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.timestamptz.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
@@ -780,7 +781,7 @@
     <!-- Runs LRG (FullRegressionTestSuite) with agent. -->
     <target name="test-lrg" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
@@ -803,14 +804,6 @@
     <target name="oracle-test" if="is.oracle" depends="config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPACustomFeaturesTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>

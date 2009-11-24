@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.customfeatures;
 
 import java.io.*;
@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.customfeatures.*;
 import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
@@ -35,15 +34,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
     private static int empId;
     protected static int NUM_INSERTS = 200;
-        
+
     public CustomFeaturesJUnitTestSuite() {
         super();
     }
-    
+
     public CustomFeaturesJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("CustomFeaturesJUnitTestSuite");
@@ -55,7 +54,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new CustomFeaturesJUnitTestSuite("testNamedStoredProcedureCursorQuery"));
         return suite;
     }
-    
+
     public void testSetup() {
         ServerSession session = JUnitTestCase.getServerSession("customfeatures");
         new EmployeeTableCreator().replaceTables(session);
@@ -71,7 +70,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager("customfeatures");
         beginTransaction(em);
         Employee emp = null;
-        try{
+        try {
             emp = new Employee();
             emp.setResume_xml(resume0());
             char nCh = '\u0410';
@@ -81,25 +80,25 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             empId = emp.getId();
             commitTransaction(em);
         } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
             throw e;
         }
-        
-        try{
+
+        try {
             Employee readEmp = em.find(Employee.class, empId);
             clearCache("customfeatures");
             if (!getServerSession("customfeatures").compareObjects(readEmp, emp)) {
                 closeEntityManager(em);
                 fail("Object: " + readEmp + " does not match object that was written: " + emp + ". See log (on finest) for what did not match.");
-            } 
-        } catch (Exception exception ) {
+            }
+        } catch (Exception exception) {
             closeEntityManager(em);
             fail("entityManager.refresh(removedObject) threw a wrong exception: " + exception.getMessage());
         }
-       closeEntityManager(em);
+        closeEntityManager(em);
     }
 
     /**
@@ -108,55 +107,59 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
     public void testBatchInserts() {
         EntityManager em = createEntityManager("customfeatures");
         beginTransaction(em);
-        try{
+        try {
             for (int i = 0; i < NUM_INSERTS; i++) {
                 Employee emp = new Employee();
                 emp.setResume_xml(resume0());
+                emp.setResume_dom(documentFromString(resume0()));
                 char nCh = '\u0410';
                 emp.setEmpNChar(nCh);
                 em.persist(emp);
             }
             commitTransaction(em);
         } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             throw e;
-        } finally{
+        } finally {
             closeEntityManager(em);
         }
     }
 
     /**
-     * Tests a Native Batch Writing as batch updates with OptimisticLockingException.
+     * Tests a Native Batch Writing as batch updates with
+     * OptimisticLockingException.
      */
     public void testBatchUpdates() {
-        QuerySQLTracker counter = null;
         EntityManager em = createEntityManager("customfeatures");
         beginTransaction(em);
-        counter = new QuerySQLTracker(getServerSession("customfeatures"));
         List emps = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         try {
-                for(int i=0; i<emps.size(); i++) {
-                    Employee e = (Employee)emps.get(i);
-                    String newName = ((Employee)emps.get(i)).getName() + i + "test";
-                    e.setName(newName);
-                    e.setVersion(e.getVersion()-1);
-                }
-                em.flush();
-                commitTransaction(em);
-                fail("OptimisticLockingException is not thrown!");
-        }  catch (Exception exception ) {
-                if (exception.getMessage().indexOf("org.eclipse.persistence.exceptions.OptimisticLockException") == -1){
-                    fail("it's not the right exception");
-                }
-        }  finally{
+            for (int i = 0; i < emps.size(); i++) {
+                Employee e = (Employee) emps.get(i);
+                String newName = ((Employee) emps.get(i)).getName() + i + "test";
+                e.setName(newName);
+                e.setVersion(e.getVersion() - 1);
+            }
+            em.flush();
+            commitTransaction(em);
+            fail("OptimisticLockingException is not thrown!");
+        } catch (Exception exception) {
+            if (exception.getMessage().indexOf("org.eclipse.persistence.exceptions.OptimisticLockException") == -1) {
+                fail("it's not the right exception");
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }
 
     /**
-     * Tests a @NamedStoredProcedureQuery with store procedure IN_OUT parameter, and XML Type using String
+     * Tests a @NamedStoredProcedureQuery with store procedure IN_OUT parameter,
+     * and XML Type using String
      */
     public void testNamedStoredProcedureInOutQuery() {
         EntityManager em = createEntityManager("customfeatures");
@@ -164,6 +167,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         try {
             Employee emp = new Employee();
             emp.setResume_xml(resume1());
+            emp.setResume_dom(documentFromString(resume0()));
             char nCh = '\u0400';
             emp.setEmpNChar(nCh);
             em.persist(emp);
@@ -174,17 +178,18 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
                 fail("Object: " + readEmp + " does not match object that was written: " + emp + ". See log (on finest) for what did not match.");
             }
         } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             throw e;
-        } finally{
+        } finally {
             closeEntityManager(em);
         }
     }
 
     /**
-     * Tests a @NamedStoredProcedureQuery with store procedure ref Cursor, and XML Type using String
+     * Tests a @NamedStoredProcedureQuery with store procedure ref Cursor, and
+     * XML Type using String
      */
     public void testNamedStoredProcedureCursorQuery() {
         EntityManager em = createEntityManager("customfeatures");
@@ -192,6 +197,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         try {
             Employee emp = new Employee();
             emp.setResume_xml(resume1());
+            emp.setResume_dom(documentFromString(resume0()));
             char nCh = '\u0400';
             emp.setEmpNChar(nCh);
             emp.setName("Edward Xu");
@@ -205,11 +211,11 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
                 fail("Object: " + readEmp + " does not match object that was written: " + emp + ". See log (on finest) for what did not match.");
             }
         } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             throw e;
-        } finally{
+        } finally {
             closeEntityManager(em);
         }
     }
@@ -257,12 +263,11 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             PackageDefinition types = new PackageDefinition();
             types.setName("Cursor_Type");
             types.addStatement("Type Any_Cursor is REF CURSOR");
-            
+
             SchemaManager schema = new SchemaManager(((DatabaseSession) session));
             schema.replaceObject(types);
             return types;
-            }
-        else{
+        } else {
             fail("store procedure is not supported!");
             return null;
         }
@@ -272,16 +277,16 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         if (TestCase.supportsStoredProcedures(session)) {
             StoredProcedureDefinition proc = new StoredProcedureDefinition();
             proc.setName("Read_Employee_InOut");
-        
+
             proc.addInOutputArgument("employee_id_v", Integer.class);
             proc.addOutputArgument("nchar_v", Character.class);
-                
+
             String statement = "SELECT NCHARTYPE INTO nchar_v FROM CUSTOM_FEATURE_EMPLOYEE WHERE (ID = employee_id_v)";
-        
+
             proc.addStatement(statement);
             SchemaManager schema = new SchemaManager(((DatabaseSession) session));
             schema.replaceObject(proc);
-        }else
+        } else
             fail("store procedure is not supported!");
     }
 
@@ -289,14 +294,14 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         if (TestCase.supportsStoredProcedures(session)) {
             StoredProcedureDefinition proc = new StoredProcedureDefinition();
             proc.setName("Read_Employee_Cursor");
-        
+
             proc.addArgument("employee_id_v", Integer.class);
             proc.addOutputArgument("RESULT_CURSOR", "CURSOR_TYPE.ANY_CURSOR");
             proc.addStatement("OPEN RESULT_CURSOR FOR SELECT * FROM CUSTOM_FEATURE_EMPLOYEE WHERE (ID = employee_id_v)");
- 
+
             SchemaManager schema = new SchemaManager(((DatabaseSession) session));
             schema.replaceObject(proc);
-        }else
+        } else
             fail("store procedure is not supported!");
     }
 
