@@ -13,19 +13,16 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
+import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.Map;
 
 //java eXtension imports
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -38,6 +35,7 @@ import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_STATIC;
 
 /**
  * <p>
@@ -57,19 +55,28 @@ public class ProjectHelper {
     public static void fixOROXAccessors(Project orProject, Project oxProject) {
         for (Iterator i = orProject.getDescriptors().values().iterator(); i.hasNext();) {
             ClassDescriptor desc = (ClassDescriptor)i.next();
-            if (!XRDynamicEntity.class.isAssignableFrom(desc.getJavaClass())) {
+            Class clz = desc.getJavaClass();
+            if (!XRDynamicEntity.class.isAssignableFrom(clz)) {
                 continue;
             }
-            Map<String, IndexInfo> propertyNames2indexes = new HashMap<String, IndexInfo>();
             ClassDescriptor xdesc = null;
             if (oxProject != null) { 
                 xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
             }
             int idx = 0;
+            XRFieldInfo xrfi = null;
+            if (!clz.getName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
+                try {
+                    Field xrfiField = Helper.getField(clz, XR_FIELD_INFO_STATIC);
+                    xrfi = (XRFieldInfo)xrfiField.get(null);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
                 DatabaseMapping dm = (DatabaseMapping)j.next();
                 String attributeName = dm.getAttributeName();
-                IndexInfo info = new IndexInfo(idx, false);
                 DatabaseMapping xdm = null;
                 if (xdesc != null) {
                     xdm = xdesc.getMappingForAttributeName(attributeName);
@@ -81,8 +88,8 @@ public class ProjectHelper {
                         if (frm.usesIndirection() && frm.getIndirectionPolicy().getClass().
                             isAssignableFrom(BasicIndirectionPolicy.class)) {
                             xdm.setAttributeAccessor(new XRDynamicEntityVHAccessor(attributeName, idx));
-                            info.derefVH = true;
-                        } else {
+                        }
+                        else {
                             // no indirection or indirection that is transparent enough (!) to work
                             xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
                         }
@@ -92,9 +99,9 @@ public class ProjectHelper {
                         if (xdm.isDirectToFieldMapping()) {
                             XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
                             XMLField xmlField = (XMLField)xmlDM.getField();
-                            Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
-                            if (clz != null) {
-                                xmlField.setType(clz);
+                            Class schemaClass = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
+                            if (schemaClass != null) {
+                                xmlField.setType(schemaClass);
                             }
                             else {
                                 xmlField.setType(OBJECT);
@@ -104,9 +111,9 @@ public class ProjectHelper {
                             AbstractCompositeDirectCollectionMapping acdcm =
                                 (AbstractCompositeDirectCollectionMapping)xdm;
                             XMLField xmlField = (XMLField)acdcm.getField();
-                            Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
+                            Class schemaClass = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
                             if (clz != null) {
-                                xmlField.setType(clz);
+                                xmlField.setType(schemaClass);
                             }
                             else {
                                 xmlField.setType(OBJECT);
@@ -114,38 +121,10 @@ public class ProjectHelper {
                         }
                     }
                 }
-                propertyNames2indexes.put(attributeName, info);
-                idx++;
-            }
-            if (!desc.getJavaClassName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-                InstantiationPolicy iPolicy = new InstantiationPolicy() {
-                    Map<String, IndexInfo> propertyNames2indexes;
-                    @Override
-                    public Object buildNewInstance() throws DescriptorException {
-                        Object o = null;
-                        try {
-                            Class clz = descriptor.getJavaClass();
-                            Constructor constructor = clz.getConstructor(Map.class);
-                            o = constructor.newInstance(propertyNames2indexes);
-                        }
-                        catch (Exception e) {
-                            //e.printStackTrace();
-                        }
-                        return o;
-                    }
-                    public InstantiationPolicy setUp(ClassDescriptor descriptor, 
-                        Map<String, IndexInfo> propertyNames2indexes) {
-                        setDescriptor(descriptor);
-                        this.propertyNames2indexes = propertyNames2indexes;
-                        return this;
-                    }
-                }.setUp(desc, propertyNames2indexes);
-                desc.setInstantiationPolicy(iPolicy);
-                if (xdesc != null) {
-                    InstantiationPolicy iPolicy2 = (InstantiationPolicy)iPolicy.clone();
-                    iPolicy2.setDescriptor(xdesc);
-                    xdesc.setInstantiationPolicy(iPolicy2);
+                if (xrfi != null) {
+                    xrfi.addFieldInfo(attributeName, idx);
                 }
+                idx++;
             }
         }
         // turn-off dynamic class generation

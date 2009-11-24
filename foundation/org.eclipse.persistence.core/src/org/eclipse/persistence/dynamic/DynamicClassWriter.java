@@ -155,7 +155,7 @@ public class DynamicClassWriter {
         }
     }
 
-    private static final String INIT = "<init>";
+    protected static final String INIT = "<init>";
 
     /**
      * Add a new constructor based invoking the provided constructor from the

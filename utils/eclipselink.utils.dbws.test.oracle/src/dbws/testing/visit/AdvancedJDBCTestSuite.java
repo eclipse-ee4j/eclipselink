@@ -149,8 +149,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoRegion");
         XRDynamicEntity regionEntity = (XRDynamicEntity)ds.getProject().getDescriptorForAlias(
             "region").getObjectBuilder().buildNewInstance();
-        regionEntity.set(0, BigDecimal.valueOf(5));
-        regionEntity.set(1, "this is a test");
+        regionEntity.set("reg_id", BigDecimal.valueOf(5));
+        regionEntity.set("reg_name", "this is a test");
         Vector v = new NonSynchronizedVector();
         v.add(regionEntity);
         Object o = ds.executeQuery(vrq, v);
@@ -158,9 +158,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             o instanceof XRDynamicEntity);
         XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
+            regionEntityEchoed.get("reg_id").equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect second field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(1).equals("this is a test"));
+            regionEntityEchoed.get("reg_name").equals("this is a test"));
     }
 
     @SuppressWarnings("unchecked")
@@ -365,29 +365,29 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpAddress");
         XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
-        regionEntity.set(0, BigDecimal.valueOf(5));
-        regionEntity.set(1, "this is a test");
+        regionEntity.set("reg_id", BigDecimal.valueOf(5));
+        regionEntity.set("reg_name", "this is a test");
         XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
-        empAddressEntity.set(0, "20 Pinetrail Cres.");
-        empAddressEntity.set(1, "Centrepointe");
-        empAddressEntity.set(2, regionEntity);
-        empAddressEntity.set(3, BigDecimal.valueOf(12));
+        empAddressEntity.set("street", "20 Pinetrail Cres.");
+        empAddressEntity.set("suburb", "Centrepointe");
+        empAddressEntity.set("addr_region", regionEntity);
+        empAddressEntity.set("postcode", BigDecimal.valueOf(12));
         Vector v = new NonSynchronizedVector();
         v.add(empAddressEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
         XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
+            addressEntityEchoed.get("street").equals("20 Pinetrail Cres."));
         assertTrue("incorrect second field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(1).equals("Centrepointe"));
-        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
+            addressEntityEchoed.get("suburb").equals("Centrepointe"));
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get("addr_region");
         assertTrue("incorrect nested-third-first field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
+            regionEntityEchoed.get("reg_id").equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-third-second field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(1).equals("this is a test"));
+            regionEntityEchoed.get("reg_name").equals("this is a test"));
         assertTrue("incorrect fourth field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(3).equals(BigDecimal.valueOf(12)));
+            addressEntityEchoed.get("postcode").equals(BigDecimal.valueOf(12)));
     }
     @SuppressWarnings("unchecked")
     @Test
@@ -703,39 +703,39 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_object");
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpObject");
         XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
-        regionEntity.set(0, BigDecimal.valueOf(5));
-        regionEntity.set(1, "this is a test");
-        XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
-        empAddressEntity.set(0, "20 Pinetrail Cres.");
-        empAddressEntity.set(1, "Centrepointe");
-        empAddressEntity.set(2, regionEntity);
-        empAddressEntity.set(3, BigDecimal.valueOf(12));
+        regionEntity.set("reg_id", BigDecimal.valueOf(5));
+        regionEntity.set("reg_name", "this is a test");
+        XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getJavaClass().newInstance();
+        empAddressEntity.set("street", "20 Pinetrail Cres.");
+        empAddressEntity.set("suburb", "Centrepointe");
+        empAddressEntity.set("addr_region", regionEntity);
+        empAddressEntity.set("postcode", BigDecimal.valueOf(12));
         XRDynamicEntity empObjectEntity = (XRDynamicEntity)empObjectDesc.getObjectBuilder().buildNewInstance();
-        empObjectEntity.set(0, BigDecimal.valueOf(55));
-        empObjectEntity.set(1, empAddressEntity);
-        empObjectEntity.set(2, "Mike Norman");
-        empObjectEntity.set(3, new java.sql.Date(System.currentTimeMillis()));
+        empObjectEntity.set("employee_id", BigDecimal.valueOf(55));
+        empObjectEntity.set("address", empAddressEntity);
+        empObjectEntity.set("employee_name", "Mike Norman");
+        empObjectEntity.set("date_of_hire", new java.sql.Date(System.currentTimeMillis()));
         Vector v = new NonSynchronizedVector();
         v.add(empObjectEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
         XRDynamicEntity empObjectEntityEchoed = (XRDynamicEntity)o;
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
-            empObjectEntityEchoed.get(0).equals(BigDecimal.valueOf(55)));
-        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)empObjectEntityEchoed.get(1);
+            empObjectEntityEchoed.get("employee_id").equals(BigDecimal.valueOf(55)));
+        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)empObjectEntityEchoed.get("address");
         assertTrue("incorrect nested-second-first field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
+            addressEntityEchoed.get("street").equals("20 Pinetrail Cres."));
         assertTrue("incorrect nested-second-second field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(1).equals("Centrepointe"));
-        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
+            addressEntityEchoed.get("suburb").equals("Centrepointe"));
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get("addr_region");
         assertTrue("incorrect nested-second-third-first field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
+            regionEntityEchoed.get("reg_id").equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-second-third-second field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(1).equals("this is a test"));
+            regionEntityEchoed.get("reg_name").equals("this is a test"));
         assertTrue("incorrect nested-second-fourth field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(3).equals(BigDecimal.valueOf(12)));
+            addressEntityEchoed.get("postcode").equals(BigDecimal.valueOf(12)));
         assertTrue("incorrect third field for type returned from StoredFunctionCall",
-            empObjectEntityEchoed.get(2).equals("Mike Norman"));
+            empObjectEntityEchoed.get("employee_name").equals("Mike Norman"));
         // assume date works out
     }
     @SuppressWarnings("unchecked")
@@ -757,19 +757,19 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         XMLDescriptor empAddressDesc = (XMLDescriptor)p2.getDescriptorForAlias("emp_address");
         XMLDescriptor empObjectDesc = (XMLDescriptor)p2.getDescriptorForAlias("emp_object");
         XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
-        regionEntity.set(0, BigDecimal.valueOf(5));
-        regionEntity.set(1, "this is a test");
+        regionEntity.set("reg_id", BigDecimal.valueOf(5));
+        regionEntity.set("reg_name", "this is a test");
         XRDynamicEntity empAddressEntity = (XRDynamicEntity)empAddressDesc.getObjectBuilder().buildNewInstance();
-        empAddressEntity.set(0, "20 Pinetrail Cres.");
-        empAddressEntity.set(1, "Centrepointe");
-        empAddressEntity.set(2, regionEntity);
-        empAddressEntity.set(3, BigInteger.valueOf(12));
+        empAddressEntity.set("street", "20 Pinetrail Cres.");
+        empAddressEntity.set("suburb", "Centrepointe");
+        empAddressEntity.set("addr_region", regionEntity);
+        empAddressEntity.set("postcode", BigInteger.valueOf(12));
         XRDynamicEntity empObjectEntity = (XRDynamicEntity)empObjectDesc.getObjectBuilder().buildNewInstance();
-        empObjectEntity.set(0, BigDecimal.valueOf(55));
-        empObjectEntity.set(1, empAddressEntity);
-        empObjectEntity.set(2, "Mike Norman");
+        empObjectEntity.set("employee_id", BigDecimal.valueOf(55));
+        empObjectEntity.set("address", empAddressEntity);
+        empObjectEntity.set("employee_name", "Mike Norman");
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
-        empObjectEntity.set(3, today);
+        empObjectEntity.set("date_of_hire", today);
         XMLContext xmlContext2 = new XMLContext(p2, xrdecl);
         Document empObjectEntityDoc = xmlPlatform.createDocument();
         xmlContext2.createMarshaller().marshal(empObjectEntity, empObjectEntityDoc);
@@ -782,22 +782,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         XRDynamicEntity echoedEmpObjectEntity = (XRDynamicEntity)xmlContext2.createUnmarshaller().unmarshal(
             new StringReader(anEmpObject), empObjectDesc.getJavaClass());
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
-            echoedEmpObjectEntity.get(0).equals(BigDecimal.valueOf(55)));
-        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)echoedEmpObjectEntity.get(1);
+            echoedEmpObjectEntity.get("employee_id").equals(BigDecimal.valueOf(55)));
+        XRDynamicEntity addressEntityEchoed = (XRDynamicEntity)echoedEmpObjectEntity.get("address");
         assertTrue("incorrect nested-second-first field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(0).equals("20 Pinetrail Cres."));
+            addressEntityEchoed.get("street").equals("20 Pinetrail Cres."));
         assertTrue("incorrect nested-second-second field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(1).equals("Centrepointe"));
-        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get(2);
+            addressEntityEchoed.get("suburb").equals("Centrepointe"));
+        XRDynamicEntity regionEntityEchoed = (XRDynamicEntity)addressEntityEchoed.get("addr_region");
         assertTrue("incorrect nested-second-third-first field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(0).equals(BigDecimal.valueOf(5)));
+            regionEntityEchoed.get("reg_id").equals(BigDecimal.valueOf(5)));
         assertTrue("incorrect nested-second-third-second field for type returned from StoredFunctionCall",
-            regionEntityEchoed.get(1).equals("this is a test"));
+            regionEntityEchoed.get("reg_name").equals("this is a test"));
         assertTrue("incorrect nested-second-fourth field for type returned from StoredFunctionCall",
-            addressEntityEchoed.get(3).equals(BigInteger.valueOf(12)));
+            addressEntityEchoed.get("postcode").equals(BigInteger.valueOf(12)));
         assertTrue("incorrect third field for type returned from StoredFunctionCall",
-            echoedEmpObjectEntity.get(2).equals("Mike Norman"));
-        Object date = echoedEmpObjectEntity.get(3);
+            echoedEmpObjectEntity.get("employee_name").equals("Mike Norman"));
+        Object date = echoedEmpObjectEntity.get("date_of_hire");
         assertTrue("incorrect fourth field (type) for type returned from StoredFunctionCall",
             date instanceof java.sql.Date);
     }
@@ -1151,25 +1151,25 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
         XRDynamicEntity returnValue = (XRDynamicEntity)o;
-        Object o2 = returnValue.get(0);
+        Object o2 = returnValue.get("items");
         assertTrue("return value array not correct type", o2 instanceof ArrayList);
         ArrayList empInfo = (ArrayList)o2;
         assertTrue("return value array wrong size", empInfo.size() == 3);
         XRDynamicEntity emp1 = (XRDynamicEntity)empInfo.get(0);
         assertTrue("return value array first element id wrong value",
-            emp1.get(0).equals(BigDecimal.valueOf(1)));
+            emp1.get("id").equals(BigDecimal.valueOf(1)));
         assertTrue("return value array first element name wrong value",
-            emp1.get(1).equals("entry 1"));
+            emp1.get("name").equals("entry 1"));
         XRDynamicEntity emp2 = (XRDynamicEntity)empInfo.get(1);
         assertTrue("return value array second element id wrong value",
-            emp2.get(0).equals(BigDecimal.valueOf(2)));
+            emp2.get("id").equals(BigDecimal.valueOf(2)));
         assertTrue("return value array second element name wrong value",
-            emp2.get(1).equals("entry 2"));
+            emp2.get("name").equals("entry 2"));
         XRDynamicEntity emp3 = (XRDynamicEntity)empInfo.get(2);
         assertTrue("return value array third element id wrong value",
-            emp3.get(0).equals(BigDecimal.valueOf(3)));
+            emp3.get("id").equals(BigDecimal.valueOf(3)));
         assertTrue("return value array second element name wrong value",
-            emp3.get(1).equals("entry 3"));
+            emp3.get("name").equals("entry 3"));
     }
     @SuppressWarnings("unchecked")
     @Test
@@ -1359,7 +1359,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
         XRDynamicEntity returnValue = (XRDynamicEntity)o;
-        ArrayList<String> strings = (ArrayList<String>)returnValue.get(0);
+        ArrayList<String> strings = (ArrayList<String>)returnValue.get("items");
         assertTrue("wrong number of returned strings", 3 == strings.size());
         for (int i = 0, len = strings.size(); i < len; i++) {
             assertTrue("wrong array element value", ("entry " + (i + 1)).equals(strings.get(i)));
@@ -1515,7 +1515,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
         XRDynamicEntity returnValue = (XRDynamicEntity)o;
-        ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get(0);
+        ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get("items");
         assertTrue("wrong number of returned dates", 3 == dates.size());
     }
     @SuppressWarnings("unchecked")
@@ -1742,17 +1742,17 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
         XRDynamicEntity returnValue = (XRDynamicEntity)o;
-        ArrayList<String> tbl1 = (ArrayList<String>)returnValue.get(0);
+        ArrayList<String> tbl1 = (ArrayList<String>)returnValue.get("t1");
         assertTrue("wrong number of returned strings", num == tbl1.size());
         for (int i = 0, len = tbl1.size(); i < len; i++) {
             assertTrue("wrong array element value", ("entry " + (i + 1)).equals(tbl1.get(i)));
         }
-        ArrayList<BigDecimal> tbl2 = (ArrayList<BigDecimal>)returnValue.get(1);
+        ArrayList<BigDecimal> tbl2 = (ArrayList<BigDecimal>)returnValue.get("t2");
         assertTrue("wrong number of returned strings", num == tbl2.size());
         for (int i = 0, len = tbl2.size(); i < len; i++) {
             assertTrue("wrong array element value", BigDecimal.valueOf(i+1).equals(tbl2.get(i)));
         }
-        BigDecimal t3 = (BigDecimal)returnValue.get(2);
+        BigDecimal t3 = (BigDecimal)returnValue.get("t3");
         assertTrue("wrong array element value", BigDecimal.valueOf(num).equals(t3));
     }
     @SuppressWarnings("unchecked")

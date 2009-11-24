@@ -36,33 +36,30 @@ public class XRDynamicEntityVHAccessor extends XRDynamicEntityAccessor {
 
     @Override
     public Object getAttributeValueFromObject(Object object) {
-
-        XRDynamicEntity entity = (XRDynamicEntity)object;
-        // if the attribute's slot is empty, put in a dummy ValueHolder
-        // and return null
-        if (entity.get(fieldIdx) == null) {
-            entity.set(fieldIdx, new ValueHolder());
-            return null;
+        XRDynamicEntity.XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
+        Object v = null;
+        if (df.isSet) {
+            v = ((ValueHolderInterface)df.fieldValue).getValue();
         }
-        // return the value from the attribute's existing ValueHolder
-        return ((ValueHolderInterface)entity.get(fieldIdx)).getValue();
+        else {
+            df.fieldValue = new ValueHolder();
+        }
+        return v;
     }
 
     @Override
     public void setAttributeValueInObject(Object object, Object value) {
-
-        XRDynamicEntity entity = (XRDynamicEntity)object;
-        // ValueHolders go directly into the attribute's slot
+        XRDynamicEntity.XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
         if (value instanceof ValueHolderInterface) {
-            entity.set(fieldIdx, value);
-            return;
+            // ValueHolders go directly into the attribute's slot
+            df.fieldValue = value;
         }
-        // what if this is the first time setting - the attribute's slot
-        // will be null and needs a dummy ValueHolder
-        if (entity.get(fieldIdx) == null) {
-            entity.set(fieldIdx, new ValueHolder());
+        else {
+            if (!df.isSet) {
+                df.fieldValue = new ValueHolder();
+            }
+            ((ValueHolderInterface)df.fieldValue).setValue(value);
         }
-        // put the value into the attribute's existing ValueHolder
-        ((ValueHolderInterface)entity.get(fieldIdx)).setValue(value);
+        df.isSet = true;
     }
 }

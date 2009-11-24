@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.xr;
 //java eXtension imports
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.xr.XRDynamicEntity.XRField;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
 /**
@@ -44,11 +45,13 @@ public class XRDynamicEntityAccessor extends AttributeAccessor {
 
     @Override
     public Object getAttributeValueFromObject(Object object) {
-        return ((XRDynamicEntity)object).get(fieldIdx);
+        return ((XRDynamicEntity)object)._fields[fieldIdx].fieldValue;
     }
 
     @Override
     public void setAttributeValueInObject(Object object, Object value) {
-        ((XRDynamicEntity)object).set(fieldIdx, value);
+        XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
+        df.fieldValue = value;
+        df.isSet = true;
     }
 }

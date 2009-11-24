@@ -15,74 +15,75 @@ package org.eclipse.persistence.internal.xr;
 //javase imports
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implements Collection<Object> {
     
-    static Map<String, IndexInfo> names2idx = new HashMap<String, IndexInfo>();
+    public static XRFieldInfo XRFI = new XRFieldInfo();
     static {
-        names2idx.put("items", new IndexInfo(0, false));
+        XRFI.addFieldInfo("items", 0);
     }
 
     public XRDynamicEntity_CollectionWrapper() {
-        super(names2idx);
-        fields = new Object[1];
-        // use ArrayList as the Collection type
-        fields[0] = new ArrayList<Object>();
+        super();
+        super.set("items", new ArrayList<Object>());
+    }
+
+    @Override
+    public XRFieldInfo getFieldInfo() {
+        return XRFI;
     }
 
     public boolean add(Object e) {
-        return ((Collection<Object>)fields[0]).add(e);
+        return ((Collection<Object>)_fields[0].fieldValue).add(e);
     }
 
     public boolean addAll(Collection<? extends Object> c) {
-        return ((Collection<Object>)fields[0]).addAll(c);
+        return ((Collection<Object>)_fields[0].fieldValue).addAll(c);
     }
 
     public void clear() {
-        ((Collection<Object>)fields[0]).clear();
+        ((Collection<Object>)_fields[0].fieldValue).clear();
     }
 
     public boolean contains(Object o) {
-        return ((Collection<Object>)fields[0]).contains(o);
+        return ((Collection<Object>)_fields[0].fieldValue).contains(o);
     }
 
     public boolean containsAll(Collection<?> c) {
-        return ((Collection<Object>)fields[0]).containsAll(c);
+        return ((Collection<Object>)_fields[0].fieldValue).containsAll(c);
     }
 
     public boolean isEmpty() {
-        return ((Collection<Object>)fields[0]).isEmpty();
+        return ((Collection<Object>)_fields[0].fieldValue).isEmpty();
     }
 
     public Iterator<Object> iterator() {
-        return ((Collection<Object>)fields[0]).iterator();
+        return ((Collection<Object>)_fields[0].fieldValue).iterator();
     }
 
     public boolean remove(Object o) {
-        return ((Collection<Object>)fields[0]).remove(o);
+        return ((Collection<Object>)_fields[0].fieldValue).remove(o);
     }
 
     public boolean removeAll(Collection<?> c) {
-        return ((Collection<Object>)fields[0]).removeAll(c);
+        return ((Collection<Object>)_fields[0].fieldValue).removeAll(c);
     }
 
     public boolean retainAll(Collection<?> c) {
-        return ((Collection<Object>)fields[0]).retainAll(c);
+        return ((Collection<Object>)_fields[0].fieldValue).retainAll(c);
     }
 
     public int size() {
-        return ((Collection<Object>)fields[0]).size();
+        return ((Collection<Object>)_fields[0].fieldValue).size();
     }
 
     public Object[] toArray() {
-        return ((Collection<Object>)fields[0]).toArray();
+        return ((Collection<Object>)_fields[0].fieldValue).toArray();
     }
 
     public <T> T[] toArray(T[] a) {
-        return (T[])((Collection<Object>)fields[0]).toArray(a);
+        return (T[])((Collection<Object>)_fields[0].fieldValue).toArray(a);
     }
 }

@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.xr;
 
 //javase imports
 import java.beans.PropertyChangeListener;
-import java.util.Map;
 import java.util.Vector;
 
 //java extension imports
@@ -22,9 +21,8 @@ import java.util.Vector;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -32,7 +30,6 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
-import static org.eclipse.persistence.internal.xr.XRDynamicEntity.EmptySlot.EMPTY_SLOT;
 
 /**
  * <p>
@@ -50,100 +47,68 @@ import static org.eclipse.persistence.internal.xr.XRDynamicEntity.EmptySlot.EMPT
  * @since EclipseLink 1.x
  */
 @SuppressWarnings("unchecked")
-public class XRDynamicEntity implements DynamicEntity, PersistenceEntity, ChangeTracker,
+public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntity, ChangeTracker,
     FetchGroupTracker, Cloneable {
 
-    static class EmptySlot {
-        static EmptySlot EMPTY_SLOT = new EmptySlot();
+    public static final String XR_FIELD_INFO_STATIC = "XRFI";
+    
+    protected XRField[] _fields;
+
+    public XRDynamicEntity() {
+        super();
+        int numFields = getFieldInfo().numFields();
+        _fields = new XRField[numFields];
+        for (int i = 0; i < numFields; i++) {
+            _fields[i] = new XRField();
+        }
     }
     
-    // propertyNames -> index cache  
-    protected Map<String, IndexInfo> propertyNames2indexes = null;
-    protected Object[] fields; // XRDynamicEntity only deal with Objects, never primitives
+    public abstract XRFieldInfo getFieldInfo();
 
-    public XRDynamicEntity(Map<String, IndexInfo> propertyNames2indexes) {
-        this.propertyNames2indexes = propertyNames2indexes;
-        int maxIdx = -1;
-        for (Map.Entry<String, IndexInfo> me : propertyNames2indexes.entrySet()) {
-            int currIdx = me.getValue().index;
-            if (maxIdx < currIdx) {
-                maxIdx = currIdx;
+    protected int getFieldIdx(String fieldName) {
+        return getFieldInfo().getFieldIdx(fieldName);
+    }
+    
+    public <T> T get(String fieldName) throws DynamicException {
+        return (T) get(getFieldIdx(fieldName));
+    }
+    protected Object get(int fieldIdx) {
+        XRField df = _fields[fieldIdx];
+        Object value = null;
+        if (df.isSet) {
+            value = df.fieldValue;
+            // trigger any indirection
+            if (value instanceof ValueHolderInterface) {
+                value = ((ValueHolderInterface)value).getValue();
+            }
+            else if (value instanceof IndirectContainer) {
+                value = ((IndirectContainer)value).getValueHolder().getValue();
             }
         }
-        int size = maxIdx + 1;
-        fields = new Object[size];
-        for (int i = 0; i < size; i++) {
-            fields[i] = EMPTY_SLOT;
-        }
+        return value;
     }
 
-    public <T> T get(String propertyName) throws DynamicException {
-        IndexInfo indexInfo = getIndexInfoFor(propertyName);
-        if (indexInfo.index < 0) {
-            throw DynamicException.invalidPropertyIndex((DynamicType)null, indexInfo.index);
-        }
-        Object o = get(indexInfo.index);
-        if (o == EMPTY_SLOT) {
-            if (indexInfo.derefVH) {
-                fields[indexInfo.index] = new ValueHolder();
-            }
-            return null;
-        }
-        if (indexInfo.derefVH) {
-            o = ((ValueHolderInterface)o).getValue();
-        }
-        return (T)o;
+    public boolean isSet(String fieldName) throws DynamicException {
+        return isSet(getFieldIdx(fieldName));
+    }
+    protected boolean isSet(int fieldIdx) {
+        return _fields[fieldIdx].isSet;
     }
 
-    public boolean isSet(String propertyName) throws DynamicException {
-        IndexInfo indexInfo = getIndexInfoFor(propertyName);
-        Object o = fields[indexInfo.index];
-        if (o == EMPTY_SLOT) {
-            return false;
-        }
-        return true;
-    }
-
-    public DynamicEntity set(String propertyName, Object value) throws DynamicException {
-        IndexInfo indexInfo = getIndexInfoFor(propertyName);
-        if (indexInfo.index < 0) {
-            throw DynamicException.invalidPropertyIndex((DynamicType)null, indexInfo.index);
-        }
-        Object o = get(indexInfo.index);
-        if (o == EMPTY_SLOT) {
-            if (indexInfo.derefVH) {
-                fields[indexInfo.index] = new ValueHolder();
-            }
-            else {
-                fields[indexInfo.index] = value;
-            }
-        }
-        else {
-            if (indexInfo.derefVH) {
-                ((ValueHolderInterface)o).setValue(value);
-            }
-            else {
-                fields[indexInfo.index] = value;
-            }
-        }
+    public DynamicEntity set(String fieldName, Object value) throws DynamicException {
+        set(getFieldIdx(fieldName), value);
         return (DynamicEntity)this;
     }
-
-    protected IndexInfo getIndexInfoFor(String propertyName) {
-        IndexInfo indexInfo = propertyNames2indexes.get(propertyName);
-        if (indexInfo == null) {
-            throw DynamicException.invalidPropertyName((DynamicType)null, propertyName);
+    protected void set(int fieldIdx, Object value) {
+        XRField df = _fields[fieldIdx];
+        Object currentValue = df.fieldValue;
+        if (currentValue instanceof ValueHolderInterface) {
+            ((ValueHolderInterface)currentValue).setValue(value);
         }
-        return indexInfo;
-    }
-
-    public Object get(int i) {
-        return fields[i];
-    }
-
-    public Object set(int i, Object aFieldValue) {
-        fields[i] = aFieldValue;
-        return this;
+        else {
+            df.fieldValue = value;
+        }
+        df.isSet = true;
     }
 
     //PersistenceEntity API
@@ -226,14 +191,14 @@ public class XRDynamicEntity implements DynamicEntity, PersistenceEntity, Change
 
     //Cloneable
     public Object clone() {
-        XRDynamicEntity entity = null;
+        Object entity = null;
         try {
             entity = (XRDynamicEntity)super.clone();
         }
         catch (Exception error) {
             throw new Error(error);
         }
-        entity.fields = entity.fields.clone();
+        ((XRDynamicEntity)entity)._fields = this._fields.clone();
         return entity;
     }
     
@@ -253,4 +218,25 @@ public class XRDynamicEntity implements DynamicEntity, PersistenceEntity, Change
         return sb.toString();
     }
 
+    static class XRField {
+        protected Object fieldValue = null;
+        protected boolean isSet = false;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (isSet) {
+                sb.append("[T]");
+            }
+            else {
+                sb.append("[F]");
+            }
+            if (fieldValue == null) {
+                sb.append("<null>");
+            }
+            else {
+                sb.append(fieldValue.toString());
+            }
+            return sb.toString();
+        }
+    }
 }

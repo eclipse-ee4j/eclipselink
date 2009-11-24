@@ -1,9 +1,7 @@
 package dbws.testing.xrdynamicentity;
 
 //javase imports
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
 
 //JUnit4 imports
 import org.junit.BeforeClass;
@@ -18,10 +16,12 @@ import static org.junit.Assert.assertNull;
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.xr.IndexInfo;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.xr.XRClassWriter;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRDynamicEntity;
+import org.eclipse.persistence.internal.xr.XRFieldInfo;
+import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_STATIC;
 
 public class XRDynamicEntityTestSuite {
 
@@ -33,13 +33,16 @@ public class XRDynamicEntityTestSuite {
     static final String TEST_STRING = "this is a test";
     
     //test fixtures
-    static Map<String, IndexInfo> propertyNames2indexes = new HashMap<String, IndexInfo>();
-    static DynamicEntity entity1 = null;
+    static XRDynamicEntity entity1 = null;
+    @SuppressWarnings("unchecked")
     @BeforeClass
-    public static void setUp() {
-        propertyNames2indexes.put(FIELD_1, new IndexInfo(0, false));
-        propertyNames2indexes.put(FIELD_2, new IndexInfo(1, false));
-        entity1 = new XRDynamicEntity(propertyNames2indexes);
+    public static void setUp() throws NoSuchFieldException, IllegalArgumentException, 
+        IllegalAccessException {
+        Field xrfiField = Helper.getField(XRCustomer.class, XR_FIELD_INFO_STATIC);
+        XRFieldInfo xrfi = (XRFieldInfo)xrfiField.get(null);
+        xrfi.addFieldInfo(FIELD_1, 0);
+        xrfi.addFieldInfo(FIELD_2, 1);
+        entity1 = new XRCustomer();
     }
     
     @Test
@@ -74,57 +77,14 @@ public class XRDynamicEntityTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void buildTestEntity() {
+    public void buildTestEntity() throws InstantiationException, IllegalAccessException {
         XRDynamicClassLoader xrdcl = 
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<DynamicEntity> testClass = 
             (Class<DynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
-        
-        //build instance incorrectly
-        DynamicEntity testEntity = null;
-        boolean newInstanceFailed = false;
-        try {
-            testEntity = testClass.newInstance();
-        }
-        catch (Exception e) {
-            newInstanceFailed = true;
-        }
-        assertTrue("opps! default constructor shouldn't have worked", newInstanceFailed);
-        Constructor<DynamicEntity>[] constructors = 
-            (Constructor<DynamicEntity>[])testClass.getConstructors();
-        assertEquals(1, constructors.length);
-        Constructor<DynamicEntity> testClassConstructor = constructors[0];
-        assertEquals(1, testClassConstructor.getParameterTypes().length);
-        assertEquals(Map.class, testClassConstructor.getParameterTypes()[0]);
-        
-        //another incorrectly built instance
-        newInstanceFailed = false;
-        try {
-            testEntity = testClassConstructor.newInstance((Map)null);
-        }
-        catch (Exception e) {
-            newInstanceFailed = true;
-        }
-        assertTrue("constructor with null Map shouldn't have worked", newInstanceFailed);
-        
-        //finally, build it correctly
-        Map<String, IndexInfo> propertyNames2indexes = new HashMap<String, IndexInfo>();
-        propertyNames2indexes.put("f1", new IndexInfo(0, false));
-        boolean newInstanceWorked = true;
-        try {
-            testEntity = testClassConstructor.newInstance(propertyNames2indexes);
-        }
-        catch (Exception e) {
-            newInstanceWorked = false;
-        }
-        assertTrue("constructor with read Map should have worked", newInstanceWorked);
-        assertFalse(testEntity.isSet("f1"));
-        assertNull(testEntity.get("f1"));
-        testEntity.set("f1", "this is a test");
-        String s = testEntity.<String>get("f1");
-        assertNotNull(s);
-        assertEquals("this is a test", s);
-        // more tests in XRDynamicEntityTestSuite
+        //build instance
+        @SuppressWarnings("unused")
+        DynamicEntity testEntity = testClass.newInstance();
     }
 
     @Test

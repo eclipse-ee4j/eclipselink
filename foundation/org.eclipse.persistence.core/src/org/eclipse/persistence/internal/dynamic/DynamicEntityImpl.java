@@ -20,7 +20,6 @@ package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
 import java.beans.PropertyChangeListener;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
@@ -42,6 +41,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Session;
+import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * This abstract class is used to represent an entity which typically is not
@@ -222,23 +222,22 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
 
     /**
      * String representation of the dynamic entity using the entity type name
-     * and the primary key values.
+     * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}
      */
+    @Override
     public String toString() {
-        StringWriter writer = new StringWriter();
-
-        writer.write(getType().getName());
-        writer.write("(");
-
-        for (DatabaseMapping mapping : getType().getDescriptor().getMappings()) {
-            if (getType().getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(mapping)) {
-                writer.write(mapping.getAttributeName());
-                writer.write("=" + mapping.getAttributeValueFromObject(this));
+        StringBuilder sb = new StringBuilder(20);
+        sb.append('{');
+        sb.append(getShortClassName(this.getClass()));
+        // use pk vector (directly) to avoid triggering indirection of 'regular' properties
+        if (primaryKey != null && primaryKey.size() > 0) {
+            for (int i = 0, len = primaryKey.size(); i < len; i++) {
+                sb.append(' ');
+                sb.append(primaryKey.elementAt(i));
             }
         }
-
-        writer.write(")");
-        return writer.toString();
+        sb.append('}');
+        return sb.toString();
     }
 
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
@@ -332,6 +331,20 @@ public abstract class DynamicEntityImpl implements DynamicEntity, ChangeTracker,
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException("DynamicEntity._persistence_shallow_clone failed on super.clone", e);
         }
+    }
+    
+    @Override
+    //Cloneable
+    public Object clone() {
+        Object entity = null;
+        try {
+            entity = super.clone();
+        }
+        catch (Exception error) {
+            throw new Error(error);
+        }
+        ((DynamicEntityImpl)entity).values = this.values.clone();
+        return entity;
     }
 
 }

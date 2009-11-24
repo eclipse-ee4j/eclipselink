@@ -173,7 +173,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Reader reader = new StringReader(CRUD1_CONTROL_DOC);
         InputSource inputSource = new InputSource(reader);
         XRDynamicEntity firstEmp = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
-        firstEmp.set(1, "some other name");
+        firstEmp.set("name", "some other name");
         Invocation invocation = new Invocation("update_crud_tableType");
         invocation.setParameter("theInstance", firstEmp);
         Operation op = xrService.getOperation(invocation.getName());
@@ -188,7 +188,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Vector<XRDynamicEntity> result = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
         XRDynamicEntity firstEmp = result.firstElement();
         Invocation invocation2 = new Invocation("delete_crud_tableType");
-        invocation2.setParameter("id", firstEmp.get(0));
+        invocation2.setParameter("id", firstEmp.get("id"));
         Operation op2 = xrService.getOperation(invocation2.getName());
         op2.invoke(xrService, invocation2);
         Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
