@@ -29,6 +29,7 @@ public class TargetServer {
     public static final String  SunAS9 = "SunAS9";
     public static final String  WebSphere = "WebSphere";
     public static final String  WebSphere_6_1 = "WebSphere_6_1";
+    public static final String  WebSphere_7 = "WebSphere_7";
     public static final String  WebLogic = "WebLogic";
     public static final String  WebLogic_9 = "WebLogic_9";
     public static final String  WebLogic_10 = "WebLogic_10";

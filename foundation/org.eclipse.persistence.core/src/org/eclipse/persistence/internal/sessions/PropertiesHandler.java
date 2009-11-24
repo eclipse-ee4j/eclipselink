@@ -532,6 +532,7 @@ public class PropertiesHandler {
                 {TargetServer.SunAS9, pcg + "sunas.SunAS9ServerPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
+                {TargetServer.WebSphere_7, pcg + "was.WebSphere_7_Platform"},
                 {TargetServer.WebLogic, pcg + "wls.WebLogicPlatform"},
                 {TargetServer.WebLogic_9, pcg + "wls.WebLogic_9_Platform"},
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},
