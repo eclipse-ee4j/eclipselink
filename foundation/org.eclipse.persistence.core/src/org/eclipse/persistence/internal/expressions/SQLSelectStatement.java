@@ -1863,7 +1863,7 @@ public class SQLSelectStatement extends SQLStatement {
      *     
      *     Note that tablesInOrder must contain all tables used by expression
      */
-    protected static SortedSet mapTableIndexToExpression(Expression expression, SortedMap map, Vector tablesInOrder) {
+    protected static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, Vector tablesInOrder) {
         // glassfish issue 2440: 
         // - Use DataExpression.getAliasedField instead of getField. This
         // allows to distinguish source and target tables in case of a self
@@ -1876,7 +1876,16 @@ public class SQLSelectStatement extends SQLStatement {
             if(de.getAliasedField() != null) {
                 tables.add(new Integer(tablesInOrder.indexOf(de.getAliasedField().getTable())));
             }
-        } else if(expression instanceof CompoundExpression) {
+            return tables;
+        }
+            
+        // Bug 279784 - Incomplete OUTER JOIN based on JoinTable.
+        // Save a copy of the original map to accommodate cases with more than one joined field, such as:
+        // (employee.emp_id1 = proj_emp.emp_id1).and((employee.emp_id2 = proj_emp.emp_id2).and((proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)))
+        // Never adding (always overriding) cached expression (the code before the fix) resulted in the first child (employee.emp_id1 = proj_emp.emp_id1) being overridden and lost.
+        // Always adding to the cached in the map expression would result in (proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)) added twice. 
+        TreeMap originalMap = (TreeMap)map.clone();
+        if(expression instanceof CompoundExpression) {
             CompoundExpression ce = (CompoundExpression)expression;
             tables.addAll(mapTableIndexToExpression(ce.getFirstChild(), map, tablesInOrder));
             tables.addAll(mapTableIndexToExpression(ce.getSecondChild(), map, tablesInOrder));
@@ -1889,7 +1898,13 @@ public class SQLSelectStatement extends SQLStatement {
         }
         
         if(tables.size() == 2) {
-            map.put(tables.last(), expression);
+            Object last = tables.last();
+            Expression cachedExpression = (Expression)originalMap.get(last);
+            if(cachedExpression == null) {
+                map.put(last, expression);
+            } else {
+                map.put(last, cachedExpression.and(expression));
+            }
         }
         
         return tables;

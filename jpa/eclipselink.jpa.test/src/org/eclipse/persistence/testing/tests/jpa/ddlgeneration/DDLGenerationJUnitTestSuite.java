@@ -781,6 +781,100 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    // Bug 279784 - Incomplete OUTER JOIN based on JoinTable 
+    public void testManyToManyWithMultipleJoinColumns() {
+        String prefix = "testManyToManyWithMultipleJoinColumns";
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+
+        // persist and flush c1, cache its pk
+        CKeyEntityC c1 = new CKeyEntityC(new CKeyEntityCPK(prefix + "_1"));
+        c1.setTempRole(prefix + "_1_Role");
+        em.persist(c1);
+        // that insures that sequencing has worked 
+        em.flush();
+        CKeyEntityCPK c1KeyPK = c1.getKey(); 
+
+        // create b1 with the same (seq, code) as c1's (seq, role); add to c1
+        ArrayList bs1 = new ArrayList();
+        CKeyEntityBPK b1KeyPK = new CKeyEntityBPK(c1KeyPK.seq, c1KeyPK.role);
+        CKeyEntityB b1 = new CKeyEntityB(b1KeyPK);
+        b1.setUnq1(prefix + "_1_1");
+        b1.setUnq2(prefix + "_1_2");
+        bs1.add(b1);
+        c1.setBs(bs1);
+        em.persist(b1);
+
+        // create c2 with the same seq as c1, but with different role
+        CKeyEntityC c2 = new CKeyEntityC(new CKeyEntityCPK(prefix + "_2"));
+        c2.setTempRole(prefix + "_2_Role");
+        CKeyEntityCPK c2KeyPK = c2.getKey(); 
+        c2KeyPK.seq = c1KeyPK.seq;
+
+        // create b2 with the same (seq, code) as c2's (seq, role); add to c2
+        ArrayList bs2 = new ArrayList();
+        CKeyEntityBPK b2KeyPK = new CKeyEntityBPK(c2KeyPK.seq, c2KeyPK.role);
+        CKeyEntityB b2 = new CKeyEntityB(b2KeyPK);
+        b2.setUnq1(prefix + "_2_1");
+        b2.setUnq2(prefix + "_2_2");
+        bs2.add(b2);
+        c2.setBs(bs2);
+
+        // persist c2
+        em.persist(c2);
+        em.persist(b2);
+
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        clearCache(DDL_PU);
+        em = createEntityManager(DDL_PU);
+        List<CKeyEntityC> clist = em.createQuery("SELECT c from CKeyEntityC c LEFT OUTER JOIN c.bs bs WHERE c.key = :key", CKeyEntityC.class).setParameter("key", c1KeyPK).getResultList();
+        // verify
+        String errorMsg = "";
+        int nSize = clist.size();
+        if(nSize == 1) {
+            // Expected result - nothing to do. Correct sql has been generated (the second ON clause is correct):
+            // SELECT t1.C_ROLE, t1.SEQ, t1.ROLE_, t1.A_SEQ, t1.A_L_NAME, t1.A_F_NAME 
+            // FROM DDL_CKENTC t1 LEFT OUTER JOIN (DDL_CKENT_C_B t2 JOIN DDL_CKENTB t0 ON ((t0.CODE = t2.B_CODE) AND (t0.SEQ = t2.B_SEQ))) ON ((t2.C_ROLE = t1.C_ROLE) AND (t2.C_SEQ = t1.SEQ)) 
+            // WHERE ((t1.SEQ = 1) AND (t1.ROLE_ = testManyToManyWithMultipleJoinColumns_1))
+
+        } else if(nSize == 2) {
+            if(clist.get(0) != clist.get(1)) {
+                errorMsg = "Read 2 cs, but they are not identical - test problem.";
+            } else {
+                // That wrong sql was generated before the fix (the second ON clause was incorrect):
+                // SELECT t1.C_ROLE, t1.SEQ, t1.ROLE_, t1.A_SEQ, t1.A_L_NAME, t1.A_F_NAME 
+                // FROM DDL_CKENTC t1 LEFT OUTER JOIN (DDL_CKENT_C_B t2 JOIN DDL_CKENTB t0 ON ((t0.CODE = t2.B_CODE) AND (t0.SEQ = t2.B_SEQ))) ON (t2.C_SEQ = t1.SEQ) 
+                // WHERE ((t1.SEQ = 1) AND (t1.ROLE_ = testManyToManyWithMultipleJoinColumns_1))
+                // That caused picking up two CKeyEntityB objects instead of one (because they both have the same SEQ), 
+                // outer joining causes return of two identical copies of c1.  
+                errorMsg = "Read 2 identical cs instead of one - likely the second on clause was incomplete";
+            }
+        } else {
+            errorMsg = "Read "+nSize+" cs, 1 or 2 were expected - test problem.";
+        }
+        
+        // clean-up
+        beginTransaction(em);
+        c1 = em.find(CKeyEntityC.class, c1KeyPK);
+        c1.getBs().clear();
+        em.remove(c1);
+        c2 = em.find(CKeyEntityC.class, c2KeyPK);
+        c2.getBs().clear();
+        em.remove(c2);
+        b1 = em.find(CKeyEntityB.class, b1KeyPK);
+        em.remove(b1);
+        b2 = em.find(CKeyEntityB.class, b2KeyPK);
+        em.remove(b2);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+
     protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
         EntityManager em = null;
         
