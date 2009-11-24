@@ -56,7 +56,7 @@ import org.eclipse.persistence.sessions.Project;
 public class XMLProjectReader {
 
     /** Allow for usage of schema validation to be configurable. */
-    protected static boolean shouldUseSchemaValidation = false; // TODO - switch back for 1.0
+    protected static boolean shouldUseSchemaValidation = false; // switch back for 1.0
 
     /** Cache the creation and initialization of the EclipseLink XML mapping project. */
     protected static Project project;
