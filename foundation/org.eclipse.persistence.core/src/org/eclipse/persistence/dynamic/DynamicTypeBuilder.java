@@ -22,6 +22,9 @@ package org.eclipse.persistence.dynamic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+
+import javax.persistence.Embeddable;
+
 import org.w3c.dom.Document;
 
 //EclipseLink imports
@@ -29,6 +32,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeInstantiationPolicy;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
@@ -274,12 +278,21 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * TODO
+     * Add a {@link OneToManyMapping} to the {@link #entityType} being built or
+     * extended. This mapping is created using standard foreign keys from the
+     * source table(s) to the target table(s) and transparent indirection (
+     * {@link IndirectList}).
      * 
      * @param name
+     *            attribute name to use in the dynamic entity. Also the property
+     *            name used to access the state of the entity
      * @param refType
      * @param fkFieldNames
-     * @return
+     *            the FK field names specified in the same order to match the PK
+     *            field names of the target class
+     * 
+     * @return the newly created, configured mappin. It will be initialized if
+     *         the descriptor is already initialized.
      */
     public OneToManyMapping addOneToManyMapping(String name, DynamicType refType, String... fkFieldNames) {
         if (fkFieldNames == null || getType().getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
@@ -301,14 +314,26 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * TODO
+     * Add a {@link DirectCollectionMapping} to the {@link #entityType} being
+     * built or extended. This mapping is created using standard foreign keys
+     * from the target table(s) to the source table(s) and transparent
+     * indirection ( {@link IndirectList}).
      * 
      * @param name
+     *            attribute name to use in the dynamic entity. Also the property
+     *            name used to access the state of the entity
      * @param targetTable
+     *            name of table holding the direct values
      * @param valueColumn
+     *            name of column in target table holding the direct value for
+     *            the collection
      * @param valueType
+     *            the type of the attribute assumed to be a known basic type
      * @param fkFieldNames
-     * @return
+     *            the FK field names on the source table specified in order to
+     *            match the PK field names on the source.
+     * @return the new mapping configured and initialized (if the descriptor is
+     *         already initialized.
      * @throws IllegalArgumentException
      */
     public DirectCollectionMapping addDirectCollectionMapping(String name, String targetTable, String valueColumn, Class<?> valueType, String... fkFieldNames) throws IllegalArgumentException {
@@ -333,12 +358,19 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * TODO
+     * Add a {@link AggregateObjectMapping} ({@link Embeddable} in JPA) to the
+     * {@link #entityType} being built or extended.
      * 
      * @param name
+     *            attribute name to use in the dynamic entity. Also the property
+     *            name used to access the state of the entity
      * @param refType
+     *            dynamic type re[presenting the Embeddable/AggregateObject
      * @param allowsNull
-     * @return
+     *            true indicates that the attribute can be null if all values
+     *            are null.
+     * @return the new mapping configured and initialized (if the descriptor has
+     *         been initialized).
      */
     public AggregateObjectMapping addAggregateObjectMapping(String name, DynamicType refType, boolean allowsNull) {
         AggregateObjectMapping mapping = new AggregateObjectMapping();
@@ -350,10 +382,17 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * TODO
+     * Add a {@link ManyToManyMapping} to the {@link #entityType} being built or
+     * extended. This method assumes that the columns names on the relationship
+     * table match the PK columns names they relate to. In the case of the
+     * target keys from the relationship table a '_' will be appended to the
+     * column names if they collide with the names from the source table.
      * 
      * @param name
+     *            attribute name to use in the dynamic entity. Also the property
+     *            name used to access the state of the entity
      * @param refType
+     *            target dynamic entity
      * @param relationshipTableName
      */
     public void addManyToManyMapping(String name, DynamicType refType, String relationshipTableName) {
@@ -378,9 +417,10 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * Add the mapping to the types' descriptor. This is where the
-     * {@link ValuesAccessor} is created and the position of the mapping in the
-     * descriptor is captured to use as its index.
+     * Add the mapping to the {@link #entityType}'s descriptor being built or
+     * extended. This is where the {@link ValuesAccessor} is created and the
+     * position of the mapping in the descriptor is captured to use as its
+     * index.
      */
     protected DatabaseMapping addMapping(DatabaseMapping mapping) {
         ClassDescriptor descriptor = getType().getDescriptor();
@@ -422,11 +462,17 @@ public class DynamicTypeBuilder {
         return mapping;
     }
 
+    /**
+     * Configure default sequencing.
+     */
     public void configureSequencing(String numberName, String numberFieldName) {
         getType().getDescriptor().setSequenceNumberName(numberName);
         getType().getDescriptor().setSequenceNumberFieldName(numberFieldName);
     }
 
+    /**
+     * Configure sequencing specifying the sequence type to use.
+     */
     public void configureSequencing(Sequence sequence, String numberName, String numberFieldName) {
         configureSequencing(numberName, numberFieldName);
         getType().getDescriptor().setSequence(sequence);
