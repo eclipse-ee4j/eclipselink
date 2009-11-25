@@ -81,17 +81,6 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 
 /**
- * Disclaimer:
- *    Yes, the following are true for this test suite - but implementation time must be ""triaged"", and this testing code is at the bottom of the list when placed against actual implementation in the time provided.
- *    - Tests must be modular - not one big huge test case that either passes or fails - it is better to have 10's of granular failures instead of only 1
- *    - proper and fully optimized test cases
- *    - full exception handling
- *    - full rollback handling
- *    - better documented assertion failures
- *    - fully described test model with links to design document
- *    - traceability back to use cases
- *    
- * 
  * These tests verify the JPA 2.0 Metamodel API.
  * The framework is as follows:
  *   - initialize persistence unit
@@ -220,7 +209,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC4_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC7_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC8_Method"));
-        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_86:_20090921:_Handle_Embeddable_Type_keyType_in_MapAttributeImpl_constructor       suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC9_DI86_Embeddable_IdClass_keyType_Method"));
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_86:_20090921:_Handle_Embeddable_Type_keyType_in_MapAttributeImpl_constructor       
+        suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyJavaType_UC9_DI86_Embeddable_IdClass_keyType_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC0_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC1a_Method"));
         suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getKeyType_UC2_Method"));
@@ -3649,8 +3639,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Test case
                 anAttribute = msCorporation_.getAttribute("does_not_exist");
             } catch (IllegalArgumentException iae) {
-                // We expect and exception
-                //iae.printStackTrace();
+                // We expect an exception
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3713,7 +3702,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 anAttribute = entityManufacturer_.getDeclaredAttribute("corporateComputers ");
             } catch (IllegalArgumentException iae) {
                 // We expect and exception
-                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -3740,7 +3728,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 anAttribute = entityManufacturer_.getDeclaredAttribute("does_not_exist");
             } catch (IllegalArgumentException iae) {
                 // We expect and exception
-                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4230,10 +4217,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
+                cleanup(em);
                 assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
-                if(null != em) {
-                    cleanup(em);
-                }
             }
         }
     }
@@ -4339,13 +4324,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4381,13 +4364,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4424,13 +4405,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4467,13 +4446,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map hardwareDesignersMapUC4;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4510,13 +4488,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4552,14 +4529,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Same as UC1a - that is missing the @MapKey name attribute
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
                 assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4597,13 +4573,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<Board, Enclosure> enclosureByBoardMapUC9;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(Board.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.ENTITY, keyType.getPersistenceType());
-
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4640,14 +4614,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Key is the primary key (PK) of the target entity - in this case HardwareDesigner which inherits its @Id from the Person @MappedSuperclass as '''Integer'''.
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                
-                
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4683,12 +4654,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4725,12 +4695,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4767,12 +4736,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map hardwareDesignersMapUC4;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4809,12 +4777,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present - or generics are set
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey or generics are not present - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4850,15 +4817,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Same as UC1a - that is missing the @MapKey name attribute
                 //private Map<String, HardwareDesigner> hardwareDesignersMapUC8;
                 Type keyType = anAttribute.getKeyType(); 
-                //assertEquals(String.class, keyJavaType); // When @MapKey(name="name") is present
                 assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.BASIC, keyType.getPersistenceType());
-                
-                
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4896,12 +4860,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<Board, Enclosure> enclosureByBoardMapUC9;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(Board.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
                 assertTrue(keyType instanceof Type);
                 assertEquals(Type.PersistenceType.ENTITY, keyType.getPersistenceType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4939,10 +4902,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<EnclosureIdClassPK, Enclosure> enclosuresUC10;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(EnclosureIdClassPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4980,10 +4942,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<EmbeddedPK, GalacticPosition> positionUniUC13;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(EmbeddedPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5021,10 +4982,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //private Map<EmbeddedPK, GalacticPosition> positionUC12;
                 Type keyType = anAttribute.getKeyType(); 
                 assertEquals(EmbeddedPK.class, keyJavaType); // When @MapKey(name="name") is present or we use generics
-                //assertEquals(Integer.class, keyJavaType); // When @MapKey is not present or missing name attribute - we default to the PK
                 assertNotNull(keyType);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5052,9 +5012,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //Type<K> getKeyType();
                 
-                
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5077,7 +5036,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Interface is empty - however we will test native functionality
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5250,7 +5209,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //java.util.Set<EmbeddableType<?>> getEmbeddables();            
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5277,10 +5236,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  * @return the metamodel entity types
                  */
                 //java.util.Set<EntityType<?>> getEntities();
-
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5310,7 +5268,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //java.util.Set<ManagedType<?>> getManagedTypes();
 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5355,7 +5313,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EmbeddableType<Manufacturer> aType = metamodel.embeddable(null);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);            
@@ -5365,7 +5322,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EmbeddableType<Manufacturer> aType = metamodel.embeddable(Manufacturer.class);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);            
@@ -5375,14 +5331,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EmbeddableType<?> aType = metamodel.embeddable(Integer.class);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 // reset state
                 expectedIAExceptionThrown = false;
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5417,7 +5371,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
@@ -5427,7 +5381,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EntityType<Manufacturer> aType = metamodel.entity(null);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);            
@@ -5437,14 +5390,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     EntityType<Integer> aType = metamodel.entity(Integer.class);
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 // reset exception flag
                 expectedIAExceptionThrown = false;
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5466,7 +5418,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Actual Test Case
                 //public static enum CollectionType {COLLECTION, SET, LIST, MAP}
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5494,7 +5446,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //CollectionType getCollectionType();
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5522,7 +5474,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //Type<E> getElementType();
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5545,7 +5497,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // The interface is empty - we will test native functionality
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5581,7 +5533,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5618,7 +5570,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5654,7 +5606,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(((AttributeImpl)nameAttribute).isPlural());
                 assertFalse(((SingularAttributeImpl)nameAttribute).isVersion());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5710,7 +5662,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //Class<T> getBindableJavaType();
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5734,7 +5686,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //public Class<T> getJavaType() {
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5765,7 +5717,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //public String toString() {
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5794,7 +5746,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  //PersistenceType getPersistenceType();
 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5828,7 +5780,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   */
                  //Class<X> getJavaType();
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5855,7 +5807,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                   */
                  //Class<X> getJavaType();
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5939,7 +5891,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     Attribute<ArrayProcessor, ?> entityArrayProcessorDeclaredAttributeThatIsNonExistent = entityArrayProcessor_.getDeclaredAttribute("non-existent");
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -5949,7 +5900,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     Attribute<ArrayProcessor, ?> entityArrayProcessorDeclaredAttributeThatIsDeclaredAbove = entityArrayProcessor_.getDeclaredAttribute("id");
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -5957,7 +5907,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Set<Attribute<Processor, ?>> entityProcessorDeclaredAttributes = entityProcessor_.getDeclaredAttributes();
                 assertEquals(3, entityProcessorDeclaredAttributes.size());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -5996,4 +5946,15 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
         }
     }
+
+    /**
+    * Disclaimer:
+        *    The following work may still need to be fully implemented - subject to available time.
+        *    - proper and fully optimized test cases
+        *    - full exception handling
+        *    - full rollback handling
+        *    - better documented assertion failures
+        *    - fully described test model with links to design document
+        *    - traceability back to use cases
+    */
 }

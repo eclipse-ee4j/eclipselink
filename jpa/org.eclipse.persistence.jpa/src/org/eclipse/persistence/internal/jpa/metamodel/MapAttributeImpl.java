@@ -90,8 +90,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
         // We need to set the keyType Type that represents the type of the Map key for this mapping
         ContainerPolicy policy = mapping.getContainerPolicy();
         Class<?> javaClass = null;
-        MapKeyMapping keyMapping = null; 
-        ClassDescriptor policyElementDescriptor = policy.getElementDescriptor();
+        MapKeyMapping keyMapping = null;        
         Object policyKeyType = null;
   
         /**
