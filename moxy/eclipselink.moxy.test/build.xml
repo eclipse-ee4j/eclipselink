@@ -85,6 +85,7 @@
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.path.against.jar">
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
