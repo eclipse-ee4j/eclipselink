@@ -44,6 +44,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author tware
  *
  */
+@SuppressWarnings("restriction")
 public class EquinoxInitializer extends JPAInitializer {
    
     /**
@@ -90,7 +91,7 @@ public class EquinoxInitializer extends JPAInitializer {
      * Note: This classloader will attempt to load Entities, MappedSuperclasses and Embeddables
      * without allowing them to be loaded by other class loaders.
      */
-    @SuppressWarnings({ "restriction", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     protected ClassLoader createTempLoader(Collection classNames, boolean shouldOverrideLoadClassForCollectionMembers) {
         if (!shouldCreateInternalLoader) {
             return initializationClassloader;

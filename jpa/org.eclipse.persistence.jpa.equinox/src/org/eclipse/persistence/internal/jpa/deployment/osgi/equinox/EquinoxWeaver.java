@@ -27,6 +27,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author tware
  *
  */
+@SuppressWarnings("restriction")
 final class EquinoxWeaver implements IWeaver {
 	private final ClassTransformer transformer;
 
