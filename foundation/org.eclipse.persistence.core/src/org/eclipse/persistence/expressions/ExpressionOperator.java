@@ -2247,6 +2247,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator simpleMath(int selector, String databaseName) {
         ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setIsBindingSupported(false);
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
