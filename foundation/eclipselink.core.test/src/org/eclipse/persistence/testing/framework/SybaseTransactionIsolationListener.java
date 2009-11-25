@@ -84,12 +84,12 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
         Statement stmt1 = null;
         Statement stmt2 = null;
         ResultSet result = null;
-        int isolationLevel;
+        Integer isolationLevel;
         try {
             stmt1 = conn.createStatement();
             result = stmt1.executeQuery("select @@isolation");
             result.next();
-            isolationLevel = result.getInt(1);
+            isolationLevel = new Integer(result.getInt(1));
             if(isolationLevel > 0) {
                 // If conn1 began transaction and updated the row (but hasn't committed the transaction yet),
                 // then conn2 should be able to read the original (not updated) state of the row.
@@ -131,11 +131,13 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
         Connection conn = ((DatabaseAccessor)event.getResult()).getConnection();
         Statement stmt = null;
         try {
-            int isolationLevel = connections.remove(conn);
-            // reset the original transaction isolation.
-            stmt = conn.createStatement();
-            stmt.execute("set transaction isolation level " + isolationLevel);
-            stmt.close();
+            Integer isolationLevel = connections.remove(conn);
+            if (isolationLevel != null){
+                // reset the original transaction isolation.
+                stmt = conn.createStatement();
+                stmt.execute("set transaction isolation level " + isolationLevel);
+                stmt.close();
+            }
         } catch (SQLException sqlException) {
             throw new TestProblemException("preReleaseConnection failed. ", sqlException);
         } finally {
