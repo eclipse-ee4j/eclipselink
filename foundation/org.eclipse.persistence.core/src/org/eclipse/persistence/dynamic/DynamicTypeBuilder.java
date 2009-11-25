@@ -22,9 +22,6 @@ package org.eclipse.persistence.dynamic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-
-import javax.persistence.Embeddable;
-
 import org.w3c.dom.Document;
 
 //EclipseLink imports
