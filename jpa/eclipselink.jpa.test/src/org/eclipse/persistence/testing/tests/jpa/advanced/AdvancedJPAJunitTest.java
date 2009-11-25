@@ -442,10 +442,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             assertTrue("Did not increment version for change to direct collection", emp.getVersion() == ++currentVersion);
             beginTransaction(em);
+            emp = em.find(Employee.class, empId);
             emp.getDealers().add(em.merge(new Dealer("update", "version")));
             commitTransaction(em);
             assertTrue("Did not increment version for change to uni-directional one to many with join table", emp.getVersion() == ++currentVersion);
             beginTransaction(em);
+            emp = em.find(Employee.class, empId);
             emp.getProjects().add(em.merge(new LargeProject("versionUpdate")));
             commitTransaction(em);
             assertTrue("Did not increment version for change to owned ManyToMany", emp.getVersion() == ++currentVersion);
