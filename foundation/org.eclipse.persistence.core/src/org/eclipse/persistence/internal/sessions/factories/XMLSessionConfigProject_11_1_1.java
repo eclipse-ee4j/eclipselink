@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_7_0_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
 
@@ -58,6 +59,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_1_PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_7_0_PlatformConfig.class));
         
         // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
         addDescriptor(buildDocumentPreservationPolicyConfigDescriptor());
@@ -165,7 +167,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_10_PlatformConfig.class, "weblogic-10-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_1_PlatformConfig.class, "websphere-61-platform");
-	
+        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_7_0_PlatformConfig.class, "websphere-7-platform");	
         return descriptor;
     }
 
