@@ -42,7 +42,8 @@ public class WeaverRegistry implements ClassLoadingHook, ServiceTrackerCustomize
 		return instance;
 	}
 
-	public boolean addClassPathEntry(ArrayList cpEntries, String cp,
+	@SuppressWarnings("unchecked")
+    public boolean addClassPathEntry(ArrayList cpEntries, String cp,
 			ClasspathManager hostmanager, BaseData sourcedata,
 			ProtectionDomain sourcedomain) {
 		return false;

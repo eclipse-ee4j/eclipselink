@@ -34,34 +34,27 @@ public class WeavingAdaptor implements AdaptorHook {
 	}
 
 	public void addProperties(Properties properties) {
-		// TODO Auto-generated method stub
 	}
 
 	public FrameworkLog createFrameworkLog() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void frameworkStop(BundleContext context) throws BundleException {
-		// TODO Auto-generated method stub
 	}
 
 	public void handleRuntimeError(Throwable error) {
-		// TODO Auto-generated method stub
 	}
 
 	public void initialize(BaseAdaptor adaptor) {
-		// TODO Auto-generated method stub
 	}
 
 	public URLConnection mapLocationToURLConnection(String location)
 			throws IOException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean matchDNChain(String pattern, String[] dnChain) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
