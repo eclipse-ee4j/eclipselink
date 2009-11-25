@@ -178,10 +178,10 @@ public class LobJUnitTestCase extends JUnitTestCase {
             em.clear();
             clearCache();
             
+            beginTransaction(em);
             image = em.find(Image.class, 5001);
             assertTrue("Image.customAttribute1 not correctly updated.", image.getCustomAttribute1().getSomeValue() == 2l);
             
-            beginTransaction(em);
             em.remove(image);
             commitTransaction(em);
             clearCache();
