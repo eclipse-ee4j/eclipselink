@@ -40,4 +40,8 @@ public class DefaultNamingConventionTransformer implements NamingConventionTrans
     public ElementStyle styleForElement(String elementName) {
         return ELEMENT;
     }
+
+    public String getOptimisticLockingField() {
+        return null;
+    }
 }

@@ -12,4 +12,5 @@ public interface NamingConventionTransformer {
 
     public ElementStyle styleForElement(String originalElementName);
 
+    public String getOptimisticLockingField();
 }
