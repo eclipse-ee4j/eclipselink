@@ -15,7 +15,13 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentr
 import javax.activation.DataHandler;
 
 public class AttTypes {
+    //@javax.xml.bind.annotation.XmlAttribute
+    //@javax.xml.bind.annotation.XmlAttachmentRef
     public DataHandler data;
+    
+    //@javax.xml.bind.annotation.XmlElement
+    //@javax.xml.bind.annotation.XmlAttachmentRef
     public DataHandler body;
+
     public Object thing;
 }

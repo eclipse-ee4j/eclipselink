@@ -80,18 +80,17 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         }
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        marshalRecord.closeStartGroupingElements(groupingFragment);
+
         if (objectValue == null) {
+            marshalRecord.closeStartGroupingElements(groupingFragment);
             return true;
         }
-        if(!xPathFragment.isSelfFragment){
-            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-            marshalRecord.closeStartElement();
-        }
+
+        // figure out CID or bytes 
+        String c_id = null;
+        byte[] bytes = null;
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //object value should be a DataHandler
-            String c_id = null;
-            byte[] bytes = null;
             if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) objectValue);
                 if(c_id == null) {
@@ -104,6 +103,42 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 bytes = data.getData();
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
             }
+        } else if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
+            XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
+            if (objectValue.getClass() == ClassConstants.APBYTE) {
+                bytes = (byte[]) objectValue;
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+            } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                if(c_id == null) {
+                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
+                }
+            } else {
+                XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                        objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
+                bytes = data.getData();
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+            }
+        }
+
+        // handle attributes
+        if (xPathFragment.isAttribute()) {
+            // if the CID is null there's nothing to write out
+            if (c_id != null) {
+                marshalRecord.attribute(xPathFragment, namespaceResolver, c_id);
+            }
+            marshalRecord.closeStartGroupingElements(groupingFragment);
+            return true;
+        }
+        
+        marshalRecord.closeStartGroupingElements(groupingFragment);
+        
+        if(!xPathFragment.isSelfFragment){
+            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+            marshalRecord.closeStartElement();
+        }
+        if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             if(c_id != null) {
                 marshalRecord.characters(c_id);
             } else {
@@ -112,25 +147,6 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
-                XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
-                String c_id = XMLConstants.EMPTY_STRING;
-                byte[] bytes = null;
-                if (objectValue.getClass() == ClassConstants.APBYTE) {
-                    bytes = (byte[]) objectValue;
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                    if(c_id == null) {
-                        bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                                objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
-                    }
-                } else {
-                    XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
-                    bytes = data.getData();
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                }
-
                 if(c_id == null) {
                     String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
                     marshalRecord.characters(value);
@@ -170,52 +186,32 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 if ((objectValue.getClass() == ClassConstants.ABYTE) || (objectValue.getClass() == ClassConstants.APBYTE)) {
                     value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, session);
                 } else {
-                    byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                             objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
                     value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
                 }
                 marshalRecord.characters(value);
             }
         }
+        
         if(!xPathFragment.isSelfFragment()){
         	marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
         return true;
     }
-
+    
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-        unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
-        XPathFragment lastFragment = xmlField.getLastXPathFragment();
-            if (!lastFragment.isAttribute()) {
-                //set a new content handler to deal with the Include element's event.
-                 BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
-                 String qnameString = xPathFragment.getLocalName();
-                 if (xPathFragment.getPrefix() != null) {
-                     qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
-                 }
-                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-                 unmarshalRecord.getXMLReader().setContentHandler(handler);
-        } else if (lastFragment.isAttribute()) {
-            //handle swaRef and inline attribute cases here:
-            String value = atts.getValue(lastFragment.getNamespaceURI(), lastFragment.getLocalName());
-            Object fieldValue = null;
-            if (xmlBinaryDataMapping.isSwaRef()) {
-                if (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) {
-                    if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                        fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value);
-                    } else {
-                        fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value);
-                    }
-                    xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession()));
-                }
-            } else {
-                //value should be base64 binary string
-                fieldValue = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
-                xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession()));
+            unmarshalRecord.removeNullCapableValue(this);
+            XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
+            XPathFragment lastFragment = xmlField.getLastXPathFragment();
+            BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
+            String qnameString = xPathFragment.getLocalName();
+            if (xPathFragment.getPrefix() != null) {
+                qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
             }
-        }
+            handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
+            unmarshalRecord.getXMLReader().setContentHandler(handler);
             return true;
         } catch(SAXException ex) {
             throw XMLMarshalException.unmarshalException(ex);
@@ -224,6 +220,31 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.getStringBuffer().reset();
+    }
+
+    /**
+     * Handle swaRef and inline attribute cases.
+     */
+    public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
+        unmarshalRecord.removeNullCapableValue(this);
+        XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
+        XPathFragment lastFragment = xmlField.getLastXPathFragment();
+        
+        Object fieldValue = null;
+        if (xmlBinaryDataMapping.isSwaRef()) {
+            if (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) {
+                if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                    fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value);
+                } else {
+                    fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value);
+                }
+                xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession()));
+            }
+        } else {
+            // value should be base64 binary string
+            fieldValue = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
+            xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession()));
+        }
     }
 
     public void setNullValue(Object object, Session session) {
