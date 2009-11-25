@@ -1379,7 +1379,9 @@ public class MetadataProject {
         
         table.setFullyQualifiedTableName(tableName);
 
-        table.setUseDelimiters(useDelimitedIdentifier());
+        if (useDelimitedIdentifier()){
+            table.setUseDelimiters(useDelimitedIdentifier());
+        }
         
         // Process the unique constraints
         table.processUniqueConstraints();
