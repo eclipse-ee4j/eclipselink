@@ -1580,10 +1580,7 @@ public class SchemaModelGenerator {
      * @return
      */
     protected boolean isFragPrimaryKey(XPathFragment frag, XMLDirectMapping mapping) {
-        // remove the following when ID support is needed
-        if (true) {
-            return false;
-        }
+        /* Uncomment the following when ID support is needed
         Vector<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
         if (pkFieldNames != null) {
             if (frag.isAttribute()) {
@@ -1591,6 +1588,7 @@ public class SchemaModelGenerator {
             }
             return pkFieldNames.contains(frag.getLocalName() + '/' + TEXT);
         }
+        */
         return false;
     }
     
