@@ -28,7 +28,6 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**

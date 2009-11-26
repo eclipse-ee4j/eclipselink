@@ -39,9 +39,7 @@ import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLParseException;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;

@@ -28,7 +28,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.jpa.Archive;
-import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
