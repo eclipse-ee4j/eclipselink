@@ -24,7 +24,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -448,21 +447,6 @@ public class XMLDescriptor extends ClassDescriptor {
             return;
         }
         setInitializationStage(PREINITIALIZED);
-
-
-        // 4924665 Check for spaces in table names, and add the appropriate quote character
-        Iterator tables = this.getTables().iterator();
-        while (tables.hasNext()) {
-            DatabaseTable next = (DatabaseTable) tables.next();
-            if (next.getName().indexOf(' ') != -1) {
-                //table names contains a space so needs to be quoted.
-                String quoteChar = ((DatasourcePlatform) session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
-                //Ensure this tablename hasn't already been quoted.
-                if (next.getName().indexOf(quoteChar) == -1) {
-                    next.setName(quoteChar + next.getName() + quoteChar);
-                }
-            }
-        }
 
         // Allow mapping pre init, must be done before validate.
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
