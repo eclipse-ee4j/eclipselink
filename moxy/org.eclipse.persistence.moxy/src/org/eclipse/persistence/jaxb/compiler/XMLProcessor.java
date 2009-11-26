@@ -407,10 +407,6 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
         }
-        // handle xml-bidirectional
-        if (xmlAttribute.getXmlBidirectional() != null) {
-            oldProperty.setBidirectionalPropertyName(xmlAttribute.getXmlBidirectional().getTargetAttribute());
-        }
 
         // handle xml-mime-type
         if (xmlAttribute.getXmlMimeType() != null) {
@@ -526,11 +522,6 @@ public class XMLProcessor {
             oldProperty.setIsXmlList(xmlElement.isXmlList());
         }
         
-        // handle xml-bidirectional
-        if (xmlElement.getXmlBidirectional() != null) {
-            oldProperty.setBidirectionalPropertyName(xmlElement.getXmlBidirectional().getTargetAttribute());
-        }
-
         // handle xml-mime-type
         if (xmlElement.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlElement.getXmlMimeType());
@@ -735,7 +726,7 @@ public class XMLProcessor {
         oldProperty.setIsRequired(false);
         oldProperty.setIsXmlList(false);
         oldProperty.setXmlJavaTypeAdapter(null);
-        oldProperty.setBidirectionalPropertyName(null);
+        oldProperty.setInverseReferencePropertyName(null);
         oldProperty.setDefaultValue(null);
         oldProperty.setDomHandlerClassName(null);
         oldProperty.setIsSwaAttachmentRef(false);

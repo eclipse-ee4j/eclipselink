@@ -89,9 +89,10 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.annotations.XmlBidirectional;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 
 /**
  * INTERNAL:
@@ -362,7 +363,7 @@ public class AnnotationsProcessor {
                     if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
                     }
-                    if (!property.isXmlValue() && !property.isAttribute()) {
+                    if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference()) {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
@@ -1210,19 +1211,22 @@ public class AnnotationsProcessor {
         }
         if(helper.isAnnotationPresent(javaHasAnnotations, XmlContainerProperty.class)) {
             XmlContainerProperty container = (XmlContainerProperty)helper.getAnnotation(javaHasAnnotations, XmlContainerProperty.class);
-            property.setBidirectionalPropertyName(container.value());
-            property.setBidirectionalPropertyGetMethodName(container.getMethodName());
-            property.setBidirectionalPropertySetMethodName(container.setMethodName());
-        } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlBidirectional.class)) {
-            XmlBidirectional backpointer = (XmlBidirectional)helper.getAnnotation(javaHasAnnotations, XmlBidirectional.class);
-            property.setBidirectionalPropertyName(backpointer.targetAttribute());
+            property.setInverseReferencePropertyName(container.value());
+            property.setInverseReferencePropertyGetMethodName(container.getMethodName());
+            property.setInverseReferencePropertySetMethodName(container.setMethodName());
+        } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlInverseReference.class)) {
+            XmlInverseReference inverseReference = (XmlInverseReference) helper.getAnnotation(javaHasAnnotations, XmlInverseReference.class);
+            property.setInverseReferencePropertyName(inverseReference.mappedBy());
+            
             TypeInfo targetInfo = this.getTypeInfo().get(property.getActualType().getName());
-            if(targetInfo != null && targetInfo.getXmlAccessType() == XmlAccessType.PROPERTY) {
+            if (targetInfo != null && targetInfo.getXmlAccessType() == XmlAccessType.PROPERTY) {
                 String propName = property.getPropertyName();
                 propName = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
-                property.setBidirectionalPropertyGetMethodName("get" + propName);
-                property.setBidirectionalPropertySetMethodName("set" + propName);
+                property.setInverseReferencePropertyGetMethodName("get" + propName);
+                property.setInverseReferencePropertySetMethodName("set" + propName);
             }
+
+            property.setInverseReference(true);
         }
         processXmlJavaTypeAdapter(property, info);
         

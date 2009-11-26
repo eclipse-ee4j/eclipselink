@@ -184,16 +184,16 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         unmarshalRecord.addAttributeValue(this, objectValue, collection);
         
-        if(xmlCompositeCollectionMapping.getContainerAccessor() != null) {
-            if(xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy() == null) {
-                xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
+        if(xmlCompositeCollectionMapping.getInverseReferenceMapping() != null) {
+            if(xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy() == null) {
+                xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
             } else {
-                Object backpointerContainer = xmlCompositeCollectionMapping.getContainerAccessor().getAttributeValueFromObject(objectValue);
+                Object backpointerContainer = xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(objectValue);
                 if(backpointerContainer == null) {
-                    backpointerContainer = xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().containerInstance();
-                    xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, backpointerContainer);
+                    backpointerContainer = xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
+                    xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(objectValue, backpointerContainer);
                 }
-                xmlCompositeCollectionMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
+                xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
         unmarshalRecord.setChildRecord(null);

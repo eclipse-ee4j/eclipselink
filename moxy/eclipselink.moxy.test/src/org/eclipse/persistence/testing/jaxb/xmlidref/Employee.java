@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.oxm.annotations.XmlBidirectional;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @XmlRootElement(name="employee")
 public class Employee {
@@ -34,12 +34,10 @@ public class Employee {
     
     @XmlIDREF
     @XmlAttribute(name="address-id")
-    @XmlBidirectional(targetAttribute = "emp")
     public Address address;
     
     @XmlIDREF
     @XmlElement(name="phone-id")
-    @XmlBidirectional(targetAttribute = "emp")
     public Collection<PhoneNumber> phones;
 
     public boolean equals(Object obj) {

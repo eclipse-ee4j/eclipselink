@@ -695,10 +695,10 @@ public class XMLContext {
                         AttributeAccessor containerAccessor = null;
                         Class containerClass = null;
                         if(oxmMapping instanceof XMLCompositeObjectMapping) {
-                            containerAccessor = ((XMLCompositeObjectMapping)oxmMapping).getContainerAccessor();
+                            containerAccessor = ((XMLCompositeObjectMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
                             containerClass = ((XMLCompositeObjectMapping)oxmMapping).getReferenceClass();
                         } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
-                            containerAccessor = ((XMLCompositeCollectionMapping)oxmMapping).getContainerAccessor();
+                            containerAccessor = ((XMLCompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
                             containerClass = ((XMLCompositeCollectionMapping)oxmMapping).getReferenceClass();
                         }
                         if(containerAccessor != null) {
@@ -711,9 +711,9 @@ public class XMLContext {
                                     ormAccessor.setChangeTracking(containerDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
                                     ormAccessor.setValueHolderProperty(ormContainerMapping instanceof OneToOneMapping && ((OneToOneMapping)ormContainerMapping).usesIndirection());
                                     if(oxmMapping instanceof XMLCompositeObjectMapping) {
-                                        ((XMLCompositeObjectMapping)oxmMapping).setContainerAccessor(ormAccessor);
+                                        ((XMLCompositeObjectMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
                                     } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
-                                        ((XMLCompositeCollectionMapping)oxmMapping).setContainerAccessor(ormAccessor);
+                                        ((XMLCompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
                                     }
                                     
                                 }
@@ -729,12 +729,12 @@ public class XMLContext {
                     DatabaseMapping nextMapping = oxmMappingsIterator.next();
                     if(nextMapping instanceof XMLObjectReferenceMapping) {
                         XMLObjectReferenceMapping refMapping = (XMLObjectReferenceMapping)nextMapping;
-                        if(refMapping.getBidirectionalTargetAccessor() != null && refMapping.getBidirectionalTargetContainerPolicy() != null) {
+                        if(refMapping.getInverseReferenceMapping().getAttributeAccessor() != null && refMapping.getInverseReferenceMapping().getContainerPolicy() != null) {
                             ClassDescriptor refDescriptor = ormSession.getClassDescriptor(refMapping.getReferenceClass());
                             if(refDescriptor != null) {
-                                DatabaseMapping backpointerMapping =refDescriptor.getMappingForAttributeName(refMapping.getBidirectionalTargetAttributeName());
+                                DatabaseMapping backpointerMapping =refDescriptor.getMappingForAttributeName(refMapping.getInverseReferenceMapping().getAttributeName());
                                 if(backpointerMapping != null && backpointerMapping.isCollectionMapping()) {
-                                    refMapping.setBidirectionalTargetContainerClass(((CollectionMapping)backpointerMapping).getContainerPolicy().getContainerClass());
+                                    refMapping.getInverseReferenceMapping().getContainerPolicy().setContainerClass(((CollectionMapping)backpointerMapping).getContainerPolicy().getContainerClass());
                                 }
                             }
                         }

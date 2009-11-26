@@ -1,0 +1,27 @@
+<root>
+	<employee>
+	  <name>Jane Doe</name>
+	  <address>
+		<street>123 Fake Street</street>
+	  </address>
+	  <phone-numbers>
+	    <number>123-4567</number>
+		<number>234-5678</number>
+	  </phone-numbers>
+	  <email-id>123</email-id>
+	  <email-id>456</email-id>
+	  <sec-cred-id>123</sec-cred-id>
+	</employee>
+	<email id="123">
+		<username>jane.doe</username>
+		<domain>eclipse.org</domain>
+	</email>
+	<email id="456">
+		<username>jdoe1972</username>
+		<domain>rocketmail.com</domain>
+	</email>
+	<security-credential id="123">
+		<zone>17A</zone>
+		<key-number>82347623847</key-number>
+	</security-credential>
+</root>

@@ -156,19 +156,19 @@ public class ReferenceResolver {
                 // for each reference, get the source object and add it to the container policy
                 // when finished, set the policy on the mapping
                 mapping.setAttributeValueInObject(currentObject, container);
-                if(mapping.getBidirectionalTargetAccessor() != null) {
+                if(mapping.getInverseReferenceMapping() != null) {
                     Object iterator = cPolicy.iteratorFor(container);
                     while(cPolicy.hasNext(iterator)) {
                         Object next = cPolicy.next(iterator, session);
-                        if(mapping.getBidirectionalTargetContainerPolicy() == null) {
-                            mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(next, currentObject);
+                        if(mapping.getInverseReferenceMapping().getContainerPolicy() == null) {
+                            mapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(next, currentObject);
                         } else {
-                            Object backpointerContainer = mapping.getBidirectionalTargetAccessor().getAttributeValueFromObject(next);
+                            Object backpointerContainer = mapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(next);
                             if(backpointerContainer == null) {
-                                backpointerContainer = mapping.getBidirectionalTargetContainerPolicy().containerInstance();
-                                mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(next, backpointerContainer);
+                                backpointerContainer = mapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
+                                mapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(next, backpointerContainer);
                             }
-                            mapping.getBidirectionalTargetContainerPolicy().addInto(currentObject, backpointerContainer, session);
+                            mapping.getInverseReferenceMapping().getContainerPolicy().addInto(currentObject, backpointerContainer, session);
                         }
                     }
                 }
@@ -181,17 +181,18 @@ public class ReferenceResolver {
                 if (null != reference.getSetting()) {
                     reference.getSetting().setValue(value);
                 }
-                AttributeAccessor backpointerAccessor = mapping.getBidirectionalTargetAccessor();
-                if(backpointerAccessor != null) {
-                    if(mapping.getBidirectionalTargetContainerPolicy() == null) {
-                        mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(value, reference.getSourceObject());
+
+                if(mapping.getInverseReferenceMapping() != null) {
+                    AttributeAccessor backpointerAccessor = mapping.getInverseReferenceMapping().getAttributeAccessor();                    
+                    if(mapping.getInverseReferenceMapping().getContainerPolicy() == null) {
+                        backpointerAccessor.setAttributeValueInObject(value, reference.getSourceObject());
                     } else {
-                        Object backpointerContainer = mapping.getBidirectionalTargetAccessor().getAttributeValueFromObject(value);
+                        Object backpointerContainer = backpointerAccessor.getAttributeValueFromObject(value);
                         if(backpointerContainer == null) {
-                            backpointerContainer = mapping.getBidirectionalTargetContainerPolicy().containerInstance();
-                            mapping.getBidirectionalTargetAccessor().setAttributeValueInObject(value, backpointerContainer);
+                            backpointerContainer = mapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
+                            backpointerAccessor.setAttributeValueInObject(value, backpointerContainer);
                         }
-                        mapping.getBidirectionalTargetContainerPolicy().addInto(reference.getSourceObject(), backpointerContainer, session);
+                        mapping.getInverseReferenceMapping().getContainerPolicy().addInto(reference.getSourceObject(), backpointerContainer, session);
                     }
                 }
             }

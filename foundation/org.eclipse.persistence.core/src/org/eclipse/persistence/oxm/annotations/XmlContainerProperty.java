@@ -21,10 +21,11 @@ import java.lang.annotation.Target;
  * This annotation indicates a transient property on the target object of this
  * field that refers back to the owning object. 
  * @author Matt
- *
+ * @deprecated  As of EclipseLink 2.0, replaced by XmlInverseReference.
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface XmlContainerProperty {
 	/**
 	 * The name of the back pointer attribute on the target class

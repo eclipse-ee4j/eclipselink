@@ -449,7 +449,6 @@
                 <syspropertyset refid="parser.properties"/>
                 <batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml">
                     <fileset dir="${eclipselink.moxy.test}/${src.dir}">
-                        <include name="**/ContainerAccessorTestSuite.java" />
                         <include name="**/DocumentPreservationTestSuite.java"/>
                         <include name="**/RootElementTestSuite.java"/>
                         <include name="**/XMLRootTestSuite.java"/>
@@ -479,6 +478,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/directtofield/converter/DirectToFieldConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -527,6 +527,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>

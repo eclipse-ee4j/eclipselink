@@ -313,16 +313,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
             // Set the child object on the parent
             unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
-            if(xmlCompositeObjectMapping.getContainerAccessor() != null) {
-                if(xmlCompositeObjectMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy() == null) {
-                    xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+            if(xmlCompositeObjectMapping.getInverseReferenceMapping() != null) {
+                if(xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy() == null) {
+                    xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
                 } else {
-                    Object backpointerContainer = xmlCompositeObjectMapping.getContainerAccessor().getAttributeValueFromObject(object);
+                    Object backpointerContainer = xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(object);
                     if(backpointerContainer == null) {
-                        backpointerContainer = xmlCompositeObjectMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().containerInstance();
-                        xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(object, backpointerContainer);
+                        backpointerContainer = xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
+                        xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(object, backpointerContainer);
                     }
-                    xmlCompositeObjectMapping.getBidirectionalPolicy().getBidirectionalTargetContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
+                    xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
                 }
             }
             unmarshalRecord.setChildRecord(null);
@@ -389,8 +389,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
-            if (xmlCompositeObjectMapping.getContainerAccessor() != null) {
-                xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
+            if (xmlCompositeObjectMapping.getInverseReferenceMapping() != null) {
+                xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
             }
         }
     }

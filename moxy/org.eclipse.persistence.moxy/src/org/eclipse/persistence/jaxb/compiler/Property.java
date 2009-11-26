@@ -72,10 +72,11 @@ public class Property {
     private boolean isXmlId = false;
     private boolean isXmlIdRef = false;
     
-    private String bidirectionalPropertyName;
-    private String bidirectionalPropertyGetMethodName;
-    private String bidirectionalPropertySetMethodName;
-    private JavaClass bidirectionalPropertyContainerClass;
+    private String inverseReferencePropertyName;
+    private String inverseReferencePropertyGetMethodName;
+    private String inverseReferencePropertySetMethodName;
+    private JavaClass inverseReferencePropertyContainerClass;
+    private boolean isInverseReference;
     
     // XmlAnyElement specific attributes
     private boolean lax;
@@ -497,36 +498,36 @@ public class Property {
         return this.isXmlList;
     }
     
-    public String getBidirectionalPropertyName() {
-        return this.bidirectionalPropertyName;
+    public String getInverseReferencePropertyName() {
+        return this.inverseReferencePropertyName;
     }
     
-    public void setBidirectionalPropertyName(String name) {
-        this.bidirectionalPropertyName = name;
+    public void setInverseReferencePropertyName(String name) {
+        this.inverseReferencePropertyName = name;
     }
     
-    public String getBidirectionalPropertyGetMethodName() {
-        return this.bidirectionalPropertyGetMethodName;
+    public String getInverseReferencePropertyGetMethodName() {
+        return this.inverseReferencePropertyGetMethodName;
     }
     
-    public String getBidirectionalPropertySetMethodName() {
-        return this.bidirectionalPropertySetMethodName;
+    public String getInverseReferencePropertySetMethodName() {
+        return this.inverseReferencePropertySetMethodName;
     }
     
-    public void setBidirectionalPropertyGetMethodName(String methodName) {
-        this.bidirectionalPropertyGetMethodName = methodName;
+    public void setInverseReferencePropertyGetMethodName(String methodName) {
+        this.inverseReferencePropertyGetMethodName = methodName;
     }
     
-    public void setBidirectionalPropertySetMethodName(String methodName) {
-        this.bidirectionalPropertySetMethodName = methodName;
+    public void setInverseReferencePropertySetMethodName(String methodName) {
+        this.inverseReferencePropertySetMethodName = methodName;
     }
     
-    public JavaClass getBidirectionalPropertyContainerClass() {
-        return this.bidirectionalPropertyContainerClass;
+    public JavaClass getInverseReferencePropertyContainerClass() {
+        return this.inverseReferencePropertyContainerClass;
     }
     
-    public void setBidirectionalPropertyContainerClass(JavaClass cls) {
-        this.bidirectionalPropertyContainerClass = cls;
+    public void setInverseReferencePropertyContainerClass(JavaClass cls) {
+        this.inverseReferencePropertyContainerClass = cls;
     }
     
     /**
@@ -629,6 +630,14 @@ public class Property {
 	public void setIsMap(boolean isMap) {
 		this.isMap = isMap;
 	}
+
+    public boolean isInverseReference() {
+        return isInverseReference;
+    }
+
+    public void setInverseReference(boolean isInverseReference) {
+        this.isInverseReference = isInverseReference;
+    }
 
 
 }

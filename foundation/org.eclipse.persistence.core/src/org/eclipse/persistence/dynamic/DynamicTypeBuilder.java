@@ -502,6 +502,8 @@ public class DynamicTypeBuilder {
         return loadDynamicProject(dynamicClassLoader.getResourceAsStream(resourcePath), login, dynamicClassLoader);
     }
 
+    
+    
     /**
      * Load a dynamic project from deployment XML creating dynamic types for all
      * descriptors where the provided class name does not exist.
@@ -532,7 +534,10 @@ public class DynamicTypeBuilder {
         ObjectPersistenceWorkbenchXMLProject opmProject = new ObjectPersistenceWorkbenchXMLProject();
         Document document = xmlParser.parse(resourceStream);
         Project project = XMLProjectReader.readObjectPersistenceRuntimeFormat(document, dynamicClassLoader, opmProject);
+        return loadDynamicProject(project, login, dynamicClassLoader);
+    }
 
+    public static Project loadDynamicProject(Project project, DatabaseLogin login, DynamicClassLoader dynamicClassLoader) {
         if (project != null) {
             if (login == null) {
                 if (project.getLogin() == null) {

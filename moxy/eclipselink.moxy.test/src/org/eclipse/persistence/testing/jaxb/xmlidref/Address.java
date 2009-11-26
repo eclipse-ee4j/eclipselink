@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
 @XmlRootElement(name="address")
 public class Address {
     @XmlID
@@ -38,7 +40,7 @@ public class Address {
     @XmlElement(name="zip")
 	public String zip;
     
-    @XmlTransient
+    @XmlInverseReference(mappedBy = "address")
     public List<Employee> emp;
 	
 	public boolean equals(Object obj) {

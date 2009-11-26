@@ -14,12 +14,14 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty;
 
 import javax.xml.bind.annotation.*;
 
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
 
 public class Address {
 	public String street;
 	public String city;
 	
-	@XmlTransient
+	@XmlInverseReference(mappedBy="address")
 	public Employee owningEmployee;
 	
 	public boolean equals(Object o) {

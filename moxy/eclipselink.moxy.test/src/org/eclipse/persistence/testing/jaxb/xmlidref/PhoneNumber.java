@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.jaxb.xmlidref;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
 public class PhoneNumber {
 
     @XmlID
@@ -22,7 +24,7 @@ public class PhoneNumber {
     
     public String number;
     
-    @XmlTransient
+    @XmlInverseReference(mappedBy = "phones")
     public Employee emp;
     
     public boolean equals(Object obj) {

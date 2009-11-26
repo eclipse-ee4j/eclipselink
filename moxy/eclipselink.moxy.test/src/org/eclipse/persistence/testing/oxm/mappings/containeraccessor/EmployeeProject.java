@@ -10,8 +10,8 @@ import org.eclipse.persistence.oxm.mappings.*;
 public class EmployeeProject extends Project {
 	public EmployeeProject(boolean methodAccess) {
 		addEmployeeDescriptor(methodAccess);
-		addAddressDescriptor();
-		addPhoneNumberDescriptor();
+		addAddressDescriptor(methodAccess);
+		addPhoneNumberDescriptor(methodAccess);
 	}
 	
 	public void addEmployeeDescriptor(boolean methodAccess) {
@@ -38,11 +38,6 @@ public class EmployeeProject extends Project {
 		addressMapping.setAttributeName("address");
 		addressMapping.setReferenceClass(Address.class);
 		addressMapping.setXPath("address");
-		addressMapping.setContainerAttributeName("owningEmployee");
-		if(methodAccess) {
-			addressMapping.setContainerGetMethodName("getOwningEmployee");
-			addressMapping.setContainerSetMethodName("setOwningEmployee");
-		}
 		descriptor.addMapping(addressMapping);
 		
 		XMLCompositeCollectionMapping phoneMapping = new XMLCompositeCollectionMapping();
@@ -50,16 +45,11 @@ public class EmployeeProject extends Project {
 		phoneMapping.setReferenceClass(PhoneNumber.class);
 		phoneMapping.setXPath("phone-numbers/number");
 		phoneMapping.setContainerPolicy(ContainerPolicy.buildPolicyFor(ArrayList.class));
-		phoneMapping.setContainerAttributeName("owningEmployee");
-		if(methodAccess) {
-			phoneMapping.setContainerGetMethodName("getOwningEmployee");
-			phoneMapping.setContainerSetMethodName("setOwningEmployee");
-		}
 		descriptor.addMapping(phoneMapping);
 		this.addDescriptor(descriptor);
 	}
 	
-	public void addAddressDescriptor() {
+	public void addAddressDescriptor(boolean methodAccess) {
 		XMLDescriptor descriptor = new XMLDescriptor();
 		descriptor.setJavaClass(Address.class);
 		
@@ -83,10 +73,20 @@ public class EmployeeProject extends Project {
 		countryMapping.setXPath("country/text()");
 		descriptor.addMapping(countryMapping);
 		
+        XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();
+        owningEmployee.setReferenceClass(Employee.class);
+        owningEmployee.setMappedBy("address");
+        owningEmployee.setAttributeName("owningEmployee");
+        if (methodAccess) {
+            owningEmployee.setSetMethodName("setOwningEmployee");
+            owningEmployee.setGetMethodName("getOwningEmployee");
+        }
+        descriptor.addMapping(owningEmployee);    
+		
 		this.addDescriptor(descriptor);
 	}
 	
-	public void addPhoneNumberDescriptor() {
+	public void addPhoneNumberDescriptor(boolean methodAccess) {
 		XMLDescriptor descriptor = new XMLDescriptor();
 		descriptor.setJavaClass(PhoneNumber.class);
 		
@@ -94,6 +94,16 @@ public class EmployeeProject extends Project {
 		numberMapping.setAttributeName("number");
 		numberMapping.setXPath("text()");
 		descriptor.addMapping(numberMapping);
+		
+        XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();
+        owningEmployee.setReferenceClass(Employee.class);
+        owningEmployee.setMappedBy("phoneNumbers");
+        owningEmployee.setAttributeName("owningEmployee");
+        if (methodAccess) {
+            owningEmployee.setSetMethodName("setOwningEmployee");
+            owningEmployee.setGetMethodName("getOwningEmployee");
+        }
+        descriptor.addMapping(owningEmployee);        
 		
 		this.addDescriptor(descriptor);
 	}

@@ -30,12 +30,10 @@ public class Employee {
 	public String lastName;
 	
 	@XmlElement(name="address")
-	@XmlContainerProperty("owningEmployee")
 	public Address address;
 	
 	@XmlElementWrapper(name="phone-numbers")
 	@XmlElement(name="number")
-	@XmlContainerProperty("owningEmployee")
 	public Vector<PhoneNumber> phoneNumbers;
 	
 	public boolean equals(Object e) {

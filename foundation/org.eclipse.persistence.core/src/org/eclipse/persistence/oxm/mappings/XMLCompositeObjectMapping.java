@@ -195,7 +195,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  */
 public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
-    private BidirectionalPolicy bidirectionalPolicy;
+    private XMLInverseReferenceMapping inverseReferenceMapping;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     private boolean isWriteOnly;
 
@@ -203,15 +203,19 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         super();
         // The default policy is NullPolicy
         nullPolicy = new NullPolicy();
-        bidirectionalPolicy = new BidirectionalPolicy();
     }
 
     /**
      * Gets the AttributeAccessor that is used to get and set the value of the
      * container on the target object.
+     * @deprecated Replaced by getInverseReferenceMapping().getAttributeAccessor()
      */
+    @Deprecated
     public AttributeAccessor getContainerAccessor() {
-        return bidirectionalPolicy.getBidirectionalTargetAccessor();
+        if (this.inverseReferenceMapping == null) {
+            return null;
+        }
+        return this.inverseReferenceMapping.getAttributeAccessor();
     }
     
     /**
@@ -219,9 +223,14 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * container on the target object.
      * 
      * @param anAttributeAccessor - the accessor to be used.
+     * @deprecated Replaced by getInverseReferenceMapping().setAttributeAccessor()
      */
+    @Deprecated
     public void setContainerAccessor(AttributeAccessor anAttributeAccessor) {
-        this.bidirectionalPolicy.setBidirectionalTargetAccessor(anAttributeAccessor);
+        if (this.inverseReferenceMapping == null) {
+            return;
+        }
+        this.inverseReferenceMapping.setAttributeAccessor(anAttributeAccessor);
     }
     
     /**
@@ -231,18 +240,27 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * during initialize.
      * 
      * @param attributeName - the name of the backpointer attribute to be populated
+     * @deprecated Replaced by getInverseReferenceMapping().setAttributeName()
      */
+    @Deprecated
     public void setContainerAttributeName(String attributeName) {
-        this.bidirectionalPolicy.setBidirectionalTargetAttributeName(attributeName);
-
+        if (this.inverseReferenceMapping == null) {
+            return;
+        }       
+        this.inverseReferenceMapping.setAttributeName(attributeName);
     }
     
     /**
      * Gets the name of the backpointer attribute on the target object. Used to 
      * populate the backpointer.
+     * @deprecated Replaced by getInverseReferenceMapping().getAttributeName()
      */    
+    @Deprecated
     public String getContainerAttributeName() {
-        return this.bidirectionalPolicy.getBidirectionalTargetAttributeName();
+        if (this.inverseReferenceMapping == null) {
+            return null;
+        }
+        return this.inverseReferenceMapping.getAttributeName();
     }
     
     /**
@@ -252,9 +270,14 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * during initialize.
      * 
      * @param methodName - the getter method to be used.
+     * @deprecated Replaced by getInverseReferenceMapping().setGetMethodName()
      */
+    @Deprecated
     public void setContainerGetMethodName(String methodName) {
-        this.bidirectionalPolicy.setBidirectionalTargetGetMethodName(methodName);
+        if (this.inverseReferenceMapping == null) {
+            return;
+        }
+        this.inverseReferenceMapping.setGetMethodName(methodName);
     }
     
     /**
@@ -264,25 +287,40 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * during initialize.
      * 
      * @param methodName - the setter method to be used.
+     * @deprecated Replaced by getInverseReferenceMapping().setSetMethodName()
      */
+    @Deprecated
     public void setContainerSetMethodName(String methodName) {
-        this.bidirectionalPolicy.setBidirectionalTargetSetMethodName(methodName);
+        if (this.inverseReferenceMapping == null) {
+            return;
+        }
+        this.inverseReferenceMapping.setSetMethodName(methodName);
     }    
     
     /**
      * Gets the name of the method to be used when accessing the value of the 
      * back pointer on the target object of this mapping.
+     * @deprecated Replaced by getInverseReferenceMapping().getGetMethodName()
      */    
+    @Deprecated
     public String getContainerGetMethodName() {
-        return this.bidirectionalPolicy.getBidirectionalTargetGetMethodName();
+        if (this.inverseReferenceMapping == null) {
+            return null;
+        }
+        return this.inverseReferenceMapping.getGetMethodName();
     }
     
     /**
      * Gets the name of the method to be used when setting the value of the 
      * back pointer on the target object of this mapping.
+     * @deprecated Replaced by getInverseReferenceMapping().getSetMethodName()
      */    
+    @Deprecated
     public String getContainerSetMethodName() {
-        return this.bidirectionalPolicy.getBidirectionalTargetSetMethodName();
+        if (this.inverseReferenceMapping == null) {
+            return null;
+        }
+        return this.inverseReferenceMapping.getSetMethodName();
     }    
     
     /**
@@ -426,15 +464,15 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         Object attributeValue = valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
         setAttributeValueInObject(targetObject, attributeValue);
         if(null != getContainerAccessor()) {
-            if(this.bidirectionalPolicy.getBidirectionalTargetContainerPolicy() == null) {
+            if(this.inverseReferenceMapping.getContainerPolicy() == null) {
                 getContainerAccessor().setAttributeValueInObject(attributeValue, targetObject);
             } else {
                 Object backpointerContainer = getContainerAccessor().getAttributeValueFromObject(attributeValue);
                 if(backpointerContainer == null) {
-                    backpointerContainer = bidirectionalPolicy.getBidirectionalTargetContainerPolicy().containerInstance();
+                    backpointerContainer = this.inverseReferenceMapping.getContainerPolicy().containerInstance();
                     getContainerAccessor().setAttributeValueInObject(attributeValue, backpointerContainer);
                 }
-                bidirectionalPolicy.getBidirectionalTargetContainerPolicy().addInto(targetObject, backpointerContainer, executionSession);
+                this.inverseReferenceMapping.getContainerPolicy().addInto(targetObject, backpointerContainer, executionSession);
             }
         }
         return attributeValue;
@@ -743,13 +781,12 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         super.setAttributeValueInObject(object, value);
     }  
     
-    public BidirectionalPolicy getBidirectionalPolicy() {
-        return this.bidirectionalPolicy;
+    public XMLInverseReferenceMapping getInverseReferenceMapping() {
+        return inverseReferenceMapping;
     }
-    
-    public void setBidirectionalPolicy(BidirectionalPolicy policy) {
-        this.bidirectionalPolicy = policy;
+
+    void setInverseReferenceMapping(XMLInverseReferenceMapping inverseReferenceMapping) {
+        this.inverseReferenceMapping = inverseReferenceMapping;
     }
-    
     
 }

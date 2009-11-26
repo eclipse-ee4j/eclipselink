@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -134,6 +135,11 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         XMLField xmlField;
         while (mappingIterator.hasNext()) {
             xmlMapping = (DatabaseMapping)mappingIterator.next();
+            
+            if (xmlMapping instanceof XMLInverseReferenceMapping) {
+                continue;
+            }
+            
             xmlField = (XMLField)xmlMapping.getField();
             if (xmlMapping.isTransformationMapping()) {
                 transformationMapping = (AbstractTransformationMapping)xmlMapping;
