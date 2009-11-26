@@ -829,7 +829,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         
         clearCache(DDL_PU);
         em = createEntityManager(DDL_PU);
-        List<CKeyEntityC> clist = em.createQuery("SELECT c from CKeyEntityC c LEFT OUTER JOIN c.bs bs WHERE c.key = :key", CKeyEntityC.class).setParameter("key", c1KeyPK).getResultList();
+        List<CKeyEntityC> clist = em.createQuery("SELECT c from CKeyEntityC c LEFT OUTER JOIN c.bs bs WHERE c.key = :key").setParameter("key", c1KeyPK).getResultList();
         // verify
         String errorMsg = "";
         int nSize = clist.size();
