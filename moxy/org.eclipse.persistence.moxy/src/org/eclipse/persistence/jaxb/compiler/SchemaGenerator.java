@@ -117,7 +117,7 @@ public class SchemaGenerator {
                     elementName = Introspector.decapitalize(myClassName.substring(myClassName.lastIndexOf('.') + 1));
                 }
 
-                // TODO - remove this TCK hack...
+                // the following satisfies a TCK requirement
                 if (elementName.length() >= 3) {
                     int idx = elementName.length() - 1;
                     char ch = elementName.charAt(idx - 1);
@@ -160,7 +160,6 @@ public class SchemaGenerator {
         if (info.isEnumerationType() || (propertyNames.size() == 1 && xmlValueProperty != null)) {
             SimpleType type = new SimpleType();
             //simple type case, we just need the name and namespace info
-            //TODO: add namespace support
             if (typeName.equals("")) {
                 //In this case, it should be a type under
                 //A root elem or locally defined whenever used
@@ -286,13 +285,13 @@ public class SchemaGenerator {
             if (info.isSetPropOrder()) {
                 propOrder = info.getPropOrder();
             }
-
+            
             if (propOrder != null && propOrder.length == 0) {
-                // TODO: needed to hack for TCK - spec requires an 'all' to be
-                // generated in cases where propOrder == 0, however, the TCK 
+                // Note that the spec requires an 'all' to be generated 
+                // in cases where propOrder == 0, however, the TCK 
                 // requires the extension case to use sequences
                 if (info.hasElementRefs()) {
-                    //needs to be a sequence
+                    // generate a sequence to satisfy TCK
                     compositor = new Sequence();
                     if (extension != null) {
                         extension.setSequence((Sequence) compositor);
@@ -307,6 +306,7 @@ public class SchemaGenerator {
                     type.setAll((All) compositor);
                 }
             } else {
+                // generate a sequence to satisfy TCK
                 compositor = new Sequence();
                 if (extension != null) {
                     extension.setSequence((Sequence) compositor);
@@ -659,9 +659,6 @@ public class SchemaGenerator {
 
                     if (next.getGenericType() != null) {
                         if (next.isXmlList()) {
-                            if (isComplexType) {
-                                //TODO: Error case probably
-                            }
                             SimpleType localSimpleType = new SimpleType();
                             org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
                             list.setItemType(typeName);

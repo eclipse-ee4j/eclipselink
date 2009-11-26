@@ -77,7 +77,6 @@ public class MarshalCallback {
                 domainClass = PrivilegedAccessHelper.getClassForName(domainClassName, true, loader);
             }
         } catch (ClassNotFoundException ex) {
-            // TODO: should never get here, but may want to throw an exception
             return;
         }
         Class[] params = new Class[] { Marshaller.class };

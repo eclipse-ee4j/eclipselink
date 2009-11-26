@@ -53,8 +53,6 @@ public class JavaMethodImpl implements JavaMethod {
         for (Type type : params) {
             if (type instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) type;
-                // TODO: should the following be:
-                // argCollection.add(new JavaClassImpl(pType, (Class) pType.getRawType()));
                 argCollection.add(new JavaClassImpl(pType, pType.getClass()));
             } else if (type instanceof Class) {
                 argCollection.add(new JavaClassImpl((Class) type));

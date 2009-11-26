@@ -206,14 +206,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || contentHandler == null) {
             throw new IllegalArgumentException();
         }
-		// TODO:  in our case, we only care if the object is an instance
-        // of JAXBElement, and do not need to use the introspector...
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-		//if (jaxbIntrospector.isElement(object)) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            // object = createXMLRootFromJAXBElement((JAXBElement) object);
-        //}
-
         if (object instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -229,7 +221,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || eventWriter == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
         if (object instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
             object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -251,7 +242,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || node == null) {
             throw new IllegalArgumentException();
         }
-		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -267,7 +257,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || outputStream == null) {
             throw new IllegalArgumentException();
         }
-		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -291,7 +280,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
         }
-		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -311,7 +299,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || streamWriter == null) {
             throw new IllegalArgumentException();
         }
-		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -333,7 +320,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || writer == null) {
             throw new IllegalArgumentException();
         }
-		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);

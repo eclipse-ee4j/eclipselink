@@ -1567,9 +1567,6 @@ public class MappingsGenerator {
                 mapping.setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-
-        // TODO: if reference class is not in typeinfo list OR the ID is not
-        // set, throw an exception...
         descriptor.addMapping(mapping);
     }
     /**
@@ -1629,8 +1626,6 @@ public class MappingsGenerator {
                 mapping.setBidirectionalTargetContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        // TODO: if reference class is not in typeinfo list OR the ID is not
-        // set, throw an exception...
         descriptor.addMapping(mapping);
     }
     

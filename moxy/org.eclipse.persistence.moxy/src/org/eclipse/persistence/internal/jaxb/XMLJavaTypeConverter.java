@@ -204,7 +204,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         // if the adapter class is null, try the adapter class name
         if (xmlAdapterClass == null) {
             ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
-            // TODO: which classloader should we use here?
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
@@ -219,7 +218,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                     xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader);
                 }
             } catch (ClassNotFoundException cnfe) {
-                // TODO: should throw an exception here
                 throw (RuntimeException) cnfe.getCause();
             }
         }
@@ -269,7 +267,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
             }
         } catch (Exception ex) {
-            // TODO:  need to throw an exception here
         }
     }
 

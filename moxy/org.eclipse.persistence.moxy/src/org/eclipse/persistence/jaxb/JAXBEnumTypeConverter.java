@@ -78,9 +78,6 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         while (i.hasNext()) {
             Enum theEnum = i.next();
             if (this.getAttributeToFieldValues().get(theEnum) == null) {
-                // TODO:  verify this workaround for JOT implementation
-                // - we may have set the name as opposed to the actual object,
-                // if so, look for the name, and replace the object as required
                 Object existingVal = this.getAttributeToFieldValues().get(theEnum.name()); 
                 if (existingVal != null) {
                     this.getAttributeToFieldValues().remove(theEnum.name());

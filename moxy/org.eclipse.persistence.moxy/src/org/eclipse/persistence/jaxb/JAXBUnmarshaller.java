@@ -195,8 +195,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	// this is incorrect, we need to check for null and throw an
     	// exception
     	String rootName = desc.getDefaultRootElement();
-    	if (rootName == null) {
-    		// TODO:  we should probably throw an exception at this point            
+    	if (rootName == null) {      
     		return createJAXBElement(new QName(""), obj.getClass(), obj);    		
     	}
         String rootNamespaceUri = null;

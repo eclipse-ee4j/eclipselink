@@ -128,7 +128,6 @@ public class JavaClassImpl implements JavaClass {
         try {
             return new JavaFieldImpl(jClass.getDeclaredField(arg0));
         } catch (NoSuchFieldException nsfe) {
-            // TODO: should we return an empty field here, throw an exception, or return null?
             return null;
         }
     }
@@ -159,7 +158,6 @@ public class JavaClassImpl implements JavaClass {
         try {
             return new JavaMethodImpl(jClass.getDeclaredMethod(arg0, params));
         } catch (NoSuchMethodException nsme) {
-            // TODO: should we return an empty method here, throw an exception, or return null?
             return null;
         }
     }
@@ -187,7 +185,6 @@ public class JavaClassImpl implements JavaClass {
         try {
             return new JavaConstructorImpl(jClass.getConstructor(params));
         } catch (NoSuchMethodException nsme) {
-            // TODO: should we return an empty method here, throw an exception, or return null?
             return null;
         }
     }
@@ -206,7 +203,6 @@ public class JavaClassImpl implements JavaClass {
         try {
             return new JavaConstructorImpl(jClass.getDeclaredConstructor(params));
         } catch (NoSuchMethodException nsme) {
-            // TODO: should we return an empty method here, throw an exception, or return null?
             return null;
         }
     }    
@@ -233,7 +229,6 @@ public class JavaClassImpl implements JavaClass {
         try { 
             return new JavaFieldImpl(jClass.getField(arg0));
         } catch (NoSuchFieldException nsfe) {
-            // TODO: should we return an empty field here, throw an exception, or return null?
             return null;
         }
     }
@@ -268,7 +263,6 @@ public class JavaClassImpl implements JavaClass {
         try {
             return new JavaMethodImpl(jClass.getMethod(arg0, params));
         } catch (NoSuchMethodException nsme) {
-            // TODO: should we return an empty method here, throw an exception, or return null?
             return null;
         }
     }

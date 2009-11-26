@@ -307,8 +307,6 @@ public class JAXBContextFactory {
                     XmlBindings binding = getXmlBindings(metadataSource, classLoader);
                     if (binding != null) {
                         bindings.put(key, binding);
-                    } else {
-                        // TODO: log a warning here
                     }
                 }
             }

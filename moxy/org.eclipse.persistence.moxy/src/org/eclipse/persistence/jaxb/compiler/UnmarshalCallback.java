@@ -77,7 +77,6 @@ public class UnmarshalCallback {
                 domainClass = PrivilegedAccessHelper.getClassForName(domainClassName, true, loader);
             }
         } catch (ClassNotFoundException ex) {
-            // TODO: should never get here, but may want to throw an exception
             return;
         }
         Class[] params = new Class[]{ Unmarshaller.class, Object.class };
