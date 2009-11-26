@@ -1,4 +1,4 @@
-Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Export-Package: org.eclipse.persistence.*;version="${version.string}";-noimport:=true,
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink MOXy
@@ -17,7 +17,8 @@ Include-Resource:\
 Import-Package:                                                         \
  javax.activation;resolution:=optional;version="1.1.0",                 \
  javax.mail.*;resolution:=optional,                                     \
- javax.xml.*;resolution:=optional;version="2.0.0",                      \
+ javax.xml.bind.*;resolution:=optional;version="2.0.0",                 \
+ javax.xml.*;resolution:=optional,                                      \
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.eclipse.persistence.*;version="${version.string}",                 \
  org.w3c.*;resolution:=optional,                                        \
