@@ -26,7 +26,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stax.StAXResult;
 
 // XML imports
 import org.w3c.dom.Document;

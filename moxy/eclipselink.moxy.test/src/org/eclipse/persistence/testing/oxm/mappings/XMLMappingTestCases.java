@@ -31,7 +31,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
-import javax.xml.transform.stax.StAXResult;
 
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -433,7 +432,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             int sizeBefore = getNamespaceResolverSize(desc);
 
-            Result result = new StAXResult(eventWriter);
+            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultConstructor, new Object[]{eventWriter});
             xmlMarshaller.marshal(objectToWrite, result);
 
             eventWriter.flush();
