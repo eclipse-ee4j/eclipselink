@@ -397,7 +397,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             int sizeBefore = getNamespaceResolverSize(desc);
 
-            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultConstructor, new Object[]{streamWriter});
+            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultStreamWriterConstructor, new Object[]{streamWriter});
             xmlMarshaller.marshal(objectToWrite, result);
 
             streamWriter.flush();
@@ -432,7 +432,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             int sizeBefore = getNamespaceResolverSize(desc);
 
-            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultConstructor, new Object[]{eventWriter});
+            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultEventWriterConstructor, new Object[]{eventWriter});
             xmlMarshaller.marshal(objectToWrite, result);
 
             eventWriter.flush();

@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -60,7 +61,8 @@ public abstract class OXTestCase extends XMLTestCase {
     protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
     protected static Class staxSourceClass;
     protected static String staxSourceClassName = "javax.xml.transform.stax.StAXSource";
-    protected static Constructor staxResultConstructor;
+    protected static Constructor staxResultStreamWriterConstructor;
+    protected static Constructor staxResultEventWriterConstructor;
     protected static Constructor staxSourceStreamReaderConstructor;
     protected static Constructor staxSourceEventReaderConstructor;
 
@@ -74,7 +76,8 @@ public abstract class OXTestCase extends XMLTestCase {
         }
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
-            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
+            staxResultStreamWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
+            staxResultEventWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLEventWriter.class}, true);
         } catch(Exception ex) {
             staxResultClass = null;
         }

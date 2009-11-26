@@ -18,8 +18,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 
-import javax.lang.model.element.TypeParameterElement;
-
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLDirectCollectionOfListsTestCases extends XMLMappingTestCases {
