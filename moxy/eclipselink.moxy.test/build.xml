@@ -105,6 +105,7 @@
     </path>
     <path id="oxm.compile.path.against.jar">
         <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <pathelement path="${junit.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
@@ -113,6 +114,7 @@
     </path>
     <path id="oxm.run.path.against.jar">
         <pathelement path="${junit.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
@@ -140,7 +142,10 @@
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.path"/>
     </target>
     <target name="compile-tests-against-jar" depends="clean" description="build moxy test classes against eclipselink.jar">
+        <echo message="Compiling OXM tests..."/>
         <compile_moxy_tests subcomponent="oxm" compilepathref="oxm.compile.path.against.jar"/>
+        <echo message=""/>
+        <echo message="Compiling JAXB tests..."/>
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.path.against.jar"/>
     </target>
 
