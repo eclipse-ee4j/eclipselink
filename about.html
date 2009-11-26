@@ -22,9 +22,9 @@
 <p>For tips on getting started with EclipseLink, please see the following resources: 
 </p>
 <ul>
+  <li> <a href="http://wiki.eclipse.org/EclipseLink/Release/2.0.0">EclipseLink 2.0.0 Release Notes</a></li>
   <li> <a href="http://wiki.eclipse.org/EclipseLink/UserManual">Documentation</a></li>
-  <li> <a href="http://wiki.eclipse.org/EclipseLink/Examples">Examples and How 
-    To</a></li>
+  <li> <a href="http://wiki.eclipse.org/EclipseLink/Examples">Examples and How To</a></li>
 </ul>
 <h2>License </h2>
 <p>The Eclipse Foundation makes available all content in this plug-in (&quot;Content&quot;). 
@@ -88,11 +88,11 @@
     byte code weaving. The AMS library is re-packaged within the source of the 
     project (org.persistence.eclipse.internal.libraries.asm.*) to avoid version 
     collisions with other usage of ASM. A custom patch has been added to the ASM 
-    1.5.3 source to handle an issue with the Oracle Java Compiler. This fix has 
+    1.5.3 source to handle an issue with other usages. This fix has 
     also been contributed back to the ASM project for inclusion in later projects. 
   </p>
   <p>The source code is available within the project's subversion repository. 
-    The binaries are distributed within the eclipselink.jar and in the org.eclipse.persistence.asm_1.2.0.v20091016-r5565.jar 
+    The binaries are distributed within the eclipselink.jar and in the org.eclipse.persistence.asm_2.0.0.v*.jar 
     bundle. </p>
   <p> <a href="http://asm.objectweb.org/license.html">http://asm.objectweb.org/license.html</a></p>
   <p>Copyright (c) 2000-2005 INRIA, France Telecom, All rights reserved.</p>
@@ -126,7 +126,7 @@
     Query language (JP QL). The ANTLR library is re-packaged within the project 
     in the org.eclipse.persistence.internal.libraries.antlr.* packages. </p>
   <p>The source is available with the project's subversion repository. The binaries 
-    are distributed within the eclipselink.jar and in the org.eclipse.persistence.antlr_1.2.0.v20091016-r5565.jar 
+    are distributed within the eclipselink.jar and in the org.eclipse.persistence.antlr_2.0.0.v*.jar 
     bundle.</p>
 </blockquote>
 <h3><a name="JAXB" id="JAXB"></a>Java Architecture for XML Binding (JAXB) v2.0.5</h3>
@@ -142,7 +142,7 @@
     <li>/jlib/moxy/jaxb.xjc.jar </li>
   </ul>
 </blockquote>
-<h3><a name="JPA1" id="JPA1"></a>Java Persistence API (JPA) 1.0 - EJB 3.0</h3>
+<h3><a name="JPA1" id="JPA1"></a>Java Persistence (JPA) 1.0 - EJB 3.0</h3>
 <blockquote> 
   <p>The Java Persistence API, included with EJB 3.0, is available for download 
     from the <a href="https://glassfish.dev.java.net/source/browse/glassfish/ejb-api">ejb-api 
@@ -151,19 +151,11 @@
     for compilation of some container based fuctionality.</p>
 </blockquote>
 <p></p>
-<h3><a name="JPA2" id="JPA2"></a>Java Persistence API (JPA) 2.0 - EARLY ACCESS</h3>
+<h3><a name="JPA2" id="JPA2"></a>Java Persistence (JPA) 2.0.  </h3>
 <blockquote> 
-  <p><b>EARLY ACCESS</b> to the Java Persistence API (JPA) version 2.0 is available 
-    in this release. The public draft specification is available for download 
-    from <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317</a>. This is an 
-    implementation of an early-draft specification developed under the Java Community 
-    Process (JCP) and is made available for testing and evaluation purposes only. 
-    The code is not compatible with any specification of the JCP. The functionality 
-    defined by this draft specifiction may change between this release and the 
-    release of EclipseLink which will deliver the final reference implementation 
-    of JPA 2.0.</p>
-  <p><i>Note: EclipseLink remains JPA 1.0 compliant and can be used through this 
-    interface without any dependencies on the draft JPA 2.0 specification.</i></p>
+  <p>EclipseLink is the Java Persistence (JPA) 2.0 Reference Implementation
+    (<a href="http://jcp.org/en/jsr/detail?id=317">JSR 317</a>).  The JPA 2.0 
+	specification API is included in EclipseLink under the <a href="http://www.eclipse.org/legal/epl-v10.html">EPL</a> and <a href="http://www.eclipse.org/org/documents/edl-v10.php">EDL</a> licenses.</p>
 </blockquote>
 <h3><a name="MAIL" id="MAIL"></a>Java Mail v1.4</h3>
 <blockquote>
