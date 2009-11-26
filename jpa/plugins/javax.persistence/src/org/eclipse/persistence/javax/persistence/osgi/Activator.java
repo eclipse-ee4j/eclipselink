@@ -10,13 +10,15 @@
  * 
  * Contributors:
  *     tware,mkeith - Initial OSGi support for JPA 
- *     smith - Cleanup of activator/listener into this class
+ *     ssmith - Cleanup of activator/listener into this class
  *     dclarke - 20090916 - Added clearCachedProviders support
+ *     ssmith - 20091126 - Bug 296010 - providers map not initialized before use
+ * 
  ******************************************************************************/
 package org.eclipse.persistence.javax.persistence.osgi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,7 +30,6 @@ import javax.persistence.spi.PersistenceProviderResolverHolder;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -45,7 +46,7 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
 
     private BundleContext ctx;
     private ServiceTracker serviceTracker;
-    private Map<String, PersistenceProvider> providers;
+    private Map<String, PersistenceProvider> providers = new Hashtable<String, PersistenceProvider>();
 
     public void start(BundleContext context) throws Exception {
         log(Level.FINE, context.getBundle().getSymbolicName() + " - starting...");
@@ -60,22 +61,6 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
 
         // Set the persistence provider resolver to use OSGi services
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(this);
-
-        this.providers = new HashMap<String, PersistenceProvider>();
-
-        // Provider bundles should require this bundle to be started before
-        // they start, so it is very unlikely that provider bundles will have
-        // already loaded and registered but we'll do this just in case...
-        ServiceReference[] refs = null;
-        try {
-            refs = ctx.getServiceReferences(PERSISTENCE_PROVIDER, null);
-        } catch (InvalidSyntaxException invEx) {
-        } // Can't happen since filter is null
-        if (refs != null) {
-            for (ServiceReference ref : refs) {
-                addProvider(ref);
-            }
-        }
 
         log(Level.FINE, context.getBundle().getSymbolicName() + " - started");
     }
@@ -106,12 +91,12 @@ public class Activator implements BundleActivator, PersistenceProviderResolver {
         this.serviceTracker.close();
         this.serviceTracker = null;
 
-        // Nil out the known provider list
+        // Clear the known provider list
         // Note: the holder is in this bundle so it will no longer be available
         // anyways. This is done to ensure all refs to providers in other
         // bundles is removed
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(null);
-        this.providers = null;
+        this.providers.clear();
 
         log(Level.FINE, context.getBundle().getSymbolicName() + " - stopped...");
     }
