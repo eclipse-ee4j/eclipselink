@@ -432,7 +432,6 @@
                 dir="${eclipselink.util.jaxb}/${resource.dir}"
                 includes="**/*.*,"/>
         </jar>
-        <delete dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
     </target>
 
     <target name="package-eclipselink-bundles">
