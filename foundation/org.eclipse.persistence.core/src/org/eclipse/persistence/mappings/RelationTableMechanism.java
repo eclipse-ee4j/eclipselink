@@ -431,10 +431,11 @@ public class RelationTableMechanism  implements Cloneable {
       
         if (getRelationTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
-            String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
+            String beginQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
+            String endQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
             //Ensure this table name hasn't already been quoted.
-            if (getRelationTable().getName().indexOf(quoteChar) == -1) {
-                getRelationTable().setName(quoteChar + getRelationTable().getName() + quoteChar);
+            if (getRelationTable().getName().indexOf(beginQuote) == -1) {
+                getRelationTable().setName(beginQuote + getRelationTable().getName() + endQuote);
             }
         }
         

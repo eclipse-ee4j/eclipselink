@@ -14,7 +14,6 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;

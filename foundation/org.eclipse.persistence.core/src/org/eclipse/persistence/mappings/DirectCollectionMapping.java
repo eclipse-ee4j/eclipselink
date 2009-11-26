@@ -1278,10 +1278,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         if (getReferenceTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
-            String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
+            String beginQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
+            String endQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
             //Ensure this tablename hasn't already been quoted.
-            if (getReferenceTable().getName().indexOf(quoteChar) == -1) {
-                getReferenceTable().setName(quoteChar + getReferenceTable().getName() + quoteChar);
+            if (getReferenceTable().getName().indexOf(beginQuote) == -1) {
+                getReferenceTable().setName(beginQuote + getReferenceTable().getName() + endQuote);
             }
         }
         if(this.listOrderField != null) {
