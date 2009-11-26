@@ -524,7 +524,7 @@ then
         MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
-        .${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
     fi
 
     ## Build Body text of email
@@ -541,11 +541,15 @@ then
     else
         touch ${MAILBODY}
     fi
-    echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
-    echo "    ${DATED_LOG}" >> ${MAILBODY}
+    echo "Build log: (${DATED_LOG})" >> ${MAILBODY}
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
-        echo "or on the download server at:" >> ${MAILBODY}
+        if [ \( ! "${TARG_NM}" = "cb" \) -a \( "${TESTS_FAILED}" = "true" \) ]
+        then
+            echo "Test logs can be found on the download server at:" >> ${MAILBODY}
+            echo "    http://www.eclipse.org/eclipselink/downloads/nightly.php" >> ${MAILBODY}
+        fi
+        echo "Build logs can be found on the download server at:" >> ${MAILBODY}
         echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
     fi
     echo "-----------------------------------" >> ${MAILBODY}
