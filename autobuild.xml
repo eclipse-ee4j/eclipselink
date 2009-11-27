@@ -268,7 +268,7 @@
         <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${build.deps.dir}/dependencies.txt" append="true"/>
     </target>
 
-    <target name="custom" if="custom.target" depends="get-dependencies">
+    <target name="custom" if="custom.target" depends="init, get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="${custom.target}"/>
     </target>
 
