@@ -192,7 +192,12 @@ public class JAXBContextFactory {
             throw new JAXBException(ex.getMessage(), ex);
         }
     }
-    
+
+    /**
+     * This means of creating a JAXBContext is aimed at creating a JAXBContext
+     * based on method parameters.  This method is useful when JAXB is used as 
+     * the binding layer for a Web Service provider.
+     */
     public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
         Type[] types = new Type[typesToBeBound.length];
         

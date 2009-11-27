@@ -8,19 +8,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     mmacivor November 17/2009 - 1.2 - Initial implementation
+ *     mmacivor November 17/2009 - 2.0 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-
 import javax.xml.namespace.QName;
 
-import org.w3c.dom.Element;
-
 /**
- * <p><b>Purpose</b>:Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
+ * <p><b>Purpose</b>:  Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
  * additional information (such as parameter level annotations and element tag names) to be included in addition
  * to the type itself.
  * 
@@ -28,61 +25,56 @@ import org.w3c.dom.Element;
  */
 public class TypeMappingInfo {
 
-    //Indicates if a global element should be generated for this type
-    protected ElementScope elementScope = ElementScope.Local;
-    
-    //Root element name associated with this type;
-    protected QName xmlTagName;
-    
-    //The type to be bound;
-    protected Type type;
-    
-    //Representing parameter level annotations that should be applied to this type.
-    protected Annotation[] annotations;
+    private ElementScope elementScope = ElementScope.Local;
+    private QName xmlTagName;
+    private Type type;
+    private Annotation[] annotations;
 
-    //Eclipselink XML based overrides to the parameter level annotations
-    protected Element[] oxmOverrides;
-
+    /**
+     * Indicates if a global element should be generated for this type.
+     */
     public ElementScope getElementScope() {
         return this.elementScope;
     }
-    
+
     public void setElementScope(ElementScope scope) {
         this.elementScope = scope;
     }
-    
+
+    /**
+     * Root element name associated with this type;
+     */
     public QName getXmlTagName() {
         return this.xmlTagName;
     }
-    
+
     public void setXmlTagName(QName tagName) {
         this.xmlTagName = tagName;
     }
-    
+
+    /**
+     * The type to be bound.
+     */
     public Type getType() {
         return this.type;
     }
-    
+
     public void setType(Type t) {
         this.type = t;
     }
-    
+
+    /**
+     * Representing parameter level annotations that should be applied to this 
+     * type.
+     */
     public Annotation[] getAnnotations() {
         return this.annotations;
     }
-    
+
     public void setAnnotations(Annotation[] annotations) {
         this.annotations = annotations;
     }
-    
-    public Element[] getOXMOverrides() {
-        return this.oxmOverrides;
-    }
-    
-    public void setOXMOverrides(Element[] overrides) {
-        this.oxmOverrides = overrides;
-    }
-    
+
     public enum ElementScope {
         Global,
         Local;

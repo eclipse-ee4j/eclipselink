@@ -233,10 +233,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(ex);
         }
     }
-	
-	public void marshal(Object object, XMLEventWriter eventWriter, TypeMappingInfo type) throws JAXBException {
-	    marshal(object, eventWriter);
-	}
+
+    /**
+     * Marshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
+    public void marshal(Object object, XMLEventWriter eventWriter, TypeMappingInfo type) throws JAXBException {
+        marshal(object, eventWriter);
+    }
 
 	public void marshal(Object object, Node node) throws JAXBException {
         if (object == null || node == null) {
@@ -290,10 +294,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 			throw new MarshalException(e);
 		}
 	}
-	
-	public void marshal(Object object, Result result, TypeMappingInfo type) throws JAXBException {
-	    marshal(object, result);
-	}
+
+    /**
+     * Marshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
+    public void marshal(Object object, Result result, TypeMappingInfo type) throws JAXBException {
+        marshal(object, result);
+    }
 
 	public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
         if (object == null || streamWriter == null) {
@@ -311,10 +319,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	        throw new MarshalException(ex);
 	    }
 	}
-	
-	public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
-	    marshal(object, streamWriter);
-	}
+
+    /**
+     * Marshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
+    public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
+        marshal(object, streamWriter);
+    }
 
 	public void marshal(Object object, Writer writer) throws JAXBException {
         if (object == null || writer == null) {

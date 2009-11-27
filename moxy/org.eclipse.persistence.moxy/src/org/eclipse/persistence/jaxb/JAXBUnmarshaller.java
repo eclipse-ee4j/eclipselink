@@ -271,7 +271,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	}
     	return null;    	    	
     }
-    
+
+    /**
+     * Unmarshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
     public JAXBElement unmarshal(Source source, TypeMappingInfo type) throws JAXBException {
         return unmarshal(source, type.getType());
     }
@@ -311,7 +315,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         return null;
     }
-    
+
+    /**
+     * Unmarshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
     public JAXBElement unmarshal(XMLStreamReader streamReader, TypeMappingInfo type) throws JAXBException {
         return unmarshal(streamReader, type.getType());
     }
@@ -359,11 +367,15 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         return null;
     }
-    
+
+    /**
+     * Unmarshal the object based on the binding metadata associated with the
+     * TypeMappingInfo.
+     */
     public JAXBElement unmarshal(XMLEventReader eventReader, TypeMappingInfo type) throws JAXBException {
         return unmarshal(eventReader, type.getType());
     }
-    
+
     public Object unmarshal(XMLEventReader eventReader) throws JAXBException {
         XMLEventReaderReader staxReader = new XMLEventReaderReader();
         staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
