@@ -80,6 +80,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     protected transient Object nullValue;
     
     protected DatabaseTable keyTableForMapKey = null;
+    
+    protected String fieldClassificationClassName = null;
 
     /**
      * PERF: Indicates if this mapping's attribute is a simple atomic value and cannot be modified, only replaced.
@@ -391,7 +393,6 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         }
         return null;
     }
-
     
     /**
      * INTERNAL:
@@ -535,6 +536,29 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             }
             
             setConverter(converter);
+        }
+        
+        if (fieldClassificationClassName != null){
+            Class fieldClassification = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
+                    }
+
+                } else {
+                    fieldClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(fieldClassificationClassName, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, e);
+            }
+            
+            setFieldClassification(fieldClassification);
         }
     }
     
@@ -723,6 +747,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public void setFieldClassification(Class fieldType) {
         getField().setType(fieldType);
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the name of the class that will be used for setFieldClassification and deploy time
+     * Used internally by JPA deployment.
+     * 
+     * @see setFieldClassification(Class fieldType)
+     * @param className
+     */
+    public void setFieldClassificationClassName(String className){
+        this.fieldClassificationClassName = className;
     }
 
     /**

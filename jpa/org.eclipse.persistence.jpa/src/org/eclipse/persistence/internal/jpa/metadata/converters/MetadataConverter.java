@@ -113,7 +113,7 @@ public abstract class MetadataConverter extends ORMetadata {
             // TODO: Future and AggregateCollections should only be able to get 
             // in here for a key converter
         } else if (mapping.isDirectToFieldMapping()) {
-            ((DirectToFieldMapping) mapping).setFieldClassification(classification);    
+            ((DirectToFieldMapping) mapping).setFieldClassificationClassName(classification.getName());
         }
     }
 }
