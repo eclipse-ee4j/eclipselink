@@ -17,7 +17,7 @@ set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo_2.1.1.v200905221342.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 
-call "%~dp0jaxb-compiler.cmd"
+call "%~dp0jaxb-compiler.cmd" %JAVA_ARGS%
 %JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% org.eclipse.persistence.sdo.helper.jaxb.JAXBClassGenerator %JAVA_ARGS%
 
 @endlocal
