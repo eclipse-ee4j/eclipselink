@@ -8,11 +8,11 @@ JVM_ARGS=-Xmx256m
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/sdo/commonj.sdo_2.1.1.jar:\
-`dirname $0`/../jlib/eclipselink.jar:
+CLASSPATH=`dirname $0`/../jlib/sdo/commonj.sdo_2.1.1.v200905221342.jar:\
+`dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"
-
-. `dirname $0`/jaxb-compiler.sh
 
 ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} \
     org.eclipse.persistence.sdo.helper.jaxb.JAXBClassGenerator ${JAVA_ARGS}
+
+. `dirname $0`/jaxb-compiler.sh ${JAVA_ARGS}
