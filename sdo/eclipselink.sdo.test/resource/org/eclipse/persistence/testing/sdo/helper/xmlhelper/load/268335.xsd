@@ -1,0 +1,9 @@
+<xs:schema targetNamespace="uuid:types" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType name="AStruct">
+        <xs:sequence>
+            <xs:element name="stringVal" type="xs:string"/>
+            <xs:element name="intVal" type="xs:int"/>
+            <xs:element name="dateTimeVal" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

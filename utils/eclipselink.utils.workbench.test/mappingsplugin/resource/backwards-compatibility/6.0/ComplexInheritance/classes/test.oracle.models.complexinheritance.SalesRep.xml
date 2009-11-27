@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexinheritance.SalesRep</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.complexinheritance.Person</type-name>
+   </superclass-handle>
+   <methods>
+      <method>
+         <name>SalesRep</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<qnameholder xmlns="mydefaultnamespace">
+    <the-qname xmlns:somePrefix="someURI">somePrefix:someLocalName</the-qname>
+	<the-qnames>
+	    <item xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</item>
+	    <item xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</item>
+	    <item xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:dateTime</item>
+        <item>someOtherLocalName</item>
+        <item2 xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string xsd:integer xsd:dateTime someOtherLocalName</item2>
+	</the-qnames>
+</qnameholder>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" xmlns:ns0="my.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="Cyclic1.xsd" namespace="my.uri"/>
+   <xsd:complexType name="USAddress">
+      <xsd:sequence>
+	<xsd:element name="thePhone" type="ns0:PhoneType"/>
+      </xsd:sequence>
+      <xsd:attribute name="street" type="xsd:string"/>
+      <xsd:attribute name="city" type="xsd:string"/>
+      <xsd:attribute name="quantity" type="xsd:string"/>
+      <xsd:attribute name="partNum" type="ns0:SKU"/>
+   </xsd:complexType>
+   <xsd:element name="uSAddress" type="USAddress"/>
+</xsd:schema>

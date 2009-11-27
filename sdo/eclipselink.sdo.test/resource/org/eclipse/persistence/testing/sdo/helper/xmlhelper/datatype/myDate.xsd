@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoXML="commonj.sdo/xml" xmlns:nist="myDate-NS" targetNamespace="myDate-NS">
+
+	<element name="myDate" type="nist:myDate-Type"/>
+
+	<simpleType name="myDate-Type">
+		<restriction base="date"/>
+	</simpleType>
+
+</schema>

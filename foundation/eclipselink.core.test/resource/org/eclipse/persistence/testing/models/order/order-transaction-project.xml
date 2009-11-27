@@ -1,0 +1,62 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>OrderTransaction</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.order.OrderTransaction</class>
+         <alias>OrderTransaction</alias>
+         <primary-key>
+            <field table="ORDER_TRANS" name="TRANS_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ORDER_TRANS" name="TRANS_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>order</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.order.Order</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="ORDER_TRANS" name="ORDER_ID" xsi:type="column"/>
+                     <target-field table="ORDER" name="@ORDER_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="ORDER_TRANS" name="ORDER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>transactionDate</attribute-name>
+               <field table="ORDER_TRANS" name="TRANS_DATE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>user</attribute-name>
+               <field table="ORDER_TRANS" name="TRANS_USER" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>ORDER_TRANS_SEQ</sequence-name>
+            <sequence-field table="ORDER_TRANS" name="TRANS_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ORDER_TRANS"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+      <user-name>jsutherl</user-name>
+      <password>BB742416276274A46959A54867978929</password>
+      <driver-class>%%driverClass%%</driver-class>
+      <connection-url>jdbc:oracle:thin:@tlsvrdb5.ca.oracle.com:1521:toplink</connection-url>
+   </login>
+</object-persistence>

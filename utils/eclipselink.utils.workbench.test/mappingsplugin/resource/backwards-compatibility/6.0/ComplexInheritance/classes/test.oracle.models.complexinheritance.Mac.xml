@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexinheritance.Mac</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.complexinheritance.PC</type-name>
+   </superclass-handle>
+   <methods>
+      <method>
+         <name>Mac</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+      <method>
+         <name>addToDescriptor</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>void</type-name>
+            </type-handle>
+         </return-type-declaration>
+         <method-parameters>
+            <method-parameter>
+               <type-declaration>
+                  <type-handle>
+                     <type-name>org.eclipse.persistence.publicinterface.Descriptor</type-name>
+                  </type-handle>
+               </type-declaration>
+            </method-parameter>
+         </method-parameters>
+      </method>
+      <method>
+         <name>getPCType</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>java.lang.String</type-name>
+            </type-handle>
+         </return-type-declaration>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:lpt="http://www.example.org">
+    <xsd:element name="ListPropertyTest" type="lpt:ListPropertyTestType"/>
+    <xsd:complexType name="ListPropertyTestType">
+        <xsd:sequence>
+            <xsd:element name="p1" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="p2" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="b1" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="i1" type="xsd:integer" minOccurs="0"/>
+            <xsd:element name="i2" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="intValues" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="contain" type="lpt:ChildType" minOccurs="0"/>
+            <xsd:element name="childContain" type="lpt:ChildContainType"/>
+            <xsd:any namespace="##any" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ChildContainType">
+        <xsd:sequence>
+            <xsd:element name="child" type="lpt:ChildType" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="kid" type="lpt:ChildType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ChildType">
+        <xsd:sequence>
+            <xsd:element name="intValue" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+</xsd:schema>

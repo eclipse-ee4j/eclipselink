@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee-data xmlns:ns0="TEST/NS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <firstName>Bob</firstName>
+   <lastName>Jones</lastName>
+   <ns0:canadian-address>
+      <street-name>123 Fake Street</street-name>
+      <city>Ottawa</city>
+      <country-name>Canada</country-name>
+      <postal-code>A1A 1A1</postal-code>
+   </ns0:canadian-address>
+</ns0:employee-data>

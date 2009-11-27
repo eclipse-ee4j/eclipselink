@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="o-x">
+   <name>test.oracle.models.xml.employee.Dependent</name>
+   <class-handle>
+      <type-name>test.oracle.models.xml.employee.Dependent</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="composite-object">
+         <name>address</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Dependent</attribute-declaring-type-name>
+            <attribute-name>address</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.xml.employee.Address</descriptor-name>
+         </reference-descriptor-handle>
+         <xpath>address</xpath>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>firstName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Dependent</attribute-declaring-type-name>
+            <attribute-name>firstName</attribute-name>
+         </attribute-handle>
+         <xml-field>@first-name</xml-field>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>lastName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Dependent</attribute-declaring-type-name>
+            <attribute-name>lastName</attribute-name>
+         </attribute-handle>
+         <xml-field>@last-name</xml-field>
+      </mapping>
+      <mapping type="composite-object">
+         <name>phoneNumber</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Dependent</attribute-declaring-type-name>
+            <attribute-name>phoneNumber</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.xml.employee.PhoneNumber</descriptor-name>
+         </reference-descriptor-handle>
+         <xpath>phone-no</xpath>
+      </mapping>
+   </mappings>
+   <schema-context-handle>
+      <schema>employee.xsd</schema>
+      <qname-path>
+         <qname component-type="element" namespace-uri="" local-name="employee"/>
+         <qname component-type="element" namespace-uri="" local-name="dependent-information"/>
+         <qname component-type="element" namespace-uri="" local-name="dependent"/>
+      </qname-path>
+   </schema-context-handle>
+   <default-root-element-handle>
+      <schema>employee.xsd</schema>
+      <qname-path>
+         <qname component-type="element" namespace-uri="" local-name="employee"/>
+         <qname component-type="element" namespace-uri="" local-name="dependent-information"/>
+         <qname component-type="element" namespace-uri="" local-name="dependent"/>
+      </qname-path>
+   </default-root-element-handle>
+   <root-descriptor>false</root-descriptor>
+</descriptor>

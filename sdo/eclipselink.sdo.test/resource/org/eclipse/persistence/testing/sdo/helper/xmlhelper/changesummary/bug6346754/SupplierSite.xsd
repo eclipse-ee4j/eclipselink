@@ -1,0 +1,22 @@
+<xsd:schema targetNamespace="http://example.com/supplier/" xmlns="http://example.com/supplier/"
+     elementFormDefault="qualified" sdoJava:package="mypackage.supplier"
+     xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java"
+     xmlns:ns1="http://example.com/address/" xmlns:ns0="http://example.com/process/">
+    <xsd:import schemaLocation="Address.xsd" namespace="http://example.com/address/"/>
+    <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
+    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:import namespace="commonj.sdo/xml"/>
+    <xsd:complexType name="SupplierSite">
+        <xsd:sequence>
+            <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="SupplierSiteId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="SiteName" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="PaymentTermsCode" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="CarrierCode" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="PurchasingSiteFlag" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="AddressId" type="xsd:long" minOccurs="0" nillable="true" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="Address" type="ns1:Address" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="supplierSite" type="SupplierSite"/>
+</xsd:schema>

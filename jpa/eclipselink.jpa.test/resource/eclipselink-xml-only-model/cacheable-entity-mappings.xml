@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="1.1" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Inherited Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.cacheable</package>
+    <table-generator name="XML_CACHEABLE_TABLE_GENERATOR" table="XML_CACHEABLE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CACHEABLE_SEQ"/>
+    <mapped-superclass class="CacheableTrueMappedSuperclass" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <entity name="XML_CACHEABLE_FALSE" class="CacheableFalseEntity" access="FIELD" cacheable="false">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </entity>
+    <entity name="XML_CACHEABLE_TRUE" class="CacheableTrueEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </entity>
+    <entity name="XML_SUB_CACHEABLE_FALSE" class="SubCacheableFalseEntity" access="FIELD" cacheable="false"/>
+    <entity name="XML_SUB_CACHEABLE_NONE" class="SubCacheableNoneEntity" access="FIELD"/>
+</entity-mappings>

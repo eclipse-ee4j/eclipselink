@@ -1,0 +1,16 @@
+<schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://example.com/process" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="TestType">
+      <complexType>
+         <sequence>
+            <element name="theValue" type="string"/>
+         </sequence>
+      </complexType>
+   </element>
+   <element name="TestType2">
+      <complexType>
+         <sequence>
+            <element name="theValue" type="string"/>
+         </sequence>
+      </complexType>
+   </element>
+</schema>

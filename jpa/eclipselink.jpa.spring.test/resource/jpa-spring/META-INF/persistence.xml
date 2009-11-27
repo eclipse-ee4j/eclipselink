@@ -1,0 +1,39 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+
+    <persistence-unit name="SpringDaoContainerPu" transaction-type="RESOURCE_LOCAL">
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Truck</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Address</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Route</class>
+    </persistence-unit>
+
+    <persistence-unit name="SpringContainerPu" transaction-type="RESOURCE_LOCAL">
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Truck</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Address</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Route</class>
+    </persistence-unit>
+
+    <persistence-unit name="SpringJTAPu" transaction-type="JTA">
+        <jta-data-source>jdbc/jta</jta-data-source>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Truck</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Address</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Route</class>
+        <properties>
+            <property name="eclipselink.target-server" value="org.eclipse.persistence.transaction.jotm.JotmTransactionController" />
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="SpringLocalPu" transaction-type="RESOURCE_LOCAL">
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Truck</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Address</class>
+        <class>test.org.eclipse.persistence.testing.models.jpa.spring.Route</class>
+        <properties>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+            <property name="javax.persistence.jdbc.driver" value="%%driverClass%%" />
+            <property name="javax.persistence.jdbc.url" value="%%dbURL%%" />
+            <property name="javax.persistence.jdbc.user" value="%%dbUser%%" />
+            <property name="javax.persistence.jdbc.password" value="%%dbPassword%%" />
+            <!--property name="eclipselink.logging.level" value="FINE"/-->
+        </properties>
+    </persistence-unit>
+
+</persistence>

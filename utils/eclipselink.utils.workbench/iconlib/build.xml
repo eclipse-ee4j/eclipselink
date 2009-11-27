@@ -1,0 +1,96 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build Icon Library" default="build.all" basedir=".">
+    <!-- =================================================================== -->
+    <target name="init">
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <property name="stop.on.error" value="false"/>
+        <property name="optimize.code"    value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"       value="off"/>
+        <property name="target.jvm"   value="${javac.version}"/>
+        <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+        <echo message="stop.on.error='${stop.on.error}'"/>
+        <echo message="optimize.code='${optimize.code}'"/>
+        <echo message="report.deprecation='${report.deprecation}'"/>
+        <echo message="target.jvm='${target.jvm}'"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <target name="build-all" depends="jar-iconlib"/>
+
+    <!-- =================================================================== -->
+    <!--  Properties                                                         -->
+    <!-- =================================================================== -->
+    <target name="properties-init" depends="init">
+        <property file="build.properties"/>
+        <mkdir dir="${_jarDestDir}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="init">
+        <property file="build.properties"/>
+
+        <delete file="${_jarDestDir}/${iconlib.jarfile}" quiet="true"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Jar                                                                -->
+    <!-- =================================================================== -->
+    <target name="jar-iconlib" depends="properties-init">
+        <delete file="${_jarDestDir}/${iconlib.jarfile}"/>
+        <jar jarfile="${_jarDestDir}/${iconlib.jarfile}" compress="false">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.iconlib" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+            </manifest>
+            <fileset
+                dir="${compile.iconlib.resources}"
+                includes="**"
+                excludes="**/.ade_path/**"
+            />
+        </jar>
+    </target>
+
+</project>

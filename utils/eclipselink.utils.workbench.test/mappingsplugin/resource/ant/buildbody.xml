@@ -1,0 +1,55 @@
+    <!-- =================================================================== -->
+    <!--  Validate the Employee MWP                                          -->
+    <!-- =================================================================== -->
+    <target name="validate-project" depends="parameter-definition">
+        <toplink:mappings.validate
+                projectfile="${toplink.mwp.dir}/Employee.mwp"
+                reportfile="${toplink.mwp.dir}/problem-report.html"
+                reportformat="html"
+                property="mw-valid"
+                classpath="${mwplatforms.classpath}" >
+            <toplink:classpath refid="mw.classpath" />
+            <toplink:classpath refid="toplink.classpath" />
+            <toplink:ignoreerrorset>
+                    <toplink:ignoreerror code="0233" />
+            </toplink:ignoreerrorset>
+        </toplink:mappings.validate>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  TopLink deployment descriptor XML generation                       -->
+    <!-- =================================================================== -->
+    <target name="export-deployment" depends="validate-project"  if="mw-valid">
+        <toplink:mappings.export
+                projectfile="${toplink.mwp.dir}/Employee.mwp"
+                deploymentfile="${toplink.mwp.dir}/EmployeeProject.xml"
+                property="export-completed"
+                failonerror="true"
+                classpathref="toplink.classpath">
+            <toplink:classpath refid="mw.classpath" />
+            <toplink:classpath path="${mwplatforms.classpath}" />
+            <toplink:ignoreerrorset refid="ignoreErrors"/>
+            <toplink:loginspec
+                    url="jdbc:oracle:thin:@tlsvrdb3.ca.oracle.com:1521:TOPLINK"
+                    driverclass="oracle.jdbc.driver.OracleDriver"
+                    user="tle" />
+        </toplink:mappings.export>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  TopLink Session Validate                                           -->
+    <!-- =================================================================== -->
+    <target name="validate-session"  depends="export-deployment" if="export-completed">
+        <toplink:session.validate
+                sessionsfile="${toplink.sessions.dir}/Employee-sessions.xml"
+                sessionname="Employee"
+                property="session-valid"
+                classpathref="toplink.classpath"
+                classpath="${user.classes}" >
+            <toplink:classpath refid="mw.classpath" />
+            <toplink:classpath>
+                    <pathelement path="${basedir}/../../../jlib/jdbc/OracleThinJDBC_jdk14_10.2.0.1.0.jar;${basedir}/../../../jlib/jdbc/db2jcc_8.1.jar"/>
+            </toplink:classpath>
+            <toplink:loginspec refid="loginSpec" />
+        </toplink:session.validate>
+    </target>

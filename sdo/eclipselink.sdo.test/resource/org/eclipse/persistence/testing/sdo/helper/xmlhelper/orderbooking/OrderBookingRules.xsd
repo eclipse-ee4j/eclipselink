@@ -1,0 +1,13 @@
+<xsd:schema targetNamespace="http://www.globalcompany.com/ns/OrderBooking/rules"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+ <xsd:element name="approve">
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element name="price" type="xsd:double"/>
+    <xsd:element name="status" type="xsd:string"/>
+    <xsd:element name="approvalRequired" type="xsd:boolean"/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+</xsd:schema>

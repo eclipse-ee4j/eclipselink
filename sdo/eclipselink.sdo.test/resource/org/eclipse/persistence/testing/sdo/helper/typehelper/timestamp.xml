@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ns1:Root xmlns:ns1="http://sdo.sample.service/types/">
+  <ns1:hireDate>2001-12-17T01:01:01</ns1:hireDate>
+</ns1:Root>

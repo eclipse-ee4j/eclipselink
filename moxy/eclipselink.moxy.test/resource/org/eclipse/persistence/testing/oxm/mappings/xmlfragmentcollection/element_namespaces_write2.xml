@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee><first-name>Jane</first-name><last-name>Doe</last-name><xml-node id="10"><child xmlns:ns1="http://www.example.com/test-uri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:someType">childtext</child></xml-node><xml-node id="11"><child xmlns:ns1="http://www.example.com/test-uri">morechildtext</child></xml-node><xml-node id="12"><child xmlns:ns1="http://www.example.com/test-uri">evenmorechildtext</child></xml-node></employee>

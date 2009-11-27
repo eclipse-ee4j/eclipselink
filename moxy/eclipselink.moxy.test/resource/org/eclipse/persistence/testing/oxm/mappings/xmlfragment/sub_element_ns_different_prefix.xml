@@ -1,0 +1,5 @@
+<root xmlns:nsx="http://www.example.com/test-uri">
+  <xml-node id="10">
+    <nsx:child>childtext</nsx:child>
+  </xml-node>
+</root>

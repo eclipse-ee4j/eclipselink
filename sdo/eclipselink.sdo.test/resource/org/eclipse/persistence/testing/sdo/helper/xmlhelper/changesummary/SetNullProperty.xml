@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:theRoot xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:Value xsi:type="ns0:Emp">
+      <ns0:Empno>7719</ns0:Empno>
+      <ns0:Ename>Kal</ns0:Ename>
+      <ns0:SimpleNonNillable>test1</ns0:SimpleNonNillable>
+      <ns0:SimpleNillable>test2</ns0:SimpleNillable>
+      <ns0:ComplexNonNillable>
+         <ns0:street>street1</ns0:street>
+      </ns0:ComplexNonNillable>
+      <ns0:ComplexNillable>
+         <ns0:street>street2</ns0:street>
+      </ns0:ComplexNillable>
+   </ns0:Value>
+   <ns0:ChangeSummary xmlns:sdo="commonj.sdo">
+      <ns0:Value sdo:ref="#/ns0:theRoot/ns0:Value[1]" sdo:unset="ComplexNonNillable">
+         <ns0:SimpleNonNillable xsi:nil="true"/>
+         <ns0:SimpleNillable xsi:nil="true"/>
+         <ns0:ComplexNillable xsi:nil="true"/>
+      </ns0:Value>
+   </ns0:ChangeSummary>
+</ns0:theRoot>

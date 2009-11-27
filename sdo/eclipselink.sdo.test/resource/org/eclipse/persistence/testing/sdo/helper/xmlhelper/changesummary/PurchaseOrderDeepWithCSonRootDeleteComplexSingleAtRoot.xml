@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myChangeSummary delete="#/ns0:purchaseOrder/ns0:myChangeSummary/ns0:purchaseOrder/ns0:shipTo" xmlns:sdo="commonj.sdo">
+      <ns0:purchaseOrder sdo:ref="#/ns0:purchaseOrder">
+         <ns0:shipTo xsi:type="ns0:AddressType" country="US">
+            <ns0:street>123 Maple Street</ns0:street>
+            <ns0:city>Mill Valley</ns0:city>
+            <ns0:state>CA</ns0:state>
+            <ns0:zip>90952</ns0:zip>
+            <ns0:phone>
+               <ns0:number>1234567</ns0:number>
+            </ns0:phone>
+            <ns0:phone>
+               <ns0:number>2345678</ns0:number>
+            </ns0:phone>
+            <ns0:yard>
+               <ns0:length>45</ns0:length>
+               <ns0:width>65</ns0:width>
+            </ns0:yard>
+         </ns0:shipTo>
+      </ns0:purchaseOrder>
+   </ns0:myChangeSummary>
+   <ns0:billTo country="US">
+      <ns0:name>Robert Smith</ns0:name>
+      <ns0:street>8 Oak Avenue</ns0:street>
+      <ns0:city>Mill Valley</ns0:city>
+      <ns0:state>PA</ns0:state>
+      <ns0:zip>95819</ns0:zip>
+   </ns0:billTo>
+   <ns0:comment>Hurry, my lawn is going wild!</ns0:comment>
+   <ns0:comment>blah blah blah comment2</ns0:comment>
+   <ns0:comment>yet another comment</ns0:comment>
+   <ns0:items>
+      <ns0:item partNum="872-AA">
+         <ns0:product>
+            <ns0:productName>Lawnmower</ns0:productName>
+            <ns0:price>
+               <ns0:dollarAmount>148.95</ns0:dollarAmount>
+               <ns0:currency>US</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+               <ns0:dollarAmount>175.95</ns0:dollarAmount>
+               <ns0:currency>CDN</ns0:currency>
+            </ns0:price>
+         </ns0:product>
+         <ns0:quantity>1</ns0:quantity>
+         <ns0:comment>Confirm this is electric2</ns0:comment>
+         <ns0:comment>And make it snappy</ns0:comment>
+      </ns0:item>
+      <ns0:item partNum="926-AA">
+         <ns0:product>
+            <ns0:productName>Baby Monitor</ns0:productName>
+            <ns0:price>
+               <ns0:dollarAmount>39.95</ns0:dollarAmount>
+               <ns0:currency>US</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+               <ns0:dollarAmount>45.95</ns0:dollarAmount>
+               <ns0:currency>CDN</ns0:currency>
+            </ns0:price>
+         </ns0:product>
+         <ns0:quantity>1</ns0:quantity>
+         <ns0:shipDate>1999-05-21</ns0:shipDate>
+      </ns0:item>
+   </ns0:items>
+</ns0:purchaseOrder>

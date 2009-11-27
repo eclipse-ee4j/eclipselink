@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>CHILDRENNAMES</short-name>
+   <columns>
+      <column>
+         <name>CHILD_NAME</name>
+         <type>VARCHAR2</type>
+         <size>20</size>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>HOLDER_ID</name>
+         <type>NUMBER</type>
+         <size>19</size>
+      </column>
+   </columns>
+   <references>
+      <table-association>
+         <name>CHILDRENNAMES_HOLDER</name>
+         <target-table-handle>
+            <table-name>HOLDER</table-name>
+         </target-table-handle>
+         <on-database>true</on-database>
+         <column-pairs>
+            <column-pair>
+               <source-column-handle>
+                  <column-table-name>CHILDRENNAMES</column-table-name>
+                  <column-name>HOLDER_ID</column-name>
+               </source-column-handle>
+               <target-column-handle>
+                  <column-table-name>HOLDER</column-table-name>
+                  <column-name>SSN</column-name>
+               </target-column-handle>
+            </column-pair>
+         </column-pairs>
+      </table-association>
+   </references>
+</table>

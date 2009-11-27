@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<prefix:emp xmlns:prefix="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <prefix:name>Alan Smithee</prefix:name>
+   <prefix:dept-number>172</prefix:dept-number>
+   <prefix:birth-date>1976-02-17T06:15:30.0+03:00</prefix:birth-date>
+   <prefix:hire-date>2009-02-17T07:30:00.000+03:00</prefix:hire-date>
+   <prefix:vacation-taken>P14DT3H30M0S</prefix:vacation-taken>
+</prefix:emp>

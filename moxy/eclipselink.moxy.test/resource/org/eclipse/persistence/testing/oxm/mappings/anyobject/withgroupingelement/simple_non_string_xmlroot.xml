@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<myns:root  xmlns:myns="www.example.com/some-dir/some.xsd">
+  <myns:nested>
+    <myns:theFloat xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:float">22.0</myns:theFloat>
+  </myns:nested>
+</myns:root>

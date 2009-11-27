@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quoteData xmlns="www.example.com">
+      <lineItem>
+        <id>42-9626LI</id>
+        <quantity>1</quantity>
+        <cost>100</cost>
+      </lineItem>
+      <lineItem>
+        <id>22-9223LI</id>
+        <quantity>2</quantity>
+        <cost>199</cost>
+      </lineItem>
+      <relatedQuoteItem>
+        <id>23-4635RQI</id>
+        <quantity>4</quantity>
+        <cost>379</cost>
+      </relatedQuoteItem>
+      <relatedQuoteItem>
+        <id>98-8786RQI</id>
+        <quantity>1</quantity>
+        <cost>345</cost>
+      </relatedQuoteItem>
+      <changeSummary logging="true"/>
+</quoteData>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.xml.employee.NormalHoursTransformer</name>
+   <modifier>17</modifier>
+   <superclass-handle>
+      <type-name>java.lang.Object</type-name>
+   </superclass-handle>
+   <last-refresh-timestamp>2008-07-01T15:45:19.39</last-refresh-timestamp>
+   <interface-handles>
+      <class-handle>
+         <type-name>oracle.toplink.mappings.transformers.AttributeTransformer</type-name>
+      </class-handle>
+      <class-handle>
+         <type-name>oracle.toplink.mappings.transformers.FieldTransformer</type-name>
+      </class-handle>
+   </interface-handles>
+</class>

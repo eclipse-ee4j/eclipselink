@@ -1,0 +1,14 @@
+<xsd:schema elementFormDefault="qualified"
+            targetNamespace="http://sdo.sample.service.types/Emp/"
+            xmlns="http://sdo.sample.service.types/Emp/"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:sdoJava="commonj.sdo/java"
+            sdoJava:package="sdo.sample.service.types.emp">
+   <xsd:element name="emp" type="Emp" />
+   <xsd:complexType name="Emp" sdoJava:instanceClass="sdo.sample.service.types.emp.Emp">
+      <xsd:sequence>
+         <xsd:element name="Empno" type="xsd:integer" minOccurs="0" />
+         <xsd:element name="Ename" type="xsd:string" minOccurs="0" nillable="true" />
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

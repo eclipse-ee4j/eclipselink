@@ -1,0 +1,26 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.example.org" targetNamespace="http://www.example.org"
+	elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+	<xsd:element name="employee" type="EmployeeType" />
+	<xsd:complexType name="AddressType">
+		<xsd:sequence>
+			<xsd:element name="street" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PhoneType">
+		<xsd:sequence>
+			<xsd:element name="number" type="xsd:string" />
+			<xsd:element name="phoneId" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EmployeeType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:string" />
+			<xsd:element name="name" type="xsd:string" />
+			<xsd:element name="address" type="AddressType" />
+			<xsd:element name="phones" type="PhoneType" minOccurs="0"
+				maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

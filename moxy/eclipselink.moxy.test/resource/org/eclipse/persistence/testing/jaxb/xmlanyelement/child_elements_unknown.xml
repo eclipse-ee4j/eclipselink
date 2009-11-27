@@ -1,0 +1,4 @@
+<root>
+  <simple-element>123</simple-element>
+  <complex-element><child>value</child></complex-element>
+</root>

@@ -1,0 +1,9 @@
+<xsd:schema targetNamespace="http://www.example.org/emp" xmlns:ns1="http://www.example.org/emp" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="Emp">
+      <xsd:sequence>
+         <xsd:element name="Empno" type="xsd:integer" minOccurs="0"/>
+         <xsd:element name="Ename" type="xsd:string" minOccurs="0" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="emp" type="ns1:Emp"/>
+</xsd:schema>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:x="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema0.xsd" namespace="listOfObjectsNamespace"/>
+   <xsd:complexType name="stringEmployeeMap">
+      <xsd:sequence>
+         <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="key" type="xsd:string" minOccurs="0"/>
+                  <xsd:element name="value" type="x:employee" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

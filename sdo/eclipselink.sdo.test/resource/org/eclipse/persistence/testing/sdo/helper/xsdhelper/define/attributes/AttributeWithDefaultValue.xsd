@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+     <xsd:schema 
+            xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+	    xmlns='http://www.example.org'
+            xmlns:sdo='commonj.sdo'
+	    targetNamespace='http://www.example.org'
+	    elementFormDefault='qualified'>
+	  <xsd:element name = 'Test' type = 'myTestType' />
+	  <xsd:complexType name='myTestType'>
+		<xsd:attribute name='myTestAttribute' type='xsd:string' default='DEFAULT'/>
+	  </xsd:complexType>
+     </xsd:schema>

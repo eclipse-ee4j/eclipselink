@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace">
+   <entry>
+      <key>thekey</key>
+      <value>10</value>
+   </entry>
+   <entry>
+      <key>thekey2</key>
+      <value>20</value>
+   </entry>
+   <entry>
+      <key>thekey3</key>
+      <value>30</value>
+   </entry>
+</ns0:root>

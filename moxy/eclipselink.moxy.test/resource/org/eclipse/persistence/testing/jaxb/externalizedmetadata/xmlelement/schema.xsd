@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/utils">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/utils"/>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="last-name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="id" type="xsd:int"/>
+         <xsd:element ref="ns0:aUtilDate"/>
+         <xsd:element name="myEmployees" type="employee" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="myInt" type="xsd:int" default="99"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

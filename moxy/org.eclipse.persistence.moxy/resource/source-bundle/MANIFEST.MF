@@ -1,0 +1,5 @@
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink MOXy Source
+Bundle-SymbolicName: org.eclipse.persistence.moxy.source
+Bundle-Version: 1.0.2
+Eclipse-SourceBundle: org.eclipse.persistence.moxy;version="1.0.2"

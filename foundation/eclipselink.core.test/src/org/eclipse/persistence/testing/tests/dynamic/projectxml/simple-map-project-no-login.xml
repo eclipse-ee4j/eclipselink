@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="1.1.2"
+	xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+	<name>simpletable-dbws-or</name>
+	<class-mapping-descriptors>
+		<class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+			<class>simpletable.Simpletable</class>
+			<alias>simpletableType</alias>
+			<primary-key>
+				<field table="SIMPLETABLE" name="ID" sql-typecode="3"
+					xsi:type="column" />
+			</primary-key>
+			<events xsi:type="event-policy" />
+			<querying xsi:type="query-policy">
+				<queries>
+					<query name="findByPrimaryKey" xsi:type="read-object-query">
+						<criteria operator="equal" xsi:type="relation-expression">
+							<left xsi:type="field-expression">
+								<field table="SIMPLETABLE" name="ID" sql-typecode="3"
+									xsi:type="column" />
+								<base xsi:type="base-expression" />
+							</left>
+							<right xsi:type="parameter-expression">
+								<parameter name="id" xsi:type="column" />
+							</right>
+						</criteria>
+						<arguments>
+							<argument name="id">
+								<type>java.lang.Object</type>
+							</argument>
+						</arguments>
+						<reference-class>simpletable.Simpletable</reference-class>
+					</query>
+					<query name="findAll" xsi:type="read-all-query">
+						<reference-class>simpletable.Simpletable</reference-class>
+						<container xsi:type="list-container-policy">
+							<collection-type>java.util.Vector</collection-type>
+						</container>
+					</query>
+				</queries>
+			</querying>
+			<attribute-mappings>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>id</attribute-name>
+					<field table="SIMPLETABLE" name="ID" sql-typecode="3"
+						xsi:type="column" />
+					<attribute-classification>java.math.BigInteger</attribute-classification>
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>name</attribute-name>
+					<field table="SIMPLETABLE" name="NAME" sql-typecode="12"
+						xsi:type="column" />
+					<attribute-classification>java.lang.String</attribute-classification>
+				</attribute-mapping>
+				<attribute-mapping xsi:type="direct-mapping">
+					<attribute-name>since</attribute-name>
+					<field table="SIMPLETABLE" name="SINCE" sql-typecode="93"
+						xsi:type="column" />
+					<attribute-classification>java.sql.Date</attribute-classification>
+				</attribute-mapping>
+			</attribute-mappings>
+			<descriptor-type>independent</descriptor-type>
+			<caching>
+				<cache-type>weak-reference</cache-type>
+				<cache-size>-1</cache-size>
+			</caching>
+			<remote-caching>
+				<cache-type>weak-reference</cache-type>
+				<cache-size>-1</cache-size>
+			</remote-caching>
+			<instantiation />
+			<copying xsi:type="instantiation-copy-policy" />
+			<tables>
+				<table name="SIMPLETABLE" />
+			</tables>
+		</class-mapping-descriptor>
+	</class-mapping-descriptors>
+</object-persistence>

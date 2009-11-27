@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee xmlns:ns0="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+  <firstName>firstName</firstName>
+  <lastName>LastName</lastName>
+  <myInt>66</myInt>
+</ns0:employee>

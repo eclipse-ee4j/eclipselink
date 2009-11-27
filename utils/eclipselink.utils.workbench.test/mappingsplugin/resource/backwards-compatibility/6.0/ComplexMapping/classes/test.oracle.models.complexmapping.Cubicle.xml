@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexmapping.Cubicle</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>java.lang.Object</type-name>
+   </superclass-handle>
+   <interface-handles>
+      <class-handle>
+         <type-name>java.io.Serializable</type-name>
+      </class-handle>
+   </interface-handles>
+</class>

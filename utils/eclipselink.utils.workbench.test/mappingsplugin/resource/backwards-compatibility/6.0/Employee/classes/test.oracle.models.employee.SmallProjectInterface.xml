@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.employee.SmallProjectInterface</name>
+   <is-interface>true</is-interface>
+   <modifier>1025</modifier>
+   <interface-handles>
+      <class-handle>
+         <type-name>test.oracle.models.employee.ProjectInterface</type-name>
+      </class-handle>
+   </interface-handles>
+</class>

@@ -1,0 +1,12 @@
+<ns2:root xmlns:ns2="http://www.example.org/root" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns2:data xmlns:ns0="http://www.example.org/data">
+      <ns0:ChangeSummary delete="#/ns2:root/ns2:data/ns0:ChangeSummary/ns2:data/ns0:Value[1]" xmlns:sdo="commonj.sdo">
+         <ns2:data sdo:ref="#/ns2:root/ns2:data">
+            <ns0:Value xsi:type="ns1:Emp" xmlns:ns1="http://www.example.org/emp">
+               <ns1:Empno>1</ns1:Empno>
+               <ns1:Ename>Employee1</ns1:Ename>
+            </ns0:Value>
+         </ns2:data>
+      </ns0:ChangeSummary>
+   </ns2:data>
+</ns2:root>

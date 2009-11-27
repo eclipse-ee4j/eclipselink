@@ -1,0 +1,287 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all JPA tests, packages test jars
+        - compile : compiles all JPA tests
+        - package : jars JPA persistent units and tests jars
+        - test : runs als JPA WDF tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+    -->
+<project name="Eclipse Persistence Services JPA WDF Testing" default="all" basedir=".">
+    <property name="env" environment="env" value="env"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property name="eclipselink.jpa.test" value="."/>
+    <property file="${eclipselink.jpa.test}/build.properties"/>
+    <property file="${eclipselink.jpa.test}/local.build.properties"/>
+    <property file="${eclipselink.jpa.test}/${test.properties}"/>
+    <property file="${eclipselink.jpa.test}/test.properties"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+
+    <!-- Configures paths for trunk checkout. -->
+    <target name="config-trunk" if="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.jpa.test}/${eclipselink.core.trunk}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.test}/${eclipselink.core.test.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.plugins.trunk}"/>
+        <property name="eclipselink.moxy.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.trunk}"/>
+        <property name="eclipselink.moxy.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.plugins.trunk}"/>
+        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.trunk}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
+    </target>
+
+    <!-- Configures paths for Eclipse project checkout. -->
+    <target name="config-flat" unless="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
+        <property name="eclipselink.moxy.dir" value="${eclipselink.moxy}"/>
+        <property name="eclipselink.moxy.lib.dir" value="${eclipselink.moxy.plugins}"/>
+        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
+    </target>
+
+    <target name="config-compile-path">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
+            <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
+                includes="${eclipselink.jpa.depend}"/>
+
+            <pathelement path="${eclipselink.core.lib.dir}/${persistence.jar.testing}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.moxy.dir}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.moxy.lib.dir}"
+                includes="${eclipselink.moxy.depend}"/>
+            <pathelement path="${eclipselink.jar.name}"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <!-- Needed for performance tests comparing with hibernate.>
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+            <!-- Needed for tests using coherence.>
+            <fileset dir="${coherence.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+        </path>
+        <path id="compile.server.path">
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+        </path>
+    </target>
+
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
+
+    <!-- Creates required directories for building. -->
+    <target name="init">
+        <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa2.model}"/>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
+        <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
+               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Packages JPA persistent unit test jars. -->
+    <target name="package" depends="config-trunk, config-flat, package-wdf-jpa2-model, package-wdf-jpa1-model" description="build EclipseLink jar">
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
+           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                    includes="org/eclipse/persistence/testing/framework/**/*.class,
+                        org/eclipse/persistence/testing/tests/**/*.class"/>
+        </jar>
+    </target>
+
+    <target name="package-wdf-jpa2-model" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa2.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.wdf.jpa2.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa2.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/wdf/jpa2/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.wdf.jpa2.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa2.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-wdf-jpa1-model" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa1.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.wdf.jpa1.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa1.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/wdf/jpa1/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.wdf.jpa1.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.wdf.jpa1.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.wdf.jpa1.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.wdf.jpa2.model}.jar"/>
+        </delete>
+    </target>
+
+    <!-- Testing -->
+
+    <!-- Classpath used for running tests. -->
+    <target name="config-run-path">
+        <path id="run.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.wdf.jpa2.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.wdf.jpa1.model}.jar"/>
+        </path>
+        <path id="run.extended.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
+        </path>
+        <path id="run.performance.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+        </path>
+    </target>
+
+    <!-- Clean all build generated content. -->
+    <target name="clean-test" description="Clean the test">
+        <delete dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <delete dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
+    </target>
+
+    <!-- Default test target, run the LRG -->
+    <target name="test" depends="clean-test, config-trunk, config-flat">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Generic target for running tests. -->
+    <target name="run-test" depends="config-trunk, config-flat">
+        <echo>Running test on ${DB_URL}</echo>
+
+        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+            <isset property="db.platform"/>
+        </condition>
+        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+            <not>
+                <isset property="db.platform"/>
+            </not>
+        </condition>
+
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+            <jvmarg value="${TEST_AGENT}"/>
+            <jvmarg value="${TEST_WEAVING}"/>
+            <jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="${jvmarg.db.platform}"/>
+            <classpath>
+                <path refid="${RUN_PATH}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest todir="${eclipselink.jpa.test}/${report.dir}" haltonfailure="no">
+                <fileset dir="${eclipselink.jpa.test}/${src.dir}"
+                         includes="org/eclipse/persistence/testing/tests/wdf/**/*Test*.java"
+                         excludes="org/eclipse/persistence/testing/tests/wdf/jpa1/query/QueryTest.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="generate-report">
+        <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.test}/${report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
+        </junitreport>
+    </target>
+
+</project>

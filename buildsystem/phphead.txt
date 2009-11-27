@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections title="Eclipse Persistence Services Project (EclipseLink) : Nightly Builds">
+    <description>
+      <p> Automated builds and the corresponding Javadocs are created every Sunday - Thursday and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>
+    </description> 
+  <section class="main" name="1.0 Nightly Builds">
+    <description>

@@ -1,0 +1,13 @@
+<root xmlns:ns1="http://www.example.com/x-test-uri" xmlns:ns2="http://www.example.com/y-test-uri">
+  <ns1:xml-node id="10">
+      <ns1:child>
+	      <ns2:innerchild>innerchildtext</ns2:innerchild>
+	      <ns2:innerchild xmlns:ns2="http://www.example.com/x-test-uri">moreinnerchildtext</ns2:innerchild>
+	  </ns1:child>
+      <ns1:child xmlns:ns1="http://www.example.com/y-test-uri">
+	      <ns1:innerchild>evenmoreinnerchildtext</ns1:innerchild>
+	      <ns2:innerchild>nomoreinnerchildtext</ns2:innerchild>
+	  </ns1:child>
+      <ns1:child>evenmorechildtext</ns1:child>
+  </ns1:xml-node>
+</root>

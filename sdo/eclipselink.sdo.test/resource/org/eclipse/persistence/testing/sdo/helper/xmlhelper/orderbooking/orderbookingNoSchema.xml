@@ -1,0 +1,29 @@
+<ns2:SOAOrderBookingProcessRequest xmlns:ns2="http://www.globalcompany.com/ns/OrderBooking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:PurchaseOrder xmlns:ns0="http://www.globalcompany.com/ns/order" >
+      <ns0:CustID>10</ns0:CustID>
+      <ns0:ID>182</ns0:ID>
+      <ns0:UserContact>
+         <ns0:PhoneNumber>18008888000</ns0:PhoneNumber>
+         <ns0:EmailAddress>sking@soademo.org</ns0:EmailAddress>
+      </ns0:UserContact>
+      <ns0:OrderItems>
+         <ns0:Item>
+            <ns0:ProductName>HD Television</ns0:ProductName>
+            <ns0:itemType>Video</ns0:itemType>
+            <ns0:partnum>128723</ns0:partnum>
+            <ns0:price>1999</ns0:price>
+            <ns0:Quantity>1</ns0:Quantity>
+         </ns0:Item>
+      </ns0:OrderItems>
+      <ns0:SupplierInfo>
+         <ns0:SupplierPrice>1799.1</ns0:SupplierPrice>
+         <ns0:SupplierName>Express Deliveries</ns0:SupplierName>
+      </ns0:SupplierInfo>
+      <ns0:OrderInfo>
+         <ns0:OrderDate>2006-08-09</ns0:OrderDate>
+         <ns0:OrderPrice>999</ns0:OrderPrice>
+         <ns0:OrderStatus>pending</ns0:OrderStatus>
+         <ns0:OrderComments>This order was issued from the SOA Retail Client.</ns0:OrderComments>
+      </ns0:OrderInfo>
+   </ns0:PurchaseOrder>
+</ns2:SOAOrderBookingProcessRequest> 

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+     <xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+	    xmlns='http://www.example.org'
+	    xmlns:sdo='commonj.sdo'
+	    targetNamespace='http://www.example.org'
+	    elementFormDefault='qualified'>
+	  <xsd:element name='Test' type='myTestType'/>
+	  <xsd:complexType name='myTestType' type = 'myTestType'>
+		<xsd:sequence>
+			<xsd:element name='myTest1' nillable='true'
+				 type='elementTest'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+          <xsd:complexType name='elementTest'>
+		<xsd:sequence>
+			<xsd:element name='myTest0' type='xsd:string' />
+		</xsd:sequence>
+	  </xsd:complexType>
+     </xsd:schema>

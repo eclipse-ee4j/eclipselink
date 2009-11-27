@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<team>
+	<employee id="1" a="1"/>
+	<employee id="2" a="2"/>
+	<employee id="3" a="1"/>
+</team>

@@ -1,0 +1,19 @@
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<email:addresses>
+		<email:address>jane.doe@example.com</email:address>
+		<email:address xsi:type="email:addressType">
+			<email:user-id>jdoe</email:user-id>
+			<email:domain>test.com</email:domain>
+		</email:address>
+	</email:addresses>
+	<mailing:addresses>
+		<mailing:address>1 Any Street, Ottawa, Ontario, A1B 2C3</mailing:address>
+		<mailing:address xsi:type="mailing:addressType">
+			<mailing:street>2 Autre Rue.</mailing:street>
+			<mailing:city>Gatineau</mailing:city>
+			<mailing:province>Quebec</mailing:province>
+			<mailing:postal-code>X1Y 2Z3</mailing:postal-code>
+		</mailing:address>
+        <mailing:address xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">5</mailing:address>
+	</mailing:addresses>
+</employee>

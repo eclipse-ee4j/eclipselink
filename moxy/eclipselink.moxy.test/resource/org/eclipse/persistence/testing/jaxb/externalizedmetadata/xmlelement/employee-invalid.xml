@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee xmlns:ns0="http://www.example.com/utils">
+  <firstName>firstName</firstName>
+  <last-name>LastName</last-name>
+  <id>66</id>
+  <myInt/>
+</employee>

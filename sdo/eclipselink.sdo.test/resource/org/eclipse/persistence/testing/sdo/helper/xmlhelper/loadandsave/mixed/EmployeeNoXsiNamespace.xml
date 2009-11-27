@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee xmlns:ns0="http://www.example.org">
+   <ns0:id>1</ns0:id>
+   This is some random text.
+   <ns0:name>Employee1</ns0:name>
+</ns0:employee>

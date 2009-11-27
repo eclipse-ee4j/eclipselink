@@ -1,0 +1,20 @@
+<root>
+    <employee id="3208">
+        <name>Dave Matthews</name>
+        <address-id>1198</address-id>
+        <address-id>1453</address-id>
+        <address-id>1676</address-id>
+    </employee>
+    <address id="1198">
+        <info>727 Main Street, Anytown NY, 78228</info>
+        <type>home</type>
+    </address>
+    <address id="1453">
+        <info>30 Capital Ave Suite 100, Big Town NY, 78441</info>
+        <type>work</type>
+    </address>
+    <address id="1676">
+        <info>Site 17 RR#4, Boonies NY, 78112</info>
+        <type>other</type>
+    </address>
+</root>

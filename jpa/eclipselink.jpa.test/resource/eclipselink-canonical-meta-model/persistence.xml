@@ -1,0 +1,43 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="2.0">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        
+        <properties>
+            <!-- JDBC properties will be given by test.properties file in runtime -->
+            <property name="eclipselink.session-name" value="default-session"/>
+            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
+            <property name="eclipselink.cache.size.default" value="500"/>
+            <property name="eclipselink.cache.size.Employee" value="550"/>
+            <property name="eclipselink.cache.size.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="555"/>
+            <property name="eclipselink.cache.type.default" value="Full"/>
+            <property name="eclipselink.cache.type.Employee" value="Weak"/>
+            <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="HardWeak"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="false"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="advanced-model-create.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="advanced-model-drop.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <!--Uncomment these to test weaving options >
+            <property name="eclipselink.weaving.eager" value="true"/>
+            <property name="eclipselink.weaving.internal" value="false"/-->
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

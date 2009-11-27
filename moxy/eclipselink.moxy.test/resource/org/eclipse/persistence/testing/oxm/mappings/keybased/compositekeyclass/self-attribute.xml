@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:department xmlns:ns="urn:example">
+   <employee id1="1" ns:id2="A">
+      <team-member fk1="2" ns:fk2="B"/>
+      <team-member fk1="3" ns:fk2="C"/>
+   </employee>
+   <employee id1="2" ns:id2="B">
+      <manager fk1="1" ns:fk2="A"/>
+   </employee>
+   <employee id1="3" ns:id2="C">
+      <manager fk1="1" ns:fk2="A"/>
+   </employee>
+</ns:department>

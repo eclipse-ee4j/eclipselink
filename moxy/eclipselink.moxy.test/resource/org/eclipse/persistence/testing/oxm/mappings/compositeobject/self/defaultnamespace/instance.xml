@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Address xmlns="http://www.foo.com/bar/baz">
+  <AttentionOfName>Jane Doe</AttentionOfName>
+  <CareOfName>n/a</CareOfName>
+  <LineOne>101 Main Street</LineOne>
+  <LineTwo>Apt 514</LineTwo>
+  <LineThree>P.O. Box 123123</LineThree>
+  <LineFour>Suite 1234</LineFour>
+  <CityName>Malibu</CityName>
+  <StateCode>CA</StateCode>
+  <PostalCode>90914-2938</PostalCode>
+  <CountryCode>USA</CountryCode>
+</Address>

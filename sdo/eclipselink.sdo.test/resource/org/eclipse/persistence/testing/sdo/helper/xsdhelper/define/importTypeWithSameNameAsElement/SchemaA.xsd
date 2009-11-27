@@ -1,0 +1,15 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+        targetNamespace="http://example.org/types"
+        xmlns:tns="http://example.org/types"
+        xmlns:sdots="http://example.org/data">
+
+    <import namespace="http://example.org/data" schemaLocation="SchemaB.xsd"/>
+
+    <element name="split">
+        <complexType>
+            <sequence>
+                <element name="splitParamSDO" type="sdots:split"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

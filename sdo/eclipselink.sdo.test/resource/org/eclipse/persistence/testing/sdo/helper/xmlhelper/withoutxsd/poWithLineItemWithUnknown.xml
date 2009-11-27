@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:someItem xsi:type="ns0:LineItemType">
+      <productName>Lawnmower</productName>
+      <quantity>1</quantity>
+      <USPrice>148.95</USPrice>
+      <comment>Confirm this is electric</comment>
+      <simpleUnknown>blah</simpleUnknown>
+   </ns0:someItem>
+</ns0:purchaseOrder>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="mynsA"
+    xmlns="mynsA"
+    xmlns:ns1="mynsB"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="2.0">
+
+  <xsd:import namespace="mynsC" schemaLocation="SchemaC.xsd"/>
+  <xsd:import namespace="mynsB" schemaLocation="SchemaB.xsd"/>
+  <xsd:element name="Test" type="ns1:TestType"/>
+   
+</xsd:schema>
