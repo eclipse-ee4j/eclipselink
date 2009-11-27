@@ -102,8 +102,6 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         try{
             beginTransaction(em);
             Query query1 = em.createNativeQuery("Select * FROM CMP3_CUSTOMER");
-            Query query2 = em.createNativeQuery("INSERT INTO CMP3_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)");
-            Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
 
             Collection c1 = query1.getResultList();
             assertTrue("getResultList returned null ",c1!=null );
@@ -114,9 +112,15 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
                 result = query1.executeUpdate();
             } catch (RuntimeException ex) {
                 rollbackTransaction(em);
+                closeEntityManager(em);
+                em = createEntityManager(); 
                 beginTransaction(em);
+                // inside container need to query again in order to attach em
+                query1 = em.createNativeQuery("Select * FROM CMP3_CUSTOMER");
             }
         
+            Query query2 = em.createNativeQuery("INSERT INTO CMP3_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)");
+            Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
 
             query2.executeUpdate();
             Collection c2 = query1.getResultList();
