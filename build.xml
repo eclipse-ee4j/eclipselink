@@ -162,7 +162,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -250,6 +250,10 @@
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
     </target>
 
+    <target name="build-persistence20">
+        <ant antfile="build.xml" dir="${jpa.prototype}" target="build"/>
+    </target>
+     
     <!-- Compiles all utils components. -->
     <target name="build-util" depends="build-dbws-util, build-mw-and-rename"/>
 
@@ -477,6 +481,23 @@
         </jar>
     </target>
 
+    <!-- Packages the eclipselink examples jar. -->
+    <target name="package-example-jar" description="build EclipseLink Examples jar">
+        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}"/>
+        <jar jarfile="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+            </manifest>
+            <zipfileset dir="examples" includes="**" excludes="**/.svn/**" prefix="examples_${release.version}" />
+        </jar>
+    </target>
+    
     <!-- Packages the eclipselink JPA testing source jar. -->
     <target name="package-tst-src-zip" description="build EclipseLink JPA and SDO testing source jar">
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>

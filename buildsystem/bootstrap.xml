@@ -301,4 +301,9 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="save-tst-results"/>
     </target>
 
+    <target name="custom" if="custom.target" depends="properties-init" description="Trigger custom target in build.xml">
+        <echo message="'custome' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="custom"/>
+    </target>
+
 </project>
