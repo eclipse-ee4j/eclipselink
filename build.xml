@@ -182,7 +182,7 @@
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
 
-<!-- ================================================================================= -->
+<!-- ======================================================================================== -->
 
     <!-- Cleans all build generated files. -->
     <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
