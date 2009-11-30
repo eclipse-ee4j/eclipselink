@@ -27,6 +27,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     11/25/2009-2.0 Guy Pelletier 
+ *       - 288955: EclipseLink 2.0.0.v20090821-r4934 (M7) throws EclipseLink-80/41 exceptions if InheritanceType.TABLE_PER_CLASS is used
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -479,21 +481,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             }
             
             mechanism.setSourceKeyFields(targetKeyFields);
-            
-            // Update the targetRelationKeyFields.
-            Vector<DatabaseField> targetRelationKeyFields = new Vector<DatabaseField>();
-            for (DatabaseField targetRelationKeyField : ownerMechanism.getTargetRelationKeyFields()) {
-                DatabaseField newTargetRelationKeyField = (DatabaseField) targetRelationKeyField.clone();
-                newTargetRelationKeyField.setTable(getDescriptor().getPrimaryTable());
-                targetRelationKeyFields.add(newTargetRelationKeyField);
-            }
-            
-            mechanism.setSourceRelationKeyFields(targetRelationKeyFields);
         } else {
             // Add all the source foreign keys we found on the owner.
             mechanism.setSourceKeyFields(ownerMechanism.getTargetKeyFields());
-            mechanism.setSourceRelationKeyFields(ownerMechanism.getTargetRelationKeyFields()); 
         }
+        
+        // Add all the source relation key fields.
+        mechanism.setSourceRelationKeyFields(ownerMechanism.getTargetRelationKeyFields());
         
         // Add all the target foreign keys we found on the owner.
         mechanism.setTargetKeyFields(ownerMechanism.getSourceKeyFields());

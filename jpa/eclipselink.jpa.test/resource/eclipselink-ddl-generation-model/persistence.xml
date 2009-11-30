@@ -57,6 +57,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.StandardBenefit</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SUV</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Team</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Player</class>
         <properties>
             <property name="eclipselink.session=name" value="ddlTablePerClass"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
