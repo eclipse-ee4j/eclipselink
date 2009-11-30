@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,29 +36,29 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**
- * This mapping is used to map a back-pointer.  It represents the "opposite" of one of the 
+ * This mapping is used to map a back-pointer.  It represents the "opposite" of one of the
  * following relationship mappings:<br><br>
- * 
+ *
  * <ul>
  * <li>XMLCompositeObjectMapping
  * <li>XMLCompositeCollectionMapping
  * <li>XMLObjectReferenceMapping
  * <li>XMLCollectionReferenceMapping
- * </ul> 
- * 
+ * </ul>
+ *
  * When configuring an XMLInverseReferenceMapping, the "mappedBy" field must be set to the
  * field on the reference class that maps to this Descriptor.  For example:<br><br>
- * 
+ *
  * <code>
  * // EMPLOYEE has a collection of PHONEs (phoneNumbers)<br>
  * // PHONE has a back-pointer to EMPLOYEE (owningEmployee)<br><br>
- * 
+ *
  * // EMPLOYEE Descriptor<br>
  * XMLCompositeCollectionMapping phone = new XMLCompositeCollectionMapping();<br>
  * phone.setReferenceClassName("org.example.PhoneNumber");<br>
  * phone.setAttributeName("phoneNumbers");<br>
  * ...<br><br>
- *  
+ *
  * // PHONE Descriptor<br>
  * XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();<br>
  * owningEmployee.setReferenceClassName("org.example.Employee");<br>
@@ -70,8 +70,8 @@ import org.eclipse.persistence.sessions.remote.RemoteSession;
 public class XMLInverseReferenceMapping extends AggregateMapping implements ContainerMapping {
 
     private String mappedBy;
-    private ContainerPolicy containerPolicy;    
-    
+    private ContainerPolicy containerPolicy;
+
     @Override
     public boolean isXMLMapping() {
         return true;
@@ -85,15 +85,15 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
 
     @Override
     public void postInitialize(AbstractSession session) throws DescriptorException {
-        // Get the corresponding mapping from the reference descriptor and set up the 
+        // Get the corresponding mapping from the reference descriptor and set up the
         // inverse mapping.
         DatabaseMapping mapping = getReferenceDescriptor().getMappingForAttributeName(this.mappedBy);
-        
+
         if (mapping instanceof XMLCompositeCollectionMapping) {
             XMLCompositeCollectionMapping oppositeMapping = (XMLCompositeCollectionMapping) mapping;
             oppositeMapping.setInverseReferenceMapping(this);
         }
-        
+
         if (mapping instanceof XMLCompositeObjectMapping) {
             XMLCompositeObjectMapping oppositeMapping = (XMLCompositeObjectMapping) mapping;
             oppositeMapping.setInverseReferenceMapping(this);
@@ -103,7 +103,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
             XMLObjectReferenceMapping oppositeMapping = (XMLObjectReferenceMapping) mapping;
             oppositeMapping.setInverseReferenceMapping(this);
         }
-        
+
     }
 
     public String getMappedBy() {
@@ -114,8 +114,8 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
         this.mappedBy = mappedBy;
     }
 
-    // ========================================================================
-    
+    // == AggregateMapping methods ============================================
+
     @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
     }
@@ -173,24 +173,22 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
             Object source, MergeManager mergeManager) {
     }
 
-    @Override
+    // == ContainerPolicy methods =============================================
+
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
     }
 
-    @Override
     public ContainerPolicy getContainerPolicy() {
         return this.containerPolicy;
     }
 
-    @Override
     public void useCollectionClass(Class concreteClass) {
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
-    @Override
     public void useMapClass(Class concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
-    
+
 }
