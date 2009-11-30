@@ -27,7 +27,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50004", "XmlAnyAttribute is invalid on property {0}. Must be used with a property of type Map"},
         {"50005", "Only one property with XmlAnyAttribute allowed on class {0}"},
         {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared"},
-        {"50007", "Name collision.  Two class have the XML type with uri {0} and name {1}"},
+        {"50007", "Name collision.  Two classes have the XML type with uri {0} and name {1}"},
         {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node"},
         {"50009", "The property or field {0} is annotated to be transient so can not be included in the proporder annotation."},
         {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
