@@ -69,6 +69,7 @@
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%eclipselinkLibDir%%" value="${eclipselink.jar.dir}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleExtensionLibDir%%" value="${oracle.extensions.jar.dir}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
               <arg line="-lang jython -f ${was.home}/bin/configWebSphere.py"/>
