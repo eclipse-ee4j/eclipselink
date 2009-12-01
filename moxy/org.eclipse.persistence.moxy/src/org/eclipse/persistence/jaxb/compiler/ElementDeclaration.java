@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb.compiler;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 import java.util.List;
@@ -33,6 +34,9 @@ public class ElementDeclaration {
     private Class javaTypeAdapterClass;
     private Class scopeClass;
     private String defaultValue;
+    private TypeMappingInfo typeMappingInfo;
+    private boolean xmlAttachmentRef;
+    private String xmlMimeType;
     
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
         this.elementName = name;
@@ -133,5 +137,29 @@ public class ElementDeclaration {
     public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
+    
+    public TypeMappingInfo getTypeMappingInfo() {
+        return this.typeMappingInfo;
+    }
+    
+    public void setTypeMappingInfo(TypeMappingInfo info) {
+        this.typeMappingInfo = info;
+    }
+
+	public String getXmlMimeType() {
+		return xmlMimeType;
+	}
+
+	public void setXmlMimeType(String xmlMimeType) {
+		this.xmlMimeType = xmlMimeType;
+	}
+
+	public boolean isXmlAttachmentRef() {
+		return xmlAttachmentRef;
+	}
+
+	public void setXmlAttachmentRef(boolean xmlAttachmentRef) {
+		this.xmlAttachmentRef = xmlAttachmentRef;
+	}
 
 }

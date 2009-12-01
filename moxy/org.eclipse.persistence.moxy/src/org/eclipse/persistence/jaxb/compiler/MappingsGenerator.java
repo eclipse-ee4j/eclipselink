@@ -40,6 +40,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -115,6 +116,8 @@ public class MappingsGenerator {
     private HashMap<String, Class> classToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
     private HashMap<QName, ElementDeclaration> globalElements;
+    private List<ElementDeclaration> localElements;
+    private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
     private Map<MapEntryGeneratedKey, Class> generatedMapEntryClasses;
     private Project project;
     private NamespaceResolver globalNamespaceResolver;
@@ -131,12 +134,14 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, boolean isDefaultNamespaceAllowed) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
         this.isDefaultNamespaceAllowed = isDefaultNamespaceAllowed;
         this.globalElements = globalElements;
+        this.localElements = localElements;
+        this.typeMappingInfoToGeneratedClasses = typeMappingInfoToGeneratedClass;
         project = new Project();
 
         // Generate descriptors
@@ -1806,10 +1811,11 @@ public class MappingsGenerator {
         if(this.globalElements == null) {
             return;
         }
-        Iterator<QName> keys = this.globalElements.keySet().iterator();
-        while(keys.hasNext()) {
-            QName next = keys.next();
-            ElementDeclaration nextElement = this.globalElements.get(next);
+        List<ElementDeclaration> elements = new ArrayList<ElementDeclaration>();
+        elements.addAll(this.localElements);
+        elements.addAll(this.globalElements.values());
+        for(ElementDeclaration nextElement:elements) {
+            QName next = nextElement.getElementName();
             String nextClassName = nextElement.getJavaTypeName();
             TypeInfo type = this.typeInfo.get(nextClassName);
                 
@@ -1823,13 +1829,25 @@ public class MappingsGenerator {
                 
                 if(next == null){
             		if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") ){
-            			addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
+            			Class generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
+            			 this.qNamesToGeneratedClasses.put(next, generatedClass);
+                         if(nextElement.getTypeMappingInfo() != null) {
+                             typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
+                         }
+                         try{
+                             Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
+                             this.qNamesToDeclaredClasses.put(next, declaredClass);
+                         }catch(Exception e){
+                         }
             			return;
             		}
             	}
                 Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
                 
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
+                if(nextElement.getTypeMappingInfo() != null) {
+                    typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
+                }
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
                     this.qNamesToDeclaredClasses.put(next, declaredClass);
@@ -1928,6 +1946,10 @@ public class MappingsGenerator {
                   mapping.setAttributeClassification(attributeClassification);
                   
               	  mapping.setShouldInlineBinaryData(false);
+              	  if(nextElement.getTypeMappingInfo() != null) {
+              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
+              	      mapping.setMimeType(nextElement.getXmlMimeType());
+              	  }
                   desc.addMapping(mapping);
                   
               }else{                  

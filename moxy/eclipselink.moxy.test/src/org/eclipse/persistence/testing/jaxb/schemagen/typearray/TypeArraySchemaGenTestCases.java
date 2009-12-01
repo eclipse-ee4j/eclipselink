@@ -85,6 +85,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
             try {
                 generateSchema(typesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
+                ex.printStackTrace();
                 fail("Schema generation failed unexpectedly: " + ex.toString());
             }
             assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);

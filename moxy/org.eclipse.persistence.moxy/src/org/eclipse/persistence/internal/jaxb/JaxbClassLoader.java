@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>Provide a ClassLoader implementation to allow the definition of ASM generated 
@@ -59,6 +60,20 @@ public class JaxbClassLoader extends ClassLoader {
 		if(types != null){
 			for(int i=0; i<types.length; i++){
 				Type nextType = types[i];
+				if (nextType instanceof Class) {
+					generatedClasses.put(((Class)nextType).getName(), nextType);
+				}
+			}
+		}
+		
+	}
+	
+	public JaxbClassLoader(ClassLoader nestedClassLoader, TypeMappingInfo[] types) {
+		this.nestedClassLoader = nestedClassLoader;
+		this.generatedClasses = new HashMap();
+		if(types != null){
+			for(int i=0; i<types.length; i++){
+				Type nextType = types[i].getType();
 				if (nextType instanceof Class) {
 					generatedClasses.put(((Class)nextType).getName(), nextType);
 				}

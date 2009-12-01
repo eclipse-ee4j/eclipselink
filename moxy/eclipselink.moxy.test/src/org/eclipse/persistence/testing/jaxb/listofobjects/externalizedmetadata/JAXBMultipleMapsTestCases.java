@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -22,18 +21,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-
-import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
-import org.w3c.dom.Document;
 
 public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xml";
@@ -130,15 +121,7 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
     protected String getNoXsiTypeControlResourceName() {    	
 	    return XML_RESOURCE;
 	}
-    
-    public void setTypes(Type[] newTypes) throws Exception {
-		classLoader = new JaxbClassLoader(Thread.currentThread()
-				.getContextClassLoader());
-		JAXBContextFactory factory = new JAXBContextFactory();
-		jaxbContext = factory.createContext(newTypes, null, classLoader);
-		jaxbMarshaller = jaxbContext.createMarshaller();
-		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-	}
+
 	public void testTypeToSchemaTypeMap(){
 		HashMap<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();		
 		int mapSize = typesMap.size();

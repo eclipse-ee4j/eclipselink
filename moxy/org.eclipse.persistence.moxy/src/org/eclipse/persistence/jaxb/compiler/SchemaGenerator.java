@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.awt.Image;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -61,6 +63,9 @@ public class SchemaGenerator {
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, SchemaTypeInfo> schemaTypeInfo;
     private HashMap<String, QName> userDefinedSchemaTypes;
+    
+    private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
+    private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";    
 
     public SchemaGenerator(Helper helper) {
         this.helper = helper;
@@ -998,6 +1003,18 @@ public class SchemaGenerator {
                         QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                         if (schemaType != null) {
                             element.setType(XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart());
+                        } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, Image.class) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+                            schemaType = XMLConstants.BASE_64_BINARY_QNAME;
+                            if(nextElement.getTypeMappingInfo() != null) {
+                                if(nextElement.isXmlAttachmentRef()) {
+                                    schemaType = XMLConstants.SWA_REF_QNAME;
+                                }
+                                if (nextElement.getXmlMimeType() != null) {
+                                    element.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, nextElement.getXmlMimeType());
+                                }
+                            }
+                            String prefix = getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), targetSchema);
+                            element.setType(prefix + ":" + schemaType.getLocalPart());
                         } else {
                             TypeInfo type = (TypeInfo) this.typeInfo.get(javaClass.getQualifiedName());
                             if (type != null) {
@@ -1099,4 +1116,36 @@ public class SchemaGenerator {
         }
         return false;
     }
+    
+    /**
+     * Compares a JavaModel JavaClass to a Class.  Equality is based on
+     * the raw name of the JavaClass compared to the canonical
+     * name of the Class.
+     * 
+     * @param src
+     * @param tgt
+     * @return
+     */
+    protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
+        if (src == null || tgtCanonicalName == null) {
+            return false;
+        }
+        return src.getRawName().equals(tgtCanonicalName);
+    }  
+    
+    /**
+     * Compares a JavaModel JavaClass to a Class.  Equality is based on
+     * the raw name of the JavaClass compared to the canonical
+     * name of the Class.
+     * 
+     * @param src
+     * @param tgt
+     * @return
+     */
+    protected boolean areEquals(JavaClass src, Class tgt) {
+        if (src == null || tgt == null) {
+            return false;
+        }
+        return src.getRawName().equals(tgt.getCanonicalName());
+    }    
 }

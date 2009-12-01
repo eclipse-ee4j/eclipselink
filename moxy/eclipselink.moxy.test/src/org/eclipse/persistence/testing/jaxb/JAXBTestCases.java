@@ -585,5 +585,5 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
               e.printStackTrace();
           }
    }
-
 }
+

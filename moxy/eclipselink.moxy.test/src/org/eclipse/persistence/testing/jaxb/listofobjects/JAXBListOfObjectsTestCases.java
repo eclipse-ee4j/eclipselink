@@ -14,43 +14,29 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBTypeElement;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -74,9 +60,13 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		classLoader = new JaxbClassLoader(Thread.currentThread()
 				.getContextClassLoader());
 		JAXBContextFactory factory = new JAXBContextFactory();
-		jaxbContext = factory.createContext(newTypes, null, classLoader);
+		jaxbContext = factory.createContext(newTypes, getProperties(), classLoader);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+	}
+	
+	protected Map getProperties() throws Exception{
+		return null;
 	}
 
 	protected Object getControlObject() {
@@ -105,6 +95,19 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject, newControlObj);                      
         } 
     } 
+    /*
+    public void testXMLToObjectFromXMLStreamReaderWithTypeMappingInfo() throws Exception { 
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getTypeMappingInfoToUnmarshalTo());
+            instream.close();
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(testObject, newControlObj);                      
+        } 
+    } */
     
     public void testXMLToObjectFromXMLStreamReaderWithClass() throws Exception { 
         if(null != XML_INPUT_FACTORY) {
@@ -140,6 +143,19 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             xmlToObjectTest(obj, newControlObj);    
         }
     }   
+    /*
+    public void testXMLToObjectFromXMLEventReaderWithTypeMappingInfo() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getTypeMappingInfoToUnmarshalTo());
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(obj, newControlObj);    
+        }
+    }   
+    */
     
     public void testXMLToObjectFromXMLEventReaderWithClass() throws Exception {
         if(null != XML_INPUT_FACTORY) {
@@ -194,7 +210,55 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             objectToXMLDocumentTest(testDocument);
         }
     }	
+/*
+    public void testObjectToXMLStreamWriterWithTypeMappingInfo() throws Exception {
+        if(XML_OUTPUT_FACTORY != null) {
+            StringWriter writer = new StringWriter();
 
+            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            javax.xml.stream.XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+        
+            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, streamWriter, getTypeMappingInfoToUnmarshalTo());
+
+            streamWriter.flush();
+          
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }
+    
+    public void testObjectToXMLEventWriterWithTypeMappingInfo() throws Exception {
+        if(XML_OUTPUT_FACTORY != null) {
+            StringWriter writer = new StringWriter();
+
+            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            javax.xml.stream.XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+        
+            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, eventWriter, getTypeMappingInfoToUnmarshalTo());
+
+            eventWriter.flush();
+        
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }    
+    	*/
+    
+    
 	//Override and don't compare namespaceresolver size
 	public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
@@ -331,6 +395,12 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
 	protected abstract Type getTypeToUnmarshalTo() throws Exception;
 
+	protected TypeMappingInfo getTypeMappingInfoToUnmarshalTo() throws Exception {
+		TypeMappingInfo info = new TypeMappingInfo();		
+		info.setType(getTypeToUnmarshalTo());
+		return info;
+	}
+	
 	protected abstract String getNoXsiTypeControlResourceName();
 	
 	public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
