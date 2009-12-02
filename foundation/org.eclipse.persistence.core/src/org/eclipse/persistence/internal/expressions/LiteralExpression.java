@@ -138,7 +138,7 @@ public class LiteralExpression extends Expression {
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
-        getLocalBase().resetPlaceHolderBuilder(queryBuilder);
+        return;
     }
 
 
