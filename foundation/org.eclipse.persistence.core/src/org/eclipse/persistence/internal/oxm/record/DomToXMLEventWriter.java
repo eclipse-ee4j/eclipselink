@@ -95,7 +95,7 @@ public class DomToXMLEventWriter {
         for(int i = 0; i < attrs.getLength(); i++) {
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
-                Attr attribute = (Attr)next;
+                Attr attribute = next;
                 if(next.getPrefix() != null && next.getPrefix().equals(XMLConstants.XMLNS)) {
                     String currentUri = xew.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {

@@ -334,7 +334,7 @@ public class XPathNode {
         boolean hasValue = false;
         if (null != attributeChildren) {
             for (int x = 0, size = attributeChildren.size(); x < size; x++) {
-                XPathNode attributeNode = (XPathNode)attributeChildren.get(x);
+                XPathNode attributeNode = attributeChildren.get(x);
                 hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
             }
         }

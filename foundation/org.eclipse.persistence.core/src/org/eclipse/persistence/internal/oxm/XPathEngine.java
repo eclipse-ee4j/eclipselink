@@ -844,7 +844,7 @@ public class XPathEngine {
         Iterator<XMLEntry> oldValues = oldNodes.iterator();
         //Remove all the old values, and then call create to add them back in.
         while(oldValues.hasNext()) {
-            XMLEntry entry = (XMLEntry)oldValues.next();
+            XMLEntry entry = oldValues.next();
             Node nextNode = (Node)entry.getValue();
             Node parent = nextNode.getParentNode();
             parent.removeChild(nextNode);

@@ -283,7 +283,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } else if(clazz == ClassConstants.OBJECT) {
     	    try{
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
-                saxUnmarshallerHandler.setXMLReader((XMLReader)xmlReader);
+                saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);

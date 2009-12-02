@@ -91,7 +91,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             if(this.descriptor != null) {
                 object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, this.unmarshaller.isResultAlwaysXMLRoot());
             } else if(documentBuilder != null) {
-                Node node = (Node)documentBuilder.getDocument().getDocumentElement();
+                Node node = documentBuilder.getDocument().getDocumentElement();
                 XMLRoot root = new XMLRoot();
                 root.setLocalName(node.getLocalName());
                 root.setNamespaceURI(node.getNamespaceURI());
