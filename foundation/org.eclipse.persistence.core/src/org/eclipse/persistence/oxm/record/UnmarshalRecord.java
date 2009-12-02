@@ -383,7 +383,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             } else {
                 unmarshalContext = ObjectUnmarshalContext.getInstance();
             }
-            
+
             Object object = this.xmlReader.getCurrentObject(session, selfRecordMapping);
             if (object == null) {
                 object = treeObjectBuilder.buildNewInstance();
@@ -414,7 +414,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     if(null == containerInstance) {
                         containerInstance = containerValue.getContainerInstance();
                     }
-                    containersMap.put(containerValue, containerInstance);    
+                    containersMap.put(containerValue, containerInstance);
                 }
             }
 
@@ -422,7 +422,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
                 selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
                 for (int x = 0; x < selfChildrenSize; x++) {
-                    XPathNode selfNode = (XPathNode)xPathNode.getSelfChildren().get(x);
+                    XPathNode selfNode = xPathNode.getSelfChildren().get(x);
                     if (null != selfNode.getNodeValue()) {
                         selfRecords.add(selfNode.getNodeValue().buildSelfRecord(this, attributes));
                     }
@@ -451,7 +451,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         if (null != xPathNode.getSelfChildren()) {
             int selfChildrenSize = xPathNode.getSelfChildren().size();
             for (int x = 0; x < selfChildrenSize; x++) {
-                XPathNode selfNode = (XPathNode)xPathNode.getSelfChildren().get(x);
+                XPathNode selfNode = xPathNode.getSelfChildren().get(x);
                 if (null != selfNode.getNodeValue()) {
                     selfNode.getNodeValue().endSelfNodeValue(this, attributes);
                 }
@@ -467,7 +467,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
 
             // PROCESS NULL CAPABLE VALUES
-            // This must be done because the node may not have existed to 
+            // This must be done because the node may not have existed to
             // trigger the mapping.
             if(null != nullCapableValues) {
                 for (int x = 0, nullValuesSize = nullCapableValues.size(); x < nullValuesSize; x++) {
@@ -565,7 +565,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
             schemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION);
-            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);                  
+            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
         }
 
         try {
@@ -638,7 +638,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                             	String attPrefix = qname.substring(0, idx);
                             	if (attPrefix.equals(XMLConstants.XMLNS)){
                                     attNamespace = XMLConstants.XMLNS_URL;
-                                }                            	
+                                }
                             }else{
                             	attLocalName = qname;
                             	if(attLocalName.equals(XMLConstants.XMLNS)){
@@ -651,9 +651,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     //Look for any Self-Mapping nodes that may want this attribute.
                     if (this.selfRecords != null) {
                         for (int j = 0; j < selfRecords.size(); j++) {
-                            UnmarshalRecord nestedRecord = ((UnmarshalRecord)selfRecords.get(j));
+                            UnmarshalRecord nestedRecord = selfRecords.get(j);
                             if(nestedRecord != null){
-                                attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);                                
+                                attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);
                                 if (attributeNodeValue != null) {
                                     attributeNodeValue.attribute(nestedRecord, attNamespace, attLocalName, value);
                                 }
@@ -708,7 +708,6 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-    	
         try {
             if (null != selfRecords) {
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
@@ -744,7 +743,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
 
             unmarshalContext.endElement(this);
-            
+
             typeQName = null;
             levelIndex--;
             if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
@@ -793,7 +792,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     }
                 }
             }
-            
+
             if (null != textNode) {
                 xPathNode = textNode;
                 unmarshalContext.characters(this);
@@ -968,29 +967,29 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     /**
-     * Sets the flag which indicates if this UnmarshalRecord 
+     * Sets the flag which indicates if this UnmarshalRecord
      * represents a 'self' record
-     * 
-     * @param isSelfRecord true if this record represents 
+     *
+     * @param isSelfRecord true if this record represents
      * 'self', false otherwise
      */
-    public void setSelfRecord(boolean isSelfRecord) { 
+    public void setSelfRecord(boolean isSelfRecord) {
         this.isSelfRecord = isSelfRecord;
     }
 
     /**
      * Indicates if this UnmarshalRecord represents a 'self' record
-     * 
+     *
      * @return true if this record represents 'self', false otherwise
      */
-    public boolean isSelfRecord() { 
+    public boolean isSelfRecord() {
         return isSelfRecord;
     }
 
     public int getLevelIndex() {
         return levelIndex;
     }
-    
+
     public void setAttributeValue(Object value, DatabaseMapping mapping) {
         this.unmarshalContext.setAttributeValue(this, value, mapping);
     }
