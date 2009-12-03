@@ -499,7 +499,7 @@ public class SchemaGenerator {
                     }
                 } else if (next.isChoice()) {
                     Choice choice = new Choice();
-                    ArrayList<Property> choiceProperties = (ArrayList<Property>) ((ChoiceProperty) next).getChoiceProperties();
+                    ArrayList<Property> choiceProperties = (ArrayList<Property>) next.getChoiceProperties();
                     addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, schema);
                     if (next.getGenericType() != null) {
                         choice.setMaxOccurs(Occurs.UNBOUNDED);

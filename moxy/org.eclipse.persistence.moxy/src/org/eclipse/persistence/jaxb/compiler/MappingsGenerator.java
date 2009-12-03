@@ -475,7 +475,6 @@ public class MappingsGenerator {
     }
     
     public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
-        ChoiceProperty prop = (ChoiceProperty)property;
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
@@ -493,7 +492,7 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
+        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
@@ -505,7 +504,6 @@ public class MappingsGenerator {
     }
     
     public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
-        ChoiceProperty prop = (ChoiceProperty)property;
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setReuseContainer(true);
         mapping.setAttributeName(property.getPropertyName());
@@ -532,7 +530,7 @@ public class MappingsGenerator {
         }
         mapping.useCollectionClassName(collectionType.getRawName());
         
-        Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
+        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();

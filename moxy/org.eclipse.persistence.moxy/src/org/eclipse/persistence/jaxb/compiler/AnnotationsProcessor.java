@@ -452,6 +452,10 @@ public class AnnotationsProcessor {
                         throw JAXBException.invalidElementWrapper(property.getPropertyName());
                     }
                 }
+                // handle XmlElements - validate and build the required properties
+                if (property.isChoice()) {
+                    processChoiceProperty(property, tInfo, jClass, property.getActualType());
+                }
             }
         }
     }
@@ -1118,7 +1122,7 @@ public class AnnotationsProcessor {
     private Property buildNewProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype){
         Property property = null;
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElements.class)) {
-            property = buildChoiceProperty(info, cls, javaHasAnnotations, propertyName, ptype);
+            property = buildChoiceProperty(javaHasAnnotations);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {                	
             XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
             property = new Property(helper);
@@ -1180,26 +1184,77 @@ public class AnnotationsProcessor {
         
         return property;
     }
-
-    private Property buildChoiceProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass propertyType){
-    	ChoiceProperty property = new ChoiceProperty(helper);
-        XmlElements xmlElements = (XmlElements) helper.getAnnotation(javaHasAnnotations, XmlElements.class);
-        XmlElement[] elements = xmlElements.value();
-        ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+    
+    /**
+     * Build a new 'choice' property.  Here, we flag a new property as a 'choice' and create/set an
+     * XmlModel XmlElements object based on the @XmlElements annotation.
+     * 
+     * Validation and building of the XmlElement properties will be done during finalizeProperties 
+     * in the processChoiceProperty method.
+     * 
+     * @param javaHasAnnotations
+     * @return
+     */
+    private Property buildChoiceProperty(JavaHasAnnotations javaHasAnnotations){
+        Property choiceProperty = new Property(helper);
+        choiceProperty.setChoice(true);
         boolean isIdRef = helper.isAnnotationPresent(javaHasAnnotations, XmlIDREF.class);
-        property.setIsXmlIdRef(isIdRef);
-        validateElementIsInPropOrder(info, propertyName);
+        choiceProperty.setIsXmlIdRef(isIdRef);
+        // build an XmlElement to set on the Property
+        org.eclipse.persistence.jaxb.xmlmodel.XmlElements xmlElements = new org.eclipse.persistence.jaxb.xmlmodel.XmlElements();
+        XmlElement[] elements = ((XmlElements) helper.getAnnotation(javaHasAnnotations, XmlElements.class)).value();
         for (int i = 0; i < elements.length; i++) {
             XmlElement next = elements[i];
-            Property choiceProp = new Property(helper);
-            String name = next.name();
+            org.eclipse.persistence.jaxb.xmlmodel.XmlElement xmlElement = new org.eclipse.persistence.jaxb.xmlmodel.XmlElement();
+            xmlElement.setDefaultValue(next.defaultValue());
+            xmlElement.setName(next.name());
+            xmlElement.setNamespace(next.namespace());
+            xmlElement.setNillable(next.nillable());
+            xmlElement.setRequired(next.required());
+            xmlElement.setType(next.type().getName());
+            xmlElements.getXmlElement().add(xmlElement);
+        }
+        choiceProperty.setXmlElements(xmlElements);
+        return choiceProperty;
+    }
+        
+    /**
+     * Complete creation of a 'choice' property.  Here, a Property is created for each XmlElement in the 
+     * XmlElements list.  Validation is performed as well.  Each created Property is added to the owning
+     * Property's list of choice properties.
+     *      
+     * @param choiceProperty
+     * @param info
+     * @param cls
+     * @param propertyType
+     */
+    private void processChoiceProperty(Property choiceProperty, TypeInfo info, JavaClass cls, JavaClass propertyType) {
+        String propertyName = choiceProperty.getPropertyName();
+        validateElementIsInPropOrder(info, propertyName);
 
-            String namespace = next.namespace();
-            QName qName = null;
-            
-            if (name.equals("##default")) {
-                name = propertyName;
+        ArrayList<Property> choiceProperties = new ArrayList<Property>();
+        for (org.eclipse.persistence.jaxb.xmlmodel.XmlElement next : choiceProperty.getXmlElements().getXmlElement()) {
+            String name = next.getName();
+            if (name == null || name.equals("##default")) {
+                if (next.getJavaAttribute() != null) {
+                    name = next.getJavaAttribute();
+                } else {
+                    name = propertyName;
+                }
             }
+            
+            // if the property has xml-idref, the target type of each xml-element in the list must have an xml-id property
+            if (choiceProperty.isXmlIdRef()) {
+                TypeInfo tInfo = typeInfo.get(next.getType());
+                if (tInfo == null || !tInfo.isIDSet()) {
+                    throw JAXBException.invalidXmlElementInXmlElementsList(propertyName, name);
+                }
+            }
+            
+            Property choiceProp = new Property(helper);
+
+            String namespace = next.getNamespace();
+            QName qName = null;
             if (!namespace.equals("##default")) {
                 qName = new QName(namespace, name);
             } else {
@@ -1211,24 +1266,24 @@ public class AnnotationsProcessor {
                 }
             }
 
-            choiceProp.setPropertyName(property.getPropertyName());
-            Class typeClass = next.type();
+            choiceProp.setPropertyName(name);
 
-            if (typeClass.equals(XmlElement.DEFAULT.class)) {
+            // figure out the property's type - note that for DEFAULT, if from XML the value will be 
+            // "XmlElement.DEFAULT", and from annotations the value will be "XmlElement$DEFAULT"
+            if (next.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT") ||
+                    next.getType().equals("javax.xml.bind.annotation.XmlElement$DEFAULT")) {
                 choiceProp.setType(propertyType);
             } else {
-                choiceProp.setType(helper.getJavaClass(typeClass));
+                choiceProp.setType(helper.getJavaClass(next.getType()));
             }
-            
+
             choiceProp.setSchemaName(qName);            
             choiceProp.setSchemaType(getSchemaTypeFor(choiceProp.getType()));
-            choiceProp.setElement(javaHasAnnotations);
-            choiceProp.setIsXmlIdRef(isIdRef);
+            choiceProp.setIsXmlIdRef(choiceProperty.isXmlIdRef());
+            choiceProp.setXmlElementWrapper(choiceProperty.getXmlElementWrapper());
             choiceProperties.add(choiceProp);
-            
         }
-        property.setChoiceProperties(choiceProperties);
-        return property;
+        choiceProperty.setChoiceProperties(choiceProperties);
     }
     
     private Property buildReferenceProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass type){
@@ -2243,7 +2298,7 @@ public class AnnotationsProcessor {
         JavaClass parent = cls.getSuperclass();
         while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
             TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
-            if (parentTypeInfo != null || (parentTypeInfo == null && shouldGenerateTypeInfo(parent))) {
+            if (parentTypeInfo != null || shouldGenerateTypeInfo(parent)) {
                 throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
             }
             parent = parent.getSuperclass();

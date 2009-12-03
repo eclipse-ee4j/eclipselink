@@ -271,7 +271,7 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlElement) {
             return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo);
         } else if (javaAttribute instanceof XmlElements) {
-            return processXmlElements((XmlElements) javaAttribute, oldProperty);
+            return processXmlElements((XmlElements) javaAttribute, oldProperty, typeInfo);
         } else if (javaAttribute instanceof XmlElementRef) {
             return processXmlElementRef((XmlElementRef) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlElementRefs) {
@@ -557,8 +557,28 @@ public class XMLProcessor {
     	return oldProperty;
     }
     
-    
-    private Property processXmlElements(XmlElements xmlElements, Property oldProperty) {
+    /**
+     * Process XmlElements.
+     * 
+     * The XmlElements object will be set on the property, and it will be 
+     * flagged as a 'choice'.
+     * 
+     * @param xmlElements
+     * @param oldProperty
+     * @param tInfo
+     * @return
+     */
+    private Property processXmlElements(XmlElements xmlElements, Property oldProperty, TypeInfo tInfo) {
+        resetProperty(oldProperty, tInfo);
+        oldProperty.setChoice(true);
+        oldProperty.setXmlElements(xmlElements);
+        // handle idref
+        oldProperty.setIsXmlIdRef(xmlElements.isXmlIdref());
+        // handle XmlElementWrapper
+        if (xmlElements.getXmlElementWrapper() != null) {
+            oldProperty.setXmlElementWrapper(xmlElements.getXmlElementWrapper());
+        }
+
         return oldProperty;
     }
 
@@ -740,10 +760,17 @@ public class XMLProcessor {
         oldProperty.setMixedContent(false);
         oldProperty.setMimeType(null);
         oldProperty.setTransient(false);
+        oldProperty.setChoice(false);
+        unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);
         unsetXmlAnyElement(oldProperty, tInfo);
         unsetXmlValue(oldProperty, tInfo);
         return oldProperty;
+    }
+    
+    private void unsetXmlElements(Property oldProperty) {
+        oldProperty.setXmlElements(null);
+        oldProperty.setChoiceProperties(null);
     }
     
     /**

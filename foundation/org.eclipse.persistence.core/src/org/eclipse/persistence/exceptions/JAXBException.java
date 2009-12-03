@@ -62,6 +62,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int XMLANYELEMENT_ALREADY_SET = 50032;
     public static final int COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER = 50033;
     public static final int INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY = 50034;
+    public static final int INVALID_XMLELEMENT_IN_XMLELEMENTS = 50035;
 
     protected JAXBException(String message) {
         super(message);
@@ -440,6 +441,23 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY, args));
         exception.setErrorCode(INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY);
+        return exception;
+    }
+
+    /**
+     * This exception should be used when XmlElements and XmlIDREF are set on a property, 
+     * but one or more of the XmlElement entries in the list has a type that does not 
+     * have an XmlID property.
+     *   
+     * @param propertyName
+     * @param typeName
+     * @param elementName
+     * @return
+     */
+    public static JAXBException invalidXmlElementInXmlElementsList(String propertyName, String elementName) {
+        Object[] args = { propertyName, elementName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XMLELEMENT_IN_XMLELEMENTS, args));
+        exception.setErrorCode(INVALID_XMLELEMENT_IN_XMLELEMENTS);
         return exception;
     }
 }

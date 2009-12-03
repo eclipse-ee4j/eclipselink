@@ -13,13 +13,16 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 
 /**
@@ -88,6 +91,11 @@ public class Property {
 	public static final String DEFAULT_KEY_NAME =  "key";
 	public static final String DEFAULT_VALUE_NAME =  "value";
 	private boolean isMap = false;
+	
+	// XmlElements specific attributes
+    private Collection<Property> choiceProperties;
+    private XmlElements xmlElements;
+    private boolean isChoice = false;
 	
     public Property() {}
 
@@ -270,8 +278,23 @@ public class Property {
         setMethodName = methodName;
     }
     
+    /**
+     * Indicates if this property represents a choice property.
+     * 
+     * @return
+     */
     public boolean isChoice() {
-        return false;
+        return isChoice;
+    }    
+
+    /**
+     * Set flag to indicate whether this property represents a choice 
+     * property.
+     * 
+     * @param choice
+     */
+    public void setChoice(boolean choice) {
+        isChoice = choice;
     }    
 
     /**
@@ -638,6 +661,44 @@ public class Property {
     public void setInverseReference(boolean isInverseReference) {
         this.isInverseReference = isInverseReference;
     }
+    
+    /**
+     * Return the XmlElements object set for this Property.  Typically 
+     * this will only be set if we are dealing with a 'choice'.
+     * 
+     * @return
+     */
+    public XmlElements getXmlElements() {
+        return xmlElements;
+    }
 
+    /**
+     * Set the XmlElements object for this Property.  Typically 
+     * this will only be set if we are dealing with a 'choice'.
+     * 
+     * @param xmlElements
+     */
+    public void setXmlElements(XmlElements xmlElements) {
+        this.xmlElements = xmlElements;
+    }
 
+    /**
+     * Return the choice properties set on this property.  Typically this
+     * will only contain properties if we are dealing with a 'choice'.
+     * 
+     * @return
+     */
+    public Collection<Property> getChoiceProperties() {
+        return this.choiceProperties;
+    }
+    
+    /** 
+     * Set the choice properties for this property.  Typically this
+     * will only contain properties if we are dealing with a 'choice'.
+     * 
+     * @param properties
+     */
+    public void setChoiceProperties(Collection<Property> properties) {
+        this.choiceProperties = properties;
+    }
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="phone">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:ID" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:ID" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="bar">
+      <xsd:sequence>
+         <xsd:element name="contact" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element name="address" type="xsd:IDREF" minOccurs="0"/>
+                     <xsd:element name="phone" type="xsd:IDREF" minOccurs="0"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="bar" type="bar"/>
+</xsd:schema>
