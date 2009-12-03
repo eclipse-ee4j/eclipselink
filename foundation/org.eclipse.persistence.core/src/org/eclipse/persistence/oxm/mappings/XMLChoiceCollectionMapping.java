@@ -491,7 +491,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 XMLChoiceFieldToClassAssociation association = (XMLChoiceFieldToClassAssociation)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
                 if(association.getConverter() != null) {
-                    this.addConverter(association.getXmlField(), (Converter)association.getConverter());
+                    this.addConverter(association.getXmlField(), association.getConverter());
                 }
             }
         }

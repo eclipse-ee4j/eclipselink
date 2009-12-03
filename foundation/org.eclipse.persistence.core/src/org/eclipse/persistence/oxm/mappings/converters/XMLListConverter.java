@@ -31,8 +31,7 @@ public class XMLListConverter implements Converter {
     private String objectClassName = null;
 
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-        XMLCompositeDirectCollectionMapping dcMapping = (XMLCompositeDirectCollectionMapping) this.mapping;
-        return this.conversionManager.convertStringToList(dataValue, getObjectClass(), dcMapping.getContainerPolicy());
+        return this.conversionManager.convertStringToList(dataValue, getObjectClass(), mapping.getContainerPolicy());
     }
 
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {

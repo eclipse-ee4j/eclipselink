@@ -217,11 +217,11 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return this.inverseReferenceMapping.getAttributeAccessor();
     }
-    
+
     /**
-     * Sets the AttributeAccessor that is used to get and set the value of the 
+     * Sets the AttributeAccessor that is used to get and set the value of the
      * container on the target object.
-     * 
+     *
      * @param anAttributeAccessor - the accessor to be used.
      * @deprecated Replaced by getInverseReferenceMapping().setAttributeAccessor()
      */
@@ -232,13 +232,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         this.inverseReferenceMapping.setAttributeAccessor(anAttributeAccessor);
     }
-    
+
     /**
-     * Sets the name of the backpointer attribute on the target object. Used to 
-     * populate the backpointer. If the specified attribute doesn't exist on 
+     * Sets the name of the backpointer attribute on the target object. Used to
+     * populate the backpointer. If the specified attribute doesn't exist on
      * the reference class of this mapping, a DescriptorException will be thrown
      * during initialize.
-     * 
+     *
      * @param attributeName - the name of the backpointer attribute to be populated
      * @deprecated Replaced by getInverseReferenceMapping().setAttributeName()
      */
@@ -246,15 +246,15 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     public void setContainerAttributeName(String attributeName) {
         if (this.inverseReferenceMapping == null) {
             return;
-        }       
+        }
         this.inverseReferenceMapping.setAttributeName(attributeName);
     }
-    
+
     /**
-     * Gets the name of the backpointer attribute on the target object. Used to 
+     * Gets the name of the backpointer attribute on the target object. Used to
      * populate the backpointer.
      * @deprecated Replaced by getInverseReferenceMapping().getAttributeName()
-     */    
+     */
     @Deprecated
     public String getContainerAttributeName() {
         if (this.inverseReferenceMapping == null) {
@@ -262,13 +262,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return this.inverseReferenceMapping.getAttributeName();
     }
-    
+
     /**
-     * Sets the method name to be used when accessing the value of the back pointer 
+     * Sets the method name to be used when accessing the value of the back pointer
      * on the target object of this mapping. If the specified method doesn't exist
      * on the reference class of this mapping, a DescriptorException will be thrown
      * during initialize.
-     * 
+     *
      * @param methodName - the getter method to be used.
      * @deprecated Replaced by getInverseReferenceMapping().setGetMethodName()
      */
@@ -279,13 +279,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         this.inverseReferenceMapping.setGetMethodName(methodName);
     }
-    
+
     /**
-     * Sets the name of the method to be used when setting the value of the back pointer 
+     * Sets the name of the method to be used when setting the value of the back pointer
      * on the target object of this mapping. If the specified method doesn't exist
      * on the reference class of this mapping, a DescriptorException will be thrown
      * during initialize.
-     * 
+     *
      * @param methodName - the setter method to be used.
      * @deprecated Replaced by getInverseReferenceMapping().setSetMethodName()
      */
@@ -295,13 +295,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             return;
         }
         this.inverseReferenceMapping.setSetMethodName(methodName);
-    }    
-    
+    }
+
     /**
-     * Gets the name of the method to be used when accessing the value of the 
+     * Gets the name of the method to be used when accessing the value of the
      * back pointer on the target object of this mapping.
      * @deprecated Replaced by getInverseReferenceMapping().getGetMethodName()
-     */    
+     */
     @Deprecated
     public String getContainerGetMethodName() {
         if (this.inverseReferenceMapping == null) {
@@ -309,20 +309,20 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return this.inverseReferenceMapping.getGetMethodName();
     }
-    
+
     /**
-     * Gets the name of the method to be used when setting the value of the 
+     * Gets the name of the method to be used when setting the value of the
      * back pointer on the target object of this mapping.
      * @deprecated Replaced by getInverseReferenceMapping().getSetMethodName()
-     */    
+     */
     @Deprecated
     public String getContainerSetMethodName() {
         if (this.inverseReferenceMapping == null) {
             return null;
         }
         return this.inverseReferenceMapping.getSetMethodName();
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
@@ -351,7 +351,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         if(null != getContainerAccessor()) {
             getContainerAccessor().initializeAttributes(this.referenceClass);
         }
-        
+
     }
 
     /**
@@ -404,17 +404,17 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }catch(Exception e){
             //do nothing
         }
-        
+
         XMLField xmlFld = (XMLField) getField();
         if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
             XMLRecord xmlRec = (XMLRecord) databaseRow;
             xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
         }
         XMLRecord parent = (XMLRecord) databaseRow;
-        
-        if (xmlReferenceDescriptor != null) {            
+
+        if (xmlReferenceDescriptor != null) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) xmlReferenceDescriptor.getObjectBuilder();
-                       
+
             boolean addXsiType = shouldAddXsiType((XMLRecord) databaseRow, xmlReferenceDescriptor);
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
             child.setNamespaceResolver(parent.getNamespaceResolver());
@@ -426,9 +426,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }else{
                 Node newNode = XPathEngine.getInstance().create((XMLField)getField(), parent.getDOM(), attributeValue, session);
                 DOMRecord newRow = new DOMRecord(newNode);
-                return newRow;            
-            }            
-        }        
+                return newRow;
+            }
+        }
     }
 
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
@@ -439,7 +439,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
         Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
         // 20071002: noEntry ineffective as a check for an absent node, empty nodes are DOMRecords, absent nodes are null)
-        //        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {           
+        //        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {
         // Do not perform a set for an absent node
         //          return null;
         //        } else {
@@ -454,7 +454,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         //        }
 
-        // Empty or xsi:nil nodes (non-absent) will arrive here along with populated nodes 
+        // Empty or xsi:nil nodes (non-absent) will arrive here along with populated nodes
         XMLRecord nestedRow = (XMLRecord) this.getDescriptor().buildNestedRowFromFieldValue(fieldValue);
         // Check the policy to see if this DOM empty/xsi:nil or filled record represents null
         if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
@@ -479,27 +479,27 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     public Object valueFromRow(Object fieldValue, XMLRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        // pretty sure we can ignore inheritance here:                
+        // pretty sure we can ignore inheritance here:
         Object toReturn = null;
-        // Use local descriptor - not the instance variable on DatabaseMapping       
+        // Use local descriptor - not the instance variable on DatabaseMapping
         ClassDescriptor aDescriptor =  getReferenceDescriptor((DOMRecord) nestedRow);
 
-        if (aDescriptor == null) {  
+        if (aDescriptor == null) {
             if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) nestedRow.getDOM());
-                toReturn = nestedRow.getDOM();                
-                if (getConverter() != null) {                    
+                toReturn = nestedRow.getDOM();
+                if (getConverter() != null) {
                     if (getConverter() instanceof XMLConverter) {
                         toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
                     } else {
                         toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
                     }
                 }
-                
+
                 //try simple case
                 toReturn = convertToSimpleTypeIfPresent(toReturn,  nestedRow, executionSession);
                 return toReturn;
-            } else {   
+            } else {
                 NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
                 for(int i=0, childrenLength=children.getLength(); i<childrenLength ; i++){
                     Node nextNode = children.item(i);
@@ -508,8 +508,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                         throw XMLMarshalException.noDescriptorFound(this);
                     }
                 }
-                
-                //simple case           
+
+                //simple case
                 toReturn = convertToSimpleTypeIfPresent(toReturn, nestedRow, executionSession);
             }
         } else {
@@ -530,7 +530,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 if (classValue != null) {
                     aDescriptor = this.getReferenceDescriptor(classValue, executionSession);
                 } else {
-                    // since there is no xsi:type attribute or leaf element type set, 
+                    // since there is no xsi:type attribute or leaf element type set,
                     // use the reference descriptor -  make sure it is non-abstract
                     if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
@@ -541,7 +541,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
             toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
         }
-        
+
         if (getConverter() != null) {
             if (getConverter() instanceof XMLConverter) {
                 toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
@@ -551,35 +551,35 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return toReturn;
     }
-    
+
     private Object convertToSimpleTypeIfPresent(Object toReturn, XMLRecord nestedRow, AbstractSession executionSession){
-        Node textchild = ((Element) nestedRow.getDOM()).getFirstChild(); 	
+        Node textchild = ((Element) nestedRow.getDOM()).getFirstChild();
         String stringValue = null;
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
             stringValue = ((Text) textchild).getNodeValue();
             if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
-                toReturn = stringValue; 
+                toReturn = stringValue;
             }
     	 }
         if ((stringValue == null) || stringValue.length() == 0) {
             return toReturn;
     	}
-    	 
+
         String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-    
+
         if ((null != type) && type.length() > 0) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
-            
-            QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());                       
+
+            QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-            if (theClass != null) {            	  
+            if (theClass != null) {
                 toReturn = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(stringValue, theClass, schemaTypeQName);
-            }                                    
+            }
         }
-        return toReturn;        
+        return toReturn;
     }
-  
+
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
         // BUG#2667762 there could be whitespace in the row instead of null
@@ -623,23 +623,23 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             	 Node root = record.getDOM();
             	 NodeList children = ((Node) attributeValue).getChildNodes();
             	 for(int i=0,childrenLength=children.getLength();i<childrenLength; i++){
-                     Node importedCopy = doc.importNode(children.item(i), true);                     
+                     Node importedCopy = doc.importNode(children.item(i), true);
                      root.appendChild(importedCopy);
                  }
-             }else{      
+             }else{
             	 ClassDescriptor desc =  this.getReferenceDescriptor(attributeValue.getClass(), session);
             	 if(desc != null){
             		 XMLObjectBuilder objectBuilder = (XMLObjectBuilder)desc.getObjectBuilder();
-            		 boolean addXsiType = shouldAddXsiType((XMLRecord) record, desc);
-            		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, addXsiType);            		
+            		 boolean addXsiType = shouldAddXsiType(record, desc);
+            		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, addXsiType);
             	 }else{
-            		 //simple case 
+            		 //simple case
              		 record.put(this.getField(), attributeValue);
             	 }
              }
         } else {
             Object fieldValue = null;
-            if (attributeValue != null) {                               
+            if (attributeValue != null) {
                 fieldValue = buildCompositeRow(attributeValue, session, record);
             } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField) getField(), session)) {
                 // If the null policy marshal method returns true (i.e. marshalled something)
@@ -692,7 +692,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     returnDescriptor = xmlRecord.getUnmarshaller().getXMLContext().getDescriptorByGlobalType(frag);
                 }
             }
-        }        
+        }
         return returnDescriptor;
 
     }
@@ -737,7 +737,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return false;
     }
-    
+
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
     }
@@ -745,7 +745,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
         this.keepAsElementPolicy = keepAsElementPolicy;
     }
-    
+
     protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
         if (rootQName == null) {
             rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
@@ -759,28 +759,28 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return xmlDescriptor;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         isWriteOnly = b;
     }
-    
+
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }  
-    
+    }
+
     public XMLInverseReferenceMapping getInverseReferenceMapping() {
         return inverseReferenceMapping;
     }
@@ -788,5 +788,5 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     void setInverseReferenceMapping(XMLInverseReferenceMapping inverseReferenceMapping) {
         this.inverseReferenceMapping = inverseReferenceMapping;
     }
-    
+
 }

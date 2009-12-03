@@ -823,7 +823,7 @@ public class XMLContext {
                                 Object childObject = ((ListContainerPolicy) mapping.getContainerPolicy()).get(xPathFragment.getIndexValue() - 1, mapping.getAttributeValueFromObject(object), null);
                                 if(stringTokenizer.hasMoreElements()) {
                                     ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
-                                    return (T) getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
+                                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
                                 } else {
                                     return (T) childObject;
                                 }
@@ -835,7 +835,7 @@ public class XMLContext {
                 if(stringTokenizer.hasMoreElements()) { 
                     Object childObject = mapping.getAttributeValueFromObject(object); 
                     ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
-                    return (T) getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
+                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
                 } else { 
                     return (T) mapping.getAttributeValueFromObject(object); 
                 } 

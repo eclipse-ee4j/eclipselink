@@ -434,9 +434,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                 XMLChoiceFieldToClassAssociation association = (XMLChoiceFieldToClassAssociation)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
                 if(association.getConverter() != null) {
-                    if(association.getConverter() instanceof Converter) {
-                        this.addConverter(association.getXmlField(), (Converter)association.getConverter());
-                    }
+                    this.addConverter(association.getXmlField(), association.getConverter());
                 }
             }
         }

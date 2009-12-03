@@ -100,7 +100,7 @@ public class SAXDocumentBuilder implements ContentHandler {
             namespaceURI = null;
         }
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
-        Node parentNode = (Node)nodes.get(nodes.size()-1);
+        Node parentNode = nodes.get(nodes.size()-1);
 
         if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
