@@ -20,7 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;

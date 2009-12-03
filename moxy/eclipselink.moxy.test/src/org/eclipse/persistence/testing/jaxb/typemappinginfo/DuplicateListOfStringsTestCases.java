@@ -15,7 +15,9 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
@@ -119,14 +121,14 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoTestCases {
 	}
 
 
-    public List<InputStream> getControlSchemaFiles(){			 		   
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
+    public Map<String, InputStream> getControlSchemaFiles(){			 		   
+		Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
 
     	InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/duplicatelistofstrings1.xsd");
-		controlSchema.add(instream);
+		controlSchema.put("", instream);
 		
 		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/duplicatelistofstrings2.xsd");
-		controlSchema.add(instream2);
+		controlSchema.put("someUri", instream2);
 		return controlSchema;
 	}
 

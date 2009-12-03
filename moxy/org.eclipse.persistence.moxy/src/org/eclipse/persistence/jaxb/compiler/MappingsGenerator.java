@@ -199,7 +199,7 @@ public class MappingsGenerator {
         String namespace;
 
         if (javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("javax.xml.bind.JAXBElement")) {
-            generateDescriptorForJAXBElementSubclass(javaClass, project, namespaceInfo.getNamespaceResolver());
+            generateDescriptorForJAXBElementSubclass(javaClass, project, namespaceInfo.getNamespaceResolverForDescriptor());
             return;
         }
         
@@ -236,13 +236,13 @@ public class MappingsGenerator {
             } else {
             	if(isDefaultNamespaceAllowed && globalNamespaceResolver.getDefaultNamespaceURI() == null){
             		globalNamespaceResolver.setDefaultNamespaceURI(namespace);
-            	    namespaceInfo.getNamespaceResolver().setDefaultNamespaceURI(namespace);
+            	    namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
             	}
-                descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null), elementName));
+                descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null), elementName));
             }
         }
         
-        descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolver());
+        descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolverForDescriptor());
         
         setPKField(descriptor, info);
         setSchemaContext(descriptor, info);
@@ -1681,7 +1681,7 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 xPath += (wrapper.getName() + "/");
             } else {
-            	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+            	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
             	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
             }
         }
@@ -1697,7 +1697,7 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 xPath += ("@" + name.getLocalPart());
             } else {
-                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
             	xPath += "@" + getQualifiedString(prefix, name.getLocalPart());
             }
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getClass());
@@ -1753,7 +1753,7 @@ public class MappingsGenerator {
                 path += "/text()";
             }
         } else {
-            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
         	path += getQualifiedString(prefix, elementName.getLocalPart());
             if (isText) {
                 path += "/text()";
@@ -1990,7 +1990,7 @@ public class MappingsGenerator {
               NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
               
   			if(info != null) {
-  				NamespaceResolver resolver = info.getNamespaceResolver();
+  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
   				String prefix = resolver.resolveNamespaceURI(namespaceUri);
   				desc.setNamespaceResolver(resolver);
   				desc.setDefaultRootElement("");
