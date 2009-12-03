@@ -27,6 +27,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     12/2/2009-2.1 Guy Pelletier 
+ *       - 296612:  Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -42,6 +44,7 @@ import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
@@ -76,9 +80,11 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  */
 public class BasicAccessor extends DirectAccessor {
     private Boolean m_mutable;
+    private boolean m_returnUpdate;
     private ColumnMetadata m_column;
     private DatabaseField m_field; 
     private GeneratedValueMetadata m_generatedValue;
+    private ReturnInsertMetadata m_returnInsert;
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
     
@@ -133,6 +139,14 @@ public class BasicAccessor extends DirectAccessor {
         if (isAnnotationPresent(TableGenerator.class)) {
             m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), accessibleObject);
         }
+        
+        // Set the return insert if one is present.
+        if (isAnnotationPresent(ReturnInsert.class)) {
+            m_returnInsert = new ReturnInsertMetadata(getAnnotation(ReturnInsert.class), accessibleObject);
+        }
+        
+        // Set the return update if one is present.
+        m_returnUpdate = isAnnotationPresent(ReturnUpdate.class);
     }
     
     /**
@@ -204,6 +218,22 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public ReturnInsertMetadata getReturnInsert() {
+        return m_returnInsert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getReturnUpdate() {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public SequenceGeneratorMetadata getSequenceGenerator() {
         return m_sequenceGenerator;
     }
@@ -232,6 +262,7 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Initialize single objects.
+        initXMLObject(m_returnInsert, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
         initXMLObject(m_tableGenerator, accessibleObject);
     }
@@ -259,6 +290,14 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected boolean isMapClass(MetadataClass cls) {
         return cls.extendsInterface(Map.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * USed for OX mapping
+     */
+    public boolean isReturnUpdate() {
+        return m_returnUpdate;
     }
     
     /**
@@ -305,7 +344,6 @@ public class BasicAccessor extends DirectAccessor {
         }
 
         // Process the @ReturnInsert and @ReturnUpdate annotations.
-        // TODO: Expand this configuration to the eclipselink-orm.xsd
         processReturnInsertAndUpdate();
         
         // Process a generated value setting.
@@ -380,32 +418,22 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * Process a ReturnInsert annotation. NOTE: This is currently only
-     * supported using annotations.
+     * Process a ReturnInsert annotation.
      */
     @Override
     protected void processReturnInsert() {
-        MetadataAnnotation returnInsert = getAnnotation(ReturnInsert.class);
-
-        if (returnInsert != null) {
-            boolean returnOnly = (Boolean) returnInsert.getAttribute("returnOnly");
-            
-            if (returnOnly) {
-                getDescriptor().addFieldForInsertReturnOnly(m_field);
-            } else {
-                getDescriptor().addFieldForInsert(m_field);
-            }
+        if (m_returnInsert != null) {
+            m_returnInsert.process(getDescriptor(), m_field);
         }
     }
 
     /**
      * INTERNAL:
-     * Process a return update setting.  NOTE: This is currently only
-     * supported using annotations.
+     * Process a return update setting.
      */
     @Override
     protected void processReturnUpdate() {
-        if (hasReturnUpdate()) {
+        if (isReturnUpdate()) {
             getDescriptor().addFieldForUpdate(m_field);
         }
     }
@@ -432,6 +460,22 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void setMutable(Boolean mutable) {
         m_mutable = mutable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReturnInsert(ReturnInsertMetadata returnInsert) {
+        m_returnInsert = returnInsert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReturnUpdate(String ignore) {
+        m_returnUpdate = true;
     }
     
     /**

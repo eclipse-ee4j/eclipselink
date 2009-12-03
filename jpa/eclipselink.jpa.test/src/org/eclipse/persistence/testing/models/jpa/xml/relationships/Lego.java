@@ -9,29 +9,12 @@
  *
  * Contributors:
  *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema 
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
+ *     12/2/2009-2.1 Guy Pelletier 
+ *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema 
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-public class Lego implements Manufacturer {
-    private Integer id;
-    private String name;
-    
+public class Lego extends ManufacturingCompany implements Manufacturer {
     public Lego() {}
-    
-    public Integer getId() { 
-        return id; 
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setId(Integer id) { 
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

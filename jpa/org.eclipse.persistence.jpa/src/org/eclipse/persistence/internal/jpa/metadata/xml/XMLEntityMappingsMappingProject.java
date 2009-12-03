@@ -33,6 +33,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     12/2/2009-2.1 Guy Pelletier 
+ *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -98,14 +100,15 @@ import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMe
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.queries.DefaultRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
 
@@ -183,6 +186,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildTransientDescriptor());
         addDescriptor(buildVersionDescriptor());
         addDescriptor(buildBasicDescriptor());
+        addDescriptor(buildReturnInsertDescriptor());
         addDescriptor(buildCascadeTypeDescriptor());
         addDescriptor(buildManyToOneDescriptor());
         addDescriptor(buildOneToOneDescriptor());
@@ -253,7 +257,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMethodMapping);
         
         XMLDirectMapping setMethodMapping = new XMLDirectMapping();
-        setMethodMapping.setAttributeName("m_getMethodName");
+        setMethodMapping.setAttributeName("m_setMethodName");
         setMethodMapping.setGetMethodName("getSetMethodName");
         setMethodMapping.setSetMethodName("setSetMethodName");
         setMethodMapping.setXPath("@set-method");
@@ -473,6 +477,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        
+        XMLCompositeObjectMapping returnInsertMapping = new XMLCompositeObjectMapping();
+        returnInsertMapping.setAttributeName("m_returnInsert");
+        returnInsertMapping.setGetMethodName("getReturnInsert");
+        returnInsertMapping.setSetMethodName("setReturnInsert");
+        returnInsertMapping.setReferenceClass(ReturnInsertMetadata.class);
+        returnInsertMapping.setXPath("orm:return-insert");
+        descriptor.addMapping(returnInsertMapping);
+        
+        XMLDirectMapping returnUpdateMapping = new XMLDirectMapping();
+        returnUpdateMapping.setAttributeName("m_returnUpdate");
+        returnUpdateMapping.setGetMethodName("getReturnUpdate");
+        returnUpdateMapping.setSetMethodName("setReturnUpdate");
+        IsSetNullPolicy returnUpdatePolicy = new IsSetNullPolicy("isReturnUpdate");
+        returnUpdatePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        returnUpdateMapping.setNullPolicy(returnUpdatePolicy);
+        returnUpdateMapping.setXPath("orm:return-update");
+        descriptor.addMapping(returnUpdateMapping);
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -955,6 +977,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getCustomCopyPolicyMapping());
+        descriptor.addMapping(getInstantiationCopyPolicyMapping());
+        descriptor.addMapping(getCloneCopyPolicyMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAttributesMapping());
         
@@ -1017,6 +1042,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(EntityAccessor.class);
 
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1059,7 +1085,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getDiscriminatorColumnMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
-        
         descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
@@ -1074,17 +1099,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
-        
-        XMLCompositeObjectMapping redirectorsMapping = new XMLCompositeObjectMapping();
-        redirectorsMapping.setAttributeName("m_defaultRedirectors");
-        redirectorsMapping.setGetMethodName("getDefaultRedirectors");
-        redirectorsMapping.setSetMethodName("setDefaultRedirectors");
-        redirectorsMapping.setReferenceClass(DefaultRedirectorsMetadata.class);
-        redirectorsMapping.setXPath("orm:query-redirectors");
-        descriptor.addMapping(redirectorsMapping);
-
-        
-        
+        descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
         descriptor.addMapping(getExcludeSuperclassListenersMapping());
         descriptor.addMapping(getEntityListenersMapping());
@@ -1100,6 +1115,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAssociationOverrideMapping());
         descriptor.addMapping(getAttributesMapping());
         
+        // Attribute mappings.
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("m_entityName");
         nameMapping.setGetMethodName("getEntityName");
@@ -1469,6 +1485,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(MappedSuperclassAccessor.class);
 
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1481,6 +1498,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getCustomCopyPolicyMapping());
+        descriptor.addMapping(getInstantiationCopyPolicyMapping());
+        descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getSequenceGeneratorMapping());
+        descriptor.addMapping(getTableGeneratorMapping());
+        descriptor.addMapping(getNamedQueryMapping());
+        descriptor.addMapping(getNamedNativeQueryMapping());
+        descriptor.addMapping(getNamedStoredProcedureQueryMapping());
+        descriptor.addMapping(getResultSetMappingMapping());
+        descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
         descriptor.addMapping(getExcludeSuperclassListenersMapping());
         descriptor.addMapping(getEntityListenersMapping());
@@ -1492,8 +1519,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
         descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getAssociationOverrideMapping());
         descriptor.addMapping(getAttributesMapping());
         
+        // Attribute mappings.
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getCacheableAttributeMapping());
@@ -1963,7 +1993,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected ClassDescriptor buildDefaultRedirectorsDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(DefaultRedirectorsMetadata.class);
+        descriptor.setJavaClass(QueryRedirectorsMetadata.class);
         
         XMLDirectMapping allQueries = new XMLDirectMapping();
         allQueries.setAttributeName("defaultQueryRedirector");
@@ -2017,6 +2047,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         return descriptor;
     }
+    
     /**
      * INTERNAL:
      * XSD: read-transformer
@@ -2031,6 +2062,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
 
+    /**
+     * INTERNAL:
+     * XSD: return-insert
+     */
+    protected ClassDescriptor buildReturnInsertDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ReturnInsertMetadata.class);
+        
+        XMLDirectMapping returnOnlyMapping = new XMLDirectMapping();
+        returnOnlyMapping.setAttributeName("m_returnOnly");
+        returnOnlyMapping.setGetMethodName("getReturnOnly");
+        returnOnlyMapping.setSetMethodName("setReturnOnly");
+        returnOnlyMapping.setXPath("@return-only");
+        descriptor.addMapping(returnOnlyMapping);
+        
+        return descriptor;
+    }
+    
     /**
      * INTERNAL:
      * XSD: table
@@ -3542,6 +3591,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         queryMapping.setSetMethodName("setQuery");
         queryMapping.setXPath("orm:query");
         return queryMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getQueryRedirectorsMapping() {
+        XMLCompositeObjectMapping redirectorsMapping = new XMLCompositeObjectMapping();
+        redirectorsMapping.setAttributeName("m_queryRedirectors");
+        redirectorsMapping.setGetMethodName("getQueryRedirectors");
+        redirectorsMapping.setSetMethodName("setQueryRedirectors");
+        redirectorsMapping.setReferenceClass(QueryRedirectorsMetadata.class);
+        redirectorsMapping.setXPath("orm:query-redirectors");
+        return redirectorsMapping;
     }
     
     /**

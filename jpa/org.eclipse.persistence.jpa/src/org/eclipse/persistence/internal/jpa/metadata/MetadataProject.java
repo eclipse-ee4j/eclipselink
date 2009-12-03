@@ -1116,7 +1116,6 @@ public class MetadataProject {
                 Integer allocationSize = sequenceGenerator.getAllocationSize();
                 if (allocationSize == null) {
                     // Default value, same as annotation default.
-                    // TODO: Log a message.
                     allocationSize = new Integer(50);
                 }
                 
@@ -1151,14 +1150,12 @@ public class MetadataProject {
                 Integer allocationSize = tableGenerator.getAllocationSize();
                 if (allocationSize == null) {
                     // Default value, same as annotation default.
-                    // TODO: Log a message.
                     allocationSize = new Integer(50);
                 }
                 
                 Integer initialValue = tableGenerator.getInitialValue();
                 if (initialValue == null) {
                     // Default value, same as annotation default.
-                    // TODO: Log a message.
                     initialValue = new Integer(0);
                 }
                 

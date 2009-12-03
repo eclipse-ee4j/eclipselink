@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
@@ -168,6 +169,18 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     public String getSequenceName() {
         return m_sequenceName;
     }  
+    
+    /**
+     * INTERNAL: 
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        if (m_sequenceName == null) {
+            m_sequenceName = "";
+        }
+    }
     
     /**
      * INTERNAL:

@@ -47,6 +47,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     12/2/2009-2.1 Guy Pelletier 
+ *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -76,8 +78,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
@@ -92,12 +93,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -109,29 +104,16 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class EntityAccessor extends MappedSuperclassAccessor {
-    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
-    private DiscriminatorColumnMetadata m_discriminatorColumn;
     private InheritanceMetadata m_inheritance;
+    private DiscriminatorColumnMetadata m_discriminatorColumn;
     
-    // TODO: Since we allow the annotations of these to be defined on a
-    // mapped superclass, we should change the schema to allow that as well
-    // and move these attributes up to MappedSuperclass. And remove their 
-    // respective processing methods from this class.
-    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
-    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
-    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
-    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
-    private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
+    private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
+    private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     
-    private SequenceGeneratorMetadata m_sequenceGenerator;
- 
     private String m_discriminatorValue;
     private String m_entityName;
     
-    private TableGeneratorMetadata m_tableGenerator;
     private TableMetadata m_table;
     
     /**
@@ -342,22 +324,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<AssociationOverrideMetadata> getAssociationOverrides() {
-        return m_associationOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AttributeOverrideMetadata> getAttributeOverrides() {
-        return m_attributeOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public DiscriminatorColumnMetadata getDiscriminatorColumn() {
         return m_discriminatorColumn;
     }
@@ -421,32 +387,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * made before calling this method. 
      * @see process()
      */
-    public ArrayList<MappedSuperclassAccessor> getMappedSuperclasses() {
+    public List<MappedSuperclassAccessor> getMappedSuperclasses() {
         return m_mappedSuperclasses;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedNativeQueryMetadata> getNamedNativeQueries() {
-        return m_namedNativeQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedQueryMetadata> getNamedQueries() {
-        return m_namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
-        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -469,32 +411,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public SequenceGeneratorMetadata getSequenceGenerator() {
-        return m_sequenceGenerator;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<SQLResultSetMappingMetadata> getSqlResultSetMappings() {
-        return m_sqlResultSetMappings;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public TableMetadata getTable() {
         return m_table;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public TableGeneratorMetadata getTableGenerator() {
-        return m_tableGenerator;
     }
     
     /**
@@ -519,17 +437,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Initialize single objects.
         initXMLObject(m_inheritance, accessibleObject);
         initXMLObject(m_discriminatorColumn, accessibleObject);
-        initXMLObject(m_sequenceGenerator, accessibleObject);
-        initXMLObject(m_tableGenerator, accessibleObject);
         initXMLObject(m_table, accessibleObject);
         
         // Initialize lists of objects.
-        initXMLObjects(m_associationOverrides, accessibleObject);
-        initXMLObjects(m_attributeOverrides, accessibleObject);
-        initXMLObjects(m_namedQueries, accessibleObject);
-        initXMLObjects(m_namedNativeQueries, accessibleObject);
-        initXMLObjects(m_namedStoredProcedureQueries, accessibleObject);
-        initXMLObjects(m_sqlResultSetMappings, accessibleObject);
         initXMLObjects(m_secondaryTables, accessibleObject);
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
     }
@@ -568,17 +478,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // ORMetadata object merging.
         m_discriminatorColumn = (DiscriminatorColumnMetadata) mergeORObjects(m_discriminatorColumn, accessor.getDiscriminatorColumn());
         m_inheritance = (InheritanceMetadata) mergeORObjects(m_inheritance, accessor.getInheritance());
-        m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
-        m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
         m_table = (TableMetadata) mergeORObjects(m_table, accessor.getTable());
         
         // ORMetadata list merging. 
-        m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
-        m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
-        m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
-        m_sqlResultSetMappings = mergeORObjectLists(m_sqlResultSetMappings, accessor.getSqlResultSetMappings());
-        m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
-        m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
         m_secondaryTables = mergeORObjectLists(m_secondaryTables, accessor.getSecondaryTables());
         m_primaryKeyJoinColumns = mergeORObjectLists(m_primaryKeyJoinColumns, accessor.getPrimaryKeyJoinColumns());
     }
@@ -706,43 +608,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Finally, process the accessors on this entity (and all those from
         // super classes that apply to us).
         processAccessors();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the association override metadata specified on an entity or 
-     * mapped superclass. Once the association overrides are processed from
-     * XML process the association overrides from annotations. This order of
-     * processing must be maintained.
-     */
-    @Override
-    protected void processAssociationOverrides() {
-        // Process the XML association override elements first.
-        for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
-            // Process the association override.
-            processAssociationOverride(associationOverride);
-        }
-        
-        // Call the super class to look for annotations.
-        super.processAssociationOverrides();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute override metadata specified on an entity or 
-     * mapped superclass. Once the attribute overrides are processed from
-     * XML process the attribute overrides from annotations. This order of 
-     * processing must be maintained.
-     */
-    @Override
-    protected void processAttributeOverrides() {
-        // Process the XML attribute overrides first.
-        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-            // Process the attribute override.
-            processAttributeOverride(attributeOverride);
-        }
-        
-        super.processAttributeOverrides();
     }
     
     /**
@@ -1089,54 +954,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process/collect the named native queries on this accessor and add them
-     * to the project for later processing.
-     */
-    @Override
-    protected void processNamedNativeQueries() {
-        // Process the XML named native queries first.
-        for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
-            getProject().addQuery(namedNativeQuery);
-        }
-        
-        // Process the named native query annotations second.
-        super.processNamedNativeQueries();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process/collect the named queries on this accessor and add them to the 
-     * project for later processing.
-     */
-    @Override
-    protected void processNamedQueries() {
-        // Process the XML named queries first.
-        for (NamedQueryMetadata namedQuery : m_namedQueries) {
-            getProject().addQuery(namedQuery);
-        }
-        
-        // Process the named query annotations second.
-        super.processNamedQueries();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process/collect the named stored procedure queries on this accessor and 
-     * add them to the project for later processing.
-     */
-    @Override
-    protected void processNamedStoredProcedureQueries() {
-        // Process the XML named queries first.
-        for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
-            getProject().addQuery(namedStoredProcedureQuery);
-        }
-        
-        // Process the named stored procedure query annotations second.
-        super.processNamedStoredProcedureQueries();
-    }
-    
-    /**
-     * INTERNAL:
      * Process a MetadataSecondaryTable. Do all the table name defaulting and 
      * set the correct, fully qualified name on the TopLink DatabaseTable.
      */
@@ -1184,37 +1001,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 processSecondaryTable(table);
             }
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the sequence generator metadata and add it to the project. 
-     */
-    @Override
-    protected void processSequenceGenerator() {
-        // Process the xml defined sequence generator first.
-        if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
-        }
-        
-        // Process the annotation defined sequence generator second.
-        super.processSequenceGenerator();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the sql result set mappings for the given class which could be 
-     * an entity or a mapped superclass.
-     */
-    @Override
-    protected void processSqlResultSetMappings() {
-        // Process the XML sql result set mapping elements first.
-        for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
-            getProject().addSQLResultSetMapping(sqlResultSetMapping);
-        }
-        
-        // Process the sql result set mapping query annotations second.
-        super.processSqlResultSetMappings();
     }
     
     /**
@@ -1308,21 +1094,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the table generator metadata and add it to the project. 
-     */
-    @Override
-    protected void processTableGenerator() {
-        // Process the xml defined table generator first.
-        if (m_tableGenerator != null) {
-            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
-        }
-        
-        // Process the annotation defined table generator second.
-        super.processTableGenerator();
-    } 
-    
-    /**
-     * INTERNAL:
      * This method resolves generic types. Resolving generic types will be
      * the responsibility of the metadata factory since each factory could have 
      * its own means to do so and not respect a generic format on the metadata
@@ -1331,22 +1102,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void resolveGenericTypes(List<String> genericTypes, MetadataClass parent) {
         getMetadataFactory().resolveGenericTypes(getJavaClass(), genericTypes, parent, getDescriptor());
     }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
-        m_associationOverrides = associationOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
-        m_attributeOverrides = attributeOverrides;
-    } 
     
     /**
      * INTERNAL:
@@ -1392,30 +1147,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setNamedNativeQueries(List<NamedNativeQueryMetadata> namedNativeQueries) {
-        m_namedNativeQueries = namedNativeQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
-        m_namedQueries = namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
-        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public void setSecondaryTables(List<SecondaryTableMetadata> secondaryTables) {
         m_secondaryTables = secondaryTables;
     }
@@ -1424,32 +1155,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
-        m_sequenceGenerator = sequenceGenerator;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setSqlResultSetMappings(List<SQLResultSetMappingMetadata> sqlResultSetMappings) {
-        m_sqlResultSetMappings = sqlResultSetMappings;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public void setTable(TableMetadata table) {
         m_table = table;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
-        m_tableGenerator = tableGenerator;
     }
     
     /**

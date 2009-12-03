@@ -37,6 +37,7 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildLEGOTable());
         addTableDefinition(buildMEGABRANDSTable());
         addTableDefinition(buildNAMCOTable());
+        addTableDefinition(buildCEOOTable());
     }
         
     public static TableCreator getCreator(){
@@ -439,19 +440,19 @@ public class RelationshipsTableManager extends TableCreator {
         TableDefinition table = new TableDefinition();
         table.setName("XML_LEGO");
 
-        FieldDefinition fieldCUST_ID = new FieldDefinition();
-        fieldCUST_ID.setName("ID");
-        fieldCUST_ID.setTypeName("NUMBER");
-        fieldCUST_ID.setSize(15);
-        fieldCUST_ID.setSubSize(0);
-        fieldCUST_ID.setIsPrimaryKey(true);
-        fieldCUST_ID.setIsIdentity(false);
-        fieldCUST_ID.setUnique(false);
-        fieldCUST_ID.setShouldAllowNull(false);
-        table.addField(fieldCUST_ID);
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
 
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
+        fieldNAME.setName("COMPANY_NAME");
         fieldNAME.setTypeName("VARCHAR2");
         fieldNAME.setSize(80);
         fieldNAME.setSubSize(0);
@@ -460,6 +461,17 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
+        
+        FieldDefinition fieldCEOID = new FieldDefinition();
+        fieldCEOID.setName("CEO_ID");
+        fieldCEOID.setTypeName("NUMERIC");
+        fieldCEOID.setSize(15);
+        fieldCEOID.setShouldAllowNull(true);
+        fieldCEOID.setIsPrimaryKey(false);
+        fieldCEOID.setUnique(false);
+        fieldCEOID.setIsIdentity(false);
+        fieldCEOID.setForeignKeyFieldName("XML_CEO.ID");
+        table.addField(fieldCEOID);
 
         return table;
     }
@@ -467,19 +479,19 @@ public class RelationshipsTableManager extends TableCreator {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MATTEL");
 
-        FieldDefinition fieldCUST_ID = new FieldDefinition();
-        fieldCUST_ID.setName("ID");
-        fieldCUST_ID.setTypeName("NUMBER");
-        fieldCUST_ID.setSize(15);
-        fieldCUST_ID.setSubSize(0);
-        fieldCUST_ID.setIsPrimaryKey(true);
-        fieldCUST_ID.setIsIdentity(false);
-        fieldCUST_ID.setUnique(false);
-        fieldCUST_ID.setShouldAllowNull(false);
-        table.addField(fieldCUST_ID);
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
 
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
+        fieldNAME.setName("COMPANY_NAME");
         fieldNAME.setTypeName("VARCHAR2");
         fieldNAME.setSize(80);
         fieldNAME.setSubSize(0);
@@ -488,6 +500,17 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
+        
+        FieldDefinition fieldCEOID = new FieldDefinition();
+        fieldCEOID.setName("CEO_ID");
+        fieldCEOID.setTypeName("NUMERIC");
+        fieldCEOID.setSize(15);
+        fieldCEOID.setShouldAllowNull(true);
+        fieldCEOID.setIsPrimaryKey(false);
+        fieldCEOID.setUnique(false);
+        fieldCEOID.setIsIdentity(false);
+        fieldCEOID.setForeignKeyFieldName("XML_CEO.ID");
+        table.addField(fieldCEOID);
 
         return table;
     }
@@ -516,15 +539,27 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
+        
+        FieldDefinition fieldCHIEFID = new FieldDefinition();
+        fieldCHIEFID.setName("CHIEF_ID");
+        fieldCHIEFID.setTypeName("NUMERIC");
+        fieldCHIEFID.setSize(15);
+        fieldCHIEFID.setShouldAllowNull(true);
+        fieldCHIEFID.setIsPrimaryKey(false);
+        fieldCHIEFID.setUnique(false);
+        fieldCHIEFID.setIsIdentity(false);
+        fieldCHIEFID.setForeignKeyFieldName("XML_CEO.ID");
+        table.addField(fieldCHIEFID);
 
         return table;
     }
+    
     public static TableDefinition buildNAMCOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NAMCO");
 
         FieldDefinition fieldCUST_ID = new FieldDefinition();
-        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setName("DISTRIBUTORID");
         fieldCUST_ID.setTypeName("NUMBER");
         fieldCUST_ID.setSize(15);
         fieldCUST_ID.setSubSize(0);
@@ -533,6 +568,46 @@ public class RelationshipsTableManager extends TableCreator {
         fieldCUST_ID.setUnique(false);
         fieldCUST_ID.setShouldAllowNull(false);
         table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldCHIEFID = new FieldDefinition();
+        fieldCHIEFID.setName("CHIEF_ID");
+        fieldCHIEFID.setTypeName("NUMERIC");
+        fieldCHIEFID.setSize(15);
+        fieldCHIEFID.setShouldAllowNull(true);
+        fieldCHIEFID.setIsPrimaryKey(false);
+        fieldCHIEFID.setUnique(false);
+        fieldCHIEFID.setIsIdentity(false);
+        fieldCHIEFID.setForeignKeyFieldName("XML_CEO.ID");
+        table.addField(fieldCHIEFID);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCEOOTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_CEO");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
 
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");

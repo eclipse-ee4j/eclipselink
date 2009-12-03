@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @author Gordon Yorke
  * @since EclipseLink 1.0
  */
-public class DefaultRedirectorsMetadata extends ORMetadata {
+public class QueryRedirectorsMetadata extends ORMetadata {
     protected String defaultQueryRedirector;
     
     protected String defaultReadAllQueryRedirector;
@@ -46,14 +46,14 @@ public class DefaultRedirectorsMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public DefaultRedirectorsMetadata() {
-        super("<default-redirectors>");
+    public QueryRedirectorsMetadata() {
+        super("<query-redirectors>");
     }
     
     /**
      * INTERNAL:
      */
-    public DefaultRedirectorsMetadata(MetadataAnnotation redirectors, MetadataAccessibleObject accessibleObject) {
+    public QueryRedirectorsMetadata(MetadataAnnotation redirectors, MetadataAccessibleObject accessibleObject) {
         super(redirectors, accessibleObject);
         
         defaultQueryRedirector = (String)redirectors.getAttribute("allQueries");

@@ -34,6 +34,8 @@
  *       - 266912: In initIdClass() store IdClass names for use by the Metamodel API  
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     12/2/2009-2.1 Guy Pelletier 
+ *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -90,10 +92,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.queries.DefaultRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
@@ -104,6 +106,11 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * INTERNAL:
  * A mapped superclass accessor.
  * 
+ * When adding new metadata objects, be sure to include their initialization in 
+ * initXMLObject. This sets the accessible object and the location of the 
+ * ORMetadata which is used when merging. Also new member metadata variables 
+ * need to be added to the merge method.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -113,13 +120,24 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private Boolean m_cacheable;
     private Boolean m_readOnly;
-    private MetadataClass m_idClass;
-    private PrimaryKeyMetadata m_primaryKey;
+    
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
-    private DefaultRedirectorsMetadata m_defaultRedirectors;
+    
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
+    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
+    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
+    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
+    
+    private MetadataClass m_idClass;
     private OptimisticLockingMetadata m_optimisticLocking;
+    private PrimaryKeyMetadata m_primaryKey;
+    private QueryRedirectorsMetadata m_queryRedirectors;
+    private SequenceGeneratorMetadata m_sequenceGenerator;
+    private TableGeneratorMetadata m_tableGenerator;
     
     private String m_existenceChecking;
     private String m_idClassName;
@@ -181,6 +199,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<AssociationOverrideMetadata> getAssociationOverrides() {
+        return m_associationOverrides;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AttributeOverrideMetadata> getAttributeOverrides() {
+        return m_attributeOverrides;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public CacheMetadata getCache() {
         return m_cache;
     }
@@ -199,14 +233,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public CacheInterceptorMetadata getCacheInterceptor() {
         return m_cacheInterceptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public DefaultRedirectorsMetadata getDefaultRedirectors() {
-        return m_defaultRedirectors;
     }
     
     /**
@@ -253,6 +279,31 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<NamedNativeQueryMetadata> getNamedNativeQueries() {
+        return m_namedNativeQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedQueryMetadata> getNamedQueries() {
+        return m_namedQueries;
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public OptimisticLockingMetadata getOptimisticLocking() {
         return m_optimisticLocking;
     }
@@ -263,6 +314,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public PrimaryKeyMetadata getPrimaryKey() {
         return m_primaryKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public QueryRedirectorsMetadata getQueryRedirectors() {
+        return m_queryRedirectors;
     }
     
     /**
@@ -331,6 +390,30 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public SequenceGeneratorMetadata getSequenceGenerator() {
+        return m_sequenceGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<SQLResultSetMappingMetadata> getSqlResultSetMappings() {
+        return m_sqlResultSetMappings;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public TableGeneratorMetadata getTableGenerator() {
+        return m_tableGenerator;
+    }
+    
+    /**
+     * INTERNAL:
      * This method is called in the pre-processing stage since we want to
      * gather a list of id classes used throughout the persistence unit. This
      * will help us build accessors, namely, mappedById accessors that can
@@ -367,10 +450,21 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Initialize single objects.
         initXMLObject(m_cache, accessibleObject);
+        initXMLObject(m_cacheInterceptor, accessibleObject);
         initXMLObject(m_optimisticLocking, accessibleObject);
+        initXMLObject(m_primaryKey, accessibleObject);
+        initXMLObject(m_queryRedirectors, accessibleObject);
+        initXMLObject(m_sequenceGenerator, accessibleObject);
+        initXMLObject(m_tableGenerator, accessibleObject);
         
         // Initialize lists of objects.
+        initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_entityListeners, accessibleObject);
+        initXMLObjects(m_namedQueries, accessibleObject);
+        initXMLObjects(m_namedNativeQueries, accessibleObject);
+        initXMLObjects(m_namedStoredProcedureQueries, accessibleObject);
+        initXMLObjects(m_sqlResultSetMappings, accessibleObject);
         
         // Simple class object
         m_idClass = initXMLClassName(m_idClassName);
@@ -414,13 +508,21 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // ORMetadata object merging.
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
-        m_cacheInterceptor = (CacheInterceptorMetadata)mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
-        m_defaultRedirectors = (DefaultRedirectorsMetadata)mergeORObjects(m_defaultRedirectors, accessor.getDefaultRedirectors());
+        m_cacheInterceptor = (CacheInterceptorMetadata) mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
         m_optimisticLocking = (OptimisticLockingMetadata) mergeORObjects(m_optimisticLocking, accessor.getOptimisticLocking());
         m_primaryKey = (PrimaryKeyMetadata) mergeORObjects(m_primaryKey, accessor.getPrimaryKey());
+        m_queryRedirectors = (QueryRedirectorsMetadata) mergeORObjects(m_queryRedirectors, accessor.getQueryRedirectors());
+        m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
+        m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
         
         // ORMetadata list merging. 
+        m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
+        m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
+        m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
+        m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
+        m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
+        m_sqlResultSetMappings = mergeORObjectLists(m_sqlResultSetMappings, accessor.getSqlResultSetMappings());
     }
     
     /**
@@ -528,7 +630,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * XML process the association overrides from annotations. This order of
      * processing must be maintained.
      */
-    protected void processAssociationOverrides() {        
+    protected void processAssociationOverrides() {
+        // Process the XML association override elements first.
+        for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
+            // Process the association override.
+            processAssociationOverride(associationOverride);
+        }
+        
         // Process the association override annotations.
         // Look for an @AssociationOverrides.
         MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
@@ -567,7 +675,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * XML process the attribute overrides from annotations. This order of 
      * processing must be maintained.
      */
-    protected void processAttributeOverrides() {        
+    protected void processAttributeOverrides() {
+        // Process the XML attribute overrides first.
+        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
+            // Process the attribute override.
+            processAttributeOverride(attributeOverride);
+        }
+        
         // Process the attribute override annotations.
         // Look for an @AttributeOverrides.
         MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
@@ -729,7 +843,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // cacheable and persistence unit global setting into consideration.
         processCaching();
         
-        // Process the Default Redirectos
+        // Process the Default Redirectors
         processDefaultRedirectors();
             
         // Process the change tracking metadata.
@@ -756,7 +870,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process a default redirector metadata. 
      */
     protected void processDefaultRedirectors() {
-        if (m_defaultRedirectors != null || isAnnotationPresent(QueryRedirectors.class)) {
+        if (m_queryRedirectors != null || isAnnotationPresent(QueryRedirectors.class)) {
             if (getDescriptor().isInheritanceSubclass()) {
                 // Ignore query redirector if specified on an inheritance subclass.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS, getJavaClass());
@@ -765,10 +879,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 // redirector is already defined on the entity.
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
             } else {
-                if (m_defaultRedirectors == null) {
-                    new DefaultRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                if (m_queryRedirectors == null) {
+                    new QueryRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
                 } else {
-                    m_defaultRedirectors.process(getDescriptor(), getJavaClass());
+                    m_queryRedirectors.process(getDescriptor(), getJavaClass());
                 }
             }
         }        
@@ -907,6 +1021,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * to the project for later processing.
      */
     protected void processNamedNativeQueries() {
+        // Process the XML named native queries first.
+        for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
+            getProject().addQuery(namedNativeQuery);
+        }
+        
         // Process the named native query annotations.
         // Look for a @NamedNativeQueries.
         MetadataAnnotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
@@ -928,7 +1047,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process/collect the named queries on this accessor and add them to the 
      * project for later processing.
      */
-    protected void processNamedQueries() {        
+    protected void processNamedQueries() { 
+        // Process the XML named queries first.
+        for (NamedQueryMetadata namedQuery : m_namedQueries) {
+            getProject().addQuery(namedQuery);
+        }
+        
         // Process the named query annotations.
         // Look for a @NamedQueries.
         MetadataAnnotation namedQueries = getAnnotation(NamedQueries.class);
@@ -950,7 +1074,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process/collect the named stored procedure queries on this accessor and 
      * add them to the project for later processing.
      */
-    protected void processNamedStoredProcedureQueries() {        
+    protected void processNamedStoredProcedureQueries() {
+        // Process the XML named queries first.
+        for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
+            getProject().addQuery(namedStoredProcedureQuery);
+        }
+        
         // Process the named stored procedure query annotations.
         // Look for a @NamedStoredProcedureQueries.
         MetadataAnnotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
@@ -1058,7 +1187,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process a SequenceGenerator annotation into a common metadata sequence 
      * generator and add it to the project.
      */
-    protected void processSequenceGenerator() {       
+    protected void processSequenceGenerator() {
+        // Process the xml defined sequence generator first.
+        if (m_sequenceGenerator != null) {
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+        }
+        
         if (isAnnotationPresent(SequenceGenerator.class)) {
             // Ask the common processor to process what we found.
             getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
@@ -1071,6 +1205,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * an entity or a mapped superclass.
      */
     protected void processSqlResultSetMappings() {
+        // Process the XML sql result set mapping elements first.
+        for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
+            getProject().addSQLResultSetMapping(sqlResultSetMapping);
+        }
+        
         // Process the sql result set mapping query annotations.
         // Look for a @SqlResultSetMappings.
         MetadataAnnotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
@@ -1095,9 +1234,30 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * generator and add it to the project.
      */
     protected void processTableGenerator() {
+        // Process the xml defined table generator first.
+        if (m_tableGenerator != null) {
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+        }
+        
         if (isAnnotationPresent(TableGenerator.class)) {
             getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
+        m_associationOverrides = associationOverrides;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
+        m_attributeOverrides = attributeOverrides;
     } 
     
     /**
@@ -1122,14 +1282,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setCacheInterceptor(CacheInterceptorMetadata cacheInterceptor) {
         m_cacheInterceptor = cacheInterceptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setDefaultRedirectors(DefaultRedirectorsMetadata redirectors) {
-        m_defaultRedirectors = redirectors;
     }
     
     /**
@@ -1172,6 +1324,30 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_idClassName = idClassName;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedNativeQueries(List<NamedNativeQueryMetadata> namedNativeQueries) {
+        m_namedNativeQueries = namedNativeQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
+        m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
+        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1234,8 +1410,40 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setQueryRedirectors(QueryRedirectorsMetadata redirectors) {
+        m_queryRedirectors = redirectors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReadOnly(Boolean readOnly) {
         m_readOnly = readOnly;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
+        m_sequenceGenerator = sequenceGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSqlResultSetMappings(List<SQLResultSetMappingMetadata> sqlResultSetMappings) {
+        m_sqlResultSetMappings = sqlResultSetMappings;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
+        m_tableGenerator = tableGenerator;
     }
 }
 

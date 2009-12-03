@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Auditor;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.CEO;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Mattel;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.MegaBrands;
@@ -85,10 +86,6 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateItem", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateOrder", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteOrder", persistenceUnit));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer", persistenceUnit));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
-
         if (persistenceUnit.equals("extended-relationships")) {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testExcludeDefaultMappings", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
@@ -97,9 +94,14 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCopyPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCloneCopyPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testInstantiationCopyPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedNativeQueryFromMappedSuperclass", persistenceUnit));
         } else {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testOne2OneRelationTables", persistenceUnit));
         }
+        
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteOrder", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
         
         return suite;
     }
@@ -234,6 +236,13 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
     }
 
+    public void testNamedNativeQueryFromMappedSuperclass() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Object customer = em.createNamedQuery("findAllSQLXMLCustomers").getSingleResult();
+        assertTrue("Error executing named native query 'findAllSQLXMLCustomers'", customer != null);
+        closeEntityManager(em);
+    }
+    
     public void testNamedQueryOnCustomer() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         Customer customer = (Customer)em.createNamedQuery("findAllXMLCustomers").getSingleResult();
@@ -369,12 +378,24 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             // Manufacturer does not cascade persist
             Mattel mattel = new Mattel();
             mattel.setName("Mattel Inc.");
+            
+            // CEO will cascade persist
+            CEO mattelCEO = new CEO();
+            mattelCEO.setName("Mr. Mattel");
+            mattel.setCeo(mattelCEO);
+            
             em.persist(mattel);
             item.setManufacturer(mattel);
             
             // Distributor will cascade persist
             Namco namco = new Namco();
             namco.setName("Namco Games");
+            
+            // CEO will cascade persist
+            CEO namcoCEO = new CEO();
+            namcoCEO.setName("Mr. Namco");
+            namco.setCeo(namcoCEO);
+            
             item.setDistributor(namco);
             
             em.persist(item);

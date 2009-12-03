@@ -8,29 +8,28 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-public class Namco extends DistributingCompany implements Distributor, Cloneable {
-    public Namco() {}
-        
-    public Namco clone(){
-        try{
-            return (Namco)super.clone();
-        } catch (CloneNotSupportedException exc){
-            return null;
-        }
+public class CEO {
+    private Integer id;
+    private String name;
+    
+    public Integer getId() { 
+        return id; 
     }
     
-    public Namco cloneNamco(){
-        return this.clone();
+    public String getName() {
+        return name;
     }
     
-    public Namco cloneWorkingCopyNamco(){
-        return this.clone();
+    public void setId(Integer id) { 
+        this.id = id;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 }
