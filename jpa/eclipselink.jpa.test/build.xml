@@ -712,13 +712,7 @@
         <path id="run.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
-            <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
@@ -732,14 +726,8 @@
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.timestamptz.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -754,6 +742,21 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+        </path>
+         <path id="run.oracle.classpath">
+            <path refid="run.classpath"/>
+                        <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.timestamptz.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
     </target>
 
@@ -807,7 +810,7 @@
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="RUN_PATH" value="run.oracle.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="oracle-proxy-test" inheritRefs="true"/>
@@ -820,7 +823,7 @@
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="RUN_PATH" value="run.oracle.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
     </target>
@@ -1048,7 +1051,7 @@
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
             <classpath>
-                <path refid="run.classpath"/>
+                <path refid="run.oracle.classpath"/>
             </classpath>
         </java>
     </target>
