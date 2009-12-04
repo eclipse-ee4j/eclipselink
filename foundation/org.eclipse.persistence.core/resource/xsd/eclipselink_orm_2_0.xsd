@@ -13,7 +13,7 @@
 <!--     Oracle - initial API and implementation from Oracle TopLink                                                            -->
 <!--     tware - update version number to 2.0                                                                                   -->
 <!--     12/2/2009-2.1 Guy Pelletier                                                                                            -->
-<!--        - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema              -->                                         -->
+<!--        - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema              -->
 <!--        - 296612: Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema    -->
 <!--        - formatted to match orm_2_0.xsd so that users can easily compare the two schemas                                   -->
 <!-- ************************************************************************************************************************** -->
