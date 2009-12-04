@@ -40,8 +40,6 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
-import com.sun.corba.se.pept.transport.TransportManager;
-
 /**
  * The class defines EclipseLink persistence unit property names. These values
  * are used to assist in the configuration of properties passed to
