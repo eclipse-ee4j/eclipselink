@@ -115,8 +115,11 @@ public class Property {
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals("marshal")) {
-            	newType = (JavaClass) method.getReturnType();
-                break;
+            	JavaClass returnType = method.getReturnType();            	
+            	if(!returnType.getQualifiedName().equals(newType.getQualifiedName())){
+            		newType = (JavaClass) method.getReturnType();
+            		break;
+            	}
             }
         }
         setType(newType);
