@@ -143,7 +143,7 @@ public class TransformerFactory {
                     boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
                     
                     ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
-                    if (descriptor.isAggregateDescriptor()) {
+                    if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
                     }
