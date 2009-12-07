@@ -446,7 +446,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldID.setSize(15);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
+        fieldID.setIsIdentity(true);
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
@@ -485,7 +485,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldID.setSize(15);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
+        fieldID.setIsIdentity(true);
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
