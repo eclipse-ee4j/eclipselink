@@ -2794,7 +2794,12 @@ public class AnnotationsProcessor {
         } else {
             componentClass = helper.getJavaClass(Object.class);
         }
-
+        
+        if(componentClass.isPrimitive()){            
+            Class primitiveClass = getPrimitiveClass(componentClass.getRawName());
+            componentClass = helper.getJavaClass(getObjectClass(primitiveClass));        
+        }
+       
         NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
         NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass); 
         if(namespaceInfo == null){
@@ -2825,8 +2830,8 @@ public class AnnotationsProcessor {
 
         int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
         String name = componentClass.getName().substring(beginIndex);
-
         String collectionClassRawName = collectionClass.getRawName();
+        
         String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf('.') + 1);
         String suggestedClassName = collectionClassShortName + "Of" + name;
         String qualifiedClassName = packageName + "." + suggestedClassName;
