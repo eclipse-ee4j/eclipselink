@@ -8139,7 +8139,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = null;
         boolean isInTransaction = false;
         try {
-            if (isOnServer()) {
+            // assume that if JTA is used on server then EntityManager is always injected.
+            boolean isEmInjected = isOnServer() && getServerSession().getLogin().shouldUseExternalTransactionController();
+            if (isEmInjected) {
                 em = createEntityManager();
                 // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
                 beginTransaction(em);
@@ -8380,7 +8382,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     public void testEMCloseAndOpen(){
-        Assert.assertFalse("Warning Sybase Driver does not handle testEMCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
 
         if (isOnServer()) {
             // Uses DefaultConnector.
@@ -8563,7 +8565,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
-        Assert.assertFalse("Warning Sybase Driver does not handle testEMCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         
         // cache the driver name
         String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
