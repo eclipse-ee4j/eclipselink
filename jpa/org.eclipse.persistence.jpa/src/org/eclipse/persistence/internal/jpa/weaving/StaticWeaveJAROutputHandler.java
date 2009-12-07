@@ -39,13 +39,8 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
      * @throws IOException
      */
     public void addDirEntry(String dirPath)throws IOException {
-        try{
-            JarEntry newEntry = new JarEntry(dirPath);
-            newEntry.setSize(0);
-            addEntry(newEntry, null);
-        }catch(ZipException e){
-            //ignore duplicate directory entry exceptions.
-        }
+        // no need to specifically add a directory entry.  directories will be created
+        // as files are added
     }
     
     /**
