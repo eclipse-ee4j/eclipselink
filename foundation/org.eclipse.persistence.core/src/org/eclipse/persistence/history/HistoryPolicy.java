@@ -87,7 +87,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 start = tableExp.getField(getStart());
                 end = tableExp.getField(getEnd());
 
-                if (expression.shouldUseOuterJoin() && expression.getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
+                if (expression.shouldUseOuterJoin()) {
                     join = start.isNull().or(start.lessThanEqual(value));
                 } else {
                     join = start.lessThanEqual(value);
@@ -103,7 +103,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 start = expression.getField(getStart(i));
                 end = expression.getField(getEnd(i));
 
-                if (expression.shouldUseOuterJoin() && expression.getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
+                if (expression.shouldUseOuterJoin()) {
                     subJoin = start.isNull().or(start.lessThanEqual(value));
                 } else {
                     subJoin = start.lessThanEqual(value);
@@ -169,6 +169,24 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     public ClassDescriptor getDescriptor() {
         return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns historical table equal to the passed one, or null.
+     */
+    public HistoricalDatabaseTable getHistoricalTable(DatabaseTable table) {
+        HistoricalDatabaseTable historicalTable = null;
+        if (historicalTables != null) {
+            int nSize = historicalTables.size();
+            for(int i=0; i < nSize; i++) {
+                if(historicalTables.get(i).equals(table)) {
+                    historicalTable = (HistoricalDatabaseTable)historicalTables.get(i);
+                    break;
+                }
+            }
+        }
+        return historicalTable;
     }
 
     /**

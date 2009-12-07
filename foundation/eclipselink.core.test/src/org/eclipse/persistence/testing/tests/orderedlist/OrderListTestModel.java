@@ -82,7 +82,6 @@ public class OrderListTestModel extends TestModel {
      * then reset brings back the saved original state.
      */
     Map<Class, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
-    boolean shouldSetPrintOuterJoinInWhereClauseBackToFalse;
         
     /*
      * Constants used by WhereToAdd tests.
@@ -148,10 +147,16 @@ public class OrderListTestModel extends TestModel {
      */
     boolean shouldAddModel(DatabasePlatform platform) {
         // H2 has an issue with large outer joins, causes null-pointer in driver.
-        // Platforms like Oracle that support both ways of joining (in from and where clause) should have switched to joining in from clause in setup.
-        // Platforms like TimesTen that support joining only in where clause cannot run this test model. See comments in setup method.
+        //
+        // There is an Eclipselink bug: when using old Oracle-style (+) outer joins the inner joins between
+        // primary and secondary tables substituted by outer joins (employee outer join manager causes manager's salary to outer join to manager).
+        // If there happens to be another outer join to the secondary table (in useSecondaryTable case manager_id is in salary table)
+        // then suddenly the secondary table auto joined to two tables - that causes exception: 
+        // ORA-01417: a table may be outer joined to at most one other table.
+        // Now by default Oracle joins in FROM clause, TimesTen can't, therefore TimesTen can't run this model.
+        //
         if (useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
-            if (platform.isH2() || platform.isHSQL() || platform.shouldPrintOuterJoinInWhereClause()) {
+            if (platform.isH2() || platform.isHSQL() || platform.isTimesTen()) {
                 return false;
             }
         }
@@ -359,22 +364,6 @@ public class OrderListTestModel extends TestModel {
                     getSession().getDescriptor(PhoneNumber.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
                 }
             }
-            
-            /*
-             * There is an Eclipselink bug: when using Oracle-style (+) outer joins the inner joins between
-             * primary and secondary tables substituted by outer joins (employee outer join manager causes manager's salary to outer join to manager).
-             * If there happens to be another outer join to the secondary table (in useSecondaryTable case manager_id is in salary table)
-             * then suddenly the secondary table auto joined to two tables - that causes exception: 
-             * ORA-01417: a table may be outer joined to at most one other table.
-             * Oracle can join in FROM clause, TimesTen can't.
-             */
-            DatabasePlatform platform = getSession().getPlatform();
-            if (useSecondaryTable && (joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN)) {
-                if(platform.shouldPrintOuterJoinInWhereClause() && platform.isOracle()) {
-                    platform.setPrintOuterJoinInWhereClause(false);
-                    shouldSetPrintOuterJoinInWhereClauseBackToFalse = true;
-                }
-            }
         }
     }
 
@@ -388,10 +377,6 @@ public class OrderListTestModel extends TestModel {
                     getSession().getDescriptor(entry.getKey()).setObjectChangePolicy(entry.getValue());
                 }
                 originalChangeTrackingPolicies = null;
-            }
-            if(shouldSetPrintOuterJoinInWhereClauseBackToFalse) {
-                getSession().getPlatform().setPrintOuterJoinInWhereClause(true);
-                shouldSetPrintOuterJoinInWhereClauseBackToFalse = false;
             }
         }
     }

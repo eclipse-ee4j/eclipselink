@@ -35,7 +35,6 @@ public class TimesTenPlatform extends DatabasePlatform {
     
     public TimesTenPlatform() {
         this.supportsForeignKeyConstraints = true;
-        this.printOuterJoinInWhereClause = true;
     }
 
     /**
@@ -222,6 +221,16 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
 
+    /**
+     * Some database require outer joins to be given in the where clause, others require it in the from clause.
+     */
+    public boolean shouldPrintOuterJoinInWhereClause() {
+        if(this.printOuterJoinInWhereClause == null) {
+            this.printOuterJoinInWhereClause = Boolean.TRUE;
+        }
+        return this.printOuterJoinInWhereClause;
+    }
+    
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports sequence objects.

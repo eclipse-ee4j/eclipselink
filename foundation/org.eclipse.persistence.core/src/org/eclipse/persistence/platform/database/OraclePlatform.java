@@ -60,7 +60,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     public OraclePlatform(){
     	super();
-    	printOuterJoinInWhereClause = true;
     	this.pingSQL = "SELECT 1 FROM DUAL";
     }
     

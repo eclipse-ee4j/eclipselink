@@ -143,7 +143,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean usesNativeBatchWriting;
 
     /** Allow configuration option to use where clause joining or From clause joining**/
-    protected boolean printOuterJoinInWhereClause = false;
+    protected Boolean printOuterJoinInWhereClause;
     
     /** Allow for the code that is used for preparing cursored outs for a storedprocedure to be settable. **/
     protected int cursorCode;
@@ -766,6 +766,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesJDBCBatchWriting(usesJDBCBatchWriting());
         databasePlatform.setUsesNativeBatchWriting(usesNativeBatchWriting());
         databasePlatform.setUsesStreamsForBinding(usesStreamsForBinding());
+        databasePlatform.printOuterJoinInWhereClause = this.printOuterJoinInWhereClause; 
     }
 
     /**
@@ -1704,7 +1705,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      *  With the value of false, outerjoins are performed in the from clause.
      */
     public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
-        this.printOuterJoinInWhereClause = printOuterJoinInWhereClause;
+        this.printOuterJoinInWhereClause = Boolean.valueOf(printOuterJoinInWhereClause);
     }
     public void setUsesStringBinding(boolean aBool) {
         usesStringBinding = aBool;
@@ -1802,7 +1803,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Some database require outer joins to be given in the where clause, others require it in the from clause.
      */
     public boolean shouldPrintOuterJoinInWhereClause() {
-        return printOuterJoinInWhereClause;
+        if(this.printOuterJoinInWhereClause == null) {
+            this.printOuterJoinInWhereClause = Boolean.FALSE;
+        }
+        return this.printOuterJoinInWhereClause;
     }
 
     /**

@@ -264,6 +264,10 @@ public class SQLSelectStatement extends SQLStatement {
                 sourceTable = outerExpression.getSourceTable();
                 sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
                 targetAlias = outerExpression.aliasForTable(targetTable);
+                if(outerExpression.usesHistory()) {
+                    sourceTable = (DatabaseTable)getTableAliases().get(sourceAlias);
+                    targetTable = (DatabaseTable)getTableAliases().get(targetAlias);
+                }
             } else {
                 sourceTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().firstElement();
                 targetTable = (DatabaseTable)((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getInheritancePolicy().getChildrenTables().get(0);
@@ -440,6 +444,8 @@ public class SQLSelectStatement extends SQLStatement {
             tables = descriptorTables;
         }
 
+        HistoryPolicy historyPolicy = desc.getHistoryPolicy();
+        
         // skip main table - start with i=1
         int tablesSize = tables.size();
         for(int i=1; i < tablesSize; i++) {
@@ -452,6 +458,12 @@ public class SQLSelectStatement extends SQLStatement {
                 } else {
                     // it's child's table
                     writer.write(" LEFT OUTER JOIN ");
+                }
+                if(historyPolicy != null) {
+                    DatabaseTable historicalTable = historyPolicy.getHistoricalTable(table);
+                    if(historicalTable != null) {
+                        table = historicalTable;
+                    }
                 }
                 writer.write(table.getQualifiedNameDelimited(printer.getPlatform()));
                 writer.write(" ");

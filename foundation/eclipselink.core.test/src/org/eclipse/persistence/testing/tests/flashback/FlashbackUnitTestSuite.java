@@ -461,9 +461,6 @@ public class FlashbackUnitTestSuite extends TestSuite {
     }
 
     public void _testOuterJoinTest() {
-        if (!getSession().getPlatform().isOracle()) {
-            throw new TestWarningException("Outer joins do not currently work with history");
-        }
         ReadAllQuery query = new ReadAllQuery(LargeProject.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.getAllowingNull("teamLeader").get("firstName").equal("Sarah");
