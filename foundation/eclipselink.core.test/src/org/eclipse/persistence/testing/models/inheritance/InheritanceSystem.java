@@ -30,9 +30,6 @@ public class InheritanceSystem extends TestSystem {
     public void addDescriptors(DatabaseSession session) {
         // Oracle has bug in outjoins that require outerjoin of inheritance type.
         // This should really be handled by the platform during expression normalization...
-        if (session.getLogin().getPlatform().isOracle()) {
-            project.getDescriptor(SalesRep.class).getInheritancePolicy().setAlwaysUseOuterJoinForClassType(true);
-        }
         // Id for Entomologist can be negative (millis cast to int wraps...)
         project.getDescriptor(Entomologist.class).setIdValidation(IdValidation.NONE);
 
