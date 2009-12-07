@@ -223,17 +223,27 @@ public class DriverWrapper implements Driver {
             throw new SQLException(getDriverBrokenExceptionString());
         }
         String decodedUrl = decodeUrl(url);
-        ConnectionWrapper conn = new ConnectionWrapper(getDriver().connect(decodedUrl, info));
-        connections.add(conn);
-        return conn;
+        if(driverName != null) {
+            ConnectionWrapper conn = new ConnectionWrapper(getDriver().connect(decodedUrl, info));
+            connections.add(conn);
+            return conn;
+        } else {
+            // non-initialized DriverWrapper should be ignored by DriverManager.
+            return null;
+        }
     }
 
     public boolean acceptsURL(String url) throws SQLException {
-        if(driverBroken) {
-            throw new SQLException(getDriverBrokenExceptionString());
+        if(driverName != null) {
+            if(driverBroken) {
+                throw new SQLException(getDriverBrokenExceptionString());
+            }
+            String decodedUrl = decodeUrl(url);
+            return getDriver().acceptsURL(decodedUrl);
+        } else {
+            // non-initialized DriverWrapper should be ignored by DriverManager.
+            return false;
         }
-        String decodedUrl = decodeUrl(url);
-        return getDriver().acceptsURL(decodedUrl);
     }
 
     public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) throws SQLException {
