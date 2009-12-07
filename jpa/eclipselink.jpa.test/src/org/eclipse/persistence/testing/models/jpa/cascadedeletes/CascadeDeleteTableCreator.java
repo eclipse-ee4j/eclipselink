@@ -45,7 +45,7 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     fieldBRANCHB_ID.setIsPrimaryKey(true);
     fieldBRANCHB_ID.setIsIdentity(false);
     fieldBRANCHB_ID.setUnique(false);
-    fieldBRANCHB_ID.setShouldAllowNull(true);
+    fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
     
     FieldDefinition fieldBRANCHBS_ID = new FieldDefinition();
@@ -56,7 +56,7 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     fieldBRANCHBS_ID.setIsPrimaryKey(true);
     fieldBRANCHBS_ID.setIsIdentity(false);
     fieldBRANCHBS_ID.setUnique(false);
-    fieldBRANCHBS_ID.setShouldAllowNull(true);
+    fieldBRANCHBS_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHBS_ID);
     
     ForeignKeyConstraint foreignKeyM_THREADINFO_THREADINFO = new ForeignKeyConstraint();
@@ -162,7 +162,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     fieldBRANCHB_ID.setIsPrimaryKey(true);
     fieldBRANCHB_ID.setIsIdentity(false);
     fieldBRANCHB_ID.setUnique(false);
-    fieldBRANCHB_ID.setShouldAllowNull(true);
+    fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
     
     FieldDefinition fieldBRANCHBS_ID = new FieldDefinition();
@@ -173,7 +173,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     fieldBRANCHBS_ID.setIsPrimaryKey(true);
     fieldBRANCHBS_ID.setIsIdentity(false);
     fieldBRANCHBS_ID.setUnique(false);
-    fieldBRANCHBS_ID.setShouldAllowNull(true);
+    fieldBRANCHBS_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHBS_ID);
     
     ForeignKeyConstraint foreignKeyBRANCHB_BRANCHB_BRANCHB = new ForeignKeyConstraint();
@@ -223,7 +223,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     fieldLEAFB_ID.setIsPrimaryKey(true);
     fieldLEAFB_ID.setIsIdentity(false);
     fieldLEAFB_ID.setUnique(false);
-    fieldLEAFB_ID.setShouldAllowNull(true);
+    fieldLEAFB_ID.setShouldAllowNull(false);
     table.addField(fieldLEAFB_ID);
     
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
@@ -234,7 +234,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     fieldBRANCHB_ID.setIsPrimaryKey(true);
     fieldBRANCHB_ID.setIsIdentity(false);
     fieldBRANCHB_ID.setUnique(false);
-    fieldBRANCHB_ID.setShouldAllowNull(true);
+    fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
     
     ForeignKeyConstraint foreignKeyBRANCHB_LEAFB_LEAFB = new ForeignKeyConstraint();
@@ -266,7 +266,7 @@ public TableDefinition buildBRANCHA_LEAFATable() {
     fieldLEAFB_ID.setIsPrimaryKey(true);
     fieldLEAFB_ID.setIsIdentity(false);
     fieldLEAFB_ID.setUnique(false);
-    fieldLEAFB_ID.setShouldAllowNull(true);
+    fieldLEAFB_ID.setShouldAllowNull(false);
     table.addField(fieldLEAFB_ID);
     
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
@@ -277,7 +277,7 @@ public TableDefinition buildBRANCHA_LEAFATable() {
     fieldBRANCHB_ID.setIsPrimaryKey(true);
     fieldBRANCHB_ID.setIsIdentity(false);
     fieldBRANCHB_ID.setUnique(false);
-    fieldBRANCHB_ID.setShouldAllowNull(true);
+    fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
     
     ForeignKeyConstraint foreignKeyBRANCHA_LEAFA_LEAFA = new ForeignKeyConstraint();
@@ -356,7 +356,7 @@ public TableDefinition buildROOTA_BRANCHATable() {
     fieldBRANCHA_ID.setIsPrimaryKey(true);
     fieldBRANCHA_ID.setIsIdentity(false);
     fieldBRANCHA_ID.setUnique(false);
-    fieldBRANCHA_ID.setShouldAllowNull(true);
+    fieldBRANCHA_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHA_ID);
     
     FieldDefinition fieldROOTA_ID = new FieldDefinition();
@@ -367,7 +367,7 @@ public TableDefinition buildROOTA_BRANCHATable() {
     fieldROOTA_ID.setIsPrimaryKey(true);
     fieldROOTA_ID.setIsIdentity(false);
     fieldROOTA_ID.setUnique(false);
-    fieldROOTA_ID.setShouldAllowNull(true);
+    fieldROOTA_ID.setShouldAllowNull(false);
     table.addField(fieldROOTA_ID);
     
     ForeignKeyConstraint foreignKeyROOTA_BRANCHA_BRANCHA = new ForeignKeyConstraint();
