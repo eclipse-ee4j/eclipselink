@@ -1845,13 +1845,22 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // newValue substitute oldValue by newValue; FALSE - remove
             // oldValue.
             Boolean isNewUserRequired = isPropertyValueToBeUpdated(login.getUserName(), user);
-            Boolean isNewPasswordRequired;
+            // if isNewUserRequired==null then isNewPasswordRequired==null, too:
+            // don't create a new ConnectionPolicy if the same user/password passed to both createEMF and createEM
+            Boolean isNewPasswordRequired = null;
             // if user name should be removed from properties then password
             // should be removed, too.
-            if (isNewUserRequired != null && !isNewUserRequired) {
-                isNewPasswordRequired = Boolean.FALSE;
-            } else {
-                isNewPasswordRequired = isPropertyValueToBeUpdated(login.getPassword(), password);
+            if (isNewUserRequired != null) {
+                if(isNewUserRequired) {
+                    if(password != null) {
+                        // can't compare the passed (un-encrypted) password with the existing encrypted one, therefore
+                        // use the new password if it's not an empty string. 
+                        isNewPasswordRequired = password.length() > 0;
+                    }
+                } else {
+                    // user should be removed -> remove password as well
+                    isNewPasswordRequired = Boolean.FALSE;
+                }
             }
             DefaultConnector oldDefaultConnector = null;
             if (login.getConnector() instanceof DefaultConnector) {
