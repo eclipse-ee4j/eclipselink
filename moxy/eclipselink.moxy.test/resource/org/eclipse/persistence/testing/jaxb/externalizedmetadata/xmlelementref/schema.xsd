@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="foo">
+      <xsd:sequence>
+         <xsd:element ref="foobar" />
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="bar">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:int" />
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="foo" type="foo" />
+   <xsd:element name="foobar" type="bar" />
+</xsd:schema>

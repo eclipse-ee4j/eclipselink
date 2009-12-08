@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foos>
+    <items>
+        <foobar>
+            <id>66</id>
+        </foobar>
+        <foobar>
+            <id>99</id>
+        </foobar>
+    </items>
+</foos>

@@ -59,7 +59,7 @@ public class TypeInfo {
     private XMLDescriptor descriptor;
     private ComplexType complexType;
     private boolean hasRootElement;
-    private boolean hasElementRefs;
+    private String elementRefsPropertyName;
     private Schema schema;
     private SimpleType simpleType;
     private ArrayList<String> propOrder; // store as a collection so it can be added to if needed
@@ -361,12 +361,31 @@ public class TypeInfo {
         hasRootElement = hasRoot;
     }
 
+    /**
+     * Indicates if this TypeInfo contains an XmlElementRefs property.
+     * 
+     * @return
+     */
     public boolean hasElementRefs() {
-        return hasElementRefs;
+        return elementRefsPropertyName != null;
     }
 
-    public void setHasElementRefs(boolean hasRefs) {
-        this.hasElementRefs = hasRefs;
+    /**
+     * Return the XmlElementRefs property name, if one has been set.
+     * 
+     * @return
+     */
+    public String getElementRefsPropName() {
+        return elementRefsPropertyName;
+    }
+    
+    /**
+     * Set the XmlElementRefs property name.
+     * 
+     * @return
+     */
+    public void setElementRefsPropertyName(String propName) {
+        elementRefsPropertyName = propName;
     }
 
     public String getObjectFactoryClassName() {

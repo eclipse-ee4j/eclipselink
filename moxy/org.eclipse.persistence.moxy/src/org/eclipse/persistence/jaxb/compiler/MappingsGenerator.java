@@ -394,7 +394,7 @@ public class MappingsGenerator {
             }
             
         } else if(property.isReference()) {
-            generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);            
+            generateMappingForReferenceProperty(property, descriptor, namespaceInfo);            
         } else if (property.isMap()){
         	if(property.isAnyAttribute()) {
         		generateAnyAttributeMapping(property, descriptor, namespaceInfo);
@@ -541,7 +541,7 @@ public class MappingsGenerator {
         return mapping;
     }
     
-    public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
+    public XMLMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
            
         if(property.isMixedContent()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
@@ -582,8 +582,29 @@ public class MappingsGenerator {
         }
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));            
-            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
+            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
+            String xPath = "";
+            
+            // handle XmlElementWrapper
+            if (property.isSetXmlElementWrapper()) {
+                XmlElementWrapper wrapper = property.getXmlElementWrapper();
+                String namespace = wrapper.getNamespace();
+                if (namespace.equals("##default")) {
+                    if (namespaceInfo.isElementFormQualified()) {
+                        namespace = namespaceInfo.getNamespace();
+                    } else {
+                        namespace = "";
+                    }
+                }
+                if (namespace.equals("")) {
+                    xPath += (wrapper.getName() + "/");
+                } else {
+                    String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+                    xPath += getQualifiedString(prefix, wrapper.getName() + "/");
+                }
+            }
+            
+            XMLField xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
                 xmlField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
@@ -606,7 +627,7 @@ public class MappingsGenerator {
                     listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
                     ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(listConverter);
                 }
-            }else{
+            } else {
                 XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
                 xmlChoiceObjectMapping.addChoiceElement(xmlField, element.getJavaTypeName());
                 nestedMapping = (DatabaseMapping) xmlChoiceObjectMapping.getChoiceElementMappings().get(xmlField);
@@ -615,19 +636,19 @@ public class MappingsGenerator {
                 }
             }
 
-            if(!element.isXmlRootElement()) {
+            if (!element.isXmlRootElement()) {
                 Class scopeClass = element.getScopeClass(); 
-                if(scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
+                if (scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
                     scopeClass = JAXBElement.GlobalScope.class;
                 }
                 Class declaredType = helper.getClassForJavaClass(element.getJavaType());
                 JAXBElementConverter converter = new JAXBElementConverter(xmlField, declaredType, scopeClass);
-                if(isCollection){
+                if (isCollection){
                     XMLChoiceCollectionMapping xmlChoiceCollectionMapping = (XMLChoiceCollectionMapping) mapping;
                     Converter originalConverter = xmlChoiceCollectionMapping.getConverter(xmlField);
                     converter.setNestedConverter(originalConverter);
                     xmlChoiceCollectionMapping.addConverter(xmlField, converter);
-                }else{
+                } else {
                     XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
                     Converter originalConverter = xmlChoiceObjectMapping.getConverter(xmlField);
                     converter.setNestedConverter(originalConverter);
@@ -1531,7 +1552,7 @@ public class MappingsGenerator {
     	List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
     	for (int i = 0; i < propertiesInOrder.size(); i++) {
     		Property next = propertiesInOrder.get(i);
-    		if(next != null){
+    		if (next != null){
             	generateMapping(next, descriptor, namespaceInfo);
             }
     	}
@@ -1759,8 +1780,7 @@ public class MappingsGenerator {
                 path += "/text()";
             }
         }
-        XMLField xmlField = new XMLField(path);
-        return xmlField;
+        return new XMLField(path);
     }
     
     public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {

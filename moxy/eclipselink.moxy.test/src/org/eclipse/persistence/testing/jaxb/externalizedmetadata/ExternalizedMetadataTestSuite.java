@@ -24,6 +24,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentre
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.XmlElementsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefTestCases;
@@ -71,6 +73,8 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlMimeTypeCases.class);
         suite.addTestSuite(XmlAttachmentRefCases.class);
         suite.addTestSuite(XmlElementsTestCases.class);
+        suite.addTestSuite(XmlElementRefTestCases.class);
+        suite.addTestSuite(XmlElementRefsTestCases.class);
         return suite;
     }
     

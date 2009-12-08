@@ -15,12 +15,14 @@ package org.eclipse.persistence.jaxb.compiler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
@@ -97,6 +99,11 @@ public class Property {
     private XmlElements xmlElements;
     private boolean isChoice = false;
 	
+    // XmlElementRef specific attributes
+    private ArrayList<ElementDeclaration> referencedElements;
+    private List<XmlElementRef> xmlElementRefs;
+    private boolean isReference = false;
+
     public Property() {}
 
     public Property(Helper helper) {
@@ -319,8 +326,23 @@ public class Property {
         this.isAnyElement = isAnyElement;
     }
     
+    /**
+     * Indicates if this Property is a reference property.
+     * 
+     * @return
+     */
     public boolean isReference() {
-    	return false;
+    	return isReference;
+    }
+    
+    /**
+     * Set flag to indicate whether this property represents a reference 
+     * property.
+     * 
+     * @param isReference
+     */
+    public void setIsReference(boolean isReference) {
+        this.isReference = isReference;
     }
 
     public boolean isNillable() {
@@ -703,5 +725,48 @@ public class Property {
      */
     public void setChoiceProperties(Collection<Property> properties) {
         this.choiceProperties = properties;
+    }
+    
+    /**
+     * Return the List of XmlElementRef(s) for this Property.
+     * 
+     * @return
+     */
+    public List<XmlElementRef> getXmlElementRefs() {
+        return xmlElementRefs;
+    }
+
+    /**
+     * Set the List of XmlElementRef(s) for this Property.
+     * 
+     * @param xmlElementRefs
+     */
+    public void setXmlElementRefs(List<XmlElementRef> xmlElementRefs) {
+        this.xmlElementRefs = xmlElementRefs;
+    }
+    
+    /**
+     * Add an ElementDeclaration to the list of referenced elements. Typically this 
+     * will only contain ElementDeclarations if we are dealing with a 'reference'.
+     * 
+     * @param element
+     */
+    public void addReferencedElement(ElementDeclaration element) {
+        if (referencedElements == null) {
+            referencedElements = new ArrayList<ElementDeclaration>();
+        }
+        if (!referencedElements.contains(element)) {
+            referencedElements.add(element);
+        }
+    }
+    
+    /**
+     * Return the list of referenced elements.  Typically this will only
+     * contain ElementDeclarations if we are dealing with a 'reference'.
+     * 
+     * @return
+     */
+    public List<ElementDeclaration> getReferencedElements() {
+        return referencedElements;
     }
 }

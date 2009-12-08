@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="foos">
+      <xsd:sequence>
+         <xsd:element name="items" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element ref="foobar" minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="bar">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="foobar" type="bar"/>
+   <xsd:element name="foos" type="foos"/>
+</xsd:schema>

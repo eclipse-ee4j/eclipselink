@@ -273,9 +273,9 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty, typeInfo);
         } else if (javaAttribute instanceof XmlElementRef) {
-            return processXmlElementRef((XmlElementRef) javaAttribute, oldProperty);
+            return processXmlElementRef((XmlElementRef) javaAttribute, oldProperty, typeInfo);
         } else if (javaAttribute instanceof XmlElementRefs) {
-            return processXmlElementRefs((XmlElementRefs) javaAttribute, oldProperty);
+            return processXmlElementRefs((XmlElementRefs) javaAttribute, oldProperty, typeInfo);
         } else if (javaAttribute instanceof XmlTransient) {
             return processXmlTransient((XmlTransient) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlValue) {
@@ -582,11 +582,50 @@ public class XMLProcessor {
         return oldProperty;
     }
 
-    private Property processXmlElementRef(XmlElementRef xmlElementRef, Property oldProperty) {
+    /**
+     * Process an xml-element-ref.
+     * 
+     * @param xmlElementRef
+     * @param oldProperty
+     * @param info
+     * @return
+     */
+    private Property processXmlElementRef(XmlElementRef xmlElementRef, Property oldProperty, TypeInfo info) {
+        resetProperty(oldProperty, info);
+
+        List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
+        eltRefs.add(xmlElementRef);
+        oldProperty.setXmlElementRefs(eltRefs);
+        oldProperty.setIsReference(true);
+        // handle XmlElementWrapper
+        if (xmlElementRef.getXmlElementWrapper() != null) {
+            oldProperty.setXmlElementWrapper(xmlElementRef.getXmlElementWrapper());
+        }
         return oldProperty;
     }
 
-    private Property processXmlElementRefs(XmlElementRefs xmlElementRefs, Property oldProperty) {
+    /**
+     * Process an xml-element-refs.
+     * 
+     * @param xmlElementRefs
+     * @param oldProperty
+     * @param info
+     * @return
+     */
+    private Property processXmlElementRefs(XmlElementRefs xmlElementRefs, Property oldProperty, TypeInfo info) {
+        resetProperty(oldProperty, info);
+
+        List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
+        for (XmlElementRef eltRef : xmlElementRefs.getXmlElementRef()) {
+            eltRefs.add(eltRef);
+        }
+        
+        oldProperty.setXmlElementRefs(eltRefs);
+        oldProperty.setIsReference(true);
+        // handle XmlElementWrapper
+        if (xmlElementRefs.getXmlElementWrapper() != null) {
+            oldProperty.setXmlElementWrapper(xmlElementRefs.getXmlElementWrapper());
+        }
         return oldProperty;
     }
 
@@ -761,6 +800,8 @@ public class XMLProcessor {
         oldProperty.setMimeType(null);
         oldProperty.setTransient(false);
         oldProperty.setChoice(false);
+        oldProperty.setIsReference(false);
+        unsetXmlElementRefs(oldProperty, tInfo);
         unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);
         unsetXmlAnyElement(oldProperty, tInfo);
@@ -768,6 +809,23 @@ public class XMLProcessor {
         return oldProperty;
     }
     
+    /**
+     * Ensure that a given property is not set as an xml-element-refs.
+     * 
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlElementRefs(Property oldProperty, TypeInfo tInfo) {
+        if (tInfo.hasElementRefs() && tInfo.getElementRefsPropName().equals(oldProperty.getPropertyName())) {
+            tInfo.setElementRefsPropertyName(null);
+        }
+    }
+    
+    /**
+     * Ensure that a given property is not set as an xml-elements.
+     *  
+     * @param oldProperty
+     */
     private void unsetXmlElements(Property oldProperty) {
         oldProperty.setXmlElements(null);
         oldProperty.setChoiceProperties(null);

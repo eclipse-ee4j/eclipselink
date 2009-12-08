@@ -119,6 +119,9 @@ public class XmlElementRef
      *     
      */
     public String getNamespace() {
+        if (namespace == null) {
+            return "";
+        }
         return namespace;
     }
 
