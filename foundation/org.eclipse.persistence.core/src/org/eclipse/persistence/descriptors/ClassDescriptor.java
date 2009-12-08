@@ -3276,7 +3276,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                         isMethodAccess = true;
                     }
                     break;
-                } else {
+                } else if (!mapping.isWriteOnly()) {
                     // Avoid reflection.
                     mapping.setAttributeAccessor(new PersistenceObjectAttributeAccessor(mapping.getAttributeName()));
                 }

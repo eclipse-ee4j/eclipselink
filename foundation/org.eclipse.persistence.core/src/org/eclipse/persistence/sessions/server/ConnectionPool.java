@@ -429,6 +429,9 @@ public class ConnectionPool {
      * Allocate the minimum connections.
      */
     public synchronized void startUp() {
+        if (isConnected()) {
+            return;
+        }
         for (int index = getInitialNumberOfConnections(); index > 0; index--) {
             getConnectionsAvailable().add(buildConnection());
         }
