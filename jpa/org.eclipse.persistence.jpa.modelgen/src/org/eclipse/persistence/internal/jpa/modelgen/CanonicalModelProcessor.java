@@ -30,6 +30,7 @@ import javax.persistence.MappedSuperclass;
 import javax.tools.JavaFileObject;
 import javax.tools.Diagnostic.Kind;
 
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -161,7 +162,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
                      
             // Write out the generation annotations.
-            writer.append("@Generated(\"EclipseLink - " + new Date() + "\")\n");
+            writer.append("@Generated(\"EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision() + " @ " +  new Date() + "\")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
                 
             int modifier = accessor.getAccessibleObject().getModifiers();
