@@ -9,15 +9,28 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.config;
 
+import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
- * PUBLIC:
- * This interface is to allow extra customization on a EclipseLink Session
+ * Customize a {@link ClassDescriptor} when the
+ * {@link #customize(ClassDescriptor)} method is called during the
+ * loading/population of the mappings. This is typically used to customize
+ * dynamically or specify configuration values not available through annotations
+ * or XML.
+ * 
+ * @see Customizer @Customizer to configure using annotations on an entity class
+ * @see ClassDescriptor {@link ClassDescriptor} for available customization API
  */
 public interface DescriptorCustomizer {
+
+    /**
+     * Customize the provided descriptor. This method is called after the
+     * descriptor is populated form annotations/XML/defaults but before it is
+     * initialized.
+     */
     public void customize(ClassDescriptor descriptor) throws Exception;
 }
