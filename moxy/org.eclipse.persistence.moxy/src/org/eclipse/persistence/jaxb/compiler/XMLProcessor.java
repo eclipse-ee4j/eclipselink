@@ -226,8 +226,8 @@ public class XMLProcessor {
                 }
             }
         }
-        
         aProcessor.finalizeProperties();
+        aProcessor.createElementsForTypeMappingInfo();
     }
 
     /**

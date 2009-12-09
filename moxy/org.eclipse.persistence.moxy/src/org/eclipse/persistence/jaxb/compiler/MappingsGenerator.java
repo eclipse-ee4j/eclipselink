@@ -1826,7 +1826,7 @@ public class MappingsGenerator {
     public void processGlobalElements(Project project) {
         //Find any global elements for classes we've generated descriptors for, and add them as possible
         //root elements.
-        if(this.globalElements == null) {
+        if(this.globalElements == null && this.localElements == null) {
             return;
         }
         List<ElementDeclaration> elements = new ArrayList<ElementDeclaration>();
@@ -1841,6 +1841,9 @@ public class MappingsGenerator {
 
                 //generate a class/descriptor for this element            	
                 String attributeTypeName = nextClassName;
+                if(nextElement.getJavaType().isPrimitive()) {
+                    attributeTypeName = helper.getClassForJavaClass(nextElement.getJavaType()).getName();
+                }
                 if (nextElement.getAdaptedJavaTypeName() != null) {
                     attributeTypeName = nextElement.getAdaptedJavaTypeName(); 
                 }
@@ -1980,8 +1983,13 @@ public class MappingsGenerator {
                       mapping.setNullValue(nextElement.getDefaultValue());
                   }
 
-                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){                                    
-                      Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
+                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){ 
+                      Class attributeClassification = null;
+                      if(nextElement.getJavaType().isPrimitive()) {
+                          attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
+                      } else {
+                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
+                      }
                       mapping.setAttributeClassification(attributeClassification);
                   }               
                   
