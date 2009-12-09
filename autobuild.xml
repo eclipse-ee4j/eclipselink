@@ -47,9 +47,7 @@
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, gen-build-for-maven, publish-milestone"/>
-    <!--        ', create-tag"
-    /> -->
+            depends="promote-init, gen-build-for-maven, publish-milestone, create-tag"/>
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
