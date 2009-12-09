@@ -48,6 +48,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnXSDManyTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnPropertyManyTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveBase64AttachmentTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveDataHandlerTestCases.class));
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWithAnnotations.class));
         suite.addTest(new TestSuite(LoadAndSaveOrderBookingTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveXMLEncodingAndVersionTestCases.class));
