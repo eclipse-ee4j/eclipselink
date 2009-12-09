@@ -15,6 +15,8 @@
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
         </properties>
     </persistence-unit>
 </persistence>

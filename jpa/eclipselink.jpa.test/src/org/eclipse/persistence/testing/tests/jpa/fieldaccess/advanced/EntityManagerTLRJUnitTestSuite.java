@@ -4440,7 +4440,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
      */
     public void testWeaving() {
         // Only test if weaving was on, test runs without weaving must set this system property.
-        if (System.getProperty("TEST_NO_WEAVING") == null) {
+        if (JUnitTestCase.isWeavingEnabled()) {
             internalTestWeaving(new Employee(), true, true);
             internalTestWeaving(new FormerEmployment(), true, false);
             internalTestWeaving(new Address(), true, false);

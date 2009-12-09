@@ -1554,6 +1554,12 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-weaving%%' value="${server.weaving}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database-platform%%' value="${db.platform}">
+            <include name="*.xml"/>
+        </replace>
 
         <!-- Copy the canonical metamodel and criteria api test -->
         <antcall target="copy_criteria_api_canonical_model" inheritRefs="true"/>
