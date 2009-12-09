@@ -28,15 +28,19 @@ import org.w3c.dom.Element;
 // Java extension imports
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatModel;
@@ -77,6 +81,10 @@ public class QueryOperation extends Operation {
     protected QueryHandler queryHandler;
     protected boolean userDefined = true;
 
+    public QueryOperation() {
+        super();
+    }
+    
     public Result getResult() {
         return result;
     }
@@ -403,7 +411,19 @@ public class QueryOperation extends Operation {
                     String elementName = sqlToXmlName(field.getName());
                     Element columnElement = TEMP_DOC.createElement(elementName);
                     rowElement.appendChild(columnElement);
-                    columnElement.appendChild(TEMP_DOC.createTextNode(fieldValue.toString()));
+                    String fieldValueString = fieldValue.toString();
+                    // handle binary content - attachments dealt with in invoke() above
+                    if (result.getType().equals(BASE_64_BINARY_QNAME)) {
+                        fieldValueString = Helper.buildHexStringFromBytes(
+                            Base64.base64Encode((byte[])fieldValue));
+                        columnElement.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI,
+                            "xmlns:xsd", W3C_XML_SCHEMA_NS_URI);
+                        columnElement.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI,
+                            "xmlns:xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                        columnElement.setAttributeNS(W3C_XML_SCHEMA_INSTANCE_NS_URI,
+                            "xsi:type", "xsd:base64Binary");
+                    }
+                    columnElement.appendChild(TEMP_DOC.createTextNode(fieldValueString));
                 }
             }
             simpleXMLFormatModel.simpleXML.add(rowElement);

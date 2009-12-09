@@ -356,6 +356,7 @@
     <RunTestsuite testsuite-name="PLSQLHelperObjectsBuilderTest"/>
     <RunTestsuite testsuite-name="TopLevelPLSQLStoredProcedureTest"/>
     <RunTestsuite testsuite-name="TopLevelStoredProcedureTest"/>
+    <RunTestsuite testsuite-name="TypesTest"/>
     <TeardownDatabase filename="alltests"/>
     <junitreport
       todir="${run.dir}"

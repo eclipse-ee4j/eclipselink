@@ -124,7 +124,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             }
         }
         else {
-            databaseQueryToInitialize = new DataModifyQuery();
+            databaseQueryToInitialize = new ValueReadQuery();
         }
         databaseQueryToInitialize.bindAllParameters();
         setDatabaseQuery(databaseQueryToInitialize);
