@@ -41,11 +41,10 @@ import org.w3c.dom.Node;
  * </ul>
  */
 public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
-    private List changeSummaries;
+    private List<SDOChangeSummary> changeSummaries;
 
     public SDOUnmarshalListener(HelperContext aContext) {
         super(aContext);
-        initialize();
     }
 
     public void beforeUnmarshal(Object target, Object parent) {
@@ -66,23 +65,24 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
             // each time we hit a ChangeSummary store it to process later and set its root 
             // object - this is because we can't fully process the cs's because they have 
             // references that can't be resolved until the full tree is built
-            ((SDOChangeSummary)target).setRootDataObject((DataObject)parent);
-            changeSummaries.add(target);
+            SDOChangeSummary sdoChangeSummary = (SDOChangeSummary) target;
+            sdoChangeSummary.setRootDataObject((DataObject)parent);
+            getChangeSummaries().add(sdoChangeSummary);
             return;
         }
-        
+
         // if getType is sequenced, then update values to settings map
         if (targetDataObject.getType().isSequenced()) {
             targetDataObject.getSequence().afterUnmarshal();
         }
-        
+
         // if parent is null we are back to the root object 
         // the last object that will hit the afterUnmarshal method
-        if (parent == null) {
+        if (parent == null && null != changeSummaries) {
             SDOChangeSummary nextCS = null;
             XMLUnmarshaller unmarshaller = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
-            for (int i = 0; i < changeSummaries.size(); i++) {
-                nextCS = (SDOChangeSummary)changeSummaries.get(i);
+            for (int i = 0, changeSummariesSize=changeSummaries.size(); i < changeSummariesSize; i++) {
+                nextCS = changeSummaries.get(i);
                 // Set logging to true until finished building modified list.
                 boolean loggingValue = nextCS.isLoggingMapping();
                 nextCS.setLogging(true);
@@ -202,7 +202,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         } else {
                                             //if sdo ref is null there is a deleted object                                                                                                                                                                                                  
                                             toDelete.add(nextInList);
-                                            indexsToDelete.add(new Integer(l));
+                                            indexsToDelete.add(l);
                                             newList.add(nextInList);
                                         }
                                     }
@@ -347,12 +347,15 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 nextCS.setLogging(loggingValue);
             }
             // reset changeSummary list - we are done with it
-            initialize();
+            changeSummaries = null;
         }
     }
 
-    private void initialize() {
-        changeSummaries = new ArrayList();
+    private List<SDOChangeSummary> getChangeSummaries() {
+        if(null == changeSummaries) {
+            changeSummaries = new ArrayList<SDOChangeSummary>();
+        }
+        return changeSummaries;
     }
 
     private String convertXPathToSDOPath(String xpath) {
@@ -369,4 +372,5 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
             return xpath.substring(1, xpath.length());
         }
     }
+
 }
