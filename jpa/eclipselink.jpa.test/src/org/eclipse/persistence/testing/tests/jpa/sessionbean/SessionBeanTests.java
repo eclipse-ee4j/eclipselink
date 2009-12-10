@@ -9,35 +9,37 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
- package org.eclipse.persistence.testing.tests.jpa.sessionbean;
+ ******************************************************************************/
+package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
- * EJB 3 SessionBean tests.
- * Testing using EclipseLink JPA in a JEE EJB 3 SessionBean environment.
- * These tests can only be run with a server.
+ * EJB 3 SessionBean tests. Testing using EclipseLink JPA in a JEE EJB 3
+ * SessionBean environment. These tests can only be run with a server.
  */
 public class SessionBeanTests extends JUnitTestCase {
     protected EmployeeService service;
-    
+
     public SessionBeanTests() {
         super();
     }
@@ -50,7 +52,7 @@ public class SessionBeanTests extends JUnitTestCase {
         super(name);
         this.shouldRunTestOnServer = shouldRunTestOnServer;
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("SessionBeanTests");
         suite.addTest(new SessionBeanTests("testSetup", true));
@@ -61,9 +63,10 @@ public class SessionBeanTests extends JUnitTestCase {
 
         return suite;
     }
-    
+
     /**
-     * The setup is done as a test, both to record its failure, and to alow execution in the server.
+     * The setup is done as a test, both to record its failure, and to allow
+     * execution in the server.
      */
     public void testSetup() throws Exception {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("sessionbean"));
@@ -80,43 +83,45 @@ public class SessionBeanTests extends JUnitTestCase {
         joe.setDepartment(new Department());
         getEmployeeService().insert(joe);
     }
-    
+
+    private static final String[] LOOKUP_STRINGS = new String[] {
+    // server, Oc4j
+    "java:comp/env/ejb/EmployeeService", "ejb/EmployeeService",
+    // WLS
+    "EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
+    // jboss
+    "EmployeeService/remote",
+    // NetWeaver
+    "JavaEE/servertest/REMOTE/EmployeeServiceBean/org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService" };
+
     public EmployeeService getEmployeeService() throws Exception {
-        if (service == null) {
-            Properties properties = new Properties();
-            String url = System.getProperty("server.url");
-            if (url != null) {
-                properties.put("java.naming.provider.url", url);
-            }
-            Context context = new InitialContext(properties);
-    
+        if (service != null) {
+            return service;
+        }
+
+        Properties properties = new Properties();
+        String url = System.getProperty("server.url");
+        if (url != null) {
+            properties.put("java.naming.provider.url", url);
+        }
+        Context context = new InitialContext(properties);
+
+        for (String candidate : LOOKUP_STRINGS) {
             try {
-                service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("java:comp/env/ejb/EmployeeService"), EmployeeService.class);
-            } catch (NameNotFoundException notFoundException) {
-                try {
-                    service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("ejb/EmployeeService"), EmployeeService.class);
-                } catch (NameNotFoundException notFoundException2) {
-                    try {
-                        // WLS likes this one.
-                        service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService"), EmployeeService.class);
-                    } catch (NameNotFoundException notFoundException3) {
-                        try {
-                             //jboss likes this one
-                             service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("EmployeeService/remote"), EmployeeService.class);
-                        } catch (NameNotFoundException notFoundException4) {
-                             throw new Error("All lookups failed.", notFoundException);
-                        }
-                    }
-                }
+                service = (EmployeeService) PortableRemoteObject.narrow(context.lookup(candidate), EmployeeService.class);
+                return service;
+            } catch (NamingException namingException) {
+                // OK, try next
             }
         }
-        return service;
+
+        throw new RuntimeException("EmployeeService bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
     }
-        
+
     public void testFindAll() throws Exception {
         List result = getEmployeeService().findAll();
-        for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
-            Employee employee = (Employee)iterator.next();
+        for (Iterator iterator = result.iterator(); iterator.hasNext();) {
+            Employee employee = (Employee) iterator.next();
             employee.getFirstName();
             employee.getLastName();
             boolean caughtError = false;
@@ -154,11 +159,11 @@ public class SessionBeanTests extends JUnitTestCase {
             }
         }
     }
-    
-    public void testFindAllServer() throws Exception {        
+
+    public void testFindAllServer() throws Exception {
         testFindAll();
     }
-    
+
     public void testMerge() throws Exception {
         Employee employee = new Employee();
         employee.setFirstName("Bob");
@@ -169,14 +174,14 @@ public class SessionBeanTests extends JUnitTestCase {
         employee.setAddress(new Address());
         employee.getAddress().setCity("Nepean");
         employee.setManager(manager);
-        
+
         int id = getEmployeeService().insert(employee);
-        
+
         employee = getEmployeeService().findById(id);
         employee.setLastName("Way");
         employee.getAddress().setCity("Kanata");
         getEmployeeService().update(employee);
-        
+
         employee = getEmployeeService().findById(id);
         if (!employee.getLastName().equals("Way")) {
             fail("Last name not updated.");
@@ -193,9 +198,9 @@ public class SessionBeanTests extends JUnitTestCase {
             }
         }
     }
-    
-    public void testMergeServer() throws Exception {        
+
+    public void testMergeServer() throws Exception {
         testMerge();
     }
-    
+
 }
