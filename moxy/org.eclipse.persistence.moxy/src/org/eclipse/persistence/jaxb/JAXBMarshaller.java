@@ -137,15 +137,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		}
 					
 		Class generatedClass = null;				
-		
-		if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
-			if(jaxbContext.getArrayClassesToGeneratedClasses() != null){
-				generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
-			}
-		}else if(elt instanceof JAXBTypeElement){			 
-			Type objectType = ((JAXBTypeElement)elt).getType();
-			generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(objectType);
-		} 
+        if(jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
+            if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
+			        TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(elt.getDeclaredType());
+			        generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+            }else if(elt instanceof JAXBTypeElement){			 
+		        Type objectType = ((JAXBTypeElement)elt).getType();
+		        TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(objectType);
+		        generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+		    }
+        } else {
+            if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
+                if(jaxbContext.getArrayClassesToGeneratedClasses() != null){
+                    generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
+                }
+            }else if(elt instanceof JAXBTypeElement){            
+                Type objectType = ((JAXBTypeElement)elt).getType();
+                generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(objectType);
+            }             
+        }
 			
 		if(generatedClass != null ) {
 			ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
@@ -206,6 +216,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || contentHandler == null) {
             throw new IllegalArgumentException();
         }
+
         if (object instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -221,6 +232,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || eventWriter == null) {
             throw new IllegalArgumentException();
         }
+        // let the JAXBIntrospector determine if the object is a JAXBElement
         if (object instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
             object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -233,19 +245,28 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(ex);
         }
     }
-
-    /**
-     * Marshal the object based on the binding metadata associated with the
-     * TypeMappingInfo.
-     */
-    public void marshal(Object object, XMLEventWriter eventWriter, TypeMappingInfo type) throws JAXBException {
-        marshal(object, eventWriter);
-    }
+	
+	public void marshal(Object object, XMLEventWriter eventWriter, TypeMappingInfo type) throws JAXBException {
+        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+            marshal(object, eventWriter);
+        } else {
+            JAXBElement element = null;
+            Object value = object;
+            if (object instanceof JAXBElement) {
+                //  use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement)object;
+                value = element.getValue();
+            }
+            value = wrapObject(value, element, type);
+            marshal(value, eventWriter);
+        }
+	}
 
 	public void marshal(Object object, Node node) throws JAXBException {
         if (object == null || node == null) {
             throw new IllegalArgumentException();
         }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -261,6 +282,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || outputStream == null) {
             throw new IllegalArgumentException();
         }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -284,6 +306,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
         }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -294,19 +317,28 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 			throw new MarshalException(e);
 		}
 	}
-
-    /**
-     * Marshal the object based on the binding metadata associated with the
-     * TypeMappingInfo.
-     */
-    public void marshal(Object object, Result result, TypeMappingInfo type) throws JAXBException {
-        marshal(object, result);
-    }
+	
+	public void marshal(Object object, Result result, TypeMappingInfo type) throws JAXBException {
+        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+            marshal(object, result);
+        } else {
+            JAXBElement element = null;
+            Object value = object;
+            if (object instanceof JAXBElement) {
+                //  use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement)object;
+                value = element.getValue();
+            }
+            value = wrapObject(value, element, type);
+            marshal(value, result);
+        }
+	}
 
 	public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
         if (object == null || streamWriter == null) {
             throw new IllegalArgumentException();
         }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);
@@ -319,19 +351,63 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	        throw new MarshalException(ex);
 	    }
 	}
+	
+	public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
+        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+            marshal(object, streamWriter);
+        } else {
+            JAXBElement element = null;
+            Object value = object;
+            if (object instanceof JAXBElement) {
+                // use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement)object;
+                value = element.getValue();
+            } 
+            value = wrapObject(value, element, type);
+            marshal(value, streamWriter);
+        }
+	}
 
-    /**
-     * Marshal the object based on the binding metadata associated with the
-     * TypeMappingInfo.
-     */
-    public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
-        marshal(object, streamWriter);
-    }
+	private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
+        Object value = object;
+	    Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+        if(generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+            ((WrappedValue)newObject).setValue(value);
+            value = newObject;
+        } else if(generatedClass != null) {
+            //should be a many value
+            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+            Object newObject = desc.getInstantiationPolicy().buildNewInstance();            
+            ((ManyValue)newObject).setItem(value);                
+            value = newObject;
+        }
+        
+        if(wrapperElement != null) {
+            value = wrapObjectInXMLRoot(wrapperElement, value);
+        }
+	    
+	    return value;
+	}
+	
+	private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value) {
+        XMLRoot xmlroot = new XMLRoot();
+        Object objectValue = value;
+        xmlroot.setObject(objectValue);
+        QName qname = wrapperElement.getName();
+        xmlroot.setLocalName(qname.getLocalPart());
+        xmlroot.setNamespaceURI(qname.getNamespaceURI());
+        xmlroot.setDeclaredType(wrapperElement.getDeclaredType());
+        
+        return xmlroot;
+	}
 
 	public void marshal(Object object, Writer writer) throws JAXBException {
         if (object == null || writer == null) {
             throw new IllegalArgumentException();
         }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
 		if (object instanceof JAXBElement) {
 			// use the JAXBElement's properties to populate an XMLRoot
 			object = createXMLRootFromJAXBElement((JAXBElement) object);

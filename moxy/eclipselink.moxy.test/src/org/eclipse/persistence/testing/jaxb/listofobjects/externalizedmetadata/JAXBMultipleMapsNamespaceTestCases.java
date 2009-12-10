@@ -22,16 +22,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
-import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 
@@ -130,17 +127,8 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsTestCas
     protected String getNoXsiTypeControlResourceName() {    	
 	    return XML_RESOURCE;
 	}
-    
-    public void setTypes(Type[] newTypes) throws Exception {
-		classLoader = new JaxbClassLoader(Thread.currentThread()
-				.getContextClassLoader());
-		JAXBContextFactory factory = new JAXBContextFactory();
-		jaxbContext = factory.createContext(newTypes, getProperties(), classLoader);
-		jaxbMarshaller = jaxbContext.createMarshaller();
-		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-	}
-    
-    private Map<String, Object> getProperties() throws Exception{
+   
+    protected Map<String, Object> getProperties() throws Exception{
     	String pkg = "java.util";
         
     	HashMap<String, Source> overrides = new HashMap<String, Source>();

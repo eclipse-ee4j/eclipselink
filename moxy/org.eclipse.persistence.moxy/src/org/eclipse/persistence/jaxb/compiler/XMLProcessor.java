@@ -22,6 +22,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
@@ -65,10 +66,10 @@ public class XMLProcessor {
      * 
      * @param annotationsProcessor
      */
-    public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput) {
+    public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] originalJavaClasses) {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
-        annotationsProcessor.init();
+        annotationsProcessor.init(originalJavaClasses, typeMappingInfos);
         
         // build a map of packages to JavaClass so we only process the JavaClasses for a given package
         // additional classes - i.e. ones from packages not listed in XML - will be processed later
@@ -91,6 +92,7 @@ public class XMLProcessor {
                 annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
 
+            
             // build an array of JavaModel classes to process
             JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 

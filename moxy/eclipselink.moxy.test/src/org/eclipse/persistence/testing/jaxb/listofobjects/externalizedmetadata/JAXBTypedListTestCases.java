@@ -56,7 +56,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();		
 	}
 	
-	private Map getProperties() throws Exception{
+	protected Map getProperties() throws Exception{
 		String pkg = "org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata";
 	    HashMap<String, Source> overrides = new HashMap<String, Source>();
 	    overrides.put(pkg, generateXmlSchemaOxm());

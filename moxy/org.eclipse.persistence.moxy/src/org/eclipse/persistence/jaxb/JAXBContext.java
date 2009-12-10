@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
@@ -77,8 +78,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private HashMap<QName, Class> qNameToGeneratedClasses;
     private HashMap<String, Class> classToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
-    private HashMap<java.lang.reflect.Type, QName> typeToSchemaType;
-    private Type[] boundTypes;
+    private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
+    private TypeMappingInfo[] boundTypes;
+    private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
+    private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
+    private Map<TypeMappingInfo, Class> typeMappingInfoToJavaTypeAdapters;
 
     public JAXBContext(XMLContext context) {
         super();
@@ -92,6 +96,22 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
         this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
         this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
+        this.boundTypes = new TypeMappingInfo[boundTypes.length];
+        for(int i =0; i< boundTypes.length; i++){
+        	TypeMappingInfo newTypeInfo = new TypeMappingInfo();
+        	newTypeInfo.setType(boundTypes[i]);
+        	this.boundTypes[i] = newTypeInfo;
+        }
+    }
+    
+    public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
+
+        this(context);
+        this.generator = generator;
+        this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
+        this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
+        this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
+        this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
         this.boundTypes = boundTypes;
     }
 
@@ -209,7 +229,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     public void initTypeToSchemaType() {
-        this.typeToSchemaType = new HashMap<Type, QName>();
+        this.typeMappingInfoToSchemaType = new HashMap<TypeMappingInfo, QName>();
         Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
 
         HashMap defaults = XMLConversionManager.getDefaultJavaTypes();
@@ -221,9 +241,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             if (next.getSchemaReference() != null){
                 QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
-                Type type;
+                Type type = null;
+                TypeMappingInfo tmi = null;
                 if (generator != null) {
+                	
                     type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
+                    
                     if (type == null) {
                         JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
                         if (arrayClass != null) {
@@ -231,52 +254,93 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                             try {
                                 type = PrivilegedAccessHelper.getClassForName(arrayClassName);
                             } catch (Exception ex) {}
+                        }      
+                        
+                        if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
+                        	//javaCLass = genereated Class for Map<String, Integer)
+                        	//Type to type mapping info key is ParameterizedType for Map<String, Integer)
+                        	
+                        	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
+                        	while(iter.hasNext()){
+                        		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                        		if(entry.getValue().equals(javaClass)){
+                        			tmi = entry.getKey();
+                        			break;
+                        		}
+                        	}
                         }
                     }
                     if (type == null) {
                         type = javaClass;
                     }
+                    
                 } else {
                     type = javaClass;
                 }
-                this.typeToSchemaType.put(type, schemaType);
+                if(tmi == null && type != null){
+                	tmi = new TypeMappingInfo();
+                	tmi.setType(type);
+                }
+                
+                this.typeMappingInfoToSchemaType.put(tmi, schemaType);
             }
         }
 
         //Add any types that we didn't generate descriptors for (built in types)
         if (boundTypes != null) {
-            for (Type next:this.boundTypes) {
-                if (this.typeToSchemaType.get(next) == null) {
+        	for (TypeMappingInfo next:this.boundTypes) {
+                if (this.typeMappingInfoToSchemaType.get(next) == null) {
+                	Type nextType = next.getType();
                     QName name = null;
                     //Check for annotation overrides
-                    if (next instanceof Class) {
-                        name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)next).getName());
+                    if (nextType instanceof Class) {
+                        name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)nextType).getName());
                     }
                     if (name == null) {
                         //Change default for byte[] to Base64 (JAXB 2.0 default)
-                        if (next == ClassConstants.ABYTE || next == ClassConstants.APBYTE) {
+                        if (nextType == ClassConstants.ABYTE || nextType == ClassConstants.APBYTE) {
                             name = XMLConstants.BASE_64_BINARY_QNAME;
                         } else {
                             name = (QName)defaults.get(next);
                         }
                     }
                     if (name != null) {
-                        this.typeToSchemaType.put(next, name);
+                        this.typeMappingInfoToSchemaType.put(next, name);
                     }
                 }
             }
         }
     }
 
-    public HashMap<Type, QName> getTypeToSchemaType() {
-        if (typeToSchemaType == null) {
+    public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
+        if (typeMappingInfoToSchemaType == null) {
             initTypeToSchemaType();
         }
-        return typeToSchemaType;
+        return typeMappingInfoToSchemaType;
     }
     
-    public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-        return new HashMap<TypeMappingInfo, QName>();
+    public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
+    	HashMap<TypeMappingInfo, QName>  typeMappingInfoToSchemaType = (HashMap)getTypeMappingInfoToSchemaType();
+    	HashMap<Type, QName> typeToSchemaTypeMap = new HashMap<Type, QName>(typeMappingInfoToSchemaType.size());
+    	java.util.Set<Entry<TypeMappingInfo, QName>> entrySet = typeMappingInfoToSchemaType.entrySet();
+    	for (Entry<TypeMappingInfo, QName> entry : entrySet) {   
+    		typeToSchemaTypeMap.put(entry.getKey().getType(), entry.getValue());
+    	}
+    	
+        return typeToSchemaTypeMap;
+    }
+     
+    Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
+        return this.typeMappingInfoToGeneratedType;
+    }
+    
+    Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
+        return this.typeToTypeMappingInfo;
+    }
+    
+    void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
+        this.typeToTypeMappingInfo = typeToMappingInfo;
+        this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
     }
 
 }

@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.*;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
@@ -59,6 +60,7 @@ public class Generator {
     private SchemaGenerator schemaGenerator;
     private MappingsGenerator mappingsGenerator;
     private Helper helper;
+    private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
 
     /**
      * This is the preferred constructor.
@@ -72,7 +74,7 @@ public class Generator {
         annotationsProcessor = new AnnotationsProcessor(helper);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
-        annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+        annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses(), null);
     }
     
     /**
@@ -92,9 +94,9 @@ public class Generator {
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         if (xmlBindings != null && xmlBindings.size() > 0) {
-            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput);
+            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, null, null);
         } else {
-            annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+            annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses(), null);
         }
     }
     
@@ -105,12 +107,13 @@ public class Generator {
      * 
      * @param jModelInput
      */
-    public Generator(JavaModelInput jModelInput, Map<JavaClass, Type> javaClassToType) {
+    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo) {
         helper = new Helper(jModelInput.getJavaModel());
-        annotationsProcessor = new AnnotationsProcessor(helper, javaClassToType);
+        annotationsProcessor = new AnnotationsProcessor(helper);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
-        annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+        this.typeToTypeMappingInfo = typeToTypeMappingInfo;
+        annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
     }
     
     /**
@@ -124,18 +127,21 @@ public class Generator {
      * @param javaClassToType
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
-     */
-    public Generator(JavaModelInput jModelInput, Map<JavaClass, Type> javaClassToType, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
+     */    
+    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
         helper = new Helper(jModelInput.getJavaModel());
-        annotationsProcessor = new AnnotationsProcessor(helper, javaClassToType);
+        annotationsProcessor = new AnnotationsProcessor(helper);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
+        this.typeToTypeMappingInfo = typeToTypeMappingInfo;
         if (xmlBindings != null && xmlBindings.size() > 0) {
-            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput);
+            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, typeMappingInfos, javaClasses);
         } else {
-            annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+        	annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
+        	//annotationsProcessor.processTypeInfoMappings(typeMappingInfos, javaClasses);
         }
     }
+
     
     /**
      * 
@@ -160,7 +166,7 @@ public class Generator {
 
     public Project generateProject() throws Exception {
     	
-        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.isDefaultNamespaceAllowed());
+        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.isDefaultNamespaceAllowed());
         
         annotationsProcessor.getArrayClassesToGeneratedClasses().putAll(mappingsGenerator.getClassToGeneratedClasses());
         
@@ -239,19 +245,20 @@ public class Generator {
             for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
                 QName key = keyIt.next();
                 Type type = additionalGlobalElements.get(key);
-                JavaClass jClass;
+                TypeMappingInfo tmi = null;
+                if(this.typeToTypeMappingInfo != null) {
+                    tmi = this.typeToTypeMappingInfo.get(type);
+                }
+
+                if(tmi != null) {
+                    if(annotationsProcessor.getTypeMappingInfoToGeneratedClasses().get(tmi) != null) {
+                        type =  annotationsProcessor.getTypeMappingInfoToGeneratedClasses().get(tmi);
+                    }
+                }
+                JavaClass jClass = null;
                 if (type instanceof Class) {
                     Class tClass = (Class) type; 
-                    if (tClass.isArray()) {
-                        // handle arrays
-                        jClass = helper.getJavaClass(annotationsProcessor.getArrayClassesToGeneratedClasses().get(tClass.getCanonicalName()));
-                    } else {
-                        // handle java class
-                        jClass = helper.getJavaClass(tClass);
-                    }
-                } else {
-                    // handle parameterized type
-                    jClass = helper.getJavaClass(annotationsProcessor.getCollectionClassesToGeneratedClasses().get(type));
+                    jClass = helper.getJavaClass(tClass);
                 }
                 // if no type is available don't do anything
                 if (jClass != null) {
@@ -276,6 +283,10 @@ public class Generator {
 
     public AnnotationsProcessor getAnnotationsProcessor() {
         return annotationsProcessor;
+    }
+    
+    public void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typesToTypeMapping) {
+        this.typeToTypeMappingInfo = typesToTypeMapping;
     }
     
 }

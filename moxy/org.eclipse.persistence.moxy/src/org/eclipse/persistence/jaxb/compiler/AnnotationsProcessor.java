@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -63,6 +64,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -77,6 +79,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.LocalVariableTypeTab
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
@@ -92,7 +95,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
-import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 
 /**
  * INTERNAL:
@@ -124,13 +126,16 @@ public class AnnotationsProcessor {
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
     private HashMap<QName, ElementDeclaration> globalElements;
     private HashMap<String, ElementDeclaration> xmlRootElements;
+    private List<ElementDeclaration> localElements;
     private HashMap<String, JavaMethod> factoryMethods;
 
     private Map<String, Class> arrayClassesToGeneratedClasses;
     private Map<Class, JavaClass> generatedClassesToArrayClasses;
     private Map<java.lang.reflect.Type, Class> collectionClassesToGeneratedClasses;
     private Map<Class, java.lang.reflect.Type> generatedClassesToCollectionClasses;
-    private Map<JavaClass, java.lang.reflect.Type> javaClassToType;
+    
+    private Map<JavaClass, TypeMappingInfo> javaClassToTypeMappingInfos;
+    private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
 
     private NamespaceResolver namespaceResolver;
     private Helper helper;
@@ -144,29 +149,68 @@ public class AnnotationsProcessor {
         isDefaultNamespaceAllowed = true;
     }
 
-    public AnnotationsProcessor(Helper helper, Map<JavaClass, java.lang.reflect.Type> javaClassToType) {
-        this.helper = helper;
-        this.javaClassToType = javaClassToType;
-    }
-
     /**
      * Generate TypeInfo instances for a given array of JavaClasses.
      * 
      * @param classes
      */
-    public void processClassesAndProperties(JavaClass[] classes) {
-        init();
+    void processClassesAndProperties(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
+        init(classes, typeMappingInfos);
         preBuildTypeInfo(classes);
         classes = postBuildTypeInfo(classes);
         processJavaClasses(classes);
         finalizeProperties();
+        createElementsForTypeMappingInfo();
+    }
+    
+    public void createElementsForTypeMappingInfo() {
+        if(this.javaClassToTypeMappingInfos != null && !this.javaClassToTypeMappingInfos.isEmpty()) {
+            Set<JavaClass> classes = this.javaClassToTypeMappingInfos.keySet();
+            for(JavaClass nextClass:classes) {
+                TypeMappingInfo nextInfo = this.javaClassToTypeMappingInfos.get(nextClass);
+                if(nextInfo != null) {
+                    boolean xmlAttachmentRef = false;
+                    String xmlMimeType = null; 
+                    java.lang.annotation.Annotation[] annotations = nextInfo.getAnnotations();
+                    if(annotations != null){
+                        for(int j=0; j<annotations.length; j++){
+                            java.lang.annotation.Annotation nextAnnotation = annotations[j];
+                            if(nextAnnotation != null){
+                                if (nextAnnotation instanceof XmlMimeType){                   
+                                    XmlMimeType javaAnnotation = (XmlMimeType)nextAnnotation;
+                                    xmlMimeType = javaAnnotation.value();
+                                }else if (nextAnnotation instanceof XmlAttachmentRef){
+                                    xmlAttachmentRef = true;
+                                }
+                            }
+                        }
+                    }
+                    if(nextInfo.getXmlTagName() != null) {
+                        ElementDeclaration element = new ElementDeclaration(nextInfo.getXmlTagName(), nextClass, nextClass.getQualifiedName(), false);
+                        element.setTypeMappingInfo(nextInfo);
+                        element.setXmlMimeType(xmlMimeType);
+                        element.setXmlAttachmentRef(xmlAttachmentRef);
+
+                        Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo); 
+                        if(generatedClass != null) {
+                            element.setJavaType(helper.getJavaClass(generatedClass));
+                        }
+                        if(nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
+                            this.globalElements.put(element.getElementName(), element);
+                        } else {
+                            this.localElements.add(element);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
      * Initialize maps, lists, etc. Typically called prior to processing a set of 
      * classes via preBuildTypeInfo, postBuildTypeInfo, processJavaClasses.
      */
-    public void init() {
+    void init(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
         typeInfoClasses = new ArrayList<JavaClass>();
         typeInfo = new HashMap<String, TypeInfo>();
         typeQNames = new ArrayList<QName>();
@@ -182,6 +226,17 @@ public class AnnotationsProcessor {
         collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
         generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
         generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
+        typeMappingInfoToGeneratedClasses = new HashMap<TypeMappingInfo, Class>();
+        globalElements = new HashMap<QName, ElementDeclaration>();
+        localElements = new ArrayList<ElementDeclaration>();
+        
+        javaClassToTypeMappingInfos = new HashMap<JavaClass, TypeMappingInfo>();
+        if(typeMappingInfos != null){
+        	for(int i=0; i<typeMappingInfos.length; i++){
+        		javaClassToTypeMappingInfos.put(classes[i], typeMappingInfos[i]);	
+        	}
+        }
+        
     }
 
     /**
@@ -450,20 +505,47 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         for (JavaClass javaClass : classes) {
+            Class xmlElementType = null;
+           
+            TypeMappingInfo tmi = javaClassToTypeMappingInfos.get(javaClass);
+            if(tmi != null){
+          
+                java.lang.annotation.Annotation[] annotations = tmi.getAnnotations();
+                if(annotations != null){
+                	for(int j=0; j<annotations.length; j++){
+                		java.lang.annotation.Annotation nextAnnotation = annotations[j];
+                	            		
+                		if(nextAnnotation != null){
+                		    if (nextAnnotation instanceof XmlElement){
+                			    XmlElement javaAnnotation = (XmlElement)nextAnnotation;
+                			    if(javaAnnotation.type() != XmlElement.DEFAULT.class) {
+                			        xmlElementType = javaAnnotation.type();
+                			    }
+                    		}
+                		}
+                	}
+                }
+            }
+        	
         	if(areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER)){
                  if (this.globalElements == null) {        			 
                      globalElements = new HashMap<QName, ElementDeclaration>();
                  }
-        		 ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
-        		 globalElements.put(null, declaration);
+                 if(tmi == null || tmi.getXmlTagName() == null) {
+                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
+                     declaration.setTypeMappingInfo(tmi);
+                     globalElements.put(null, declaration);
+                 }
         	} else if (javaClass.isArray()){
 	                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
 	                    extraClasses.add(javaClass.getComponentType());
 	                }
-	                Class generatedClass = generateWrapperForArrayClass(javaClass);
+	                Class generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);	                
 	                extraClasses.add(helper.getJavaClass(generatedClass));
 	                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
-	                generatedClassesToArrayClasses.put(generatedClass, javaClass);            	
+	                generatedClassesToArrayClasses.put(generatedClass, javaClass);         
+	                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+	                 
             } else if (isCollectionType(javaClass)) {
                 JavaClass componentClass;                
                 if (javaClass.hasActualTypeArguments()) {
@@ -474,15 +556,11 @@ public class AnnotationsProcessor {
                 } else {
                     componentClass = helper.getJavaClass(Object.class);
                 }
-                if (javaClassToType != null) {
-                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                    if (theType != null) {
-                        Class generatedClass = generateWrapperForArrayClass(javaClass);
-                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
-                        generatedClassesToCollectionClasses.put(generatedClass, theType);
-                        extraClasses.add(helper.getJavaClass(generatedClass));
-                    }
-                }
+          
+                Class generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType);
+                        
+                extraClasses.add(helper.getJavaClass(generatedClass));
+                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);                
             } else if (isMapType(javaClass)) {
                 JavaClass keyClass;
                 JavaClass valueClass;
@@ -499,15 +577,10 @@ public class AnnotationsProcessor {
                     keyClass = helper.getJavaClass(Object.class);
                     valueClass = helper.getJavaClass(Object.class);
                 }
-                if (javaClassToType != null) {
-                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                    if (theType != null) {
-                        Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
-                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
-                        generatedClassesToCollectionClasses.put(generatedClass, theType);
-                        extraClasses.add(helper.getJavaClass(generatedClass));
-                    }
-                }
+               
+                Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
             } else {
                 // process @XmlRegistry, @XmlSeeAlso and inner classes
                 processClass(javaClass, classesToProcess);
@@ -1422,9 +1495,9 @@ public class AnnotationsProcessor {
             
             JavaClass ptype = null;
             if (getMethod != null) {
-            	ptype = (JavaClass) getMethod.getReturnType();
+                ptype = (JavaClass) getMethod.getReturnType();
             } else {
-            	ptype = setMethod.getParameterTypes()[0];
+                ptype = setMethod.getParameterTypes()[0];
             }
             
             if (!propertyNames.contains(propertyName)) {
@@ -1710,7 +1783,7 @@ public class AnnotationsProcessor {
 
         }
         if(!info.isElementFormQualified() || info.isAttributeFormQualified()){
-        	isDefaultNamespaceAllowed = false;            
+            isDefaultNamespaceAllowed = false;            
         }
         return info;
     }
@@ -1788,11 +1861,11 @@ public class AnnotationsProcessor {
             if (!namespace.equals("##default")) {
                 qName = new QName(namespace, name);
                 if(namespace.equals(XMLConstants.EMPTY_STRING)){
-                	isDefaultNamespaceAllowed = false;                	
+                    isDefaultNamespaceAllowed = false;                  
                 }
             } else {
                 if (namespaceInfo.isElementFormQualified()) {
-                	qName = new QName(uri, name);
+                    qName = new QName(uri, name);
                 } else {
                     qName = new QName(name);
                 }
@@ -2058,16 +2131,16 @@ public class AnnotationsProcessor {
                     if (namespaceInfo == null) {
                         rootElemName = new QName(elementName);
                     } else {
-                    	String rootNS = namespaceInfo.getNamespace();
+                        String rootNS = namespaceInfo.getNamespace();
                         rootElemName = new QName(rootNS, elementName);
                         if(rootNS.equals(XMLConstants.EMPTY_STRING)){
-                        	isDefaultNamespaceAllowed = false;                	
+                            isDefaultNamespaceAllowed = false;                  
                         }
                     }                    
                 } else {
                     rootElemName = new QName(rootNamespace, elementName);
                     if(rootNamespace.equals(XMLConstants.EMPTY_STRING)){
-                    	isDefaultNamespaceAllowed = false;                	
+                        isDefaultNamespaceAllowed = false;                  
                     }
                 }
                 ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getQualifiedName(), false);
@@ -2200,64 +2273,64 @@ public class AnnotationsProcessor {
     }
 
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass){
-    	
-    	NamespaceInfo combinedNamespaceInfo = null;
-		NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
-		String combinedNamespaceInfoNamespace = null;
-		NamespaceInfo nsForMapClass = packageToNamespaceMappings.get(mapClass.getPackageName());
-		if(nsForMapClass != null){
-			combinedNamespaceInfo = nsForMapClass;
-			combinedNamespaceInfoNamespace = nsForMapClass.getNamespace();
-		}else{
-			combinedNamespaceInfo = new NamespaceInfo();
-		}
-		String packageName = "jaxb.dev.java.net";
-    	if(!helper.isBuiltInJavaType(keyClass)){
-    		NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
-    		String keyPackageName = keyClass.getPackageName();
-    		packageName = packageName + "." + keyPackageName;
-    		if(combinedNamespaceInfoNamespace == null){
-    			TypeInfo keyTypeInfo = getTypeInfo().get(keyClass.getQualifiedName()); 
-             	if (keyTypeInfo == null && shouldGenerateTypeInfo(keyClass)) {
+        
+        NamespaceInfo combinedNamespaceInfo = null;
+        NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
+        String combinedNamespaceInfoNamespace = null;
+        NamespaceInfo nsForMapClass = packageToNamespaceMappings.get(mapClass.getPackageName());
+        if(nsForMapClass != null){
+            combinedNamespaceInfo = nsForMapClass;
+            combinedNamespaceInfoNamespace = nsForMapClass.getNamespace();
+        }else{
+            combinedNamespaceInfo = new NamespaceInfo();
+        }
+        String packageName = "jaxb.dev.java.net";
+        if(!helper.isBuiltInJavaType(keyClass)){
+            NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
+            String keyPackageName = keyClass.getPackageName();
+            packageName = packageName + "." + keyPackageName;
+            if(combinedNamespaceInfoNamespace == null){
+                TypeInfo keyTypeInfo = getTypeInfo().get(keyClass.getQualifiedName()); 
+                if (keyTypeInfo == null && shouldGenerateTypeInfo(keyClass)) {
                     JavaClass[] jClassArray = new JavaClass[] { keyClass };
                     buildNewTypeInfo(jClassArray);
                     keyTypeInfo = getTypeInfo().get(keyClass.getQualifiedName());
                 }
-             	combinedNamespaceInfoNamespace = keyTypeInfo.getClassNamespace();
-    			
-    		}
-    		java.util.Vector<Namespace> namespaces= keyNamespaceInfo.getNamespaceResolver().getNamespaces();
-    		for(Namespace n:namespaces){
-    			combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
-    		}    		
-    	}
-    	
-    	if(!helper.isBuiltInJavaType(valueClass)){
-			NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
-			String valuePackageName = valueClass.getPackageName();		
-			packageName = packageName + "." + valuePackageName;			
-			java.util.Vector<Namespace> namespaces= valueNamespaceInfo.getNamespaceResolver().getNamespaces();		
-			for(Namespace n:namespaces){
-			    combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
-			}			
-    	}
-    	if(combinedNamespaceInfoNamespace == null){
-    		combinedNamespaceInfoNamespace = "";
-    	}
-		combinedNamespaceInfo.setNamespace(combinedNamespaceInfoNamespace);
-	
-		combinedNamespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
-				
-		getPackageToNamespaceMappings().put(packageName, combinedNamespaceInfo);
-							
-   		int beginIndex = keyClass.getName().lastIndexOf(".")+1;
-   		String keyName = keyClass.getName().substring(beginIndex);
-   		beginIndex = valueClass.getName().lastIndexOf(".")+1;
-   		String valueName = valueClass.getName().substring(beginIndex);
-   		String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') +1);
-   		String className = keyName + valueName + collectionClassShortName;
-   		
-   		String qualifiedClassName = packageName +"." + className; 
+                combinedNamespaceInfoNamespace = keyTypeInfo.getClassNamespace();
+                
+            }
+            java.util.Vector<Namespace> namespaces= keyNamespaceInfo.getNamespaceResolver().getNamespaces();
+            for(Namespace n:namespaces){
+                combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());  
+            }           
+        }
+        
+        if(!helper.isBuiltInJavaType(valueClass)){
+            NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
+            String valuePackageName = valueClass.getPackageName();      
+            packageName = packageName + "." + valuePackageName;         
+            java.util.Vector<Namespace> namespaces= valueNamespaceInfo.getNamespaceResolver().getNamespaces();      
+            for(Namespace n:namespaces){
+                combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());  
+            }           
+        }
+        if(combinedNamespaceInfoNamespace == null){
+            combinedNamespaceInfoNamespace = "";
+        }
+        combinedNamespaceInfo.setNamespace(combinedNamespaceInfoNamespace);
+    
+        combinedNamespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
+                
+        getPackageToNamespaceMappings().put(packageName, combinedNamespaceInfo);
+                            
+        int beginIndex = keyClass.getName().lastIndexOf(".")+1;
+        String keyName = keyClass.getName().substring(beginIndex);
+        beginIndex = valueClass.getName().lastIndexOf(".")+1;
+        String valueName = valueClass.getName().substring(beginIndex);
+        String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') +1);
+        String className = keyName + valueName + collectionClassShortName;
+        
+        String qualifiedClassName = packageName +"." + className; 
 
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         String internalKeyName = keyClass.getRawName().replace('.', '/');
@@ -2342,20 +2415,21 @@ public class AnnotationsProcessor {
         return generateClassFromBytes(qualifiedClassName, classBytes);
     }
 
-    private Class generateWrapperForArrayClass(JavaClass arrayClass) {
-        if (arrayClass.isArray()) {
-            JavaClass componentClass = arrayClass.getComponentType();
-            if (componentClass.isPrimitive()) {
-                return generatePrimitiveArrayValue(arrayClass);
-            } else {
-                return generateObjectArrayValue(arrayClass);
-            }
-        } else {
-            return generateCollectionValue(arrayClass);
+    private Class generateWrapperForArrayClass(JavaClass arrayClass, TypeMappingInfo typeMappingInfo, Class xmlElementType) {        
+        JavaClass componentClass = null;
+        if(typeMappingInfo != null && xmlElementType != null){
+            componentClass = helper.getJavaClass(xmlElementType);           
+        }else{
+            componentClass = arrayClass.getComponentType();
         }
+        if (componentClass.isPrimitive()) {
+            return generatePrimitiveArrayValue(arrayClass, componentClass, typeMappingInfo);
+        } else {
+            return generateObjectArrayValue(arrayClass, componentClass, typeMappingInfo);
+        }        
     }
 
-    private Class generatePrimitiveArrayValue(JavaClass arrayClass) {
+    private Class generatePrimitiveArrayValue(JavaClass arrayClass, JavaClass componentClass, TypeMappingInfo typeMappingInfo) {
 
         String packageName = "jaxb.dev.java.net.array";
 
@@ -2367,14 +2441,18 @@ public class AnnotationsProcessor {
 
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
-        String primitiveClassName = arrayClass.getComponentType().getRawName();
-        Class primitiveClass = getPrimitiveClass(primitiveClassName);
-        JavaClass componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
+        int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
+        String name = componentClass.getName().substring(beginIndex);   
 
-        int beginIndex = arrayClass.getComponentType().getName().lastIndexOf(".") + 1;
-        String name = arrayClass.getComponentType().getName().substring(beginIndex);
-        String className = name + "Array";
-        String qualifiedClassName = packageName + "." + className;
+        String suggestedClassName = name + "Array";
+        String qualifiedClassName = packageName + "." + suggestedClassName;
+        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
+        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
+        
+        String primitiveClassName = componentClass.getRawName();     
+        Class primitiveClass = getPrimitiveClass(primitiveClassName);
+        componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
+        
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
 
         Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
@@ -2385,8 +2463,26 @@ public class AnnotationsProcessor {
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/PrimitiveArrayValue", null, className.replace(".", "/") + ".java");
 
         // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
+        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
+        if(typeMappingInfo != null){
+            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            if(annotations != null){
+                for(int i=0; i<annotations.length; i++){
+                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){
+                        String annotationClassName = nextAnnotation.getClass().getName();
+                        Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
+                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                    }
+                }
+            }           
+        }
+                
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
+        fieldAttrs1.next = fieldAttrs2;
+                
         cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);
+
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -2423,10 +2519,8 @@ public class AnnotationsProcessor {
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitMethodInsn(Constants.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;");
         cv.visitTypeInsn(Constants.CHECKCAST, componentType.getInternalName());
-        // cv.visitMethodInsn(Constants.INVOKEVIRTUAL, componentType.getInternalName(), "booleanValue", "()Z"); //
         cv.visitMethodInsn(Constants.INVOKEVIRTUAL, componentType.getInternalName(), getToPrimitiveStringForObjectClass(primitiveClassName), getReturnTypeFor(primitiveClass));
 
-        // cv.visitInsn(Constants.BASTORE);
         int iaStoreOpcode = Type.getType(primitiveClass).getOpcode(Constants.IASTORE);
         cv.visitInsn(iaStoreOpcode);
 
@@ -2441,7 +2535,6 @@ public class AnnotationsProcessor {
         Label l3 = new Label();
         cv.visitLabel(l3);
         // CODE ATTRIBUTE
-        // LocalVariableTypeTableAttribute cv = new LocalVariableTypeTableAttribute();
 
         LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
         cv.visitAttribute(cvAttr);
@@ -2462,7 +2555,6 @@ public class AnnotationsProcessor {
         l0 = new Label();
         cv.visitLabel(l0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        // cv.visitTypeInsn(Constants.CHECKCAST, "[Z");
         cv.visitTypeInsn(Constants.CHECKCAST, getCastTypeFor(primitiveClass));
 
         cv.visitVarInsn(Constants.ASTORE, 3);
@@ -2474,7 +2566,6 @@ public class AnnotationsProcessor {
         cv.visitLabel(l2);
         cv.visitVarInsn(Constants.ALOAD, 3);
         cv.visitVarInsn(Constants.ILOAD, 4);
-        // cv.visitInsn(Constants.BALOAD);
         int iaLoadOpcode = Type.getType(primitiveClass).getOpcode(Constants.IALOAD);
         cv.visitInsn(iaLoadOpcode);
         cv.visitVarInsn(Constants.ISTORE, 5);
@@ -2510,10 +2601,9 @@ public class AnnotationsProcessor {
         return generateClassFromBytes(qualifiedClassName, classBytes);
     }
 
-    private Class generateObjectArrayValue(JavaClass arrayClass) {
-
-        JavaClass componentClass = arrayClass.getComponentType();
-        String packageName = arrayClass.getComponentType().getPackageName();
+    private Class generateObjectArrayValue(JavaClass arrayClass, JavaClass componentClass, TypeMappingInfo typeMappingInfo) {
+        
+        String packageName = componentClass.getPackageName();
         packageName = "jaxb.dev.java.net.array." + packageName;
 
         if (helper.isBuiltInJavaType(componentClass)) {
@@ -2530,9 +2620,13 @@ public class AnnotationsProcessor {
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
 
-        int beginIndex = arrayClass.getComponentType().getName().lastIndexOf(".") + 1;
-        String className = arrayClass.getComponentType().getName().substring(beginIndex) + "Array";
-        String qualifiedClassName = packageName + "." + className;
+        int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
+        
+        String suggestedClassName = componentClass.getName().substring(beginIndex) + "Array";
+        String qualifiedClassName = packageName + "." + suggestedClassName;
+        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
+        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
+              
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
 
         Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
@@ -2542,9 +2636,26 @@ public class AnnotationsProcessor {
 
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/ObjectArrayValue", null, className.replace('.', '/') + ".java");
 
-        // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
-        cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);
+        // FIELD ATTRIBUTES        
+        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
+
+        if(typeMappingInfo != null){
+            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            if(annotations != null){
+                for(int i=0; i<annotations.length; i++){
+                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){
+                        String annotationClassName = nextAnnotation.getClass().getName();
+                        Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
+                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                    }
+                }
+            }           
+        }
+        
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
+        fieldAttrs1.next = fieldAttrs2;
+        cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);        
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -2617,9 +2728,13 @@ public class AnnotationsProcessor {
         return generateClassFromBytes(qualifiedClassName, classBytes);
     }
 
-    private Class generateCollectionValue(JavaClass collectionClass) {
+    private Class generateCollectionValue(JavaClass collectionClass, TypeMappingInfo typeMappingInfo, Class xmlElementType) {
+       
         JavaClass componentClass;
-        if (collectionClass.hasActualTypeArguments()) {
+        
+        if(typeMappingInfo != null && xmlElementType != null){
+            componentClass = helper.getJavaClass(xmlElementType);           
+        }else if (collectionClass.hasActualTypeArguments()) {
             componentClass = ((JavaClass) collectionClass.getActualTypeArguments().toArray()[0]);
         } else {
             componentClass = helper.getJavaClass(Object.class);
@@ -2629,7 +2744,7 @@ public class AnnotationsProcessor {
         NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass); 
         if(namespaceInfo == null){
             namespaceInfo = componentNamespaceInfo;
-			
+            
             TypeInfo componentTypeInfo = getTypeInfo().get(componentClass.getQualifiedName()); 
             if (componentTypeInfo == null && shouldGenerateTypeInfo(componentClass)) {
                 JavaClass[] jClassArray = new JavaClass[] { componentClass };
@@ -2639,11 +2754,11 @@ public class AnnotationsProcessor {
             if(componentTypeInfo != null){
                 namespaceInfo.setNamespace(componentTypeInfo.getClassNamespace());
             }
-			
-        }else{		
+            
+        }else{      
              java.util.Vector<Namespace> namespaces= componentNamespaceInfo.getNamespaceResolver().getNamespaces();
             for(Namespace n:namespaces){
-                namespaceInfo.getNamespaceResolver().put(n.getPrefix(), n.getNamespaceURI());	
+                namespaceInfo.getNamespaceResolver().put(n.getPrefix(), n.getNamespaceURI());   
             } 
 
         }
@@ -2658,9 +2773,10 @@ public class AnnotationsProcessor {
 
         String collectionClassRawName = collectionClass.getRawName();
         String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf('.') + 1);
-        String className = collectionClassShortName + "Of" + name;
-
-        String qualifiedClassName = packageName + "." + className;
+        String suggestedClassName = collectionClassShortName + "Of" + name;
+        String qualifiedClassName = packageName + "." + suggestedClassName;
+        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
+        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
 
         Type collectionType = Type.getType("L" + collectionClassRawName.replace('.', '/') + ";");
         Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
@@ -2670,10 +2786,27 @@ public class AnnotationsProcessor {
 
         cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
 
-        // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;");
-        cw.visitField(Constants.ACC_PUBLIC, "item", "L"+collectionType.getInternalName()+";", null, fieldAttrs1);
+        // FIELD ATTRIBUTES       
+        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
+   
+        if(typeMappingInfo != null){
+            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            if(annotations != null){
+                for(int i=0; i<annotations.length; i++){
+                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){                     
+                        String annotationClassName = nextAnnotation.annotationType().getName();
+                        Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName.replace('.', '/')+";");
+                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                    }
+                }
+            }           
+        }        
         
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;");
+        fieldAttrs1.next = fieldAttrs2;
+        cw.visitField(Constants.ACC_PUBLIC, "item", "L"+collectionType.getInternalName()+";", null, fieldAttrs1);
+                
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", "<init>", "()V");
@@ -2798,7 +2931,25 @@ public class AnnotationsProcessor {
         }
         return 0;
     }
-
+    
+    private String getNextAvailableClassName(String suggestedName){
+        int counter = 1;
+        return getNextAvailableClassName(suggestedName, suggestedName, counter);        
+    }
+    
+    private String getNextAvailableClassName(String suggestedBaseName, String suggestedName, int counter){
+   
+        Iterator<Class> iter = typeMappingInfoToGeneratedClasses.values().iterator();
+        while(iter.hasNext()){
+            Class nextClass = iter.next();
+            if(nextClass.getName().equals(suggestedName)){
+                counter = counter+1;
+                return getNextAvailableClassName(suggestedBaseName, suggestedBaseName+counter, counter);
+            }
+        }
+        return suggestedName;
+    }
+        
     private String getShortNameForPrimitive(Class primitiveClass) {
         Type thePrimitiveType = Type.getType(primitiveClass);
         return thePrimitiveType.toString();
@@ -2843,6 +2994,7 @@ public class AnnotationsProcessor {
         return ConversionManager.getDefaultManager().getObjectClass(primitiveClass);
     }
 
+    
     public Map<java.lang.reflect.Type, Class> getCollectionClassesToGeneratedClasses() {
         return collectionClassesToGeneratedClasses;
     }
@@ -3010,5 +3162,13 @@ public class AnnotationsProcessor {
 
     public boolean isDefaultNamespaceAllowed() {
         return isDefaultNamespaceAllowed;
+    }
+    
+    public List<ElementDeclaration> getLocalElements() {
+        return this.localElements;
+    }
+    
+    public Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedClasses() {
+        return this.typeMappingInfoToGeneratedClasses;
     }
 }

@@ -13,22 +13,19 @@
 package org.eclipse.persistence.testing.jaxb;
 
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeTwoDatesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
-import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.ListofObjects;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
 import junit.framework.Test;
@@ -102,6 +99,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.required.RequiredAnnotationTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite.suite());
+        suite.addTest(TypeMappingInfoTestSuite.suite());
+
         suite.addTest(org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.singleobject.JAXBSingleObjectTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.DifferentClassLoaderTestCases.class);
