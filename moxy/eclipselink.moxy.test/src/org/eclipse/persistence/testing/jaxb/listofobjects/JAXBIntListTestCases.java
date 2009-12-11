@@ -12,8 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,33 +20,34 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerList.xml";
-	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerListNoXsiType.xml";
-
-	public JAXBIntegerListTestCases(String name) throws Exception {
+public class JAXBIntListTestCases extends JAXBIntegerListTestCases {
+	
+	private Type typeToUnmarshalTo;
+	
+	public JAXBIntListTestCases(String name) throws Exception {
 		super(name);
 	}
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-
-		Type[] types = new Type[1];
-		types[0] = getTypeToUnmarshalTo();
-		setTypes(types);
-	}
-
 	protected Type getTypeToUnmarshalTo() throws Exception {
-		Field fld = ListofObjects.class.getField("integerList");
-		return fld.getGenericType();
+		if(typeToUnmarshalTo == null){
+		
+		Type listOfInts = new ParameterizedType() {
+		      Type[] typeArgs = {int.class};
+		      public Type[] getActualTypeArguments() { return typeArgs;}
+		      public Type getOwnerType() { return null; }
+		      public Type getRawType() { return List.class; }      
+		    };
+		    typeToUnmarshalTo = listOfInts;
+		}
+		return typeToUnmarshalTo;
 	}
 
 	protected Object getControlObject() {
 		ArrayList<Integer> integers = new ArrayList<Integer>();
-		integers.add(new Integer("10"));
-		integers.add(new Integer("20"));
-		integers.add(new Integer("30"));
-		integers.add(new Integer("40"));
+	     integers.add(10);
+		integers.add(20);
+		integers.add(30);
+		integers.add(40);
 
 		QName qname = new QName("examplenamespace", "root");
 		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -56,17 +56,4 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 		return jaxbElement;
 	}
 	
-	public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
-			
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-			controlSchema.add(instream);
-			return controlSchema;
-		}
-		
-
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
 }

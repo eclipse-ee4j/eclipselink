@@ -2739,7 +2739,12 @@ public class AnnotationsProcessor {
         } else {
             componentClass = helper.getJavaClass(Object.class);
         }
-
+        
+        if(componentClass.isPrimitive()){            
+            Class primitiveClass = getPrimitiveClass(componentClass.getRawName());
+            componentClass = helper.getJavaClass(getObjectClass(primitiveClass));        
+        }
+       
         NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
         NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass); 
         if(namespaceInfo == null){
