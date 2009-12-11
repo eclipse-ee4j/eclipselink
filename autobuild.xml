@@ -151,13 +151,13 @@
         <property name="download.path" value="${eclipselink.download.path}/milestones/${release.version}/${build.type}"/>
 
         <!-- Set p2 repository path appropriately depending upon build target     -->
-        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly">
+        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/${release.version}/nightly">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
         <condition property="p2.repos.path" value="${eclipselink.download.path}/updates/${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/${release.version}/milestone"/>
         <property name="p2.base.dir" value="${p2.repos.path}"/>
         <property name="p2.base.url" value="file:${p2.base.dir}"/>
 
