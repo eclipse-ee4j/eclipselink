@@ -707,7 +707,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             }
             entry = e;
             index = i;
-            return e != null;
+            return e != null && currentEntryRef != null;
         }
 
         public Object next() {
