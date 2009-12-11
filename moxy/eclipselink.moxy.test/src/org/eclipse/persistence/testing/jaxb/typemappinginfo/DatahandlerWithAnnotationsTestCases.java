@@ -15,7 +15,9 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
@@ -84,11 +86,11 @@ public class DatahandlerWithAnnotationsTestCases extends TypeMappingInfoTestCase
 	}
 
 
-    public List<InputStream> getControlSchemaFiles(){			 		   
+    public Map<String, InputStream> getControlSchemaFiles(){			 		   
 	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/dataHandlerAttachmentRefAndMimeType.xsd");
 		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
+		Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
+		controlSchema.put("someUri", instream);
 		return controlSchema;
 	}
 

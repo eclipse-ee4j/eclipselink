@@ -38,6 +38,7 @@ public class NamespaceInfo {
     private XmlAccessType accessType = XmlAccessType.PUBLIC_MEMBER;
     private XmlAccessOrder accessOrder = XmlAccessOrder.UNDEFINED;
     private String location;
+    private NamespaceResolver namespaceResolverForDescriptor;
     
     public String getNamespace() {
         return namespace;
@@ -93,5 +94,15 @@ public class NamespaceInfo {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+    
+    public NamespaceResolver getNamespaceResolverForDescriptor() {
+        if(this.namespaceResolverForDescriptor == null) {
+            this.namespaceResolverForDescriptor = new NamespaceResolver();
+            for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
+                this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
+            }
+        }
+        return this.namespaceResolverForDescriptor;
     }
 }

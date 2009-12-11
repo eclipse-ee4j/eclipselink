@@ -980,6 +980,9 @@ public class XMLMarshaller {
 
     private void writeTypeAttribute(MarshalRecord marshalRecord, XMLDescriptor descriptor, String xsiPrefix) {
         //xsi:type=schemacontext
+        if(descriptor.getSchemaReference() == null) {
+            return;
+        }
         String typeValue = descriptor.getSchemaReference().getSchemaContext();
 
         // handle case where the schema context is set as a QName

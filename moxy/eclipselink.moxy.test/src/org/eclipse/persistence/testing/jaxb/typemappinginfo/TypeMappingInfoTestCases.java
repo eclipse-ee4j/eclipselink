@@ -19,8 +19,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
@@ -189,7 +191,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         compareJAXBElementObjects(controlObj, testObj);
     }	
 	
-	public abstract List<InputStream> getControlSchemaFiles();
+	public abstract Map<String, InputStream> getControlSchemaFiles();
 	
 	public void testSchemaGen() throws Exception {
 		testSchemaGen(getControlSchemaFiles());
@@ -374,16 +376,16 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	        }
 	    }	
 	    
-	    public void testSchemaGen(List<InputStream> controlSchemas) throws Exception {
+	    public void testSchemaGen(Map<String, InputStream> controlSchemas) throws Exception {
 	    	MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 			jaxbContext.generateSchema(outputResolver);
 			
-			List<File> generatedSchemas = outputResolver.getSchemaFiles();
+			Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();
 			assertEquals(controlSchemas.size(), generatedSchemas.size());
 
-			for(int i=0;i<controlSchemas.size(); i++){
-				InputStream nextControlValue = controlSchemas.get(i);						
-				File nextGeneratedValue =generatedSchemas.get(i);
+			for(String next:controlSchemas.keySet()){
+				InputStream nextControlValue = controlSchemas.get(next);						
+				File nextGeneratedValue = generatedSchemas.get(next);
 				
 				assertNotNull("Generated Schema not found.", nextGeneratedValue);
 				
@@ -392,8 +394,10 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 				
 				JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
 				boolean isEqual = xmlComparer.isSchemaEqual(control, test);
-				if(!isEqual){				
+				if(!isEqual){
+				    log("Expected Schema\n");
 					log(control);
+					log("ActualSchema\n");
 					log(test);
 				}
 				assertTrue("generated schema did not match control schema", isEqual);
@@ -403,10 +407,10 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	    public class MySchemaOutputResolver extends SchemaOutputResolver {
 			// keep a list of processed schemas for the validation phase of the
 			// test(s)
-			public List<File> schemaFiles;
+			public Map<String, File> schemaFiles;
 
 			public MySchemaOutputResolver() {
-				schemaFiles = new ArrayList<File>();
+				schemaFiles = new HashMap<String, File>();
 			}
 
 			public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
@@ -414,11 +418,11 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 				if(namespaceURI == null){
 					namespaceURI ="";
 				}
-				schemaFiles.add(schemaFile);
+				schemaFiles.put(namespaceURI, schemaFile);
 				return new StreamResult(schemaFile);
 			}		
 			
-			public List<File> getSchemaFiles() {
+			public Map<String, File> getSchemaFiles() {
 				return schemaFiles;
 			}
 		}
