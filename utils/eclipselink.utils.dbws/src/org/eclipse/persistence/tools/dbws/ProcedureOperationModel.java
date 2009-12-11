@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.dbws;
 
 // javase imports
 import java.util.List;
-
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;

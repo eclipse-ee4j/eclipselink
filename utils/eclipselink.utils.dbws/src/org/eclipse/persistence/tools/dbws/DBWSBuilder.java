@@ -120,7 +120,6 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherListenerChainAdapter;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
-import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -603,7 +602,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     protected List<DbStoredProcedure> loadProcedures(ProcedureOperationModel procedureModel,
         boolean isOracle) {
-        if (isOracle && (procedureModel.isPLSQLProcedureOperation() || procedureModel.isAdvancedJDBC)) { // use OracleHelper
+        //bug 296114 - Problem using JDBC metadata for Oracle Stored Function in package with overloading
+        //             use OracleHelper for all StoredProcedure operations, not just PL/SQL or
+        //             advancedJDBC
+        if (isOracle) {    
             return OracleHelper.buildStoredProcedure(getConnection(), getUsername(), databasePlatform,
                 procedureModel);
         }
@@ -834,11 +836,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procOpModel = (ProcedureOperationModel)opModel;
                 if (procOpModel.getJPubType() != null) {
-                    /* procedure's operationModel has a non-null JPubType, then the helper was
-                     * OracleHelper and the trimmed-down JPublisher classes
-                     * (org.eclipse.persistence.platform.database.oracle.publisher.*) were used
-                     * to describe the procedure, its package and types.
-                     */
                     if (procOpModel.isPLSQLProcedureOperation()) {
                         buildOROXProjectsForAdvancedPLSQLProcedure(procOpModel);
                     }
@@ -943,7 +940,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                 }
                 else {
-                    dq = new DataModifyQuery();
+                    dq = new ValueReadQuery();
                 }
                 dq.bindAllParameters();
                 dq.setName(nameAndModel.name);

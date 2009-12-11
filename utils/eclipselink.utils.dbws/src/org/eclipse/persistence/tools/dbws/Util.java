@@ -17,6 +17,7 @@ package org.eclipse.persistence.tools.dbws;
 import java.util.regex.Pattern;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.CHAR;
+import static java.sql.Types.CLOB;
 import static java.sql.Types.DATE;
 import static java.sql.Types.DECIMAL;
 import static java.sql.Types.DOUBLE;
@@ -110,6 +111,7 @@ public class Util {
             case CHAR:
             case LONGVARCHAR:
             case VARCHAR:
+            case CLOB:
                 return STRING_QNAME;
             case BIGINT:
                 return INTEGER_QNAME;

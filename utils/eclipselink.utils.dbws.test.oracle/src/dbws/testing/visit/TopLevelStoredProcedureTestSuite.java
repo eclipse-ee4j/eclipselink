@@ -76,6 +76,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
         "</properties>" +
         "<procedure " +
            "name=\"testEcho\" " +
+           "catalogPattern=\"TOPLEVEL\" " +
            "procedurePattern=\"TESTECHO\" " +
            "isSimpleXMLFormat=\"true\" " +
         "/>" +

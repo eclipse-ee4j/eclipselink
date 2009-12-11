@@ -23,7 +23,6 @@ import java.util.Stack;
 //EclipseLink imports
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
-import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.StoredFunctionCall;
@@ -173,7 +172,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                         }
                     }
                     else {
-                        dq = new DataModifyQuery();
+                        dq = new ValueReadQuery();
                     }
                     dq.bindAllParameters();
                     dq.setName(nameAndModel.name);

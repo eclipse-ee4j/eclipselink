@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
 import static java.sql.DatabaseMetaData.columnNullable;
 import static java.sql.DatabaseMetaData.procedureReturnsResult;
 import static java.sql.DatabaseMetaData.tableIndexStatistic;
@@ -40,7 +39,6 @@ import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
-
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;

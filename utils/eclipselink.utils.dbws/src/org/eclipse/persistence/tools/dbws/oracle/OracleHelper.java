@@ -36,6 +36,7 @@ import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.BinaryInteger;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_PACKAGE;
@@ -193,7 +194,12 @@ public class OracleHelper {
                     
                 }
             }
-            fromJDBCType = Util.getXMLTypeFromJDBCType(typ);
+            if ("LONG".equals(arg.getJdbcTypeName())) {
+                fromJDBCType = BASE_64_BINARY_QNAME;
+            }
+            else {
+                fromJDBCType = Util.getXMLTypeFromJDBCType(typ);
+            }
         }
         return fromJDBCType;
     }
