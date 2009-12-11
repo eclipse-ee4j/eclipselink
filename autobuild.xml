@@ -167,7 +167,7 @@
         <property name="p2.SDK.install.dir"  value="${build.deps.dir}/eclipse"/>
         <!-- verify location of eclipse SDK install exists before proceeding...   -->
         <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
-        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." if="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
 
         <!-- generate P2 repository labels                                        -->
         <condition property="metadata.repos.name" value="&quot;${P2.nightly.repos.name}&quot;">
