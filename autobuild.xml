@@ -151,13 +151,13 @@
         <property name="download.path" value="${eclipselink.download.path}/milestones/${release.version}/${build.type}"/>
 
         <!-- Set p2 repository path appropriately depending upon build target     -->
-        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly">
+        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly/${release.version}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
         <condition property="p2.repos.path" value="${eclipselink.download.path}/updates/${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone/${release.version}"/>
         <property name="p2.base.dir" value="${p2.repos.path}"/>
         <property name="p2.base.url" value="file:${p2.base.dir}"/>
 
@@ -165,6 +165,9 @@
         <property name="release.designation" value="EclipseLink ${release.version}"/>
         <!-- specify location of eclipse SDK install to use                       -->
         <property name="p2.SDK.install.dir"  value="${build.deps.dir}/eclipse"/>
+        <!-- verify location of eclipse SDK install exists before proceeding...   -->
+        <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
 
         <!-- generate P2 repository labels                                        -->
         <condition property="metadata.repos.name" value="&quot;${P2.nightly.repos.name}&quot;">
@@ -300,6 +303,10 @@
         <echo message="activation: ${activation.url}${line.separator}" file="${build.deps.dir}/dependencies.txt" append="true"/>
         <echo message="mail:       ${mail.url}${line.separator}"       file="${build.deps.dir}/dependencies.txt" append="true"/>
         <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${build.deps.dir}/dependencies.txt" append="true"/>
+    </target>
+
+    <target name="custom" if="custom.target" depends="init, get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="${custom.target}"/>
     </target>
 
     <target name="build" depends="get-dependencies">
