@@ -190,7 +190,6 @@ public class PLSQLcollectionTestSuite {
             comparer.isNodeEqual(controlDoc, testDoc));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void fromProjectXML() {
         XRDynamicClassLoader xrdecl = 

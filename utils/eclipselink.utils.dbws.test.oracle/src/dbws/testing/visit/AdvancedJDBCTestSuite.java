@@ -163,7 +163,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             regionEntityEchoed.get("reg_name").equals("this is a test"));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void struct1LevelDeep_OxPart() throws SQLException, PublisherException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -389,7 +388,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("incorrect fourth field for type returned from StoredFunctionCall",
             addressEntityEchoed.get("postcode").equals(BigDecimal.valueOf(12)));
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void struct2LevelDeep_OxPart() throws SQLException, PublisherException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -738,7 +737,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             empObjectEntityEchoed.get("employee_name").equals("Mike Norman"));
         // assume date works out
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void struct3LevelDeep_OxPart() throws SQLException, PublisherException,
         InstantiationException, IllegalAccessException {
@@ -1171,7 +1170,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("return value array second element name wrong value",
             emp3.get("name").equals("entry 3"));
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void buildEmpArray_OxPart() throws SQLException, PublisherException,
         InstantiationException, IllegalAccessException {
@@ -1365,7 +1364,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             assertTrue("wrong array element value", ("entry " + (i + 1)).equals(strings.get(i)));
         }
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void sfTbl1_OxPart() {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -1518,7 +1517,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get("items");
         assertTrue("wrong number of returned dates", 3 == dates.size());
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void tbl5_OxPart() {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -1755,7 +1754,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         BigDecimal t3 = (BigDecimal)returnValue.get("t3");
         assertTrue("wrong array element value", BigDecimal.valueOf(num).equals(t3));
     }
-    @SuppressWarnings("unchecked")
+
     @Test
     public void BuildARecord_OxPart() {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -2478,7 +2477,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             comparer.isNodeEqual(controlSchema, schema));
     }
 
-    @SuppressWarnings("unchecked")
     public DatabaseSession fixUp(String projectString) {
         XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(this.getClass().getClassLoader());
         XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, xrdecl);

@@ -34,7 +34,6 @@ public class XRDynamicEntityTestSuite {
     
     //test fixtures
     static XRDynamicEntity entity1 = null;
-    @SuppressWarnings("unchecked")
     @BeforeClass
     public static void setUp() throws NoSuchFieldException, IllegalArgumentException, 
         IllegalAccessException {
