@@ -1149,7 +1149,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
                 if (collectionContainerPolicy.isMapPolicy() || collectionContainerPolicy.isDirectMapPolicy()) {
                     // Handle the 3 Map type mappings (policy.isMappedKeyMapPolicy()) is handled by isMapPolicy())
-                    member = new MapAttributeImpl((IdentifiableTypeImpl)this, colMapping, true);
+                    
+                    
+                    member = new MapAttributeImpl(this, colMapping, true);
                     // check mapping.attributeAcessor.attributeField.type=Collection
                 } else if (collectionContainerPolicy.isListPolicy()) { 
                     /**
