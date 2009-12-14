@@ -87,19 +87,9 @@ public class JAXBContextFactory {
     }
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
-        // Check properties map for eclipselink-oxm.xml entries
-        Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
-        for (String key : xmlBindings.keySet()) {
-            classesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, classesToBeBound);
-        }
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
-        classesToBeBound = updateClassesWithObjectFactory(classesToBeBound, loader);
-        try {
-            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, classLoader);
-            return createContext(generator, properties, classLoader, loader, classesToBeBound);
-        } catch (Exception ex) {
-            throw new JAXBException(ex.getMessage(), ex);
-        }
+    	Type[] types = new Type[classesToBeBound.length];
+    	System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);                     
+        return createContext(types, properties, classLoader);
     }
 
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
