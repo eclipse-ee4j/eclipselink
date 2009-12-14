@@ -69,7 +69,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * @param managedType
      * @param mapping
      */
-    protected MapAttributeImpl(IdentifiableTypeImpl<X> managedType, CollectionMapping mapping) {
+    protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
         this(managedType, mapping, false);
     }
 
@@ -84,7 +84,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * @param mapping - contains the mapping policy
      * @param validationEnabled - report errors in the metamodel
      */
-    protected MapAttributeImpl(IdentifiableTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
+    protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         // Set the managedType (X or owning Type) - Note: EmbeddableTypes are only supported as Map keys here
         super(managedType, mapping, validationEnabled);
         // We need to set the keyType Type that represents the type of the Map key for this mapping
