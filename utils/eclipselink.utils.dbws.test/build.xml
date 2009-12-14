@@ -380,5 +380,6 @@
         <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
         <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
         <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
+        <SetupCompileRunTeardown testsuite-name="RootCause"/>
     </target>
 </project>

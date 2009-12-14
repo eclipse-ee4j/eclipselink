@@ -33,7 +33,6 @@ import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -163,7 +162,7 @@ public class SOAPResponseWriter {
         }
     }
 
-    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, EclipseLinkException ele)
+    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, Exception e)
     throws SOAPException {
         MessageFactory messageFactory = null;
         if (useSOAP12) {
@@ -181,7 +180,7 @@ public class SOAPResponseWriter {
         else {
             serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
         }
-        body.addFault(serverQName, op.getName() + " failed: " + ele.getMessage());
+        body.addFault(serverQName, op.getName() + " failed: " + e);
         return message;
     }
 

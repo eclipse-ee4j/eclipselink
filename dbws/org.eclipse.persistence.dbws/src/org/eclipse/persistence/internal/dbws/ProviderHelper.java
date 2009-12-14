@@ -48,7 +48,6 @@ import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.dbws.DBWSAdapter;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -385,7 +384,7 @@ public class ProviderHelper extends XRServiceFactory {
             envelope = request.getSOAPPart().getEnvelope();
         }
         catch (SOAPException se) {
-            throw new WebServiceException(se.getMessage());
+            throw new WebServiceException(se.getMessage(), se);
         }
         // check soap 1.2 Namespace in envelope
         String namespaceURI = envelope.getNamespaceURI();
@@ -396,7 +395,7 @@ public class ProviderHelper extends XRServiceFactory {
             body = getSOAPBodyElement(envelope);
         }
         catch (SOAPException se) {
-            throw new WebServiceException(se.getMessage());
+            throw new WebServiceException(se.getMessage(), se);
         }
 
         if (body == null) {
@@ -432,7 +431,7 @@ public class ProviderHelper extends XRServiceFactory {
             xmlRoot = (XMLRoot)xmlContext.createUnmarshaller().unmarshal(body,
                 Invocation.class);
         }
-        catch (XMLMarshalException e) {
+        catch (Exception e) {
             SOAPFault soapFault = null;
             try {
                 SOAPFactory soapFactory = null;
@@ -449,8 +448,12 @@ public class ProviderHelper extends XRServiceFactory {
                 else {
                     clientQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
                 }
+                Throwable e1 = e;
+                if (e.getCause() != null) {
+                    e1 = e.getCause();
+                }
                 soapFault = soapFactory.createFault("SOAPMessage request format error - " +
-                    e.getMessage(), clientQName);
+                    e1, clientQName);
             }
             catch (SOAPException se) {
                 // ignore
@@ -518,13 +521,13 @@ public class ProviderHelper extends XRServiceFactory {
             response = responseWriter.generateResponse(op, usesSOAP12, result);
         }
         catch (SOAPException se) {
-            throw new WebServiceException(se.getMessage());
+            throw new WebServiceException(se.getMessage(), se);
         }
-        catch (EclipseLinkException ele) {
+        catch (Exception e) {
             try {
-                response = responseWriter.generateResponse(op, usesSOAP12, ele);
+                response = responseWriter.generateResponse(op, usesSOAP12, e);
             }
-            catch (SOAPException e) {
+            catch (SOAPException soape1) {
                 SOAPFault soapFault = null;
                 try {
                     SOAPFactory soapFactory = null;
@@ -544,7 +547,7 @@ public class ProviderHelper extends XRServiceFactory {
                     soapFault = soapFactory.createFault("SOAPMessage response error - " + 
                         e.getMessage(), serverQName);
                 }
-                catch (SOAPException se) {
+                catch (SOAPException soape2) {
                     // ignore
                 }
                 throw new SOAPFaultException(soapFault);

@@ -81,6 +81,13 @@ public class DBWSTestSuite {
     public static final String SFAULT_SERVICE_NAMESPACE = "urn:" + SFAULT_SERVICE;
     public static final String SFAULT_PORT = SFAULT_SERVICE + "Port";
 
+    public static final String ROOTCAUSE = "rootcause_table";
+    public static final String ROOTCAUSE_TEST = ROOTCAUSE + "Test";
+    public static final String ROOTCAUSE_SERVICE = ROOTCAUSE + "Service";
+    public static final String ROOTCAUSE_NAMESPACE = "urn:" + ROOTCAUSE;
+    public static final String ROOTCAUSE_SERVICE_NAMESPACE = "urn:" + ROOTCAUSE_SERVICE;
+    public static final String ROOTCAUSE_PORT = ROOTCAUSE_SERVICE + "Port";
+
     // JUnit test fixtures
 
     public static String DBWS_BUILDER_XML_USERNAME;
