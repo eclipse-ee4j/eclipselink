@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.awt.Image;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -79,6 +81,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private HashMap<String, Class> classToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
     private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
+    private HashMap<Type, QName> typeToSchemaType;
     private TypeMappingInfo[] boundTypes;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
     private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
@@ -227,12 +230,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
         return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
-
-    public void initTypeToSchemaType() {
+    
+    public void initTypeMappingInfoToSchemaType() {
         this.typeMappingInfoToSchemaType = new HashMap<TypeMappingInfo, QName>();
+        
+        if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
+        	return;
+        }
+        
         Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
-
-        HashMap defaults = XMLConversionManager.getDefaultJavaTypes();
 
         //Add schema types generated for mapped domain classes
         while (descriptors.hasNext()) {
@@ -244,9 +250,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 Type type = null;
                 TypeMappingInfo tmi = null;
                 if (generator != null) {
-                	
-                    type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
-                    
+                    type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);                    
                     if (type == null) {
                         JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
                         if (arrayClass != null) {
@@ -257,9 +261,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                         }      
                         
                         if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
-                        	//javaCLass = genereated Class for Map<String, Integer)
-                        	//Type to type mapping info key is ParameterizedType for Map<String, Integer)
-                        	
                         	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
                         	while(iter.hasNext()){
                         		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
@@ -286,48 +287,120 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        //Add any types that we didn't generate descriptors for (built in types)
+      //Add any types that we didn't generate descriptors for (built in types)
         if (boundTypes != null) {
         	for (TypeMappingInfo next:this.boundTypes) {
-                if (this.typeMappingInfoToSchemaType.get(next) == null) {
+                if (this.typeToSchemaType.get(next) == null) {
                 	Type nextType = next.getType();
-                    QName name = null;
-                    //Check for annotation overrides
-                    if (nextType instanceof Class) {
-                        name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)nextType).getName());
-                    }
-                    if (name == null) {
-                        //Change default for byte[] to Base64 (JAXB 2.0 default)
-                        if (nextType == ClassConstants.ABYTE || nextType == ClassConstants.APBYTE) {
-                            name = XMLConstants.BASE_64_BINARY_QNAME;
-                        } else {
-                            name = (QName)defaults.get(next);
-                        }
-                    }
-                    if (name != null) {
+                	QName name = getSchemaTypeForTypeMappingInfo(nextType);
+                	if (name != null) {
                         this.typeMappingInfoToSchemaType.put(next, name);
-                    }
+                    }                	                	
                 }
             }
         }
     }
+    
+    
+    
+    public void initTypeToSchemaType() {
+        this.typeToSchemaType = new HashMap<Type, QName>();
+        
+        if(typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0){
+        	return;
+        }
+        
+        Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
 
+        //Add schema types generated for mapped domain classes
+        while (descriptors.hasNext()) {
+            XMLDescriptor next = (XMLDescriptor)descriptors.next();
+            Class javaClass = next.getJavaClass();
+
+            if (next.getSchemaReference() != null){
+                QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+                Type type = null;
+                if (generator != null) {
+                	
+                    type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
+                    
+                    if (type == null) {
+                        JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+                        if (arrayClass != null) {
+                            String arrayClassName = arrayClass.getName();
+                            try {
+                                type = PrivilegedAccessHelper.getClassForName(arrayClassName);
+                            } catch (Exception ex) {}
+                        }      
+                        
+                        if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
+                        	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
+                        	while(iter.hasNext()){
+                        		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                        		if(entry.getValue().equals(javaClass)){
+                        			type = entry.getKey().getType();
+                        			break;
+                        		}
+                        	}
+                        }
+                    }
+                    if (type == null) {
+                        type = javaClass;
+                    }
+                    
+                } else {
+                    type = javaClass;
+                }
+                this.typeToSchemaType.put(type, schemaType);
+            }
+        }
+
+        //Add any types that we didn't generate descriptors for (built in types)
+        if (boundTypes != null) {
+        	for (TypeMappingInfo next:this.boundTypes) {
+                if (this.typeToSchemaType.get(next) == null) {
+                	Type nextType = next.getType();
+                	QName name = getSchemaTypeForTypeMappingInfo(nextType);
+                	if (name != null) {
+                        this.typeToSchemaType.put(nextType, name);
+                    }                	                	
+                }
+            }
+        }
+    }
+    
+    private QName getSchemaTypeForTypeMappingInfo(Type type){    	
+        QName name = null;
+        //Check for annotation overrides
+        if (type instanceof Class) {
+            name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)type).getName());
+            if (name == null) {        	
+            	Class theClass = (Class)type;
+                //Change default for byte[] to Base64 (JAXB 2.0 default)
+                if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
+                    name = XMLConstants.BASE_64_BINARY_QNAME;
+                } else {
+                    name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
+                }
+            }
+            
+        }
+        
+    	return name;
+    }
+    
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
         if (typeMappingInfoToSchemaType == null) {
-            initTypeToSchemaType();
+            initTypeMappingInfoToSchemaType();
         }
         return typeMappingInfoToSchemaType;
     }
     
     public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
-    	HashMap<TypeMappingInfo, QName>  typeMappingInfoToSchemaType = (HashMap)getTypeMappingInfoToSchemaType();
-    	HashMap<Type, QName> typeToSchemaTypeMap = new HashMap<Type, QName>(typeMappingInfoToSchemaType.size());
-    	java.util.Set<Entry<TypeMappingInfo, QName>> entrySet = typeMappingInfoToSchemaType.entrySet();
-    	for (Entry<TypeMappingInfo, QName> entry : entrySet) {   
-    		typeToSchemaTypeMap.put(entry.getKey().getType(), entry.getValue());
-    	}
-    	
-        return typeToSchemaTypeMap;
+    	if(typeToSchemaType == null){
+    		initTypeToSchemaType();
+    	}   
+        return typeToSchemaType;
     }
      
     Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
