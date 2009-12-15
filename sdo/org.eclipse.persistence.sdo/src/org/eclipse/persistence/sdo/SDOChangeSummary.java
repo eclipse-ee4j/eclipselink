@@ -44,7 +44,7 @@ public class SDOChangeSummary implements ChangeSummary {
     private boolean logging;
 
     //loggingMapping is the boolean that's mapped in OX, we don't really want to turn
-    //on logging until after the XML has all been processed at which time we set the 
+    //on logging until after the XML has all been processed at which time we set the
     //real logging boolean
     private boolean loggingMapping;
     private DataGraph dataGraph;
@@ -54,7 +54,7 @@ public class SDOChangeSummary implements ChangeSummary {
     private List createdXPaths;//for ox mapping
 
     /** The deletedXPaths field is picked up reflectively during marshal/unmarshal operations. */
-    @SuppressWarnings("unused") private List deletedXPaths; //for ox mapping     
+    @SuppressWarnings("unused") private List deletedXPaths; //for ox mapping
     private List modifiedDoms;
     private Map unsetPropsMap;
 
@@ -163,15 +163,15 @@ public class SDOChangeSummary implements ChangeSummary {
             deletedList.remove(anObject);
         }
 
-        if (isLogging() && !this.isDeleted(anObject)) {            
-            if (deleted) {            
+        if (isLogging() && !this.isDeleted(anObject)) {
+            if (deleted) {
                 // remove from other sets
                 if(isCreated(anObject)){
                   createdList.remove(anObject);
-                  
+
                   oldSettings.remove(anObject);
                   originalValueStores.remove(anObject);
-                  originalElements.remove(anObject);                  
+                  originalElements.remove(anObject);
                   return false;
                 }else {
                   pauseLogging();
@@ -273,12 +273,12 @@ public class SDOChangeSummary implements ChangeSummary {
         getModified(rootDataObject, modifiedList);
         return modifiedList;
     }
-    
+
     private void getModified(SDODataObject sdoDataObject, List modifiedList) {
         if(null == sdoDataObject) {
             return;
         }
-        
+
         if(isModified(sdoDataObject)) {
             modifiedList.add(sdoDataObject);
         }
@@ -299,7 +299,6 @@ public class SDOChangeSummary implements ChangeSummary {
             }
         }
     }
-    
 
     /**
      * INTERNAL:
@@ -356,7 +355,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #getChangedDataObjects
      */
     public boolean isModified(DataObject dataObject) {
-        // a modified data object is present in the original value 
+        // a modified data object is present in the original value
         // stores list and has not been deleted
         if (this.originalValueStores.get(dataObject) == null || isDeleted(dataObject)) {
             return false;
@@ -393,7 +392,7 @@ public class SDOChangeSummary implements ChangeSummary {
                     oldSettingsList.add(setting);
                 }
             }
-            
+
             List openProps = (List)getUnsetOCPropertiesMap().get(dataObject);
             if(openProps != null){
               for(int i=0; i< openProps.size(); i++){
@@ -404,10 +403,10 @@ public class SDOChangeSummary implements ChangeSummary {
                   }
               }
             }
-            
+
             return oldSettingsList;
         }
-        
+
         return new ArrayList();// Note: spec did not mention null value case.
     }
 
@@ -466,7 +465,7 @@ public class SDOChangeSummary implements ChangeSummary {
             aList.add(ocKey);
             unsetOCPropsMap.put(dataObject, aList);
         } else {
-            // dont replace existing key (ie we readd a previously unset oc property)        	
+            // dont replace existing key (ie we readd a previously unset oc property)
             if (!((List)value).contains(ocKey)) {
                 ((List)value).add(ocKey);
             }
@@ -484,9 +483,9 @@ public class SDOChangeSummary implements ChangeSummary {
         if (value != null) {
             // if we referenced the property - check if it is the only one left in the map value
             if (((List)value).remove(ocKey)) {
-            	if(!(((List)value).size() > 0)) {
-            		unsetOCPropsMap.remove(dataObject);
-            	}
+                if(!(((List)value).size() > 0)) {
+                    unsetOCPropsMap.remove(dataObject);
+                }
             }
         }
     }
@@ -545,7 +544,7 @@ public class SDOChangeSummary implements ChangeSummary {
     private void resetChanges() {
         createdList.clear();
         deletedList.clear();
-        // See spec. p.30 "List of changed DataObjects cleared"        
+        // See spec. p.30 "List of changed DataObjects cleared"
         oldSettings.clear();
         deepCopies.clear();
         oldContainer.clear();
@@ -588,7 +587,7 @@ public class SDOChangeSummary implements ChangeSummary {
         if (!isCreated(dataObject) && isDirty(dataObject)) {
             return getOldValueForChangedDataObject(dataObject, (SDOProperty) property);
         }
-        return null; 
+        return null;
     }
 
     /**
@@ -627,7 +626,7 @@ public class SDOChangeSummary implements ChangeSummary {
                 } else {
                     oldValue = currentValue;
                 }
-            }            
+            }
             if (isDeleted || ((wasSet != isSet) || (oldValue != currentValue))) {
                 if ((oldValue != null) && !property.getType().isDataType()) {
                     if (oldValue instanceof DataObject) {
@@ -719,7 +718,7 @@ public class SDOChangeSummary implements ChangeSummary {
             if (originalSeq == null) {
                 originalSeq = (SDOSequence) dataObject.getSequence();
             }
-            
+
             SDOSequence seqWithDeepCopies = new SDOSequence((SDODataObject) dataObject);
             for (int i = 0; i < originalSeq.size(); i++) {
                 // setting/value may be null in some cases
@@ -997,17 +996,17 @@ public class SDOChangeSummary implements ChangeSummary {
      */
   public void unsetPropertyInternal(DataObject dataObject, Property property) {
         ValueStore vs = (ValueStore)originalValueStores.get(dataObject);
-        if (property.isMany()) {                      
-            ListWrapper currentValue = (ListWrapper)dataObject.getList(property);            
+        if (property.isMany()) {
+            ListWrapper currentValue = (ListWrapper)dataObject.getList(property);
             originalElements.put(currentValue, new ArrayList());
             if (property.isOpenContent()) {
-                vs.unsetOpenContentProperty(property);                
+                vs.unsetOpenContentProperty(property);
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }
         } else {
             if (property.isOpenContent()) {
-                vs.unsetOpenContentProperty(property);                
+                vs.unsetOpenContentProperty(property);
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }
@@ -1111,4 +1110,5 @@ public class SDOChangeSummary implements ChangeSummary {
         aBuffer.append(">]");
         return aBuffer.toString();
     }
+
 }
