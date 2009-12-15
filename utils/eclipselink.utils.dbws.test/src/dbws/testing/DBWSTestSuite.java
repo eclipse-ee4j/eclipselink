@@ -87,6 +87,13 @@ public class DBWSTestSuite {
     public static final String ROOTCAUSE_NAMESPACE = "urn:" + ROOTCAUSE;
     public static final String ROOTCAUSE_SERVICE_NAMESPACE = "urn:" + ROOTCAUSE_SERVICE;
     public static final String ROOTCAUSE_PORT = ROOTCAUSE_SERVICE + "Port";
+    
+    public static final String OPTLOCK = "optlock";
+    public static final String OPTLOCK_TEST = OPTLOCK + "Test";
+    public static final String OPTLOCK_SERVICE = OPTLOCK + "Service";
+    public static final String OPTLOCK_NAMESPACE = "urn:" + OPTLOCK;
+    public static final String OPTLOCK_SERVICE_NAMESPACE = "urn:" + OPTLOCK_SERVICE;
+    public static final String OPTLOCK_PORT = OPTLOCK_SERVICE + "Port";
 
     // JUnit test fixtures
 

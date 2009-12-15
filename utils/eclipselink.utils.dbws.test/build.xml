@@ -381,5 +381,6 @@
         <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
         <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
         <SetupCompileRunTeardown testsuite-name="RootCause"/>
+        <SetupCompileRunTeardown testsuite-name="OptLock"/>
     </target>
 </project>

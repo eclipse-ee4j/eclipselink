@@ -1,6 +1,7 @@
 package org.eclipse.persistence.tools.dbws;
 
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
 
 public class DefaultNamingConventionTransformer implements NamingConventionTransformer {
 
@@ -42,6 +43,15 @@ public class DefaultNamingConventionTransformer implements NamingConventionTrans
     }
 
     public String getOptimisticLockingField() {
-        return null;
+        NamingConventionTransformer nct = getNextTransformer();
+        if (nct == null) {
+            return DEFAULT_OPTIMISTIC_LOCKING_FIELD;
+        }
+        else {
+            if (nct.styleForElement(DEFAULT_OPTIMISTIC_LOCKING_FIELD) == NONE) {
+                return null;
+            }
+            return nct.getOptimisticLockingField();
+        }
     }
 }
