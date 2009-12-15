@@ -451,38 +451,41 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         if (sessionsFileName != null && sessionsFileName.length() > 0) {
             xrServiceModel.setSessionsFile(sessionsFileName);
         }
-        // setup the NamingConventionTransformers
-        ServiceLoader<NamingConventionTransformer> transformers =
-            ServiceLoader.load(NamingConventionTransformer.class);
-        Iterator<NamingConventionTransformer> transformerIter = transformers.iterator();
-        topTransformer = transformerIter.next();
-        LinkedList<NamingConventionTransformer> transformerList =
-            new LinkedList<NamingConventionTransformer>();
-        // check for user-provided transformer in front of default transformers
-        if (!((DefaultNamingConventionTransformer)topTransformer).isDefaultTransformer()) {
-            // ditch all default transformers, except for the last one - SQLX2003Transformer
-            for (; transformerIter.hasNext(); ) {
-                NamingConventionTransformer nextTransformer = transformerIter.next();
-                if (!((DefaultNamingConventionTransformer)nextTransformer).isDefaultTransformer()) {
-                    transformerList.addLast(nextTransformer);
-                }
-                else if (nextTransformer instanceof SQLX2003Transformer) {
-                    transformerList.addLast(nextTransformer);
+        //has someone manually set a custom NamingConventionTransformer?
+        if (topTransformer == null) {
+            // setup the NamingConventionTransformers
+            ServiceLoader<NamingConventionTransformer> transformers =
+                ServiceLoader.load(NamingConventionTransformer.class);
+            Iterator<NamingConventionTransformer> transformerIter = transformers.iterator();
+            topTransformer = transformerIter.next();
+            LinkedList<NamingConventionTransformer> transformerList =
+                new LinkedList<NamingConventionTransformer>();
+            // check for user-provided transformer in front of default transformers
+            if (!((DefaultNamingConventionTransformer)topTransformer).isDefaultTransformer()) {
+                // ditch all default transformers, except for the last one - SQLX2003Transformer
+                for (; transformerIter.hasNext(); ) {
+                    NamingConventionTransformer nextTransformer = transformerIter.next();
+                    if (!((DefaultNamingConventionTransformer)nextTransformer).isDefaultTransformer()) {
+                        transformerList.addLast(nextTransformer);
+                    }
+                    else if (nextTransformer instanceof SQLX2003Transformer) {
+                        transformerList.addLast(nextTransformer);
+                    }
                 }
             }
-        }
-        else {
-            // assume usual configuration: ToLowerTransformer -> TypeSuffixTransformer -> SQLX2003Transformer
-            for (; transformerIter.hasNext(); ) {
-                transformerList.addLast(transformerIter.next());
+            else {
+                // assume usual configuration: ToLowerTransformer -> TypeSuffixTransformer -> SQLX2003Transformer
+                for (; transformerIter.hasNext(); ) {
+                    transformerList.addLast(transformerIter.next());
+                }
             }
-        }
-        // hook up the chain-of-responsibility
-        NamingConventionTransformer nextTransformer = topTransformer;
-        for (Iterator<NamingConventionTransformer> i = transformerList.iterator(); i.hasNext();) {
-            NamingConventionTransformer nct = i.next();
-            ((DefaultNamingConventionTransformer)nextTransformer).setNextTransformer(nct);
-            nextTransformer = nct;
+            // hook up the chain-of-responsibility
+            NamingConventionTransformer nextTransformer = topTransformer;
+            for (Iterator<NamingConventionTransformer> i = transformerList.iterator(); i.hasNext();) {
+                NamingConventionTransformer nct = i.next();
+                ((DefaultNamingConventionTransformer)nextTransformer).setNextTransformer(nct);
+                nextTransformer = nct;
+            }
         }
         packager.start();
         buildDbArtifacts();
@@ -787,6 +790,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     nullPolicy.setMarshalNullRepresentation(XSI_NIL);
                     nullPolicy.setNullRepresentedByXsiNil(true);
                     xdm.setNullPolicy(nullPolicy);
+                }
+                if (nct.getOptimisticLockingField() != null && 
+                    nct.getOptimisticLockingField().equalsIgnoreCase(columnName)) {
+                    desc.useVersionLocking(columnName, false);
                 }
                 desc.addMapping(dtfm);
                 xdesc.addMapping(xdm);

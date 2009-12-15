@@ -12,5 +12,6 @@ public interface NamingConventionTransformer {
 
     public ElementStyle styleForElement(String originalElementName);
 
+    public static final String DEFAULT_OPTIMISTIC_LOCKING_FIELD = "VERSION";
     public String getOptimisticLockingField();
 }

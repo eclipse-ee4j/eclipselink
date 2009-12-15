@@ -1,4 +1,4 @@
-package dbws.testing.updatefault;
+package dbws.testing.optlock;
 
 //javase imports
 import java.io.ByteArrayInputStream;
@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 import org.w3c.dom.Element;
@@ -87,7 +86,6 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import org.eclipse.persistence.tools.dbws.WebServicePackager;
 import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
@@ -106,36 +104,22 @@ import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.DBWSTestSuite.SFAULT;
-import static dbws.testing.DBWSTestSuite.SFAULT_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.SFAULT_PORT;
-import static dbws.testing.DBWSTestSuite.SFAULT_SERVICE;
-import static dbws.testing.DBWSTestSuite.SFAULT_SERVICE_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.SFAULT_TEST;
+import static dbws.testing.DBWSTestSuite.OPTLOCK;
+import static dbws.testing.DBWSTestSuite.OPTLOCK_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.OPTLOCK_PORT;
+import static dbws.testing.DBWSTestSuite.OPTLOCK_SERVICE;
+import static dbws.testing.DBWSTestSuite.OPTLOCK_SERVICE_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.OPTLOCK_TEST;
 
 @WebServiceProvider(
-    targetNamespace = SFAULT_SERVICE_NAMESPACE,
-    serviceName = SFAULT_SERVICE,
-    portName = SFAULT_PORT
+    targetNamespace = OPTLOCK_SERVICE_NAMESPACE,
+    serviceName = OPTLOCK_SERVICE,
+    portName = OPTLOCK_PORT
 )
 @ServiceMode(MESSAGE)
-public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
-    public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SFAULT;
-    static final String SOAP_UPDATE_REQUEST = 
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
-              "<srvc:update_sfault_tableType xmlns:srvc=\"" + SFAULT_SERVICE_NAMESPACE + "\" xmlns=\"" + SFAULT_NAMESPACE + "\">" +
-                 "<srvc:theInstance>" +
-                    "<sfault_tableType>" +
-                       "<id>1</id>" +
-                       // name field is too long for database column
-                       "<name>abcdefghij</name>" +
-                    "</sfault_tableType>" +
-                 "</srvc:theInstance>" +
-              "</srvc:update_sfault_tableType>" + 
-           "</SOAP-ENV:Body>" +
-        "</SOAP-ENV:Envelope>";
+    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + OPTLOCK_TEST;
 
     // JUnit test fixtures
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
@@ -150,19 +134,18 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
     public static QName portQName = null;
     public static Service testService = null;
     public static DBWSBuilder builder = new DBWSBuilder();
-
+   
     @BeforeClass
     public static void setUp() throws WSDLException {
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        builder.setProjectName(SFAULT_TEST);
-        builder.setTargetNamespace(SFAULT_NAMESPACE);
-        TableOperationModel sFaultOp = new TableOperationModel();
-        sFaultOp.additionalOperations = new ArrayList<OperationModel>();
-        sFaultOp.setName(SFAULT_TEST);
-        sFaultOp.setTablePattern(SFAULT);
-        builder.getOperations().add(sFaultOp);
+        builder.setProjectName(OPTLOCK_TEST);
+        builder.setTargetNamespace(OPTLOCK_NAMESPACE);
+        TableOperationModel tModel = new TableOperationModel();
+        tModel.setName(OPTLOCK);
+        tModel.setTablePattern(OPTLOCK);
+        builder.getOperations().add(tModel);
         builder.quiet = true;
         builder.setLogLevel(SessionLog.FINE_LABEL);
         builder.setDriver(DEFAULT_DATABASE_DRIVER);
@@ -179,26 +162,26 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
             DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
             __nullStream, null);
-        endpoint = Endpoint.create(new UpdateFaultTestSuite());
+        endpoint = Endpoint.create(new OptLockTestSuite());
         endpoint.publish(ENDPOINT_ADDRESS);
-        QName serviceQName = new QName(SFAULT_SERVICE_NAMESPACE, SFAULT_SERVICE);
-        portQName = new QName(SFAULT_SERVICE_NAMESPACE, SFAULT_PORT);
+        QName serviceQName = new QName(OPTLOCK_SERVICE_NAMESPACE, OPTLOCK_SERVICE);
+        portQName = new QName(OPTLOCK_SERVICE_NAMESPACE, OPTLOCK_PORT);
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
     }
-
+   
     @AfterClass
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
         }
     }
-
+   
     @PreDestroy
     public void destroy() {
         super.destroy();
     }
-
+   
     @PostConstruct
     @SuppressWarnings("serial")
     public void init() {
@@ -381,62 +364,83 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         responseWriter = new SOAPResponseWriter(dbwsAdapter);
         responseWriter.initialize();
     }
+     
+     @Override
+     public void logoutSessions() {
+         if (xrService.getORSession() != null) {
+             ((DatabaseSession)xrService.getORSession()).logout();
+         }
+         if (xrService.getOXSession() != null) {
+             ((DatabaseSession)xrService.getOXSession()).logout();
+         }
+     }
+   
+     @Override
+     public void buildSessions() {
+         Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
+             parentClassLoader);
+         ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+         Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
+             parentClassLoader);
+         DatasourceLogin login = orProject.getLogin();
+         login.setUserName(builder.getUsername());
+         login.setPassword(builder.getPassword());
+         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
+         ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+         Platform platform = builder.getDatabasePlatform();
+         ConversionManager cm = platform.getConversionManager();
+         cm.setLoader(parentClassLoader);
+         login.setDatasourcePlatform(platform);
+         ((DatabaseLogin)login).bindAllParameters();
+         orProject.setDatasourceLogin(login);
+         ProjectHelper.fixOROXAccessors(orProject, oxProject);
+         DatabaseSession databaseSession = orProject.createDatabaseSession();
+         databaseSession.dontLogMessages();
+         xrService.setORSession(databaseSession);
+         xrService.setXMLContext(new XMLContext(oxProject));
+         xrService.setOXSession(xrService.getXMLContext().getSession(0));
+     }
+
+  static final String THE_INSTANCE = 
+      "<optlockType>" +
+          "<id>1</id>" +
+          "<name>name</name>" +
+          "<descript>this is ver 2</descript>" +
+          "<version>1</version>" +
+      "</optlockType>";
+        
+    static final String REQUEST_MSG = 
+        "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<env:Header/>" +
+          "<env:Body>" +
+            "<srvc:update_optlockType xmlns:srvc=\"" + OPTLOCK_SERVICE_NAMESPACE +"\" " +
+            "xmlns=\"" + OPTLOCK_NAMESPACE + "\">" +
+              "<srvc:theInstance>" +
+                THE_INSTANCE +
+              "</srvc:theInstance>" +
+            "</srvc:update_optlockType>" + 
+          "</env:Body>" +
+        "</env:Envelope>";
     
-    @Override
-    public void logoutSessions() {
-        if (xrService.getORSession() != null) {
-            ((DatabaseSession)xrService.getORSession()).logout();
-        }
-        if (xrService.getOXSession() != null) {
-            ((DatabaseSession)xrService.getOXSession()).logout();
-        }
-    }
-
-    @Override
-    public void buildSessions() {
-        Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-            parentClassLoader);
-        ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-        Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-            parentClassLoader);
-        DatasourceLogin login = orProject.getLogin();
-        login.setUserName(builder.getUsername());
-        login.setPassword(builder.getPassword());
-        ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-        ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
-        Platform platform = builder.getDatabasePlatform();
-        ConversionManager cm = platform.getConversionManager();
-        cm.setLoader(parentClassLoader);
-        login.setDatasourcePlatform(platform);
-        ((DatabaseLogin)login).bindAllParameters();
-        orProject.setDatasourceLogin(login);
-        ProjectHelper.fixOROXAccessors(orProject, oxProject);
-        DatabaseSession databaseSession = orProject.createDatabaseSession();
-        databaseSession.dontLogMessages();
-        xrService.setORSession(databaseSession);
-        xrService.setXMLContext(new XMLContext(oxProject));
-        xrService.setOXSession(xrService.getXMLContext().getSession(0));
-    }
-
     @Test
-    public void soapFault() throws SOAPException, IOException, SAXException,
+    public void updateinstanceTest() throws SOAPException, IOException, SAXException,
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart();
+        SOAPPart part = request.getSOAPPart(); 
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-            new InputSource(new StringReader(SOAP_UPDATE_REQUEST))));
+            new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
             Service.Mode.MESSAGE);
-        @SuppressWarnings("unused")
-        SOAPMessage response = null;
         try {
-            response = dispatch.invoke(request);
+            dispatch.invoke(request);
         }
         catch (SOAPFaultException sfe) {
             assertTrue("incorrect SOAPFaultException",
-                sfe.getMessage().contains("Data too long for column 'NAME'"));
+                sfe.getMessage().contains("EclipseLink-5010"));
         }
     }
+
 }
