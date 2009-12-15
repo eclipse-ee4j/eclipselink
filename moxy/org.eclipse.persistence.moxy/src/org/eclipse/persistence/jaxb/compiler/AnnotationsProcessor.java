@@ -2427,17 +2427,26 @@ public class AnnotationsProcessor {
 
         int beginIndex = keyClass.getName().lastIndexOf(".") + 1;
         String keyName = keyClass.getName().substring(beginIndex);
-        beginIndex = valueClass.getName().lastIndexOf(".") + 1;
+        int dollarIndex = keyName.indexOf('$'); 
+        if(dollarIndex > -1){
+        	keyName = keyName.substring(dollarIndex + 1);
+        }
+        
+        beginIndex = valueClass.getName().lastIndexOf(".")+1;
         String valueName = valueClass.getName().substring(beginIndex);
+        dollarIndex = valueName.indexOf('$'); 
+        if(dollarIndex > -1){
+        	valueName = valueName.substring(dollarIndex + 1);
+        }
         String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') + 1);
         String className = keyName + valueName + collectionClassShortName;
 
         String qualifiedClassName = packageName + "." + className;
 
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
-        String internalKeyName = keyClass.getRawName().replace('.', '/');
-        String internalValueName = valueClass.getRawName().replace('.', '/');
-
+        String internalKeyName = keyClass.getQualifiedName().replace('.', '/');
+        String internalValueName = valueClass.getQualifiedName().replace('.', '/');
+        
         Type mapType = Type.getType("L" + mapClass.getRawName().replace('.', '/') + ";");
 
         ClassWriter cw = new ClassWriter(false);
@@ -2721,16 +2730,21 @@ public class AnnotationsProcessor {
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
 
-        int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
-
-        String suggestedClassName = componentClass.getName().substring(beginIndex) + "Array";
+        
+        String name = componentClass.getName();
+        int dollarIndex = name.indexOf('$'); 
+        if(dollarIndex > -1){
+        	name = name.substring(dollarIndex + 1);
+        }
+        int beginIndex = name.lastIndexOf(".") + 1;
+        String suggestedClassName = name.substring(beginIndex) + "Array";
         String qualifiedClassName = packageName + "." + suggestedClassName;
         qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
         String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
 
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
 
-        Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
+        Type componentType = Type.getType("L" + componentClass.getQualifiedName().replace('.', '/') + ";");
 
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
@@ -2876,6 +2890,10 @@ public class AnnotationsProcessor {
 
         int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
         String name = componentClass.getName().substring(beginIndex);
+        int dollarIndex = name.indexOf('$'); 
+        if(dollarIndex > -1){
+        	name = name.substring(dollarIndex + 1);
+        }
         String collectionClassRawName = collectionClass.getRawName();
         
         String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf('.') + 1);
@@ -2885,7 +2903,7 @@ public class AnnotationsProcessor {
         String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
 
         Type collectionType = Type.getType("L" + collectionClassRawName.replace('.', '/') + ";");
-        Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
+        Type componentType = Type.getType("L" + componentClass.getQualifiedName().replace('.', '/') + ";");
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;

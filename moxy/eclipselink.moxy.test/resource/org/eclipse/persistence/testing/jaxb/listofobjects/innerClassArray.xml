@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="x:myInnerArray">
+   <item>
+      <innerName>aaa</innerName>
+   </item>
+   <item>
+      <innerName>bbb</innerName>
+   </item>
+</ns0:root>

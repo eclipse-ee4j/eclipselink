@@ -1080,11 +1080,11 @@ public class MappingsGenerator {
         }
         String mapEntryClassName = WRAPPER_CLASS + wrapperCounter++; 
         
-        MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getRawName(),valueType.getRawName());
+        MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getQualifiedName(),valueType.getQualifiedName());
     	Class generatedClass = getGeneratedMapEntryClasses().get(mapKey);
     	
         if(generatedClass == null){
-            generatedClass = generateMapEntryClass(mapEntryClassName, keyType.getRawName(), valueType.getRawName());
+            generatedClass = generateMapEntryClass(mapEntryClassName, keyType.getQualifiedName(), valueType.getQualifiedName());
             getGeneratedMapEntryClasses().put(mapKey, generatedClass);
             XMLDescriptor desc = new XMLDescriptor();
             desc.setJavaClass(generatedClass);            
