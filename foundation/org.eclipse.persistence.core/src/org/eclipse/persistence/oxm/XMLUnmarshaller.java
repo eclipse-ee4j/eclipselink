@@ -141,7 +141,6 @@ public class XMLUnmarshaller {
         XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
         platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
         platformUnmarshaller.setWhitespacePreserving(false);
-        unmarshalProperties = new Properties();
 
         // Waiting on XDK to fix bug #3697940 to enable this code
         //initializeSchemas();
@@ -539,6 +538,9 @@ public class XMLUnmarshaller {
      * @return
      */
     public Properties getProperties() {
+        if(null == unmarshalProperties) {
+            unmarshalProperties = new Properties();
+        }
         return unmarshalProperties;
     }
 
@@ -549,6 +551,9 @@ public class XMLUnmarshaller {
      * @return
      */
     public Object getProperty(Object key) {
+        if(null == unmarshalProperties) {
+            return null;
+        }
         return unmarshalProperties.get(key);
     }
 
