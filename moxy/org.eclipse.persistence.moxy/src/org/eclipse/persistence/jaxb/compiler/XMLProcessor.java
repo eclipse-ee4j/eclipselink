@@ -62,7 +62,8 @@ public class XMLProcessor {
     }
 
     /**
-     * Process XmlBindings on a per package basis for a given AnnotationsPorcessor instance.
+     * Process XmlBindings on a per package basis for a given
+     * AnnotationsPorcessor instance.
      * 
      * @param annotationsProcessor
      */
@@ -70,11 +71,12 @@ public class XMLProcessor {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
         annotationsProcessor.init(originalJavaClasses, typeMappingInfos);
-        
-        // build a map of packages to JavaClass so we only process the JavaClasses for a given package
-        // additional classes - i.e. ones from packages not listed in XML - will be processed later
+
+        // build a map of packages to JavaClass so we only process the
+        // JavaClasses for a given package additional classes - i.e. ones from
+        // packages not listed in XML - will be processed later
         Map<String, ArrayList<JavaClass>> pkgToClassMap = buildPackageToJavaClassMap();
-        
+
         // process each XmlBindings in the map
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
@@ -92,12 +94,19 @@ public class XMLProcessor {
                 annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
 
-            
             // build an array of JavaModel classes to process
             JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 
             // pre-build the TypeInfo objects
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
+
+            // handle package-level xml-schema-type
+            if (xmlBindings.getXmlSchemaType() != null) {
+                JavaClass jClass = aProcessor.getHelper().getJavaClass(xmlBindings.getXmlSchemaType().getType());
+                if (jClass != null) {
+                    aProcessor.processSchemaType(xmlBindings.getXmlSchemaType().getName(), xmlBindings.getXmlSchemaType().getNamespace(), jClass.getQualifiedName());
+                }
+            }
 
             nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
 
@@ -194,16 +203,13 @@ public class XMLProcessor {
             jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    TypeInfo typeInfo = typeInfosForPackage.get(javaType.getName());
-                    if (javaType != null) {
-                        processJavaType(javaType, typeInfo, nsInfo);
-                    }
+                    processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
                 }
             }
             // remove the entry for this package from the map
             pkgToClassMap.remove(packageName);
         }
-        
+
         // now process remaining classes
         Iterator<ArrayList<JavaClass>> classIt = pkgToClassMap.values().iterator();
         while (classIt.hasNext()) {
@@ -212,9 +218,10 @@ public class XMLProcessor {
             annotationsProcessor.buildNewTypeInfo(jClassArray);
             annotationsProcessor.processJavaClasses(jClassArray);
         }
-        
-        // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo
-        // objects built for them - SchemaGenerator will require a descriptor for each
+
+        // need to ensure that any bound types (from XmlJavaTypeAdapter) have
+        // TypeInfo objects built for them - SchemaGenerator will require a
+        // descriptor for each
         Map<String, TypeInfo> typeInfos = (Map<String, TypeInfo>) aProcessor.getTypeInfo().clone();
         for (String key : typeInfos.keySet()) {
             JavaClass[] jClassArray;
@@ -309,19 +316,20 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlAnyAttribute(XmlAnyAttribute xmlAnyAttribute, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
-        // if oldProperty is already an Any (via @XmlAnyAttribute annotation) there's nothing to do
+        // if oldProperty is already an Any (via @XmlAnyAttribute annotation)
+        // there's nothing to do
         if (oldProperty.isAnyAttribute()) {
             return oldProperty;
         }
-        
+
         // type has to be a java.util.Map
         if (!oldProperty.getType().getName().equals("java.util.Map")) {
             throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
         }
-        
+
         // reset any existing values
         resetProperty(oldProperty, tInfo);
-        
+
         oldProperty.setIsAnyAttribute(true);
         tInfo.setAnyAttributePropertyName(oldProperty.getPropertyName());
 
@@ -329,8 +337,8 @@ public class XMLProcessor {
     }
 
     /**
-     * Handle xml-any-element.  If the property was annotated with @XmlAnyElement in code all
-     * values will be overridden.  
+     * Handle xml-any-element. If the property was annotated with @XmlAnyElement
+     * in code all values will be overridden.
      * 
      * @param xmlAnyElement
      * @param oldProperty
@@ -341,7 +349,7 @@ public class XMLProcessor {
     private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
         // reset any existing values
         resetProperty(oldProperty, tInfo);
-        
+
         // set xml-any-element specific properties
         oldProperty.setIsAny(true);
         oldProperty.setDomHandlerClassName(xmlAnyElement.getDomHandler());
@@ -352,13 +360,13 @@ public class XMLProcessor {
         // update TypeInfo
         tInfo.setMixed(xmlAnyElement.isXmlMixed());
         tInfo.setAnyElementPropertyName(oldProperty.getPropertyName());
-        
+
         return oldProperty;
     }
 
     /**
      * XmlAttribute override will completely replace the existing values.
-     *  
+     * 
      * @param xmlAttribute
      * @param oldProperty
      * @param nsInfo
@@ -367,7 +375,7 @@ public class XMLProcessor {
     private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
         // reset any existing values
         resetProperty(oldProperty, typeInfo);
-        
+
         // handle xml-id
         if (xmlAttribute.isXmlId()) {
             typeInfo.setIDProperty(oldProperty);
@@ -378,10 +386,10 @@ public class XMLProcessor {
             }
         }
         oldProperty.setIsXmlId(xmlAttribute.isXmlId());
-        
+
         // handle xml-idref
         oldProperty.setIsXmlIdRef(xmlAttribute.isXmlIdref());
-        
+
         // set isAttribute
         oldProperty.setIsAttribute(true);
 
@@ -404,7 +412,7 @@ public class XMLProcessor {
             qName = new QName(xmlAttribute.getNamespace(), name);
         }
         oldProperty.setSchemaName(qName);
-        
+
         // handle XmlJavaTypeAdapter
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
@@ -420,7 +428,12 @@ public class XMLProcessor {
             oldProperty.setIsSwaAttachmentRef(true);
             oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
         }
-        
+
+        // handle xml-schema-type
+        if (xmlAttribute.getXmlSchemaType() != null) {
+            oldProperty.setSchemaType(new QName(xmlAttribute.getXmlSchemaType().getNamespace(), xmlAttribute.getXmlSchemaType().getName()));
+        }
+
         return oldProperty;
     }
 
@@ -436,11 +449,11 @@ public class XMLProcessor {
     private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
         // reset any existing values
         resetProperty(oldProperty, typeInfo);
-        
-        if(xmlElement.getXmlMap() != null){
-        	processXmlMap(xmlElement.getXmlMap(), oldProperty);
-        }       
-        
+
+        if (xmlElement.getXmlMap() != null) {
+            processXmlMap(xmlElement.getXmlMap(), oldProperty);
+        }
+
         // handle xml-id
         if (xmlElement.isXmlId()) {
             typeInfo.setIDProperty(oldProperty);
@@ -451,10 +464,10 @@ public class XMLProcessor {
             }
         }
         oldProperty.setIsXmlId(xmlElement.isXmlId());
-        
+
         // handle xml-idref
         oldProperty.setIsXmlIdRef(xmlElement.isXmlIdref());
-        
+
         // set required
         oldProperty.setIsRequired(xmlElement.isRequired());
 
@@ -487,24 +500,24 @@ public class XMLProcessor {
 
         // set type
         if (xmlElement.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
-            // if xmlElement has no type, and the property type was set via 
+            // if xmlElement has no type, and the property type was set via
             // @XmlElement, reset it to the original value
             if (oldProperty.isXmlElementType()) {
                 oldProperty.setType(oldProperty.getOriginalType());
             }
         } else {
-        	if(xmlElement.getXmlMap() != null){
-                    getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
-        	}else{
-                    oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
-        	}
+            if (xmlElement.getXmlMap() != null) {
+                getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
+            } else {
+                oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
+            }
         }
 
         // handle XmlJavaTypeAdapter
         if (xmlElement.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
         }
-        
+
         // handle XmlElementWrapper
         if (xmlElement.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
@@ -515,7 +528,8 @@ public class XMLProcessor {
             JavaClass ptype = oldProperty.getActualType();
             oldProperty.setIsRequired(ptype.isPrimitive() || ptype.isArray() && ptype.getComponentType().isPrimitive());
         }
-        
+
+        // handle xml-list
         if (xmlElement.isSetXmlList()) {
             // Make sure XmlList annotation is on a collection or array
             if (!aProcessor.isCollectionType(oldProperty) && !oldProperty.getType().isArray()) {
@@ -523,7 +537,7 @@ public class XMLProcessor {
             }
             oldProperty.setIsXmlList(xmlElement.isXmlList());
         }
-        
+
         // handle xml-mime-type
         if (xmlElement.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlElement.getXmlMimeType());
@@ -535,32 +549,37 @@ public class XMLProcessor {
             oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
         }
 
+        // handle xml-schema-type
+        if (xmlElement.getXmlSchemaType() != null) {
+            oldProperty.setSchemaType(new QName(xmlElement.getXmlSchemaType().getNamespace(), xmlElement.getXmlSchemaType().getName()));
+        }
+
         return oldProperty;
     }
-    
-    private Property processXmlMap(XmlMap xmlMap, Property oldProperty){
+
+    private Property processXmlMap(XmlMap xmlMap, Property oldProperty) {
         XmlMap.Key mapKey = xmlMap.getKey();
         XmlMap.Value mapValue = xmlMap.getValue();
-        
-        if (mapKey != null && mapKey.getType() !=null){
-        	oldProperty.setKeyType(jModelInput.getJavaModel().getClass(mapKey.getType()));
-        } else{
-        	oldProperty.setKeyType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+
+        if (mapKey != null && mapKey.getType() != null) {
+            oldProperty.setKeyType(jModelInput.getJavaModel().getClass(mapKey.getType()));
+        } else {
+            oldProperty.setKeyType(jModelInput.getJavaModel().getClass("java.lang.Object"));
         }
-                
-        if (mapValue != null && mapValue.getType() !=null) {        	
-        	oldProperty.setValueType(jModelInput.getJavaModel().getClass(mapValue.getType()));        	
-        } else{
-        	oldProperty.setValueType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+
+        if (mapValue != null && mapValue.getType() != null) {
+            oldProperty.setValueType(jModelInput.getJavaModel().getClass(mapValue.getType()));
+        } else {
+            oldProperty.setValueType(jModelInput.getJavaModel().getClass("java.lang.Object"));
         }
-        
-    	return oldProperty;
+
+        return oldProperty;
     }
-    
+
     /**
      * Process XmlElements.
      * 
-     * The XmlElements object will be set on the property, and it will be 
+     * The XmlElements object will be set on the property, and it will be
      * flagged as a 'choice'.
      * 
      * @param xmlElements
@@ -619,7 +638,7 @@ public class XMLProcessor {
         for (XmlElementRef eltRef : xmlElementRefs.getXmlElementRef()) {
             eltRefs.add(eltRef);
         }
-        
+
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
         // handle XmlElementWrapper
@@ -637,15 +656,15 @@ public class XMLProcessor {
     private Property processXmlValue(XmlValue xmlValue, Property oldProperty, TypeInfo info, JavaType javaType) {
         // reset any existing values
         resetProperty(oldProperty, info);
-        
+
         oldProperty.setIsXmlValue(true);
         info.setXmlValueProperty(oldProperty);
         return oldProperty;
     }
 
     /**
-     * Process an XmlSchema. This involves creating a NamespaceInfo instance and populating it based
-     * on the given XmlSchema.
+     * Process an XmlSchema. This involves creating a NamespaceInfo instance and
+     * populating it based on the given XmlSchema.
      * 
      * @param xmlBindings
      * @param packageName
@@ -677,7 +696,7 @@ public class XMLProcessor {
         nsInfo.setNamespaceResolver(nsr);
         return nsInfo;
     }
-    
+
     /**
      * Convenience method for building a Map of package to classes.
      * 
@@ -690,7 +709,8 @@ public class XMLProcessor {
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
             ArrayList classes = new ArrayList<JavaClass>();
-            // add binding classes - the Java Model will be used to get a JavaClass via class name
+            // add binding classes - the Java Model will be used to get a
+            // JavaClass via class name
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -699,14 +719,14 @@ public class XMLProcessor {
             }
             theMap.put(packageName, classes);
         }
-        
+
         // add any other classes that aren't declared via external metadata
         for (JavaClass jClass : jModelInput.getJavaClasses()) {
             // need to verify that the class isn't already in one of our lists
             String pkg = jClass.getPackageName();
             ArrayList<JavaClass> existingClasses = theMap.get(pkg);
             if (existingClasses != null) {
-            	if (!classExistsInArray(jClass, existingClasses)) {
+                if (!classExistsInArray(jClass, existingClasses)) {
                     existingClasses.add(jClass);
                 }
             } else {
@@ -717,7 +737,7 @@ public class XMLProcessor {
         }
         return theMap;
     }
-    
+
     /**
      * Lazy load the metadata logger.
      * 
@@ -729,54 +749,54 @@ public class XMLProcessor {
         }
         return logger;
     }
-    
+
     /**
-     * Convenience method to determine if a class exists in a given ArrayList.  The classes
-     * are compared via equals() method.
+     * Convenience method to determine if a class exists in a given ArrayList.
+     * The classes are compared via equals() method.
      */
     public boolean classExistsInArray(JavaClass theClass, ArrayList<JavaClass> existingClasses) {
         for (JavaClass jClass : existingClasses) {
-        	if(areClassesEqual(jClass, theClass)){
-        		return true;
-        	}
-        	
+            if (areClassesEqual(jClass, theClass)) {
+                return true;
+            }
+
         }
         return false;
     }
-    
-    private boolean areClassesEqual(JavaClass classA, JavaClass classB){
-    	if(classA == classB){
-    		return true;
-    	}
-    	
-    	if(!(classA.getQualifiedName().equals(classB.getQualifiedName()))){
-    		return false;
-    	}
-    	if(classA.getActualTypeArguments() != null){
-    		if(classB.getActualTypeArguments() == null){
-    			return false;
-    		}
-    		if(classA.getActualTypeArguments().size() != classB.getActualTypeArguments().size()){
-    			return false;
-    		}
-    		
-    		for(int i=0;i<classA.getActualTypeArguments().size(); i++){
-    			JavaClass nestedClassA = (JavaClass)classA.getActualTypeArguments().toArray()[i];
-    			JavaClass nestedClassB = (JavaClass)classB.getActualTypeArguments().toArray()[i];
-    			if(!areClassesEqual(nestedClassA, nestedClassB)){
-    				return false;
-    			}
-    		}
-    		return true;
-    	}else if(classB.getActualTypeArguments() == null){
-    		return true;
-    	}
-    	return false;
+
+    private boolean areClassesEqual(JavaClass classA, JavaClass classB) {
+        if (classA == classB) {
+            return true;
+        }
+
+        if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
+            return false;
+        }
+        if (classA.getActualTypeArguments() != null) {
+            if (classB.getActualTypeArguments() == null) {
+                return false;
+            }
+            if (classA.getActualTypeArguments().size() != classB.getActualTypeArguments().size()) {
+                return false;
+            }
+
+            for (int i = 0; i < classA.getActualTypeArguments().size(); i++) {
+                JavaClass nestedClassA = (JavaClass) classA.getActualTypeArguments().toArray()[i];
+                JavaClass nestedClassB = (JavaClass) classB.getActualTypeArguments().toArray()[i];
+                if (!areClassesEqual(nestedClassA, nestedClassB)) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (classB.getActualTypeArguments() == null) {
+            return true;
+        }
+        return false;
     }
-    
+
     /**
-     * Convenience method for resetting a number of properties on a
-     * given property.
+     * Convenience method for resetting a number of properties on a given
+     * property.
      * 
      * @param oldProperty
      * @return
@@ -808,7 +828,7 @@ public class XMLProcessor {
         unsetXmlValue(oldProperty, tInfo);
         return oldProperty;
     }
-    
+
     /**
      * Ensure that a given property is not set as an xml-element-refs.
      * 
@@ -820,20 +840,20 @@ public class XMLProcessor {
             tInfo.setElementRefsPropertyName(null);
         }
     }
-    
+
     /**
      * Ensure that a given property is not set as an xml-elements.
-     *  
+     * 
      * @param oldProperty
      */
     private void unsetXmlElements(Property oldProperty) {
         oldProperty.setXmlElements(null);
         oldProperty.setChoiceProperties(null);
     }
-    
+
     /**
      * Ensure that a given property is not set as an xml-any-attribute.
-     *  
+     * 
      * @param oldProperty
      * @param tInfo
      */
@@ -843,10 +863,10 @@ public class XMLProcessor {
             tInfo.setAnyAttributePropertyName(null);
         }
     }
-    
+
     /**
      * Ensure that a given property is not set as an xml-any-element.
-     *  
+     * 
      * @param oldProperty
      * @param tInfo
      */
@@ -856,10 +876,10 @@ public class XMLProcessor {
             tInfo.setAnyElementPropertyName(null);
         }
     }
-    
+
     /**
      * Ensure that a given property is not set as an xml-value.
-     *  
+     * 
      * @param oldProperty
      * @param tInfo
      */

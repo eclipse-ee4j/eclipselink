@@ -26,7 +26,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.Employee;
 import org.w3c.dom.Document;
 
 /**

@@ -75,6 +75,8 @@ public class XmlBindings {
 
     @XmlElement(name = "xml-schema", required = true)
     protected XmlSchema xmlSchema;
+    @XmlElement(name = "xml-schema-type", required = true)
+    protected XmlSchemaType xmlSchemaType;
     @XmlElement(name = "xml-schema-types", required = true)
     protected XmlSchemaTypes xmlSchemaTypes;
     @XmlElement(name = "xml-java-type-adapters", required = true)
@@ -110,6 +112,30 @@ public class XmlBindings {
      */
     public void setXmlSchema(XmlSchema value) {
         this.xmlSchema = value;
+    }
+
+    /**
+     * Gets the value of the xmlSchemaType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlSchemaType }
+     *     
+     */
+    public XmlSchemaType getXmlSchemaType() {
+        return xmlSchemaType;
+    }
+
+    /**
+     * Sets the value of the xmlSchemaType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlSchemaType }
+     *     
+     */
+    public void setXmlSchemaType(XmlSchemaType value) {
+        this.xmlSchemaType = value;
     }
 
     /**

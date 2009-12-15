@@ -95,6 +95,7 @@ import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>To perform some initial processing of Java classes and JAXB 2.0 
@@ -170,7 +171,12 @@ public class AnnotationsProcessor {
                 if (nextInfo != null) {
                     boolean xmlAttachmentRef = false;
                     String xmlMimeType = null;
+                    
+                    
+                    
                     java.lang.annotation.Annotation[] annotations = nextInfo.getAnnotations();
+                    
+                    
                     if (annotations != null) {
                         for (int j = 0; j < annotations.length; j++) {
                             java.lang.annotation.Annotation nextAnnotation = annotations[j];
@@ -205,6 +211,7 @@ public class AnnotationsProcessor {
         }
     }
 
+    
     /**
      * Initialize maps, lists, etc. Typically called prior to processing a set of 
      * classes via preBuildTypeInfo, postBuildTypeInfo, processJavaClasses.
@@ -298,6 +305,9 @@ public class AnnotationsProcessor {
             // handle descriptor customizer
             preProcessCustomizer(javaClass, info);
 
+            // handle package level @XmlSchemaType(s)
+            processSchemaTypes(javaClass, info);
+
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
         }
@@ -348,9 +358,6 @@ public class AnnotationsProcessor {
 
             // handle factory methods
             processFactoryMethods(javaClass, info);
-
-            // handle @XmlSchemaType(s)
-            processSchemaTypes(javaClass, info);
 
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
 
@@ -1724,20 +1731,25 @@ public class AnnotationsProcessor {
         return list;
     }
 
+    /**
+     * Use name, namespace and type information to setup a user-defined
+     * schema type.  This method will typically be called when processing 
+     * an @XmlSchemaType(s) annotation or xml-schema-type(s) metadata.
+     * 
+     * @param name
+     * @param namespace
+     * @param jClassQualifiedName
+     */
+    public void processSchemaType(String name, String namespace, String jClassQualifiedName) {
+        this.userDefinedSchemaTypes.put(jClassQualifiedName, new QName(namespace, name));
+    }
+    
     public void processSchemaType(XmlSchemaType type) {
-        String schemaTypeName = type.name();
-        Class javaType = type.type();
-        if (javaType == null) {
-            return;
-        }
-
-        JavaClass jClass = helper.getJavaClass(javaType);
+        JavaClass jClass = helper.getJavaClass(type.type());
         if (jClass == null) {
             return;
         }
-
-        QName typeQName = new QName(type.namespace(), schemaTypeName);
-        this.userDefinedSchemaTypes.put(jClass.getQualifiedName(), typeQName);
+        processSchemaType(type.name(), type.namespace(), jClass.getQualifiedName());
     }
 
     public void addEnumTypeInfo(JavaClass javaClass, EnumTypeInfo info) {

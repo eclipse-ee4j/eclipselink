@@ -8,9 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - December 03/2009 - 2.0 - Initial implementation
+ * dmccann - December 08/2009 - 2.0 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,127 +29,112 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
 import org.w3c.dom.Document;
 
 /**
- * Tests XmlElementRef via eclipselink-oxm.xml
+ * Tests XmlSchemaType via eclipselink-oxm.xml
  *
  */
-public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/";
+public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
+    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype";
+    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematype/";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlElementRefTestCases(String name) {
+    public XmlSchemaTypeTestCases(String name) {
         super(name);
     }
-    
+
     /**
-     * Tests @XmlElementRef schema generation via eclipselink-oxm.xml.  
+     * Tests @XmlSchemaType schema generation via eclipselink-oxm.xml.  Here, a 
+     * package-level xml-schema-type declaration exists.  It's value "date" 
+     * should override the one set in code ("year").
      * 
      * Positive test.
      */
-    public void testXmlElementRefSchemaGen() {
-        MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
+    public void testXmlSchemaTypePkgSchemaGen() {
+        String metadataFile = PATH + "eclipselink-oxm-package.xml";
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 
     /**
-     * Tests @XmlElementRef schema generation via eclipselink-oxm.xml.  Here, an
-     * xml-element-wrapper is also used.
+     * Tests @XmlSchemaType schema generation via eclipselink-oxm.xml.  Here, a 
+     * property-level xml-schema-type declaration exists.  It's value "date" 
+     * should override the one set in code ("year").
      * 
      * Positive test.
      */
-    public void testXmlElementRefWithWrapperSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
+    public void testXmlSchemaTypePropSchemaGen() {
+        String metadataFile = PATH + "eclipselink-oxm-property.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, iStream, 1);
-        
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
         // validate schema
-        String controlSchema = PATH + "schema_wrapper.xsd";
+        String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 
     /**
-     * Tests @XmlElementRef via eclipselink-oxm.xml.
+     * Tests @XmlSchemaType schema generation via eclipselink-oxm.xml.  Here, both package-level
+     * and property-level xml-schema-type declarations exist.  It is expected that the property-
+     * level value "date" will override the package-level one ("time"), as well as the package-
+     * level one set in code ("year").
      * 
      * Positive test.
      */
-    public void testXmlElementRef() {
-        // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm.xml";
+    public void testXmlSchemaTypeOverrideSchemaGen() {
+        String metadataFile = PATH + "eclipselink-oxm-override.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Foo.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
-        
-        // load instance doc
-        String src = PATH + "foo.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
+        // validate schema
+        String controlSchema = PATH + "schema.xsd";
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 
     /**
-     * Tests @XmlElementRef via eclipselink-oxm.xml.  Here an xml-element-wrapper
-     * is also used.
+     * Tests @XmlSchemaType schema generation via eclipselink-oxm.xml.  Here, both package-level
+     * and property-level @XmlSchemaType annotations exist in code.  In Xml, there is a package-
+     * level declaration ("day"), but it is expected that the property-level value "date" in code will 
+     * override it.
      * 
      * Positive test.
      */
-    public void testXmlElementRefWithWrapper() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
+    public void testXmlSchemaTypeClassOverridesPackageSchemaGen() {
+        String metadataFile = PATH + "eclipselink-oxm-class-overrides-package.xml";
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        // validate schema
+        String controlSchema = PATH + "schema1.xsd";
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+    }
+
+    /**
+     * Tests @XmlSchemaType via eclipselink-oxm.xml.
+     * 
+     * Positive test.
+     */
+    public void testXmlSchemaType() {
+        // load XML metadata
+        String metadataFile = PATH + "eclipselink-oxm-property.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -163,14 +148,14 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
         // create context
         JAXBContext jCtx = null;
         try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Foos.class }, properties);
+            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
         } catch (JAXBException e1) {
             e1.printStackTrace();
             fail("JAXBContext creation failed.");
         }
         
         // load instance doc
-        String src = PATH + "foo-wrapper.xml";
+        String src = PATH + "employee.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + src + "]");
