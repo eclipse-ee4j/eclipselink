@@ -94,13 +94,13 @@ public class SDOConstants {
 
     /** Numeric primitive default instances see p 45 of Java Spec. 4th ed */
     public static final Boolean BOOLEAN_DEFAULT = Boolean.FALSE;
-    public static final Byte BYTE_DEFAULT = new Byte((byte)0);
-    public static final Character CHARACTER_DEFAULT = new Character('\u0000');
-    public static final Double DOUBLE_DEFAULT = new Double(0.0d);
-    public static final Float FLOAT_DEFAULT = new Float(0.0f);
-    public static final Integer INTEGER_DEFAULT = new Integer(0);
-    public static final Long LONG_DEFAULT = new Long(0L);
-    public static final Short SHORT_DEFAULT = new Short((short)0);
+    public static final Byte BYTE_DEFAULT = (byte)0;
+    public static final Character CHARACTER_DEFAULT = '\u0000';
+    public static final Double DOUBLE_DEFAULT = 0.0d;
+    public static final Float FLOAT_DEFAULT = 0.0f;
+    public static final Integer INTEGER_DEFAULT = 0;
+    public static final Long LONG_DEFAULT = 0L;
+    public static final Short SHORT_DEFAULT = (short)0;
 
     public static final SDOType SDO_BOOLEAN = new SDODataType(SDO_URL, BOOLEAN, ClassConstants.PBOOLEAN, sdoTypeHelper, BOOLEAN_DEFAULT);
     public static final SDOType SDO_BYTE = new SDODataType(SDO_URL, BYTE, ClassConstants.PBYTE, sdoTypeHelper, BYTE_DEFAULT);

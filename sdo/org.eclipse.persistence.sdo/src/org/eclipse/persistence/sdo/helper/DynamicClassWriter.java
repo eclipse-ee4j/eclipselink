@@ -67,12 +67,12 @@ public class DynamicClassWriter {
                 Integer parentEndPropertyIndex = (Integer) PrivilegedAccessHelper.getValueFromField(parentEndPropertyIndexField, parentClass);
                 startPropertyIndex = parentEndPropertyIndex + 1;
             } catch(NoSuchFieldException e) {
-                startPropertyIndex = new Integer(0);
+                startPropertyIndex = 0;
             } catch(IllegalAccessException e) {
-                startPropertyIndex = new Integer(0);
+                startPropertyIndex = 0;
             }
         } else {
-            startPropertyIndex = new Integer(0);
+            startPropertyIndex = 0;
         }
     }
 

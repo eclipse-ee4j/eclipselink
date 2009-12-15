@@ -434,7 +434,7 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     AttributeChangeNotification acn = (AttributeChangeNotification) notification;
                     if (acn.getAttributeName().equals(WLS_ACTIVE_VERSION_STATE)) {
-                        if (acn.getNewValue().equals(new Integer(0))) {
+                        if (acn.getNewValue().equals(0)) {
                             resetHelperContext(mapKey);
                         }
                     }

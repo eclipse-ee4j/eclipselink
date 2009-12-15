@@ -303,35 +303,35 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public void setBoolean(String path, boolean value) {
-        convertValueAndSet(path, new Boolean(value));
+        convertValueAndSet(path, value);
     }
 
     public void setByte(String path, byte value) {
-        convertValueAndSet(path, new Byte(value));
+        convertValueAndSet(path, value);
     }
 
     public void setChar(String path, char value) {
-        convertValueAndSet(path, new Character(value));
+        convertValueAndSet(path, value);
     }
 
     public void setDouble(String path, double value) {
-        convertValueAndSet(path, new Double(value));
+        convertValueAndSet(path, value);
     }
 
     public void setFloat(String path, float value) {
-        convertValueAndSet(path, new Float(value));
+        convertValueAndSet(path, value);
     }
 
     public void setInt(String path, int value) {
-        convertValueAndSet(path, new Integer(value));
+        convertValueAndSet(path, value);
     }
 
     public void setLong(String path, long value) {
-        convertValueAndSet(path, new Long(value));
+        convertValueAndSet(path, value);
     }
 
     public void setShort(String path, short value) {
-        convertValueAndSet(path, new Short(value));
+        convertValueAndSet(path, value);
     }
 
     public void setBytes(String path, byte[] value) {
@@ -514,35 +514,35 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public void setBoolean(int propertyIndex, boolean value) {
-        convertValueAndSet(propertyIndex, new Boolean(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setByte(int propertyIndex, byte value) {
-        convertValueAndSet(propertyIndex, new Byte(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setChar(int propertyIndex, char value) {
-        convertValueAndSet(propertyIndex, new Character(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setDouble(int propertyIndex, double value) {
-        convertValueAndSet(propertyIndex, new Double(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setFloat(int propertyIndex, float value) {
-        convertValueAndSet(propertyIndex, new Float(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setInt(int propertyIndex, int value) {
-        convertValueAndSet(propertyIndex, new Integer(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setLong(int propertyIndex, long value) {
-        convertValueAndSet(propertyIndex, new Long(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setShort(int propertyIndex, short value) {
-        convertValueAndSet(propertyIndex, new Short(value));
+        convertValueAndSet(propertyIndex, value);
     }
 
     public void setBytes(int propertyIndex, byte[] value) {
@@ -778,7 +778,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             addOpenContentProperty(property);
         }
     }
-        
+
     /**
      * INTERNAL:
      * Sets the value of the given property of the object to the new value.
@@ -1038,35 +1038,35 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public void setBoolean(Property property, boolean value) {
-        convertValueAndSet(property, new Boolean(value));
+        convertValueAndSet(property, value);
     }
 
     public void setByte(Property property, byte value) {
-        convertValueAndSet(property, new Byte(value));
+        convertValueAndSet(property, value);
     }
 
     public void setChar(Property property, char value) {
-        convertValueAndSet(property, new Character(value));
+        convertValueAndSet(property, value);
     }
 
     public void setDouble(Property property, double value) {
-        convertValueAndSet(property, new Double(value));
+        convertValueAndSet(property, value);
     }
 
     public void setFloat(Property property, float value) {
-        convertValueAndSet(property, new Float(value));
+        convertValueAndSet(property, value);
     }
 
     public void setInt(Property property, int value) {
-        convertValueAndSet(property, new Integer(value));
+        convertValueAndSet(property, value);
     }
 
     public void setLong(Property property, long value) {
-        convertValueAndSet(property, new Long(value));
+        convertValueAndSet(property, value);
     }
 
     public void setShort(Property property, short value) {
-        convertValueAndSet(property, new Short(value));
+        convertValueAndSet(property, value);
     }
 
     public void setBytes(Property property, byte[] value) {
