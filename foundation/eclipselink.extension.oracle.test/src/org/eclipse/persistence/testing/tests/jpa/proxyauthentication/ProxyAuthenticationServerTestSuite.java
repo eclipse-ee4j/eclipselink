@@ -248,13 +248,13 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } catch (Exception ex) {
             if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
                 ex.printStackTrace();
                 fail("it's not the right exception");
             }
         } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }
