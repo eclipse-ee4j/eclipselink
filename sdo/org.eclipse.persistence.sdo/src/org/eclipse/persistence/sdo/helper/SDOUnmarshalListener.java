@@ -1,30 +1,30 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.TypeHelper;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -76,26 +76,24 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
             targetDataObject.getSequence().afterUnmarshal();
         }
 
-        // if parent is null we are back to the root object 
+        // if parent is null we are back to the root object
         // the last object that will hit the afterUnmarshal method
         if (parent == null && null != changeSummaries) {
-            SDOChangeSummary nextCS = null;
-            XMLUnmarshaller unmarshaller = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
+            XMLUnmarshaller unmarshaller = null;
             for (int i = 0, changeSummariesSize=changeSummaries.size(); i < changeSummariesSize; i++) {
-                nextCS = changeSummaries.get(i);
+                SDOChangeSummary nextCS = changeSummaries.get(i);
                 // Set logging to true until finished building modified list.
                 boolean loggingValue = nextCS.isLoggingMapping();
                 nextCS.setLogging(true);
+
                 // CREATES
                 // For each xpath in the create attribute convert it to an sdo path and execute it against the root
                 // dataobject to get the dataobject being pointed to and set that dataobject to be created
                 List xpaths = nextCS.getCreatedXPaths();
-                String nextXPath = null;
-                SDODataObject nextCreatedDO = null;
-                for (int j = 0; j < xpaths.size(); j++) {
-                    nextXPath = (String)xpaths.get(j);
+                for (int j = 0, xpathsSize = xpaths.size(); j < xpathsSize; j++) {
+                    String nextXPath = (String)xpaths.get(j);
                     String sdoPath = convertXPathToSDOPath(nextXPath);
-                    nextCreatedDO = targetDataObject.getDataObject(sdoPath);
+                    SDODataObject nextCreatedDO = targetDataObject.getDataObject(sdoPath);
 
                     if(nextCreatedDO == null) {
                         int nextSlash = sdoPath.indexOf('/');
@@ -106,7 +104,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         }
                         nextCreatedDO = targetDataObject.getDataObject(sdoPath);
                     }
-                    
+
                     if (nextCreatedDO != null) {
                         nextCreatedDO._setCreated(true);
                         nextCS.getOldContainers().remove(nextCreatedDO);
@@ -114,22 +112,20 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         throw SDOException.errorProcessingXPath(nextXPath);
                     }
                 }
-                //clear the createxpaths list that was read in from XML                
+                //clear the createxpaths list that was read in from XML
                 nextCS.setCreatedXPaths(null);
-                //MODIFIED                
+
+                //MODIFIED
                 List modifiedDoms = nextCS.getModifiedDoms();
-                Element nextNode = null;
-                String refValue = null;
-                SDODataObject nextModifiedDO = null;
-                for (int j = 0; j < modifiedDoms.size(); j++) {
-                    nextNode = (Element)modifiedDoms.get(j);
-                    refValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_REF);
+                for (int j = 0, modifiedDomsSize=modifiedDoms.size(); j < modifiedDomsSize; j++) {
+                    Element nextNode = (Element)modifiedDoms.get(j);
+                    String refValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_REF);
                     if ((refValue == null) || (refValue.length() == 0)) {
                         throw SDOException.missingRefAttribute();
                     }
                     //nextModifiedDO is the real modified current data object
                     String sdoPath = convertXPathToSDOPath(refValue);
-                    nextModifiedDO = targetDataObject.getDataObject(sdoPath);
+                    SDODataObject nextModifiedDO = targetDataObject.getDataObject(sdoPath);
                     //if it failed, try peeling off the first fragment (may be the root
                     if(nextModifiedDO == null) {
                         int nextSlash = sdoPath.indexOf('/');
@@ -149,26 +145,30 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);
                         SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(nextModifiedDO.getType().getHelperContext(), true);
+                        if(null == unmarshaller) {
+                            unmarshaller = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
+                        }
                         unmarshaller.setUnmarshalListener(listener);
                         unmarshaller.getProperties().put("sdoHelperContext", aHelperContext);
-                        unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);                        
+                        unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);
                         Object unmarshalledNode = unmarshaller.unmarshal(nextNode, nextModifiedDO.getType().getXmlDescriptor().getJavaClass());
                         //unmarshalledDO is the modified dataobject from the changesummary xml
-                        DataObject unmarshalledDO = null;
-                        // Assumption: unmarshalledNode should always be either an instance of XMLRoot or DataObject                        
+                        SDODataObject unmarshalledDO = null;
+                        // Assumption: unmarshalledNode should always be either an instance of XMLRoot or DataObject
                         if (unmarshalledNode instanceof XMLRoot) {
-                            unmarshalledDO = (DataObject)((XMLRoot)unmarshalledNode).getObject();
+                            unmarshalledDO = (SDODataObject)((XMLRoot)unmarshalledNode).getObject();
                         } else if (unmarshalledNode instanceof DataObject) {
-                            unmarshalledDO = (DataObject)unmarshalledNode;
+                            unmarshalledDO = (SDODataObject)unmarshalledNode;
                         }
                         List modifiedProps = new ArrayList();
                         Node n = nextNode.getFirstChild();
+                        TypeHelper typeHelper = aHelperContext.getTypeHelper();
                         while(n != null) {
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 String propName = n.getLocalName();
                                 Property nextProp = unmarshalledDO.getInstanceProperty(propName);
                                 if (nextProp == null) {
-                                    nextProp = aHelperContext.getTypeHelper().getOpenContentProperty(n.getNamespaceURI(), propName);
+                                    nextProp = typeHelper.getOpenContentProperty(n.getNamespaceURI(), propName);
                                 }
                                 if (!modifiedProps.contains(nextProp)) {
                                     modifiedProps.add(nextProp);
@@ -177,7 +177,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                             n = n.getNextSibling();
                         }
                         //instead of iterating over all props can we just check elements in cs and get appropriate properties from DO
-                        for (int k = 0; k < modifiedProps.size(); k++) {
+                        for (int k = 0, modifiedPropsSize = modifiedProps.size(); k < modifiedPropsSize; k++) {
                             SDOProperty nextProp = (SDOProperty)modifiedProps.get(k);
                             if (!nextProp.getType().isDataType()) {
                                 if (nextProp.isMany()) {
@@ -186,7 +186,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                     List newList = new ArrayList();
                                     List toDelete = new ArrayList();
                                     List indexsToDelete = new ArrayList();
-                                    for (int l = 0; l < originalValue.size(); l++) {
+                                    for (int l = 0, originalValueSize = originalValue.size(); l < originalValueSize; l++) {
                                         SDODataObject nextInList = (SDODataObject)originalValue.get(l);
                                         String sdoRef = nextInList._getSdoRef();
                                         if (sdoRef != null) {
@@ -200,7 +200,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             }
                                             newList.add(targetDataObject.getDataObject(sdoRefPath));
                                         } else {
-                                            //if sdo ref is null there is a deleted object                                                                                                                                                                                                  
+                                            //if sdo ref is null there is a deleted object
                                             toDelete.add(nextInList);
                                             indexsToDelete.add(l);
                                             newList.add(nextInList);
@@ -208,10 +208,11 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                     }
                                     //lw is the list from the real current data object
                                     ListWrapper lw = ((ListWrapper)nextModifiedDO.getList(nextProp));
-                                    if (indexsToDelete.size() > 0) {
-                                        //after this loop, lw will have the entire list when logging was turned on                                        
+                                    int indexsToDeleteSize = indexsToDelete.size();
+                                    if (indexsToDeleteSize > 0) {
+                                        //after this loop, lw will have the entire list when logging was turned on
                                         nextCS.pauseLogging();
-                                        for (int m = 0; m < indexsToDelete.size(); m++) {
+                                        for (int m = 0; m < indexsToDeleteSize; m++) {
                                             int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
                                             lw.add(toDeleteIndex, nextToDelete);
@@ -220,7 +221,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         SDOSequence nextSeq = ((SDOSequence)nextCS.getOriginalSequences().get(nextModifiedDO));
                                         nextCS.resumeLogging();
                                         nextModifiedDO._setModified(true);
-                                        for (int m = indexsToDelete.size() - 1; m >= 0; m--) {
+                                        for (int m = indexsToDeleteSize - 1; m >= 0; m--) {
                                             int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
                                             if(nextSeq != null){
@@ -233,14 +234,14 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                     }
                                     nextCS.getOriginalElements().put(lw, newList);
                                 } else {
-                                    SDODataObject value = (SDODataObject)unmarshalledDO.getDataObject(nextProp);
+                                    SDODataObject value = unmarshalledDO.getDataObject(nextProp);
                                     if (value != null) {
                                         String sdoRef = value._getSdoRef();
                                         if (sdoRef != null) {
-                                            //modified                                                
+                                            //modified
                                             nextModifiedDO._setModified(true);
                                         } else {
-                                            //deleted       
+                                            //deleted
                                             value._setChangeSummary(nextCS);
                                             nextModifiedDO._setModified(true);
                                             nextCS.pauseLogging();
@@ -249,9 +250,9 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             Object existingValue = nextModifiedDO.get(nextProp);
                                             // grab index of nextProp's Setting for use during setting below
                                             Sequence nextModifiedDOSequence = nextModifiedDO.getSequence();
-                                            int settingIdx = -1; 
+                                            int settingIdx = -1;
                                             if (nextModifiedDOSequence != null) {
-                                                settingIdx = ((SDOSequence)nextModifiedDOSequence).getIndexForProperty(nextProp); 
+                                                settingIdx = ((SDOSequence)nextModifiedDOSequence).getIndexForProperty(nextProp);
                                             }
                                             value._setContainmentPropertyName(null);
                                             value._setContainer(null);
@@ -261,7 +262,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             if(nextSeq != null){
                                               nextSeq.addSettingWithoutModifyingDataObject(-1, nextProp, value);
                                             }
-  
+
                                             nextCS.resumeLogging();
                                             nextModifiedDO._setModified(true);
 
@@ -285,29 +286,30 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                             } else {
                                 nextModifiedDO._setModified(true);
                                 Object value = unmarshalledDO.get(nextProp);
-                                //lw is the list from the real current data object              
-                                
-                                if(nextProp.isMany()){                                       
-                                                                  
+                                //lw is the list from the real current data object
+
+                                if(nextProp.isMany()){
+
                                   Property theProp = nextModifiedDO.getInstanceProperty(nextProp.getName());
                                   if(theProp == null){
                                     Property newProp = nextModifiedDO.defineOpenContentProperty(nextProp.getName(), new ArrayList(), nextProp.getType());
                                     nextModifiedDO.set(newProp, new ArrayList());
                                     theProp = newProp;
                                   }
-                                  List lw = nextModifiedDO.getList(theProp.getName());                                                                    
+                                  List lw = nextModifiedDO.getList(theProp.getName());
                                   nextCS.setPropertyInternal(nextModifiedDO, theProp, lw);
                                   nextCS.getOriginalElements().put(lw, ((ListWrapper)value).getCurrentElements());
                                 }else{
-                                  nextCS.setPropertyInternal(nextModifiedDO, nextProp, value);  
+                                  nextCS.setPropertyInternal(nextModifiedDO, nextProp, value);
                                 }
                             }
                         }
-                        for (int k = 0; k < unsetValueList.size(); k++) {
-                            Property nextProp = unmarshalledDO.getInstanceProperty((String)unsetValueList.get(k));
+
+                        for (int k = 0, unsetValueListSize = unsetValueList.size(); k < unsetValueListSize; k++) {
+                            SDOProperty nextProp = unmarshalledDO.getInstanceProperty((String)unsetValueList.get(k));
                             if (nextProp != null) {
                                 Object oldValue = null;
-                                if (((SDOType)nextProp.getType()).isDataType() || nextProp.isMany()) {
+                                if (nextProp.getType().isDataType() || nextProp.isMany()) {
                                     //to get default
                                     oldValue = unmarshalledDO.get(nextProp);
                                 }
@@ -325,14 +327,16 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         throw SDOException.errorProcessingXPath(refValue);
                     }
                 }
+
                 //clear modified doms list
                 nextCS.setModifiedDoms(null);
+
                 //clear deleted xpaths list
                 nextCS.setDeletedXPaths(null);
 
-                Iterator created = nextCS.getCreated().iterator();
-                while(created.hasNext()) {
-                    SDODataObject next = (SDODataObject)created.next();
+                List created = nextCS.getCreated();
+                for(int j=0, createdSize = created.size(); j<createdSize; j++) {
+                    SDODataObject next = (SDODataObject)created.get(j);
                     Property containmentProperty = next.getContainmentProperty();
                     if(containmentProperty != null && containmentProperty.isMany()) {
                         SDODataObject container = next.getContainer();
@@ -344,6 +348,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         }
                     }
                 }
+
                 nextCS.setLogging(loggingValue);
             }
             // reset changeSummary list - we are done with it
@@ -368,7 +373,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
         } else if (xpath.startsWith("#/")) {
             return xpath.substring(2, xpath.length());
         } else {
-            // remove the sdo ref prefix only "#", leave the root path identifier "/"        
+            // remove the sdo ref prefix only "#", leave the root path identifier "/"
             return xpath.substring(1, xpath.length());
         }
     }
