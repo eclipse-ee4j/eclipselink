@@ -91,7 +91,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     public SDODataObject() {
         // Implementors should not be calling this constructor directly - please use SDODataFactory
         // however if it is called we will initialize the default implementation of the currentValueStore Map
-        // initialize Map Implementation        
+        // initialize Map Implementation
         // set currentValueStore Map implementation (replace any that was set in the constructor in newInstance() above)
         _setCurrentValueStore(new DefaultValueStore());
     }
@@ -110,12 +110,12 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public Object get(String path) {// path like "a/b/c"
-    	try {
-    		return XPathEngine.getInstance().get(path, this);
-    	} catch (Exception e) {
-    		// Swallow exception and return null, as per SDO 2.1 spec
-    		return null;
-    	}
+        try {
+            return XPathEngine.getInstance().get(path, this);
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public void set(String path, Object value) throws ClassCastException, UnsupportedOperationException, IllegalArgumentException {
@@ -652,14 +652,14 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("containment", isContainment);
         return aHelperContext.getTypeHelper().defineOpenContentProperty(null, propertyDO);
     }
-    
+
     public Property defineOpenContentProperty(String name, Object value, Type sdotype) throws UnsupportedOperationException, IllegalArgumentException {
         if(sdotype == null){
           return defineOpenContentProperty(name, value);
         }
         DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
-        propertyDO.set("name", name);        
+        propertyDO.set("name", name);
         boolean isMany = false;
         boolean isContainment = false;
         Class valueClass = value.getClass();
@@ -675,12 +675,12 @@ public class SDODataObject implements DataObject, SequencedObject {
                     if (firstObject instanceof DataObject) {
                         if (((DataObject)firstObject).getContainer() == null) {
                             isContainment = true;
-                        }                        
+                        }
                         sdotype = ((DataObject)firstObject).getType();
                     } else {
                         sdotype = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(valueClass);
                     }
-                } 
+                }
             }
             isMany = true;
         } else if (value instanceof DataObject) {
@@ -729,7 +729,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 try {
                     listValue = (List) value;
                 } catch(ClassCastException e) {
-                    throw new IllegalArgumentException("Properties with isMany = true can only be set on list values.");            		
+                    throw new IllegalArgumentException("Properties with isMany = true can only be set on list values.");
                 }
             }
             if (property.isContainment() || isContainedByDataGraph(property)) {
@@ -746,7 +746,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             // 20060529: v33: Move clear() out of ListWrapper.addAll()
             // handle clearing of elements which also calls removeContainment(prop) outside of addAll()
             oldValueListWrapper.clear(updateSequence);
-            // handle updateContainment and sequences inside addAll() 
+            // handle updateContainment and sequences inside addAll()
             oldValueListWrapper.addAll((Collection)value, updateSequence);// for non-default Pluggable impl this function is not required
         } else {
             if (property.isContainment() || isContainedByDataGraph(property)) {
@@ -799,7 +799,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (property.isReadOnly()) {
             throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
-        
+
         // Can't set null on a non-nullable property - implementation specific handling, one of:
         // 1) perform an unset operation
         // 2) throw new UnsupportedOperationException("Property ["+ property.getName() +"] is non-nullable");
@@ -857,7 +857,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
 
         if (((SDOProperty)property).isReadOnly()) {
-        	throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
+            throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
 
         boolean wasSet = isSet(property);
@@ -1200,8 +1200,8 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param isRootOfRecursiveLoop (are we at the root of the detach/delete or inside the subtree)
      */
     private void detachDeleteRecursivePrivate(boolean fromDelete, boolean clearCS, boolean isRootOfRecursiveLoop) {
-    	// Store flag for (is root of the detach/delete subtree the CS root?) before we modify it when this object has no container
-    	boolean subTreeRootHasCStoClear = clearCS;
+        // Store flag for (is root of the detach/delete subtree the CS root?) before we modify it when this object has no container
+        boolean subTreeRootHasCStoClear = clearCS;
         if (null == getContainer()) {
             clearCS = false;
         }
@@ -1217,7 +1217,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         /** Order here is important - the dataGraph pointer should be cleared preorder before we enter the recursive loop to clear child DO's */
         DataGraph previousDataGraph = getDataGraph();
         // Remove back pointer to containing DataGraph
-        setDataGraph(null);        
+        setDataGraph(null);
 
         List instancePropertiesList = getInstanceProperties();
         for (int i = 0, psize = instancePropertiesList.size(); i < psize; i++) {
@@ -1225,7 +1225,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             Object oldValue = get(nextProperty);
 
             if (!nextProperty.getType().isChangeSummaryType()) {
-            	// Non-containment nodes have changeSummary and dataGraph pointers if they were in a dataGraph
+                // Non-containment nodes have changeSummary and dataGraph pointers if they were in a dataGraph
                 if (nextProperty.isContainment() || isContainedByDataGraph(previousDataGraph, nextProperty)) {
                     if (nextProperty.isMany()) {
                         Object manyItem;
@@ -1256,7 +1256,7 @@ public class SDODataObject implements DataObject, SequencedObject {
          * Case 6: delete subtree root from root (without cs) = true
          * Case 7: delete subtree internal from root (without cs) = true
          */
-        if (clearCS || subTreeRootHasCStoClear) { 
+        if (clearCS || subTreeRootHasCStoClear) {
             _setChangeSummary(null);
         }
     }
@@ -1282,7 +1282,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 if (aDataObject.getContainer() != null) {
                     ChangeSummary containerCS = aDataObject.getContainer().getChangeSummary();
 
-                    // If there is no CS field set above this object then clear any ChangeSummary pointer at this level 
+                    // If there is no CS field set above this object then clear any ChangeSummary pointer at this level
                     if (containerCS == null) {
                         clearCS = true;
                     }
@@ -1329,7 +1329,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         SDOProperty containmentProperty = getContainmentProperty();
 
         if ((containmentProperty != null) && containmentProperty.isReadOnly()) {
-        	throw new UnsupportedOperationException("Property is Readonly." + containmentProperty.getName() + "  " + getType().getName());
+            throw new UnsupportedOperationException("Property is Readonly." + containmentProperty.getName() + "  " + getType().getName());
         }
 
         if (containmentProperty != null) {
@@ -1348,7 +1348,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    public void delete() {                
+    public void delete() {
         deleteWithSequenceUpdate();
     }
 
@@ -1508,7 +1508,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param aChangeSummary   the ChangeSummary taking this DataObject as root.
      */
     public void _setChangeSummary(SDOChangeSummary aChangeSummary) {
-    	updateChangeSummaryAndDataGraph(aChangeSummary, getDataGraph());
+        updateChangeSummaryAndDataGraph(aChangeSummary, getDataGraph());
     }
 
     /**
@@ -1516,18 +1516,18 @@ public class SDODataObject implements DataObject, SequencedObject {
      * Recursively set this DataObject's changeSummary and dataGraph.
      * The parent changeSummary and dataGraph may be null.
      * Preconditions: No changeSummary must exist on the child tree.
-     * Callers: Typically updateContainment (during a set) or delete/detach 
+     * Callers: Typically updateContainment (during a set) or delete/detach
      *   of an object without its own changeSummary property.
      * @param aDataGraph
      */
-    private void updateChangeSummaryAndDataGraph(ChangeSummary aChangeSummary, DataGraph aDataGraph) {    	
+    private void updateChangeSummaryAndDataGraph(ChangeSummary aChangeSummary, DataGraph aDataGraph) {
         Iterator iterProperties = getInstanceProperties().iterator();
         Property property;
         Object object;
         Object listContainedObject;
-        
+
         // Add back pointer to containing DataGraph - in preOrder sequence before recursing
-       	setDataGraph(aDataGraph);
+        setDataGraph(aDataGraph);
 
         // Recurse currentValueStore
         while (iterProperties.hasNext()) {
@@ -1537,7 +1537,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             // special handling for bidirectional currentValueStore, do a shallow set
             // do not recurse bidirectional currentValueStore that are non-containment
             if (property.isContainment() || isContainedByDataGraph(property)) {
-            	object = get(property);
+                object = get(property);
                 if (object instanceof SDODataObject) {// DataObject child of this DataObject
                     ((SDODataObject)object).updateChangeSummaryAndDataGraph(aChangeSummary, aDataGraph);
                 }
@@ -1556,15 +1556,15 @@ public class SDODataObject implements DataObject, SequencedObject {
         // Set/Clear changeSummary in postOrder sequence
         setChangeSummaryNonRecursive(aChangeSummary);
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Recursively set this DataObject's DataGraph
-     * This function serves as a copy of updateChangeSummaryAndDataGraph() to recursively walk and set the dataGraph. 
-     * that will be run when no recursion occurs in the case that an object (with a changeSummary) 
+     * This function serves as a copy of updateChangeSummaryAndDataGraph() to recursively walk and set the dataGraph.
+     * that will be run when no recursion occurs in the case that an object (with a changeSummary)
      * is set internally to a tree (without a changeSummary).
-     * Callers: Typically updateContainment (during a set) or delete/detach 
+     * Callers: Typically updateContainment (during a set) or delete/detach
      *   when the current object is internal with its own changeSummary property.
      * @param aDataGraph
      */
@@ -1575,17 +1575,17 @@ public class SDODataObject implements DataObject, SequencedObject {
         Object listContainedObject;
 
         // Add back pointer to containing DataGraph - in preOrder sequence before recursing
-       	setDataGraph(aDataGraph);
+        setDataGraph(aDataGraph);
 
         // Recurse currentValueStore
         while (iterProperties.hasNext()) {
-        	property = (Property)iterProperties.next();
+            property = (Property)iterProperties.next();
 
             // Note: Both opposite currentValueStore cannot be isContainment=true
             // special handling for bidirectional currentValueStore, do a shallow set
             // do not recurse bidirectional currentValueStore that are non-containment
             if (property.isContainment() || isContainedByDataGraph(property)) {
-            	object = get(property);
+                object = get(property);
                 if (object instanceof SDODataObject) {// DataObject child of this DataObject
                     ((SDODataObject)object).updateDataGraph(aDataGraph);
                 }
@@ -1664,7 +1664,7 @@ public class SDODataObject implements DataObject, SequencedObject {
 
         // base step: swap valueStores at the current node
         if (((SDOChangeSummary)cs).isDirty(this)) {
-            // reset only if changes were done       
+            // reset only if changes were done
             if (!isCSRoot) {
                 // reset changeSummary
                 if (null == changeSummary) {
@@ -1683,7 +1683,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 }
             }
 
-            // swap valueStores   		
+            // swap valueStores
             _setCurrentValueStore((ValueStore)((SDOChangeSummary)cs).getOriginalValueStores().get(this));
             // return original to null (no changes)
             ((SDOChangeSummary)cs).getOriginalValueStores().remove(this);
@@ -1711,11 +1711,11 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
 
         // restore any open content properties to the 3 data structures on SDODataObject, and remove from cs.unsetOCPropsMap
-        // see openContentPropertiesMap<String,Property>, openContentProperties(List<Property>). instanceProperties (List<Property>)      
+        // see openContentPropertiesMap<String,Property>, openContentProperties(List<Property>). instanceProperties (List<Property>)
         List oldUnsetOCList =  ((SDOChangeSummary)cs).getUnsetOCProperties(this);
         for (int i = 0, size = oldUnsetOCList.size(); i < size; i++) {
              // it is essential that the oc property is removed from the cs or we will get an unsupported op during resetChanges()
-             // the property will be added only when logging=true, we reference the first item in the list as it reduces in size 
+             // the property will be added only when logging=true, we reference the first item in the list as it reduces in size
              addOpenContentProperty((Property)oldUnsetOCList.get(0));
         }
 
@@ -1778,9 +1778,9 @@ public class SDODataObject implements DataObject, SequencedObject {
         // dont store an original sequence if there are already is one in the map
         if (isLogging() && (!getChangeSummary().isDirty(this)) && (!getChangeSummary().isCreated(this))) {
             // dont copy containers of many props
-            // original valuestore becomes current one (from null)                              
+            // original valuestore becomes current one (from null)
             getChangeSummary().getOriginalValueStores().put(this, _getCurrentValueStore());
-            // we make a shallow copy of the current valuestore arrays at this level in the tree        
+            // we make a shallow copy of the current valuestore arrays at this level in the tree
             currentValueStore = _getCurrentValueStore().copy();
 
             // handle Sequences only in UC2 where we have modified the container object - not when only the sequence is dirty
@@ -1788,7 +1788,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 // deep copy the list of settings so a modification of the current sequence will not affect a setting in the originalSequences map
                 SDOSequence copySequence = getSequence().copy();
 
-                // store original sequence on ChangeSummary 
+                // store original sequence on ChangeSummary
                 getChangeSummary().getOriginalSequences().put(this, copySequence);
             }
         }
@@ -1807,7 +1807,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
 
         // Note: valueStores will not be switched and originalValueStore will continue to be null until the first modification
-        // initialize empty list for current dataObject        
+        // initialize empty list for current dataObject
         for (Iterator iterProperties = getInstanceProperties().iterator(); iterProperties.hasNext();) {
             SDOProperty property = (SDOProperty)iterProperties.next();
             Object value = get(property);
@@ -1818,15 +1818,15 @@ public class SDODataObject implements DataObject, SequencedObject {
 
                 ((SDODataObject)value).resetChanges();
             } else {
-                // Handle isMany objects and store the oldCont* values for each item in the list            
+                // Handle isMany objects and store the oldCont* values for each item in the list
                 if (property.isMany()) {
                     if (null != value) {// secondary NPE check
                         for (Iterator iterMany = ((ListWrapper)value).iterator();
                                  iterMany.hasNext();) {
                             Object valueMany = iterMany.next();
 
-                            // do not recurse into a non-containment relationship unless inside a dataGraph                            
-                            if ((property.isContainment() || isContainedByDataGraph(property)) && // 
+                            // do not recurse into a non-containment relationship unless inside a dataGraph
+                            if ((property.isContainment() || isContainedByDataGraph(property)) && //
                                 (valueMany != null) && !property.getType().isChangeSummaryType()) {
                                 ((SDODataObject)valueMany).resetChanges();
                             }
@@ -1901,8 +1901,8 @@ public class SDODataObject implements DataObject, SequencedObject {
     public Map _getOpenContentPropertiesAttributesMap() {
         Map openContentPropertiesAttrs = new HashMap();
         for (int i = 0, size = _getOpenContentPropertiesAttributes().size(); i < size; i++) {
-            Property next = (Property)_getOpenContentPropertiesAttributes().get(i);            
-            //if uri is null then attributes won't be prefix qualified                      
+            Property next = (Property)_getOpenContentPropertiesAttributes().get(i);
+            //if uri is null then attributes won't be prefix qualified
             QName qname = new QName(((SDOProperty)next).getUri(), next.getName());
             openContentPropertiesAttrs.put(qname, get(next));
         }
@@ -1920,18 +1920,18 @@ public class SDODataObject implements DataObject, SequencedObject {
             if ((!nextKey.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) && (!((nextKey.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) && nextKey.getLocalPart().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)))) {
                 Object value = openAttributeProperties.get(nextKey);
                 SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(nextKey.getNamespaceURI(), nextKey.getLocalPart(), false);
-                if (prop == null) {                
+                if (prop == null) {
                     DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
                     propDo.set("name", nextKey.getLocalPart());
                     propDo.set("type", SDOConstants.SDO_STRING);
-                    propDo.set("many", false);                                        
+                    propDo.set("many", false);
                     prop = (SDOProperty)aHelperContext.getTypeHelper().defineOpenContentProperty(null, propDo);
                     prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
                     prop.setUri(nextKey.getNamespaceURI());
-                
+
                     set(prop, value);
-                } else {                    
-                    set(prop, value);                    
+                } else {
+                    set(prop, value);
                 }
             }
         }
@@ -1995,7 +1995,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                       }
                     }else{
                        prop = createNewProperty(propertyName,propertyUri, theType);
-                    }                                  
+                    }
                 }
 
                 if (prop.isMany()) {
@@ -2006,8 +2006,8 @@ public class SDODataObject implements DataObject, SequencedObject {
             }
         }
     }
-    
-    private SDOProperty createNewProperty(String propertyName,String propertyUri, Type theType){      
+
+    private SDOProperty createNewProperty(String propertyName,String propertyUri, Type theType){
        DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
        propDo.set("name", propertyName);
        propDo.set("type", theType);
@@ -2077,7 +2077,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
         return openContentProperties;
     }
-        
+
 
     private Map<String, Property> _getOpenContentAliasNamesMap() {
         if (openContentAliasNames == null) {
@@ -2091,19 +2091,19 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     private void convertValueAndSet(Property property, Object originalValue) {
         Object convertedValue;
-    	if (property.isMany()) {
-    		if (originalValue == null) {
-    			convertedValue = new ArrayList();
-    	    } else if (originalValue instanceof List) {
-    	        convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
-    		} else {
-        		List l = new ArrayList();
-        		l.add(originalValue);
-    	        convertedValue = aHelperContext.getDataHelper().convert(property, l);
-    		}
-    	} else {
-    		convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
-    	}
+        if (property.isMany()) {
+            if (originalValue == null) {
+                convertedValue = new ArrayList();
+            } else if (originalValue instanceof List) {
+                convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
+            } else {
+                List l = new ArrayList();
+                l.add(originalValue);
+                convertedValue = aHelperContext.getDataHelper().convert(property, l);
+            }
+        } else {
+            convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
+        }
         set(property, convertedValue);
     }
 
@@ -2134,7 +2134,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws IllegalArgumentException
      */
     public Object convertObjectToValue(Property property, Class cls) throws ClassCastException, IllegalArgumentException {
-        //ie get String - convert(thisprop, String.class)    
+        //ie get String - convert(thisprop, String.class)
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }
@@ -2169,11 +2169,11 @@ public class SDODataObject implements DataObject, SequencedObject {
 
         Object obj;
         if (position == -1) {
-        	if (cls == ClassConstants.List_Class) {
-        		obj = get(property);
-        	} else {
-        		obj = unwrapListValue(property, get(property));
-        	}
+            if (cls == ClassConstants.List_Class) {
+                obj = get(property);
+            } else {
+                obj = unwrapListValue(property, get(property));
+            }
         } else {
             obj = getList(property).get(position);
         }
@@ -2231,8 +2231,8 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @return
      */
     private boolean isContainedByDataGraph(Property aProperty) {
-    	// The property is of type DataObject that points to a DataGraph
-    	return isContainedByDataGraph(getDataGraph(),  (SDOProperty) aProperty);
+        // The property is of type DataObject that points to a DataGraph
+        return isContainedByDataGraph(getDataGraph(),  (SDOProperty) aProperty);
     }
 
     /**
@@ -2240,15 +2240,15 @@ public class SDODataObject implements DataObject, SequencedObject {
      * Return whether the current dataObject(this) is was part of the passed in dataGraph.
      * Typically this is used to determine whether to treat !isContainment dataObjects as containment while inside a dataGraph.
      * The dataGraph input is used when the current DataGraph pointer has already been cleared
-	 * @param aDataGraph
+     * @param aDataGraph
      * @param aProperty
      * @return
      */
     private boolean isContainedByDataGraph(DataGraph aDataGraph, SDOProperty aProperty) {
-    	// The property is of type DataObject that points to a DataGraph
-    	return (null != aDataGraph) && (null != aProperty.getType()) && !aProperty.getType().isDataType();
+        // The property is of type DataObject that points to a DataGraph
+        return (null != aDataGraph) && (null != aProperty.getType()) && !aProperty.getType().isDataType();
     }
-    
+
     /**
      * INTERNAL:
      * Update containment with flagged update sequence state
@@ -2258,7 +2258,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     public void updateContainment(Property property, Collection values, boolean updateSequence) {
         if (property.isContainment() || isContainedByDataGraph(property)) {//
-          
+
             Object[] valuesArray = values.toArray();
             for(int i=0; i<valuesArray.length; i++){
                Object next = valuesArray[i];
@@ -2308,7 +2308,7 @@ public class SDODataObject implements DataObject, SequencedObject {
              * The following 2 update functions are kept separate for performance reasons in #6473342..
              * Alternate implementations could have used a Command pattern object or boolean states to enable a
              * single function to perform multiple operations.
-             * 
+             *
              * The DataGraph pointer on all subtrees are always updated regardless of the dataGraph value.
              * However, the ChangeSummary pointer is only updated if the dataObject(value) being updated is not
              * itself an internal changeSummary root.
@@ -2321,36 +2321,36 @@ public class SDODataObject implements DataObject, SequencedObject {
              *  root
              *     -> B
              *             -> D (String)
-             *     -> CS-root             
+             *     -> CS-root
              */
             if ((getChangeSummary() != null) && (aDataObject.getType() != null) && //
-            		(aDataObject.getType().getChangeSummaryProperty() == null)) {
-                // Recursively set the current changeSummary and dataGraph - the CS root is above or absent 
-            	aDataObject.updateChangeSummaryAndDataGraph(getChangeSummary(), getDataGraph());
+                    (aDataObject.getType().getChangeSummaryProperty() == null)) {
+                // Recursively set the current changeSummary and dataGraph - the CS root is above or absent
+                aDataObject.updateChangeSummaryAndDataGraph(getChangeSummary(), getDataGraph());
             } else {
                 // Recursively set the dataGraph when this level (value) is the CS root n the subtree
                 if(aDataObject.getDataGraph() != getDataGraph()) {
                     aDataObject.updateDataGraph(getDataGraph());
                 }
             }
-            	
+
             // add value as a property of (this)
             aDataObject._setContainer(this);
             aDataObject._setContainmentPropertyName(property.getName());
 
             // We don't setCreated for objects that were previously deleted
             if (!wasInNewCS && (getChangeSummary() != null) && !getChangeSummary().isDeleted(aDataObject)) {
-            	aDataObject._setCreated(true);
+                aDataObject._setCreated(true);
             }
 
             // If we are adding a previously deleted object, we must cancel out the isDeleted with an isCreated
             // so we end up with all isDeleted, isModified == false
             if ((getChangeSummary() != null) && getChangeSummary().isDeleted(aDataObject)) {
                 // explicitly clear the oldSetting and clear the key:value pair in the deleted map
-            	aDataObject._setDeleted(false);
+                aDataObject._setDeleted(false);
 
                 // remove oldSetting from map only when we return to original position
-                // by comparing an undo() with the projected model after set() - for now keep oldSettings                
+                // by comparing an undo() with the projected model after set() - for now keep oldSettings
             }
 
             // modify container object
@@ -2368,8 +2368,8 @@ public class SDODataObject implements DataObject, SequencedObject {
                     // Remove the old value store from the change summary
                     originalValueStores.remove(aDataObject);
                 }
-                
-                DataObject oldParentDO = getChangeSummary().getOldContainer(aDataObject);       
+
+                DataObject oldParentDO = getChangeSummary().getOldContainer(aDataObject);
                 if (oldParentDO == this) {
                     // The data object was deleted and is now being re-added to same parent object.
                     // May need to remove the corresponding entry in the oldValueStore map.
@@ -2379,12 +2379,12 @@ public class SDODataObject implements DataObject, SequencedObject {
                         // Value stores are equal, now make sure no ListWrappers have been modified
                         // For each typePropertyValue that is a ListWrapper in the currentValueStore, check
                         // the OriginalElements list in the CS to see if that wrapper exists in the list (indicating
-                        // the wrapper's list was modified at some point) and if it does, compare the current list 
-                        // to that original list.  If they are equal, and the value stores are equal, the entries 
+                        // the wrapper's list was modified at some point) and if it does, compare the current list
+                        // to that original list.  If they are equal, and the value stores are equal, the entries
                         // can be removed from the change summary so isModified will work correctly
                         Object prop;
                         Object oldList;
-                        Map originalElements = getChangeSummary().getOriginalElements();       
+                        Map originalElements = getChangeSummary().getOriginalElements();
                         List oldParentProps = oldParentDO.getInstanceProperties();
                         for (int i=0; i<oldParentProps.size(); i++) {
                             prop = originalParentVS.getDeclaredProperty(i);
@@ -2490,8 +2490,8 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (aChild.isMany()) {
             int index = (aParent.getList(aChild)).indexOf(targetObject);
 
-            return getPathPrivate(aContainmentPropertyName +// 
-                                  SDOConstants.SDO_XPATH_LIST_INDEX_OPEN_BRACKET +// 
+            return getPathPrivate(aContainmentPropertyName +//
+                                  SDOConstants.SDO_XPATH_LIST_INDEX_OPEN_BRACKET +//
                                   (1 + index) +// [indexes] start at 1
                                   SDOConstants.SDO_XPATH_LIST_INDEX_CLOSE_BRACKET +//
                                   aSeparator +//
@@ -2521,7 +2521,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             // Recursive Case: call private recursive reverse O(logn) traversal
             // function on root object
             return getPathPrivate(SDOConstants.EMPTY_STRING,//
-                                  this,// 
+                                  this,//
                                   SDOConstants.EMPTY_STRING);
         }
     }
@@ -2594,9 +2594,9 @@ public class SDODataObject implements DataObject, SequencedObject {
                 getSequence().addSettingWithoutModifyingDataObject(property, value);
             } else {
                 if(isSet(property)) {
-                    getSequence().updateSettingWithoutModifyingDataObject(property, get(property), value);                                        
+                    getSequence().updateSettingWithoutModifyingDataObject(property, get(property), value);
                 } else {
-                    getSequence().addSettingWithoutModifyingDataObject(property, value);                                        
+                    getSequence().addSettingWithoutModifyingDataObject(property, value);
                 }
             }
         }
@@ -2670,10 +2670,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         }else {
             theList = _getOpenContentProperties();
         }
-        
+
         if (!theList.contains(property)) {
             if (isLogging()) {
-                getChangeSummary().removeUnsetOCProperty(this, property);   
+                getChangeSummary().removeUnsetOCProperty(this, property);
             }
             theList.add(property);
             getInstanceProperties().add(property);
@@ -2789,23 +2789,23 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * Convenience method that unwraps a list and returns the first element,
      * if necessary.
-     * 
+     *
      * @param prop
      * @param val
      * @return
      */
     private Object unwrapListValue(Property prop, Object val) {
-    	if (prop == null || val == null) {
-    		return null;
-    	}
-    	if (! (prop.isMany() &&  val instanceof ListWrapper) ) {
-    		return val;
-    	}
-    	List l = (ListWrapper) val;
-    	if (l.size() == 0) {
-    		return null;
-    	}
-    	return l.get(0);
+        if (prop == null || val == null) {
+            return null;
+        }
+        if (! (prop.isMany() &&  val instanceof ListWrapper) ) {
+            return val;
+        }
+        List l = (ListWrapper) val;
+        if (l.size() == 0) {
+            return null;
+        }
+        return l.get(0);
     }
-    
+
 }
