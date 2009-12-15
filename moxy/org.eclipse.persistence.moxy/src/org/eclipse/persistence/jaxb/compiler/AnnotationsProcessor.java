@@ -171,6 +171,7 @@ public class AnnotationsProcessor {
                 if(nextInfo != null) {
                     boolean xmlAttachmentRef = false;
                     String xmlMimeType = null; 
+                    Class adapterClass = null;
                     java.lang.annotation.Annotation[] annotations = nextInfo.getAnnotations();
                     if(annotations != null){
                         for(int j=0; j<annotations.length; j++){
@@ -231,10 +232,10 @@ public class AnnotationsProcessor {
         localElements = new ArrayList<ElementDeclaration>();
         
         javaClassToTypeMappingInfos = new HashMap<JavaClass, TypeMappingInfo>();
-        if(typeMappingInfos != null){
-        	for(int i=0; i<typeMappingInfos.length; i++){
-        		javaClassToTypeMappingInfos.put(classes[i], typeMappingInfos[i]);	
-        	}
+        if (typeMappingInfos != null) {
+            for (int i = 0; i < typeMappingInfos.length; i++) {
+                javaClassToTypeMappingInfos.put(classes[i], typeMappingInfos[i]);
+            }
         }
         
     }
@@ -527,7 +528,7 @@ public class AnnotationsProcessor {
                 }
             }
         	
-        	if(areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER)){
+            if (areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                  if (this.globalElements == null) {        			 
                      globalElements = new HashMap<QName, ElementDeclaration>();
                  }

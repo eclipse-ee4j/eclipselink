@@ -30,6 +30,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         TestSuite suite = new TestSuite("TypeMappingInfo Test Suite");
         suite.addTestSuite(DatahandlerWithAnnotationsTestCases.class);
         suite.addTestSuite(DuplicateListOfStringsTestCases.class);
+        suite.addTestSuite(ImageTestCases.class);
         return suite;
     }
 }

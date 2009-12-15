@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -202,6 +203,8 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
              assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
          } else if(controlValue instanceof DataHandler && testValue instanceof DataHandler){
         	 compareDataHandlers((DataHandler)controlValue, (DataHandler)testValue); 
+         } else if(controlValue instanceof Image && testValue instanceof Image) {
+             compareImages((Image)controlValue, (Image) testValue);
          } else {
              assertEquals(controlValue, testValue);
          }
@@ -215,6 +218,11 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	          e.printStackTrace();
 	          fail();
 	      }
+	 }
+	 
+	 private void compareImages(Image controlImage, Image testImage) {
+	     assertEquals(controlImage.getWidth(null), testImage.getWidth(null));
+	     assertEquals(controlImage.getHeight(null), testImage.getHeight(null));
 	 }
 	   protected void setupParser() {
 	        try {
