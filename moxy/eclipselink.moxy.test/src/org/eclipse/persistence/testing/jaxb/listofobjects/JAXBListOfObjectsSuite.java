@@ -54,6 +54,9 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBMultipleMapsTestCases.class);
 		suite.addTestSuite(JAXBMultipleMapsNamespaceTestCases.class);
 		suite.addTestSuite(JAXBTypedListTestCases.class);
+		suite.addTestSuite(JAXBListOfInnerClassTestCases.class);
+		suite.addTestSuite(JAXBArrayOfInnerClassTestCases.class);
+		suite.addTestSuite(JAXBMapOfInnerClassTestCases.class);
 		return suite;
 	}
 }
