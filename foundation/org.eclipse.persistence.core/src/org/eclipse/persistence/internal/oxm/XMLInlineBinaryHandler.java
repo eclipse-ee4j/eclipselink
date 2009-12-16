@@ -31,7 +31,6 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
     Converter converter;
     UnmarshalRecord parent;
     
-    
     public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, DatabaseMapping mapping, Converter converter, boolean isCollection) {
         super(null);
         this.nodeValue = nodeValue;
@@ -55,18 +54,20 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
        Object value = this.getStringBuffer().toString();
        resetStringBuffer();
 
+       Class attributeClassification = null;
        boolean isSwaRef = false;
        if(isCollection) {
            isSwaRef = ((XMLBinaryDataCollectionMapping)mapping).isSwaRef();
            field = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
+           attributeClassification =((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
        } else {
            isSwaRef = ((XMLBinaryDataMapping)mapping).isSwaRef();
            field = (XMLField)((XMLBinaryDataMapping)mapping).getField();
+           attributeClassification =((XMLBinaryDataMapping)mapping).getAttributeClassification();
        }
            
-
-       if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {
-           if(mapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+       if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {    	  
+           if(attributeClassification != null && attributeClassification == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler((String)value);
            } else {
                value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray((String)value);
@@ -88,7 +89,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
                }
            }
        }
-       value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, mapping.getAttributeClassification(), parent.getSession());
+       value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
        if(isCollection) {
            if(value != null) {
                parent.addAttributeValue((ContainerValue)nodeValue, value);

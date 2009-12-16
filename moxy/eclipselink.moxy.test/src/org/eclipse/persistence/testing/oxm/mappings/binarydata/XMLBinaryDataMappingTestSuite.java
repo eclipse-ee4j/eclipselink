@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataByteObjectArrayTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameNullNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameXOPonNSRTestCases;
@@ -31,6 +32,7 @@ public class XMLBinaryDataMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataEmptyElementTestCases.class);
         suite.addTestSuite(BinaryDataSelfTestCases.class);
         suite.addTestSuite(BinaryDataSelfDataHandlerTestCases.class);
+        suite.addTestSuite(BinaryDataByteObjectArrayTestCases.class);
         return suite;
     }
 

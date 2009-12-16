@@ -8,27 +8,13 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Denise Smith - December 15, 2009
  ******************************************************************************/  
-
-/* $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameProject.java 02-nov-2006.10:57:28 gyorke Exp $ */
-/* Copyright (c) 2006, Oracle. All rights reserved.  */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    mfobrien    10/19/06 - Creation
- */
-
-/**
- *  @version $Header: BinaryDataCollectionWithGroupingElementIdentifiedByNameProject.java 02-nov-2006.10:57:28 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -36,18 +22,19 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.EmployeeWithByteArrayObject;
 
-public class BinaryDataCollectionWithGroupingElementIdentifiedByNameProject extends Project {
-    //public NamespaceResolver namespaceResolver;
-    public BinaryDataCollectionWithGroupingElementIdentifiedByNameProject(//
+public class BinaryDataCollectionByteObjectArrayProject extends Project {
+    public BinaryDataCollectionByteObjectArrayProject(//
     NamespaceResolver namespaceResolver) {
         addDescriptor(getEmployeeDescriptor(namespaceResolver));
     }
 
     private XMLDescriptor getEmployeeDescriptor(NamespaceResolver aNSResolver) {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(Employee.class);
+        descriptor.setJavaClass(EmployeeWithByteArrayObject.class);
         descriptor.setDefaultRootElement("employee");
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -57,8 +44,7 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameProject exte
 
         XMLBinaryDataCollectionMapping photosMapping = new XMLBinaryDataCollectionMapping();
         photosMapping.setAttributeName("photos");
-        //photosMapping.setXPath("photos/list/photo");///text()");   
-        XMLField field = new XMLField("photos/list/photo");///text()");
+        XMLField field = new XMLField("photos/list/photo");
         field.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         photosMapping.setField(field);
 
@@ -70,7 +56,31 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameProject exte
         photosMapping.setShouldInlineBinaryData(false);
         photosMapping.setSwaRef(false);
         photosMapping.setMimeType("image");
-        photosMapping.setCollectionContentType(ClassConstants.APBYTE);
+        //photosMapping.setCollectionContentType(ClassConstants.ABYTE);
+        Converter valueConverter = new MyConverter();
+        photosMapping.setValueConverter(valueConverter);
+        
+        photosMapping.setAttributeElementClass(Byte[].class);
         return descriptor;
     }
+    
+    public class MyConverter implements Converter{
+    	
+		public Object convertDataValueToObjectValue(Object dataValue, Session session) { 
+			return dataValue;
+		}
+	
+		public Object convertObjectValueToDataValue(Object objectValue, Session session) {
+			return objectValue;
+		}
+	
+		public void initialize(DatabaseMapping mapping, Session session) {
+			
+		}
+	
+		public boolean isMutable() {
+			return false;
+		}
+    }
+
 }
