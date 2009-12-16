@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
-import java.util.zip.ZipException;
 
 /**
  * The class provides a set of methods to pack passing in entries into the sepcified archive file.
