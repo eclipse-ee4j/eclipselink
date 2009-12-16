@@ -49,6 +49,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -426,8 +427,23 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 				return schemaFiles;
 			}
 		}
-
-
+	    
+    /**
+     * Return an Element for a given xml-element snippet.
+     * 
+     * @param xmlelement
+     * @return
+     * @throws Exception
+     */
+    protected Element getXmlElement(String xmlelement) throws Exception {
+        StringReader str = new StringReader(xmlelement);
+        InputSource is = new InputSource(str);
+        try {
+            return parser.parse(is).getDocumentElement();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }
 
 

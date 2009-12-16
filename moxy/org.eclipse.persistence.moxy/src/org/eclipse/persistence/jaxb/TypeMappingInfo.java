@@ -16,6 +16,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Element;
+
 /**
  * <p><b>Purpose</b>:  Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
  * additional information (such as parameter level annotations and element tag names) to be included in addition
@@ -29,6 +31,7 @@ public class TypeMappingInfo {
     private QName xmlTagName;
     private Type type;
     private Annotation[] annotations;
+    private Element xmlElement;
 
     /**
      * Indicates if a global element should be generated for this type.
@@ -80,4 +83,38 @@ public class TypeMappingInfo {
         Local;
     }
 
+    /**
+     * Returns the xml-element as a <code>Element</code> which represents the
+     * parameter level annotations that should be applied to this type.
+     * 
+     * @return <code>Element</code> which represents the parameter level
+     *         annotations that should be applied to this type if set, otherwise
+     *         null
+     */
+    public Element getXmlElement() {
+        return xmlElement;
+    }
+
+    /**
+     * Set the xml-element <code>Element</code> representing parameter level
+     * annotations that should be applied to this type. If
+     * <code>xmlElement</code> is non-null, any annotations set on this instance
+     * will be completely ignored.
+     * 
+     * The following XML representations of parameter level annotations will be
+     * supported:
+     * <ul>
+     * <li>xml-element</li> <li>xml-attachment-ref</li> <li>xml-list</li> <li>
+     * xml-mime-type</li> <li>xml-java-type-adapter</li>
+     * </ul>
+     * 
+     * @param xmlElement
+     *            <code>Element</code> created from an xml-element
+     * 
+     * @see org.w3c.dom.Element
+     * @see org.eclipse.persistence.jaxb.xmlmodel.XmlElement
+     */
+    public void setXmlElement(Element xmlElement) {
+        this.xmlElement = xmlElement;
+    }
 }

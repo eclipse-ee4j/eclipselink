@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -78,7 +80,9 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.LocalVariableTypeTab
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
@@ -94,7 +98,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
-
 
 /**
  * INTERNAL:
@@ -116,6 +119,9 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 public class AnnotationsProcessor {
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+    private static final String TYPE_METHOD_NAME = "type";
+    private static final String VALUE_METHOD_NAME = "value";
+    private static JAXBContext xmlModelContext = null;
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -171,12 +177,7 @@ public class AnnotationsProcessor {
                 if (nextInfo != null) {
                     boolean xmlAttachmentRef = false;
                     String xmlMimeType = null;
-                    
-                    
-                    
-                    java.lang.annotation.Annotation[] annotations = nextInfo.getAnnotations();
-                    
-                    
+                    java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
                     if (annotations != null) {
                         for (int j = 0; j < annotations.length; j++) {
                             java.lang.annotation.Annotation nextAnnotation = annotations[j];
@@ -211,6 +212,61 @@ public class AnnotationsProcessor {
         }
     }
 
+    /**
+     * Returns an array of Annotations for a given TypeMappingInfo.  This array will
+     * either be populated from the TypeMappingInfo's array of annotations, or based
+     * on an xml-element if present.  The xml-element will take precedence over
+     * the annotation array; if there is an xml-element the Array of Annotations
+     * will be ignored.
+     * 
+     * @param tmInfo
+     * @return
+     */
+    private java.lang.annotation.Annotation[] getAnnotations(TypeMappingInfo tmInfo) {
+        if (tmInfo.getXmlElement() != null) {
+            ClassLoader loader = helper.getClassLoader();
+            // create a single ConversionManager for that will be shared by the proxy objects
+            ConversionManager cMgr = new ConversionManager();
+            cMgr.setLoader(loader);
+
+            // unmarshal the node into an XmlElement
+            org.eclipse.persistence.jaxb.xmlmodel.XmlElement xElt = (org.eclipse.persistence.jaxb.xmlmodel.XmlElement) getXmlElement(tmInfo.getXmlElement(), loader);
+            List annotations = new ArrayList();
+            // where applicable, a given dynamic proxy will contain a Map of method name/return value entries
+            Map<String, Object> components = null;
+            // handle @XmlElement: set 'type' method
+            if (!(xElt.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT"))) {
+                components = new HashMap();
+                components.put(TYPE_METHOD_NAME, xElt.getType());
+                annotations.add(AnnotationProxy.getProxy(components, XmlElement.class, loader, cMgr));
+            }
+            // handle @XmlList
+            if (xElt.isXmlList()) {
+                annotations.add(AnnotationProxy.getProxy(components, XmlList.class, loader, cMgr));
+            }
+            // handle @XmlAttachmentRef
+            if (xElt.isXmlAttachmentRef()) {
+                annotations.add(AnnotationProxy.getProxy(components, XmlAttachmentRef.class, loader, cMgr));
+            }
+            // handle @XmlMimeType: set 'value' method
+            if (xElt.getXmlMimeType() != null) {
+                components = new HashMap();
+                components.put(VALUE_METHOD_NAME, xElt.getXmlMimeType());
+                annotations.add(AnnotationProxy.getProxy(components, XmlMimeType.class, loader, cMgr));
+            }
+            // handle @XmlJavaTypeAdapter: set 'type' and 'value' methods
+            if (xElt.getXmlJavaTypeAdapter() != null) {
+                components = new HashMap();
+                components.put(TYPE_METHOD_NAME, xElt.getXmlJavaTypeAdapter().getType());
+                components.put(VALUE_METHOD_NAME, xElt.getXmlJavaTypeAdapter().getValue());
+                annotations.add(AnnotationProxy.getProxy(components, XmlJavaTypeAdapter.class, loader, cMgr));
+            }
+            // return the newly created array of dynamic proxy objects
+            return (java.lang.annotation.Annotation[]) annotations.toArray(new java.lang.annotation.Annotation[annotations.size()]);
+        }
+        // no xml-element set on the info, (i.e. no xml overrides) so return the array of Annotation objects  
+        return tmInfo.getAnnotations();
+    }
     
     /**
      * Initialize maps, lists, etc. Typically called prior to processing a set of 
@@ -524,7 +580,7 @@ public class AnnotationsProcessor {
             TypeMappingInfo tmi = javaClassToTypeMappingInfos.get(javaClass);
             if (tmi != null) {
 
-                java.lang.annotation.Annotation[] annotations = tmi.getAnnotations();
+                java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
                 if (annotations != null) {
                     for (int j = 0; j < annotations.length; j++) {
                         java.lang.annotation.Annotation nextAnnotation = annotations[j];
@@ -2588,7 +2644,7 @@ public class AnnotationsProcessor {
         // FIELD ATTRIBUTES
         RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
         if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
@@ -2767,7 +2823,7 @@ public class AnnotationsProcessor {
         RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
 
         if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
@@ -2926,7 +2982,7 @@ public class AnnotationsProcessor {
         RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
 
         if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
@@ -3305,5 +3361,44 @@ public class AnnotationsProcessor {
 
     public Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedClasses() {
         return this.typeMappingInfoToGeneratedClasses;
+    }
+    
+    /**
+     * Return a JAXBContext for the XmlModel.
+     *  
+     * @return
+     */
+    private JAXBContext getXmlModelContext() {
+        // only create the JAXBContext for our XmlModel once
+        if (xmlModelContext == null) {
+            try {
+                xmlModelContext = JAXBContextFactory.createContext(JAXBContextFactory.METADATA_MODEL_PACKAGE, helper.getClassLoader());
+            } catch (javax.xml.bind.JAXBException e) {
+                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
+            }
+            if (xmlModelContext == null) {
+                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
+            }
+        }
+        return xmlModelContext;
+    }
+    
+    /**
+     * Convenience method for creating an XmlElement object based on a given Element.
+     * The method will load the eclipselink metadata model and unmarshal the Element. 
+     * This assumes that the Element represents an xml-element to be unmarshalled.
+     * 
+     * @param xmlElementNode
+     * @param classLoader
+     * @return
+     */
+    public org.eclipse.persistence.jaxb.xmlmodel.XmlElement getXmlElement(org.w3c.dom.Element xmlElementNode, ClassLoader classLoader) {
+        try {
+            Unmarshaller unmarshaller = getXmlModelContext().createUnmarshaller();
+            JAXBElement<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> jelt = unmarshaller.unmarshal(xmlElementNode, org.eclipse.persistence.jaxb.xmlmodel.XmlElement.class);
+            return jelt.getValue();
+        } catch (javax.xml.bind.JAXBException jaxbEx) {
+            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
+        }
     }
 }
