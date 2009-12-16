@@ -247,14 +247,14 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 //write as attachment
                 String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
-                if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
-                    if (getCollectionContentType() == ClassConstants.ABYTE) {
+                if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
+                    if (getAttributeElementClass() == ClassConstants.ABYTE) {
                         element = session.getDatasourcePlatform().getConversionManager().convertObject(element, ClassConstants.APBYTE);
                     }
                     bytes = (byte[])element;
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.mimeTypePolicy.getMimeType(parent), field.getLastXPathFragment().getLocalName(),
                             field.getLastXPathFragment().getNamespaceURI());
-                } else if (getCollectionContentType() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                } else if (getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) element, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
                     if(c_id == null) {
                         XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, marshaller, this.mimeTypePolicy.getMimeType(parent));
@@ -300,7 +300,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 }
             } else {
                 //inline
-                if (!((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE))) {
+            	if (!((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE))) {
                     element = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, marshaller, this.mimeTypePolicy.getMimeType(parent)).getData();
                 }
             }
@@ -424,7 +424,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     field.setNamespaceResolver(tempResolver);
                     String includeValue = (String) record.get(field);
                     if (element != null && includeValue != null) {
-                        if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
+                    	if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
                             fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
                         } else {
                             fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);
@@ -455,21 +455,21 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 }
             }
 
-            if (collectionContentType != null) {
-                attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, collectionContentType, executionSession);
-            }
             cp.addInto(attributeValue, result, query.getSession());
-            //return attributeValue;
         }
         return result;
     }
 
     public void setCollectionContentType(Class javaClass) {
-        collectionContentType = javaClass;
+    	setAttributeElementClass(javaClass);
     }
 
+    /*
+     * This is the same as calling getAttributeElementClass()
+     * If not set by the user than byte[].class is the default
+     */
     public Class getCollectionContentType() {
-        return collectionContentType;
+    	return getAttributeElementClass();
     }
 
 }

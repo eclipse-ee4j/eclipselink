@@ -83,7 +83,7 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
             Object data = null;
             Class attributeClassification = null;
             if(isCollection) {
-                attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getCollectionContentType();
+            	attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
             } else {
                 attributeClassification = mapping.getAttributeClassification();
             }
