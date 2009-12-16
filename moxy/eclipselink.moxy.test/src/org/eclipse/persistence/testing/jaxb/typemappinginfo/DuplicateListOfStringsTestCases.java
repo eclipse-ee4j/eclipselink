@@ -46,6 +46,7 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoTestCases {
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+	    setupParser();
 	
 		setTypeMappingInfos(getTypeMappingInfos());
 		

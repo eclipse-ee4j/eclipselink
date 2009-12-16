@@ -47,6 +47,7 @@ public class DatahandlerWithAnnotationsTestCases extends TypeMappingInfoTestCase
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+	    setupParser();
 	
 		setTypeMappingInfos(getTypeMappingInfos());
 		

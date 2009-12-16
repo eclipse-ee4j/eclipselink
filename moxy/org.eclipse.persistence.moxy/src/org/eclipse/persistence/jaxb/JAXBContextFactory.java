@@ -72,7 +72,7 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class JAXBContextFactory {
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
-    private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
+    public static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
     private static JAXBContext jaxbContext = null;
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
