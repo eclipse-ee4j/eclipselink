@@ -580,7 +580,10 @@
                 <include name="org.eclipse.persistence.*.jar"/>
                 <include name="*modelgen*.jar"/>
             </fileset>
-        </copy>
+            <fileset dir="${temp.rebuild.path}/bundlezip">
+                <include name="eclipselink-jpa-modelgen*.jar"/>
+            </fileset>
+      </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
             <fileset dir="${temp.rebuild.path}/bundlezip">
