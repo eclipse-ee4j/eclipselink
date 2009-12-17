@@ -35,6 +35,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(MapStringIntegerTestCases.class);
         suite.addTestSuite(ConflictingQNamesTestCases.class);
         suite.addTestSuite(MultipleMapTestCases.class);
+        suite.addTestSuite(MultipleMapWithBindingsTestCases.class);
         return suite;
     }
 }
