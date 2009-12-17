@@ -81,6 +81,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /** Cache the descriptor as it is useful and required in some places. */
     protected transient ClassDescriptor descriptor;
     
+    /** return whether this change set should be recalculated after an event changes the object */
+    protected boolean shouldRecalculateAfterUpdateEvent = true;
+    
     /**
      * The default constructor.
      */
@@ -1063,4 +1066,24 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     public void setActiveCacheKey(CacheKey activeCacheKey)  {
         this.activeCacheKey = activeCacheKey;
     }
+        
+    /**
+     * ADVANCED
+     * Returns true if this ObjectChangeSet should be recalculated after changes in event
+     * @return
+     */
+    public boolean shouldRecalculateAfterUpdateEvent() {
+        return shouldRecalculateAfterUpdateEvent;
+    }
+
+    /**
+     * ADVANCED
+     * Set whether this ObjectChangeSet should be recalculated after changes in event
+     * @return
+     */
+    public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent) {
+        this.shouldRecalculateAfterUpdateEvent = shouldRecalculateAfterUpdateEvent;
+    }
+
 }
+

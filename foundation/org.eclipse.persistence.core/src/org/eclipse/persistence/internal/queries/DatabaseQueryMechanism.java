@@ -1079,7 +1079,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
                 // PreUpdateWithChangesEvent listeners may have altered the object - should recalculate the change set.
                 UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
-                if (!uowChangeSet.isChangeSetFromOutsideUOW()){
+                if (!uowChangeSet.isChangeSetFromOutsideUOW() && writeQuery.getObjectChangeSet().shouldRecalculateAfterUpdateEvent()){
                     // writeQuery.getObjectChangeSet() is mapped to object in uowChangeSet.
                     // It is first cleared then re-populated by calculateChanges method.
                     if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy() ){

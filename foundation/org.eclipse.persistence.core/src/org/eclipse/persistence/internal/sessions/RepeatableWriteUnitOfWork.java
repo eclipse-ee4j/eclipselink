@@ -357,7 +357,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             return;
         }
         try {
-            commitToDatabaseWithPreBuiltChangeSet(changeSet, false);
+            commitToDatabaseWithPreBuiltChangeSet(changeSet, false, false);
             writesCompleted();
         } catch (RuntimeException exception) {
             clearFlushClearCache();

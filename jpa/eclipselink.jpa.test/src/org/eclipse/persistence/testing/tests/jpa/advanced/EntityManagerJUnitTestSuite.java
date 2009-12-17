@@ -340,7 +340,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testGenerateSessionNameFromConnectionProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
-
+        suite.addTest(new EntityManagerJUnitTestSuite("testPreupdateEmbeddable"));
+        
         return suite;
     }
 
@@ -983,6 +984,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             em.flush();
         }catch (Exception ex){
+
             em.clear(); //prevent the flush again
             // Query may fail in server as connection marked for rollback.
             try {
@@ -9226,4 +9228,40 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+    
+    public void testPreupdateEmbeddable(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("testPreupdateEmbeddable");
+        emp.setLastName("testPreupdateEmbeddable");
+        EmploymentPeriod period = new EmploymentPeriod();
+        period.setStartDate(Date.valueOf("2002-1-1"));
+        emp.setPeriod(period);
+        em.persist(emp);
+        commitTransaction(em);
+        closeEntityManager(em);
+        clearCache();
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        
+        emp = em.find(Employee.class, emp.getId());
+        emp.setFirstName("testPreupdateEmbeddable1");
+        
+
+        emp = em.merge(emp);
+
+        em.flush();
+        
+        clearCache();
+        emp = em.find(Employee.class, emp.getId());
+        assertTrue("The endDate was not updated.", emp.getPeriod().getEndDate().equals(EmployeeListener.UPDATE_DATE));
+        
+        em.remove(emp);
+        commitTransaction(em);
+    }
+
+
 }
+
