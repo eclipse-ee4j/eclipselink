@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="testTagname" xmlns:ns1="http://www.w3.org/2005/05/xmlmime" ns1:expectedContentTypes="image/jpeg" type="xsd:base64Binary"/>
+</xsd:schema>

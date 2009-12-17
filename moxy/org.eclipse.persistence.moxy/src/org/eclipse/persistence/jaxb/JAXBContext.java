@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb;
 
 import java.awt.Image;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
@@ -85,7 +87,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private TypeMappingInfo[] boundTypes;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
     private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
-    private Map<TypeMappingInfo, Class> typeMappingInfoToJavaTypeAdapters;
+    private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
 
     public JAXBContext(XMLContext context) {
         super();
@@ -115,12 +117,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
         this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
         this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
+        this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
         this.boundTypes = boundTypes;
     }
 
     public XMLContext getXMLContext() {
         return this.xmlContext;
     }
+    
+    
 
     public void generateSchema(SchemaOutputResolver outputResolver) {
         generateSchema(outputResolver, null);
@@ -414,6 +419,72 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
         this.typeToTypeMappingInfo = typeToMappingInfo;
         this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
+    }
+    
+    void setTypeMappingInfoToJavaTypeAdapaters(Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters) {
+        this.typeMappingInfoToJavaTypeAdapters = typeMappingInfoToAdapters;
+    }
+    
+    private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
+        Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
+        for(TypeMappingInfo tmi:typeMappingInfoToAdapterClasses.keySet()) {
+            Class adapterClass = typeMappingInfoToAdapterClasses.get(tmi);
+            if(adapterClass != null) {
+                try {
+                    XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
+                    Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
+                    RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
+                    
+                    typeMappingInfoToAdapters.put(tmi, rootLevelXmlAdapter);
+                } catch(Exception ex) {}
+            }
+            
+        }
+        return typeMappingInfoToAdapters;
+    }
+    
+    private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
+        Class boundType = Object.class;
+        
+        for (Method method:adapterClass.getDeclaredMethods()) {
+            if (method.getName().equals("marshal")) {
+                Class returnType = method.getReturnType();              
+                if(!returnType.getName().equals(boundType.getName())) {
+                    boundType = returnType;
+                    break;
+                }
+            }
+        }
+        return boundType;
+    }
+    
+    static class RootLevelXmlAdapter {
+        private XmlAdapter xmlAdapter;
+        private Class boundType;
+        
+        public RootLevelXmlAdapter(XmlAdapter adapter, Class boundType) {
+            this.xmlAdapter = adapter;
+            this.boundType = boundType;
+        }
+        
+        public XmlAdapter getXmlAdapter() {
+            return xmlAdapter;
+        }
+        
+        public Class getBoundType() {
+            return boundType;
+        }
+        
+        public void setXmlAdapter(XmlAdapter xmlAdapter) {
+            this.xmlAdapter = xmlAdapter;
+        }
+        
+        public void setBoundType(Class boundType) {
+            this.boundType = boundType;
+        }
+    }
+    Map<TypeMappingInfo, RootLevelXmlAdapter> getTypeMappingInfoToJavaTypeAdapters() {
+        return this.typeMappingInfoToJavaTypeAdapters;
     }
 
 }
