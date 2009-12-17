@@ -2401,9 +2401,10 @@ public class AnnotationsProcessor {
         	valueName = valueName.substring(dollarIndex + 1);
         }
         String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') + 1);
-        String className = keyName + valueName + collectionClassShortName;
-
-        String qualifiedClassName = packageName + "." + className;
+        String suggestedClassName = keyName + valueName + collectionClassShortName;
+        
+        String qualifiedClassName = packageName + "." + suggestedClassName;
+        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
 
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         String internalKeyName = keyClass.getQualifiedName().replace('.', '/');
