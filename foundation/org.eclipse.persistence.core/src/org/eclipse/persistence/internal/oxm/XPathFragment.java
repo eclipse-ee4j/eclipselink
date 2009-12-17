@@ -101,7 +101,7 @@ public class XPathFragment {
 
             if (xpathString.charAt(0) == '/') {
                 setShouldExecuteSelectNodes(true);
-                shortName = xpathString;
+                shortName = xpathString.substring(xpathString.lastIndexOf('/') + 1);
                 indexValue = hasIndex(xpathString);
                 setupNamespaceInformation(shortName);
                 return;
