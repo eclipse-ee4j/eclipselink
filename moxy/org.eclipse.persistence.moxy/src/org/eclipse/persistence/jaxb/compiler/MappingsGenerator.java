@@ -66,6 +66,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.internal.jaxb.many.JAXBObjectArrayAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.many.JAXBPrimitiveArrayAttributeAccessor;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValueAttributeAccessor;
 import org.eclipse.persistence.sessions.Project;
@@ -228,6 +229,8 @@ public class MappingsGenerator {
             namespace = namespaceInfo.getNamespace();
         }
         
+        JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);
+        if(!manyValueJavaClass.isAssignableFrom(javaClass)){
         if (rootElem == null) {
             descriptor.setDefaultRootElement("");
         } else {
@@ -239,7 +242,8 @@ public class MappingsGenerator {
             	    namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
             	}
                 descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null), elementName));
-            }
+	        }
+        }
         }
         
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolverForDescriptor());
@@ -1877,12 +1881,20 @@ public class MappingsGenerator {
                 }
             }else if(type != null && !type.isTransient()){
                 if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
-                    type.getDescriptor().addRootElement(next.getLocalPart());
+                	if(type.getDescriptor().getDefaultRootElement() == null){
+                		type.getDescriptor().setDefaultRootElement(next.getLocalPart());
+                	}else{
+                        type.getDescriptor().addRootElement(next.getLocalPart());
+                	}
                 } else {                    
                     XMLDescriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
                     String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
-                    descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                    if(type.getDescriptor().getDefaultRootElement() == null){
+                		descriptor.setDefaultRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                	}else{
+                        descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                	}
                 }
             }
         }

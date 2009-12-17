@@ -32,6 +32,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(DatahandlerWithXMLTestCases.class);
         suite.addTestSuite(DuplicateListOfStringsTestCases.class);
         suite.addTestSuite(DuplicateListOfStringsTestCasesWithXML.class);
+        suite.addTestSuite(MapStringIntegerTestCases.class);
         return suite;
     }
 }
