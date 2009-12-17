@@ -335,6 +335,7 @@ public class DescriptorEvent extends EventObject {
         if (eventChangeSet != null) {
             eventChangeSet.removeChange(attributeName);
             eventChangeSet.addChange(mapping.compareForChange(clone, ((UnitOfWorkImpl)getSession()).getBackupClone(clone, getDescriptor()), eventChangeSet, getSession()));
+            eventChangeSet.setShouldRecalculateAfterUpdateEvent(false);
         }
     }
 
@@ -401,6 +402,7 @@ public class DescriptorEvent extends EventObject {
         }
         if (eventChangeSet != null) {
             mapping.simpleAddToCollectionChangeRecord(mapKey, valueForChangeSet, eventChangeSet, getSession());
+            eventChangeSet.setShouldRecalculateAfterUpdateEvent(false);
         }
     }
 
@@ -465,6 +467,7 @@ public class DescriptorEvent extends EventObject {
         }
         if (eventChangeSet != null) {
             mapping.simpleRemoveFromCollectionChangeRecord(mapKey, valueForChangeSet, eventChangeSet, getSession());
+            eventChangeSet.setShouldRecalculateAfterUpdateEvent(false);
         }
     }
 }

@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
+
+import java.sql.Date;
 import java.util.EventListener;
 
 public class EmployeeListener implements EventListener {
@@ -28,6 +30,8 @@ public class EmployeeListener implements EventListener {
 
     // preUpdate will remove this prefix from firstName and lastName
     public static String PRE_UPDATE_NAME_PREFIX = "PRE_UPDATE_NAME_PREFIX";
+    
+    public static final Date UPDATE_DATE = Date.valueOf("2004-1-1");
     
 	@PrePersist
 	public void prePersist(Object emp) {
@@ -58,6 +62,9 @@ public class EmployeeListener implements EventListener {
         }
         if(employee.getLastName() != null && employee.getLastName().startsWith(PRE_UPDATE_NAME_PREFIX)) {
             employee.setLastName(employee.getLastName().substring(PRE_UPDATE_NAME_PREFIX.length()));
+        }
+        if (employee.getFirstName() != null && employee.getFirstName().equals("testPreupdateEmbeddable1")){
+            employee.getPeriod().setEndDate(UPDATE_DATE);
         }
 	}
 
