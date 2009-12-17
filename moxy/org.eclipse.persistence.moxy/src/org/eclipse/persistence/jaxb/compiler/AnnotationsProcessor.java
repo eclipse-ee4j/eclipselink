@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -65,7 +66,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
@@ -143,6 +143,7 @@ public class AnnotationsProcessor {
     
     private Map<JavaClass, TypeMappingInfo> javaClassToTypeMappingInfos;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
+    private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
 
     private NamespaceResolver namespaceResolver;
     private Helper helper;
@@ -177,11 +178,11 @@ public class AnnotationsProcessor {
                 TypeMappingInfo nextInfo = this.javaClassToTypeMappingInfos.get(nextClass);
                 if(nextInfo != null) {
                     boolean xmlAttachmentRef = false;
-                    String xmlMimeType = null; 
-                    Class adapterClass = null;
+                    String xmlMimeType = null;
                     java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
-                    if(annotations != null){
-                        for(int j=0; j<annotations.length; j++){
+                    Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
+                    if (annotations != null) {
+                        for (int j = 0; j < annotations.length; j++) {
                             java.lang.annotation.Annotation nextAnnotation = annotations[j];
                             if(nextAnnotation != null){
                                 if (nextAnnotation instanceof XmlMimeType){                   
@@ -199,6 +200,23 @@ public class AnnotationsProcessor {
                         element.setXmlMimeType(xmlMimeType);
                         element.setXmlAttachmentRef(xmlAttachmentRef);
 
+                        if(adapterClass != null) {
+                            Method[] tacMethods = adapterClass.getMethods();
+                            Class declJavaType = Object.class;
+
+                            for (int i = 0; i < tacMethods.length; i++) {
+                                Method method = tacMethods[i];
+                                if (method.getName().equals("marshal")) {
+                                    if(!(method.getReturnType() == declJavaType)) {
+                                        declJavaType = method.getReturnType();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            element.setJavaType(helper.getJavaClass(declJavaType));
+                        }                                    
+                            
                         Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo); 
                         if(generatedClass != null) {
                             element.setJavaType(helper.getJavaClass(generatedClass));
@@ -300,7 +318,19 @@ public class AnnotationsProcessor {
                 javaClassToTypeMappingInfos.put(classes[i], typeMappingInfos[i]);
             }
         }
-        
+        typeMappingInfoToAdapterClasses = new HashMap<TypeMappingInfo, Class>();
+        if (typeMappingInfos != null) {
+            for(TypeMappingInfo next:typeMappingInfos) {
+                java.lang.annotation.Annotation[] annotations = getAnnotations(next);
+                if(annotations != null) {
+                    for(java.lang.annotation.Annotation nextAnnotation:annotations) {
+                        if(nextAnnotation instanceof XmlJavaTypeAdapter) {
+                            typeMappingInfoToAdapterClasses.put(next, ((XmlJavaTypeAdapter)nextAnnotation).value());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -568,48 +598,65 @@ public class AnnotationsProcessor {
     private JavaClass[] processAdditionalClasses(JavaClass[] classes) {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
-        for (JavaClass javaClass : classes) {
+        for (JavaClass jClass : classes) {
             Class xmlElementType = null;
-           
+            JavaClass javaClass = jClass;
             TypeMappingInfo tmi = javaClassToTypeMappingInfos.get(javaClass);
-            if(tmi != null){
-          
+            if (tmi != null) {
+                Class adapterClass = this.typeMappingInfoToAdapterClasses.get(tmi);
+                if(adapterClass != null) {
+                    JavaClass adapterJavaClass = helper.getJavaClass(adapterClass);
+                    JavaClass newType  = helper.getJavaClass(Object.class);
+                    
+                    // look for marshal method
+                    for (Object nextMethod:adapterJavaClass.getDeclaredMethods()) {
+                        JavaMethod method = (JavaMethod)nextMethod;
+                        if (method.getName().equals("marshal")) {
+                            JavaClass returnType = method.getReturnType();              
+                            if(!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
+                                newType = (JavaClass) returnType;
+                                break;
+                            }
+                        }
+                    }
+                    javaClass = newType;
+                }
                 java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
-                if(annotations != null){
-                	for(int j=0; j<annotations.length; j++){
-                		java.lang.annotation.Annotation nextAnnotation = annotations[j];
-                	            		
-                		if(nextAnnotation != null){
-                		    if (nextAnnotation instanceof XmlElement){
-                			    XmlElement javaAnnotation = (XmlElement)nextAnnotation;
-                			    if(javaAnnotation.type() != XmlElement.DEFAULT.class) {
-                			        xmlElementType = javaAnnotation.type();
-                			    }
-                    		}
-                		}
-                	}
+                if (annotations != null) {
+                    for (int j = 0; j < annotations.length; j++) {
+                        java.lang.annotation.Annotation nextAnnotation = annotations[j];
+
+                        if (nextAnnotation != null) {
+                            if (nextAnnotation instanceof XmlElement) {
+                                XmlElement javaAnnotation = (XmlElement) nextAnnotation;
+                                if (javaAnnotation.type() != XmlElement.DEFAULT.class) {
+                                    xmlElementType = javaAnnotation.type();
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        	
+
             if (areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
-                 if (this.globalElements == null) {        			 
-                     globalElements = new HashMap<QName, ElementDeclaration>();
-                 }
-                 if(tmi == null || tmi.getXmlTagName() == null) {
-                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
-                     declaration.setTypeMappingInfo(tmi);
-                     globalElements.put(null, declaration);
-                 }
-        	} else if (javaClass.isArray()){
-	                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
-	                    extraClasses.add(javaClass.getComponentType());
-	                }
-	                Class generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);	                
-	                extraClasses.add(helper.getJavaClass(generatedClass));
-	                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
-	                generatedClassesToArrayClasses.put(generatedClass, javaClass);         
-	                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
-	                 
+                if (this.globalElements == null) {
+                    globalElements = new HashMap<QName, ElementDeclaration>();
+                }
+                if (tmi == null || tmi.getXmlTagName() == null) {
+                    ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
+                    declaration.setTypeMappingInfo(tmi);
+                    globalElements.put(null, declaration);
+                }
+            } else if (javaClass.isArray()) {
+                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
+                    extraClasses.add(javaClass.getComponentType());
+                }
+                Class generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+                generatedClassesToArrayClasses.put(generatedClass, javaClass);
+                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+
             } else if (isCollectionType(javaClass)) {
                 JavaClass componentClass;                
                 if (javaClass.hasActualTypeArguments()) {
@@ -642,7 +689,7 @@ public class AnnotationsProcessor {
                     valueClass = helper.getJavaClass(Object.class);
                 }
                
-                Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
+                Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
                 extraClasses.add(helper.getJavaClass(generatedClass));
                 typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
             } else {
@@ -2336,7 +2383,7 @@ public class AnnotationsProcessor {
         return helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
     }
 
-    private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass){
+    private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
         
         NamespaceInfo combinedNamespaceInfo = null;
         NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
@@ -2417,8 +2464,39 @@ public class AnnotationsProcessor {
 
         cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/MapValue", null, "StringEmployeeMap.java");
 
+        // FIELD ATTRIBUTES       
+        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
+
+        if (typeMappingInfo != null) {
+            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            if (annotations != null) {
+                for (int i = 0; i < annotations.length; i++) {
+                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement)) {
+                        String annotationClassName = nextAnnotation.annotationType().getName();
+                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName.replace('.', '/') + ";");
+                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
+                            try {
+                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
+                                if(nextValue instanceof Class) {
+                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
+                                    nextValue = nextType;
+                                }
+                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                            } catch(InvocationTargetException ex) {
+                                //ignore the invocation target exception here.
+                            } catch(IllegalAccessException ex) {
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs1 = new SignatureAttribute("L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;");
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
+        fieldAttrs1.next = fieldAttrs2;
         cw.visitField(Constants.ACC_PUBLIC, "entry", "L"+ mapType.getInternalName()+ ";", null, fieldAttrs1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
@@ -2547,6 +2625,20 @@ public class AnnotationsProcessor {
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
+                            try {
+                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
+                                if(nextValue instanceof Class) {
+                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
+                                    nextValue = nextType;
+                                }
+                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                            } catch(InvocationTargetException ex) {
+                                //ignore the invocation target exception here.
+                            } catch(IllegalAccessException ex) {
+                                
+                            }
+                        }
                     }
                 }
             }           
@@ -2727,6 +2819,20 @@ public class AnnotationsProcessor {
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
+                            try {
+                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
+                                if(nextValue instanceof Class) {
+                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
+                                    nextValue = nextType;
+                                }
+                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                            } catch(InvocationTargetException ex) {
+                                //ignore the invocation target exception here.
+                            } catch(IllegalAccessException ex) {
+                                
+                            }
+                        }
                     }
                 }
             }           
@@ -2882,10 +2988,24 @@ public class AnnotationsProcessor {
             if(annotations != null){
                 for(int i=0; i<annotations.length; i++){
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){                     
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName.replace('.', '/')+";");
+                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName.replace('.', '/') + ";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
+                            try {
+                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
+                                if(nextValue instanceof Class) {
+                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
+                                    nextValue = nextType;
+                                }
+                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                            } catch(InvocationTargetException ex) {
+                                //ignore the invocation target exception here.
+                            } catch(IllegalAccessException ex) {
+                                
+                            }
+                        }
                     }
                 }
             }           
@@ -3295,5 +3415,9 @@ public class AnnotationsProcessor {
         } catch (javax.xml.bind.JAXBException jaxbEx) {
             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
+    }
+    
+    public Map<TypeMappingInfo, Class> getTypeMappingInfoToAdapterClasses() {
+        return this.typeMappingInfoToAdapterClasses;
     }
 }

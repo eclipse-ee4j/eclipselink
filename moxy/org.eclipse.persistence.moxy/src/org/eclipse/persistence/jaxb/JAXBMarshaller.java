@@ -43,10 +43,12 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
+import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.*;
 
 /**
@@ -261,6 +263,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement)object;
                 value = element.getValue();
             }
+            
+            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+            if(adapter != null) {
+                try {
+                    value = adapter.getXmlAdapter().marshal(value);
+                } catch (Exception ex) {
+                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+                }
+            }
+            
             value = wrapObject(value, element, type);
             marshal(value, eventWriter);
         }
@@ -333,6 +345,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement)object;
                 value = element.getValue();
             }
+            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+            if(adapter != null) {
+                try {
+                    value = adapter.getXmlAdapter().marshal(value);
+                } catch (Exception ex) {
+                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+                }
+            }
             value = wrapObject(value, element, type);
             marshal(value, result);
         }
@@ -367,6 +387,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement)object;
                 value = element.getValue();
             } 
+            
+            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+            if(adapter != null) {
+                try {
+                    value = adapter.getXmlAdapter().marshal(value);
+                } catch (Exception ex) {
+                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+                }
+            }
+            
             value = wrapObject(value, element, type);
             marshal(value, streamWriter);
         }
