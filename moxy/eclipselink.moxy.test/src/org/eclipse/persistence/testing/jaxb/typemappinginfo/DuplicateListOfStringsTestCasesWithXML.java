@@ -16,6 +16,8 @@ import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,6 +29,9 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 public class DuplicateListOfStringsTestCasesWithXML extends DuplicateListOfStringsTestCases {
+    @XmlElement
+    public List myList;
+
     public DuplicateListOfStringsTestCasesWithXML(String name) throws Exception {
         super(name);
         //useLogging = true;
@@ -40,9 +45,11 @@ public class DuplicateListOfStringsTestCasesWithXML extends DuplicateListOfStrin
             TypeMappingInfo tpi = new TypeMappingInfo();
             tpi.setXmlTagName(new QName("someUri","testTagname"));      
             tpi.setElementScope(ElementScope.Global);
-            
+            // set annotations - should be ignored since XML wins
+            Annotation[] annotations = new Annotation[1];               
+            annotations[0] = getClass().getField("myList").getAnnotations()[0];             
+            tpi.setAnnotations(annotations);
             tpi.setXmlElement(getXmlElement("<xml-element xml-list=\"true\" />"));
-            
             tpi.setType(List.class);        
             typeMappingInfos[0] = tpi;
         

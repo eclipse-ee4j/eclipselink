@@ -16,6 +16,9 @@ import java.io.StringReader;
 import java.lang.annotation.Annotation;
 
 import javax.activation.DataHandler;
+import javax.xml.bind.annotation.XmlAttachmentRef;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -24,6 +27,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 public class DatahandlerWithXMLTestCases extends DatahandlerWithAnnotationsTestCases {
+    @XmlMimeType(value="application/binary")
+    public String xmlMimeTypeField;
+
+    @XmlElement
+    public String xmlAttachementRefField;
+
     public DatahandlerWithXMLTestCases(String name) throws Exception {
         super(name);
         //useLogging = true;
@@ -35,6 +44,11 @@ public class DatahandlerWithXMLTestCases extends DatahandlerWithAnnotationsTestC
             TypeMappingInfo tpi = new TypeMappingInfo();
             tpi.setXmlTagName(new QName("someUri","testTagname"));      
             tpi.setElementScope(ElementScope.Global);
+            // set annotations - should be ignored since XML wins
+            Annotation[] annotations = new Annotation[2];
+            annotations[0] = getClass().getField("xmlMimeTypeField").getAnnotations()[0];
+            annotations[1] = getClass().getField("xmlAttachementRefField").getAnnotations()[0];
+            tpi.setAnnotations(annotations);
             tpi.setXmlElement(getXmlElement("<xml-element xml-mime-type=\"image/jpeg\" xml-attachment-ref=\"true\"/>"));
             tpi.setType(DataHandler.class);         
             typeMappingInfos[0] = tpi;          
