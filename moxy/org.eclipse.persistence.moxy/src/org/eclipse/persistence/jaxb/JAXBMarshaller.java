@@ -125,6 +125,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		    xmlroot.setSchemaType((QName)org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
 		}
 		
+		if(elt instanceof WrappedValue){
+			xmlroot.setObject(elt);
+			return xmlroot;
+		}
 		if(qNameToGeneratedClasses != null){		
 			Class theClass = qNameToGeneratedClasses.get(qname);			
 			if(theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {

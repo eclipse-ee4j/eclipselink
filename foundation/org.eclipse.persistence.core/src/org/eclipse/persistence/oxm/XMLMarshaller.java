@@ -1316,15 +1316,15 @@ public class XMLMarshaller {
     	                return false;
     	            }
     	        }
-
-    	        QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
-    	        XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
-    	        if (xdesc != null) {
-    	            return xdesc.getJavaClass() != descriptor.getJavaClass();
-    	        }
-
+    	        
     	        if (descriptor.getSchemaReference() == null) {
     	            return false;
+    	        }
+
+    	        QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
+    	        XMLDescriptor xdesc = xmlContext.getDescriptor(qName);    	     
+    	        if (xdesc != null) {
+    	            return xdesc.getJavaClass() != descriptor.getJavaClass();
     	        }
 
     	        String xmlRootLocalName = xr.getLocalName();
