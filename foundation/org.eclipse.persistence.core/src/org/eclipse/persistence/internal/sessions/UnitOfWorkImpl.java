@@ -1535,7 +1535,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void commitToDatabaseWithPreBuiltChangeSet(UnitOfWorkChangeSet uowChangeSet, boolean commitTransaction, boolean isChangeSetFromOutsideUOW) throws DatabaseException, OptimisticLockException {
         try {
-            boolean savedIsChangeSetFromOutsideUOW = uowChangeSet.isChangeSetFromOutsideUOW();
             uowChangeSet.setIsChangeSetFromOutsideUOW(isChangeSetFromOutsideUOW);
             // The sequence numbers are assigned outside of the commit transaction.
             // This improves concurrency, avoids deadlock and in the case of three-tier will
@@ -1545,7 +1544,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // Iterate over each clone and let the object build merge to clones into the originals.
             setUnitOfWorkChangeSet(uowChangeSet);
             commitToDatabase(commitTransaction);
-            uowChangeSet.setIsChangeSetFromOutsideUOW(savedIsChangeSetFromOutsideUOW);
+            uowChangeSet.setIsChangeSetFromOutsideUOW(false);
 
         } catch (RuntimeException exception) {
             handleException(exception);
