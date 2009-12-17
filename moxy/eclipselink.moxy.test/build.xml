@@ -412,6 +412,7 @@
                         <include name="**/*TestSuite.java"/>
                         <include name="**/ClassLoaderTestCases.java"/>
                         <include name="**/MappingClassLoaderTestCases.java"/>
+                        <include name="**/advancedxpath/**/*TestCases.java"/>
                         <exclude name="**/OXTestSuite.java"/>
                         <exclude name="**/OXMSRGTestSuite.java"/>
                         <exclude name="**/DeploymentXMLOXTestSuite.java"/>
