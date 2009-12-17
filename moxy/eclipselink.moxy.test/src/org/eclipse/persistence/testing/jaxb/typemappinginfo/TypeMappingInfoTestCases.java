@@ -88,7 +88,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     
     public void setTypeMappingInfos(TypeMappingInfo[] newTypes) throws Exception {
     	typeMappingInfos = newTypes;
-    	jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, null, Thread.currentThread().getContextClassLoader());
+    	jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, getProperties(), Thread.currentThread().getContextClassLoader());
     	jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      } 
@@ -96,6 +96,10 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     	return typeMappingInfos[0];
     }
 	
+    protected Map getProperties() throws Exception{
+    	return null;
+    }
+    
     public void testXMLToObjectFromXMLEventReaderWithTypeMappingInfo() throws Exception {
 	    if(null != XML_INPUT_FACTORY) {
 	        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);

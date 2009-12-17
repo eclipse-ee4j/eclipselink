@@ -626,12 +626,14 @@ public class XMLProcessor {
      */
     private Map<String, ArrayList<JavaClass>> buildPackageToJavaClassMap() {
         Map<String, ArrayList<JavaClass>> theMap = new HashMap<String, ArrayList<JavaClass>>();
+        Map<String, ArrayList<JavaClass>> xmlBindingsMap = new HashMap<String, ArrayList<JavaClass>>();
 
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
             ArrayList classes = new ArrayList<JavaClass>();
-            // add binding classes - the Java Model will be used to get a JavaClass via class name
+            // add binding classes - the Java Model will be used to get a
+            // JavaClass via class name
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -639,23 +641,30 @@ public class XMLProcessor {
                 }
             }
             theMap.put(packageName, classes);
+            xmlBindingsMap.put(packageName, new ArrayList(classes));
         }
-        
+
         // add any other classes that aren't declared via external metadata
         for (JavaClass jClass : jModelInput.getJavaClasses()) {
-            // need to verify that the class isn't already in one of our lists
+            // need to verify that the class isn't already in the bindings file list
             String pkg = jClass.getPackageName();
-            ArrayList<JavaClass> existingClasses = theMap.get(pkg);
-            if (existingClasses != null) {
-            	if (!classExistsInArray(jClass, existingClasses)) {
-                    existingClasses.add(jClass);
+            ArrayList<JavaClass> existingXmlBindingsClasses = xmlBindingsMap.get(pkg);
+            ArrayList<JavaClass> allExistingClasses = theMap.get(pkg);
+            if (existingXmlBindingsClasses != null) {
+            	if (!classExistsInArray(jClass, existingXmlBindingsClasses)) {
+            		allExistingClasses.add(jClass);
                 }
             } else {
-                ArrayList classes = new ArrayList<JavaClass>();
-                classes.add(jClass);
-                theMap.put(pkg, classes);
+            	if(allExistingClasses != null){
+            		allExistingClasses.add(jClass);
+            	}else{
+                    ArrayList classes = new ArrayList<JavaClass>();
+                    classes.add(jClass);
+                    theMap.put(pkg, classes);
+            	}
             }
         }
+        
         return theMap;
     }
     
