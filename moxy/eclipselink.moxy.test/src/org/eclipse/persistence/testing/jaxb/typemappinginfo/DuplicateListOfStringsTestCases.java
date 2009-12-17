@@ -93,25 +93,9 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoTestCases {
 	}
 	
 
-	protected TypeMappingInfo getTypeMappingInfo()throws Exception {
-		
-		TypeMappingInfo tpi = new TypeMappingInfo();
-		tpi.setXmlTagName(new QName("someUri","testTagname"));		
-		tpi.setElementScope(ElementScope.Global);
-		Annotation[] annotations = new Annotation[1];				
-		annotations[0] = getClass().getField("myList").getAnnotations()[0];				
-		tpi.setAnnotations(annotations);
-		tpi.setType(List.class);		
-				
-		return tpi;
-	}
 		
 	protected Object getControlObject() {
 		
-		/*DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");		
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, DataHandler.class, data);
-		*/
 		QName qname = new QName("examplenamespace", "root");
 		List theList = new ArrayList();
 		theList.add("aaa");

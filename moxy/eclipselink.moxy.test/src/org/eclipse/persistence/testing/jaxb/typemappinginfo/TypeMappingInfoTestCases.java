@@ -91,12 +91,15 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     	jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      } 
+    public TypeMappingInfo getTypeMappingInfo(){
+    	return typeMappingInfos[0];
+    }
 	
     public void testXMLToObjectFromXMLEventReaderWithTypeMappingInfo() throws Exception {
 	    if(null != XML_INPUT_FACTORY) {
 	        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
 	        javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-	        Object obj = ((org.eclipse.persistence.jaxb.JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, typeMappingInfos[0]);
+	        Object obj = ((org.eclipse.persistence.jaxb.JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getTypeMappingInfo());
 
 	        JAXBElement controlObj = (JAXBElement)getReadControlObject();            
 	        xmlToObjectTest(obj, controlObj);
@@ -107,7 +110,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, typeMappingInfos[0]);
+            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getTypeMappingInfo());
             instream.close();
 
             JAXBElement controlObj = (JAXBElement)getReadControlObject();
@@ -133,7 +136,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             }
 
             int sizeBefore = getNamespaceResolverSize(desc);
-            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, streamWriter, typeMappingInfos[0]);
+            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, streamWriter, getTypeMappingInfo());
 
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
@@ -165,7 +168,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             }
 
             int sizeBefore = getNamespaceResolverSize(desc);
-            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, eventWriter, typeMappingInfos[0]);
+            ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, eventWriter, getTypeMappingInfo());
 
             eventWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
