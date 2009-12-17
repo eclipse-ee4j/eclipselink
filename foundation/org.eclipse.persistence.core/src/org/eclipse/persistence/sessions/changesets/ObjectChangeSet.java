@@ -107,4 +107,18 @@ public interface ObjectChangeSet {
      * Returns true if this ObjectChangeSet represents a new object.
      */
     boolean isNew();
+    
+    /**
+     * ADVANCED
+     * Returns true if this ObjectChangeSet should be recalculated after changes in event
+     * @return
+     */
+    public boolean shouldRecalculateAfterUpdateEvent();
+
+    /**
+     * ADVANCED
+     * Set whether this ObjectChangeSet should be recalculated after changes in event
+     * @return
+     */
+    public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent);
 }
