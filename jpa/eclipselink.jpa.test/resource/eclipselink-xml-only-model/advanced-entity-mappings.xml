@@ -108,7 +108,7 @@
         <attributes>
             <id name="id">
                 <column name="ADDRESS_ID"/>
-                <generated-value strategy="SEQUENCE" generator="ADDRESS_SEQUENCE_GENERATOR"/>
+                <generated-value strategy="SEQUENCE" generator="XML_ADDRESS_SEQUENCE_GENERATOR"/>
             </id>
             <basic name="postalCode">
                 <column name="P_CODE"/>
@@ -178,7 +178,7 @@
         <attributes>
             <id name="id">
                 <column name="PROJ_ID"/>
-                <generated-value strategy="SEQUENCE" generator="PROJECT_SEQUENCE_GENERATOR"/>
+                <generated-value strategy="SEQUENCE" generator="XML_PROJECT_SEQUENCE_GENERATOR"/>
             </id>
             <basic name="name">
                 <column name="PROJ_NAME"/>

@@ -35,7 +35,7 @@ public class MasterSlaveTableCreator extends TableCreator {
         FieldDefinition fieldid = new FieldDefinition();
         fieldid.setName("id");
         fieldid.setTypeName("NUMBER");
-        fieldid.setSize(28);
+        fieldid.setSize(18);
         fieldid.setSubSize(0);
         fieldid.setIsPrimaryKey(true);
         fieldid.setIsIdentity(false);
@@ -53,7 +53,7 @@ public class MasterSlaveTableCreator extends TableCreator {
         FieldDefinition fieldid = new FieldDefinition();
         fieldid.setName("id");
         fieldid.setTypeName("NUMBER");
-        fieldid.setSize(28);
+        fieldid.setSize(18);
         fieldid.setSubSize(0);
         fieldid.setIsPrimaryKey(true);
         fieldid.setIsIdentity(false);
@@ -64,7 +64,7 @@ public class MasterSlaveTableCreator extends TableCreator {
         FieldDefinition fieldmid = new FieldDefinition();
         fieldmid.setName("mid");
         fieldmid.setTypeName("NUMBER");
-        fieldmid.setSize(28);
+        fieldmid.setSize(18);
         fieldmid.setSubSize(0);
         fieldmid.setIsPrimaryKey(false);
         fieldmid.setIsIdentity(false);

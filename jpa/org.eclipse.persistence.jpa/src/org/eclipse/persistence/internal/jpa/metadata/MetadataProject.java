@@ -573,7 +573,12 @@ public class MetadataProject {
      */     
     public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema) {
         // Process the default values.
-        processTable(tableGenerator, TableSequence.defaultTableName, defaultCatalog, defaultSchema);
+        String defaultSequenceTableName = TableSequence.defaultTableName;
+        Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
+        if (seq instanceof TableSequence) {
+            defaultSequenceTableName = ((TableSequence)seq).getTableName();
+        }
+        processTable(tableGenerator, defaultSequenceTableName, defaultCatalog, defaultSchema);
         
         String generatorName = tableGenerator.getGeneratorName();
         
@@ -1098,7 +1103,14 @@ public class MetadataProject {
             TableSequence defaultTableSequence = new TableSequence(DEFAULT_TABLE_GENERATOR);
             NativeSequence defaultObjectNativeSequence = new NativeSequence(DEFAULT_SEQUENCE_GENERATOR, false);
             NativeSequence defaultIdentityNativeSequence = new NativeSequence(DEFAULT_IDENTITY_GENERATOR, 1, true);
-            
+
+            // override default table name with platform's, in case current one
+            // is not legal for this platform (e.g. SEQUENCE for Symfoware)
+            Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
+            if (seq instanceof TableSequence) {
+                defaultTableSequence.setTableName(((TableSequence)seq).getTableName());
+            }
+
             // Sequences keyed on generator names.
             Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
             

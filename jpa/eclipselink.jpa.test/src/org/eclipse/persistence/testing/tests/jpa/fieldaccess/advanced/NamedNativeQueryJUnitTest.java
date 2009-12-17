@@ -55,6 +55,6 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
             exception = e;
         }
         
-        assertNull("Exception was caught", exception);
+        assertNull("Exception was caught: " + exception, exception);
     }
 }

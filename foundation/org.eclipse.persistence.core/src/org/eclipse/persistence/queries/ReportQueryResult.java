@@ -659,7 +659,11 @@ public class ReportQueryResult implements Serializable, Map {
         java.io.StringWriter writer = new java.io.StringWriter();
         writer.write("ReportQueryResult(");
         for (int index = 0; index < getResults().size(); index++) {
-            writer.write(String.valueOf(getResults().get(index)));
+            Object resultObj = getResults().get(index);
+            writer.write(String.valueOf(resultObj));
+            writer.write(" <"
+                         + (resultObj == null ? "null" : resultObj.getClass().getName())
+                         + ">");
             if (index < (getResults().size() - 1)) {
                 writer.write(", ");
             }

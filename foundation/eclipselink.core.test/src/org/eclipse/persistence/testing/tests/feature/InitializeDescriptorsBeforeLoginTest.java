@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
@@ -41,7 +42,16 @@ public class InitializeDescriptorsBeforeLoginTest extends AutoVerifyTestCase {
         DatabaseLogin login = (DatabaseLogin)(getSession().getLogin().clone());
 
         // make sure we are using table sequencing
-        login.setDefaultSequence(new TableSequence());
+        TableSequence ts = new TableSequence();
+
+        // override default table name with platform's, in case current one
+        // is not legal for this platform (e.g. SEQUENCE for Symfoware)
+        Sequence seq = getSession().getDatasourcePlatform().getDefaultSequence();
+        if (seq instanceof TableSequence) {
+            ts.setTableName(((TableSequence)seq).getTableName());
+        }
+
+        login.setDefaultSequence(ts);
         // any project that uses sequencing will do
         org.eclipse.persistence.sessions.Project project = new EmployeeProject();
         project.setLogin(login);

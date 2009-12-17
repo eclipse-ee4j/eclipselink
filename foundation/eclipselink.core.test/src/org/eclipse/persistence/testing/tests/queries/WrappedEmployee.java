@@ -31,4 +31,12 @@ public class WrappedEmployee extends Employee {
     public String getLastName() {
         throw new RuntimeException("Trying to access a wrapped object.");
     }
+
+    /**
+     * Override super's toString() as it depends on getFirstName() and
+     * getLastName() return actual values (as opposed to exceptions).
+     */
+    public String toString() {
+        return "WrappedEmployee";
+    }
 }

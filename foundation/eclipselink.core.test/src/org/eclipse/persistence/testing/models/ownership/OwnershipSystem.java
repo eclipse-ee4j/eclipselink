@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.ownership;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -34,6 +35,12 @@ public class OwnershipSystem extends TestSystem {
 
     public void createTables(DatabaseSession session) {
         // Drop old constraints.
+        DatabasePlatform platform = (DatabasePlatform)session.getDatasourcePlatform();
+        boolean supportsAlterTableConstraints = platform
+                .supportsForeignKeyConstraints()
+                || (platform.supportsUniqueColumns() && !platform
+                        .requiresUniqueConstraintCreationOnTableCreate());
+        if (supportsAlterTableConstraints)
         try {
             session.executeNonSelectingSQL("Alter TABLE OBJECT_A DROP CONSTRAINT OWNER_A_ONE_TO_ONE_");
             session.executeNonSelectingSQL("Alter TABLE OBJECT_C DROP CONSTRAINT OWNER_C_ONE_TO_ONE_");
@@ -41,23 +48,26 @@ public class OwnershipSystem extends TestSystem {
         }
         SchemaManager schemaManager = new SchemaManager(session);
 
+        if (supportsAlterTableConstraints) {
         schemaManager.dropConstraints(ObjectA.tableDefinition());
         schemaManager.dropConstraints(ObjectB.tableDefinition());
         schemaManager.dropConstraints(ObjectC.tableDefinition());
         schemaManager.dropConstraints(ObjectD.tableDefinition());
         schemaManager.dropConstraints(ObjectE.tableDefinition());
-
+        }
         schemaManager.replaceObject(ObjectA.tableDefinition());
         schemaManager.replaceObject(ObjectB.tableDefinition());
         schemaManager.replaceObject(ObjectC.tableDefinition());
         schemaManager.replaceObject(ObjectD.tableDefinition());
         schemaManager.replaceObject(ObjectE.tableDefinition());
 
+        if (supportsAlterTableConstraints) {
         schemaManager.createConstraints(ObjectA.tableDefinition());
         schemaManager.createConstraints(ObjectB.tableDefinition());
         schemaManager.createConstraints(ObjectC.tableDefinition());
         schemaManager.createConstraints(ObjectD.tableDefinition());
         schemaManager.createConstraints(ObjectE.tableDefinition());
+        }
 
         schemaManager.createSequences();
     }
