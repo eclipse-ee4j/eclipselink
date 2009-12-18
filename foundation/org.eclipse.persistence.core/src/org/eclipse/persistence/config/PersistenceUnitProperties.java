@@ -28,6 +28,7 @@ import javax.persistence.Persistence;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -1101,6 +1102,10 @@ public class PersistenceUnitProperties {
      * value of 0 is assumed to be null/unassigned. This allows 0 to be a valid
      * id value. This can also be set per class using the @PrimaryKey annotation
      * and IdValidation.
+     * <p>
+     * Caution: This property configures the static singleton on
+     * {@link Helper#isZeroValidPrimaryKey} which will be shared by all
+     * concurrent uses of EclipseLink.
      * 
      * @see org.eclipse.persistence.annotations.PrimaryKey
      * @see org.eclipse.persistence.annotations.IdValidation

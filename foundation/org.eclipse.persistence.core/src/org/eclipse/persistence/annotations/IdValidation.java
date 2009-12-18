@@ -9,33 +9,42 @@
  *
  * Contributors:
  *     James Sutherland - allow for zero ids
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
-/** 
- * The IdValidation enum determines the type value that are valid for an Id.
- * By default null is not allowed, and 0 is not allow for singleton ids of long or int type.
- * The default value is ZERO for singleton ids, and NULL for composite ids.
- * This can be set using the @PrimaryKey annotation, or ClassDescriptor API.
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
+/**
+ * IdValidation configures which id values are considered valid when loading
+ * from the database. This configuration is set either using the
+ * {@link PrimaryKey} annotation or using the {@link ClassDescriptor} API.
+ * <p>
+ * <i>Note: This configuration is not used to determine if a sequence number is
+ * required. To control how sequencing handles zero values in new objects use
+ * the {@link PersistenceUnitProperties#ALLOW_ZERO_ID} property.</i>
+ * <p>
  * 
- * @see PrimaryKey
- * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
+ * @see PrimaryKey#validation()
+ * @see ClassDescriptor#setIdValidation(IdValidation)
  * @author James Sutherland
- * @since EclipseLink 1.0 
- */ 
+ * @since EclipseLink 1.0
+ */
 public enum IdValidation {
     /**
-     * Only null is not allowed as an id value, 0 is allowed.
+     * Only null is invalid All other values are considered valid. This is the
+     * default configuration when composite identifiers are used.
      */
     NULL,
 
     /**
-     * null and 0 are not allowed, (only int and long).
+     * null and 0 are not allowed for primitive int and long ids. This is the
+     * default configuration for a simple identifier.
      */
     ZERO,
 
     /**
-     * No id validation is done.
+     * No identifier validation is performed.
      */
     NONE
 }
