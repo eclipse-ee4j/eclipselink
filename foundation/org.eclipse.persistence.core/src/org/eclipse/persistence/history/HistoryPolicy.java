@@ -173,24 +173,6 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Returns historical table equal to the passed one, or null.
-     */
-    public HistoricalDatabaseTable getHistoricalTable(DatabaseTable table) {
-        HistoricalDatabaseTable historicalTable = null;
-        if (historicalTables != null) {
-            int nSize = historicalTables.size();
-            for(int i=0; i < nSize; i++) {
-                if(historicalTables.get(i).equals(table)) {
-                    historicalTable = (HistoricalDatabaseTable)historicalTables.get(i);
-                    break;
-                }
-            }
-        }
-        return historicalTable;
-    }
-
-    /**
-     * INTERNAL:
      */
     public final Vector getHistoricalTables() {
         if (historicalTables == null) {

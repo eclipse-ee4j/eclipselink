@@ -1147,26 +1147,4 @@ public class QueryKeyExpression extends ObjectExpression {
         }
         return null;
     }
-    
-    /**
-     * Indicates whether history policy is used.
-     * 
-     * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
-     * 
-     * @return boolean
-     */    
-    public boolean usesHistory() {
-        if(getMapping() != null) {
-            if(getMapping().getDescriptor().getHistoryPolicy() != null) {
-                return true;
-            } else {
-                if (getMapping().isDirectCollectionMapping()) {
-                    return ((DirectCollectionMapping)getMapping()).getHistoryPolicy() != null;
-                } else {
-                    return getMapping().getReferenceDescriptor().getHistoryPolicy() != null;
-                }
-            }
-        }
-        return false;
-    }
 }

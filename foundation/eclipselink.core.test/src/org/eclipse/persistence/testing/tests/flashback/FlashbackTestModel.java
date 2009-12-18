@@ -326,9 +326,10 @@ public class FlashbackTestModel extends TestModel {
             // This delay here is nasty but inevitable.  Every time the tables get
             // recreated (i.e. by every test model) flashback is disabled for
             // 5 minutes.
-            System.out.println("Starting to sleep for 5 minutes.");
-            Thread.sleep((1000 * 60 * 6) + 2000);
-            System.out.println("Have stopped sleeping for 5 minutes.");
+            // Now sleeps for 5 seconds only - seem to be ok.
+            System.out.println("Starting to sleep for 5 seconds.");
+            Thread.sleep(1000 * 5);
+            System.out.println("Have stopped sleeping for 5 seconds.");
             calculateSystemChangeNumber();
             //calculateTimestamp();
             buildAsOfClause();

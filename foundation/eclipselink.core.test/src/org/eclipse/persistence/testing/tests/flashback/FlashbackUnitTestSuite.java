@@ -461,17 +461,28 @@ public class FlashbackUnitTestSuite extends TestSuite {
     }
 
     public void _testOuterJoinTest() {
+        internalOuterJoinTest(true);
+    }
+
+    public void _testOuterJoinTestWithoutAsOf() {
+        internalOuterJoinTest(false);
+    }
+
+    void internalOuterJoinTest(boolean withAsOf) {
         ReadAllQuery query = new ReadAllQuery(LargeProject.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.getAllowingNull("teamLeader").get("firstName").equal("Sarah");
         expression = expression.or(builder.get("name").equal("TOPEmployee Management"));
         query.setSelectionCriteria(expression);
         query.dontMaintainCache();
-        query.setAsOfClause(getAsOfClause());
+        if(withAsOf) {
+            query.setAsOfClause(getAsOfClause());
+        }
         Vector result = (Vector)getSession().executeQuery(query);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        if ((result == null) || (result.size() != 2)) {
-            throw new TestErrorException("Expected 2 objects, read " + result.size());
+        int expectedSize = (withAsOf ? 2 : 1);
+        if ((result == null) || (result.size() != expectedSize)) {
+            throw new TestErrorException("Expected "+expectedSize+" objects, read " + result.size());
         }
     }
 
@@ -566,6 +577,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         addTest(new UnitTestCase("NoTransactionsInHistoricalSessionExceptionTest"));
         addTest(new UnitTestCase("SuccessfulCachingTest"));
         addTest(new UnitTestCase("OuterJoinTest"));
+        addTest(new UnitTestCase("OuterJoinTestWithoutAsOf"));
         addTest(new UnitTestCase("HistoricalQueriesMustPreserveGlobalCacheExceptionTest"));
         addTest(new UnitTestCase("HistoricalQueriesOnlySupportedOnOracleExceptionTest"));
         addTest(new UnitTestCase("HistoricalSessionOnlySupportedOnOracleExceptionTest"));
