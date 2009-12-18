@@ -271,13 +271,16 @@ public abstract class AbstractNullPolicy {
         // Nillable 
         if (isNullRepresentedByXsiNil()) {
             // Ignore any other attributes that are in addition to xsi:nil
+            if(null == attributes) {
+                return false;
+            }
             int index = attributes.getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
             if (index >= 0) {
                 return true;
             }
         } else {
             // EMPTY_NODE - Required
-            if (isNullRepresentedByEmptyNode() && attributes.getLength() == 0) {
+            if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
                 return true;
             }
         }
