@@ -253,4 +253,17 @@
             </fileset>
         </jar>
     </target>
+
+    <target name="bnd-deps" if="bnd.path" depends="init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+        <bnd
+            classpath="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"
+            eclipse="false"
+            sourcepath="${moxy.2.common.plugins.dir}/${jaxb-api.src.lib}"
+            failok="false"
+            exceptions="true"
+            files="./javax.xml.bind.bnd"
+            output="${moxy.2.common.plugins.dir}/javax.xml.bind_2.1.12.v${build.date}${build.time}.jar"/>
+        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.lib}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.1.12.v${build.date}${build.time}.jar" failonerror="false"/>
+    </target>
 </project>
