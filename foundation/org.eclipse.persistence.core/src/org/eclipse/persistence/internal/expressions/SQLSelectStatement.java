@@ -156,21 +156,6 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
-     * Add a table to the statement. The table will
-     * be used in the FROM part of the SQL statement.
-     * Descriptor tables should be overridden with
-     * historical tables with the same name.
-     */
-    public void addOrOverrideTable(DatabaseTable table) {
-        int index = getTables().indexOf(table);
-        if(index >= 0) {
-            getTables().setElementAt(table, index);
-        } else {
-            getTables().addElement(table);
-        }
-    }
-
-    /**
      * ADVANCED:
      * If a platform is Informix, then the outer join must be in the FROM clause.
      * This is used internally by EclipseLink for building Informix outer join syntax which differs from
@@ -882,15 +867,9 @@ public class SQLSelectStatement extends SQLStatement {
 
         Hashtable allTables = (Hashtable)iterator.getResult();
         setTableAliases(allTables);
-        
-        if(getBuilder().asOfClause == null) {
-            for (Enumeration e = allTables.elements(); e.hasMoreElements();) {
-                addTable((DatabaseTable)e.nextElement());
-            }
-        } else {
-            for (Enumeration e = allTables.elements(); e.hasMoreElements();) {
-                addOrOverrideTable((DatabaseTable)e.nextElement());
-            }
+
+        for (Enumeration e = allTables.elements(); e.hasMoreElements();) {
+            addTable((DatabaseTable)e.nextElement());
         }
     }
 
