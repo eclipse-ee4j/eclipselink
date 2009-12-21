@@ -13,7 +13,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     12/12/2008-1.1 Guy Pelletier 
- *       - 249860: Implement table per class inheritance support.     
+ *       - 249860: Implement table per class inheritance support.
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
@@ -59,117 +61,19 @@ public class InheritanceMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Set the class extractor class name on the inheritance policy.
      */
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof InheritanceMetadata) {
-            return valuesMatch(m_strategy, ((InheritanceMetadata) objectToCompare).getStrategy());
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getStrategy() {
-        return m_strategy;
-    }
-    
-    /**
-     * INTERNAL:
-     * The process method method will be called with the descriptor from
-     * every entity in the hierarchy.
-     */
-    public void process(MetadataDescriptor descriptor) {
-        EntityAccessor accessor = (EntityAccessor) descriptor.getClassAccessor();
-        
-        // Set the correct inheritance policy.
-        if (m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name())) {
-            setTablePerClassInheritancePolicy(descriptor);
-        } else {
-            setInheritancePolicy(descriptor);
-        }
-        
-        // Process an inheritance subclass.
-        if (descriptor.isInheritanceSubclass()) {
-            MetadataDescriptor rootDescriptor = descriptor.getInheritanceRootDescriptor();
-            EntityAccessor rootAccessor = (EntityAccessor) rootDescriptor.getClassAccessor();
-                 
-            if (rootDescriptor.usesTablePerClassInheritanceStrategy()) {
-                MetadataDescriptor parentDescriptor = descriptor.getInheritanceParentDescriptor();
-                descriptor.getClassDescriptor().getTablePerClassPolicy().addParentDescriptor(parentDescriptor.getClassDescriptor());
-                parentDescriptor.getClassDescriptor().getTablePerClassPolicy().addChildDescriptor(descriptor.getClassDescriptor());
-            } else {
-                // Set the parent class on the inheritance policy.
-                descriptor.getClassDescriptor().getInheritancePolicy().setParentClassName(descriptor.getInheritanceParentDescriptor().getJavaClassName());                
-            }
-            
-            // If we have inheritance defined then we are a root parent and the 
-            // strategy should be changing meaning we have double the work to do. 
-            // Note: if the strategy does not change, then we ignore the inheritance 
-            // hierarchy and continue as if we were a simple inheritance subclass.
-            if (accessor.hasInheritance() && ! equals(rootAccessor.getInheritance())) {
-                // If our parent was a table per class strategy then we need
-                // to add the table per class mappings.
-                if (rootDescriptor.usesTablePerClassInheritanceStrategy()) {
-                    // Go through our parents (including their mapped superclasses 
-                    // and add their accessors to our list of accessors.
-                    addTablePerClassParentMappings(descriptor, descriptor);
-                } else {
-                    if (! usesTablePerClassStrategy()) {
-                        // We are either a JOINED or SINGLE_TABLE strategy and we
-                        // need to process our specific inheritance metadata.
-                        addClassIndicatorField(descriptor, accessor);
-                        addClassIndicator(rootDescriptor, accessor);
-                    }
-                    
-                    // The strategies are changing so must process some 
-                    // join columns to link up the classes.
-                    accessor.processInheritancePrimaryKeyJoinColumns();
-                }
-            } else {
-                // We are a simple inheritance subclass.
-                if (usesTablePerClassStrategy()) {
-                    // Go through our parents (including their mapped superclasses 
-                    // and add their accessors to our list of accessors.
-                    addTablePerClassParentMappings(descriptor, descriptor);
-                } else {
-                    // We have metadata we need to set on our root parent.
-                    addClassIndicator(rootDescriptor, accessor);
-                    
-                    // Process join columns if necessary.
-                    if (rootAccessor.getInheritance().usesJoinedStrategy()) {
-                        accessor.processInheritancePrimaryKeyJoinColumns();
-                    }
-                }
-            }
-            
-            // If the root descriptor has an id class, we need to set the same 
-            // id class on our descriptor.
-            if (descriptor.getInheritanceRootDescriptor().hasCompositePrimaryKey()) {
-                descriptor.setPKClass(descriptor.getInheritanceRootDescriptor().getPKClass());
-            }
-        } else {
-            // Since Inheritance hierarchies are processed from the top most
-            // root down, only the top most roots will go through this code.
-            if (! usesTablePerClassStrategy()) {
-                // We are either a JOINED or SINGLE_TABLE strategy and we
-                // need to process our specific inheritance metadata.
-                addClassIndicatorField(descriptor, accessor);
-                addClassIndicator(descriptor, accessor);
-            }  
-        }
+    protected void addClassExtractor(MetadataDescriptor descriptor, EntityAccessor accessor) { 
+        descriptor.getClassDescriptor().getInheritancePolicy().setClassExtractorName(accessor.processClassExtractor());
     }
     
     /**
      * INTERNAL:
      * Recursive method.
      */
-    private void addClassIndicator(MetadataDescriptor rootDescriptor, EntityAccessor accessor) {
-        if (rootDescriptor.isInheritanceSubclass()) {
-            addClassIndicator(rootDescriptor.getInheritanceRootDescriptor(), accessor);
+    protected void addClassIndicator(MetadataDescriptor descriptor, EntityAccessor accessor) {
+        if (descriptor.isInheritanceSubclass()) {
+            addClassIndicator(descriptor.getInheritanceRootDescriptor(), accessor);
         } else {
             // Get the discriminator value from the accessor (this will do any
             // defaulting if necessary and log a message). If the discriminator 
@@ -177,18 +81,17 @@ public class InheritanceMetadata extends ORMetadata {
             // abstract and should be not be added to the class name indicator 
             // list.
 
-            String discriminatorValue = accessor.getDiscriminatorValueOrNull();
+            String discriminatorValue = accessor.processDiscriminatorValue();
             if (discriminatorValue != null) {
-                if (rootDescriptor.getClassDescriptor().getInheritancePolicy().getClassIndicatorField().getType() == Integer.class){
-                    try{
-                        Integer integerDiscriminator = new Integer(discriminatorValue);
-                        rootDescriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), integerDiscriminator);
-                        return;
+                if (descriptor.getClassDescriptor().getInheritancePolicy().getClassIndicatorField().getType() == Integer.class){
+                    try {
+                        descriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), new Integer(discriminatorValue));
                     } catch (NumberFormatException exc){
                         accessor.getLogger().logWarningMessage(MetadataLogger.WARNING_INCORRECT_DISCRIMINATOR_FORMAT, accessor.getJavaClassName(), discriminatorValue);
                     }
+                } else {
+                    descriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), discriminatorValue);
                 }
-                rootDescriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), discriminatorValue);
             }
         }
     }
@@ -196,7 +99,7 @@ public class InheritanceMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    private void addClassIndicatorField(MetadataDescriptor descriptor, EntityAccessor accessor) {
+    protected void addClassIndicatorField(MetadataDescriptor descriptor, EntityAccessor accessor) {
         descriptor.getClassDescriptor().getInheritancePolicy().setClassIndicatorField(accessor.processDiscriminatorColumn());
     }
     
@@ -255,9 +158,139 @@ public class InheritanceMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof InheritanceMetadata) {
+            return valuesMatch(m_strategy, ((InheritanceMetadata) objectToCompare).getStrategy());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getStrategy() {
+        return m_strategy;
+    }
+    
+    /**
+     * INTERNAL:
+     * The process method method will be called with the descriptor from
+     * every entity in the hierarchy.
+     */
+    public void process(MetadataDescriptor descriptor) {
+        EntityAccessor accessor = (EntityAccessor) descriptor.getClassAccessor();
+        
+        // Set the correct inheritance policy.
+        if (m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name())) {
+            setTablePerClassInheritancePolicy(descriptor);
+        } else {
+            setInheritancePolicy(descriptor);
+        }
+        
+        // Process an inheritance subclass.
+        if (descriptor.isInheritanceSubclass()) {
+            MetadataDescriptor rootDescriptor = descriptor.getInheritanceRootDescriptor();
+            EntityAccessor rootAccessor = (EntityAccessor) rootDescriptor.getClassAccessor();
+                 
+            if (rootDescriptor.usesTablePerClassInheritanceStrategy()) {
+                MetadataDescriptor parentDescriptor = descriptor.getInheritanceParentDescriptor();
+                descriptor.getClassDescriptor().getTablePerClassPolicy().addParentDescriptor(parentDescriptor.getClassDescriptor());
+                parentDescriptor.getClassDescriptor().getTablePerClassPolicy().addChildDescriptor(descriptor.getClassDescriptor());
+            } else {
+                // Set the parent class on the inheritance policy.
+                descriptor.getClassDescriptor().getInheritancePolicy().setParentClassName(descriptor.getInheritanceParentDescriptor().getJavaClassName());                
+            }
+            
+            // If we have inheritance defined then we are a root parent and the 
+            // strategy should be changing meaning we have double the metadata
+            // to process.
+            // Note: if the strategy does not change, then we ignore the
+            // inheritance hierarchy and continue as if we were a simple 
+            // inheritance subclass.
+            if (accessor.hasInheritance() && ! equals(rootAccessor.getInheritance())) {
+                // Process the inheritance root metadata.
+                processInheritanceRoot(descriptor, accessor);
+            } else {
+                // Process the inheritance sub class metadata.
+                processInheritanceSubclass(descriptor, accessor, rootAccessor);
+            }
+            
+            // If the root descriptor has an id class, we need to set the same 
+            // id class on our descriptor.
+            if (rootDescriptor.hasCompositePrimaryKey()) {
+                descriptor.setPKClass(rootDescriptor.getPKClass());
+            }
+        } else {
+            // Process the inheritance root metadata.
+            processInheritanceRoot(descriptor, accessor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the inheritance metadata of a root class.
+     */
+    protected void processInheritanceRoot(MetadataDescriptor descriptor, EntityAccessor accessor) {
+        // If we are an inheritance subclass, then the strategy must be changing 
+        // and we therefore have a little more work to do.
+        if (descriptor.isInheritanceSubclass()) {
+            if (descriptor.getInheritanceRootDescriptor().usesTablePerClassInheritanceStrategy()) {
+                // If our parent used a TABLE_PER_CLASS strategy then we need to 
+                // add the table per class mappings from our parents, including 
+                // their mapped superclasses, to our list of accessors.
+                addTablePerClassParentMappings(descriptor, descriptor);
+            } else {
+                // Indicators are used with all strategies except for 
+                // TABLE_PER_CLASS. However, if the parent used anything but 
+                // TPC we need to process primary key join columns since the 
+                // strategies are changing and we need to link up the classes.
+                accessor.processInheritancePrimaryKeyJoinColumns();    
+            }
+        }
+        
+        // Indicators are used with all strategies except for TABLE_PER_CLASS.
+        if (! usesTablePerClassStrategy()) {
+            if (accessor.hasClassExtractor()) {
+                addClassExtractor(descriptor, accessor);
+            } else {
+                addClassIndicatorField(descriptor, accessor);
+                addClassIndicator(descriptor, accessor);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the inheritance metadata of a sub class.
+     */
+    protected void processInheritanceSubclass(MetadataDescriptor descriptor, EntityAccessor accessor, EntityAccessor rootAccessor) {
+        if (usesTablePerClassStrategy()) {
+            // Go through our parents, including their mapped superclasses, 
+            // and add their accessors to our list of accessors.
+            addTablePerClassParentMappings(descriptor, descriptor);
+        } else {
+            // If the root accessor doesn't have a class extractor then add
+            // the class indicator.
+            if (! rootAccessor.hasClassExtractor()) {
+                addClassIndicator(rootAccessor.getDescriptor(), accessor);
+            }
+            
+            // Process join columns if necessary.
+            if (rootAccessor.getInheritance().usesJoinedStrategy()) {
+                accessor.processInheritancePrimaryKeyJoinColumns();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Recursive method.
      */
-    private void setInheritancePolicy(MetadataDescriptor descriptor) {
+    protected void setInheritancePolicy(MetadataDescriptor descriptor) {
         if (m_strategy == null && ! descriptor.isInheritanceSubclass()) {
             // TODO: Log a defaulting message
         }
@@ -276,7 +309,7 @@ public class InheritanceMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    private void setTablePerClassInheritancePolicy(MetadataDescriptor descriptor) {
+    protected void setTablePerClassInheritancePolicy(MetadataDescriptor descriptor) {
         descriptor.getClassDescriptor().setTablePerClassPolicy(new TablePerClassPolicy(descriptor.getClassDescriptor()));
     }
     

@@ -17,6 +17,7 @@ import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.*;
@@ -69,7 +71,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
     protected transient Expression childrenJoinExpression;
 
     /** Allow for class extraction method to be specified. */
+    protected String classExtractorName;
     protected transient ClassExtractor classExtractor;
+    
     protected ClassDescriptor descriptor;
     protected boolean shouldAlwaysUseOuterJoin = false;
 
@@ -383,7 +387,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
         return clone;
     }
-
+    
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this InheritancePolicy to actual class-based settings.
@@ -394,47 +398,63 @@ public class InheritancePolicy implements Serializable, Cloneable {
         Iterator keysEnum = getClassNameIndicatorMapping().keySet().iterator();
         Iterator valuesEnum = getClassNameIndicatorMapping().values().iterator();
         // Clear old classes (after class names have been lazy initialized).
-        this.classIndicatorMapping = new HashMap();
+        classIndicatorMapping = new HashMap();
         while (keysEnum.hasNext()) {
             Object key = keysEnum.next();
             Object value = valuesEnum.next();
-            Class theClass = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            
+            Class theClass = convertClassNameToClass((String) key, classLoader);
+            classIndicatorMapping.put(theClass, value);
+            classIndicatorMapping.put(value, theClass);
+        }
+        
+        // Initialize the parent class name.
+        if (getParentClassName() != null){
+            setParentClass(convertClassNameToClass(getParentClassName(), classLoader));
+        }
+        
+        // Initialize the class extractor name.
+        if (classExtractorName != null) {
+            Class classExtractorClass = convertClassNameToClass(classExtractorName, classLoader);
+            
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        theClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName((String)key, true, classLoader));
+                        setClassExtractor((ClassExtractor) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(classExtractorClass)));
                     } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames((String)key, (Exception)exception.getCause());
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(classExtractorName, exception.getException());
                     }
                 } else {
-                    theClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName((String)key, true, classLoader);
+                    setClassExtractor((ClassExtractor) PrivilegedAccessHelper.newInstanceFromClass(classExtractorClass));
                 }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames((String)key, exc);
+            } catch (IllegalAccessException ex) {
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex);
+            } catch (InstantiationException e) {
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, e);   
             }
-            this.classIndicatorMapping.put(theClass, value);
-            this.classIndicatorMapping.put(value, theClass);
         }
-        if (getParentClassName() == null){
-            return;
-        }
-        Class parentClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    parentClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getParentClassName(), true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(getParentClassName(), exception.getException());
-                }
-            } else {
-                parentClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getParentClassName(), true, classLoader);
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(parentClassName, exc);
-        }
-        setParentClass(parentClass);
     }
 
+    /**
+     * INTERNAL:
+     * Convert the given className to an actual class.
+     */
+    protected Class convertClassNameToClass(String className, ClassLoader classLoader) {
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, (Exception)exception.getCause());
+                }
+            } else {
+                return PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+            }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+        }
+    }
+    
     /**
      * PUBLIC:
      * Set the descriptor to only read instance of itself when queried.
@@ -608,6 +628,18 @@ public class InheritancePolicy implements Serializable, Cloneable {
         this.classExtractor = classExtractor;
     }
 
+    /**
+     * ADVANCED:
+     * Set the class extractor class name. At descriptor initialize time this
+     * class will be converted to a Class and set as the ClassExtractor. This
+     * method is called from JPA.
+     * 
+     * @see setClassExtractor for more information on the ClassExtractor class.
+     */
+    public void setClassExtractorName(String classExtractorName) {
+        this.classExtractorName = classExtractorName;
+    }
+    
     /**
      * INTERNAL:
      * Return the class indicator associations for XML.

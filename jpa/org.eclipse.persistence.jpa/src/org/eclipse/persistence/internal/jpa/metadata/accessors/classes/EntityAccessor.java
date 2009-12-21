@@ -49,6 +49,8 @@
  *       - 290567: mappedbyid support incomplete
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -69,6 +71,7 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.ClassExtractor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -111,6 +114,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     
+    private MetadataClass m_classExtractor;
+    
+    private String m_classExtractorName;
     private String m_discriminatorValue;
     private String m_entityName;
     
@@ -324,6 +330,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getClassExtractorName() {
+        return m_classExtractorName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public DiscriminatorColumnMetadata getDiscriminatorColumn() {
         return m_discriminatorColumn;
     }
@@ -334,34 +348,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public String getDiscriminatorValue() {
         return m_discriminatorValue;
-    }
- 
-    /**
-     * INTERNAL:
-     * Process a discriminator value to set the class indicator on the root 
-     * descriptor of the inheritance hierarchy. 
-     * 
-     * If there is no discriminator value, the class indicator defaults to 
-     * the class name.
-     */
-    public String getDiscriminatorValueOrNull() {
-        if (! Modifier.isAbstract(getJavaClass().getModifiers())) {
-            // Add the indicator to the inheritance root class' descriptor. The
-            // default is the short class name.
-            if (m_discriminatorValue == null) {
-                MetadataAnnotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
-                
-                if (discriminatorValue == null) {
-                    return Helper.getShortClassName(getJavaClassName());
-                } else {
-                    return (String) discriminatorValue.getAttribute("value"); 
-                }
-            } else {
-                return m_discriminatorValue;
-            }  
-        }
-        
-        return null;
     }
     
     /**
@@ -416,6 +402,43 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
+     * INTERNAL:
+     * This method is a little involved since a class extractor is mutually
+     * exclusive with a discriminator column.
+     * 
+     * Within one xml file it is impossible to have both specified since they
+     * are within a choice tag. However, if one is specified in the orm.xml
+     * and the other in the eclipselink-orm.xml, after the merge both will be
+     * set on this accessor, so we need to check which came from the 
+     * eclipselink-orm.xml because it is the one we need to use. 
+     */
+    public boolean hasClassExtractor() {
+        if (m_classExtractorName != null && m_discriminatorColumn != null) {
+            // If we have both a classExtractorName and a discriminatorColumn 
+            // then the only way this is possible is if the user has both an 
+            // orm.xml and an eclipselink-orm.xml and one specifies the 
+            // discriminator column and the other specifies the class extractor. 
+            // We must use the one from the eclipselink-orm.xml.
+            return ! m_discriminatorColumn.loadedFromEclipseLinkXML();
+        } else if (m_classExtractorName != null) {
+            // We have a class extractor name and we don't care where it came 
+            // from. It must be used and override any annotations.
+            return true;
+        } else if (m_discriminatorColumn != null) {
+            // We have a discriminator column and we don't care where it came 
+            // from. It must be used and override any annotations.
+            return false;
+        } else {
+            // Nothing was specified in XML. Must look at the annotations now.
+            if (isAnnotationPresent(ClassExtractor.class) && (isAnnotationPresent(DiscriminatorColumn.class) || isAnnotationPresent(DiscriminatorValue.class))) {
+                throw ValidationException.classExtractorCanNotBeSpecifiedWithDiscriminatorMetadata(getJavaClassName());
+            }
+            
+            return isAnnotationPresent(ClassExtractor.class);
+        }
+    }
+    
+    /**
      * INTERNAL: 
      * Return true if this class has an inheritance specifications.
      */
@@ -433,6 +456,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize simple class objects.
+        m_classExtractor = initXMLClassName(m_classExtractorName);
         
         // Initialize single objects.
         initXMLObject(m_inheritance, accessibleObject);
@@ -474,6 +500,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Simple object merging.
         m_entityName = (String) mergeSimpleObjects(m_entityName, accessor.getEntityName(), accessor, "@name");
         m_discriminatorValue = (String) mergeSimpleObjects(m_discriminatorValue, accessor.getDiscriminatorValue(), accessor, "<discriminator-value>");
+        m_classExtractorName = (String) mergeSimpleObjects(m_classExtractorName, accessor.getClassExtractorName(), accessor, "<class-extractor>");
         
         // ORMetadata object merging.
         m_discriminatorColumn = (DiscriminatorColumnMetadata) mergeORObjects(m_discriminatorColumn, accessor.getDiscriminatorColumn());
@@ -660,6 +687,24 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Return the user defined class extractor class for this entity. Assumes
+     * hasClassExtractor has been called beforehand (meaning we either have
+     * an annotation or XML definition.
+     */
+    public String processClassExtractor() {
+        MetadataAnnotation classExtractor = getAnnotation(ClassExtractor.class);
+
+        if (m_classExtractor == null) {
+            m_classExtractor = getMetadataClass((String) classExtractor.getAttribute("value"));
+        } else {
+            getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, classExtractor, getJavaClassName(), getLocation());
+        }
+        
+        return m_classExtractor.getName();
+    }
+    
+    /**
+     * INTERNAL:
      * Allows for processing DerivedIds.  All referenced accessors are processed
      * first to ensure the necessary fields are set before this derivedId is processed 
      */
@@ -681,7 +726,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the discriminator column metadata (defaulting is necessary),
+     * Process the discriminator column metadata (defaulting if necessary),
      * and return the EclipseLink database field.
      */
     public DatabaseField processDiscriminatorColumn() {
@@ -696,6 +741,34 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         }
         
         return m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a discriminator value to set the class indicator on the root 
+     * descriptor of the inheritance hierarchy. 
+     * 
+     * If there is no discriminator value, the class indicator defaults to 
+     * the class name.
+     */
+    public String processDiscriminatorValue() {
+        if (! Modifier.isAbstract(getJavaClass().getModifiers())) {
+            // Add the indicator to the inheritance root class' descriptor. The
+            // default is the short class name.
+            if (m_discriminatorValue == null) {
+                MetadataAnnotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
+                
+                if (discriminatorValue == null) {
+                    return Helper.getShortClassName(getJavaClassName());
+                } else {
+                    return (String) discriminatorValue.getAttribute("value"); 
+                }
+            } else {
+                return m_discriminatorValue;
+            }  
+        }
+        
+        return null;
     }
     
     /**
@@ -1043,7 +1116,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * our parents have already been processed fully. The only exception being
      * when a root accessor doesn't know they are a root (defaulting case). In
      * this case we'll tell the root accessor to process the inheritance 
-     * metadata befor continuing with our own processing.
+     * metadata before continuing with our own processing.
      */
     protected void processTableAndInheritance() {
         // If we are an inheritance subclass, ensure our root is processed 
@@ -1101,6 +1174,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     protected void resolveGenericTypes(List<String> genericTypes, MetadataClass parent) {
         getMetadataFactory().resolveGenericTypes(getJavaClass(), genericTypes, parent, getDescriptor());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setClassExtractorName(String classExtractorName) {
+        m_classExtractorName = classExtractorName;
     }
     
     /**

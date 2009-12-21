@@ -9,12 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
+
+import java.util.List;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 
+import org.eclipse.persistence.testing.models.jpa.inheritance.MacBook;
+import org.eclipse.persistence.testing.models.jpa.inheritance.MacBookPro;
 import org.eclipse.persistence.testing.models.jpa.inheritance.MudTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.RockTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireRating;
@@ -53,7 +59,9 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         
         suite.addTest(new MixedInheritanceJUnitTestCase("testReadNewMudTire"));
         suite.addTest(new MixedInheritanceJUnitTestCase("testReadNewRockTire"));
-
+        
+        suite.addTest(new MixedInheritanceJUnitTestCase("testAppleComputers"));
+        
         return suite;
     }
     
@@ -64,7 +72,55 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
-
+    
+    public void testAppleComputers() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        MacBook macBook1 = new MacBook();
+        macBook1.setRam(2);
+        MacBook macBook2 = new MacBook();
+        macBook2.setRam(4);
+        
+        MacBookPro macBookPro1 = new MacBookPro();
+        macBookPro1.setRam(4);
+        macBookPro1.setColor("Black");
+        MacBookPro macBookPro2 = new MacBookPro();
+        macBookPro2.setRam(6);
+        macBookPro2.setColor("Red");
+        MacBookPro macBookPro3 = new MacBookPro();
+        macBookPro3.setRam(8);
+        macBookPro3.setColor("Green");
+        MacBookPro macBookPro4 = new MacBookPro();
+        macBookPro4.setRam(8);
+        macBookPro4.setColor("Blue");
+        
+        try {
+            em.persist(macBook1);
+            em.persist(macBook2);
+            
+            em.persist(macBookPro1);
+            em.persist(macBookPro2);
+            em.persist(macBookPro3);
+            em.persist(macBookPro4);
+            
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting macbooks: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        clearCache();
+        em = createEntityManager();
+        
+        List macBooks = em.createNamedQuery("findAllMacBooks").getResultList();
+        assertTrue("The wrong number of mac books were returned: " + macBooks.size() + ", expected: 6", macBooks.size() == 6);
+        
+        List macBookPros = em.createNamedQuery("findAllMacBookPros").getResultList();
+        assertTrue("The wrong number of mac book pros were returned: " + macBookPros.size() + ", expected: 4", macBookPros.size() == 4);
+    }
+    
     public void testCreateNewMudTire() {
         EntityManager em = createEntityManager();
         beginTransaction(em);

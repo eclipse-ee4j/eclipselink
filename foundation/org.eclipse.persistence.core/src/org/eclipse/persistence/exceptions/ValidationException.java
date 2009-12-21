@@ -390,6 +390,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_ASSOCIATION_OVERRIDE_REFERENCE_COLUMN_NAME = 7322;
     public static final int MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED = 7323;
     
+    public static final int CLASS_EXTRACTOR_CAN_NOT_BE_SPECIFIED_WITH_DISCRIMINATOR = 7324;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2276,6 +2278,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException classExtractorCanNotBeSpecifiedWithDiscriminatorMetadata(String className) {
+        Object[] args = { className };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_EXTRACTOR_CAN_NOT_BE_SPECIFIED_WITH_DISCRIMINATOR, args));
+        validationException.setErrorCode(CLASS_EXTRACTOR_CAN_NOT_BE_SPECIFIED_WITH_DISCRIMINATOR);
+        return validationException;
+    }
+    
     public static ValidationException classFileTransformerThrowsException(Object transformer, String className, Exception ex) {
         Object[] args = { transformer, className };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_FILE_TRANSFORMER_THROWS_EXCEPTION, args), ex);

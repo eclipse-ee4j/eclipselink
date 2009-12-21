@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 
 
@@ -34,9 +36,91 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildVEHICLETable());
         addTableDefinition(buildCOMPANYTable());
         addTableDefinition(buildENGINEERTable());
-        addTableDefinition(buildPERSONTable());       
+        addTableDefinition(buildPERSONTable());
+        
+        addTableDefinition(buildAPPLETable());
+        addTableDefinition(buildMACBOOKTable());
+        addTableDefinition(buildMACBOOKPROTable());
     }
 
+    public TableDefinition buildAPPLETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_APPLE");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        return table;
+    }
+    
+    public TableDefinition buildMACBOOKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_MACBOOK");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setForeignKeyFieldName("XML_APPLE.ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldRAM = new FieldDefinition();
+        fieldRAM.setName("RAM");
+        fieldRAM.setTypeName("VARCHAR2");
+        fieldRAM.setSize(10);
+        fieldRAM.setSubSize(0);
+        fieldRAM.setIsPrimaryKey(false);
+        fieldRAM.setIsIdentity(false);
+        fieldRAM.setUnique(false);
+        fieldRAM.setShouldAllowNull(true);
+        table.addField(fieldRAM);
+
+        return table;
+    }
+    
+    public TableDefinition buildMACBOOKPROTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_MACBOOK_PRO");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setForeignKeyFieldName("XML_MACBOOK.ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("COLOR");
+        fieldCOLOR.setTypeName("VARCHAR2");
+        fieldCOLOR.setSize(10);
+        fieldCOLOR.setSubSize(0);
+        fieldCOLOR.setIsPrimaryKey(false);
+        fieldCOLOR.setIsIdentity(false);
+        fieldCOLOR.setUnique(false);
+        fieldCOLOR.setShouldAllowNull(true);
+        table.addField(fieldCOLOR);
+
+        return table;
+    }
+    
     public TableDefinition buildBICYCLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_BICYCLE");

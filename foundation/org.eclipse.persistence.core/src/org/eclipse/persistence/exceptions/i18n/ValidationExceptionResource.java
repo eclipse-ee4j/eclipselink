@@ -302,6 +302,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7321", "The field [{1}] from the derived id mapping [{2}] from class [{3}] is an invalid id field from the reference class [{0}]. Ensure there is a corresponding id mapping to that field. " },
                                            { "7322", "The reference column name [{0}] from the association override named [{1}] on the attribute [{2}] from class [{3}] is not a valid mapped primary key field. Ensure there is a corresponding id mapping to that field" },
                                            { "7323", "The table with name [{1}] from [{2}] has multiple unique constraints with the name [{0}]. This is not allowed, unique constaints names must be unique across all tables." },
+                                           { "7324", "The entity class [{1}] specifies both a @ClassExtractor and discriminator metadata. When using a @ClassExtractor, a @DiscriminatorColumn and/or @DiscriminatorValue should not be specified on this class nor should any discriminator value metadata be defined on its subclasses." },
  };
     
     /**

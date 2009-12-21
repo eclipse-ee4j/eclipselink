@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml;
 
@@ -38,20 +40,21 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
     public static Test suite(String testing) {
         TestSuite suite = new TestSuite("XML Entity Mappings JUnit Test Suite");
         
+        suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
+        suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
+        suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
+        
         if (testing.equals(TestingProperties.JPA_ORM_TESTING)) {
-            suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
-            suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
-            suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
         }
+        
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
+        
         return suite;
     }
 }

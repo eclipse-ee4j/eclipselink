@@ -35,6 +35,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1083,6 +1085,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(discriminatorValueMapping);
         
         descriptor.addMapping(getDiscriminatorColumnMapping());
+        descriptor.addMapping(getClassExtractorMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
@@ -2693,6 +2696,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getClassExtractorMapping() {
+        XMLDirectMapping classExtractorMapping = new XMLDirectMapping();
+        classExtractorMapping.setAttributeName("m_classExtractorName");
+        classExtractorMapping.setGetMethodName("getClassExtractorName");
+        classExtractorMapping.setSetMethodName("setClassExtractorName");
+        classExtractorMapping.setXPath("orm:class-extractor/@class");
+        return classExtractorMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getCloneCopyPolicyMapping() {
         XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
         columnMapping.setAttributeName("m_cloneCopyPolicy");
@@ -2802,7 +2817,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         customizerMapping.setXPath("orm:customizer/@class");
         return customizerMapping;
     }
-    
+
     /**
      * INTERNAL:
      */

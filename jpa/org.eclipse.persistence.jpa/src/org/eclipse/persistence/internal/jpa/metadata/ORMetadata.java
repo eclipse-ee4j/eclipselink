@@ -293,7 +293,7 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected boolean loadedFromEclipseLinkXML() {
+    public boolean loadedFromEclipseLinkXML() {
         if (loadedFromXML()) {
             return m_entityMappings.isEclipseLinkORMFile();
         }

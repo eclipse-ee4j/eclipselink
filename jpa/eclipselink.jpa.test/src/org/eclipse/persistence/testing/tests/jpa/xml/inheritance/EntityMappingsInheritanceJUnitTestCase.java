@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2009-2.1 Guy Pelletier 
+ *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.inheritance;
 
@@ -22,6 +24,8 @@ import junit.framework.*;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBook;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBookPro;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Boat;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Company;
@@ -35,40 +39,48 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.Defa
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener1;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener2;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener3;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  
 /**
- * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
+ * JUnit test case(s) xml specified inheritance metadata.
  */
 public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     private static Number busId;
     private static Number boatId;
     private static Number sportsCarId;
+    private String m_persistenceUnit;
     
-    public EntityMappingsInheritanceJUnitTestCase() {
-        super();
-    }
-    
-    public EntityMappingsInheritanceJUnitTestCase(String name) {
+    public EntityMappingsInheritanceJUnitTestCase(String name, String persistenceUnit) {
         super(name);
+        
+        m_persistenceUnit = persistenceUnit;
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite("Inheritance Model");
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testSetup"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateBusFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateNonFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testReadFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testReadNonFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testNamedNativeQueryOnSportsCar"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateBusFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateNonFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteBusFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteFueledVehicle"));
-        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteNonFueledVehicle"));
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-inheritance";
+        
+        TestSuite suite = new TestSuite("Inheritance Model - " + persistenceUnit);
+        
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testSetup", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateBusFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateNonFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testReadFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testReadNonFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testNamedNativeQueryOnSportsCar", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateBusFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testUpdateNonFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteBusFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteNonFueledVehicle", persistenceUnit));
+        
+        if (persistenceUnit.equals("extended-inheritance")) {
+            suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testAppleComputers", persistenceUnit));
+        }
         
         return suite;
     }
@@ -77,9 +89,57 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        DatabaseSession session = JUnitTestCase.getServerSession();
+        DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         new InheritanceTableCreator().replaceTables(session);
-        clearCache();
+        clearCache(m_persistenceUnit);
+    }
+    
+    public void testAppleComputers() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        MacBook macBook1 = new MacBook();
+        macBook1.setRam(2);
+        MacBook macBook2 = new MacBook();
+        macBook2.setRam(4);
+        
+        MacBookPro macBookPro1 = new MacBookPro();
+        macBookPro1.setRam(4);
+        macBookPro1.setColor("Black");
+        MacBookPro macBookPro2 = new MacBookPro();
+        macBookPro2.setRam(6);
+        macBookPro2.setColor("Red");
+        MacBookPro macBookPro3 = new MacBookPro();
+        macBookPro3.setRam(8);
+        macBookPro3.setColor("Green");
+        MacBookPro macBookPro4 = new MacBookPro();
+        macBookPro4.setRam(8);
+        macBookPro4.setColor("Blue");
+        
+        try {
+            em.persist(macBook1);
+            em.persist(macBook2);
+            
+            em.persist(macBookPro1);
+            em.persist(macBookPro2);
+            em.persist(macBookPro3);
+            em.persist(macBookPro4);
+            
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting macbooks: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        clearCache(m_persistenceUnit);
+        em = createEntityManager(m_persistenceUnit);
+        
+        List macBooks = em.createNamedQuery("findAllXMLMacBooks").getResultList();
+        assertTrue("The wrong number of mac books were returned: " + macBooks.size() + ", expected: 6", macBooks.size() == 6);
+        
+        List macBookPros = em.createNamedQuery("findAllXMLMacBookPros").getResultList();
+        assertTrue("The wrong number of mac book pros were returned: " + macBookPros.size() + ", expected: 4", macBookPros.size() == 4);
     }
     
     public void testCreateBusFueledVehicle() {
@@ -95,7 +155,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int prePersistDefaultListenerCountBefore = DefaultListener.PRE_PERSIST_COUNT;
         int postPersistDefaultListenerCountBefore = DefaultListener.POST_PERSIST_COUNT;
         
-        EntityManager em = createEntityManager();        
+        EntityManager em = createEntityManager(m_persistenceUnit);        
         beginTransaction(em);
         
         Bus bus = new Bus();
@@ -143,7 +203,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
     
     public void testCreateFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             SportsCar car = (SportsCar) InheritanceModelExamples.sportsCarExample1();
@@ -164,7 +224,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testCreateNonFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
 
@@ -188,7 +248,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int preRemoveBusCountBefore = 0;//Bus.PRE_REMOVE_COUNT;
         int postRemoveBusCountBefore = 0;//Bus.POST_REMOVE_COUNT;
 
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         Bus bus = em.find(Bus.class, busId);
         try {
@@ -210,7 +270,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testDeleteFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             em.remove(em.find(SportsCar.class, sportsCarId));
@@ -226,7 +286,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testDeleteNonFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             em.remove(em.find(Boat.class, boatId));
@@ -242,7 +302,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testNamedNativeQueryOnSportsCar() {
-        Query query = createEntityManager().createNamedQuery("findSQLMaxSpeedForFerrari");
+        Query query = createEntityManager(m_persistenceUnit).createNamedQuery("findSQLMaxSpeedForFerrari");
         List results = query.getResultList();
         assertTrue("Failed to return 1 item", (results.size() == 1));
 
@@ -254,12 +314,12 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadFueledVehicle() {
-        SportsCar car = createEntityManager().find(SportsCar.class, sportsCarId);
+        SportsCar car = createEntityManager(m_persistenceUnit).find(SportsCar.class, sportsCarId);
         assertTrue("Error reading FueledVehicle [SportsCar]", car.getId() == sportsCarId);
     }
 
     public void testReadNonFueledVehicle() {
-        Boat boat = createEntityManager().find(Boat.class, boatId);
+        Boat boat = createEntityManager(m_persistenceUnit).find(Boat.class, boatId);
         assertTrue("Error reading NonFueledVehicle [Boat]", boat.getId() == boatId);
     }
 
@@ -267,7 +327,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int preUpdateBusCountBefore = 0;//Bus.PRE_UPDATE_COUNT;
         int postUpdateBusCountBefore = 0;//Bus.POST_UPDATE_COUNT;
 
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
 
         Bus bus;
@@ -296,7 +356,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         try {
             bus = em.find(Bus.class, busId);
             // Clear the cache and check that we get a post load (post build internally).
-            clearCache();
+            clearCache(m_persistenceUnit);
             em.refresh(bus);
             postLoadBusCountAfter1 = bus.post_load_count;
 
@@ -319,7 +379,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testUpdateFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             SportsCar car = em.find(SportsCar.class, sportsCarId);
@@ -333,13 +393,13 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         SportsCar newCar = em.find(SportsCar.class, sportsCarId);
         assertTrue("Error updating FueledVehicle [SportsCar]", newCar.getDescription().equals("Corvette"));
     }
 
     public void testUpdateNonFueledVehicle() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Boat boat = em.find(Boat.class, boatId);
@@ -354,7 +414,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         Boat newBoat = em.find(Boat.class, boatId);
         assertTrue("Error updating NonFueledVehicle [Boat]", newBoat.getOwner().getName().equals("XYZ"));
     }
