@@ -263,7 +263,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
         
-        em.createQuery("Select e.address.city from Employee e where size(e.phoneNumbers) > 2").setMaxResults(5).getResultList();
+        em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
         beginTransaction(em);
         try {        
             Metamodel mm = em.getMetamodel();
@@ -1047,8 +1047,6 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
         
     }
-
-
 
     public void testProd(){
         EntityManager em = createEntityManager();
