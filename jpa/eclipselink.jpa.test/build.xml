@@ -178,6 +178,15 @@
             </not>
         </condition>
 
+        <condition property="SESSION_DS_NAME" value="jdbc/${DS_NAME}">
+            <contains string="${server.name}" substring="netweaver"/>
+        </condition>
+        <condition property="SESSION_DS_NAME" value="${DS_NAME}">
+            <not>
+                <isset property="is.netweaver"/>
+            </not>
+        </condition>
+
     </target>
 
     <!-- Configures paths for trunk checkout. -->
@@ -1574,6 +1583,9 @@
             <include name="*.xml"/>
         </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%session-data-source-name%%' value="${SESSION_DS_NAME}">
             <include name="*.xml"/>
         </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-weaving%%' value="${server.weaving}">
