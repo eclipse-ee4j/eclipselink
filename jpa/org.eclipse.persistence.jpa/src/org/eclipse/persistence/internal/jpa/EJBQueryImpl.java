@@ -233,7 +233,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             }
 
             // Apply any query hints.
-            databaseQuery = applyHints(hints, databaseQuery, classLoader);
+            databaseQuery = applyHints(hints, databaseQuery, classLoader, (AbstractSession) session);
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare
                 // as in read-only).
@@ -248,8 +248,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     /**
      * Build a ReadAllQuery from a class and sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader) {
-        return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader);
+    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
+        return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader, session);
     }
 
     /**
@@ -258,21 +258,21 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param hints
      *            a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ReadAllQuery query = new ReadAllQuery(resultClass);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        return applyHints(hints, query, classLoader);
+        return applyHints(hints, query, classLoader, session);
     }
 
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and sql
      * string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, ClassLoader classLoader) {
-        return buildSQLDatabaseQuery(sqlResultSetMappingName, sqlString, null, classLoader);
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, ClassLoader classLoader, AbstractSession session) {
+        return buildSQLDatabaseQuery(sqlResultSetMappingName, sqlString, null, classLoader, session);
     }
 
     /**
@@ -282,26 +282,26 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param hints
      *            a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        return applyHints(hints, query, classLoader);
+        return applyHints(hints, query, classLoader, session);
     }
 
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DatabaseQuery query = new ReadAllQuery(resultClass);
         query.setCall(call);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        query = applyHints(hints, query, classLoader);
+        query = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
         applyArguments(arguments, query);
@@ -313,7 +313,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DataReadQuery query = new DataReadQuery();
         query.setResultType(DataReadQuery.AUTO);
 
@@ -321,7 +321,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         query.setIsUserDefined(true);
 
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query, classLoader);
+        DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
         applyArguments(arguments, hintQuery);
@@ -333,14 +333,14 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
         query.setCall(call);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query, classLoader);
+        DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
         applyArguments(arguments, hintQuery);
@@ -351,21 +351,21 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     /**
      * Build a DataReadQuery from a sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, ClassLoader classLoader) {
-        return buildSQLDatabaseQuery(sqlString, new HashMap<String, Object>(), classLoader);
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, ClassLoader classLoader, AbstractSession session) {
+        return buildSQLDatabaseQuery(sqlString, new HashMap<String, Object>(), classLoader, session);
     }
 
     /**
      * Build a DataReadQuery from a sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DataReadQuery query = new DataReadQuery();
         query.setResultType(DataReadQuery.AUTO);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        return applyHints(hints, query, classLoader);
+        return applyHints(hints, query, classLoader, session);
     }
 
     /**
@@ -844,8 +844,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param query
      *            the query to apply the hints to
      */
-    protected static DatabaseQuery applyHints(Map<String, Object> hints, DatabaseQuery query, ClassLoader classLoader) {
-        return QueryHintsHandler.apply(hints, query, classLoader);
+    protected static DatabaseQuery applyHints(Map<String, Object> hints, DatabaseQuery query, ClassLoader classLoader, AbstractSession session) {
+        return QueryHintsHandler.apply(hints, query, classLoader, session);
     }
 
     /**
@@ -907,7 +907,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
         ClassLoader loader = getEntityManager().getServerSession().getLoader();
-        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery(), loader);
+        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery(), loader, (AbstractSession)getActiveSession());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);
         }

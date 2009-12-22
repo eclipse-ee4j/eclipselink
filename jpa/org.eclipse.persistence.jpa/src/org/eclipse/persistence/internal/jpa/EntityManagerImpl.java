@@ -662,7 +662,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             query = (ReadObjectQuery) query.clone();
 
             // Apply the properties if there are some.
-            QueryHintsHandler.apply(properties, query, session.getLoader());
+            QueryHintsHandler.apply(properties, query, session.getLoader(), session);
 
             query.setIsExecutionClone(true);
             query.setSelectionKey(primaryKeyValues);
@@ -984,7 +984,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Query createNativeQuery(String sqlString) {
         try {
             verifyOpen();
-            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(sqlString, this.serverSession.getLoader()), this);
+            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(sqlString, this.serverSession.getLoader(), this.serverSession), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1146,7 +1146,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         ReadObjectQuery query = new ReadObjectQuery();
 
         // Apply the properties if there are some.
-        QueryHintsHandler.apply(properties, query, this.serverSession.getDatasourcePlatform().getConversionManager().getLoader());
+        QueryHintsHandler.apply(properties, query, this.serverSession.getDatasourcePlatform().getConversionManager().getLoader(), this.serverSession);
         query.setIsExecutionClone(true);
         return query;
     }

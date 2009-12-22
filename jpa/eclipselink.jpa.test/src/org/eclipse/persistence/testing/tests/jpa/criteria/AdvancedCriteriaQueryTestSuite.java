@@ -133,6 +133,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheOnlyCacheHits"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryCacheOnlyCacheHitsOnSession"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testQueryHintFetch"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testCursors"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsEmpty"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNeg"));
@@ -1007,6 +1008,44 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
                 counter.remove();
             }
         }
+    }
+    
+    public void testQueryHintFetch(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.equal(root.get("firstName"), qb.literal("Bob")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            tq.setHint(QueryHints.FETCH, "e.projects");
+            List<Employee> result = tq.getResultList();
+            assertFalse("No Employees were returned", result.isEmpty());
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            try {
+                ObjectOutputStream stream = new ObjectOutputStream(byteStream);
+
+                stream.writeObject(result.get(0));
+                stream.flush();
+                byte arr[] = byteStream.toByteArray();
+                ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
+                ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
+
+                Employee emp = (Employee) inObjStream.readObject();
+                assertTrue("Did not return Employee", emp.getClass().equals(Employee.class));
+                assertTrue("Employee had wrong firstname", emp.getFirstName().equalsIgnoreCase("bob"));
+                emp.getProjects().size(); //may cause exception
+            } catch (IOException e) {
+                fail("Failed during serialization");
+            } catch (ClassNotFoundException e) {
+                fail("Failed during serialization");
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        
     }
 
     public void testProd(){

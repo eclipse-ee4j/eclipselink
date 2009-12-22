@@ -158,8 +158,4 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         //no-op because an expression will have no root
     }
     
-    protected Object getValue(){
-        return this.getValue();
-    }
-    
 }
