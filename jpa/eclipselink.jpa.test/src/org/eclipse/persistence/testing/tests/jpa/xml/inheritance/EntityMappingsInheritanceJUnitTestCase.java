@@ -52,6 +52,14 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     private static Number sportsCarId;
     private String m_persistenceUnit;
     
+    public EntityMappingsInheritanceJUnitTestCase() {
+        super();
+    }
+    
+    public EntityMappingsInheritanceJUnitTestCase(String name) {
+        super(name);
+    }
+    
     public EntityMappingsInheritanceJUnitTestCase(String name, String persistenceUnit) {
         super(name);
         
