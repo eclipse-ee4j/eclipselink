@@ -58,7 +58,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         m_direction = (String) storedProcedureParameter.getAttribute("direction");
         m_name = (String) storedProcedureParameter.getAttribute("name");
         m_queryParameter = (String) storedProcedureParameter.getAttribute("queryParameter"); 
-        m_type = getMetadataClass((String) storedProcedureParameter.getAttribute("type"));
+        m_type = getMetadataClass((String) storedProcedureParameter.getAttributeClass("type"));
         m_jdbcType = (Integer) storedProcedureParameter.getAttribute("jdbcType");
         m_jdbcTypeName = (String) storedProcedureParameter.getAttribute("jdbcTypeName");
     }

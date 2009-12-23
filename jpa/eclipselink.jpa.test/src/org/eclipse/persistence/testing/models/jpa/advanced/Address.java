@@ -113,7 +113,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
         procedureName="SProc_Read_InOut",
         parameters={
                 @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
-                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET")
         })
 })
 @SqlResultSetMappings({
