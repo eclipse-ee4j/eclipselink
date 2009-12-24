@@ -13,6 +13,7 @@
  *        - 259993: As part 2) During mergeClonesAfterCompletion() 
  *           If the the acquire and release threads are different 
  *           switch back to the stored acquire thread stored on the mergeManager.
+ *      tware, David Mulligan - fix performance issue with releasing locks
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
