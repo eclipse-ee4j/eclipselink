@@ -742,6 +742,15 @@ public class Project implements Serializable, Cloneable {
     public boolean hasProxyIndirection() {
         return this.hasProxyIndirection;
     }
+    
+    /**
+     * PUBLIC:
+     * Return true if the sql result set mapping name exists.
+     */
+    public boolean hasSQLResultSetMapping(String sqlResultSetMapping) {
+        return sqlResultSetMappings.containsKey(sqlResultSetMapping);
+    }
+    
     /**
      * INTERNAL:
      * Set to true during descriptor initialize if any descriptor uses ProxyIndirection

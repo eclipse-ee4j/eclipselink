@@ -391,6 +391,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED = 7323;
     
     public static final int CLASS_EXTRACTOR_CAN_NOT_BE_SPECIFIED_WITH_DISCRIMINATOR = 7324;
+    public static final int INVALID_SQL_RESULT_SET_MAPPING_NAME = 7325;
     
     /**
      * INTERNAL:
@@ -2454,6 +2455,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidSQLResultSetMapping(String sqlResultSetMapping, String queryName, Object location) {
+        Object[] args = { sqlResultSetMapping, queryName, location };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_SQL_RESULT_SET_MAPPING_NAME, args));
+        validationException.setErrorCode(INVALID_SQL_RESULT_SET_MAPPING_NAME);
+        return validationException;
+    }
+    
     public static ValidationException invalidTargetClass(String attributeName, Object cls) {
         Object[] args = { attributeName, cls };
 

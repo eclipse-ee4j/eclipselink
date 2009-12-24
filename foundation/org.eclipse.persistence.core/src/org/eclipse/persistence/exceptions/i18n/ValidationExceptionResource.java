@@ -303,6 +303,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7322", "The reference column name [{0}] from the association override named [{1}] on the attribute [{2}] from class [{3}] is not a valid mapped primary key field. Ensure there is a corresponding id mapping to that field" },
                                            { "7323", "The table with name [{1}] from [{2}] has multiple unique constraints with the name [{0}]. This is not allowed, unique constaints names must be unique across all tables." },
                                            { "7324", "The entity class [{1}] specifies both a @ClassExtractor and discriminator metadata. When using a @ClassExtractor, a @DiscriminatorColumn and/or @DiscriminatorValue should not be specified on this class nor should any discriminator value metadata be defined on its subclasses." },
+                                           { "7325", "The sql result set mapping [{0}] used with the named query [{1}] from [{2}] is not a recognized sql result set mapping. Ensure the name is correct and that a sql result set mapping with that name exists." },
  };
     
     /**

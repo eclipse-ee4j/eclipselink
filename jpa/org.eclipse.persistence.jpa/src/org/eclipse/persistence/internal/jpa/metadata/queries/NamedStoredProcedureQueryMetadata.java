@@ -140,11 +140,11 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         // Process the result class.
         if (getResultClass().isVoid()) {
-            if (getResultSetMapping().equals("")) {
+            if (hasResultSetMapping(session)) {
+                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, queryArguments, hints, loader, session));
+            } else {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
                 session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, queryArguments, hints, loader, session));
-            } else {
-                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, queryArguments, hints, loader, session));
             }
         } else {
             session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, queryArguments, hints, loader, session));

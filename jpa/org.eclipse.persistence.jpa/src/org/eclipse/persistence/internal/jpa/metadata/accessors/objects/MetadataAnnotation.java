@@ -88,6 +88,15 @@ public class MetadataAnnotation {
     
     /**
      * INTERNAL:
+     * Return the Class attribute value, or void if not set.
+     */
+    public Object getAttributeClass(String name) {
+        Object value = getAttribute(name);
+        return (value == null) ? "void" : value;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public Map<String, Object> getAttributes() {
         return m_attributes;

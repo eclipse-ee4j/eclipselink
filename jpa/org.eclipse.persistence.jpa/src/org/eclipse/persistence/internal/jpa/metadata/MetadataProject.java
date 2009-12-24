@@ -1072,10 +1072,13 @@ public class MetadataProject {
      * session.
      */
     public void processQueries(ClassLoader loader) {
+        // Step 1 - process the sql result set mappings first.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings.values()) {
             sqlResultSetMapping.process(m_session, loader);
         }
         
+        // Step 2 - process the named queries second, some may need to validate
+        // a sql result set mapping specification.
         for (NamedQueryMetadata query : m_queries.values()) {
             query.process(m_session, loader);
         }

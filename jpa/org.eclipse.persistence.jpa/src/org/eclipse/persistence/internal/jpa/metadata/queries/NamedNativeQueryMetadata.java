@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.Map;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -107,8 +108,20 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * INTERNAL:
      * Return true is a result set mapping has been specified.
      */
-    protected boolean hasResultSetMapping() {
-        return m_resultSetMapping != null && !m_resultSetMapping.equals("");
+    protected boolean hasResultSetMapping(AbstractSession session) {
+        if (m_resultSetMapping != null && ! m_resultSetMapping.equals("")) {
+            // User has specified a result set mapping. Since all the result
+            // set mappings are processed and placed on the session before named
+            // queries, let's validate that the sql result set mapping specified
+            // on this query actually exists.
+            if (session.getProject().hasSQLResultSetMapping(m_resultSetMapping)) {
+                return true;
+            } else {
+                throw ValidationException.invalidSQLResultSetMapping(m_resultSetMapping, getName(), getLocation());
+            }
+        }
+        
+        return false;
     }
     
     /**
@@ -129,7 +142,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass.isVoid()) {
-            if (hasResultSetMapping()) {
+            if (hasResultSetMapping(session)) {
                 session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader, session));
             } else {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
