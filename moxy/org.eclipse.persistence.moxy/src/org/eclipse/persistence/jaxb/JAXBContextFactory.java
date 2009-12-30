@@ -435,43 +435,7 @@ public class JAXBContextFactory {
         	return existingTypes;
         }
     }
-
-    /**
-     * Convenience method that returns an array of Classes based on a given XmlBindings and an array
-     * of existing classes. The resulting array will not contain duplicate entries.
-     * 
-     * @param xmlBindings
-     * @param classLoader
-     * @param existingClasses
-     * @return
-     */
-    private static Class[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, Class[] existingClasses) {
-        Class[] additionalClasses = existingClasses;
-        ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
-        JavaTypes jTypes = xmlBindings.getJavaTypes();
-        if (jTypes != null) {
-            for (JavaType javaType : jTypes.getJavaType()) {
-                try {
-                    javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
-                } catch (ClassNotFoundException e) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
-                }
-            }
-        }
-
-        if (javaTypeClasses.size() > 0) {
-            // add any existing classes not defined in the metadata file to the list
-            for (Class cls : existingClasses) {
-                if (!javaTypeClasses.contains(cls)) {
-                    javaTypeClasses.add(cls);
-                }
-            }
-            // populate the array to return
-            additionalClasses = javaTypeClasses.toArray(new Class[javaTypeClasses.size()]);
-        }
-        return additionalClasses;
-    }
-
+  
     /**
      * Convenience method that returns a list of Classes based on a given XmlBindings and an array
      * of existing classes. The resulting array will not contain duplicate entries.
@@ -515,27 +479,6 @@ public class JAXBContextFactory {
             additionalClasses = getXmlBindingsClasses(xmlBindingMap.get(packageName), classLoader, additionalClasses);
         }
         return additionalClasses;
-    }
-
-    private static Class[] updateClassesWithObjectFactory(Class[] classes, ClassLoader loader) {
-        ArrayList<Class> updatedClasses = new ArrayList<Class>();
-        for (Class next : classes) {
-            if (!(updatedClasses.contains(next))) {
-                updatedClasses.add(next);
-            }
-            if (next.getPackage() != null) {
-                String packageName = next.getPackage().getName();
-                try {
-                    Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
-                    if (!(updatedClasses.contains(objectFactoryClass))) {
-                        updatedClasses.add(objectFactoryClass);
-                    }
-                } catch (Exception ex) {
-                }
-            }
-        }
-
-        return updatedClasses.toArray(new Class[updatedClasses.size()]);
     }
 
     private static TypeMappingInfo[] updateTypesWithObjectFactory(TypeMappingInfo[] typeMappingInfos, ClassLoader loader) {

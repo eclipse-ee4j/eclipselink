@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:testTagName xmlns:ns0="http://jaxb.dev.java.net/array">
+    <item>10</item>
+    <item>20</item>
+</ns0:testTagName>

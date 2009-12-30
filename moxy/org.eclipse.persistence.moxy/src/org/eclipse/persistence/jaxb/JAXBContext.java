@@ -251,9 +251,21 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             if (next.getSchemaReference() != null){
                 QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+                
+                TypeMappingInfo tmi = null;                
+                if(getTypeMappingInfoToGeneratedType() != null){                             	
+                	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
+                	while(iter.hasNext()){
+                		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                		if(entry.getValue().equals(javaClass)){
+                			tmi = entry.getKey();
+                			break;
+                		}
+                	}
+                }
+                
                 Type type = null;
-                TypeMappingInfo tmi = null;
-                if (generator != null) {
+                if (tmi == null && generator != null) {
                     type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);                    
                     if (type == null) {
                         JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
@@ -262,18 +274,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                             try {
                                 type = PrivilegedAccessHelper.getClassForName(arrayClassName);
                             } catch (Exception ex) {}
-                        }      
-                        
-                        if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
-                        	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                        	while(iter.hasNext()){
-                        		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
-                        		if(entry.getValue().equals(javaClass)){
-                        			tmi = entry.getKey();
-                        			break;
-                        		}
-                        	}
-                        }
+                        }                             
                     }
                     if (type == null) {
                         type = javaClass;
