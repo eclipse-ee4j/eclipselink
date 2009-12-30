@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -295,7 +294,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       //Add any types that we didn't generate descriptors for (built in types)
         if (boundTypes != null) {
         	for (TypeMappingInfo next:this.boundTypes) {
-                if (this.typeToSchemaType.get(next) == null) {
+                if (this.typeMappingInfoToSchemaType.get(next) == null) {
                 	Type nextType = next.getType();
                 	QName name = getSchemaTypeForTypeMappingInfo(nextType);
                 	if (name != null) {
