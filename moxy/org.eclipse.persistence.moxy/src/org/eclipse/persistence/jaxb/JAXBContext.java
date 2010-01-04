@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -124,6 +123,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public XMLContext getXMLContext() {
         return this.xmlContext;
     }
+    
+    
 
     public void generateSchema(SchemaOutputResolver outputResolver) {
         generateSchema(outputResolver, null);
@@ -250,9 +251,21 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             if (next.getSchemaReference() != null){
                 QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+                
+                TypeMappingInfo tmi = null;                
+                if(getTypeMappingInfoToGeneratedType() != null){                             	
+                	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
+                	while(iter.hasNext()){
+                		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                		if(entry.getValue().equals(javaClass)){
+                			tmi = entry.getKey();
+                			break;
+                		}
+                	}
+                }
+                
                 Type type = null;
-                TypeMappingInfo tmi = null;
-                if (generator != null) {
+                if (tmi == null && generator != null) {
                     type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);                    
                     if (type == null) {
                         JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
@@ -261,18 +274,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                             try {
                                 type = PrivilegedAccessHelper.getClassForName(arrayClassName);
                             } catch (Exception ex) {}
-                        }      
-                        
-                        if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
-                        	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                        	while(iter.hasNext()){
-                        		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
-                        		if(entry.getValue().equals(javaClass)){
-                        			tmi = entry.getKey();
-                        			break;
-                        		}
-                        	}
-                        }
+                        }                             
                     }
                     if (type == null) {
                         type = javaClass;
@@ -293,7 +295,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       //Add any types that we didn't generate descriptors for (built in types)
         if (boundTypes != null) {
         	for (TypeMappingInfo next:this.boundTypes) {
-                if (this.typeToSchemaType.get(next) == null) {
+                if (this.typeMappingInfoToSchemaType.get(next) == null) {
                 	Type nextType = next.getType();
                 	QName name = getSchemaTypeForTypeMappingInfo(nextType);
                 	if (name != null) {

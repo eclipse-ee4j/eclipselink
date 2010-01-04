@@ -82,5 +82,11 @@ public class MapStringIntegerTestCases extends TypeMappingInfoTestCases{
 		return controlSchema;
 	}
 	
+	public void testTypeMappingInfoToSchemaType() throws Exception{
+		Map theMap =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
+		assertNotNull(theMap);
+		assertEquals(1, theMap.size());
+		assertNotNull(theMap.get(getTypeMappingInfos()[0]));
+	}
 
 }
