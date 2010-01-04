@@ -202,6 +202,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.wdf.jpa2.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.wdf.jpa1.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
