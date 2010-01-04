@@ -437,6 +437,19 @@ public class XMLDescriptor extends ClassDescriptor {
         super.setTableNames(tableNames);
     }
     
+    
+    /**
+     * INTERNAL:
+     * Sets the tables
+     */
+    public void setTables(Vector<DatabaseTable> theTables) {
+    	 if (null != theTables && theTables.size() > 0) {
+             setDefaultRootElementField(new XMLField((String)theTables.get(0).getName()));
+         }
+         super.setTables(theTables);
+
+    }
+    
     /**
      * INTERNAL:
      * Allow the descriptor to initialize any dependencies on this session.

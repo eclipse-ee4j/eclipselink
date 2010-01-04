@@ -16,7 +16,6 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -25,7 +24,7 @@ import org.eclipse.persistence.sessions.Project;
  *  @since   release specific (what release of product did this appear in)
  */
 public class InheritanceProject extends Project {
-    private NamespaceResolver namespaceResolver;
+    protected NamespaceResolver namespaceResolver;
 
     public InheritanceProject() {
         super();
