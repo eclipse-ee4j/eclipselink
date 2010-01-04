@@ -641,6 +641,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * INTERNAL: Supports Batch Writing with Optimistic Locking.
+     */
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call) {
+        return false;
+    }
+
+    /**
      * INTERNAL
      * Indicates whether the platform can build call with returning.
      * In case this method returns true, buildCallWithReturning method
