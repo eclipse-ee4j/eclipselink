@@ -47,17 +47,17 @@ import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 
 /**
- * INTERNAL:
  * <b>Purpose:</b>
- * <ul><li>This class is a reference implementation of an instantiable {@link Sequence commonj.sdo.HelperContext}.</li>
+ * <ul>
+ * <li>This class represents a local HelperContext.  The global 
+ * HelperContext can be accessed as HelperProvider.getDefaultContext().</li>
  * </ul>
  * <b>Responsibilities:</b>
  * <ul>
- * <li>Provide access to a instances of helper objects.</li>
+ * <li>Provide access to instances of helper objects.</li>
+ * <li>Provide an OSGi compatible HelperContext (when the constructor that takes
+ * a ClassLoader is used).</li>
  * </ul>
- * <p/>
- * Use this class in place of the default HelperProvider.DefaultHelperContext implementation.
- * <br/>
  *
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -97,17 +97,20 @@ public class SDOHelperContext implements HelperContext {
     private static final Class[] PARAMETER_TYPES = {};
 
     /**
-     * The default constructor will use the current thread's context
-     * class loader.
+     * Create a local HelperContext.  The current thread's context ClassLoader
+     * will be used to find static instance classes.  In OSGi environments the 
+     * construct that takes a ClassLoader parameter should be used instead.
      */
     public SDOHelperContext() {
         this(Thread.currentThread().getContextClassLoader());
     }
 
     /**
-     * This constructor creates the helper instances.
+     * Create a local HelperContext.  This constructor should be used in OSGi 
+     * environments.
      * 
-     * @param aClassLoader
+     * @param aClassLoader This class loader will be used to find static 
+     * instance classes.
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
