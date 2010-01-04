@@ -444,7 +444,7 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public void setTables(Vector<DatabaseTable> theTables) {
     	 if (null != theTables && theTables.size() > 0) {
-             setDefaultRootElementField(new XMLField((String)theTables.get(0).getName()));
+             setDefaultRootElementField(new XMLField(theTables.get(0).getName()));
          }
          super.setTables(theTables);
 
