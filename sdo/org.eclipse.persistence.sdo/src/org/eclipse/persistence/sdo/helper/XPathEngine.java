@@ -233,7 +233,8 @@ public class XPathEngine {
         if (numInLastProperty == -1) {
             if (lastDataObject != null) {
                 if(convertValue){
-                  value = DataHelper.INSTANCE.convert(lastProperty, value);
+                  DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper(); 
+                  value = dataHelper.convert(lastProperty, value);
                 }
                 lastDataObject.set(lastProperty, value);
             } else {
@@ -243,7 +244,8 @@ public class XPathEngine {
             List objects = lastDataObject.getList(lastProperty);
 
             if (convertValue) {
-            	value =  DataHelper.INSTANCE.convert(lastProperty.getType(), value);
+                DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper(); 
+                value =  dataHelper.convert(lastProperty.getType(), value);
             }
             
             Sequence seq = lastDataObject.getSequence();
