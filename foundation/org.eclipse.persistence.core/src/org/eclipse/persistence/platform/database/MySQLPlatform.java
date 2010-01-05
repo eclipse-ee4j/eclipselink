@@ -14,6 +14,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Statement;
 import java.util.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -184,6 +185,36 @@ public class MySQLPlatform extends DatabasePlatform {
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
     
+    /**
+     * Internal: This gets called on each batch statement execution
+     * Needs to be implemented so that it returns the number of rows successfully modified
+     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
+     * the call uses optimistic locking).  
+     * 
+     * @param isStatementPrepared - flag is set to true if this statement is prepared 
+     * @return - number of rows modified/deleted by this statement
+     */
+    public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
+       int[] updateResult = statement.executeBatch();
+       System.out.println(Arrays.toString(updateResult));
+       int updateCount = 0;
+       for (int count : updateResult){
+           if (count == Statement.SUCCESS_NO_INFO){
+               count = 1;
+           }
+           updateCount+=count;
+       }
+       return updateCount;
+    }
+
+    /**
+     * INTERNAL:
+     * Supports Batch Writing with Optimistic Locking.
+     */
+    public boolean canBatchWriteWithOptimisticLocking(){
+        return true;
+    }
+
     /**
      * INTERNAL:
      * Used for constraint deletion.

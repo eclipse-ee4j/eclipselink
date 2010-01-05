@@ -686,6 +686,14 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
+     * Supports Batch Writing with Optimistic Locking.
+     */
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
+        return false;
+    }
+
+    /**
+     * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
      * 

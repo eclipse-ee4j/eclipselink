@@ -13,7 +13,12 @@
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+import org.eclipse.persistence.testing.models.optimisticlocking.OptimisticLockingSystem;
+import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
+import org.eclipse.persistence.testing.tests.optimisticlocking.OptimisticLockingTestModel;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.BarSystem;
 
 public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
     
@@ -39,5 +44,13 @@ public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
         getExecutor().removeConfigureSystem(new EmployeeSystem());
         // Force the database to be recreated to ensure the sequences are defined.
         addForcedRequiredSystem(new EmployeeSystem());
+        addForcedRequiredSystem(new OptimisticLockingSystem());
+        addForcedRequiredSystem(new BarSystem());
+    }
+
+    public void addTests() {
+        super.addTests();
+        addTest(OptimisticLockingTestModel.getOptimisticLockingTestSuite());
+        addTest(OptimisticLockingTestModel.getCascadeOptimisticLockingTestSuite());
     }
 }

@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ModifyQuery;
@@ -37,16 +38,27 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * This variable is used to store the SQLStrings that are being batched
      */
     protected ArrayList sqlStrings;
+    
+    /**
+     * Stores the statement indexes for statements that are using optimistic locking.  This allows us to check individual
+     * statement results on supported platforms
+     */
 
     /**
      * This attribute is used to store the maximum length of all strings batched together
      */
     protected long batchSize;
+    
+    /**
+     * Records if this batch uses optimistic locking.
+     */
+     protected boolean usesOptimisticLocking;
 
     public DynamicSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
         this.sqlStrings = new ArrayList(10);
         this.batchSize = 0;
+        
     }
 
     /**
@@ -70,8 +82,13 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             if ((batchSize + dbCall.getSQLString().length()) > this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize()) {
                 executeBatchedStatements(session);
             }
+            if (this.usesOptimisticLocking != dbCall.hasOptimisticLock){
+                executeBatchedStatements(session);
+            }
             this.sqlStrings.add(dbCall.getSQLString());
             this.batchSize += dbCall.getSQLString().length();
+            this.usesOptimisticLocking = dbCall.hasOptimisticLock;
+            ++this.statementCount;
             // feature for bug 4104613, allows users to force statements to flush on execution
             if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution())
             {
@@ -90,6 +107,8 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     public void clear() {
         this.sqlStrings.clear();
+        statementCount = executionCount  = 0;
+        this.usesOptimisticLocking = false;
         this.batchSize = 0;
         clearCacheQueryTimeout();
     }
@@ -120,8 +139,12 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
                 PreparedStatement statement = prepareBatchStatement(session);
                 this.databaseAccessor.executeBatchedStatement(statement, session);
             } else {
+                //lets add optimistic locking support.
                 Statement statement = prepareJDK12BatchStatement(session);
-                this.databaseAccessor.executeJDK12BatchStatement(statement, null, session, false);
+                executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, null, session, false);
+                if (this.usesOptimisticLocking && (executionCount!=statementCount)){
+                    throw OptimisticLockException.batchStatementExecutionFailure();
+                }
             }
         } finally {
             // Reset the batched sql string
