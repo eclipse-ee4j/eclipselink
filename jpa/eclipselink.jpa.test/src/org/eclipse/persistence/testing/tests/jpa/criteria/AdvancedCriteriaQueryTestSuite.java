@@ -139,6 +139,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNeg"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMember"));
     suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMemberEntity"));
+    suite.addTest(new AdvancedCriteriaQueryTestSuite("testNullRestrictionGetRestriction"));
         
         return suite;
     }
@@ -424,6 +425,22 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
                 assertTrue("PhoneNumbers Found", ! e.getPhoneNumbers().isEmpty());
             }
         }finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testNullRestrictionGetRestriction() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {        
+            Metamodel mm = em.getMetamodel();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            cquery.getRestriction();
+        }catch (NullPointerException ex){
+            fail("'getRestriction()' with null restriction threw NullPointerException");
+        } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
