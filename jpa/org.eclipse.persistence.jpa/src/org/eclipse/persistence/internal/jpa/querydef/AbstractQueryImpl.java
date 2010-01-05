@@ -260,6 +260,9 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
      * @return where clause predicate
      */
     public Predicate getRestriction(){
+        if (this.where == null) {
+            return null;
+        }
         if (((ExpressionImpl)this.where).isPredicate()) return (Predicate)this.where;
         return this.queryBuilder.isTrue(this.where);
     }
