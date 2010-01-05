@@ -2,7 +2,6 @@
     <persistence-unit name="%%default%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>%%data-source-name%%</jta-data-source>
-        <mapping-file>META-INF/RelationshipProject.xml</mapping-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
              <property name="eclipselink.target-server" value="%%server-platform%%"/>
