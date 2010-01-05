@@ -52,12 +52,6 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
     protected ArrayList parameters;
     protected DatabaseCall lastCallAppended;
     
-    //bug 4241441: used to keep track of the values returned from the driver via addBatch and executeStatment
-    protected int executionCount;
-    //bug 4241441: increments with each addBatch call.  Used to compare against value returned from driver for 
-    //  optimistic locking
-    protected int statementCount;
-
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
         this.parameters = new ArrayList(10);

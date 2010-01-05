@@ -557,7 +557,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             //if it is a StoredProcedure with in/out or out parameters then do not batch
             //logic may be weird but we must not batch if we are not using JDBC batchwriting and we have parameters
             // we may want to refactor this some day
-            if (dbCall.isNothingReturned() && (!dbCall.hasOptimisticLock() || getPlatform().usesNativeBatchWriting() ) 
+            if (dbCall.isNothingReturned() && (!dbCall.hasOptimisticLock() || getPlatform().canBatchWriteWithOptimisticLocking(dbCall) )  
                 && (!dbCall.shouldBuildOutputRow()) && (getPlatform().usesJDBCBatchWriting() || (!dbCall.hasParameters())) && (!dbCall.isLOBLocatorNeeded())) {
                 // this will handle executing batched statements, or switching mechanisms if required
                 getActiveBatchWritingMechanism().appendCall(session, dbCall);

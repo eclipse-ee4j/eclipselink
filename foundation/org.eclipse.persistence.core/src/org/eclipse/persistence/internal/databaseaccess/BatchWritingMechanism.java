@@ -42,6 +42,14 @@ public abstract class BatchWritingMechanism {
      */
     protected int queryTimeoutCache = DescriptorQueryManager.NoTimeout;
     
+    // bug 4241441: used to keep track of the values returned from the driver
+    // via addBatch and executeStatment
+    protected int executionCount;
+
+    // bug 4241441: increments with each addBatch call. Used to compare against
+    // value returned from driver for optimistic locking
+    protected int statementCount;
+
     /**
      * INTERNAL:
      * This function caches the largest query timeout encountered within all the calls in this batch,
