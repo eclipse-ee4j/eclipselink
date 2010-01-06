@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -103,6 +104,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testOrderColumnNoviceBeerConsumerDesignations"));
         suite.addTest(new InheritedModelJunitTest("testCreateExpertBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testReadExpertBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testExpertBeerConsumerRecordsCRUD"));
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
         suite.addTest(new InheritedModelJunitTest("testCascadeRemove"));
@@ -633,6 +635,188 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 2);
         // don't individually check them ... assume they are correct.
+    }
+    
+    // Bug 296606 - issues with ElementCollections 
+    // This test should be run after testCreateExpertBearConsumer
+    // This test makes changes, so testReadExpertBeerConsumer will fail after this test.
+    public void testExpertBeerConsumerRecordsCRUD() {        
+        String errorMsg = "";
+        
+        int nRecords;
+        int nRecordsExpected = 2;
+        
+        clearCache();
+        EntityManager em = createEntityManager();
+        try {
+            // read all Records inside transaction
+            beginTransaction(em);
+            ExpertBeerConsumer consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            // trigger indirection
+            nRecords = consumer.getRecords().size();
+            // Bug 296606 - issues with ElementCollections cause commit to fail with NPE
+            // Before the bug was fixed, the workaround was to annotate Record with @ChangeTracking(ChangeTrackingType.DEFERRED)
+            commitTransaction(em);
+            closeEntityManager(em);
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "wrong number of records after read; ";
+            }
+            
+            // remove Record
+            em = createEntityManager();
+            beginTransaction(em);
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            Record recordToRemove = consumer.getRecords().iterator().next(); 
+            consumer.getRecords().remove(recordToRemove);
+            commitTransaction(em);
+            closeEntityManager(em);
+            nRecordsExpected--;
+            // verify in cache
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "cache: wrong number of records after remove; ";
+            }
+            // verify in db
+            clearCache();
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "db: wrong number of records after remove; ";
+            }
+            
+            // add Record
+            Record record1 = new Record();
+            record1.setDescription("Original");
+            record1.setDate(Helper.dateFromYearMonthDate(2009, 1, 1));
+            record1.setLocation(new Location("Ottawa", "Canada"));
+            Venue venue1 = new Venue();
+            venue1.setAttendance(10);
+            venue1.setName("Original");
+            record1.setVenue(venue1);
+            em = createEntityManager();
+            beginTransaction(em);
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            consumer.getRecords().add(record1);
+            commitTransaction(em);
+            closeEntityManager(em);
+            nRecordsExpected++;
+            // verify in cache
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "cache: wrong number of records after add; ";
+            }
+            // verify in db
+            clearCache();
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "db: wrong number of records after add; ";
+            }
+
+            // update all Records one by one.
+            String newDescription = "New Description ";
+            String newName = "New Name ";
+            em = createEntityManager();
+            beginTransaction(em);
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            int i=0;
+            Iterator<Record> it = consumer.getRecords().iterator();
+            while(it.hasNext()) {
+                Record record = it.next();
+                String index = Integer.toString(i++);
+                record.setDescription(newDescription + index);
+                record.getVenue().setName(newName + index );
+            }
+            // Bug 296606 - issues with ElementCollections cause commit to fail with NPE
+            // Before the bug was fixed, the workaround was to annotate both Record and Venue with @ChangeTracking(ChangeTrackingType.DEFERRED).
+            // With that workaround the test still used to fail - Record and Venue were not updated in the data base.
+            // Before the bug was fixed, the workaround for that was to set property "eclipselink.weaving.internal" to "false" in persistence.xml.
+            commitTransaction(em);
+            // verify in cache
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "cache: wrong number of records after update; ";
+            }
+            HashSet<String> usedDescriptions = new HashSet(nRecords); 
+            HashSet<String> usedNames = new HashSet(nRecords); 
+            it = consumer.getRecords().iterator();
+            while(it.hasNext()) {
+                Record record = it.next();
+                String description = record.getDescription();
+                if(!description.startsWith(newDescription)) {
+                    errorMsg += "cache: wrong record description after update; ";
+                }
+                usedDescriptions.add(description);
+                String name = record.getVenue().getName();
+                if(!name.startsWith(newName)) {
+                    errorMsg += "cache: wrong venue name after update; ";
+                }
+                usedNames.add(name);
+            }
+            if(usedDescriptions.size() != nRecords) {
+                errorMsg += "cache: records with same description; ";
+            }
+            if(usedNames.size() != nRecords) {
+                errorMsg += "cache: venues with same name; ";
+            }
+            // verify in db
+            clearCache();
+            em = createEntityManager();
+            consumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            closeEntityManager(em);
+            nRecords = consumer.getRecords().size(); 
+            if(nRecords != nRecordsExpected) {
+                errorMsg += "db: wrong number of records after update; ";
+            }
+            usedDescriptions.clear(); 
+            usedNames.clear(); 
+            it = consumer.getRecords().iterator();
+            while(it.hasNext()) {
+                Record record = it.next();
+                String description = record.getDescription();
+                if(!description.startsWith(newDescription)) {
+                    errorMsg += "db: wrong record description after update; ";
+                }
+                usedDescriptions.add(description);
+                String name = record.getVenue().getName();
+                if(!name.startsWith(newName)) {
+                    errorMsg += "db: wrong venue name after update; ";
+                }
+                usedNames.add(name);
+            }
+            if(usedDescriptions.size() != nRecords) {
+                errorMsg += "db: records with same description; ";
+            }
+            if(usedNames.size() != nRecords) {
+                errorMsg += "db: venues with same name; ";
+            }
+            
+            if(errorMsg.length() > 0) {
+                fail(errorMsg);
+            }
+        } finally {
+            if(em != null) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                if(em.isOpen()) {
+                    closeEntityManager(em);
+                }
+            }
+        }
     }
     
     public void testRedStripeExpertConsumer() {

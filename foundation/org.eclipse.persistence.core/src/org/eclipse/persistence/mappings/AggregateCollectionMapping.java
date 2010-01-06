@@ -28,6 +28,9 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -1923,15 +1926,27 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      * For aggregate collection mapping the reference descriptor is cloned. The cloned descriptor is then
-     * assigned primary keys and table names before initialize. Once cloned descriptor is initialized
-     * it is assigned as reference descriptor in the aggregate mapping. This is very specific
+     * assigned primary keys and table names before initialize. Once the cloned descriptor is initialized
+     * it is assigned as reference descriptor in the aggregate mapping. This is a very specific
      * behavior for aggregate mappings. The original descriptor is used only for creating clones and
-     * after that mapping never uses it.
+     * after that the aggregate mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
     public void postInitialize(AbstractSession session) throws DescriptorException {
         super.postInitialize(session);
-        getReferenceDescriptor().postInitialize(session);
+
+        if (getReferenceDescriptor() != null) {
+            // Changed as part of fix for bug#4410581 aggregate mapping can not be set to use change tracking if owning descriptor does not use it.
+            // Basically the policies should be the same, but we also allow deferred with attribute for CMP2 (courser grained).
+            if (getDescriptor().getObjectChangePolicy().getClass().equals(DeferredChangeDetectionPolicy.class)) {
+                getReferenceDescriptor().setObjectChangePolicy(new DeferredChangeDetectionPolicy());
+            } else if (getDescriptor().getObjectChangePolicy().getClass().equals(ObjectChangeTrackingPolicy.class)
+                    && getReferenceDescriptor().getObjectChangePolicy().getClass().equals(AttributeChangeTrackingPolicy.class)) {
+                getReferenceDescriptor().setObjectChangePolicy(new ObjectChangeTrackingPolicy());
+            }
+            
+            getReferenceDescriptor().postInitialize(session);
+        } 
     }
 
     /**
