@@ -10,7 +10,7 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-'
+*   - multi-word targets use hyphens '-' 
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
