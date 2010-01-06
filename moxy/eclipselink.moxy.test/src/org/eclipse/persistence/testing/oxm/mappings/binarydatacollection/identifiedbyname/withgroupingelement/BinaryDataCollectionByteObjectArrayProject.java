@@ -32,7 +32,7 @@ public class BinaryDataCollectionByteObjectArrayProject extends Project {
         addDescriptor(getEmployeeDescriptor(namespaceResolver));
     }
 
-    private XMLDescriptor getEmployeeDescriptor(NamespaceResolver aNSResolver) {
+    protected XMLDescriptor getEmployeeDescriptor(NamespaceResolver aNSResolver) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(EmployeeWithByteArrayObject.class);
         descriptor.setDefaultRootElement("employee");

@@ -198,7 +198,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             //object value should be a DataHandler
             String c_id = null;
             byte[] bytes = null;
-            if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+            if (xmlBinaryDataCollectionMapping.getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) objectValue);
                 if(c_id == null) {
                     bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
