@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/02/2009-2.0 Guy Pelletier 
  *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -31,6 +33,8 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -47,6 +51,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * A MetadataEntityListener and is placed on the owning entity's descriptor. 
@@ -146,7 +151,9 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * INTERNAL:
      * Load a class from a given class name.
      */
-    Class getClassForName(String classname, ClassLoader loader) {
+    Class getClass(MetadataClass metadataClass, ClassLoader loader) {
+        String classname = metadataClass.getName();
+        
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -195,6 +202,27 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     @Override
     public String getIdentifier() {
         return m_className;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    Object getInstance(Class cls) {
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(cls));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.errorInstantiatingClass(cls, exception.getException());
+                }
+            } else {
+                return PrivilegedAccessHelper.newInstanceFromClass(cls);
+            }
+        } catch (IllegalAccessException exception) {
+            throw ValidationException.errorInstantiatingClass(cls, exception);
+        } catch (InstantiationException exception) {
+            throw ValidationException.errorInstantiatingClass(cls, exception);
+        }
     }
     
     /**
@@ -306,20 +334,27 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         if (m_entityListenerClass == null) {
             m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
+
+        DescriptorEventListener listener;
+        Object entityListenerClassInstance = getInstance(getClass(m_entityListenerClass, loader));
         
-        // Initialize the listener class (reload the listener class)
-        m_listener = new EntityListener(
-                getClassForName(m_entityListenerClass.getName(), loader),
-                getClassForName(descriptor.getJavaClass().getName(), loader));
+        if (m_entityListenerClass.extendsInterface(DescriptorEventListener.class)) {
+            listener = (DescriptorEventListener) entityListenerClassInstance;
+        } else {
+            // Initialize the listener class before processing the callback methods.
+            m_listener = new EntityListener(entityListenerClassInstance, getClass(descriptor.getJavaClass(), loader));
+            
+            // Process the callback methods defined from XML and annotations.
+            processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor);
+            
+            listener = m_listener;
+        }
         
-        // Process the callback methods defined from XML and annotations.
-        processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor);
-    
         // Add the listener to the descriptor.
         if (isDefaultListener) {
-            descriptor.addDefaultEventListener(m_listener);
+            descriptor.addDefaultEventListener(listener);
         } else {
-            descriptor.addEntityListenerEventListener(m_listener);
+            descriptor.addEntityListenerEventListener(listener);
         }
     }
     

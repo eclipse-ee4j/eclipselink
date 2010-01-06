@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
@@ -17,7 +19,10 @@ import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
 @Entity
-@EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.BusListener.class)
+@EntityListeners({
+    org.eclipse.persistence.testing.models.jpa.inheritance.listeners.BusListener.class,
+    org.eclipse.persistence.testing.models.jpa.inheritance.listeners.BusNativeListener.class
+})
 @Table(name="CMP3_BUS")
 @DiscriminatorValue("BU")
 @PrimaryKeyJoinColumn(name="BUS_ID", referencedColumnName="ID")

@@ -10,6 +10,8 @@
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -31,7 +33,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * An EntityListener is placed on the owning entity's descriptor. 
@@ -86,24 +87,10 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL: 
      */
-    public EntityListener(Class listenerClass, Class entityClass) { 
+    public EntityListener(Object listener, Class entityClass) { 
         this(entityClass);
         
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    m_listener = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.errorInstantiatingClass(listenerClass, exception.getException());
-                }
-            } else {
-                m_listener = PrivilegedAccessHelper.newInstanceFromClass(listenerClass);
-            }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
-        } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
-        }
+        m_listener = listener;
     }
     
     /**

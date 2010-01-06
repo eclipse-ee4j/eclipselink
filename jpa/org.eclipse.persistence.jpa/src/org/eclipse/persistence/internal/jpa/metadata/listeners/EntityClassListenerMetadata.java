@@ -14,7 +14,9 @@
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
  *     04/02/2009-2.0 Guy Pelletier 
- *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated      
+ *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -59,7 +61,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
      */
     public void process(List<MappedSuperclassAccessor> mappedSuperclasses, ClassLoader loader) {
         // Create the listener.
-        Class accessorClass = getClassForName(m_accessor.getJavaClass().getName(), loader);
+        Class accessorClass = getClass(m_accessor.getJavaClass(), loader);
         m_listener = new EntityClassListener(accessorClass);
         
         // Process the callback methods as defined in XML or annotations on the 
@@ -70,7 +72,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         // on the mapped superclasses if not excluded second. 
         if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                Class superClass = getClassForName(mappedSuperclass.getJavaClass().getName(), loader);
+                Class superClass = getClass(mappedSuperclass.getJavaClass(), loader);
                 processCallbackMethods(getDeclaredMethods(superClass), m_descriptor);
             }
         }

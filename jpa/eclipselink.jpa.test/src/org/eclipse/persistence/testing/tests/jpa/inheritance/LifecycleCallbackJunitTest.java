@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AbstractBus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.BusListener;
+import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.BusNativeListener;
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.VehicleListener;
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.ListenerSuperclass;
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.FueledVehicleListener;
@@ -156,6 +159,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
     
     public void testPrePersistBusOverrideAndAbstractInheritAndDefault() {
         int busListenerPrePersistCountBefore = BusListener.PRE_PERSIST_COUNT;
+        int busNativeListenerPreWriteCountBefore = BusNativeListener.PRE_WRITE_COUNT;
+        int busNativeListenerPostWriteCountBefore = BusNativeListener.POST_WRITE_COUNT;
         int listenerSuperclassPrePersistCountBefore = ListenerSuperclass.COMMON_PRE_PERSIST_COUNT;
         int abstractBusPrePeristCountBefore = AbstractBus.PRE_PERSIST_COUNT;
         int defaultListenerPrePersistCountBefore = DefaultListener.PRE_PERSIST_COUNT;
@@ -184,11 +189,15 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         closeEntityManager(em);
         
         int busListenerPrePersistCountAfter = BusListener.PRE_PERSIST_COUNT;
+        int busNativeListenerPreWriteCountAfter = BusNativeListener.PRE_WRITE_COUNT;
+        int busNativeListenerPostWriteCountAfter = BusNativeListener.POST_WRITE_COUNT;
         int listenerSuperclassPrePersistCountAfter = ListenerSuperclass.COMMON_PRE_PERSIST_COUNT;
         int abstractBusPrePeristCountAfter = AbstractBus.PRE_PERSIST_COUNT;
         int defaultListenerPrePersistCountAfter = DefaultListener.PRE_PERSIST_COUNT;
         
         assertFalse("The PrePersist callback method on BusListener was not called.", busListenerPrePersistCountBefore == busListenerPrePersistCountAfter);
+        assertFalse("The PreWrite (native) callback method on BusNativeListener was not called.", busNativeListenerPreWriteCountBefore == busNativeListenerPreWriteCountAfter);
+        assertFalse("The PostWrite (native) callback method on BusNativeListener was not called.", busNativeListenerPostWriteCountBefore == busNativeListenerPostWriteCountAfter);
         assertTrue("The PrePersist callback method on ListenerSuperclass was called.", listenerSuperclassPrePersistCountBefore == listenerSuperclassPrePersistCountAfter);
         assertFalse("The PrePersist callback method on AbstractBus was not called.", abstractBusPrePeristCountBefore == abstractBusPrePeristCountAfter);
         assertFalse("The PrePersist callback method on DefaultListener was not called.", defaultListenerPrePersistCountBefore == defaultListenerPrePersistCountAfter);

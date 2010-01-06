@@ -161,6 +161,7 @@
                 <pre-update method-name="preUpdate"/>
                 <post-update method-name="postUpdate"/>
             </entity-listener>
+            <entity-listener class="org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusNativeListener"/>
         </entity-listeners>
         <pre-persist method-name="prePersist"/>
         <post-persist method-name="postPersist"/>

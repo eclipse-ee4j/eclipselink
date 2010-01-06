@@ -48,6 +48,8 @@
  *         Add m_idAccessor map and hasIdAccessor() function.
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -260,7 +262,7 @@ public class MetadataDescriptor {
     /** 
      * INTERNAL:
      */
-    public void addDefaultEventListener(EntityListener listener) {
+    public void addDefaultEventListener(DescriptorEventListener listener) {
         m_descriptor.getEventManager().addDefaultEventListener(listener);
     }
 
@@ -274,7 +276,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void addEntityListenerEventListener(EntityListener listener) {
+    public void addEntityListenerEventListener(DescriptorEventListener listener) {
         m_descriptor.getEventManager().addEntityListenerEventListener(listener);
     }
 

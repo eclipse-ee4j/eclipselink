@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     01/05/2010-2.1 Guy Pelletier 
+ *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.inheritance;
 
@@ -35,6 +37,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.InheritanceMod
 
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusNativeListener;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener1;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener2;
@@ -154,6 +157,9 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int prePersistBusCountBefore = 0;//Bus.PRE_PERSIST_COUNT;
         int postPersistBusCountBefore = 0;//Bus.POST_PERSIST_COUNT;
         
+        int preWriteBusNativeListenerCountBefore = BusNativeListener.PRE_WRITE_COUNT;
+        int postWriteBusNativeListenerCountBefore = BusNativeListener.POST_WRITE_COUNT;
+        
         int prePersistBusListenerCountBefore = BusListener.PRE_PERSIST_COUNT;
         int postPersistBusListenerCountBefore = BusListener.POST_PERSIST_COUNT;
         
@@ -187,6 +193,8 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         
         assertFalse("The PrePersist callback method on Bus was not called.", prePersistBusCountBefore == bus.pre_persist_count);
         assertFalse("The PostPersist callback method on Bus was not called.", postPersistBusCountBefore == bus.post_persist_count);
+        assertFalse("The PreWrite callback method (native) on BusNativeListener was not called.", preWriteBusNativeListenerCountBefore == BusNativeListener.PRE_WRITE_COUNT);
+        assertFalse("The PostWrite callback method (native) on BusNativeListener was not called.", postWriteBusNativeListenerCountBefore == BusNativeListener.POST_WRITE_COUNT);
         assertFalse("The PrePersist callback method on BusListener was not called.", prePersistBusListenerCountBefore == BusListener.PRE_PERSIST_COUNT);
         assertFalse("The PostPersist callback method on BusListener was not called.", postPersistBusListenerCountBefore == BusListener.POST_PERSIST_COUNT);
         assertFalse("The PrePersist callback method on BusListener2 was not called.", prePersistBusListener2CountBefore == BusListener2.PRE_PERSIST_COUNT);
