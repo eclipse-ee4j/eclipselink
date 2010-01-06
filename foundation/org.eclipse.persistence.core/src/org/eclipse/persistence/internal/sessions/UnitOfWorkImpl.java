@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
@@ -651,7 +652,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 obj1 = iterator1.next();
 
         }
-        if(deletedPrivateOwnedObjects != null && !isNestedUnitOfWork())
+        if(deletedPrivateOwnedObjects != null && !this.isNestedUnitOfWork)
         {
             for(Iterator iterator2 = deletedPrivateOwnedObjects.entrySet().iterator(); iterator2.hasNext();)
             {
@@ -832,7 +833,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 return registeredObject;
             }
         }
-        if (this.isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             // bug # 3228185
             //may be a new object from a parent Unit Of Work, let's check our new object in parent list to see
             //if it has already been registered locally
@@ -860,7 +861,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Object cloneAndRegisterNewObject(Object original) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
-        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+        if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
         ObjectBuilder builder = descriptor.getObjectBuilder();
@@ -907,7 +908,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is used to ensure that no invalid objects are registered.
      */
     public void checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
-        if (!isNestedUnitOfWork() && (cacheKey.getObject() != null)) {
+        if (!this.isNestedUnitOfWork && (cacheKey.getObject() != null)) {
             CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
             // BUG#6671556 refresh invalid objects when accessed in the unit of work.
             if (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey)) {
@@ -934,7 +935,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             concreteDescriptor = getDescriptor(original);
         }
         // Nested unit of work is not supported for attribute change tracking.
-        if (isNestedUnitOfWork() && (concreteDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
+        if (this.isNestedUnitOfWork && (concreteDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
 
@@ -979,7 +980,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // bug # 3228185 & Bug4736360
             // if this is a nested unit of work and the object is new in the parent
             //  and we must store it in the newobject list for lookup later
-            if (this.isNestedUnitOfWork() && isCloneNewObjectFromParent(original)) {
+            if (this.isNestedUnitOfWork && isCloneNewObjectFromParent(original)) {
                 getNewObjectsInParentOriginalToClone().put(original, workingClone);
             }
 
@@ -1049,7 +1050,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.unitOfWorkAfterWriteChangesFailed("commit");
         }
 
-        if (!isNestedUnitOfWork()) {
+        if (!this.isNestedUnitOfWork) {
             if (isSynchronized()) {
                 // If we started the JTS transaction then we have to commit it as well.
                 if (getParent().wasJTSTransactionInternallyStarted()) {
@@ -1069,7 +1070,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             this.eventManager.preCommitUnitOfWork();
         }
         setLifecycle(CommitPending);
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             commitNestedUnitOfWork();
         } else {
             commitRootUnitOfWork();
@@ -1107,7 +1108,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.unitOfWorkAfterWriteChangesFailed("commit");
         }
 
-        if (!isNestedUnitOfWork()) {
+        if (!this.isNestedUnitOfWork) {
             if (isSynchronized()) {
                 // JTA synchronized units of work, cannot be resumed as there is no
                 // JTA transaction to register with after the commit,
@@ -1148,7 +1149,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * and the feature revisited to support OptimisticLocking and Serialization
      */
     public void commitAndResumeWithPreBuiltChangeSet(UnitOfWorkChangeSet uowChangeSet) throws DatabaseException, OptimisticLockException {
-        if (!isNestedUnitOfWork()) {
+        if (!this.isNestedUnitOfWork) {
             if (isSynchronized()) {
                 // If we started the JTS transaction then we have to commit it as well.
                 if (getParent().wasJTSTransactionInternallyStarted()) {
@@ -1699,7 +1700,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void discoverAllUnregisteredNewObjectsInParent() {
         // Iterate over the clones.
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             // 2612538 - the default size of Map (32) is appropriate
             Map visitedNodes = new IdentityHashMap();
             Map newObjects = new IdentityHashMap();
@@ -2879,7 +2880,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (registeredObject == null) {
             // Nested units of work are special because the parent can be used to determine if the object exists
             // in most case and new object may be in the cache in the parent.
-            if (isNestedUnitOfWork()) {
+            if (this.isNestedUnitOfWork) {
                 UnitOfWorkImpl parentUnitOfWork = (UnitOfWorkImpl)getParent();
 
                 // If it is not registered in the parent we must go through the existence check.
@@ -3197,7 +3198,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return;
         }
 
-        boolean isNestedUnitOfWork = isNestedUnitOfWork();
+        boolean isNestedUnitOfWork = this.isNestedUnitOfWork;
         
         // If everything is isolated, can bypass merge entirely.
         if (!isNestedUnitOfWork && (!this.project.hasNonIsolatedUOWClasses() && (this.modifyAllQueries == null))) {
@@ -3299,7 +3300,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
         } finally {
-            if (!isNestedUnitOfWork() && !manager.getAcquiredLocks().isEmpty()) {
+            if (!this.isNestedUnitOfWork && !manager.getAcquiredLocks().isEmpty()) {
                 // if the locks have not already been released (!acquiredLocks.empty)
                 // then there must have been an error, release all of the locks.
                 try{
@@ -3637,17 +3638,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //but not DeferredChangeDetectionPolicy.  Build backup clone for DeferredChangeDetectionPolicy 
         //or ObjectChangeTrackingPolicy, but not for AttributeChangeTrackingPolicy.  
         // - Set listener before populating attributes so aggregates can find the parent's listener
-        descriptor.getObjectChangePolicy().setChangeListener(workingClone, this, descriptor);
-        descriptor.getObjectChangePolicy().dissableEventProcessing(workingClone);
+        ObjectChangePolicy changePolicy = descriptor.getObjectChangePolicy();
+        changePolicy.setChangeListener(workingClone, this, descriptor);
+        changePolicy.dissableEventProcessing(workingClone);
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
         builder.populateAttributesForClone(original, workingClone, this);
-        Object backupClone = descriptor.getObjectChangePolicy().buildBackupClone(workingClone, builder, this);
-        // PERF: Avoid put is no backup clone.
+        Object backupClone = changePolicy.buildBackupClone(workingClone, builder, this);
+        // PERF: Avoid put if no backup clone.
         if (workingClone != backupClone) {
             getCloneMapping().put(workingClone, backupClone);
         }
-        descriptor.getObjectChangePolicy().enableEventProcessing(workingClone);
+        changePolicy.enableEventProcessing(workingClone);
     }
 
     /**
@@ -4384,7 +4386,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 rollbackTransaction(false);
                 setWasTransactionBegunPrematurely(false);
             }
-        } else if (wasTransactionBegunPrematurely() && (!isNestedUnitOfWork())) {
+        } else if (wasTransactionBegunPrematurely() && (!this.isNestedUnitOfWork)) {
             rollbackTransaction();
             setWasTransactionBegunPrematurely(false);
         }
@@ -4418,7 +4420,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Also removes classes which are read only because their descriptors are readonly
      */
     public void removeAllReadOnlyClasses() throws ValidationException {
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             throw ValidationException.cannotRemoveFromReadOnlyClassesInNestedUnitOfWork();
         }
         getReadOnlyClasses().clear();
@@ -4462,7 +4464,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             throw ValidationException.cannotRemoveFromReadOnlyClassesInNestedUnitOfWork();
         }
         getReadOnlyClasses().remove(theClass);
@@ -4524,7 +4526,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         setDeletedObjects(new IdentityHashMap());
         setRemovedObjects(new IdentityHashMap());
         setUnregisteredNewObjects(new IdentityHashMap());
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             discoverAllUnregisteredNewObjectsInParent();
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");
@@ -4941,7 +4943,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * and forced a transaction to be started.
      */
     public void setWasTransactionBegunPrematurely(boolean wasTransactionBegunPrematurely) {
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             ((UnitOfWorkImpl)this.parent).setWasTransactionBegunPrematurely(wasTransactionBegunPrematurely);
         }
         this.wasTransactionBegunPrematurely = wasTransactionBegunPrematurely;
@@ -5143,7 +5145,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.lifecycle = Birth;
         this.isSynchronized = false;
         this.unregisteredNewObjectsInParent = null;
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             discoverAllUnregisteredNewObjectsInParent();
         }
     }
@@ -5156,7 +5158,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void resumeUnitOfWork() {
         // Resume new objects.
-        if (hasNewObjects() && !isNestedUnitOfWork()) {
+        if (hasNewObjects() && !this.isNestedUnitOfWork) {
             Iterator newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (newEntries.hasNext()) {
@@ -5417,7 +5419,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     // * 2.5.1.8 Nov 17, 2000 JED
     // * Prs 25751 Changed to make this method public
     public boolean wasTransactionBegunPrematurely() {
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             return ((UnitOfWorkImpl)this.parent).wasTransactionBegunPrematurely();
         }
         return wasTransactionBegunPrematurely;
@@ -5448,7 +5450,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.cannotWriteChangesTwice();
         }
-        if (isNestedUnitOfWork()) {
+        if (this.isNestedUnitOfWork) {
             throw ValidationException.writeChangesOnNestedUnitOfWork();
         }
         mergeBmpAndWsEntities();

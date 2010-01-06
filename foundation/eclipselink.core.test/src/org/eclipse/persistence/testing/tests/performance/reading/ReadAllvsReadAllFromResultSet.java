@@ -35,11 +35,11 @@ public class ReadAllvsReadAllFromResultSet extends PerformanceComparisonTestCase
         query = new ReadAllQuery(Address.class);
         resultSetQuery = new ReadAllQuery(Address.class);
         resultSetQuery.setIsResultSetOptimizedQuery(true);
-        getSession().getDescriptor(Address.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
+        //getSession().getDescriptor(Address.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
     }
 
     public void reset() throws Exception {
-        getSession().getDescriptor(Address.class).setObjectChangePolicy(new DeferredChangeDetectionPolicy());
+        //getSession().getDescriptor(Address.class).setObjectChangePolicy(new DeferredChangeDetectionPolicy());
     }
 
     /**

@@ -566,8 +566,13 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
+     * Release the cursor query's connection.
      */
     public void releaseReadConnection(Accessor connection) {
+        // If the cursor's connection is the write connection, then do not release it.
+        if (getWriteConnection() == connection) {
+            return;
+        }
         //bug 4668234 -- used to only release connections on server sessions but should always release
         this.parent.releaseReadConnection(connection);
     }

@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
@@ -1264,7 +1265,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Extract values directly from the result-set.
      * PERF: This is used for optimized object building directly from the result-set.
      */
-    public Object readFromResultSetIntoObject(ResultSet resultSet, Object targetObject, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws DatabaseException {
+    public Object readFromResultSetIntoObject(ResultSet resultSet, Object targetObject, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
         Object attributeValue = valueFromResultSet(resultSet, query, session, accessor, metaData, columnNumber, platform);
         setAttributeValueInObject(targetObject, attributeValue);
         return attributeValue;
@@ -1580,7 +1581,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Returns the value for the mapping directly from the result-set.
      * PERF: Used for optimized object building.
      */
-    public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws DatabaseException {
+    public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
         throw DescriptorException.invalidMappingOperation(this, "valueFromResultSet");
     }
 

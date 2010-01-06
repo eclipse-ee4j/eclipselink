@@ -36,7 +36,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Clear all the query caches
      */
     public void clearQueryCache() {
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessor().clearQueryCache();
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache();
     }
 
     /**
@@ -44,7 +44,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Clear the query class associated with the passed-in read query
      */
     public void clearQueryCache(ReadQuery query) {
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessor().clearQueryCache(query);
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache(query);
     }
 
     /**
@@ -52,7 +52,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Clear the query cache associated with the named query on the session
      */
     public void clearQueryCache(String sessionQueryName) {
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getQuery(sessionQueryName));
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getQuery(sessionQueryName));
     }
 
     /**
@@ -60,7 +60,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Clear the query cache associated with the named query on the descriptor for the given class
      */
     public void clearQueryCache(String descriptorQueryName, Class queryClass) {
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
     }
 
     /**
@@ -71,7 +71,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         if (getIdentityMapManager().containsKey(primaryKey, theClass, descriptor)) {
             return true;
         }
-        return ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass, descriptor);
+        return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass, descriptor);
     }
 
     /**
@@ -118,7 +118,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         // Note: Objects returned from the parent's identity map should include invalidated
         // objects. This is important because this internal method is used in the existence
         // check in the UnitOfWork.
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParent().getIdentityMapAccessorInstance();
         CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor);
         if ((cacheKey == null) && unitOfWork.getParent().isUnitOfWork()) {
@@ -156,13 +156,13 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         }
 
         // Consider read-only class CR#4094
-        if (getSession().isClassReadOnly(theClass, descriptor)) {
+        if (this.session.isClassReadOnly(theClass, descriptor)) {
             // PERF: Just return the original object.
             return objectFromCache;
         }
 
-        if(getSession() instanceof RepeatableWriteUnitOfWork ) {
-            Object unregisteredDeletedClone = ((RepeatableWriteUnitOfWork)getSession()).getUnregisteredDeletedCloneForOriginal(objectFromCache);
+        if (this.session instanceof RepeatableWriteUnitOfWork) {
+            Object unregisteredDeletedClone = ((RepeatableWriteUnitOfWork)this.session).getUnregisteredDeletedCloneForOriginal(objectFromCache);
             if(unregisteredDeletedClone != null) {
                 return unregisteredDeletedClone;
             }
@@ -180,7 +180,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * results are only cached in the parent session for UnitOfWorks
      */
     public Object getQueryResult(ReadQuery query, Vector parameters, boolean checkExpiry) {
-        return ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
+        return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
     }
 
     /**
@@ -192,7 +192,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *  Results are only cached in the parent session for UnitOfWorks
      */
     public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
     }
 
     /**
@@ -208,6 +208,6 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     public void initializeAllIdentityMaps() {
         super.initializeAllIdentityMaps();
-        ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 }

@@ -14,6 +14,7 @@ package org.eclipse.persistence.queries;
 
 import java.util.*;
 import java.sql.*;
+
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -320,32 +321,33 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Remove any deleted or changed objects that no longer conform.
         // Deletes will only work for simple queries, queries with or's or anyof's may not return
         // correct results when untriggered indirection is in the model.		
-        Vector fromDatabase = null;
+        List fromDatabase = null;
 
         // When building directly from rows, one of the performance benefits
         // is that we no longer have to wrap and then unwrap the originals.
         // result is just a vector, not a container of wrapped originals.
         if (buildDirectlyFromRows) {
-            Vector rows = (Vector)result;
-            fromDatabase = new Vector(rows.size());
-            for (int i = 0; i < rows.size(); i++) {
-                Object object = rows.elementAt(i);
+            List<AbstractRecord> rows = (List<AbstractRecord>)result;
+            int size = rows.size();
+            fromDatabase = new ArrayList(size);
+            for (int index = 0; index < size; index++) {
+                AbstractRecord row = rows.get(index);
                 // null is placed in the row collection for 1-m joining to filter duplicate rows.
-                if (object != null) {
-                    Object clone = conformIndividualResult(object, unitOfWork, arguments, getSelectionCriteria(), indexedInterimResult, buildDirectlyFromRows);
+                if (row != null) {
+                    Object clone = conformIndividualResult(buildObject(row), unitOfWork, arguments, getSelectionCriteria(), indexedInterimResult);
                     if (clone != null) {
-                        fromDatabase.addElement(clone);
+                        fromDatabase.add(clone);
                     }
                 }
             }
         } else {
-            fromDatabase = new Vector(cp.sizeFor(result));
+            fromDatabase = new ArrayList(cp.sizeFor(result));
             AbstractSession sessionToUse = unitOfWork.getParent();
             for (Object iter = cp.iteratorFor(result); cp.hasNext(iter);) {
                 Object object = cp.next(iter, sessionToUse);
-                Object clone = conformIndividualResult(object, unitOfWork, arguments, getSelectionCriteria(), indexedInterimResult, buildDirectlyFromRows);
+                Object clone = conformIndividualResult(registerIndividualResult(object, null, unitOfWork, null, null), unitOfWork, arguments, getSelectionCriteria(), indexedInterimResult);
                 if (clone != null) {
-                    fromDatabase.addElement(clone);
+                    fromDatabase.add(clone);
                 }
             }
         }
@@ -354,13 +356,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Wrapping is done automatically.
         // Make sure a vector of exactly the right size is returned.
         Object conformedResult = cp.containerInstance(indexedInterimResult.size() + fromDatabase.size());
-        Object eachClone;
         for (Iterator enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
-            eachClone = enumtr.next();
+            Object eachClone = enumtr.next();
             cp.addInto(eachClone, conformedResult, unitOfWork);
         }
-        for (Enumeration enumtr = fromDatabase.elements(); enumtr.hasMoreElements();) {
-            eachClone = enumtr.nextElement();
+        int size = fromDatabase.size();
+        for (int index = 0; index < size; index++) {
+            Object eachClone = fromDatabase.get(index);
             cp.addInto(eachClone, conformedResult, unitOfWork);
         }
 
@@ -486,41 +488,43 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Execute the query building the objects directly from the database result-set.
      * @exception  DatabaseException - an error has occurred on the database
-     * @return object - the first object found or null if none.
+     * @return an ArrayList of the resulting objects.
      */
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
-        DatabaseAccessor accessor = (DatabaseAccessor)unitOfWork.getAccessor();
-        DatabasePlatform platform = accessor.getPlatform();
-        DatabaseCall call = (DatabaseCall)getCall().clone();
-        call.setQuery(this);
-        call.translate(this.translationRow, null, unitOfWork);
-        Statement statement = null;
-        ResultSet resultSet = null;
+        AbstractSession session = this.session;
+        DatabasePlatform platform = session.getPlatform();
+        DatabaseCall call = (DatabaseCall)((CallQueryMechanism)this.queryMechanism).getCall();
+        call.returnCursor();
+        call = this.queryMechanism.cursorSelectAllRows();
+        Statement statement = call.getStatement();
+        ResultSet resultSet = call.getResult();
+        DatabaseAccessor accessor = (DatabaseAccessor)this.accessor;
         boolean exceptionOccured = false;
         try {
-            accessor.incrementCallCount(unitOfWork);
-            statement = call.prepareStatement(accessor, this.translationRow, unitOfWork);
-            resultSet = accessor.executeSelect(call, statement, unitOfWork);
             ResultSetMetaData metaData = resultSet.getMetaData();
-            Vector results = new Vector();
+            List results = new ArrayList();
             ObjectBuilder builder = this.descriptor.getObjectBuilder();
             while (resultSet.next()) {
-                results.add(builder.buildWorkingCopyCloneFromResultSet(this, this.joinedAttributeManager, resultSet, unitOfWork, accessor, metaData, platform));
+                results.add(builder.buildObjectFromResultSet(this, this.joinedAttributeManager, resultSet, session, accessor, metaData, platform));
             }
             return results;
         } catch (SQLException exception) {
             exceptionOccured = true;
             DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
-            if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, call, accessor, unitOfWork, false);
+            if (commException != null) {
+                throw commException;
+            }
+            throw DatabaseException.sqlException(exception, call, accessor, session, false);
         } finally {
             try {
                 if (resultSet != null) {
                     resultSet.close();
                 }
                 if (statement != null) {
-                    accessor.releaseStatement(statement, call.getSQLString(), call, unitOfWork);
+                    accessor.releaseStatement(statement, call.getSQLString(), call, session);
+                }
+                if (accessor != null) {
+                    session.releaseReadConnection(accessor);
                 }
             } catch (SQLException exception) {
                 if (!exceptionOccured) {
@@ -528,7 +532,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     // if it is null we will be unable to check the connection for a comm error and
                     //therefore must return as if it was not a comm error.
                     DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
-                    if (commException != null) throw commException;
+                    if (commException != null) {
+                        throw commException;
+                    }
                     throw DatabaseException.sqlException(exception, call, accessor, session, false);
                 }
             }
@@ -866,7 +872,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         AbstractSession sessionToUse = unitOfWork.getParent();
         for (Object iter = cp.iteratorFor(result); cp.hasNext(iter);) {
             Object object = cp.next(iter, sessionToUse);
-            Object clone = registerIndividualResult(object, unitOfWork, this.joinedAttributeManager);
+            Object clone = registerIndividualResult(object, null, unitOfWork, this.joinedAttributeManager, null);
             cp.addInto(clone, clones, unitOfWork);
         }
         if (cursor != null) {

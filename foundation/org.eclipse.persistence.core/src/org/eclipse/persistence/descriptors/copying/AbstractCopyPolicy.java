@@ -41,13 +41,6 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
         return buildClone(domainObject, session);
     }
-
-    /**
-     * By default create a new instance.
-     */
-    public Object buildWorkingCopyCloneFromPrimaryKeyObject(Object primaryKeyObject, ObjectBuildingQuery query, org.eclipse.persistence.sessions.UnitOfWork uow) {
-        return this.descriptor.getObjectBuilder().buildNewInstance();
-    }
     
     /**
      * By default create a new instance.

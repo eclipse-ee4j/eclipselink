@@ -162,4 +162,8 @@ public class AttributeChangeListener extends ObjectChangeListener {
         super.clearChanges();
         this.objectChangeSet = null;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getObjectChangeSet() + ")";
+    }
 }

@@ -20,6 +20,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
@@ -100,8 +101,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Used when initializing queries for mappings that use a Map
-     * Called when the selection query is being initialized to add the fields for the map key to the query
+     * Used when initializing queries for mappings that use a Map.
+     * Called when the selection query is being initialized to add the fields for the map key to the query.
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
         if (selectionQuery.isObjectLevelReadQuery()){
@@ -124,9 +125,9 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * Used when initializing queries for mappings that use a Map
-     * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
+     * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query.
      */
-    public void addFieldsForMapKey(AbstractRecord joinRow){
+    public void addFieldsForMapKey(AbstractRecord joinRow) {
         joinRow.put(getField(), null);
     }
 
@@ -137,11 +138,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      *
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
-     * 
-     * @param object
-     * @param manager
      */
-    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
+    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects) {
     }
     
     /**
@@ -206,6 +204,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         buildClone(clone, backup, unitOfWork);
     }
@@ -214,6 +213,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
+    @Override
     public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
         buildCloneValue(original, clone, unitOfWork);
     }
@@ -233,9 +233,6 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * Clone the actual value represented by this mapping.  Do set the cloned value into the object.
-     * @param attributeValue
-     * @param session
-     * @return
      */
     protected Object buildCloneValue(Object attributeValue, AbstractSession session) {
         Object newAttributeValue = attributeValue;
@@ -262,16 +259,13 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
+    @Override
     public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
         buildCloneValue(original, copy, policy.getSession());
     }
 
     /**
-     * Build a clone of the given element in a unitOfWork
-     * @param element
-     * @param unitOfWork
-     * @param isExisting
-     * @return
+     * Build a clone of the given element in a unitOfWork.
      */
     public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
         return buildCloneValue(attributeValue, unitOfWork);
@@ -282,6 +276,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value for a directToField mapping.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
         Object attributeValue = this.getAttributeValueFromObject(queryObject);
@@ -304,8 +299,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * Certain key mappings favor different types of selection query.  Return the appropriate
-     * type of selectionQuery
-     * @return
+     * type of selectionQuery.
      */
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
         DataReadQuery query = new DataReadQuery();
@@ -316,7 +310,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Cascade discover and persist new objects during commit to the map key
+     * Cascade discover and persist new objects during commit to the map key.
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow,  boolean getAttributeValueFromObject){
         //objects referenced by this mapping are not registered as they have
@@ -325,7 +319,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Cascade perform delete through mappings that require the cascade
+     * Cascade perform delete through mappings that require the cascade.
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
         //objects referenced by this mapping are not registered as they have
@@ -334,7 +328,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Cascade perform delete through mappings that require the cascade
+     * Cascade perform delete through mappings that require the cascade.
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
@@ -343,7 +337,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Cascade registerNew for Create through mappings that require the cascade
+     * Cascade registerNew for Create through mappings that require the cascade.
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
         //objects referenced by this mapping are not registered as they have
@@ -352,7 +346,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Cascade registerNew for Create through mappings that require the cascade
+     * Cascade registerNew for Create through mappings that require the cascade.
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
@@ -363,6 +357,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         AbstractDirectMapping clone = (AbstractDirectMapping)super.clone();
 
@@ -375,6 +370,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * Returns the field this mapping represents.
      */
+    @Override
     protected Vector<DatabaseField> collectFields() {
         Vector databaseField = new Vector(1);
 
@@ -386,6 +382,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Compare the clone and backup clone values and return a change record if the value changed.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         // same code as write from object into row for update
         if ((owner.isNew()) || (!compareObjects(backUp, clone, session))) {
@@ -400,9 +397,6 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * 
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
-     * 
-     * @param objectDeleted
-     * @param session
      */
     public void deleteMapKey(Object objectDeleted, AbstractSession session){
     }
@@ -411,13 +405,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Directly build a change record without comparison
      */
+    @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         return internalBuildChangeRecord(getAttributeValueFromObject(clone), owner);
     }
 
     /**
      * INTERNAL:
-     * Build a change record
+     * Build a change record.
      */
     public ChangeRecord internalBuildChangeRecord(Object newValue, ObjectChangeSet owner) {
         DirectToFieldChangeRecord changeRecord = new DirectToFieldChangeRecord(owner);
@@ -431,6 +426,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstValue = getAttributeValueFromObject(firstObject);
         Object secondValue = getAttributeValueFromObject(secondObject);
@@ -470,11 +466,10 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Convert all the class-name-based settings in this mapping to actual class-based
-     * settings
+     * Convert all the class-name-based settings in this mapping to actual class-based settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         
@@ -566,7 +561,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session) {
         Object key = dbRow.get(getField());
         key = getAttributeValue(key, session);
         return key;
@@ -576,16 +571,15 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session){
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session) {
         return createMapComponentFromRow(dbRow, query, session);
     }
     
     /**
      * INTERNAL:
-     * Create a query key that links to the map key
-     * @return
+     * Create a query key that links to the map key.
      */
-    public QueryKey createQueryKeyForMapKey(){
+    public QueryKey createQueryKeyForMapKey() {
         DirectQueryKey queryKey = new DirectQueryKey();
         queryKey.setField(field);
         return queryKey;
@@ -593,8 +587,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Extract the fields for the Map key from the object to use in a query
-     * @return
+     * Extract the fields for the Map key from the object to use in a query.
      */
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map fields = new HashMap();
@@ -612,13 +605,13 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
     }
 
     /**
      * INTERNAL:
-     * Return any tables that will be required when this mapping is used as part of a join query
-     * @return
+     * Return any tables that will be required when this mapping is used as part of a join query.
      */
     public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
         List tables = new ArrayList(1);
@@ -630,7 +623,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
-     * the instance variable value to that data type
+     * the instance variable value to that data type.
      */
     public Class getAttributeClassification() {
         return attributeClassification;
@@ -690,6 +683,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAbstractDirectMapping() {
         return true;
     }
@@ -698,8 +692,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Get the descriptor for this mapping
      * This method is potentially called when this mapping is used as a map key and
-     * will return null since direct mappings do not have reference descriptors
-     * @return
+     * will return null since direct mappings do not have reference descriptors.
      */
     public ClassDescriptor getReferenceDescriptor(){
         return null;
@@ -812,8 +805,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Return a Map of any foreign keys defined within the the MapKey
-     * @return
+     * Return a Map of any foreign keys defined within the the MapKey.
      */
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
         return null;
@@ -823,8 +815,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with
      * a primary key, it will be the set of fields in the primary key.  For mappings without
-     * a primary key it will likely be all the fields
-     * @return
+     * a primary key it will likely be all the fields.
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
         return getAllFieldsForMapKey();
@@ -832,7 +823,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Get all the fields for the map key
+     * Get all the fields for the map key.
      */
     public List<DatabaseField> getAllFieldsForMapKey(){
         Vector<DatabaseField> fields = new Vector<DatabaseField>(1);
@@ -843,9 +834,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
-     * 
-     * This method is used when this mapping is used to map the key in a Map
-     * @return
+     * This method is used when this mapping is used to map the key in a Map.
      */
     public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
         return null;
@@ -866,9 +855,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Return the selection criteria necessary to select the target object when this mapping
      * is a map key.
-     * 
-     * DirectMappings do not need any additional selection criteria when they are map keys
-     * @return
+     * DirectMappings do not need any additional selection criteria when they are map keys.
      */
     public Expression getAdditionalSelectionCriteriaForMapKey(){
         return null;
@@ -877,9 +864,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager.
-     * 
-     * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
-     * @return
+     * Used with MapKeyContainerPolicy to abstract getting the target version of a source key.
      */
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
        return object;
@@ -904,6 +889,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Return the weight of the mapping, used to sort mappings to ensure that
      * DirectToField Mappings get merged first
      */
+    @Override
     public Integer getWeight() {
         return this.weight;
     }
@@ -914,6 +900,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
      * remote session.
      */
+    @Override
     public void remoteInitialization(DistributedSession session) {
         if (!isRemotelyInitialized()) {
             super.remoteInitialization(session);
@@ -927,8 +914,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      * Initialize the attribute classification.
-     * @Throws DescriptorException when attributeClassification is null
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
         // Allow the attribute class to be set by the user.
@@ -967,6 +954,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * The mapping is initialized with the given session.
      * This mapping is fully initialized after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -994,6 +982,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isDirectToFieldMapping() {
         return true;
     }
@@ -1002,6 +991,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Iterate on the appropriate attribute.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         // PERF: Only iterate when required.
         if (iterator.shouldIterateOnPrimitives()) {
@@ -1011,9 +1001,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
-     * @param iterator
-     * @param element
+     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey.
      */
     public void iterateOnMapKey(DescriptorIterator iterator, Object element){
         if (iterator.shouldIterateOnPrimitives()) {
@@ -1025,6 +1013,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         setAttributeValueInObject(target, buildCloneValue(((DirectToFieldChangeRecord)changeRecord).getNewValue(), mergeManager.getSession()));
     }
@@ -1034,6 +1023,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
      * does not exist or the target is uninitialized
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         // If merge into the unit of work, must only merge and raise the event is the value changed.
         if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
@@ -1055,7 +1045,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
-     * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
+     * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping.
      */
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
         keyTableForMapKey = table;
@@ -1063,7 +1053,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map.
      */
     public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
         ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).normalize(session, null);
@@ -1110,6 +1100,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         return getClass().getName() + "[" + getAttributeName() + "-->" + getField() + "]";
     }
@@ -1119,6 +1110,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Either create a new change record or update with the new value.  This is used
      * by attribute change tracking.
      */
+    @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (changeRecord == null) {
@@ -1132,6 +1124,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Return if this mapping supports change tracking.
      */
+    @Override
     public boolean isChangeTrackingSupported(Project project) {
         return !isMutable();
     }
@@ -1140,18 +1133,15 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Return if this mapping requires its attribute value to be cloned.
      */
+    @Override
     public boolean isCloningRequired() {
         return isMutable() || getDescriptor().getCopyPolicy().buildsNewInstance();
     }
 
     /**
      * INTERNAL:
-     * Allow the key mapping to unwrap the object
-     * @param key
-     * @param session
-     * @return
-     */
-    
+     * Allow the key mapping to unwrap the object.
+     */    
     public Object unwrapKey(Object key, AbstractSession session){
         return key;
     }
@@ -1160,6 +1150,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Allow for subclasses to perform validation.
      */
+    @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         if ((getFieldName() == null) || (getFieldName().length() == 0)) {
             session.getIntegrityChecker().handleError(DescriptorException.noFieldNameForMapping(this));
@@ -1168,12 +1159,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
-     * Allow the key mapping to wrap the object
-     * @param key
-     * @param session
-     * @return
+     * Allow the key mapping to wrap the object.
      */
-    
     public Object wrapKey(Object key, AbstractSession session){
         return key;
     }
@@ -1182,6 +1169,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Get the value from the object for this mapping.
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) throws DescriptorException {
         return getFieldValue(getAttributeValueFromObject(object), session);
     }
@@ -1193,6 +1181,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // Even though the correct value may exist on the original, we can't
         // make that assumption.  It is easy to just build it again from the
@@ -1211,6 +1200,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * the shared cache (no concern over cycles).
      * @parameter original later the input to buildCloneFromRow
      */
+    @Override
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         readFromRowIntoObject(databaseRow, null, original, query, executionSession);
     }
@@ -1222,6 +1212,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * directly from a row, the session set in the query will not know which platform to use
      * for converting the value.  Allows the correct session to be passed in.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // PERF: Direct variable access.
         Object fieldValue = row.get(this.field);
@@ -1235,7 +1226,15 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Returns the value for the mapping directly from the result-set.
      * PERF: Used for optimized object building.
      */
-    public Object valueFromResultSet(ResultSet resultSet, ObjectLevelReadQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws DatabaseException {
+    @Override
+    public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
+        if (this.attributeObjectClassification == ClassConstants.STRING) {
+            return resultSet.getString(columnNumber);
+        } else if (this.attributeObjectClassification == ClassConstants.LONG) {
+            return resultSet.getLong(columnNumber);
+        } else if (this.attributeObjectClassification == ClassConstants.INTEGER) {
+            return resultSet.getInt(columnNumber);
+        }
         return accessor.getObject(resultSet, this.field, metaData, columnNumber, platform, true, session);
     }
 
@@ -1243,6 +1242,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
         if (this.isReadOnly) {
             return;
@@ -1262,6 +1262,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Get a value from the object and set that in the respective field of the row.
      * Validation preventing primary key updates is implemented here.
      */
+    @Override
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
         if (this.isReadOnly) {
             return;
@@ -1281,6 +1282,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Write the attribute value from the object to the row for update.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord databaseRow) {
         if (query.getSession().isUnitOfWork()) {
             if (compareObjects(query.getBackupClone(), query.getObject(), query.getSession())) {
@@ -1295,6 +1297,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         if (isReadOnly()) {
             return;

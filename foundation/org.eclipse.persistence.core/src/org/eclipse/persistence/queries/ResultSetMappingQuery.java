@@ -195,7 +195,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                 setSession(nestedUnitOfWork.getParent());
                 Object result = executeDatabaseQuery();
                 setSession(nestedUnitOfWork);
-                Object clone = registerIndividualResult(result, unitOfWork, null);
+                Object clone = registerIndividualResult(result, null, unitOfWork, null, null);
 
                 if (shouldUseWrapperPolicy()) {
                     clone = getDescriptor().getObjectBuilder().wrapObject(clone, unitOfWork);

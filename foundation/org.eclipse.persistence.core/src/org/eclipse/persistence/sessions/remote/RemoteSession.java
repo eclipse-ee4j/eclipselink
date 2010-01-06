@@ -126,7 +126,7 @@ public class RemoteSession extends DistributedSession {
      */
     public Login getDatasourceLogin() {
         Login login = super.getDatasourceLogin();
-        if (login == null) {
+        if ((login == null) && (getRemoteConnection() != null)) {
             login = getRemoteConnection().getLogin();
             setDatasourceLogin(login);
         }

@@ -118,4 +118,8 @@ public class FetchGroup implements java.io.Serializable {
     public boolean isSupersetOf(FetchGroup anotherGroup) {
         return (anotherGroup != null) && ((this == anotherGroup) || getAttributes().containsAll(anotherGroup.getAttributes()));
     }
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getAttributes() + ")";
+    }
 }

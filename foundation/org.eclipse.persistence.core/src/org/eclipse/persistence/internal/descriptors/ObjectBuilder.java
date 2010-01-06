@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -488,7 +489,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // processing ahead.
                 domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
             } else {
-                domainObject = buildObject(query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+                domainObject = buildObject(false, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
                 if (query.shouldCacheQueryResults()) {
                     query.cacheResult(domainObject);
                 }
@@ -563,31 +564,68 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Represents the way TopLink has always worked.
      */
     protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
-        // This is normal case when we are not in transaction.
-        // Pass the query off to the parent.  Let it build the object and
-        // cache it normally, then register/refresh it.
-        AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
-        Object original = null;
-        Object clone = null;
-
-        
-        // forwarding queries to different sessions is now as simple as setting
-        // the session on the query.
-        query.setSession(session);
-        if (session.isUnitOfWork()) {
-            original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
-        } else {
-            original = buildObject(query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
-            if (query.shouldCacheQueryResults()) {
-                query.cacheResult(original);
+        // First check local unit of work cache.
+        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+        Object clone = unitOfWorkCacheKey.getObject();
+        boolean found = clone != null;
+        Object original = null; 
+        try {
+            // Only check parent cache if not in unit of work, or if a refresh is required.
+            if (!found || query.shouldRefreshIdentityMapResult()
+                    || query.shouldRetrieveBypassCache()
+                    || (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(clone))) {
+                // This is normal case when we are not in transaction.
+                // Pass the query off to the parent.  Let it build the object and
+                // cache it normally, then register/refresh it.
+                AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
+                
+                // forwarding queries to different sessions is now as simple as setting
+                // the session on the query.
+                query.setSession(session);
+                if (session.isUnitOfWork()) {
+                    // If a nested unit of work, recurse.
+                    original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
+                    //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true 
+                    if (unitOfWork.shouldCascadeCloneToJoinedRelationship()) {
+                        return query.registerIndividualResult(original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
+                    } else {
+                        return query.registerIndividualResult(original, primaryKey, unitOfWork, null, concreteDescriptor);            
+                    }
+                } else {
+                    // PERF: This optimizes the normal case to avoid duplicate cache access.
+                    CacheKey parentCacheKey = (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+                    original = parentCacheKey.getObject();
+                    if (query.shouldCacheQueryResults()) {
+                        query.cacheResult(original);
+                    }
+                    // PERF: Do not register nor process read-only.
+                    if (unitOfWork.isClassReadOnly(original.getClass(), concreteDescriptor)) {
+                        // There is an obscure case where they object could be read-only and pessimistic.
+                        // Record clone if referenced class has pessimistic locking policy.
+                        query.recordCloneForPessimisticLocking(original, unitOfWork);
+                        return original;
+                    }
+                    if (!query.isRegisteringResults()) {
+                        return original;
+                    }
+                    if (clone == null) {
+                        clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor);
+                    }
+                    //bug3659327
+                    //fetch group manager control fetch group support
+                    if (concreteDescriptor.hasFetchGroupManager()) {
+                        //if the object is already registered in uow, but it's partially fetched (fetch group case)     
+                        if (concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
+                            //there might be cases when reverting/refreshing clone is needed.
+                            concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork);
+                        }
+                    }
+                }
             }
-        }
-        query.setSession(unitOfWork);
-        //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true 
-        if (unitOfWork.shouldCascadeCloneToJoinedRelationship()) {
-            clone = query.registerIndividualResult(original, unitOfWork, joinManager);
-        } else {
-            clone = query.registerIndividualResult(original, unitOfWork, null);            
+            query.postRegisterIndividualResult(clone, original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
+        } finally {
+            unitOfWorkCacheKey.release();
+            query.setSession(unitOfWork);
         }
         return clone;
     }
@@ -596,7 +634,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    protected Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Object domainObject = null;
         
         // Cache key is used for object locking.
@@ -783,7 +821,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
             concreteDescriptor.getObjectBuilder().instantiateEagerMappings(domainObject, session);
         }
         
-        return domainObject;
+        if (returnCacheKey) {
+            return cacheKey;
+        } else {
+            return domainObject;
+        }
     }
 
     /**
@@ -1294,7 +1336,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * putting uncommitted versions of objects in the shared cache.
      */
     protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey) throws DatabaseException, QueryException {
-        AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
         ClassDescriptor descriptor = this.descriptor;
 
         // If the clone already exists then it may only need to be refreshed or returned.
@@ -1320,6 +1361,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             Object original = null;    
             // If not refreshing can get the object from the cache.
             if ((!isARefresh) && (!isIsolated) && !unitOfWork.shouldReadFromDB()) {
+                AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
                 CacheKey originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
                 if (originalCacheKey != null) {
                     // PERF: Read-lock is not required on object as unit of work will acquire this on clone and object cannot gc and object identity is maintained.
@@ -1409,41 +1451,81 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * so can avoid many of the normal checks, only queries that have this criteria
      * can use this method of building objects.
      */
-    public Object buildWorkingCopyCloneFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, UnitOfWorkImpl unitOfWork, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform) throws DatabaseException, QueryException {
+    public Object buildObjectFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform) throws SQLException {
         ClassDescriptor descriptor = this.descriptor;
-        Object primaryKeyObject = getPrimaryKeyMappings().get(0).valueFromResultSet(resultSet, query, unitOfWork, accessor, metaData, 1, platform);
-        Vector primaryKey = new Vector(1);
+        DatabaseMapping primaryKeyMapping = this.primaryKeyMappings.get(0);
+        Object primaryKeyObject = primaryKeyMapping.valueFromResultSet(resultSet, query, executionSession, accessor, metaData, 1, platform);
+        Vector primaryKey = new NonSynchronizedVector(1);
         primaryKey.add(primaryKeyObject);
 
-        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
-        Object workingClone = unitOfWorkCacheKey.getObject();
+        UnitOfWorkImpl unitOfWork = null;
+        AbstractSession session = executionSession;
+        boolean isolated = descriptor.isIsolated();
+        if (session.isUnitOfWork()) {
+            unitOfWork = (UnitOfWorkImpl)executionSession;
+        }
+        
+        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
+        CacheKey parentCacheKey = null;
+        Object object = cacheKey.getObject();
         try {
-            // If there is a clone, then just return it.
-            if (workingClone != null) {
-                return workingClone;
-            }    
-            workingClone = descriptor.getCopyPolicy().buildWorkingCopyCloneFromPrimaryKeyObject(primaryKeyObject, query, unitOfWork);
-            unitOfWorkCacheKey.setObject(workingClone);                
-            unitOfWork.getCloneMapping().put(workingClone, workingClone);    
-            ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
-            policy.setChangeListener(workingClone, unitOfWork, descriptor);
-            
-            List mappings = descriptor.getMappings();
-            int size = mappings.size();
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping) mappings.get(index);
-                mapping.readFromResultSetIntoObject(resultSet, workingClone, query, unitOfWork, accessor, metaData, index + 1, platform);
+            // Found locally in the unit of work, or session query and found in the session.
+            if (object != null) {
+                return object;
             }
-            
-            query.recordCloneForPessimisticLocking(workingClone, unitOfWork);
-            if (workingClone instanceof PersistenceEntity) {
-                ((PersistenceEntity)workingClone)._persistence_setPKVector(primaryKey);
+            if ((unitOfWork != null) && !isolated) {
+                // Need to lookup in the session.
+                session = unitOfWork.getParentIdentityMapSession(query);
+                parentCacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
+                object = parentCacheKey.getObject();
+            }
+            // If the object is not in the cache, it needs to be built, this is building in the unit of work if isolated.
+            if (object == null) {
+                object = buildNewInstance();
+                if (unitOfWork == null) {
+                    cacheKey.setObject(object);                    
+                } else {
+                    if (isolated) {
+                        cacheKey.setObject(object); 
+                        unitOfWork.getCloneMapping().put(object, object);
+                    } else {
+                        parentCacheKey.setObject(object);                        
+                    }
+                }
+                
+                primaryKeyMapping.setAttributeValueInObject(object, primaryKeyObject);
+                List mappings = descriptor.getMappings();            
+                int size = mappings.size();
+                for (int index = 1; index < size; index++) {
+                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                    mapping.readFromResultSetIntoObject(resultSet, object, query, session, accessor, metaData, index + 1, platform);
+                }
+                
+                ((PersistenceEntity)object)._persistence_setPKVector(primaryKey);
+                if ((unitOfWork != null) && isolated) {
+                    ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
+                    policy.setChangeListener(object, unitOfWork, descriptor);
+                }
+            }
+            if ((unitOfWork != null) && !isolated) {
+                // Need to clone the object in the unit of work.
+                Object clone = instantiateWorkingCopyClone(object, unitOfWork);
+                ((PersistenceEntity)clone)._persistence_setPKVector(cacheKey.getKey());
+                unitOfWork.getCloneMapping().put(clone, clone);
+                unitOfWork.getCloneToOriginals().put(clone, object);
+                cacheKey.setObject(clone);
+                ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
+                policy.setChangeListener(clone, unitOfWork, descriptor);
+                object = clone;
             }
         } finally {
-            unitOfWorkCacheKey.release();            
+            cacheKey.release();
+            if (parentCacheKey != null) {
+                parentCacheKey.release();
+            }
         }
 
-        return workingClone;
+        return object;
     }
 
     /**

@@ -17,6 +17,7 @@ import java.sql.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -330,11 +331,13 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         // Must unwrap as the built object is always wrapped.
         // Note the object is unwrapped on the parent which it belongs to, as we
         // do not want to trigger a registration just yet.
-        Object implementation = null;
+        Object clone = null;
         if (buildDirectlyFromRows) {
-            implementation = result;
+            clone = buildObject((AbstractRecord)result);
         } else {
-            implementation = this.descriptor.getObjectBuilder().unwrapObject(result, unitOfWork.getParent());
+            clone = registerIndividualResult(
+                    this.descriptor.getObjectBuilder().unwrapObject(result, unitOfWork.getParent()),
+                    null, unitOfWork, null, null);
         }
 
         if ((getSelectionCriteria() != null) && (getSelectionKey() == null) && (getSelectionObject() == null)) {
@@ -343,7 +346,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             builder.setQueryClass(getReferenceClass());
         }
 
-        Object clone = conformIndividualResult(implementation, unitOfWork, databaseRow, getSelectionCriteria(), null, buildDirectlyFromRows);
+        clone = conformIndividualResult(clone, unitOfWork, databaseRow, getSelectionCriteria(), null);
         if (clone == null) {
             return clone;
         }
@@ -467,37 +470,38 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @return object - the first object found or null if none.
      */
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
-        DatabaseAccessor accessor = (DatabaseAccessor)unitOfWork.getAccessor();
-        DatabasePlatform platform = accessor.getPlatform();
-        DatabaseCall call = (DatabaseCall)getCall().clone();
-        call.setQuery(this);
-        AbstractRecord translationRow = getTranslationRow();
-        call.translate(getTranslationRow(), null, unitOfWork);
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        AbstractSession session = this.session;
+        DatabasePlatform platform = session.getPlatform();
+        DatabaseCall call = (DatabaseCall)((CallQueryMechanism)this.queryMechanism).getCall();
+        call.returnCursor();
+        call = this.queryMechanism.cursorSelectAllRows();
+        Statement statement = call.getStatement();
+        ResultSet resultSet = call.getResult();
+        DatabaseAccessor accessor = (DatabaseAccessor)this.accessor;
         boolean exceptionOccured = false;
         try {
-            accessor.incrementCallCount(unitOfWork);
-            statement = (PreparedStatement)call.prepareStatement(accessor, translationRow, unitOfWork);
-            resultSet = statement.executeQuery();
             if (!resultSet.next()) {
                 return null;
             }
             ResultSetMetaData metaData = resultSet.getMetaData();
-            return this.descriptor.getObjectBuilder().buildWorkingCopyCloneFromResultSet(this, null, resultSet, unitOfWork, accessor, metaData, platform);
+            return this.descriptor.getObjectBuilder().buildObjectFromResultSet(this, null, resultSet, session, accessor, metaData, platform);
         } catch (SQLException exception) {
             exceptionOccured = true;
             DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
-            if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, call, accessor, unitOfWork, false);
+            if (commException != null) {
+                throw commException;
+            }
+            throw DatabaseException.sqlException(exception, call, accessor, session, false);
         } finally {
             try {
                 if (resultSet != null) {
                     resultSet.close();
                 }
                 if (statement != null) {
-                    accessor.releaseStatement(statement, call.getSQLString(), call, unitOfWork);
+                    accessor.releaseStatement(statement, call.getSQLString(), call, session);
+                }
+                if (accessor != null) {
+                    session.releaseReadConnection(accessor);
                 }
             } catch (SQLException exception) {
                 if (!exceptionOccured) {
@@ -505,7 +509,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     // if it is null we will be unable to check the connection for a comm error and
                     //therefore must return as if it was not a comm error.
                     DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
-                    if (commException != null) throw commException;
+                    if (commException != null) {
+                        throw commException;
+                    }
                     throw DatabaseException.sqlException(exception, call, accessor, session, false);
                 }
             }
@@ -723,7 +729,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (buildDirectlyFromRows) {
             clone = buildObject((AbstractRecord)result);
         } else {
-            clone = registerIndividualResult(result, unitOfWork, null);
+            clone = registerIndividualResult(result, null, unitOfWork, null, null);
         }
 
         if (shouldUseWrapperPolicy()) {

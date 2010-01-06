@@ -70,7 +70,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     protected transient WriteLockManager writeLockManager;
 
     /** PERF: Used to avoid readLock and profiler checks to improve performance. */
-    protected Boolean isCacheAccessPreCheckRequired;
+    protected boolean isCacheAccessPreCheckRequired;
 
     public IdentityMapManager(AbstractSession session) {
         this.session = session;
@@ -85,6 +85,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             this.identityMaps = new ConcurrentHashMap();
             this.queryResults = new ConcurrentHashMap();
         }
+        checkIsCacheAccessPreCheckRequired();
     }
 
     /**
@@ -92,15 +93,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireDeferredLock(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireDeferredLock(primaryKey);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireDeferredLock(primaryKey);
         }
@@ -114,15 +115,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLock(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireLock(primaryKey, forMerge);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireLock(primaryKey, forMerge);
         }
@@ -136,15 +137,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLockNoWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireLockNoWait(primaryKey, forMerge);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireLockNoWait(primaryKey, forMerge);
         }
@@ -158,15 +159,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireLockWithWait(primaryKey, forMerge, wait);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireLockWithWait(primaryKey, forMerge, wait);
         }
@@ -178,35 +179,26 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * PERF: Used to micro optimize cache access.
      * Avoid the readLock and profile checks if not required.
      */
-    protected boolean isCacheAccessPreCheckRequired() {
-        if (this.isCacheAccessPreCheckRequired == null) {
-            if ((getSession().getProfiler() != null) || getSession().getDatasourceLogin().shouldSynchronizedReadOnWrite()) {
-                this.isCacheAccessPreCheckRequired = Boolean.TRUE;
-            } else {
-                this.isCacheAccessPreCheckRequired = Boolean.FALSE;
-            }
+    public void checkIsCacheAccessPreCheckRequired() {
+        if ((this.session.getProfiler() != null)
+                || ((this.session.getDatasourceLogin() != null) && this.session.getDatasourceLogin().shouldSynchronizedReadOnWrite())) {
+            this.isCacheAccessPreCheckRequired = true;
+        } else {
+            this.isCacheAccessPreCheckRequired = false;
         }
-        return this.isCacheAccessPreCheckRequired.booleanValue();
-    }
-
-    /**
-     * Clear the cache access pre-check flag, used from session when profiler .
-     */
-    public void clearCacheAccessPreCheck() {
-        this.isCacheAccessPreCheckRequired = null;
     }
 
     /**
      * Provides access for setting a concurrency lock on an IdentityMap.
      */
     public void acquireReadLock() {
-        getSession().startOperationProfile(SessionProfiler.CACHE);
+        this.session.startOperationProfile(SessionProfiler.CACHE);
 
-        if (getSession().getDatasourceLogin().shouldSynchronizedReadOnWrite()) {
+        if (this.session.getDatasourceLogin().shouldSynchronizedReadOnWrite()) {
             getCacheMutex().acquireReadLock();
         }
 
-        getSession().endOperationProfile(SessionProfiler.CACHE);
+        this.session.endOperationProfile(SessionProfiler.CACHE);
     }
 
     /**
@@ -217,15 +209,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireReadLockOnCacheKey(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireReadLockOnCacheKey(primaryKey);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireReadLockOnCacheKey(primaryKey);
         }
@@ -242,15 +234,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireReadLockOnCacheKeyNoWait(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = getIdentityMap(descriptor, false).acquireReadLockOnCacheKeyNoWait(primaryKey);
             } finally {
                 releaseReadLock();
             }
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         } else {
             cacheKey = getIdentityMap(descriptor, false).acquireReadLockOnCacheKeyNoWait(primaryKey);
         }
@@ -264,7 +256,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * By write, unit of work merge is meant.
      */
     public boolean acquireWriteLock() {
-        if (getSession().getDatasourceLogin().shouldSynchronizedReadOnWrite() || getSession().getDatasourceLogin().shouldSynchronizeWrites()) {
+        if (this.session.getDatasourceLogin().shouldSynchronizedReadOnWrite() || this.session.getDatasourceLogin().shouldSynchronizeWrites()) {
             getCacheMutex().acquire();
             return true;
         }
@@ -296,7 +288,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (this.session.isUnitOfWork()) {
             if (((UnitOfWorkImpl)this.session).getReferenceMode() == ReferenceMode.FORCE_WEAK){
                 return new WeakUnitOfWorkIdentityMap(32, descriptor);
-            } else if (((UnitOfWorkImpl)getSession()).getReferenceMode() == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
+            } else if (((UnitOfWorkImpl)this.session).getReferenceMode() == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
                 return new WeakUnitOfWorkIdentityMap(32, descriptor);        
             } else {
                 return new UnitOfWorkIdentityMap(32, descriptor);
@@ -324,7 +316,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { new Integer(size), descriptor }));
                     if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
                         constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, new Class[] { IdentityMap.class, AbstractSession.class }, false));
-                        Object params[] = new Object[]{map, getSession()};
+                        Object params[] = new Object[]{map, this.session};
                         map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
                     }
                     return map;
@@ -336,7 +328,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { new Integer(size), descriptor });
                 if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
                     constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
-                    Object params[] = new Object[]{map, getSession()};
+                    Object params[] = new Object[]{map, this.session};
                     map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, params);
                 }
                 return map;
@@ -413,14 +405,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (map == null) {
             return false;
         }
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 return map.containsKey(key);
             } finally {
                 releaseReadLock();
-                getSession().endOperationProfile(SessionProfiler.CACHE);
+                this.session.endOperationProfile(SessionProfiler.CACHE);
             }
         } else {
             return map.containsKey(key);
@@ -431,15 +423,15 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Query the cache in-memory.
      */
     public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
-        ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-        getSession().startOperationProfile(SessionProfiler.CACHE);
+        ClassDescriptor descriptor = this.session.getDescriptor(theClass);
+        this.session.startOperationProfile(SessionProfiler.CACHE);
         Vector objects = null;
         try {
             if (selectionCriteria != null) {
                 // PERF: Avoid clone of expression.            
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder != null && builder.getSession() == null) {
-                    builder.setSession(getSession().getRootSession(null));
+                    builder.setSession(this.session.getRootSession(null));
                     builder.setQueryClass(theClass);
                 }
             }
@@ -464,18 +456,18 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 if ((object.getClass() == theClass) || (theClass.isInstance(object))) {
                     if (selectionCriteria == null) {
                         objects.add(object);
-                        getSession().incrementProfile(SessionProfiler.CacheHits);
+                        this.session.incrementProfile(SessionProfiler.CacheHits);
                     } else {
                         try {
-                            if (selectionCriteria.doesConform(object, getSession(), (AbstractRecord)translationRow, valueHolderPolicy)) {
+                            if (selectionCriteria.doesConform(object, this.session, (AbstractRecord)translationRow, valueHolderPolicy)) {
                                 objects.addElement(object);
-                                getSession().incrementProfile(SessionProfiler.CacheHits);
+                                this.session.incrementProfile(SessionProfiler.CacheHits);
                             }
                         } catch (QueryException queryException) {
                             if (queryException.getErrorCode() == QueryException.MUST_INSTANTIATE_VALUEHOLDERS) {
                                 if (valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED) {
                                     objects.add(object);
-                                    getSession().incrementProfile(SessionProfiler.CacheHits);
+                                    this.session.incrementProfile(SessionProfiler.CacheHits);
                                 } else if (valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION) {
                                     throw queryException;
                                 }
@@ -487,7 +479,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         } finally {
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         }
         return objects;
     }
@@ -496,8 +488,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Invalidate objects meeting selectionCriteria.
      */
     public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
-        ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-        getSession().startOperationProfile(SessionProfiler.CACHE);
+        ClassDescriptor descriptor = this.session.getDescriptor(theClass);
+        this.session.startOperationProfile(SessionProfiler.CACHE);
         try {
             IdentityMap map = getIdentityMap(descriptor, true);
             if(map == null) {
@@ -508,7 +500,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 // PERF: Avoid clone of expression.            
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder.getSession() == null) {
-                    builder.setSession(getSession().getRootSession(null));
+                    builder.setSession(this.session.getRootSession(null));
                     builder.setQueryClass(theClass);
                 }
                 CacheInvalidationPolicy cacheInvalidationPolicy = descriptor.getCacheInvalidationPolicy();
@@ -530,7 +522,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     // Must check for inheritance.
                     if (!isChildDescriptor || (object.getClass() == theClass) || (theClass.isInstance(object))) {
                         try {
-                            if (selectionCriteria.doesConform(object, getSession(), (AbstractRecord)translationRow, inMemoryQueryIndirectionPolicy)) {
+                            if (selectionCriteria.doesConform(object, this.session, (AbstractRecord)translationRow, inMemoryQueryIndirectionPolicy)) {
                                 key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                             }
                         } catch (QueryException queryException) {
@@ -578,7 +570,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         } finally {
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         }
     }
 
@@ -591,14 +583,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return null;
         }
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = map.getCacheKeyForLock(primaryKey);
             } finally {
                 releaseReadLock();
-                getSession().endOperationProfile(SessionProfiler.CACHE);
+                this.session.endOperationProfile(SessionProfiler.CACHE);
             }
         } else {
             cacheKey = map.getCacheKeyForLock(primaryKey);
@@ -615,14 +607,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return null;
         }
         CacheKey cacheKey = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = map.getCacheKey(primaryKey);
             } finally {
                 releaseReadLock();
-                getSession().endOperationProfile(SessionProfiler.CACHE);
+                this.session.endOperationProfile(SessionProfiler.CACHE);
             }
         } else {
             cacheKey = map.getCacheKey(primaryKey);
@@ -655,8 +647,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * as the given object.
      */
     public Object getFromIdentityMap(Object object) {
-        ClassDescriptor descriptor = getSession().getDescriptor(object);
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
+        ClassDescriptor descriptor = this.session.getDescriptor(object);
+        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this.session);
         return getFromIdentityMap(primaryKey, object.getClass(), descriptor);
     }
 
@@ -682,8 +674,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return null;
         }
         Object domainObject = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = map.getCacheKey(key);
@@ -704,12 +696,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
             domainObject = checkForInheritance(domainObject, theClass, descriptor);
         }
 
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.endOperationProfile(SessionProfiler.CACHE);
             if (domainObject == null) {
-                getSession().incrementProfile(SessionProfiler.CacheMisses);
+                this.session.incrementProfile(SessionProfiler.CacheMisses);
             } else {
-                getSession().incrementProfile(SessionProfiler.CacheHits);
+                this.session.incrementProfile(SessionProfiler.CacheHits);
             }
         }
 
@@ -717,14 +709,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
     }
 
     public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        UnitOfWorkImpl unitOfWork = (conforming) ? (UnitOfWorkImpl)getSession() : null;
-        getSession().startOperationProfile(SessionProfiler.CACHE);
+        UnitOfWorkImpl unitOfWork = (conforming) ? (UnitOfWorkImpl)this.session : null;
+        this.session.startOperationProfile(SessionProfiler.CACHE);
         try {
             if (selectionCriteria != null) {
                 // PERF: Avoid clone of expression.            
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder.getSession() == null) {
-                    builder.setSession(getSession().getRootSession(null));
+                    builder.setSession(this.session.getRootSession(null));
                     builder.setQueryClass(theClass);
                 }
             }
@@ -749,17 +741,17 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     if (selectionCriteria == null) {
                         // bug 2782991: if first found was deleted nothing returned. 
                         if (!(conforming && unitOfWork.isObjectDeleted(object))) {
-                            getSession().incrementProfile(SessionProfiler.CacheHits);
+                            this.session.incrementProfile(SessionProfiler.CacheHits);
                             return object;
                         }
                     }
 
                     //CR 3677 integration of a ValueHolderPolicy
                     try {
-                        if (selectionCriteria.doesConform(object, getSession(), (AbstractRecord)translationRow, valueHolderPolicy)) {
+                        if (selectionCriteria.doesConform(object, this.session, (AbstractRecord)translationRow, valueHolderPolicy)) {
                             // bug 2782991: if first found was deleted nothing returned. 
                             if (!(conforming && unitOfWork.isObjectDeleted(object))) {
-                                getSession().incrementProfile(SessionProfiler.CacheHits);
+                                this.session.incrementProfile(SessionProfiler.CacheHits);
                                 return object;
                             }
                         }
@@ -768,7 +760,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                             if (valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED) {
                                 // bug 2782991: if first found was deleted nothing returned. 
                                 if (!(conforming && unitOfWork.isObjectDeleted(object))) {
-                                    getSession().incrementProfile(SessionProfiler.CacheHits);
+                                    this.session.incrementProfile(SessionProfiler.CacheHits);
                                     return object;
                                 }
                             } else if (valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED) {
@@ -783,7 +775,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         } finally {
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+            this.session.endOperationProfile(SessionProfiler.CACHE);
         }
         return null;
     }
@@ -794,7 +786,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public Object getFromIdentityMapWithDeferredLock(Vector key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (key == null) {
-            getSession().incrementProfile(SessionProfiler.CacheMisses);
+            this.session.incrementProfile(SessionProfiler.CacheMisses);
             return null;
         }
 
@@ -804,8 +796,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         CacheKey cacheKey;
         Object domainObject = null;
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().startOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
                 cacheKey = map.getCacheKey(key);
@@ -826,12 +818,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
 
 
-        if (isCacheAccessPreCheckRequired()) {
-            getSession().endOperationProfile(SessionProfiler.CACHE);
+        if (this.isCacheAccessPreCheckRequired) {
+            this.session.endOperationProfile(SessionProfiler.CACHE);
             if (domainObject == null) {
-                getSession().incrementProfile(SessionProfiler.CacheMisses);
+                this.session.incrementProfile(SessionProfiler.CacheMisses);
             } else {
-                getSession().incrementProfile(SessionProfiler.CacheHits);
+                this.session.incrementProfile(SessionProfiler.CacheHits);
             }
         }
 
@@ -946,7 +938,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         IdentityMap map = getIdentityMap(descriptor, false);
         Object wrapper;
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
@@ -981,7 +973,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public Object getWriteLockValue(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
         IdentityMap map = getIdentityMap(descriptor, false);
         Object value;
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             acquireReadLock();
             try {
@@ -1179,7 +1171,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         IdentityMap map = getIdentityMap(descriptor, false);
         CacheKey cacheKey;
 
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             // This is atomic so considered a read lock.
             acquireReadLock();
@@ -1264,7 +1256,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         IdentityMap map = getIdentityMap(descriptor, false);
         Object value;
 
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             // This is atomic so considered a read lock.
             acquireReadLock();
@@ -1306,7 +1298,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         IdentityMap map = getIdentityMap(descriptor, false);
 
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             // This is atomic so considered a read lock.
             acquireReadLock();
@@ -1328,7 +1320,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         IdentityMap map = getIdentityMap(descriptor, false);
 
-        if (isCacheAccessPreCheckRequired()) {
+        if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.CACHE);
             // This is atomic so considered a read lock.
             acquireReadLock();

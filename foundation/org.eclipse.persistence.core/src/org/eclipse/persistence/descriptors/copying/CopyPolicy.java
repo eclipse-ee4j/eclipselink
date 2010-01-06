@@ -46,11 +46,6 @@ public interface CopyPolicy extends Cloneable, Serializable {
      * Return a shallow clone of the object for usage with the unit of work working copy.
      */
     Object buildWorkingCopyClone(Object object, Session session) throws DescriptorException;
-
-    /**
-     * Return an instance with the primary key, used for building a working copy during a unit of work transactional read.
-     */
-    Object buildWorkingCopyCloneFromPrimaryKeyObject(Object primaryKeyObject, ObjectBuildingQuery query, org.eclipse.persistence.sessions.UnitOfWork uow) throws DescriptorException;
             
     /**
      * Return an instance with the primary key set from the row, used for building a working copy during a unit of work transactional read.

@@ -1925,7 +1925,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
     public Login getDatasourceLogin() {
-        return getProject().getDatasourceLogin();
+        if (this.project == null) {
+            return null;
+        }
+        return this.project.getDatasourceLogin();
     }
     
     /**
@@ -3040,7 +3043,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             profiler.setSession(this);
             setIsInProfile(getProfiler().getProfileWeight() != SessionProfiler.NONE);
             // Clear cached flag that bypasses the profiler check.
-            getIdentityMapAccessorInstance().getIdentityMapManager().clearCacheAccessPreCheck();
+            getIdentityMapAccessorInstance().getIdentityMapManager().checkIsCacheAccessPreCheckRequired();
         } else {
             setIsInProfile(false);
         }

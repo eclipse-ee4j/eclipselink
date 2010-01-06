@@ -49,111 +49,112 @@ public class TestRunModel extends TestModel {
         Vector tests = new Vector();
 
         if (isLight) {        
-            tests.addElement("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWMIntegrationStoredProcedureTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWorkbenchIntegrationTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.mapping.MappingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.directmap.DirectMapMappingModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.FeatureTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.FeatureTestModelWithoutBinding");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.TopLinkBatchUpdatesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.JDBCBatchUpdatesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.ParameterizedBatchUpdatesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.NativeBatchWritingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.EmployeeJoinFetchTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.types.TypeTestModelWithAccessors");
-            tests.addElement("org.eclipse.persistence.testing.tests.types.TypeTestModelWithOutAccessors");
-            tests.addElement("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModelWithoutBinding");
-            tests.addElement("org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unidirectional.UnidirectionalEmployeeBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.onetoonejointable.OneToOneJoinTableEmployeeBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.orderedlist.OrderListTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.insurance.InsuranceObjectRelationalTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.legacy.LegacyTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.inheritance.InheritanceTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.ownership.OwnershipTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.mapping.OuterJoinWithMultipleTablesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.interfaces.InterfaceWithTablesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.interfaces.InterfaceWithoutTablesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.optimisticlocking.OptimisticLockingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.relationshipmaintenance.RelationshipsTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.jpql.JPQLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.simultaneous.SimultaneousTestsModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.transactionisolation.UnitOfWorkTransactionIsolationTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.collections.CollectionsTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.collections.map.MapCollectionsTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.customsqlstoredprocedures.CustomSQLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.validation.ValidationModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.readonly.ReadOnlyTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.forceupdate.FUVLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.changeflag.EmployeeChangeTrackingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.jms.JMSTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.schemaframework.AutoTableGeneratorBasicTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.localization.LocalizationTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.security.SecurityTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.history.HistoryTestRunModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.writechanges.UnitOfWorkWriteChangesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.CacheExpiryModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeTimeToLiveTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeDailyExpiryTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.nondeferredwrites.NonDeferredWritesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.weaving.SimpleWeavingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.multipletable.MultipleTableModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.distributedcache.DistributedCacheModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.tableswithspacesmodel.EmployeeWithSpacesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWMIntegrationStoredProcedureTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWorkbenchIntegrationTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.mapping.MappingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.directmap.DirectMapMappingModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.FeatureTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.FeatureTestModelWithoutBinding");
+            tests.add("org.eclipse.persistence.testing.tests.feature.TopLinkBatchUpdatesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.JDBCBatchUpdatesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.ParameterizedBatchUpdatesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.NativeBatchWritingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.EmployeeJoinFetchTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.types.TypeTestModelWithAccessors");
+            tests.add("org.eclipse.persistence.testing.tests.types.TypeTestModelWithOutAccessors");
+            tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModelWithoutBinding");
+            tests.add("org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unidirectional.UnidirectionalEmployeeBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.onetoonejointable.OneToOneJoinTableEmployeeBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.orderedlist.OrderListTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.insurance.InsuranceObjectRelationalTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.legacy.LegacyTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.inheritance.InheritanceTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.ownership.OwnershipTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.mapping.OuterJoinWithMultipleTablesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.interfaces.InterfaceWithTablesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.interfaces.InterfaceWithoutTablesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.optimisticlocking.OptimisticLockingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.relationshipmaintenance.RelationshipsTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.jpql.JPQLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.simultaneous.SimultaneousTestsModel");
+            tests.add("org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkSynchNewObjectsClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.transactionisolation.UnitOfWorkTransactionIsolationTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel");
+            tests.add("org.eclipse.persistence.testing.tests.collections.CollectionsTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.collections.map.MapCollectionsTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.customsqlstoredprocedures.CustomSQLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.validation.ValidationModel");
+            tests.add("org.eclipse.persistence.testing.tests.readonly.ReadOnlyTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.forceupdate.FUVLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.changeflag.EmployeeChangeTrackingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.jms.JMSTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.schemaframework.AutoTableGeneratorBasicTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
+            tests.add("org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.localization.LocalizationTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.security.SecurityTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.history.HistoryTestRunModel");
+            tests.add("org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.writechanges.UnitOfWorkWriteChangesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.CacheExpiryModel");
+            tests.add("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeTimeToLiveTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeDailyExpiryTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.nondeferredwrites.NonDeferredWritesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.weaving.SimpleWeavingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.multipletable.MultipleTableModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedcache.DistributedCacheModel");
+            tests.add("org.eclipse.persistence.testing.tests.tableswithspacesmodel.EmployeeWithSpacesTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
         // or take a really long time, or need some kind of manual verification.        
         if (isAll) {
             // Requires specific classpath.
-            tests.addElement("org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel");
 
             // Requires user "scott" unlocked and granted special privileges on oracle database
-            tests.addElement("org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel");
 
             // Requires usage of Japanese machine and database.
-            tests.addElement("org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel");
 
             // Requires specific LAB databases.
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel");
+            tests.add("org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel");
  
             // Requires remote config.
-            tests.addElement("org.eclipse.persistence.testing.tests.remote.RMIRemoteModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
+            tests.add("org.eclipse.persistence.testing.tests.remote.RMIRemoteModel");
+            tests.add("org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel");
+            tests.add("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
 
             // Can take a long time, can deadlock.
-            tests.addElement("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
 
             // Requires EIS datasources config.
-            tests.addElement("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
             
             // PLSQL
-            tests.addElement("org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel");
         }
 
         for (int index = 0; index < tests.size(); ++index) {

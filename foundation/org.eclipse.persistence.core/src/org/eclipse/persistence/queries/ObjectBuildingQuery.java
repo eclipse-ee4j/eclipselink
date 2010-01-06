@@ -299,7 +299,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * This is only ever false if using the conforming without registering
      * feature.
      */
-    protected boolean isRegisteringResults() {
+    public boolean isRegisteringResults() {
         return ((shouldRegisterResultsInUnitOfWork() && this.descriptor.shouldRegisterResultsInUnitOfWork()) || isLockQuery());
     }
 
@@ -336,9 +336,12 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      *
      * @return a refreshed UnitOfWork queried object, unwrapped.
      */
-    public Object registerIndividualResult(Object result, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager) {
+    public Object registerIndividualResult(Object result, Vector primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
+        if (concreteDescriptor == null) {
+            concreteDescriptor = unitOfWork.getDescriptor(result.getClass());
+        }
         // PERF: Do not register nor process read-only.
-        if (unitOfWork.isClassReadOnly(result.getClass())) {
+        if (unitOfWork.isClassReadOnly(result.getClass(), concreteDescriptor)) {
             // There is an obscure case where they object could be read-only and pessimistic.
             // Record clone if referenced class has pessimistic locking policy.
             recordCloneForPessimisticLocking(result, unitOfWork);
@@ -347,7 +350,10 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         Object clone = null;
         // For bug 2612601 Conforming without registering in Unit Of Work.
         if (!isRegisteringResults()) {
-            clone = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(result);
+            if (primaryKey == null) {
+                primaryKey = concreteDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(result, getSession());
+            }
+            clone = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(primaryKey, result.getClass(), concreteDescriptor);
 
             // If object not registered do not register it here!  Simply return 
             // the original to the user.
@@ -359,13 +365,24 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             // bug # 3183379 either the object comes from the shared cache and is existing, or
             //it is from a parent unit of work and this unit of work does not need to know if it is new
             //or not.  It will query the parent unit of work to determine newness.
-            clone = unitOfWork.registerExistingObject(result);
+            clone = unitOfWork.registerExistingObject(result, concreteDescriptor);
         }
+        postRegisterIndividualResult(clone, result, primaryKey, unitOfWork, joinManager, concreteDescriptor);
+        return clone;
+    }
 
+
+    /**
+     * Post process the object once it is registered in the unit of work.
+     */
+    public void postRegisterIndividualResult(Object clone, Object original, Vector primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
         // Check for refreshing, require to revert in the unit of work to accomplish a refresh.
         if (shouldRefreshIdentityMapResult()) {
+            if (primaryKey == null) {
+                primaryKey = concreteDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
+            }
             // Revert only works in the object is in the parent cache, if it is not merge must be used.
-            if (unitOfWork.getParent().getIdentityMapAccessor().containsObjectInIdentityMap(clone)) {
+            if (unitOfWork.getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, original.getClass(), concreteDescriptor)) {
                 if (shouldCascadeAllParts()) {
                     unitOfWork.deepRevertObject(clone);
                 } else if (shouldCascadePrivateParts()) {
@@ -377,62 +394,63 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
                 }
             } else {
                 if (shouldCascadeAllParts()) {
-                    unitOfWork.deepMergeClone(result);
+                    unitOfWork.deepMergeClone(original);
                 } else if (shouldCascadePrivateParts()) {
-                    unitOfWork.mergeClone(result);
+                    unitOfWork.mergeClone(original);
                 } else if (shouldCascadeByMapping()) {
-                    unitOfWork.mergeClone(result, MergeManager.CASCADE_BY_MAPPING);
+                    unitOfWork.mergeClone(original, MergeManager.CASCADE_BY_MAPPING);
                 } else if (!shouldCascadeParts()) {
-                    unitOfWork.shallowMergeClone(result);
+                    unitOfWork.shallowMergeClone(original);
                 }
             }
         }
         //bug 6130550: trigger indirection on the clone where required due to fetch joins on the query
         if (joinManager != null && joinManager.hasJoinedAttributeExpressions()) { 
-            triggerJoinExpressions(unitOfWork, joinManager, clone);
+            triggerJoinExpressions(unitOfWork, joinManager, clone, concreteDescriptor);
         }
-        return clone;
     }
     
     /**
      * INTERNAL:
      * Fetch/trigger indirection on the clone passed in, based on join expressions in the joinManager.
      */
-    private void triggerJoinExpressions(UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, Object clone){
+    private void triggerJoinExpressions(UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, Object clone, ClassDescriptor concreteDescriptor) {
         List joinExpressions = joinManager.getJoinedAttributeExpressions();
         int size = joinExpressions.size();
-        if ( (size==0) || (clone==null) ){
+        if ((size == 0) || (clone == null)) {
             return;
         }
-        ClassDescriptor descriptor = unitOfWork.getDescriptor(clone);
+        if (concreteDescriptor == null) {
+            concreteDescriptor = unitOfWork.getDescriptor(clone.getClass());
+        }
         for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(joinManager.getJoinedAttributes().get(index));
-            if (mapping !=null){
+            DatabaseMapping mapping = concreteDescriptor.getObjectBuilder().getMappingForAttributeName(joinManager.getJoinedAttributes().get(index));
+            if (mapping != null) {
                 Object attributeValue = mapping.getRealAttributeValueFromObject(clone, unitOfWork);
-                if (attributeValue != null){
-                    if ( mapping.isForeignReferenceMapping() && (((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesTransparentIndirection()) ) {
+                if (attributeValue != null) {
+                    if (mapping.isForeignReferenceMapping() && (((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesTransparentIndirection())) {
                         ((IndirectContainer)attributeValue).getValueHolder().getValue();
                     }
                     //recurse through the mapping if the expression's base isn't the base expressionBuilder
                     QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
-                    if (!queryKeyExpression.getBaseExpression().isExpressionBuilder()){
-                        ObjectLevelReadQuery nestedQuery =null;
-                        if (joinManager.getJoinedMappingQueryClones()==null){
-                            if (joinManager.getJoinedMappingQueries_()!=null){
+                    if (!queryKeyExpression.getBaseExpression().isExpressionBuilder()) {
+                        ObjectLevelReadQuery nestedQuery = null;
+                        if (joinManager.getJoinedMappingQueryClones() == null) {
+                            if (joinManager.getJoinedMappingQueries_() != null) {
                                 nestedQuery = joinManager.getJoinedMappingQueries_().get(mapping);
                             }
-                        }else{
+                        } else {
                             nestedQuery = joinManager.getJoinedMappingQueryClones().get(mapping);
                         }
 
-                        if ( (nestedQuery!=null) && (nestedQuery.getJoinedAttributeManager()!=null)){
-                            if (!mapping.isCollectionMapping()){
-                                triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), attributeValue);
+                        if ((nestedQuery != null) && (nestedQuery.getJoinedAttributeManager() != null)) {
+                            if (!mapping.isCollectionMapping()) {
+                                triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), attributeValue, null);
                             }else {
                                 ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
                                 Object iterator = cp.iteratorFor(attributeValue);
                                 while (cp.hasNext(iterator)){
-                                    triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), cp.next(iterator, unitOfWork));
+                                    triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), cp.next(iterator, unitOfWork), null);
                                 }
                             }
                         }

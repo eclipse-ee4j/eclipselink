@@ -790,17 +790,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * row
      * @return a clone, or null if result does not conform.
      */
-    protected Object conformIndividualResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, Expression selectionCriteriaClone, Map alreadyReturned, boolean buildDirectlyFromRows) {
-        // First register the object.  Since object is presently unwrapped the
-        // exact objects stored in the cache will be returned.
-        // The object is known to exist.
-        Object clone = null;
-        if (buildDirectlyFromRows) {
-            clone = buildObject((AbstractRecord)result);
-        } else {
-            clone = registerIndividualResult(result, unitOfWork, null);
-        }
-
+    protected Object conformIndividualResult(Object clone, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, Expression selectionCriteriaClone, Map alreadyReturned) {
         if (this.descriptor.hasWrapperPolicy() && this.descriptor.getWrapperPolicy().isWrapped(clone)) {
             // The only time the clone could be wrapped is if we are not registering
             // results in the unitOfWork and we are ready to return a final
@@ -963,6 +953,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Executes the prepared query on the datastore.
      */
     public Object executeDatabaseQuery() throws DatabaseException {
+        // PERF: If the query has been set to optimize building its result
+        // directly from the database result-set then follow an optimized path.
+        if (this.isResultSetOptimizedQuery) {
+            return executeObjectLevelReadQueryFromResultSet();
+        }
+        
         if (getSession().isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
 
@@ -981,11 +977,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 setSession(nestedUnitOfWork);
                 return registerResultInUnitOfWork(result, nestedUnitOfWork, getTranslationRow(), false);
             }
-        }
-        // PERF: If the query has been set to optimize building its result
-        // directly from the database result-set then follow an optimized path.
-        if (isResultSetOptimizedQuery()) {
-            return executeObjectLevelReadQueryFromResultSet();
         }
         
         session.validateQuery(this);// this will update the query with any settings
@@ -1744,7 +1735,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * This is only ever false if using the conforming without registering
      * feature.
      */
-    protected boolean isRegisteringResults() {
+    public boolean isRegisteringResults() {
         return ((shouldRegisterResultsInUnitOfWork() && this.descriptor.shouldRegisterResultsInUnitOfWork()) || isLockQuery());
     }
 
@@ -2673,6 +2664,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
+            && (!isResultSetOptimizedQuery())
             && (isDefaultLock())
             && (!isDistinctComputed())
             && (!hasAdditionalFields())

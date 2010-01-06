@@ -169,7 +169,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
                 // S.M changed from 3 - 4 from session read refactoring.  In the
                 // old code, we would not go to the database if we got a
                 // cache hit on the session cache.  Now we do. Gray area
-                expectedGetIdCallCount = 4;
+                expectedGetIdCallCount = 3;
             }
             break;
         }
@@ -188,9 +188,9 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
                 // S.M. This went from 5 calls to 4, which is good.
                 // When checking the one new object + registration +
                 // building clone + building backup clone.
-                expectedGetIdCallCount = 4;
+                expectedGetIdCallCount = 3;
             } else {
-                expectedGetIdCallCount = n + 5;
+                expectedGetIdCallCount = n + 4;
             }
             break;
         }

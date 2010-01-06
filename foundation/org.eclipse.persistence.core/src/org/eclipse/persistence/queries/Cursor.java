@@ -287,7 +287,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
             ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
             if (query.shouldConformResultsInUnitOfWork() || query.getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
-                object = query.conformIndividualResult(row, unitOfWork, getTranslationRow(), getSelectionCriteriaClone(), getInitiallyConformingIndex(), true);
+                object = query.conformIndividualResult(query.buildObject(row), unitOfWork, getTranslationRow(), getSelectionCriteriaClone(), getInitiallyConformingIndex());
                 // Notifies caller to continue until conforming instance found
                 if (object == null) {
                     return InvalidObject.instance;
