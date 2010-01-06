@@ -55,6 +55,9 @@
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="init, publish-build, publish-results"
     />
+    <target name="build-oracle"     description="Trigger the automated oracle build"
+            depends="clean, build-oracle-extension, publish-oracle"
+    />
 
     <!-- script to "cleanup" the revision information -->
     <scriptdef name="cleanRevision" language="javascript" manager="javax">
@@ -265,8 +268,16 @@
         <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${build.deps.dir}/dependencies.txt" append="true"/>
     </target>
 
+    <target name="custom" if="custom.target" depends="init, get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="${custom.target}"/>
+    </target>
+
     <target name="build" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="build-distribution"/>
+    </target>
+
+    <target name="build-oracle-extension">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
@@ -351,6 +362,16 @@
         <!-- it needs to be recreated now that the build has completed.      --> 
         <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+    </target>
+
+    <target name="publish-oracle">
+        <echo message="oracle commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
+        </exec>
     </target>
 
     <target name="publish-maven" depends="init">
