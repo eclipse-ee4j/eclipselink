@@ -73,6 +73,19 @@ then
         exit
     fi
 fi
+if [ "${TARGET}" = "custom" ]
+then
+    CUSTOM=true
+    if [ ! "${BRANCH}" = "" ]
+    then
+        CUSTOM_TARG=${BRANCH}
+        BRANCH=$3
+    else
+        echo "ERROR: Name of custom target must be specified in ARG2!"
+        echo "USAGE: ./boostrap.sh custom TARGET [branch]"
+        exit
+    fi
+fi
 if [ "${TARGET}" = "release" ]
 then
     echo "Error: 'release' is not a valid initial target. Use 'milestone release'. Exiting..."
@@ -378,6 +391,11 @@ then
     ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_NoUpdateSrc=1"
 fi
 
+if [ "${CUSTOM}" = "true" ]
+then
+    ANT_BASEARG="${ANT_BASEARG} -Dcustom.target=\"${CUSTOM_TARG}\""
+fi
+
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
 export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME TARGET BRANCH_NM
 
@@ -403,7 +421,7 @@ echo "Build completed at: `date`" >> ${DATED_LOG}
 echo "Build complete."
 
 # If promoting a build just exit. there is no post-build processing
-if [ "${MILESTONE}" = "true" ]
+if [ \( "${MILESTONE}" = "true" \) -o \( "${CUSTOM}" = "true" \) ]
 then
     exit
 fi
@@ -524,7 +542,7 @@ then
         MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
-        .${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
     fi
 
     ## Build Body text of email
@@ -541,11 +559,15 @@ then
     else
         touch ${MAILBODY}
     fi
-    echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
-    echo "    ${DATED_LOG}" >> ${MAILBODY}
+    echo "Build log: (${DATED_LOG})" >> ${MAILBODY}
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
-        echo "or on the download server at:" >> ${MAILBODY}
+        if [ \( ! "${TARG_NM}" = "cb" \) -a \( "${TESTS_FAILED}" = "true" \) ]
+        then
+            echo "Test logs can be found on the download server at:" >> ${MAILBODY}
+            echo "    http://www.eclipse.org/eclipselink/downloads/nightly.php" >> ${MAILBODY}
+        fi
+        echo "Build logs can be found on the download server at:" >> ${MAILBODY}
         echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
     fi
     echo "-----------------------------------" >> ${MAILBODY}

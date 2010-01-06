@@ -215,6 +215,11 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
     </target>
 
+    <target name="oracle" depends="properties-init" description="Trigger the oracle automated build">
+        <echo message="'oracle' target: Calling 'build-oracle' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-oracle"/>
+    </target>
+
     <target name="cb" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger an automated 'continuous build' (compile and run short verify)">
         <!-- Don't move current to latest until source sucessfully retrieved -->
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
@@ -294,6 +299,11 @@
     <target name="save-tst-results" depends="properties-init" description="Trigger saving of the test results for a failed cb">
         <echo message="Calling 'save-tst-results' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="save-tst-results"/>
+    </target>
+
+    <target name="custom" if="custom.target" depends="get-src" description="Trigger custom target in build.xml">
+        <echo message="'custome' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="custom"/>
     </target>
 
 </project>
