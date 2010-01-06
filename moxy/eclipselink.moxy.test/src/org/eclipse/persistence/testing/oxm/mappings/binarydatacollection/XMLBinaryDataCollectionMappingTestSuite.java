@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionByteObjectArrayTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionDataHandlerTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionForcedInlineBinaryTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestCases;
@@ -42,6 +43,7 @@ public class XMLBinaryDataCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataCollectionForcedInlineBinaryTestCases.class);
         suite.addTestSuite(BinaryDataCollectionReuseTestCases.class);
         suite.addTestSuite(BinaryDataCollectionByteObjectArrayTestCases.class);
+        suite.addTestSuite(BinaryDataCollectionDataHandlerTestCases.class);
         return suite;
     }
 
