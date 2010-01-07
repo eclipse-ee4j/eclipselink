@@ -34,10 +34,14 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
     class Listener extends SessionEventAdapter {
         public void postAcquireExclusiveConnection(SessionEvent event) {
             numAcquireExclusive++;
+            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+            event.getSession().executeNonSelectingSQL("UPDATE ISOLATED_EMPLOYEE SET F_NAME = 'A' WHERE EMP_ID = 0");
         }
     
         public void preReleaseExclusiveConnection(SessionEvent event) {
             numReleaseExclusive++;
+            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+            event.getSession().executeNonSelectingSQL("UPDATE EMPLOYEE SET F_NAME = 'A' WHERE EMP_ID = 0");
         }
     }
     Listener listener = new Listener();
