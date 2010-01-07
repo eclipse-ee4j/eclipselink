@@ -18,11 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -213,6 +211,10 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         	 compareDataHandlers((DataHandler)controlValue, (DataHandler)testValue); 
          } else if(controlValue instanceof Image && testValue instanceof Image) {
              compareImages((Image)controlValue, (Image) testValue);
+         } else if (controlValue instanceof Byte[] && testValue instanceof Byte[]){
+       	     compareByteArrays((Byte[])controlValue, (Byte[])testValue);
+         } else if (controlValue instanceof byte[] && testValue instanceof byte[]){
+        	     compareByteArrays((byte[])controlValue, (byte[])testValue);
          } else {
              assertEquals(controlValue, testValue);
          }
@@ -370,11 +372,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	            while(controlIter.hasNext()){
 	                Object nextControl = controlIter.next();
 	                Object nextTest = testIter.next();
-	                if(nextControl instanceof Node){
-	                    assertTrue("Nodes are not equal", getXMLComparer().isNodeEqual((Node)nextControl, (Node)nextTest));
-	                }else{
-	                    assertEquals(nextControl, nextTest);
-	                }
+	                compareValues(nextControl, nextTest);
 	            }
 	        }else{
 	        	compareValues(controlValue, testValue);
@@ -459,6 +457,32 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             throw e;
         }
     }
+    
+    private boolean compareByteArrays(Byte[] first, Byte[] second){
+		if(first.length != second.length){
+			return false;
+		}
+
+		for(int i=0; i<first.length; i++){
+			if (first[i] != second[i]){
+				return false;
+			}
+		}
+		return true;
+	}
+
+     private boolean compareByteArrays(byte[] first, byte[] second){
+		if(first.length != second.length){
+			return false;
+		}
+
+		for(int i=0; i<first.length; i++){
+			if (first[i] != second[i]){
+				return false;
+			}
+		}
+		return true;
+	}    
 }
 
 
