@@ -803,6 +803,7 @@ public class DefaultTableGenerator {
                 // Also ensure that the type, size and subsize of the foreign key field is 
                 // same as that of the original field.
                 fkFieldDef.setType(targetFieldDef.getType());
+                fkFieldDef.setTypeDefinition(targetFieldDef.getTypeDefinition());
                 fkFieldDef.setSize(targetFieldDef.getSize()); 
                 fkFieldDef.setSubSize(targetFieldDef.getSubSize());
                 
