@@ -52,10 +52,14 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * Override to acquire the connection from the pool at the last minute
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
+        boolean shouldReleaseConnection = false;
         if (query.getAccessor() == null) {
             //if the connection has not yet been acquired then do it here.
             if (getAccessor() == null) {
                 this.parent.acquireClientConnection(this);
+                // the session has been already released and this query is likely instantiates a ValueHolder - 
+                // release exclusive connection immediately after the query is executed, otherwise it may never be released.
+                shouldReleaseConnection = !isActive();
             }
             query.setAccessor(getAccessor());
         }
@@ -65,9 +69,11 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
             if (call.isFinished()) {
                 query.setAccessor(null);
             }
-            if(!isActive() && getAccessor() != null) {
-                // the session has been already released and this query is likely instantiates a ValueHolder - 
-                // release exclusive connection right away, otherwise it may never be released.
+            // Note that connection could be release only if it has been acquired by the same query,
+            // that allows to execute other queries from postAcquireConnection / preReleaseConnection events
+            // without wiping out connection set by the original query or causing stack overflow, see
+            // bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+            if(shouldReleaseConnection && getAccessor() != null) {
                 this.parent.releaseClientSession(this);
             }
         }
