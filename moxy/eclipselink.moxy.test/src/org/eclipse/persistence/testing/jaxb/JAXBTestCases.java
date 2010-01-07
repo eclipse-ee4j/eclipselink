@@ -477,11 +477,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             while(controlIter.hasNext()){
                 Object nextControl = controlIter.next();
                 Object nextTest = testIter.next();
-                if(nextControl instanceof Node){
-                    assertTrue("Nodes are not equal", getXMLComparer().isNodeEqual((Node)nextControl, (Node)nextTest));
-                }else{
-                    assertEquals(nextControl, nextTest);
-                }
+                compareValues(nextControl, nextTest);
             }
         }else{
         	compareValues(controlValue, testValue);

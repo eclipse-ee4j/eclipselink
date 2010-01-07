@@ -370,7 +370,11 @@ public class MappingsGenerator {
                 }
             } else {
                 if (isCollectionType(property)) {
-                    generateDirectCollectionMapping(property, descriptor, namespaceInfo).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    if(areEquals(valueType, ClassConstants.ABYTE) || areEquals(valueType, ClassConstants.APBYTE) ||areEquals(valueType, "javax.activation.DataHandler") || areEquals(valueType, "java.awt.Image") || areEquals(valueType, "java.xml.transform.Source") || areEquals(valueType, "javax.mail.internet.MimeMultipart")) {                      	
+                    	generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    } else{
+                	    generateDirectCollectionMapping(property, descriptor, namespaceInfo).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                	}
                 } else {
                     if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                         generateBinaryMapping(property, descriptor, namespaceInfo).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
@@ -872,6 +876,66 @@ public class MappingsGenerator {
         return mapping;
     }
     
+    public XMLBinaryDataCollectionMapping generateBinaryDataCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+        XMLBinaryDataCollectionMapping mapping = new XMLBinaryDataCollectionMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
+                mapping.setIsReadOnly(true);
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
+                mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
+        }
+        mapping.setField(getXPathForField(property, namespaceInfo, false));
+        if (property.isSwaAttachmentRef()) {
+            ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
+            mapping.setSwaRef(true);
+        } else if (property.isMtomAttachment()) {
+            ((XMLField) mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        }
+        if (helper.isAnnotationPresent(property.getElement(), XmlInlineBinaryData.class)) {
+            mapping.setShouldInlineBinaryData(true);
+        }
+        // use a non-dynamic implementation of MimeTypePolicy to wrap the MIME string
+        if (property.getMimeType() != null) {
+            mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
+        } else {
+            mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        }
+        
+        JavaClass collectionType = property.getType();
+        if(collectionType != null && isCollectionType(collectionType)){        	            
+        	if(collectionType.hasActualTypeArguments()){
+        		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
+        		try{
+        			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
+        			mapping.setAttributeElementClass(declaredClass);
+        		}catch (Exception e) {
+ 
+			}
+        	}
+        }else{
+        	mapping.setAttributeElementClass(Byte[].class);
+        }
+        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+            collectionType = jotArrayList;
+        } else if (areEquals(collectionType, Set.class)) {
+            collectionType = jotHashSet;
+        }
+        mapping.useCollectionClassName(collectionType.getRawName());
+        
+        descriptor.addMapping(mapping);
+        
+        return mapping;
+    }
     public void generateDirectEnumerationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
@@ -928,6 +992,8 @@ public class MappingsGenerator {
         } else if(!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals(OBJECT_CLASS_NAME)){         
             XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
             ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        }else if(areEquals(javaClass, ClassConstants.ABYTE) || areEquals(javaClass, ClassConstants.APBYTE) ||areEquals(javaClass, "javax.activation.DataHandler") || areEquals(javaClass, "java.awt.Image") || areEquals(javaClass, "java.xml.transform.Source") || areEquals(javaClass, "javax.mail.internet.MimeMultipart")) {
+        	generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo);
         } else {
             generateDirectCollectionMapping(property, descriptor, namespaceInfo);
         }

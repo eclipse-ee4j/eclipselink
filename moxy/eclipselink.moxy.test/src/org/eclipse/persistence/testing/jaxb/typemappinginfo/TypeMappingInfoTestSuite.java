@@ -41,6 +41,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(JavaTypeAdapterStringToListTestCases.class);
         suite.addTestSuite(JavaTypeAdapterMapToEmpTestCases.class);
         suite.addTestSuite(IntegerArrayTestCases.class);
+        suite.addTestSuite(ListOfDataHandlerTestCases.class);
         return suite;
     }
 }
