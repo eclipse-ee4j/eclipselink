@@ -555,6 +555,7 @@ public class XMLContext {
                         descriptorsByQName.put(descriptorQName, xmlDescriptor);
                     } else {
                         //this means we have a descriptor that is a child in an inheritance hierarchy
+                        storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor());
                         XMLDescriptor existingDescriptor = (XMLDescriptor) descriptorsByQName.get(descriptorQName);
                         if (existingDescriptor == null) {
                             descriptorsByQName.put(descriptorQName, xmlDescriptor);
