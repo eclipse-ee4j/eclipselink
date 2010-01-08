@@ -14,8 +14,8 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -97,18 +97,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.TUPLE;
                 this.queryType = Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
-                if (!findConstructor(this.selection.getJavaType(), selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]))) {
-                    Object[] selections = new Object[selection.getCompoundSelectionItems().size()];
-                    Object[] params = new Object[2];
-                    params[0] = this.queryType;
-                    int count = 0;
-                    for (Selection select : selection.getCompoundSelectionItems()) {
-                        selections[++count] = select.getJavaType();
-                    }
-                    params[1] = params;
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
-                }
-                this.queryResult = ResultType.CONSTRUCTOR;
+                Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]);
+                populateAndSetConstructorSelection((ConstructorSelectionImpl)selection, this.selection.getJavaType(), selectArray);
                 this.queryType = selection.getJavaType();
             } else {
                 this.queryResult = ResultType.OBJECT_ARRAY;
@@ -169,6 +159,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
         if (selections == null || selections.length == 0) {
             this.selection = null;
+            return this;
         }
         for (Selection select : selections) {
             findRootAndParameters(select);
@@ -177,28 +168,17 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
-            if (!findConstructor(this.queryType, selections)) {
-                Object[] args = new Object[selections.length];
-                Object[] params = new Object[2];
-                params[0] = this.queryType;
-                int count = 0;
-                for (Selection select : selection.getCompoundSelectionItems()) {
-                    args[++count] = select.getJavaType();
-                }
-                params[1] = args;
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
-            } else {
-                this.selection = new ConstructorSelectionImpl(this.queryType, selections);
-            }
+            populateAndSetConstructorSelection(null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
                 this.selection = (SelectionImpl<?>) selections[0];
-            } else if (!findConstructor(this.queryType, selections)) {
-                this.queryResult = ResultType.PARTIAL;
-                this.selection = new CompoundSelectionImpl(this.queryType, selections);
             } else {
-                this.queryResult = ResultType.CONSTRUCTOR;
-                this.selection = new ConstructorSelectionImpl(this.queryType, selections);
+                try {
+                    populateAndSetConstructorSelection(null, this.queryType, selections);//throws IllegalArgumentException if it doesn't exist
+                } catch(IllegalArgumentException constructorDoesNotExist){
+                    this.queryResult = ResultType.PARTIAL;
+                    this.selection = new CompoundSelectionImpl(this.queryType, selections);
+                } 
             }
         } else if (this.queryResult.equals(ResultType.TUPLE)) {
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
@@ -209,19 +189,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 if (!BasicTypeHelperImpl.getInstance().isDateClass(this.queryType)) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT"));
                 }
-                if (!findConstructor(this.queryType, selections)) {
-                    Object[] args = new Object[selections.length];
-                    Object[] params = new Object[2];
-                    params[0] = this.queryType;
-                    int count = 0;
-                    for (Selection select : selections) {
-                        args[++count] = select.getJavaType();
-                    }
-                    params[1] = args;
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params));
-                } else {
-                    this.selection = new ConstructorSelectionImpl(this.queryType, selections);
-                }
+                populateAndSetConstructorSelection(null, this.queryType, selections);
             }
         } else { // unknown
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
@@ -420,26 +388,45 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         this.parameters.add(parameter);
     }
 
-    public boolean findConstructor(Class<?> class1, Selection<?>... selections) {
+    /**
+     * This method will set this queryImpl's selection to a ConstructorSelectionImpl, creating a new 
+     * instance or populating the one passed in as necessary.    
+     * Throws IllegalArgumentException if a constructor taking arguments represented 
+     * by the selections array doesn't exist for the given class.  
+     * 
+     * , as well as set the query result to ResultType.CONSTRUCTOR
+     * 
+     * @param class1
+     * @param selections
+     * @throws IllegalArgumentException
+     */
+    public void populateAndSetConstructorSelection(ConstructorSelectionImpl constructorSelection, Class<?> class1, Selection<?>... selections) throws IllegalArgumentException{
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
         for (Selection select : selections) {
             constructorArgs[count++] = select.getJavaType();
         }
+        Constructor constructor = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                AccessController.doPrivileged(new PrivilegedGetConstructorFor(class1, constructorArgs, false));
-                this.queryResult = ResultType.CONSTRUCTOR;
-                return true;
+                constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(class1, constructorArgs, false));
             } else {
-                PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
-                this.queryResult = ResultType.CONSTRUCTOR;
-                return true;
+                constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
             }
-        } catch (PrivilegedActionException ex) {
-        } catch (NoSuchMethodException e) {
+            if (constructorSelection == null){
+                constructorSelection = new ConstructorSelectionImpl(class1, selections);
+            }
+            this.queryResult = ResultType.CONSTRUCTOR;
+            constructorSelection.setConstructor(constructor);
+            constructorSelection.setConstructorArgTypes(constructorArgs);
+            this.selection = constructorSelection;
+        } catch (Exception e){
+            //PrivilegedActionException and NoSuchMethodException are possible
+            Object[] params = new Object[1];
+            params[0] = this.queryType;
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params), e);
         }
-        return false;
+        
     }
 
     /**

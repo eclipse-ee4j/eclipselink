@@ -32,6 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 
+import org.eclipse.persistence.testing.tests.jpa.advanced.DataHolder;
 import org.eclipse.persistence.testing.tests.jpa.jpql.*;
 
 /**
@@ -93,7 +95,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   public static Test suite() 
   {
     TestSuite suite = new TestSuite();
-    suite.setName("JUnitJPQLUnitTestSuite");
+    suite.setName("JUnitCriteriaUnitTestSuite");
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSetup"));   
     suite.addTest(new JUnitCriteriaUnitTestSuite("testExistWithJoin"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCode"));
@@ -110,6 +112,8 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitCriteriaUnitTestSuite("testMaxAndFirstResultsOnDataQueryWithGroupBy"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testConstructorWithFunctionParameters"));
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testNonExistentConstructorCriteriaQuery"));
     
     return suite;
   }
@@ -665,6 +669,52 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         }finally{
             rollbackTransaction(em);
         }
+    }
+    
+    /*
+     * For 297385, Constructor expressions are not working with function arguments.
+     */
+    public void testConstructorWithFunctionParameters(){
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("Very");
+            emp.setLastName("Dumb");
+            emp.setSalary(-100);//Employee pays to work?
+            em.persist(emp);
+            em.flush();
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            // Test constructor DataHolder(int)
+            CriteriaQuery<?> cq = qb.createQuery(DataHolder.class);
+            Root<Employee> from = cq.from(Employee.class);
+            EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
+            cq.multiselect( qb.min(from.get(Emp_.getSingularAttribute("salary", int.class))));
+            List resultList =  em.createQuery(cq).getResultList();
+            Object resultObject = (DataHolder)resultList.get(0);
+            assertTrue("constructor expression test expected DataHolder object, got "+resultObject,(resultObject instanceof DataHolder));
+            this.assertEquals("Expected DataHolder to contain int value of -100, Got :"+resultObject, -100, ((DataHolder)resultObject).getPrimitiveInt());
+        }finally{
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testNonExistentConstructorCriteriaQuery(){
+        Exception expectedException = null;
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+            // Test constructor object:
+        CriteriaQuery<?> cq = qb.createQuery(DataHolder.class);
+        Root<Employee> from = cq.from(Employee.class);
+        EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
+            //IllegalArgumentException expected from multiselect since DataHolder(String) does not exist 
+        try{
+            cq.multiselect( from.get(Emp_.getSingularAttribute("lastName", String.class)));
+            Query query = em.createQuery(cq);
+        } catch (IllegalArgumentException exception){
+            expectedException = exception;
+        }
+        this.assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
     }
     
 }
