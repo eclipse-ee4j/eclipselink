@@ -3065,8 +3065,22 @@ public class AnnotationsProcessor {
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
 
-        int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
-        String name = componentClass.getName().substring(beginIndex);
+        String name = componentClass.getName();
+
+        Type componentType = Type.getType("L" + componentClass.getName().replace('.', '/') + ";");
+        String componentTypeInternalName = null;
+        if(name.equals("[B")){        	
+        	name = "byteArray";
+        	componentTypeInternalName = componentType.getInternalName();
+        }else if(name.equals("[Ljava.lang.Byte;")){        	
+        	name = "ByteArray";
+        	componentTypeInternalName = componentType.getInternalName() + ";";  
+        }else{
+        	componentTypeInternalName = "L" + componentType.getInternalName() + ";";  
+        }
+        
+        int beginIndex = name.lastIndexOf('.') + 1;
+        name = name.substring(beginIndex);
         int dollarIndex = name.indexOf('$'); 
         if(dollarIndex > -1){
         	name = name.substring(dollarIndex + 1);
@@ -3080,7 +3094,6 @@ public class AnnotationsProcessor {
         String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
 
         Type collectionType = Type.getType("L" + collectionClassRawName.replace('.', '/') + ";");
-        Type componentType = Type.getType("L" + componentClass.getQualifiedName().replace('.', '/') + ";");
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
@@ -3119,7 +3132,7 @@ public class AnnotationsProcessor {
             }
         }
 
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L" + collectionType.getInternalName() + "<L" + componentType.getInternalName() + ";>;");
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
         fieldAttrs1.next = fieldAttrs2;
         cw.visitField(Constants.ACC_PUBLIC, "item", "L" + collectionType.getInternalName() + ";", null, fieldAttrs1);
 
@@ -3135,7 +3148,7 @@ public class AnnotationsProcessor {
         Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L" + collectionType.getInternalName() + "<L" + componentType.getInternalName() + ";>;)V");
+        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;)V");
         methodAttrs1.next = methodAttrs2;
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(L" + collectionType.getInternalName() + ";)V", null, methodAttrs1);
         Label l0 = new Label();
@@ -3159,7 +3172,7 @@ public class AnnotationsProcessor {
         methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
         methodAttrs1.annotations.add(methodAttrs1ann0);
 
-        methodAttrs2 = new SignatureAttribute("()L" + collectionType.getInternalName() + "<L" + componentType.getInternalName() + ";>;");
+        methodAttrs2 = new SignatureAttribute("()L" + collectionType.getInternalName() + "<" + componentTypeInternalName  + ">;");
         methodAttrs1.next = methodAttrs2;
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + collectionType.getInternalName() + ";", null, methodAttrs1);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -3182,7 +3195,7 @@ public class AnnotationsProcessor {
         cv.visitMaxs(2, 2);
 
         // CLASS ATRIBUTE
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L"+collectionType.getInternalName()+"<L" + componentType.getInternalName() + ";>;>;");
+        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L"+collectionType.getInternalName()+"<" + componentTypeInternalName + ">;>;");
         cw.visitAttribute(attr);
 
         cw.visitEnd();

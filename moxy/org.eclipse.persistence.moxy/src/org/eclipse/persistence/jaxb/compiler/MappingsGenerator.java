@@ -916,7 +916,7 @@ public class MappingsGenerator {
         	if(collectionType.hasActualTypeArguments()){
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
         		try{
-        			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
+        			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getQualifiedName(), false, helper.getClassLoader());
         			mapping.setAttributeElementClass(declaredClass);
         		}catch (Exception e) {
  
