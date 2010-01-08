@@ -39,6 +39,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
@@ -100,14 +102,26 @@ public class XMLProcessor {
             // pre-build the TypeInfo objects
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
 
+            // handle package-level xml-schema-types
+            List<XmlSchemaType> xmlSchemaTypes = null;
+            XmlSchemaTypes sTypes = xmlBindings.getXmlSchemaTypes();
+            if (sTypes != null) {
+                xmlSchemaTypes = sTypes.getXmlSchemaType();
+            } else {
+                xmlSchemaTypes = new ArrayList<XmlSchemaType>();
+            }
             // handle package-level xml-schema-type
             if (xmlBindings.getXmlSchemaType() != null) {
-                JavaClass jClass = aProcessor.getHelper().getJavaClass(xmlBindings.getXmlSchemaType().getType());
+                xmlSchemaTypes.add(xmlBindings.getXmlSchemaType());
+            }
+            // process each xml-schema-type entry
+            for (XmlSchemaType sType : xmlSchemaTypes) {
+                JavaClass jClass = aProcessor.getHelper().getJavaClass(sType.getType());
                 if (jClass != null) {
-                    aProcessor.processSchemaType(xmlBindings.getXmlSchemaType().getName(), xmlBindings.getXmlSchemaType().getNamespace(), jClass.getQualifiedName());
+                    aProcessor.processSchemaType(sType.getName(), sType.getNamespace(), jClass.getQualifiedName());
                 }
             }
-
+            
             nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
 
             JavaTypes jTypes = xmlBindings.getJavaTypes();

@@ -25,6 +25,7 @@
             <xs:all>
                 <xs:element ref="xml-schema" />
                 <xs:element ref="xml-schema-type" />
+                <xs:element ref="xml-schema-types" />
                 <xs:element ref="xml-java-type-adapters" />
                 <xs:element name="java-types">
                     <xs:complexType>
@@ -103,6 +104,13 @@
             <xs:attribute name="element-form-default" type="xml-ns-form" default="UNSET" />
             <xs:attribute name="location" type="xs:string" />
             <xs:attribute name="namespace" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xml-schema-types">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xml-schema-type" maxOccurs="unbounded" />
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
     <xs:element name="xml-java-type-adapters">

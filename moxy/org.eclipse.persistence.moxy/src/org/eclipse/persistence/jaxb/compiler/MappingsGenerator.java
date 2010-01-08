@@ -28,7 +28,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
@@ -107,7 +106,7 @@ public class MappingsGenerator {
     private static int wrapperCounter = 0;
 
     String outputDir = ".";
-    private HashMap userDefinedSchemaTypes;
+    private HashMap<String, QName> userDefinedSchemaTypes;
     private Helper helper;
     private JavaClass jotArrayList;
     private JavaClass jotHashSet;
@@ -135,7 +134,7 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, boolean isDefaultNamespaceAllowed) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -1282,7 +1281,7 @@ public class MappingsGenerator {
             mapping.setAttributeName(attributeName);
             ((XMLDirectMapping)mapping).setXPath(attributeName + "/text()");
             
-            QName schemaType = (QName) userDefinedSchemaTypes.get(theType);        
+            QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());        
                      
             if (schemaType == null) {            	
                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
@@ -1415,19 +1414,13 @@ public class MappingsGenerator {
             }
         	
     		collectionType = jotArrayList;
-        }
-        
-        
-        else if(collectionType != null && isCollectionType(collectionType)){        	
-        
-        	if(collectionType.hasActualTypeArguments()){
+        } else if (isCollectionType(collectionType)){        	
+        	if (collectionType.hasActualTypeArguments()){
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
-        		try{
+        		try {
         			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
         			mapping.setAttributeElementClass(declaredClass);
-        		}catch (Exception e) {
- 
-			}
+        		} catch (Exception e) {}
         	}
         }
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
@@ -1791,7 +1784,7 @@ public class MappingsGenerator {
                 String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
             	xPath += "@" + getQualifiedString(prefix, name.getLocalPart());
             }
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getClass());
+            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
             if (property.getSchemaType() != null) {
                 schemaType = property.getSchemaType();
             }
@@ -1804,7 +1797,7 @@ public class MappingsGenerator {
         } else if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
             xPath = "text()";
             XMLField field = new XMLField(xPath);
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType());
+            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
             if (property.getSchemaType() != null) {
                 schemaType = property.getSchemaType();
             }
@@ -1817,12 +1810,11 @@ public class MappingsGenerator {
             QName elementName = property.getSchemaName();
             xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
 
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType());
+            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
             if (property.getSchemaType() != null) {
                 schemaType = property.getSchemaType();
             }
-            
-            
+
             if (schemaType == null){
             	JavaClass propertyType = property.getActualType();
             	            	
@@ -1870,17 +1862,6 @@ public class MappingsGenerator {
             return valueField;
         }
         return null;
-    }
-    
-    public void processSchemaType(XmlSchemaType type) {
-        String schemaTypeName = type.name();
-        Class javaType = type.type();
-
-        if (javaType == null) {
-            return;
-        }
-        QName typeQName = new QName(type.namespace(), schemaTypeName);
-        this.userDefinedSchemaTypes.put(javaType, typeQName);
     }
    
     public String getSchemaTypeNameForClassName(String className) {
