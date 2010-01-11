@@ -1021,7 +1021,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("MultiPlatformTest2");
         test.setDescription("test simple Case function on multiple platforms");
-        /*TODO: add in any unsupported platform checks*/
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         addTest(test);
     }
     
