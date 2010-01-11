@@ -237,15 +237,22 @@ public class UnitOfWorkTestSuite extends TestSuite {
      */
     public TransactionalTestCase buildRefReadOnlyTest() {
         TransactionalTestCase test = new TransactionalTestCase() {
+            public void setup() {
+                super.setup();
+                getSession().getDescriptor(Address.class).setReadOnly();
+            }
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
-                uow.addReadOnlyClass(Address.class);
                 Address address = (Address)uow.readObject(Address.class);
                 Employee employee = new Employee();
                 // Delete the phone but do not remove the employee reference.
                 employee = (Employee)uow.registerObject(employee);
                 employee.setAddress(address);
                 uow.commit();
+            }
+            public void reset() {
+                super.reset();
+                getSession().getDescriptor(Address.class).setShouldBeReadOnly(false);
             }
         };
         test.setName("RefReadOnlyTest");
