@@ -134,6 +134,11 @@
         <contains string="${server.name}" substring="weblogic"/>
     </condition>
 
+    <!-- This checks if static weaving enabled -->
+    <condition property="is.static.server.weaving">
+        <contains string="${server.weaving}" substring="static"/>
+    </condition>
+
     <!-- Define Spring jars needed for running JPA tests on Spring -->
     <path id="spring.path">
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
@@ -1320,8 +1325,24 @@
         </weave>
     </target>
 
-    <!-- Server Testing -->
+    <target name="run-weaver-server-test">
+        <!-- define weaving ant task-->
+        <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </taskdef>
+        <!-- process the weaving function-->
+        <weave source="${eclipselink.jpa.test}/build/unwoven-${MODEL_NAME}_ejb.jar"
+               target="${eclipselink.jpa.test}/build/${MODEL_NAME}_ejb.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+    </target>
 
+    <!-- Server Testing -->
     <target name="server-install">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
@@ -1555,13 +1576,32 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-weaving%%' value="${server.weaving}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database-platform%%' value="${db.platform}">
+            <include name="*.xml"/>
+        </replace>
 
         <!-- Copy the canonical metamodel and criteria api test -->
         <antcall target="copy_criteria_api_canonical_model" inheritRefs="true"/>
         <!-- Create ejb jar. -->
-        <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
+        <antcall target="create-ejb-jar" inheritRefs="true"/>
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
+    </target>
+
+    <target name="create-ejb-jar" depends="create-ejb-jar-without-static-weaving,create-ejb-jar-with-static-weaving"/>
+
+    <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">
+        <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
+    </target>
+
+    <target name="create-ejb-jar-with-static-weaving" if="is.static.server.weaving">
+        <jar destfile="${eclipselink.jpa.test}/${build.dir}/unwoven-${MODEL_NAME}_ejb.jar" basedir="stage"/>
+        <antcall target="run-weaver-server-test" inheritRefs="true">
+            <param name="MODEL_NAME" value="${MODEL_NAME}"/>
+        </antcall>
     </target>
 
     <target name="copy_criteria_api_canonical_model" if="is.criteria.server.test">
