@@ -2472,7 +2472,7 @@ public class AnnotationsProcessor {
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement)) {
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                    
                         String annotationClassName = nextAnnotation.annotationType().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName.replace('.', '/') + ";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
@@ -2621,7 +2621,7 @@ public class AnnotationsProcessor {
             if(annotations != null){
                 for(int i=0; i<annotations.length; i++){
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                    	
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
@@ -2815,7 +2815,7 @@ public class AnnotationsProcessor {
             if(annotations != null){
                 for(int i=0; i<annotations.length; i++){
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if( nextAnnotation != null && !(nextAnnotation instanceof XmlElement)){
+                   	if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                    	
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L"+annotationClassName+";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
