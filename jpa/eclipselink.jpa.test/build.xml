@@ -147,6 +147,7 @@
                 <contains string="${server.name}" substring="weblogic"/>
                 <!--contains string="${server.name}" substring="websphere"/-->
                 <contains string="${server.name}" substring="jboss"/>
+                <contains string="${server.name}" substring="glassfish"/>
             </or>
         </and>
     </condition>
