@@ -13,8 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.lang.reflect.Constructor;
 import javax.persistence.criteria.Selection;
 
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 
 /**
@@ -32,6 +34,9 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  */
 public class ConstructorSelectionImpl extends CompoundSelectionImpl {
     
+    protected Constructor constructor;
+    protected Class[] constructorArgTypes;
+
     public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
         super(javaType, subSelections);
     }
@@ -39,11 +44,16 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
     public ConstructorReportItem translate(){
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
+        item.setConstructor(constructor);
         for(Selection selection : this.getCompoundSelectionItems()){
             if (((SelectionImpl)selection).isCompoundSelection()){
                 item.addItem(((ConstructorSelectionImpl)selection).translate());
             }else{
-                item.addAttribute(((SelectionImpl)selection).getCurrentNode());
+                ReportItem reportItem = new ReportItem(item.getName()+item.getReportItems().size(), 
+                        ((SelectionImpl)selection).getCurrentNode());
+                //bug: 297385 - set type here because the selection already knows the type
+                reportItem.setResultType(selection.getJavaType());
+                item.addItem(reportItem);
             }
         }
         return item;
@@ -54,6 +64,21 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
         return true;
     }
     
+    /**
+     * INTERNAL:
+     * Set the constructor.
+     */
+    public void setConstructor(Constructor constructor){
+        this.constructor = constructor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the constructorArgTypes.
+     */
+    public void setConstructorArgTypes(Class[] constructorArgTypes){
+        this.constructorArgTypes = constructorArgTypes;
+    }
     
     public void findRootAndParameters(AbstractQueryImpl query){
         for (Selection selection: getCompoundSelectionItems()){

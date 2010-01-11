@@ -530,7 +530,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         {"mapping_not_supported_by_mw.MSGID" ,"TOP-50137"}, 
         {"toplink_ejb_jar_in_jar.MSGID" ,"TOP-50138"}, 
         {"migration_tool_usage.MSGID" ,"TOP-50139"}, 
-        {"migration_tool_usage_exmaple.MSGID" ,"TOP-50140"}, 
+        {"migration_tool_usage_example.MSGID" ,"TOP-50140"}, 
         {"jta_cannot_be_disabled_in_cmp.MSGID" ,"TOP-50141"}, 
         
         {"annotation_default_alias.MSGID" ,"TOP-50142"}, 

@@ -171,20 +171,22 @@ public class ConstructorReportItem extends ReportItem  {
                 }
             }
         }
-        try {
-            Constructor constructor = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(getResultType(), constructorArgTypes, true));
-                } catch (PrivilegedActionException exception) {
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
+        if (getConstructor() == null) {
+            try {
+                Constructor constructor = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(getResultType(), constructorArgTypes, true));
+                    } catch (PrivilegedActionException exception) {
+                        throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
+                    }
+                } else {
+                    constructor = PrivilegedAccessHelper.getConstructorFor(getResultType(), constructorArgTypes, true);
                 }
-            } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(getResultType(), constructorArgTypes, true);
+                setConstructor(constructor);
+            } catch (NoSuchMethodException exception) {
+                throw QueryException.exceptionWhileUsingConstructorExpression(exception, query);
             }
-            setConstructor(constructor);
-        } catch (NoSuchMethodException exception) {
-            throw QueryException.exceptionWhileUsingConstructorExpression(exception, query);
         }
     }
     
