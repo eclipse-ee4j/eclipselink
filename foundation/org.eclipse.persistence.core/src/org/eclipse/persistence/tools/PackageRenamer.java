@@ -465,14 +465,13 @@ public class PackageRenamer {
         }
         String[] aStringArrayOfSortedKeyPackageName = new String[aVector.size()];
         aVector.copyInto(aStringArrayOfSortedKeyPackageName);
-        Arrays anArray = null;
         Arrays.sort(aStringArrayOfSortedKeyPackageName);
 
         // Starting to rename.
         boolean alreadyPrint = false;
         int index = aStringArrayOfSortedKeyPackageName.length;
         for (Enumeration enumtr = properties.keys(); enumtr.hasMoreElements();) {
-            String garbage = (String)enumtr.nextElement();
+            enumtr.nextElement();
             String key = aStringArrayOfSortedKeyPackageName[index - 1];
             String value = (String)properties.get(key);
             index -= 1;

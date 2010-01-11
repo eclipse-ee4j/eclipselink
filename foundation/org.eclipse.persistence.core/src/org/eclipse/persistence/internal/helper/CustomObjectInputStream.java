@@ -39,6 +39,6 @@ public class CustomObjectInputStream extends ObjectInputStream {
     }
 
     public Class resolveClass(ObjectStreamClass classDesc) throws ClassNotFoundException, IOException {
-        return (Class)m_conversionManager.convertClassNameToClass(classDesc.getName());
+        return m_conversionManager.convertClassNameToClass(classDesc.getName());
     }
 }

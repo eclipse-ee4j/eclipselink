@@ -864,7 +864,7 @@ public class DefaultTableGenerator {
             if (!error) {
                 // if target fields are primary keys
                 resolved = true;
-                for (String pkField : (Vector<String>)targetTableDef.getPrimaryKeyFieldNames()) {
+                for (String pkField : targetTableDef.getPrimaryKeyFieldNames()) {
                     String fkField = targetToFkField.get(pkField);
                     if (fkField == null) {
                         //primary key column not found
@@ -914,7 +914,6 @@ public class DefaultTableGenerator {
     }
     
     private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, Vector<List<String>>> uniqueConstraintsMap) {
-        UniqueKeyConstraint uniqueKeyConstraint;
         int serialNumber = -1;
         
         for (String name : uniqueConstraintsMap.keySet()) {

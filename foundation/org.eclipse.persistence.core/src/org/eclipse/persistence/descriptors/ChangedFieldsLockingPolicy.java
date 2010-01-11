@@ -81,13 +81,12 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * Returns the fields that should be compared in the where clause.
      * In this case, it is only the fields that were changed.
      */
-    protected Vector getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
-        Vector fields = getAllNonPrimaryKeyFields(table);
-        Vector returnedFields = new Vector();
-        for (Enumeration enumtr = fields.elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumtr.nextElement();
+    protected List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
+        List<DatabaseField> fields = getAllNonPrimaryKeyFields(table);
+        List<DatabaseField> returnedFields = new ArrayList<DatabaseField>();
+        for (DatabaseField field : fields) {
             if (modifyRow.containsKey(field)) {
-                returnedFields.addElement(field);
+                returnedFields.add(field);
             }
         }
         return returnedFields;

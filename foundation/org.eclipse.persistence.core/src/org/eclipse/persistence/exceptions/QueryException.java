@@ -881,7 +881,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException classPkDoesNotExistInCache(Class theClass, java.util.Vector primaryKey) {
+    public static QueryException classPkDoesNotExistInCache(Class theClass, Object primaryKey) {
         Object[] args = { theClass, primaryKey };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CLASS_PK_DOES_NOT_EXIST_IN_CACHE, args));

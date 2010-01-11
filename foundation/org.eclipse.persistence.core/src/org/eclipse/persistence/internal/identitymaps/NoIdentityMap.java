@@ -35,6 +35,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * NoIdentityMap has no locks.
      */
+    @Override
     public void collectLocks(HashMap threadList) {
         return;
     }
@@ -42,6 +43,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return an empty enumerator.
      */
+    @Override
     public Enumeration elements() {
         return new Vector(0).elements();
     }
@@ -49,13 +51,15 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return null as no objects are cached.
      */
-    public Object get(Vector primaryKey) {
+    @Override
+    public Object get(Object primaryKey) {
         return null;
     }
 
     /**
      * Return null as no objects are cached.
      */
+    @Override
     protected CacheKey getCacheKey(CacheKey searchKey) {
         return null;
     }
@@ -63,6 +67,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return null as no objects are cached.
      */
+    @Override
     protected CacheKey getCacheKeyIfAbsentPut(CacheKey cacheKey) {
         return null;
     }
@@ -70,6 +75,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return 0 as no objects are cached.
      */
+    @Override
     public int getSize() {
         return 0;
     }
@@ -77,6 +83,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return 0 as no objects are cached.
      */
+    @Override
     public int getSize(Class myClass, boolean recurse) {
         return 0;
     }
@@ -84,43 +91,31 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return null as no objects are cached.
      */
-    public Object getWriteLockValue(Vector primaryKey) {
+    @Override
+    public Object getWriteLockValue(Object primaryKey) {
         return null;
     }
 
     /**
      * Return an empty enumerator.
      */
+    @Override
     public Enumeration keys() {
-        return new Vector(1).elements();
+        return new Vector(0).elements();
     }
 
     /**
      * Return an empty enumerator.
      */
-    public Enumeration keys(boolean shouldCheckReadLocks) {
-        return new Vector(1).elements();
+    public Enumeration keys(boolean checkReadLocks) {
+        return keys();
     }
     
     /**
      * Do Nothing.
      */
-    public CacheKey put(Vector aVector, Object object, Object writeLockValue, long readTime) {
-        return null;
-    }
-
-    /**
-     * Do Nothing.
-     */
-    public void put(CacheKey key) {
-        return;
-    }
-
-    /**
-     * Do Nothing.
-     * Return null, since no objects are cached.
-     */
-    public Object remove(Vector primaryKey, Object object) {
+    @Override
+    public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         return null;
     }
 
@@ -128,6 +123,16 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Do Nothing.
      * Return null, since no objects are cached.
      */
+    @Override
+    public Object remove(Object primaryKey, Object object) {
+        return null;
+    }
+
+    /**
+     * Do Nothing.
+     * Return null, since no objects are cached.
+     */
+    @Override
     public Object remove(CacheKey searchKey) {
         return null;
     }
@@ -135,7 +140,8 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Do Nothing.
      */
-    public void setWriteLockValue(Vector primaryKey, Object writeLockValue) {
+    @Override
+    public void setWriteLockValue(Object primaryKey, Object writeLockValue) {
         return;
     }
 }

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.descriptors;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.*;
@@ -55,7 +56,7 @@ public class AllFieldsLockingPolicy extends FieldsLockingPolicy {
      * In this case, it is all the fields, except for the primary key
      * and class indicator.
      */
-    protected Vector getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
+    protected List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
         return getAllNonPrimaryKeyFields(table);
     }
 }

@@ -633,7 +633,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = iterator();
             while (objects.hasNext()) {
-                Object object = objects.next();
+                objects.next();
                 objects.remove();
             }
             return;

@@ -615,7 +615,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         TypeInfo info = this.typesInfo.get(type.getTypeName());
         // If the info was not found in publisher, then generate it.
         if (info == null) {
-            info = generateNestedFunction((ComplexDatabaseType)type);
+            info = generateNestedFunction(type);
         }
         if (argument.direction == IN) {
             if (!functions.contains(info.sql2PlConv)) {

@@ -55,8 +55,9 @@ public class CacheIdentityMap extends FullIdentityMap {
         this.last.setPrevious(this.first);
     }
 
-    public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime);
+    @Override
+    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
+        return new LinkedCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
     }
 
     /**
@@ -79,7 +80,8 @@ public class CacheIdentityMap extends FullIdentityMap {
      * @param primaryKeys is the primary key for the object to search for.
      * @return the LinkedCacheKey or null if none found for primaryKey
      */
-    public CacheKey getCacheKey(Vector primaryKeys) {
+    @Override
+    public CacheKey getCacheKey(Object primaryKeys) {
         LinkedCacheKey cacheKey = (LinkedCacheKey)super.getCacheKey(primaryKeys);
         if (cacheKey != null) {
             synchronized (this.first) {

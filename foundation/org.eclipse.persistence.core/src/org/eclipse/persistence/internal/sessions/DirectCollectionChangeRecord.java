@@ -333,7 +333,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
                 while(itEntries.hasNext()) {
                     Map.Entry<Object, Set[]> entry = itEntries.next();
                     Object obj = entry.getValue();
-                    Set[] indexes = (Set[])entry.getValue();
+                    Set[] indexes = entry.getValue();
                     if(this.changedIndexes.containsKey(obj)) {
                         // we assuming that these are two consecutive change records:
                         // oldIndexes[1] should be equal to newIndexes[0]

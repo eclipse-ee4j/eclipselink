@@ -89,7 +89,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
             for (Enumeration enumtr = getLockedExpressions().elements(); enumtr.hasMoreElements();) {
                 Expression next = (Expression)enumtr.nextElement();
                 // Necessary as this was determined in query framework.
-                next = (Expression)next.rebuildOn(clonedBuilder);
+                next = next.rebuildOn(clonedBuilder);
                 if(next.isObjectExpression()) {
                     ObjectExpression objectExp = (ObjectExpression)next;        
                     objectExp.writeForUpdateOfFields(printer, statement);
@@ -123,7 +123,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
             Expression next = (Expression)enumtr.nextElement();
 
             // Necessary as this was determined in query framework.
-            next = (Expression)next.rebuildOn(clonedBuilder);
+            next = next.rebuildOn(clonedBuilder);
             // next is either ObjectExpression or FieldExpression
             if(next.isFieldExpression()) {
                 next = ((FieldExpression)next).getBaseExpression();

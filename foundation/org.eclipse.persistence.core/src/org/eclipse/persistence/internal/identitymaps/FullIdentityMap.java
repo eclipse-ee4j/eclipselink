@@ -27,7 +27,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class FullIdentityMap extends AbstractIdentityMap {
 
-    /** Hashtable of CacheKeys stored using their key. */
+    /** Map of CacheKeys stored using their key. */
     protected Map<CacheKey, CacheKey> cacheKeys;
 
     public FullIdentityMap() {}
@@ -46,6 +46,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * INTERNAL:
      * Clones itself.
      */
+    @Override
     public Object clone() {
         FullIdentityMap clone = (FullIdentityMap)super.clone();
         clone.setCacheKeys(new ConcurrentHashMap(getCacheKeys().size()));
@@ -62,6 +63,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * INTERNAL:
      * Used to print all the Locks in every identity map in this session.
      */
+    @Override
     public void collectLocks(HashMap threadList) {
         Iterator cacheKeyIterator = getCacheKeys().values().iterator();
         while (cacheKeyIterator.hasNext()) {
@@ -81,6 +83,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     /**
      * Allow for the cache to be iterated on.
      */
+    @Override
     public Enumeration elements() {
         return new IdentityMapEnumeration(this);
     }
@@ -89,6 +92,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Return the cache key matching the primary key of the searchKey.
      * If no object for the key exists, return null.
      */
+    @Override
     protected CacheKey getCacheKey(CacheKey searchKey) {
         return getCacheKeys().get(searchKey);
     }    
@@ -98,6 +102,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * If the CacheKey is missing then put the searchKey in the map.
      * The searchKey should have already been locked. 
      */
+    @Override
     protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
         // PERF: First to a get, and get is non-locking, putIfAbsent locks.
         CacheKey cacheKey = getCacheKeys().get(searchKey);
@@ -119,6 +124,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Return the number of CacheKeys in the IdentityMap.
      * This may contain weak referenced objects that have been garbage collected.
      */
+    @Override
     public int getSize() {
         return this.cacheKeys.size();
     }
@@ -127,6 +133,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Return the number of actual objects of type myClass in the IdentityMap.
      * Recurse = true will include subclasses of myClass in the count.
      */
+    @Override
     public int getSize(Class myClass, boolean recurse) {
         int count = 0;
         Iterator keys = getCacheKeys().values().iterator();
@@ -151,8 +158,9 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Allow for the cache keys to be iterated on.
      * Read locks will be checked.
      */
+    @Override
     public Enumeration keys() {
-        return this.keys(true);
+        return keys(true);
     }
 
     /**
@@ -172,7 +180,8 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * @param object is the domain object to cache.
      * @param writeLockValue is the current write lock value of object, if null the version is ignored.
      */
-    public CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
+    @Override
+    public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         CacheKey newCacheKey = createCacheKey(primaryKey, object, writeLockValue, readTime);
         // Find the cache key in the map, reset it, or put the new one.
         CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
@@ -190,6 +199,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Removes the CacheKey from the map.
      * @return the object held within the CacheKey or null if no object cached for given cacheKey.
      */
+    @Override
     public Object remove(CacheKey cacheKey) {
         if (cacheKey != null) {
             // Cache key needs to be locked when removing from the map.

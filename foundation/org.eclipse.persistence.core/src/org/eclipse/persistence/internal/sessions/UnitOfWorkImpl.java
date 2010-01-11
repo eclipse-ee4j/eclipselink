@@ -5321,9 +5321,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * On persist and flush operations we must update any derived id fields.
      */
     protected Object updateDerivedIds(Object clone, ClassDescriptor descriptor) {
-        if (descriptor.hasDerivedId()) {
-            ObjectBuilder dependentBuilder = descriptor.getObjectBuilder();
-            
+        if (descriptor.hasDerivedId()) {            
             for (DatabaseMapping derivesIdMapping : descriptor.getDerivesIdMappinps()) {
                 DatabaseMapping derivedIdMapping = derivesIdMapping.getDerivedIdMapping();
                 
@@ -5331,7 +5329,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // from the JPA spec.
                 if (derivedIdMapping != null) {
                     ClassDescriptor parentDescriptor = derivesIdMapping.getReferenceDescriptor();
-                    ObjectBuilder parentBuilder = parentDescriptor.getObjectBuilder();
                     Object parentClone = derivesIdMapping.getRealAttributeValueFromObject(clone, this);
                     
                     // If the parent clone is null, we don't have any work to do, continue to the next 

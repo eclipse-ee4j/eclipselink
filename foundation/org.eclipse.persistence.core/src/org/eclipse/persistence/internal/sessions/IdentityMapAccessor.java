@@ -66,7 +66,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Deferred lock the identity map for the object, this is used for avoiding deadlock
      * The return cacheKey should be used to release the deferred lock.
      */
-    public CacheKey acquireDeferredLock(Vector primarKey, Class javaClass, ClassDescriptor descriptor) {
+    public CacheKey acquireDeferredLock(Object primarKey, Class javaClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireDeferredLock(primarKey, javaClass, descriptor);
     }
 
@@ -75,7 +75,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Lock the identity map for the object, this must be done when building objects.
      * The return cacheKey should be used to release the lock.
      */
-    public CacheKey acquireLock(Vector primarKey, Class javaClass, ClassDescriptor descriptor) {
+    public CacheKey acquireLock(Object primarKey, Class javaClass, ClassDescriptor descriptor) {
         return acquireLock(primarKey, javaClass, false, descriptor);
     }
 
@@ -84,7 +84,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLock(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor);
     }
 
@@ -93,7 +93,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockNoWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireLockNoWait(primaryKey, domainClass, forMerge, descriptor);
     }
 
@@ -102,7 +102,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+    public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
     }
 
@@ -112,7 +112,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * This will allow multiple users to read the same object but prevent writes to
      * the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKey(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireReadLockOnCacheKey(primaryKey, domainClass, descriptor);
     }
 
@@ -123,7 +123,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * the object while the read lock is held.
      * If no readlock can be acquired then do not wait but return null.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Vector primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireReadLockOnCacheKeyNoWait(primaryKey, domainClass, descriptor);
     }
 
@@ -181,7 +181,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Return if their is an object for the primary key.
      */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         return containsObjectInIdentityMap(primaryKey, theClass, descriptor);
     }
@@ -190,7 +190,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Return if their is an object for the primary key.
      */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().containsKey(primaryKey, theClass, descriptor);
     }
 
@@ -206,7 +206,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Extract primary key from a row.
      */
-    protected Vector extractPrimaryKeyFromRow(Record rowContainingPrimaryKey, Class theClass) {
+    protected Object extractPrimaryKeyFromRow(Record rowContainingPrimaryKey, Class theClass) {
         return this.session.getDescriptor(theClass).getObjectBuilder().extractPrimaryKeyFromRow((AbstractRecord)rowContainingPrimaryKey, this.session);
     }
 
@@ -301,7 +301,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
-    public CacheKey getCacheKeyForObjectForLock(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
     }
 
@@ -311,7 +311,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
-    public CacheKey getCacheKeyForObject(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor);
     }
 
@@ -319,7 +319,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Return the object from the identity with the primary and class.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass) {
+    public Object getFromIdentityMap(Object primaryKey, Class theClass) {
         return getFromIdentityMap(primaryKey, theClass, true);
     }
     
@@ -327,7 +327,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Return the object from the identity with the primary and class.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         return getFromIdentityMap(primaryKey, theClass, true, descriptor);
     }
 
@@ -336,7 +336,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
     
@@ -345,7 +345,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -434,7 +434,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Return the object from the identity with the primary and class.
      */
-    public Object getFromIdentityMapWithDeferredLock(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         return getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
     }
 
@@ -443,7 +443,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested
      */
-    public Object getFromIdentityMapWithDeferredLock(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -519,7 +519,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public Object getWrapper(Vector primaryKey, Class theClass) {
+    public Object getWrapper(Object primaryKey, Class theClass) {
         return getIdentityMapManager().getWrapper(primaryKey, theClass);
     }
 
@@ -543,7 +543,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Extract the write lock value from the identity map.
      */
-    public Object getWriteLockValue(Vector primaryKey, Class theClass) {
+    public Object getWriteLockValue(Object primaryKey, Class theClass) {
         return getWriteLockValue(primaryKey, theClass, getSession().getDescriptor(theClass));
     }
         
@@ -551,7 +551,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Extract the write lock value from the identity map.
      */
-    public Object getWriteLockValue(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getWriteLockValue(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getWriteLockValue(primaryKey, theClass, descriptor);
     }
 
@@ -622,7 +622,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object does not exist in the cache, this method will return
      * without any action.
      */
-    public void invalidateObject(Vector primaryKey, Class theClass) {
+    public void invalidateObject(Object primaryKey, Class theClass) {
         invalidateObject(primaryKey, theClass, false);
     }
 
@@ -631,7 +631,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster) {
+    public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
         CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
@@ -778,10 +778,10 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Return if this object is valid in the cache.
      */
-    public boolean isValid(Vector primaryKey, Class theClass) {
+    public boolean isValid(Object primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
-        CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
+        CacheKey key = getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
         if (key == null) {
             throw QueryException.classPkDoesNotExistInCache(theClass, primaryKey);
         }
@@ -843,7 +843,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      */
-    public Object putInIdentityMap(Object object, Vector key) {
+    public Object putInIdentityMap(Object object, Object key) {
         return putInIdentityMap(object, key, null);
     }
 
@@ -852,7 +852,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      */
-    public Object putInIdentityMap(Object object, Vector key, Object writeLockValue) {
+    public Object putInIdentityMap(Object object, Object key, Object writeLockValue) {
         return putInIdentityMap(object, key, writeLockValue, 0);
     }
 
@@ -862,7 +862,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The object must always be registered with its version number if optimistic locking is used.
      * The readTime may also be included in the cache key as it is constructed.
      */
-    public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime) {
+    public Object putInIdentityMap(Object object, Object key, Object writeLockValue, long readTime) {
         ClassDescriptor descriptor = getSession().getDescriptor(object);
         return putInIdentityMap(object, key, writeLockValue, readTime, descriptor);
     }
@@ -873,7 +873,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The object must always be registered with its version number if optimistic locking is used.
      * The readTime may also be included in the cache key as it is constructed.
      */
-    public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
+    public Object putInIdentityMap(Object object, Object key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
         CacheKey cacheKey = internalPutInIdentityMap(object, key, writeLockValue, readTime, descriptor);
         if (cacheKey == null) {
             return null;
@@ -898,7 +898,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The readTime may also be included in the cache key as it is constructed.
      * Return the cache-key.
      */
-    public CacheKey internalPutInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
+    public CacheKey internalPutInIdentityMap(Object object, Object key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
         return getIdentityMapManager().putInIdentityMap(object, key, writeLockValue, readTime, descriptor);
     }
 
@@ -927,7 +927,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Vector key, Class theClass) {
+    public Object removeFromIdentityMap(Object key, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         return removeFromIdentityMap(key, theClass, descriptor, null);
     }
@@ -936,7 +936,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor, Object object) {
+    public Object removeFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor, Object object) {
         return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
     }
 
@@ -953,7 +953,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Update the wrapper object the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public void setWrapper(Vector primaryKey, Class theClass, Object wrapper) {
+    public void setWrapper(Object primaryKey, Class theClass, Object wrapper) {
         getIdentityMapManager().setWrapper(primaryKey, theClass, wrapper);
     }
 
@@ -969,7 +969,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Update the write lock value in the cache.
      */
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue) {
+    public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue) {
         getIdentityMapManager().setWriteLockValue(primaryKey, theClass, writeLockValue);
     }
 

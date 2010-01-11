@@ -45,7 +45,6 @@ public class MapKeyNode extends Node {
      * Apply this node to the passed query
      */
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
-        ParseTreeContext context = generationContext.getParseTreeContext();
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
@@ -75,7 +74,6 @@ public class MapKeyNode extends Node {
     }
     
     public void validate(ParseTreeContext context) {
-        TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
         if (left.isVariableNode()){
             setType(((VariableNode)left).getTypeForMapKey(context));

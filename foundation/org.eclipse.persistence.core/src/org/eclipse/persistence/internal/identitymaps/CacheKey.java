@@ -87,14 +87,14 @@ public class CacheKey implements Serializable, Cloneable {
     protected CacheKey(){
     }
     
-    public CacheKey(Vector primaryKey) {
-        this.key = primaryKey;
-        this.hash = computeHash(primaryKey);
+    public CacheKey(Object primaryKey) {
+        this.key = (Vector)primaryKey;
+        this.hash = computeHash((Vector)primaryKey);
     }
 
-    public CacheKey(Vector primaryKey, Object object, Object lockValue) {
-        this.key = primaryKey;
-        this.hash = computeHash(primaryKey);
+    public CacheKey(Object primaryKey, Object object, Object lockValue) {
+        this.key = (Vector)primaryKey;
+        this.hash = computeHash((Vector)primaryKey);
         this.writeLockValue = lockValue;
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
         if (object != null) {
@@ -102,9 +102,9 @@ public class CacheKey implements Serializable, Cloneable {
         }
     }
 
-    public CacheKey(Vector primaryKey, Object object, Object lockValue, long readTime) {
-        this.key = primaryKey;
-        this.hash = computeHash(primaryKey);
+    public CacheKey(Object primaryKey, Object object, Object lockValue, long readTime) {
+        this.key = (Vector)primaryKey;
+        this.hash = computeHash((Vector)primaryKey);
         this.writeLockValue = lockValue;
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
         if (object != null) {

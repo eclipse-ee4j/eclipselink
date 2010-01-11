@@ -43,7 +43,6 @@ public class CaseNode extends Node {
      * Apply this node to the passed query
      */
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
-        ParseTreeContext context = generationContext.getParseTreeContext();
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);

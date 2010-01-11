@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.copying;
 
-
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.*;
@@ -45,7 +42,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     /**
      * By default create a new instance.
      */
-    public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWork uow) throws DescriptorException {
+    public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         return this.descriptor.getObjectBuilder().buildNewInstance();
     }
 

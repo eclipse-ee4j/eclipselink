@@ -83,7 +83,7 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy implement
             ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)keyField.clone());
             ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)keyField.getTable().clone());
         } else {
-            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable((DatabaseTable)keyField.getTable()).getField(keyField));
+            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(keyField.getTable()).getField(keyField));
         }
     }
     

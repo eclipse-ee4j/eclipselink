@@ -262,7 +262,6 @@ public class NodeFactoryImpl implements NodeFactory {
     public Object newVariableDecl(int line, int column, 
                                   Object path, String variable) {
         DotNode dotNode = (DotNode)path;
-        AttributeNode rightNode = (AttributeNode)dotNode.getRight();
         JoinDeclNode node = new JoinDeclNode();
         node.setPath(dotNode);
         node.setVariableName(variable);

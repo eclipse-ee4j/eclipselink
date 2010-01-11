@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -37,39 +36,39 @@ public interface IdentityMap extends Cloneable{
      * This first thread will get an active lock.
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
-    public CacheKey acquireDeferredLock(Vector primaryKey);
+    public CacheKey acquireDeferredLock(Object primaryKey);
     
     /**
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
-    public CacheKey acquireLock(Vector primaryKey, boolean forMerge);
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge);
     
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
-    public CacheKey acquireLockNoWait(Vector primaryKey, boolean forMerge);
+    public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge);
 
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
-    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait);
+    public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait);
 
     /**
      * Acquire a read lock on the object.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKey(Vector primaryKey);
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey);
 
     /**
      * Acquire a read lock on the object, if not already locked.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Vector primaryKey);
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey);
     
     /**
      * Clone the map and all of the CacheKeys.
@@ -89,7 +88,7 @@ public interface IdentityMap extends Cloneable{
      * User API.
      * @param primaryKey is the primary key for the object to search for.
      */
-    public boolean containsKey(Vector primaryKey);
+    public boolean containsKey(Object primaryKey);
 
     /**
      * Allow for the cache to be iterated on.
@@ -100,17 +99,17 @@ public interface IdentityMap extends Cloneable{
      * Return the object cached in the identity map or null if it could not be found.
      * User API.
      */
-    public Object get(Vector primaryKey);
+    public Object get(Object primaryKey);
 
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public CacheKey getCacheKey(Vector primaryKey);
+    public CacheKey getCacheKey(Object primaryKey);
 
     /**
      * Get the cache key (with object) for the primary key in order to acquire a lock.
      */
-    public CacheKey getCacheKeyForLock(Vector primaryKey);
+    public CacheKey getCacheKeyForLock(Object primaryKey);
 
         /**
      * Return the class that this is the map for.
@@ -143,13 +142,13 @@ public interface IdentityMap extends Cloneable{
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB2.
      */
-    public Object getWrapper(Vector primaryKey);
+    public Object getWrapper(Object primaryKey);
     
     /**
      * Get the write lock value from the cache key associated to the primarykey.
      * User API.
      */
-    public Object getWriteLockValue(Vector primaryKey);
+    public Object getWriteLockValue(Object primaryKey);
 
     /**
      * Allow for the CacheKeys to be iterated on.
@@ -172,7 +171,7 @@ public interface IdentityMap extends Cloneable{
      * @param object is the domain object to cache.
      * @param writeLockValue is the current write lock value of object, if null the version is ignored.
      */
-    public CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime);
+    public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime);
 
     /**
      * This method may be called during initialize all identity maps.  It allows the identity map
@@ -185,7 +184,7 @@ public interface IdentityMap extends Cloneable{
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
-    public Object remove(Vector primaryKey, Object object);
+    public Object remove(Object primaryKey, Object object);
 
     /**
      * Remove the CacheKey from the map.
@@ -208,13 +207,13 @@ public interface IdentityMap extends Cloneable{
      * Update the wrapper object in the CacheKey associated with the given primaryKey,
      * this is used for EJB2.
      */
-    public void setWrapper(Vector primaryKey, Object wrapper);
+    public void setWrapper(Object primaryKey, Object wrapper);
     
     /**
      * Update the write lock value of the CacheKey associated with the given primaryKey.
      * This is used by UpdateObjectQuery, and is also an advanced (very) user API.
      */
-    public void setWriteLockValue(Vector primaryKey, Object writeLockValue);
+    public void setWriteLockValue(Object primaryKey, Object writeLockValue);
 
     public String toString();
 }

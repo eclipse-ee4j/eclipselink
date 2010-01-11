@@ -336,7 +336,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      *
      * @return a refreshed UnitOfWork queried object, unwrapped.
      */
-    public Object registerIndividualResult(Object result, Vector primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
+    public Object registerIndividualResult(Object result, Object primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
         if (concreteDescriptor == null) {
             concreteDescriptor = unitOfWork.getDescriptor(result.getClass());
         }
@@ -375,7 +375,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     /**
      * Post process the object once it is registered in the unit of work.
      */
-    public void postRegisterIndividualResult(Object clone, Object original, Vector primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
+    public void postRegisterIndividualResult(Object clone, Object original, Object primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
         // Check for refreshing, require to revert in the unit of work to accomplish a refresh.
         if (shouldRefreshIdentityMapResult()) {
             if (primaryKey == null) {

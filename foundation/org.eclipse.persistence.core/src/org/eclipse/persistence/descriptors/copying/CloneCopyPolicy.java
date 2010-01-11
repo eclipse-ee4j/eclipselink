@@ -16,8 +16,6 @@ import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -119,7 +117,8 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     /**
      * Create a new instance, unless a workingCopyClone method is specified, then build a new instance and clone it.
      */
-    public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWork uow) throws DescriptorException {
+    @Override
+    public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         // For now must preserve CMP code which builds heavy clones with a context.
         // Also preserve for clients who use the copy policy.
         ObjectBuilder builder = getDescriptor().getObjectBuilder();

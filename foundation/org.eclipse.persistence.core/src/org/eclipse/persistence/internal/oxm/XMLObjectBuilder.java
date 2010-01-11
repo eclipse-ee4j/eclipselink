@@ -229,6 +229,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * they were created from, we are able to preserve the structure and
      * unmapped content of the document that was used to create these objects.
      */
+    @Override
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         XMLRecord row = (XMLRecord)databaseRow;
         row.setSession(query.getSession());
@@ -434,6 +435,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Override method in superclass in order to set the session on the record.
      * Return the row with primary keys and their values from the given expression.
      */
+    @Override
     public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         expression.getBuilder().setSession(session.getRootSession(null));
@@ -450,7 +452,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         return extractPrimaryKeyFromRow(primaryKeyRow, session);
     }
-    
+
+    @Override
     public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(getDescriptor().getJavaClass()))) {
             return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);

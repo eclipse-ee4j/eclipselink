@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.Serializable;
-import java.util.Vector;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -129,7 +128,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * PUBLIC:
      * Return the number of versions different between these objects.
      */
-    public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session);
+    public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -145,7 +144,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Object getWriteLockValue(Object domainObject, java.util.Vector primaryKey, AbstractSession session);
+    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -190,7 +189,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public boolean isNewerVersion(Object currentValue, Object domainObject, Vector primaryKey, AbstractSession session);
+    public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -201,7 +200,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, java.util.Vector primaryKey, AbstractSession session);
+    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -209,7 +208,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void mergeIntoParentCache(UnitOfWorkImpl uow, java.util.Vector primaryKey, Object object);
+    public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object);
 
     /**
      * INTERNAL:

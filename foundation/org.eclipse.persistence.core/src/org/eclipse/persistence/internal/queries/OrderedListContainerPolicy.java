@@ -444,12 +444,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             }
         }
         synchronized (synchronizedValueOfTarget) {
-            if (!changeRecord.getOrderedChangeObjectList().isEmpty()){
-                //Attribute change tracking merge behavior
-                Vector removedList = new Vector();
-                
-                Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();
-                
+            if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {                
+                Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();                
                 while (objects.hasNext()){
                     OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
                     objectChanges = changeObject.getChangeSet();
@@ -462,7 +458,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         if (objectToRemove!=null){
                             Integer index = changeObject.getIndex();
                             if (index!=null){
-                                if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )){
+                                if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()))) {
                                     removeFromAtIndex(index, valueOfTarget);
                                 } else {
                                     //Object is in the cache, but the collection doesn't have it at the location we expect

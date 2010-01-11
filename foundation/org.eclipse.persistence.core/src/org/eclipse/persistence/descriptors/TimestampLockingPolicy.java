@@ -14,7 +14,6 @@ package org.eclipse.persistence.descriptors;
 
 import org.eclipse.persistence.internal.sessions.*;
 
-import java.util.*;
 import java.sql.Timestamp;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -143,7 +142,8 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Return the number of versions different between these objects.
      */
-    public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session) {
+    @Override
+    public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
         java.sql.Timestamp newWriteLockFieldValue = (java.sql.Timestamp)currentValue;
         if (newWriteLockFieldValue == null) {
@@ -166,9 +166,10 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
 
     /**
      * INTERNAL:
-     * This method will return the optimistic lock value for the object
+     * This method will return the optimistic lock value for the object.
      */
-    public Object getWriteLockValue(Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    @Override
+    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue = null;
         if (isStoredInCache()) {
             writeLockFieldValue = (java.sql.Timestamp)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
@@ -207,7 +208,8 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Compares the value with the value from the object (or cache).
      * Will return true if the currentValue is newer than the domainObject.
      */
-    public boolean isNewerVersion(Object currentValue, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    @Override
+    public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
         java.sql.Timestamp newWriteLockFieldValue = (java.sql.Timestamp)currentValue;
         if (isStoredInCache()) {
@@ -224,7 +226,8 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Compares the value from the row and from the object (or cache).
      * Will return true if the row is newer than the object.
      */
-    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    @Override
+    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
         java.sql.Timestamp newWriteLockFieldValue = (java.sql.Timestamp)session.getDatasourcePlatform().convertObject(databaseRow.get(getWriteLockField()), ClassConstants.TIMESTAMP);
         if (isStoredInCache()) {

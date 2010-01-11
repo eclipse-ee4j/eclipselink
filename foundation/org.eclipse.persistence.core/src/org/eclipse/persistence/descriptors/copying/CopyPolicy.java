@@ -13,7 +13,6 @@
 package org.eclipse.persistence.descriptors.copying;
 
 import java.io.*;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -50,7 +49,7 @@ public interface CopyPolicy extends Cloneable, Serializable {
     /**
      * Return an instance with the primary key set from the row, used for building a working copy during a unit of work transactional read.
      */
-    Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWork uow) throws DescriptorException;
+    Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException;
            
     /**
      * Clone the CopyPolicy.

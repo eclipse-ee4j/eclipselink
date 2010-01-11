@@ -230,7 +230,6 @@ public class ClassTypeExpression extends DataExpression {
      * return value (a class), as none of the expressions will have a session.  
      */
     public ClassDescriptor getContainingDescriptor(ObjectLevelReadQuery query) {
-        AbstractSession session;
         Class queryClass = null;
         if (getBaseExpression().isExpressionBuilder()){
             queryClass = ((ExpressionBuilder)getBaseExpression()).getQueryClass();

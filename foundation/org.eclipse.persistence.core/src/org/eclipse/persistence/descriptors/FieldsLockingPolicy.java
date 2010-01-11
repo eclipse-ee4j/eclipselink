@@ -36,7 +36,7 @@ import org.eclipse.persistence.exceptions.*;
  */
 public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     protected ClassDescriptor descriptor;
-    protected Vector allNonPrimaryKeyFields;
+    protected List<DatabaseField> allNonPrimaryKeyFields;
 
     /**
      * PUBLIC:
@@ -70,20 +70,20 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Returns the fields that should be compared in the where clause.
      * In this case, it is all the fields, except for the primary key
      * and class indicator fields.
-     * This is called durring lazy initialization
+     * This is called during lazy initialization.
      */
-    protected Vector buildAllNonPrimaryKeyFields() {
-        Vector fields = new Vector();
+    protected List buildAllNonPrimaryKeyFields() {
+        List fields = new ArrayList();
         for (Enumeration enumtr = descriptor.getFields().elements(); enumtr.hasMoreElements();) {
             DatabaseField dbField = (DatabaseField)enumtr.nextElement();
             if (!isPrimaryKey(dbField)) {
                 if (descriptor.hasInheritance()) {
                     DatabaseField classField = descriptor.getInheritancePolicy().getClassIndicatorField();
                     if (!((classField == null) || dbField.equals(classField))) {
-                        fields.addElement(dbField);
+                        fields.add(dbField);
                     }
                 } else {
-                    fields.addElement(dbField);
+                    fields.add(dbField);
                 }
             }
         }
@@ -112,13 +112,13 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     protected Expression buildExpression(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow, ExpressionBuilder builder) {
         Expression exp = null;
         DatabaseField field;
-        Enumeration enumtr = getFieldsToCompare(table, transRow, modifyRow).elements();
-        if (enumtr.hasMoreElements()) {
-            field = (DatabaseField)enumtr.nextElement();//First element
+        Iterator<DatabaseField> iterator = getFieldsToCompare(table, transRow, modifyRow).iterator();
+        if (iterator.hasNext()) {
+            field = iterator.next();//First element
             exp = builder.getField(field).equal(builder.getParameter(field));
         }
-        while (enumtr.hasMoreElements()) {
-            field = (DatabaseField)enumtr.nextElement();
+        while (iterator.hasNext()) {
+            field = iterator.next();
             exp = exp.and(builder.getField(field).equal(builder.getParameter(field)));
         }
         return exp;
@@ -195,7 +195,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * In this case, it is all the fields, except for the primary key
      * and class indicator field.
      */
-    protected Vector getAllNonPrimaryKeyFields() {
+    protected List<DatabaseField> getAllNonPrimaryKeyFields() {
         if (allNonPrimaryKeyFields == null) {
             allNonPrimaryKeyFields = buildAllNonPrimaryKeyFields();
         }
@@ -206,12 +206,11 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * filter the fields based on the passed in table.  Only return fields of this table.
      */
-    protected Vector getAllNonPrimaryKeyFields(DatabaseTable table) {
-        Vector filteredFields = new Vector();
-        for (Enumeration enumtr = getAllNonPrimaryKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField dbField = (DatabaseField)enumtr.nextElement();
+    protected List<DatabaseField> getAllNonPrimaryKeyFields(DatabaseTable table) {
+        List<DatabaseField> filteredFields = new ArrayList<DatabaseField>();
+        for (DatabaseField dbField : getAllNonPrimaryKeyFields()) {
             if (dbField.getTableName().equals(table.getName())) {
-                filteredFields.addElement(dbField);
+                filteredFields.add(dbField);
             }
         }
         return filteredFields;
@@ -231,7 +230,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Returns the fields that should be compared in the where clause.
      * This method must be implemented by the subclass
      */
-    protected abstract Vector getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow);
+    protected abstract List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow);
 
     /**
        * INTERNAL:
@@ -274,7 +273,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Return the number of version difference between the two states of the object.
      */
-    public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session) {
+    public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
         // There is no way of knowing what the difference is so return 0
         // This should never be called for field locking.
         return 0;
@@ -284,7 +283,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * This method will return the optimistic lock value for the object
      */
-    public Object getWriteLockValue(Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return null;
     }
@@ -328,7 +327,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * (or cache).  Will return true if the object is newer
      * than the row.
      */
-    public boolean isNewerVersion(Object currentValue, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return true;
     }
@@ -339,7 +338,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * (or cache).  Will return true if the object is newer
      * than the row.
      */
-    public boolean isNewerVersion(AbstractRecord Record, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public boolean isNewerVersion(AbstractRecord Record, Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return true;
     }
@@ -369,14 +368,14 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Only applicable when the value is stored in the cache.
      */
-    public void mergeIntoParentCache(UnitOfWorkImpl uow, java.util.Vector primaryKey, Object object) {
+    public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
         // nothing to do
     }
 
     /**
      * INTERNAL: Set method for all the primary keys
      */
-    protected void setAllNonPrimaryKeyFields(Vector allNonPrimaryKeyFields) {
+    protected void setAllNonPrimaryKeyFields(List allNonPrimaryKeyFields) {
         this.allNonPrimaryKeyFields = allNonPrimaryKeyFields;
     }
 

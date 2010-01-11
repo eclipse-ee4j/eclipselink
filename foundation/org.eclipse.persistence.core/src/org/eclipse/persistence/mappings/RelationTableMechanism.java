@@ -512,7 +512,7 @@ public class RelationTableMechanism  implements Cloneable {
         }
         
         if(mapping.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
-            Expression startCriteria = (Expression)mapping.getSelectionQuery().getSelectionCriteria();
+            Expression startCriteria = mapping.getSelectionQuery().getSelectionCriteria();
             if(startCriteria != null) {
                 startCriteria = (Expression)startCriteria.clone();
             }

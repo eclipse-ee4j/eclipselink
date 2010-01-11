@@ -35,13 +35,11 @@ import javax.naming.NamingException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.services.mbean.MBeanDevelopmentServices;
 import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * PUBLIC:
@@ -147,7 +145,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
                     }
 
-                    MBeanDevelopmentServices mbean = new MBeanDevelopmentServices((Session)getDatabaseSession());
+                    MBeanDevelopmentServices mbean = new MBeanDevelopmentServices(getDatabaseSession());
                     ObjectInstance info = null;
                     try {
                         info = mBeanServerRuntime.registerMBean(mbean, name);
@@ -170,7 +168,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
                     }
                     
-                    MBeanWebLogicRuntimeServices runtimeServices = new MBeanWebLogicRuntimeServices((AbstractSession)getDatabaseSession());                    
+                    MBeanWebLogicRuntimeServices runtimeServices = new MBeanWebLogicRuntimeServices(getDatabaseSession());                    
                     ObjectInstance runtimeInstance = null;
                     try {
                         runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServices, name);
@@ -235,7 +233,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "unregistering_mbean", name);
                     try {
-                        ((MBeanServer)mBeanServerRuntime).unregisterMBean(name);
+                        mBeanServerRuntime.unregisterMBean(name);
                     } catch(InstanceNotFoundException inf) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", inf);
                     } catch (MBeanRegistrationException mbre) {
@@ -254,7 +252,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "unregistering_mbean", name);
                     try {
-                        ((MBeanServer)mBeanServerRuntime).unregisterMBean(name);
+                        mBeanServerRuntime.unregisterMBean(name);
                     } catch(InstanceNotFoundException inf) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", inf);
                     } catch (MBeanRegistrationException registrationProblem) {

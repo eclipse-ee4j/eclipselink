@@ -247,7 +247,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         InterfaceContainerPolicy cp = null;
         try{
-            cp = (InterfaceContainerPolicy)((CollectionMapping)getMapping()).getContainerPolicy();
+            cp = (InterfaceContainerPolicy)getMapping().getContainerPolicy();
         } catch (ClassCastException e){
             throw QueryException.mapEntryExpressionForNonMap(getBaseExpression(), getMapping());
         }

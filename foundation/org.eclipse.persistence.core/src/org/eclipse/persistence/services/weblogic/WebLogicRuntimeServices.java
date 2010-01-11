@@ -211,7 +211,6 @@ public class WebLogicRuntimeServices extends RuntimeServices {
             // get details for each class, and add the details to the summary
             for (int index = 0; index < mappedClassNames.size(); index++) {
                 mappedClassName = (String)mappedClassNames.elementAt(index);
-                String[] key = new String[] { mappedClassName };
                 classSummaryDetails.add(buildLowlevelDetailsFor(mappedClassName));
             }
             return classSummaryDetails;
@@ -1094,11 +1093,10 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     }
 
     /**
-    *        This method will answer the number of persistent classes contained in the session.
-    *   This does not include aggregates.
-    */
+     * This method will answer the number of persistent classes contained in the session.
+     * This does not include aggregates.
+     */
     public Integer getNumberOfPersistentClasses() {
-        int count = 0;
         Hashtable classesTable = new Hashtable();
         ClassDescriptor currentDescriptor;
 
@@ -1316,7 +1314,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
     */
     public synchronized void invalidateIdentityMaps(String[] classNamesParam, Boolean recurse) throws ClassNotFoundException {
-        String[] classNames = (String[])classNamesParam;
+        String[] classNames = classNamesParam;
         for (int index = 0; index < classNames.length; index++) {
             invalidateIdentityMap(classNames[index], recurse);
         }

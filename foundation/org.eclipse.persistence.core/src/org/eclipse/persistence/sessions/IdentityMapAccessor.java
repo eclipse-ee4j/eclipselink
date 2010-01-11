@@ -77,7 +77,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return boolean
      */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass);
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -168,7 +168,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass);
+    public Object getFromIdentityMap(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -190,7 +190,7 @@ public interface IdentityMapAccessor {
      * @param shouldReturnInvalidatedObjects InMemoryQueryIndirectionPolicy
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
+    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
 
     /**
      * ADVANCED:
@@ -272,11 +272,8 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Extracts the write lock value from the identity map through the passed in primaryKey and Class type.
      * Write lock values are used when optimistic locking is stored in the cache instead of the object.
-     * @param primaryKey Vector
-     * @param theClass Class
-     * @return Object for versioning
      */
-    public Object getWriteLockValue(Vector primaryKey, Class theClass);
+    public Object getWriteLockValue(Object primaryKey, Class theClass);
 
     /**
      * PUBLIC:
@@ -333,14 +330,14 @@ public interface IdentityMapAccessor {
      * @param primaryKey Vector
      * @param theClass Class
      */
-    public void invalidateObject(Vector primaryKey, Class theClass);
+    public void invalidateObject(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster);
+    public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster);
     
     /**
      * ADVANCED:
@@ -442,7 +439,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return boolean
      */
-    public boolean isValid(Vector primaryKey, Class theClass);
+    public boolean isValid(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -493,7 +490,7 @@ public interface IdentityMapAccessor {
      * @param key Vector
      * @return Object
      */
-    public Object putInIdentityMap(Object domainObject, Vector key);
+    public Object putInIdentityMap(Object domainObject, Object key);
 
     /**
      * ADVANCED:
@@ -504,7 +501,7 @@ public interface IdentityMapAccessor {
      * @param writeLockValue Object for versioning
      * @return Object
      */
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue);
+    public Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue);
 
     /**
      * ADVANCED:
@@ -517,7 +514,7 @@ public interface IdentityMapAccessor {
      * @param readTime long, time in milliseconds
      * @return Object the Object put into the identity map
      */
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue, long readTime);
+    public Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue, long readTime);
 
     /**
      * ADVANCED:
@@ -538,7 +535,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return Object the Object removed from the identity map
      */
-    public Object removeFromIdentityMap(Vector key, Class theClass);
+    public Object removeFromIdentityMap(Object key, Class theClass);
 
     /**
      * ADVANCED:
@@ -557,7 +554,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @param writeLockValue Object for versioning
      */
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue);
+    public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue);
 
     /**
      * ADVANCED:

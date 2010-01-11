@@ -298,7 +298,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * @param primaryKeys a vector containing the primary keys of the domainObject
      * @param session the session to be used with the comparison
      */
-    public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session) {
+    public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)currentValue;
 
@@ -346,7 +346,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * This method will return the optimistic lock value for the object
      */
-    public Object getWriteLockValue(Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         if (isStoredInCache()) {
             writeLockFieldValue = (Number)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
@@ -424,7 +424,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Compares the value with the value from the object (or cache).
      * Will return true if the currentValue is newer than the domainObject.
      */
-    public boolean isNewerVersion(Object currentValue, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)currentValue;
 
@@ -442,7 +442,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Compares the value from the row and from the object (or cache).
      * Will return true if the row is newer than the object.
      */
-    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
+    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)databaseRow.get(getWriteLockField());
         if (isStoredInCache()) {
@@ -525,7 +525,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Only applicable when the value is stored in the cache.  Will merge with the parent unit of work.
      */
-    public void mergeIntoParentCache(UnitOfWorkImpl uow, Vector primaryKey, Object object) {
+    public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
         if (isStoredInCache()) {
             Object parentValue = uow.getParent().getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, object.getClass(), getDescriptor());
             uow.getIdentityMapAccessor().updateWriteLockValue(primaryKey, object.getClass(), parentValue);

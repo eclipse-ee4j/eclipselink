@@ -164,7 +164,7 @@ public class DynamicTypeBuilder {
         descriptor.setInstantiationPolicy(new DynamicTypeInstantiationPolicy((DynamicTypeImpl) getType()));
 
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
-            addMapping((DatabaseMapping) descriptor.getMappings().get(index));
+            addMapping(descriptor.getMappings().get(index));
         }
 
         descriptor.setProperty(DynamicTypeImpl.DESCRIPTOR_PROPERTY, entityType);

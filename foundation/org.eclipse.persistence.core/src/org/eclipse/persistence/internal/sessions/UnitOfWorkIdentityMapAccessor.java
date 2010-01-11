@@ -13,12 +13,14 @@
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.Record;
 
 /**
  * INTERNAL:
@@ -35,6 +37,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * ADVANCED:
      * Clear all the query caches
      */
+    @Override
     public void clearQueryCache() {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache();
     }
@@ -43,6 +46,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * ADVANCED:
      * Clear the query class associated with the passed-in read query
      */
+    @Override
     public void clearQueryCache(ReadQuery query) {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache(query);
     }
@@ -51,6 +55,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * ADVANCED:
      * Clear the query cache associated with the named query on the session
      */
+    @Override
     public void clearQueryCache(String sessionQueryName) {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getQuery(sessionQueryName));
     }
@@ -59,6 +64,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * ADVANCED:
      * Clear the query cache associated with the named query on the descriptor for the given class
      */
+    @Override
     public void clearQueryCache(String descriptorQueryName, Class queryClass) {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
     }
@@ -67,7 +73,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * INTERNAL:
      * Return if their is an object for the primary key.
      */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+    @Override
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         if (getIdentityMapManager().containsKey(primaryKey, theClass, descriptor)) {
             return true;
         }
@@ -79,7 +86,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * This method overrides the getAllFromIdentityMap method in Session.  Invalidated Objects
      * will always be returned from a UnitOfWork.
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    @Override
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         return super.getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -88,7 +96,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Override the getFromIdentityMapWithDeferredLock method on the session to ensure that
      * invalidated objects are always returned since this is a UnitOfWork
      */
-    public Object getFromIdentityMapWithDeferredLock(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    @Override
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return super.getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
     }
 
@@ -100,7 +109,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Note: in a UnitOfWork, invalidated objects will always be returned from the identity map
      * In the parent session, only return the object if it has not been Invalidated
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    @Override
+    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         Object objectFromCache = super.getFromIdentityMap(primaryKey, theClass, true, descriptor);
 
         if (objectFromCache != null) {
@@ -114,7 +124,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * INTERNAL:
      * This method will return the object from the parent and clone it.
      */
-    protected Object getAndCloneCacheKeyFromParent(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         // Note: Objects returned from the parent's identity map should include invalidated
         // objects. This is important because this internal method is used in the existence
         // check in the UnitOfWork.
@@ -179,6 +189,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *
      * results are only cached in the parent session for UnitOfWorks
      */
+    @Override
     public Object getQueryResult(ReadQuery query, Vector parameters, boolean checkExpiry) {
         return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
     }
@@ -191,6 +202,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *
      *  Results are only cached in the parent session for UnitOfWorks
      */
+    @Override
     public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
     }
@@ -206,6 +218,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * be maintained for any objects currently read in.  This should only be called
      * if the application knows that it no longer has references to object held in the cache.
      */
+    @Override
     public void initializeAllIdentityMaps() {
         super.initializeAllIdentityMaps();
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();

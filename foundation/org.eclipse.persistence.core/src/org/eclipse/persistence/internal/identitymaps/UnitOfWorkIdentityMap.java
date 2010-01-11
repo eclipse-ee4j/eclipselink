@@ -31,15 +31,43 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         this.cacheKeys = new HashMap(size);
         this.descriptor = descriptor;
     }
+
+    @Override
+    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
+        return new UnitOfWorkCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+    }
+
+    /**
+     * Avoid acquiring any lock as uow is single threaded.
+     */
+    @Override
+    public CacheKey acquireDeferredLock(Object primaryKey) {
+        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        if (cacheKey == null) {
+            return newCacheKey;
+        }
+        return cacheKey;
+    }
+
+    /**
+     * Avoid acquiring any lock as uow is single threaded.
+     */
+    @Override
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
+        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        if (cacheKey == null) {
+            return newCacheKey;
+        }
+        return cacheKey;
+    }
     
-    public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new UnitOfWorkCacheKey(primaryKey, object, writeLockValue, readTime);
-    }
-
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    public CacheKey acquireDeferredLock(Vector primaryKey) {
+    @Override
+    public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
         CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
         CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
         if (cacheKey == null) {
@@ -51,19 +79,8 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    public CacheKey acquireLock(Vector primaryKey, boolean forMerge) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        if (cacheKey == null) {
-            return newCacheKey;
-        }
-        return cacheKey;
-    }
-    
-    /**
-     * Avoid acquiring any lock as uow is single threaded.
-     */
-    public CacheKey acquireLockNoWait(Vector primaryKey, boolean forMerge) {
+    @Override
+    public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
         CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
         CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
         if (cacheKey == null) {
@@ -75,26 +92,16 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        if (cacheKey == null) {
-            return newCacheKey;
-        }
-        return cacheKey;
-    }
-
-    /**
-     * Avoid acquiring any lock as uow is single threaded.
-     */
-    public CacheKey acquireReadLockOnCacheKey(Vector primaryKey) {
+    @Override
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
         return acquireReadLockOnCacheKeyNoWait(primaryKey);
     }
 
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Vector primaryKey) {
+    @Override
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
         CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
         CacheKey cacheKey = getCacheKey(newCacheKey);
         if (cacheKey == null) {
@@ -106,7 +113,8 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    protected CacheKey getCacheKeyWithReadLock(Vector primaryKey) {
+    @Override
+    protected CacheKey getCacheKeyWithReadLock(Object primaryKey) {
         return getCacheKey(primaryKey);
     }
     
@@ -127,6 +135,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
+    @Override
     public Object remove(CacheKey cacheKey) {
         if (cacheKey != null) {
             getCacheKeys().remove(cacheKey);
@@ -139,6 +148,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
+    @Override
     public void resetCacheKey(CacheKey key, Object object, Object writeLockValue, long readTime) {
         key.setObject(object);
         key.setWriteLockValue(writeLockValue);
@@ -148,7 +158,8 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
-    public void setWriteLockValue(Vector primaryKey, Object writeLockValue) {
+    @Override
+    public void setWriteLockValue(Object primaryKey, Object writeLockValue) {
         CacheKey cacheKey = getCacheKeyForLock(primaryKey);
         if (cacheKey != null) {
             cacheKey.setWriteLockValue(writeLockValue);

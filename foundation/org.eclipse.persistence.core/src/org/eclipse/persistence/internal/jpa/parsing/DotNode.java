@@ -149,7 +149,6 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * "emp.address.city" = builder.get("address").get("city")
      */
     public Expression generateExpression(GenerationContext context) {
-        Node left = getLeft();
         Node right = getRight();
 
         if (enumConstant != null) {

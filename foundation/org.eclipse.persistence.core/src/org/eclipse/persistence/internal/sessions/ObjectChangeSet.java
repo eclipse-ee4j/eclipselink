@@ -92,12 +92,12 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /**
      * This constructor is used to create an ObjectChangeSet that represents a regular object.
      */
-    public ObjectChangeSet(Vector primaryKey, ClassDescriptor descriptor, Object cloneObject, UnitOfWorkChangeSet parent, boolean isNew) {
+    public ObjectChangeSet(Object primaryKey, ClassDescriptor descriptor, Object cloneObject, UnitOfWorkChangeSet parent, boolean isNew) {
         this.cacheSynchronizationType = ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
         this.cloneObject = cloneObject;
         this.isNew = isNew;
         this.shouldBeDeleted = false;
-        if ((primaryKey != null) && !primaryKey.contains(null)) {
+        if ((primaryKey != null) && !((Vector)primaryKey).contains(null)) {
             this.cacheKey = new CacheKey(primaryKey);
         }
         this.classType = descriptor.getJavaClass();

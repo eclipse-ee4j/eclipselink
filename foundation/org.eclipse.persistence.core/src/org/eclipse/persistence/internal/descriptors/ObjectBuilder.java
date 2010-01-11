@@ -451,7 +451,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractSession session = query.getSession();
         session.startOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
 
-        Vector primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
+        Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
 
         // Check for null primary key, this is not allowed.
         if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
@@ -531,7 +531,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * shared cache) or buildWorkingCopyCloneNormally (placing the result in the
      * shared cache).
      */
-    protected Object buildObjectInUnitOfWork(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey, ClassDescriptor concreteDescriptor) throws DatabaseException, QueryException {
+    protected Object buildObjectInUnitOfWork(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, ClassDescriptor concreteDescriptor) throws DatabaseException, QueryException {
         // When in transaction we are reading via the write connection
         // and so do not want to corrupt the shared cache with dirty objects.
         // Hence we build and refresh clones directly from the database row.
@@ -563,7 +563,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * <p>
      * Represents the way TopLink has always worked.
      */
-    protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         // First check local unit of work cache.
         CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
         Object clone = unitOfWorkCacheKey.getObject();
@@ -634,7 +634,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Object domainObject = null;
         
         // Cache key is used for object locking.
@@ -703,7 +703,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
                 if (domainObject instanceof PersistenceEntity) {
                     ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
-                    ((PersistenceEntity)domainObject)._persistence_setPKVector(primaryKey);
+                    ((PersistenceEntity)domainObject)._persistence_setPKVector((Vector)primaryKey);
                 }
             } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
@@ -1335,7 +1335,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * cache.  This is because we might violate transaction isolation by
      * putting uncommitted versions of objects in the shared cache.
      */
-    protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey) throws DatabaseException, QueryException {
+    protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey) throws DatabaseException, QueryException {
         ClassDescriptor descriptor = this.descriptor;
 
         // If the clone already exists then it may only need to be refreshed or returned.
@@ -1434,7 +1434,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             query.recordCloneForPessimisticLocking(workingClone, unitOfWork);
             // PERF: Cache the primary key if implements PersistenceEntity.
             if (workingClone instanceof PersistenceEntity) {
-                ((PersistenceEntity)workingClone)._persistence_setPKVector(primaryKey);
+                ((PersistenceEntity)workingClone)._persistence_setPKVector((Vector)primaryKey);
             }
         } finally {
             unitOfWorkCacheKey.release();            
@@ -2641,7 +2641,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * <p>Instead the copy policy must in some cases not copy at all.
      * this allows the stub of the clone to be registered before cloning its parts.
      */
-    public Object instantiateWorkingCopyCloneFromRow(AbstractRecord row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWorkImpl unitOfWork) {
+    public Object instantiateWorkingCopyCloneFromRow(AbstractRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWorkImpl unitOfWork) {
         return this.descriptor.getCopyPolicy().buildWorkingCopyCloneFromRow(row, query, primaryKey, unitOfWork);
     }
 

@@ -81,7 +81,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 int size = mappings.size();
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    changes.addChange(mapping.compareForChange(clone, null, changes, (UnitOfWorkImpl)session));
+                    changes.addChange(mapping.compareForChange(clone, null, changes, session));
                 }
             }
         }

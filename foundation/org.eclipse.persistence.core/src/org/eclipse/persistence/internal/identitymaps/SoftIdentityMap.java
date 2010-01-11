@@ -35,7 +35,8 @@ public class SoftIdentityMap extends WeakIdentityMap {
         this.cleanupSize = size;
     }
 
-    public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime);
+    @Override
+    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
+        return new SoftCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
     }
 }

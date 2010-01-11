@@ -70,13 +70,15 @@ public class WeakIdentityMap extends FullIdentityMap {
         }
     }
 
-    public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime);
+    @Override
+    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
+        return new WeakCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
     }
 
     /**
      * Need to check for cleanup on put.
      */
+    @Override
     protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
         CacheKey cacheKey = super.getCacheKeyIfAbsentPut(searchKey);
         if (cacheKey == null) {

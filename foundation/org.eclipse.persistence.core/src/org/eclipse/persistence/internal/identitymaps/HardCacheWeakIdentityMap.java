@@ -44,8 +44,9 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
      * Use a ReferenceCacheKey that also stores the linked list node to manage
      * the LRU sub-cache of references.
      */
-    public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new ReferenceCacheKey(primaryKey, object, writeLockValue, readTime);
+    @Override
+    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
+        return new ReferenceCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
     }
 
     /**
@@ -91,7 +92,8 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     /**
      * Store the object in the cache at its primary key, and add to sub-cache list.
      */
-    public CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
+    @Override
+    public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         CacheKey cacheKey = super.put(primaryKey, object, writeLockValue, readTime);
         cacheKey.updateAccess();
         return cacheKey;
