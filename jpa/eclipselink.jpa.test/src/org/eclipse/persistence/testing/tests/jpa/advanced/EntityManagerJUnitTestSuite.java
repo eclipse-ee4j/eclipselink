@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -341,6 +341,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPreupdateEmbeddable"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFindReadOnlyIsolated"));
         
         return suite;
     }
@@ -9262,6 +9263,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
     }
 
+    /**
+     * Test for Bug 299147 - em.find isolated read-only entity throws exception 
+     */
+    public void testFindReadOnlyIsolated() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            // test query
+            em.createQuery("SELECT ro FROM ReadOnlyIsolated ro").getResultList();
+            // test find - this used to throw exception
+            em.find(ReadOnlyIsolated.class, 1);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
 
 }
 

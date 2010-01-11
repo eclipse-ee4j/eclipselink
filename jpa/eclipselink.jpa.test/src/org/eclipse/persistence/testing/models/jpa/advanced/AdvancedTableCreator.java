@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -50,7 +50,8 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildCONCURRENCYATable());
         addTableDefinition(buildCONCURRENCYBTable());
         addTableDefinition(buildCONCURRENCYCTable());
-        //addTableDefinition(buildEMPLOYEE_SEQTable());
+        addTableDefinition(buildREADONLYISOLATED());
+        
     }
     
     public static TableDefinition buildADDRESSTable() {
@@ -612,36 +613,6 @@ public class AdvancedTableCreator extends TableCreator {
         return table;   
     }
 
-    public static TableDefinition buildEMPLOYEE_SEQTable() {
-        TableDefinition table = new TableDefinition();
-//        table.setName("SEQUENCE");
-        table.setName("CMP3_EMPLOYEE_SEQ");
-
-        FieldDefinition fieldSEQ_COUNT = new FieldDefinition();
-        fieldSEQ_COUNT.setName("SEQ_COUNT");
-        fieldSEQ_COUNT.setTypeName("NUMBER");
-        fieldSEQ_COUNT.setSize(15);
-        fieldSEQ_COUNT.setSubSize(0);
-        fieldSEQ_COUNT.setIsPrimaryKey(false);
-        fieldSEQ_COUNT.setIsIdentity(false);
-        fieldSEQ_COUNT.setUnique(false);
-        fieldSEQ_COUNT.setShouldAllowNull(false);
-        table.addField(fieldSEQ_COUNT);
-
-        FieldDefinition fieldSEQ_NAME = new FieldDefinition();
-        fieldSEQ_NAME.setName("SEQ_NAME");
-        fieldSEQ_NAME.setTypeName("VARCHAR2");
-        fieldSEQ_NAME.setSize(80);
-        fieldSEQ_NAME.setSubSize(0);
-        fieldSEQ_NAME.setIsPrimaryKey(true);
-        fieldSEQ_NAME.setIsIdentity(false);
-        fieldSEQ_NAME.setUnique(false);
-        fieldSEQ_NAME.setShouldAllowNull(false);
-        table.addField(fieldSEQ_NAME);
-
-        return table;
-    }
-    
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_EMPLOYEE");
@@ -1486,6 +1457,35 @@ public class AdvancedTableCreator extends TableCreator {
         IDfield.setIsIdentity(true);
         table.addField(IDfield);
         
+        return table;
+    }
+
+	public static TableDefinition buildREADONLYISOLATED() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_READONLY_ISOLATED");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldCODE = new FieldDefinition();
+        fieldCODE.setName("CODE");
+        fieldCODE.setTypeName("VARCHAR2");
+        fieldCODE.setSize(10);
+        fieldCODE.setSubSize(0);
+        fieldCODE.setIsPrimaryKey(false);
+        fieldCODE.setIsIdentity(false);
+        fieldCODE.setUnique(false);
+        fieldCODE.setShouldAllowNull(false);
+        table.addField(fieldCODE);
+
         return table;
     }
 }
