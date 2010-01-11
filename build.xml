@@ -253,7 +253,7 @@
     <target name="build-persistence20">
         <ant antfile="build.xml" dir="${jpa.prototype}" target="build"/>
     </target>
-     
+
     <!-- Compiles all utils components. -->
     <target name="build-util" depends="build-dbws-util, build-mw-and-rename"/>
 
@@ -497,7 +497,7 @@
             <zipfileset dir="examples" includes="**" excludes="**/.svn/**" prefix="examples_${release.version}" />
         </jar>
     </target>
-    
+
     <!-- Packages the eclipselink JPA testing source jar. -->
     <target name="package-tst-src-zip" description="build EclipseLink JPA and SDO testing source jar">
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
