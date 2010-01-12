@@ -2536,6 +2536,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     
     public void simpleCaseInWhereTest(){
         EntityManager em = createEntityManager();
+
+        Assert.assertFalse("Warning: Derby does not support simple CASE",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby());
+
         //select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Rob' then 'Robbie' else 'Not Bob' = 'Bob'
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -2560,6 +2563,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     
     public void simpleCaseInSelectTest(){
         EntityManager em = createEntityManager();
+
+        Assert.assertFalse("Warning: Derby does not support simple CASE",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby());
+
         //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Object> cq = qb.createQuery(Object.class);
