@@ -398,79 +398,45 @@ public class JAXBContextFactory {
     private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
         ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
         JavaTypes jTypes = xmlBindings.getJavaTypes();
-        if (jTypes != null) {
-            for (JavaType javaType : jTypes.getJavaType()) {
+        if (jTypes != null) { 
+        	java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
+        	 for (TypeMappingInfo typeMappingInfo : existingTypes) {
+             	Type type  = typeMappingInfo.getType();
+                 // ignore ParameterizedTypes
+                 if (type instanceof Class) {
+                     Class cls = (Class) type;
+                     existingClasses.add(cls);
+                 }
+             }
+        	 
+        	 java.util.List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+                
+             for (JavaType javaType : jTypes.getJavaType()) {
                 try {
-                    javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
+                    Class nextClass = classLoader.loadClass(javaType.getName());
+                    if(!(existingClasses.contains(nextClass))){
+                    	TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
+                    	typeMappingInfo.setType(nextClass);
+                    	additionalTypeMappingInfos.add(typeMappingInfo);
+                    	existingClasses.add(nextClass);
+                    }
                 } catch (ClassNotFoundException e) {
                     throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                 }
             }
-        }
-
-        if (javaTypeClasses.size() > 0) {
-            // add any existing classes not defined in the metadata file to the list
-            for (TypeMappingInfo typeMappingInfo : existingTypes) {
-            	Type type  = typeMappingInfo.getType();
-                // ignore ParameterizedTypes
-                if (type instanceof Class) {
-                    Class cls = (Class) type;
-                    if (!javaTypeClasses.contains(cls)) {
-                        javaTypeClasses.add(cls);
-                    }
-                }
-            }
-            // populate the array to return
-            Type[] types = javaTypeClasses.toArray(new Type[javaTypeClasses.size()]);
-            TypeMappingInfo[] additionalTypes = new TypeMappingInfo[types.length];
-            for(int i=0;i<types.length; i++){
-            	Type nextType = types[i];
-            	TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
-            	typeMappingInfo.setType(nextType);
-            	additionalTypes[i] = typeMappingInfo;
-            }
-            return additionalTypes;
+            
+            TypeMappingInfo[] allTypeMappingInfos = new TypeMappingInfo[existingTypes.length + additionalTypeMappingInfos.size()];
+            System.arraycopy(existingTypes, 0, allTypeMappingInfos, 0, existingTypes.length);
+            Object[] additionalTypes = additionalTypeMappingInfos.toArray();
+            System.arraycopy(additionalTypes, 0, allTypeMappingInfos, existingTypes.length, additionalTypes.length); 
+            return allTypeMappingInfos;
         }else{
         	return existingTypes;
         }
     }
-
-    /**
-     * Convenience method that returns an array of Classes based on a given XmlBindings and an array
-     * of existing classes. The resulting array will not contain duplicate entries.
-     * 
-     * @param xmlBindings
-     * @param classLoader
-     * @param existingClasses
-     * @return
-     */
-    private static Class[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, Class[] existingClasses) {
-        Class[] additionalClasses = existingClasses;
-        ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
-        JavaTypes jTypes = xmlBindings.getJavaTypes();
-        if (jTypes != null) {
-            for (JavaType javaType : jTypes.getJavaType()) {
-                try {
-                    javaTypeClasses.add(classLoader.loadClass(javaType.getName()));
-                } catch (ClassNotFoundException e) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
-                }
-            }
-        }
-
-        if (javaTypeClasses.size() > 0) {
-            // add any existing classes not defined in the metadata file to the list
-            for (Class cls : existingClasses) {
-                if (!javaTypeClasses.contains(cls)) {
-                    javaTypeClasses.add(cls);
-                }
-            }
-            // populate the array to return
-            additionalClasses = javaTypeClasses.toArray(new Class[javaTypeClasses.size()]);
-        }
-        return additionalClasses;
-    }
-
+    
+    
+  
     /**
      * Convenience method that returns a list of Classes based on a given XmlBindings and an array
      * of existing classes. The resulting array will not contain duplicate entries.
