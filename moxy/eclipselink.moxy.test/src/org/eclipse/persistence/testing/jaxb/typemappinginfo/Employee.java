@@ -19,4 +19,19 @@ public class Employee {
 
     public String firstName;
     public String lastName;
+    
+    public boolean equals(Object theObject){
+    	if(theObject instanceof Employee){
+    		Employee emp = (Employee)theObject;
+    	   if(!firstName.equals(emp.firstName)){
+    		   return false;
+    	   }
+    	   if(!lastName.equals(emp.lastName)){
+    		   return false;
+    	   }
+    	   return true;
+    	}else{
+    	   return false;
+    	}
+    }
 }
