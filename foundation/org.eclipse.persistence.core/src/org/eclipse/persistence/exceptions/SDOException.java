@@ -395,7 +395,7 @@ public class SDOException extends EclipseLinkException {
      * This exception occurs only for complex single types.
      */
     public static SDOException sequenceDuplicateSettingNotSupportedForComplexSingleObject(int index, String settingPropertyName) {
-        Object[] args = { new Integer(index), settingPropertyName };
+        Object[] args = { Integer.valueOf(index), settingPropertyName };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SEQUENCE_DUPLICATE_ADD_NOT_SUPPORTED, args));
         exception.setErrorCode(SEQUENCE_DUPLICATE_ADD_NOT_SUPPORTED);
         return exception;
@@ -477,7 +477,7 @@ public class SDOException extends EclipseLinkException {
     * Exception when trying to find a property at an invalid index
     */
     public static SDOException propertyNotFoundAtIndex(Exception e, int propIndex) {
-        Object[] args = { new Integer(propIndex) };
+        Object[] args = { Integer.valueOf(propIndex) };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, PROPERTY_NOT_FOUND_AT_INDEX, args), e);
         exception.setErrorCode(PROPERTY_NOT_FOUND_AT_INDEX);
         return exception;
@@ -533,7 +533,7 @@ public class SDOException extends EclipseLinkException {
      * Exception trying to pass an invalid index to a method
      */
     public static SDOException invalidIndex(IndexOutOfBoundsException nestedException, int index) {
-        Object[] args = {new Integer(index) };
+        Object[] args = {Integer.valueOf(index) };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, INVALID_INDEX, args),nestedException);
         exception.setErrorCode(INVALID_INDEX);
         return exception;

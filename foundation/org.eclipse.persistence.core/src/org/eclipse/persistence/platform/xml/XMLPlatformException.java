@@ -96,7 +96,7 @@ public class XMLPlatformException extends EclipseLinkException {
      * @see org.eclipse.persistence.platform.xml.XMLSchemaReference.getType()
      */
     public static XMLPlatformException xmlPlatformInvalidTypeException(int type) {
-        Object[] args = { new Integer(type) };
+        Object[] args = { Integer.valueOf(type) };
         int errorCode = XML_PLATFORM_INVALID_TYPE;
         XMLPlatformException exception = new XMLPlatformException(ExceptionMessageGenerator.buildMessage(XMLPlatformException.class, errorCode, args));
         exception.setErrorCode(errorCode);
@@ -122,7 +122,7 @@ public class XMLPlatformException extends EclipseLinkException {
     }
 
     public static XMLPlatformException xmlPlatformSAXParseException(SAXParseException nestedException) {
-        Object[] args = { new Integer(nestedException.getLineNumber()), nestedException.getSystemId(), nestedException.getMessage() };
+        Object[] args = { Integer.valueOf(nestedException.getLineNumber()), nestedException.getSystemId(), nestedException.getMessage() };
         int errorCode = XML_PLATFORM_PARSER_SAX_PARSE_EXCEPTION;
         XMLPlatformException exception = new XMLPlatformException(ExceptionMessageGenerator.buildMessage(XMLPlatformException.class, errorCode, args));
         exception.setErrorCode(errorCode);

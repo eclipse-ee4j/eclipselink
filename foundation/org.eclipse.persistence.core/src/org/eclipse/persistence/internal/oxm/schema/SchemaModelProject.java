@@ -111,21 +111,21 @@ public class SchemaModelProject extends Project {
         descriptor.addMapping(groupsMapping);
 
         ObjectTypeConverter converter = new ObjectTypeConverter();
-        converter.addConversionValue("unqualified", new Boolean(false));
-        converter.addConversionValue("qualified", new Boolean(true));
+        converter.addConversionValue("unqualified", false);
+        converter.addConversionValue("qualified", true);
         converter.setFieldClassification(String.class);
 
         XMLDirectMapping elementFormDefaultMapping = new XMLDirectMapping();
         elementFormDefaultMapping.setAttributeName("elementFormDefault");
         elementFormDefaultMapping.setXPath("@elementFormDefault");
-        elementFormDefaultMapping.setNullValue(new Boolean(false));
+        elementFormDefaultMapping.setNullValue(false);
         elementFormDefaultMapping.setConverter(converter);
         descriptor.addMapping(elementFormDefaultMapping);
 
         XMLDirectMapping attributeFormDefaultMapping = new XMLDirectMapping();
         attributeFormDefaultMapping.setAttributeName("attributeFormDefault");
         attributeFormDefaultMapping.setXPath("@attributeFormDefault");
-        attributeFormDefaultMapping.setNullValue(new Boolean(false));
+        attributeFormDefaultMapping.setNullValue(false);
         attributeFormDefaultMapping.setConverter(converter);
         descriptor.addMapping(attributeFormDefaultMapping);
 
@@ -180,13 +180,13 @@ public class SchemaModelProject extends Project {
         XMLDirectMapping abstractValueMapping = new XMLDirectMapping();
         abstractValueMapping.setAttributeName("abstractValue");
         abstractValueMapping.setXPath("@abstract");
-        abstractValueMapping.setNullValue(new Boolean(false));
+        abstractValueMapping.setNullValue(false);
         descriptor.addMapping(abstractValueMapping);
 
         XMLDirectMapping mixedMapping = new XMLDirectMapping();
         mixedMapping.setAttributeName("mixed");
         mixedMapping.setXPath("@mixed");
-        mixedMapping.setNullValue(new Boolean(false));
+        mixedMapping.setNullValue(false);
         descriptor.addMapping(mixedMapping);
 
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
@@ -263,7 +263,7 @@ public class SchemaModelProject extends Project {
         XMLDirectMapping mixedMapping = new XMLDirectMapping();
         mixedMapping.setAttributeName("mixed");
         mixedMapping.setXPath("@mixed");
-        mixedMapping.setNullValue(new Boolean(false));
+        mixedMapping.setNullValue(false);
         descriptor.addMapping(mixedMapping);
 
         XMLCompositeObjectMapping restrictionMapping = new XMLCompositeObjectMapping();
@@ -558,7 +558,7 @@ public class SchemaModelProject extends Project {
         XMLDirectMapping nillableMapping = new XMLDirectMapping();
         nillableMapping.setAttributeName("nillable");
         nillableMapping.setXPath("@nillable");
-        nillableMapping.setNullValue(new Boolean("false"));
+        nillableMapping.setNullValue(false);
         descriptor.addMapping(nillableMapping);
 
         XMLDirectMapping defaultMapping = new XMLDirectMapping();

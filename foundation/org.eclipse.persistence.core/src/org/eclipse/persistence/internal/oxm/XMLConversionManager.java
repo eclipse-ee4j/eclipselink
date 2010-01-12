@@ -1648,7 +1648,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         byte[] bytes = convertSchemaBase64ToByteArray(sourceObject);
         Byte[] objectBytes = new Byte[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
-            objectBytes[index] = new Byte(bytes[index]);
+            objectBytes[index] = bytes[index];
         }
         return objectBytes;
     }
