@@ -68,7 +68,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     private Map openContentAliasNames;
     private String containmentPropertyName;
     private SDOChangeSummary changeSummary;
-    private List instanceProperties;
+    private List<SDOProperty> instanceProperties;
     private String sdoRef;
     private SDOSequence sequence;
     private DataGraph dataGraph;
@@ -104,8 +104,8 @@ public class SDODataObject implements DataObject, SequencedObject {
     public void _setHelperContext(HelperContext aContext) {
         aHelperContext = aContext;
         // reset the HelperContext on ChangeSummary
-        if (getChangeSummary() != null) {
-            getChangeSummary().setHelperContext(aHelperContext);
+        if (changeSummary != null) {
+            changeSummary.setHelperContext(aHelperContext);
         }
     }
 
@@ -1155,8 +1155,9 @@ public class SDODataObject implements DataObject, SequencedObject {
     private void detach(Property property, Object oldValue) {
         // This function is called internally from set(property, object, boolean) when a detach of the existing object is required
         if (property.isMany()) {
-            for (int i = 0, size = ((List)oldValue).size(); i < size; i++) {
-                Object nextValue = ((List)oldValue).get(i);
+            List oldListValue = (List) oldValue;
+            for (int i = 0, size = oldListValue.size(); i < size; i++) {
+                Object nextValue = oldListValue.get(i);
                 if ((nextValue != null) && (nextValue instanceof SDODataObject)) {
                     ((SDODataObject)nextValue).detachOrDelete(false);
                 }
@@ -1178,10 +1179,10 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     public void detachOrDelete(boolean fromDelete) {
         // If we are detaching the root - perform a no-operation
-        if ((null == getContainer()) && !fromDelete) {
+        if ((null == container) && !fromDelete) {
             return;
         }
-        boolean isCSRoot = (null != getChangeSummary()) && (getChangeSummary().getRootObject() == this);
+        boolean isCSRoot = (null != changeSummary) && (changeSummary.getRootObject() == this);
 
         // Detaching the dataObject that is the root of the CS doesn't need to do anything - truncate the recursive traversal
         if(!fromDelete && isCSRoot){
@@ -1802,14 +1803,14 @@ public class SDODataObject implements DataObject, SequencedObject {
     public void resetChanges() {
         // fill all oldSettings when logging is turned on
         if ((container != null) && (containmentPropertyName != null) && (changeSummary != null)) {
-            getChangeSummary().setOldContainer(this, container);
-            getChangeSummary().setOldContainmentProperty(this, container.getInstanceProperty(containmentPropertyName));
+            changeSummary.setOldContainer(this, container);
+            changeSummary.setOldContainmentProperty(this, container.getInstanceProperty(containmentPropertyName));
         }
 
         // Note: valueStores will not be switched and originalValueStore will continue to be null until the first modification
         // initialize empty list for current dataObject
-        for (Iterator iterProperties = getInstanceProperties().iterator(); iterProperties.hasNext();) {
-            SDOProperty property = (SDOProperty)iterProperties.next();
+        for(int x=0, instancePropertiesSize=instanceProperties.size(); x<instancePropertiesSize; x++) {
+            SDOProperty property = instanceProperties.get(x);
             Object value = get(property);
 
             // #5878436 12-FEB-07 do not recurse into a non-containment relationship unless inside a dataGraph
@@ -1821,9 +1822,9 @@ public class SDODataObject implements DataObject, SequencedObject {
                 // Handle isMany objects and store the oldCont* values for each item in the list
                 if (property.isMany()) {
                     if (null != value) {// secondary NPE check
-                        for (Iterator iterMany = ((ListWrapper)value).iterator();
-                                 iterMany.hasNext();) {
-                            Object valueMany = iterMany.next();
+                        List listValue = (List) value;
+                        for(int y=0, listValueSize=listValue.size(); y<listValueSize; y++) {
+                            Object valueMany = listValue.get(y);
 
                             // do not recurse into a non-containment relationship unless inside a dataGraph
                             if ((property.isContainment() || isContainedByDataGraph(property)) && //
