@@ -35,6 +35,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
@@ -44,6 +46,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -72,6 +75,7 @@ public class XMLProcessor {
     public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] originalJavaClasses) {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
+        Map<String, XmlEnum> xmlEnumMap = new HashMap<String, XmlEnum>();
         annotationsProcessor.init(originalJavaClasses, typeMappingInfos);
 
         // build a map of packages to JavaClass so we only process the
@@ -99,9 +103,18 @@ public class XMLProcessor {
             // build an array of JavaModel classes to process
             JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 
+            // handle xml-enums
+            // build a map of enum class names to XmlEnum objects
+            XmlEnums xmlEnums = xmlBindings.getXmlEnums();
+            if (xmlEnums != null) {
+                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {
+                    xmlEnumMap.put(xmlEnum.getJavaEnum(), xmlEnum);
+                }
+            }
+            
             // pre-build the TypeInfo objects
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
-
+            
             // handle package-level xml-schema-types
             List<XmlSchemaType> xmlSchemaTypes = null;
             XmlSchemaTypes sTypes = xmlBindings.getXmlSchemaTypes();
@@ -213,6 +226,27 @@ public class XMLProcessor {
             // get the generated TypeInfo
             Map<String, TypeInfo> typeInfosForPackage = annotationsProcessor.getTypeInfosForPackage(packageName);
 
+            // update xml-enum info if necessary
+            for (String key : typeInfosForPackage.keySet()) {
+                TypeInfo tInfo = typeInfosForPackage.get(key);
+                if (tInfo.isEnumerationType()) {
+                    EnumTypeInfo etInfo = (EnumTypeInfo) tInfo;
+                    XmlEnum xmlEnum = xmlEnumMap.get(etInfo.getClassName());
+                    if (xmlEnum != null) {
+                        JavaClass restrictionClass = aProcessor.getHelper().getJavaClass(xmlEnum.getValue());
+                        // default to String if necessary
+                        if (restrictionClass == null) {
+                            restrictionClass = jModelInput.getJavaModel().getClass(String.class);
+                        }
+                        etInfo.setRestrictionBase(aProcessor.getSchemaTypeFor(restrictionClass));
+                        for (XmlEnumValue xmlEnumValue : xmlEnum.getXmlEnumValue()) {
+                            // overwrite any existing entries (from annotations)
+                            etInfo.addJavaFieldToXmlEnumValuePair(true, xmlEnumValue.getJavaEnumValue(), xmlEnumValue.getValue());
+                        }
+                    }
+                }
+            }
+            
             // update TypeInfo objects based on the JavaTypes
             jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
@@ -732,6 +766,15 @@ public class XMLProcessor {
                     classes.add(jModelInput.getJavaModel().getClass(javaType.getName()));
                 }
             }
+            
+            // add any enum types to the class list
+            XmlEnums xmlEnums = xmlBindings.getXmlEnums();
+            if (xmlEnums != null) {
+                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {
+                    classes.add(jModelInput.getJavaModel().getClass(xmlEnum.getJavaEnum()));
+                }
+            }
+            
             theMap.put(packageName, classes);
             xmlBindingsMap.put(packageName, new ArrayList(classes));
         }

@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-enum-value" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="java-enum" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="java.lang.String" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -53,6 +54,8 @@ public class XmlEnum {
     protected List<XmlEnumValue> xmlEnumValue;
     @XmlAttribute(name = "java-enum", required = true)
     protected String javaEnum;
+    @XmlAttribute
+    protected String value;
 
     /**
      * Gets the value of the xmlEnumValue property.
@@ -105,6 +108,34 @@ public class XmlEnum {
      */
     public void setJavaEnum(String value) {
         this.javaEnum = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        if (value == null) {
+            return "java.lang.String";
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

@@ -961,10 +961,10 @@ public class MappingsGenerator {
     
     private JAXBEnumTypeConverter buildJAXBEnumTypeConverter(DatabaseMapping mapping, EnumTypeInfo enumInfo){
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, enumInfo.getClassName(), false);
-        List<Object> objects = enumInfo.getObjectValues();
-        List<String> fieldValues = enumInfo.getFieldValues();
-        for (int i=0; i< objects.size(); i++) {         
-            converter.addConversionValue(fieldValues.get(i), objects.get(i));
+        List<String> fieldNames = enumInfo.getFieldNames();
+        List<String> xmlEnumValues = enumInfo.getXmlEnumValues();
+        for (int i=0; i< fieldNames.size(); i++) {         
+            converter.addConversionValue(xmlEnumValues.get(i), fieldNames.get(i));
         }
         return converter;
     }

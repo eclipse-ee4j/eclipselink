@@ -1875,12 +1875,11 @@ public class AnnotationsProcessor {
         for (Iterator<JavaField> fieldIt = javaClass.getDeclaredFields().iterator(); fieldIt.hasNext();) {
             JavaField field = fieldIt.next();
             if (field.isEnumConstant()) {
-                String fieldValue = field.getName();
+                String enumValue = field.getName();
                 if (helper.isAnnotationPresent(field, XmlEnumValue.class)) {
-                    XmlEnumValue xmlEnumValue = (XmlEnumValue) helper.getAnnotation(field, XmlEnumValue.class);
-                    fieldValue = xmlEnumValue.value();
+                    enumValue = ((XmlEnumValue) helper.getAnnotation(field, XmlEnumValue.class)).value();
                 }
-                info.addObjectToFieldValuePair(field.getName(), fieldValue);
+                info.addJavaFieldToXmlEnumValuePair(field.getName(), enumValue);
             }
         }
     }

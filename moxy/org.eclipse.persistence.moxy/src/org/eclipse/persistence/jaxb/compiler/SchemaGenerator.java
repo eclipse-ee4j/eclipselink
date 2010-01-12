@@ -849,7 +849,7 @@ public class SchemaGenerator {
     }
 
     public ArrayList<String> getEnumerationFacetsFor(EnumTypeInfo info) {
-        return (ArrayList<String>) info.getFieldValues();
+        return (ArrayList<String>) info.getXmlEnumValues();
     }
 
     public Property getXmlValueFieldForSimpleContent(TypeInfo info) {

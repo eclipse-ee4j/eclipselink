@@ -27,6 +27,13 @@
                 <xs:element ref="xml-schema-type" />
                 <xs:element ref="xml-schema-types" />
                 <xs:element ref="xml-java-type-adapters" />
+                <xs:element name="xml-enums">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="xml-enum" maxOccurs="unbounded" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="java-types">
                     <xs:complexType>
                         <xs:sequence>
@@ -152,6 +159,15 @@
     </xs:element>
 
     <!-- @Target(value=TYPE) -->
+    <xs:element name="xml-enum">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xml-enum-value" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="java-enum" type="xs:string" use="required" />
+            <xs:attribute name="value" type="xs:string" default="java.lang.String" />
+        </xs:complexType>
+    </xs:element>
     <xs:element name="xml-type">
         <xs:complexType>
             <xs:attribute name="name" type="xs:string" default="##default" />
@@ -176,6 +192,15 @@
     </xs:element>
 
     <!-- @Target(value={FIELD})  -->
+    <xs:element name="xml-enum-value">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="java-enum-value" type="xs:string" use="required" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
 
     <!-- @Target(value={FIELD,METHOD}) -->
     <xs:element name="xml-any-attribute" substitutionGroup="java-attribute">

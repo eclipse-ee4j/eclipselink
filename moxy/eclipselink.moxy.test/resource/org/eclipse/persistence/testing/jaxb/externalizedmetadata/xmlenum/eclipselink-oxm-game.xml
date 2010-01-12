@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-enums>
+        <xml-enum java-enum="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.Card" value="java.lang.String">
+            <xml-enum-value java-enum-value="CLUBS">CLUBS</xml-enum-value>
+            <xml-enum-value java-enum-value="HEARTS">HEARTS</xml-enum-value>
+            <xml-enum-value java-enum-value="SPADES">SPADES</xml-enum-value>
+            <xml-enum-value java-enum-value="DIAMONDS">DIAMONDS</xml-enum-value>
+        </xml-enum>
+        <xml-enum java-enum="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.Department" value="java.lang.Integer">
+            <xml-enum-value java-enum-value="J2EE">1</xml-enum-value>
+            <xml-enum-value java-enum-value="RDBMS">2</xml-enum-value>
+        </xml-enum>
+        <xml-enum java-enum="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.Coin" value="java.lang.Integer">
+            <xml-enum-value java-enum-value="PENNY">1</xml-enum-value>
+            <xml-enum-value java-enum-value="NICKEL">5</xml-enum-value>
+            <xml-enum-value java-enum-value="DIME">10</xml-enum-value>
+            <xml-enum-value java-enum-value="QUARTER">25</xml-enum-value>
+        </xml-enum>
+    </xml-enums>
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.Game">
+            <xml-root-element name="game" />
+            <java-attributes>
+                <xml-element java-attribute="card" />
+                <xml-element java-attribute="coin" />
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.Coin">
+            <xml-type name="coin-enum" />
+        </java-type>
+    </java-types>
+</xml-bindings>

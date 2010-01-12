@@ -35,15 +35,19 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 public class EnumTypeInfo extends TypeInfo {
     private String m_className;
     private QName m_restrictionBase;
-    private List<Object> objectValues;
-    private List<String> fieldValues;
+    private List<String> m_fieldNames;
+    private List<String> m_xmlEnumValues;
     
     public EnumTypeInfo(Helper helper) {
         super(helper);
-        objectValues = new ArrayList<Object>();
-        fieldValues = new ArrayList<String>();
+        m_fieldNames = new ArrayList<String>();
+        m_xmlEnumValues = new ArrayList<String>();
     }
     
+    public boolean isEnumerationType() {
+        return true;
+    }
+
     public String getClassName() {
         return m_className;
     }
@@ -59,22 +63,65 @@ public class EnumTypeInfo extends TypeInfo {
     public void setRestrictionBase(QName restrictionBase) {
         m_restrictionBase = restrictionBase;
     }
-      
-    public void addObjectToFieldValuePair(Object theObject, String theValue){
-    	objectValues.add(theObject);
-    	fieldValues.add(theValue);
+
+    /**
+     * Add a Java field name to XmlEnumValue pair.
+     * 
+     * @param fieldName
+     * @param xmlEnumValue
+     */
+    public void addJavaFieldToXmlEnumValuePair(String fieldName, String xmlEnumValue) {
+    	m_fieldNames.add(fieldName);
+    	m_xmlEnumValues.add(xmlEnumValue);
     }
+
+    /**
+     * Add a Java field name to XmlEnumValue pair.  If an entry exists at the specified 
+     * with the same fieldName, its value will be overridden.  A value of true for 
+     * 'override' will typically be used when performing overrides via XML metadata 
+     * in XmlProcessor.
+     * 
+     * @param override
+     * @param fieldName
+     * @param xmlEnumValue
+     */
+    public void addJavaFieldToXmlEnumValuePair(boolean override, String fieldName, String xmlEnumValue) {
+        if (!override) {
+            addJavaFieldToXmlEnumValuePair(fieldName, xmlEnumValue);
+        } else {
+            int idx = getIndexForJavaField(fieldName);
+            if (idx == -1) {
+                // the entry doesn't exist, so add a new one
+                addJavaFieldToXmlEnumValuePair(fieldName, xmlEnumValue);
+            } else {
+                // entry already exists, so replace the existing value
+                m_xmlEnumValues.remove(idx);
+                m_xmlEnumValues.add(idx, xmlEnumValue);
+            }
+        }
+    }
+
+    public List<String> getFieldNames() {
+        return m_fieldNames;
+    }
+
+    public List<String> getXmlEnumValues() {
+		return m_xmlEnumValues;
+	}
     
-    public boolean isEnumerationType() {
-        return true;
+    /**
+     * Return the index in the fieldNames List for a given Java field 
+     * name, or -1 if it doesn't exist.
+     * 
+     * @param fieldName
+     * @return
+     */
+    private int getIndexForJavaField(String fieldName) {
+        for (int i=0; i<m_fieldNames.size(); i++) {
+            if (m_fieldNames.get(i).equals(fieldName)) {
+                return i;
+            }
+        }
+        return -1;
     }
-
-	public List<String> getFieldValues() {
-		return fieldValues;
-	}
-
-	public List<Object> getObjectValues() {
-		return objectValues;
-	}
-	
 }
