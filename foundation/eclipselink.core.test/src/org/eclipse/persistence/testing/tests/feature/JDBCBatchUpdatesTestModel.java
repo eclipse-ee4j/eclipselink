@@ -13,10 +13,8 @@
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.optimisticlocking.OptimisticLockingSystem;
-import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
 import org.eclipse.persistence.testing.tests.optimisticlocking.OptimisticLockingTestModel;
 import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.BarSystem;
 

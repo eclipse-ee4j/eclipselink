@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-
 import org.eclipse.persistence.internal.descriptors.*;
 
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -64,7 +62,7 @@ public class ReloadSelectionObjectTest extends ReadObjectTest {
             throw new org.eclipse.persistence.testing.framework.TestException("objects are not identical");
         }
         ObjectBuilder builder = getSession().getDescriptor(originalObject).getObjectBuilder();
-        Vector primaryKey = builder.extractPrimaryKeyFromObject(getOriginalObject(), getAbstractSession());
+        Object primaryKey = builder.extractPrimaryKeyFromObject(getOriginalObject(), getAbstractSession());
         if (getSession().getIdentityMapAccessor().getFromIdentityMap(primaryKey, originalObject.getClass()) == null) {
             throw new org.eclipse.persistence.testing.framework.TestException("object was not put in the cache");
         }

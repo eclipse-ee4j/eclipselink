@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.DeleteObjectTest;
 import org.eclipse.persistence.testing.framework.TestException;
@@ -60,7 +58,7 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
     }
 
     public void verify() {
-        Vector primaryKey = getSession().keyFromObject(this.originalObject);
+        Object primaryKey = getSession().getId(this.originalObject);
         if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey, 
                                                                               this.originalObject.getClass())) {
             throw new TestException("The object " + originalObject + 
@@ -68,7 +66,7 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
                                     "not the parent session's cache.");
         }
 
-        primaryKey = getSession().keyFromObject(this.address);
+        primaryKey = getSession().getId(this.address);
         if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey, 
                                                                               this.address.getClass())) {
             throw new TestException("The object " + this.address + 

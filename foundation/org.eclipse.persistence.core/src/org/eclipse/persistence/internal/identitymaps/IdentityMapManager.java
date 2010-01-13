@@ -644,7 +644,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public Object getFromIdentityMap(Object object) {
         ClassDescriptor descriptor = this.session.getDescriptor(object);
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this.session);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this.session);
         return getFromIdentityMap(primaryKey, object.getClass(), descriptor);
     }
 

@@ -35,9 +35,8 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     private int testId;
     
     // transient fields
-    private boolean printCalendarIntoTimestampTZ;
     private boolean oldBindingValue;
-    private Boolean oldPrintingValue;
+    private boolean printCalendarIntoTimestampTZ;
     private DatabaseRecord result;
 
     // test data

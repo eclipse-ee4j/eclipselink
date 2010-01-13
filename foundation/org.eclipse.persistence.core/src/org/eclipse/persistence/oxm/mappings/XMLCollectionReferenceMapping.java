@@ -123,13 +123,13 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }
         ClassDescriptor descriptor = getReferenceDescriptor();
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        Vector pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
+        Object pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         XMLField tgtXMLField = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld);
         int idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
         if (idx == -1) {
             return null;
         }
-        return pks.get(idx);
+        return ((Vector)pks).get(idx);
     }
 
     /**

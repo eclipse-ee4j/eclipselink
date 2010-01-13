@@ -1512,7 +1512,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         AbstractRecord targetRow = trimRowForJoin(row, joinManager, executionSession);
         // PERF: Only check for null row if an outer-join was used.
         if (((joinManager != null) && joinManager.hasOuterJoinedAttributeQuery()) && !sourceQuery.hasPartialAttributeExpressions()) {
-            Vector key = this.referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
+            Object key = this.referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
             if (key == null) {
                 return this.indirectionPolicy.nullValueFromRow();
             }

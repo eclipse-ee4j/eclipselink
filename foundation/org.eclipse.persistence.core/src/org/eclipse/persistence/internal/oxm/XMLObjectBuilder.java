@@ -83,10 +83,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
      */
     public AbstractRecord buildRow(Object object, AbstractSession session, DatabaseField xmlField, XMLRecord parentRecord, boolean addXsiType) {
         if (isXmlDescriptor() && ((XMLDescriptor)getDescriptor()).shouldPreserveDocument()) {
-            Vector pk = extractPrimaryKeyFromObject(object, session);
-            if ((pk == null) || (pk.size() == 0)) {
+            Object pk = extractPrimaryKeyFromObject(object, session);
+            if ((pk == null) || (((Vector)pk).size() == 0)) {
                 pk = new Vector();
-                pk.addElement(new WeakObjectWrapper(object));
+                ((Vector)pk).add(new WeakObjectWrapper(object));
             }
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, getDescriptor().getJavaClass(), getDescriptor());
             if ((cacheKey != null) && (cacheKey.getRecord() != null)) {
@@ -237,7 +237,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         XMLUnmarshaller unmarshaller = row.getUnmarshaller();
         Object parent = row.getOwningObject();
 
-        Vector pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
+        Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
         if (!(isXmlDescriptor() || getDescriptor().isDescriptorTypeAggregate())) {
             return super.buildObject(query, databaseRow, joinManager);
         }
@@ -293,9 +293,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
         if (isXmlDescriptor() && ((XMLDescriptor)concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (pk.size() == 0)) {
+            if ((pk == null) || (((Vector)pk).size() == 0)) {
                 pk = new Vector();
-                pk.addElement(new WeakObjectWrapper(domainObject));
+                ((Vector)pk).add(new WeakObjectWrapper(domainObject));
             }
             CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor);
             if (((XMLDescriptor)concreteDescriptor).shouldPreserveDocument()) {
@@ -436,7 +436,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Return the row with primary keys and their values from the given expression.
      */
     @Override
-    public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
+    public Object extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression.
@@ -454,7 +454,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     @Override
-    public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
+    public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(getDescriptor().getJavaClass()))) {
             return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
         }

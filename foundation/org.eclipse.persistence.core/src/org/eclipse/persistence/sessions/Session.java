@@ -674,11 +674,20 @@ public interface Session {
      * Return if this session is a remote unit of work.
      */
     public boolean isRemoteUnitOfWork();
+
+    /**
+     * ADVANCED:
+     * Extract and return the Id from the object.
+     */
+    public Object getId(Object domainObject) throws ValidationException;
     
     /**
      * ADVANCED:
      * Extract and return the primary key from the object.
+     * @deprecated since EclipseLink 2.1, replaced by getId(Object)
+     * @see #getId(Object)
      */
+    @Deprecated
     public Vector keyFromObject(Object domainObject) throws ValidationException;
 
     /**

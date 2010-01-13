@@ -1727,7 +1727,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             List nestedDataResults = dataResults;
             if (nestedDataResults == null) {
                 // Extract the primary key of the source object, to filter only the joined rows for that object.
-                Vector sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
+                Object sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
                 CacheKey sourceCacheKey = new CacheKey(sourceKey);
                 nestedDataResults = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
             }

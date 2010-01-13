@@ -1005,7 +1005,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         Object value = policy.containerInstance();
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
-        Vector sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
+        Object sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
         CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);

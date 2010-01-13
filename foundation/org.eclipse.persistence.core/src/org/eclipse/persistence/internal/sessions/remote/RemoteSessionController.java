@@ -103,7 +103,7 @@ public class RemoteSessionController {
     protected ObjectDescriptor buildObjectDescriptor(Object object) {
         ObjectDescriptor objectDescriptor = new ObjectDescriptor();
         ClassDescriptor descriptor = getSession().getDescriptor(object);
-        Vector key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
+        Object key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
         objectDescriptor.setKey(key);
         objectDescriptor.setWriteLockValue(getSession().getIdentityMapAccessorInstance().getWriteLockValue(key, object.getClass(), descriptor));
         objectDescriptor.setObject(object);

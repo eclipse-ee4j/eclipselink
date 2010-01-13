@@ -18,6 +18,7 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -178,26 +179,20 @@ public class RelationExpression extends CompoundExpression {
         }
 
         Class javaClass = leftValue.getClass();
-        Vector leftPrimaryKey;
-        Vector rightPrimaryKey;
-        ClassDescriptor descriptor;
-        org.eclipse.persistence.internal.identitymaps.CacheKey rightCacheKey;
-        org.eclipse.persistence.internal.identitymaps.CacheKey leftCacheKey;
-
         if (javaClass != rightValue.getClass()) {
             return performSelector(false);
         }
 
-        descriptor = session.getDescriptor(javaClass);
+        ClassDescriptor descriptor = session.getDescriptor(javaClass);
         // Currently cannot conform aggregate comparisons in-memory.
         if (descriptor.isAggregateDescriptor()) {
             throw QueryException.cannotConformExpression();
         }
-        leftPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(leftValue, session);
-        rightPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rightValue, session);
+        Object leftPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(leftValue, session);
+        Object rightPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rightValue, session);
 
-        rightCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(rightPrimaryKey);
-        leftCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(leftPrimaryKey);
+        CacheKey rightCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(rightPrimaryKey);
+        CacheKey leftCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(leftPrimaryKey);
 
         return performSelector(rightCacheKey.equals(leftCacheKey));
 

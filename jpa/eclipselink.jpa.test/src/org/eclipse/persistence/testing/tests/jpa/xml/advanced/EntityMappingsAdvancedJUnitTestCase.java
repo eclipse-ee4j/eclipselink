@@ -36,7 +36,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants; 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -526,23 +525,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        Query query;
-        if (isOnServer()) {
-            query = em.createNamedQuery("findAllXMLAddresses");
-        } else {
-            query = (EJBQueryImpl) em.createNamedQuery("findAllXMLAddresses");
-        }
+        Query query = em.createNamedQuery("findAllXMLAddresses");
         List addresses = query.getResultList();
         assertTrue("Error executing named native query 'findAllXMLAddresses'", addresses != null);
     }
 
     public void testNamedQueryOnEmployee() {
-        Query query;
-        if (isOnServer()) {
-            query = createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
-        } else {
-            query = (EJBQueryImpl) createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
-        }
+        Query query = createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
         query.setParameter("firstname", "Brady");
         Employee employee = (Employee) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLEmployeesByFirstName'", employee != null);
@@ -1293,23 +1282,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-
-    private int getDealerVersionFromDB(EntityManager em, Dealer dealer) {
-        int version = 0;
-        // add the dealer to the first employee:
-        beginTransaction(em);
-        try {
-            em.merge(dealer);
-            em.refresh(dealer);
-            version = getVersion(em, dealer);
-        } finally {
-            if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-        }
-        return version;
-    }
-
     
     public void testUnidirectionalTargetLocking_DeleteSource() {
         String lastName = "testUnidirectionalTargetLocking_DS";

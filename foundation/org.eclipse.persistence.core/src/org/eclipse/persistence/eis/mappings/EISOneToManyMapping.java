@@ -706,8 +706,8 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             return false;
         }
 
-        Vector primaryKey1 = this.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element1, session);
-        Vector primaryKey2 = this.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element2, session);
+        Object primaryKey1 = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element1, session);
+        Object primaryKey2 = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element2, session);
 
         CacheKey cacheKey1 = new CacheKey(primaryKey1);
         CacheKey cacheKey2 = new CacheKey(primaryKey2);

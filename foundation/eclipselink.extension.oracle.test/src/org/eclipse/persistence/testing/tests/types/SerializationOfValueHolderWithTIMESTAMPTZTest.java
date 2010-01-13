@@ -63,11 +63,10 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
             byte arr[] = byteStream.toByteArray();
             ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
             ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
-            TIMESTAMPTZOwner deserialTstz;
             
             //deserialize the object
             try {
-                deserialTstz = (TIMESTAMPTZOwner) inObjStream.readObject();
+                TIMESTAMPTZOwner ts = (TIMESTAMPTZOwner) inObjStream.readObject();
             } catch (ClassNotFoundException e) {
                 System.out.println("Could not deserialize object " + e.toString());
             }

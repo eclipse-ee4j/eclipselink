@@ -63,7 +63,7 @@ public class RegisterInIdentityMapTest extends TestCase {
     }
 
     protected Object getObjectFromIdentityMap(Object domainObject) {
-        return getAbstractSession().getIdentityMapAccessorInstance().getFromIdentityMap(getSession().keyFromObject(domainObject), domainObject.getClass());
+        return getAbstractSession().getIdentityMapAccessorInstance().getFromIdentityMap(getSession().getId(domainObject), domainObject.getClass());
     }
 
     protected boolean isCacheIdentityMap() {

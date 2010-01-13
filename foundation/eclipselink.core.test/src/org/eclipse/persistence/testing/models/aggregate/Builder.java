@@ -150,7 +150,7 @@ public class Builder implements Serializable {
         definition.setName("BUILDER_HOUSE");
         
         for(int i=0; i < definition.getFields().size(); i++) {
-            FieldDefinition field = (FieldDefinition)definition.getFields().get(i);
+            FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
                 field.setName("BUILDER_ID");
                 break;
@@ -168,7 +168,7 @@ public class Builder implements Serializable {
         definition.setName("BUILDER_SINGLE_HOUSE");
         
         for(int i=0; i < definition.getFields().size(); i++) {
-            FieldDefinition field = (FieldDefinition)definition.getFields().get(i);
+            FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
                 field.setName("BUILDER_ID");
                 break;
@@ -186,7 +186,7 @@ public class Builder implements Serializable {
         definition.setName("BUILDER_SELLING_POINT");
         
         for(int i=0; i < definition.getFields().size(); i++) {
-            FieldDefinition field = (FieldDefinition)definition.getFields().get(i);
+            FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
                 field.setName("BUILDER_ID");
                 break;
@@ -204,7 +204,7 @@ public class Builder implements Serializable {
         definition.setName("BUILDER_CUSTOMER");
         
         for(int i=0; i < definition.getFields().size(); i++) {
-            FieldDefinition field = (FieldDefinition)definition.getFields().get(i);
+            FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
                 field.setName("BUILDER_ID");
                 break;
@@ -233,7 +233,7 @@ public class Builder implements Serializable {
         definition.setName("BUILDER_VEHICLE");
 
         for(int i=0; i < definition.getFields().size(); i++) {
-            FieldDefinition field = (FieldDefinition)definition.getFields().get(i);
+            FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("ID")) {
                 field.setName("BUILDER_ID");
                 field.setIsPrimaryKey(false);

@@ -62,7 +62,7 @@ public class NumericTester extends TypeTester {
     }
 
     private static void addBigDecimalField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = (FieldTypeDefinition)(platform.getFieldTypes().get(BigDecimal.class));
+        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(BigDecimal.class);
 
         if (fieldDef.isSizeAllowed()) {
             int scale = fieldDef.getMaxPrecision() / 2;
@@ -78,7 +78,7 @@ public class NumericTester extends TypeTester {
      *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
      */
     private static void addDoubleField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = (FieldTypeDefinition)(platform.getFieldTypes().get(Double.class));
+        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Double.class);
 
         if (fieldDef.isSizeAllowed()) {
             int scale = fieldDef.getMaxPrecision() / 2;
@@ -96,7 +96,7 @@ public class NumericTester extends TypeTester {
      *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
      */
     private static void addFloatField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = (FieldTypeDefinition)(platform.getFieldTypes().get(Float.class));
+        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Float.class);
 
         if (fieldDef.isSizeAllowed()) {
             int scale = fieldDef.getMaxPrecision() / 2;

@@ -44,7 +44,6 @@ public class SessionConsole extends JFrame {
     private JMenuItem ivjInspectResultMenuItem = null;
     private JMenuItem ivjInspectSessionMenuItem1 = null;
     private JSeparator ivjJSeparator1 = null;
-    private JSeparator ivjJSeparator2 = null;
     private JSeparator ivjJSeparator3 = null;
     private JSeparator ivjJSeparator4 = null;
     private JSeparator ivjJSeparator5 = null;
@@ -110,42 +109,6 @@ public class SessionConsole extends JFrame {
                                      boolean shouldCallSystemExit) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // Additional color changes for JDK 1.1.x
-            try {
-                // Test to see if we're in JDK 1.1.x; if this fails, we're not
-                Class hashSet = Class.forName("java.util.HashSet");
-            } catch (Exception exception) {
-                // Buttons for combobox
-                UIManager.getDefaults().put("control", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-                // Slider for combobox
-                UIManager.getDefaults().put("ScrollBar.thumb", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-                UIManager.getDefaults().put("ScrollBar.track", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.controlLtHighlight));
-                // Selection color for combobox
-                UIManager.getDefaults().put("ComboBox.selectedBackground", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.activeCaption));
-                // Disabled textfield
-                UIManager.getDefaults().put("TextField.inactiveForeground", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.controlShadow));
-                // Highlighted text
-                UIManager.getDefaults().put("TextField.selectionBackground", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.activeCaption));
-                UIManager.getDefaults().put("TextPane.selectionBackground", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-                UIManager.getDefaults().put("List.selectionBackground", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.activeCaption));
-                // Splitters
-                UIManager.getDefaults().put("SplitPane.background", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-                UIManager.getDefaults().put("ScrollPane.background", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-                UIManager.getDefaults().put("TableHeader.background", 
-                                            new javax.swing.plaf.ColorUIResource(java.awt.SystemColor.control));
-            }
-
             SessionConsole aSessionInspectorFrame;
             aSessionInspectorFrame = new SessionConsole();
             aSessionInspectorFrame.shouldCallSystemExit = shouldCallSystemExit;

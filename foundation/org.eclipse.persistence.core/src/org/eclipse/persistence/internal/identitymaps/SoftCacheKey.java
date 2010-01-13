@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.lang.ref.*;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
@@ -33,7 +32,7 @@ public class SoftCacheKey extends WeakCacheKey {
      * @param writeLockValue is the write lock value, null if optimistic locking not being used for this object.
      * @param readTime the time EclipseLInk read the cache key
      */
-    public SoftCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
+    public SoftCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         super(primaryKey, object, writeLockValue, readTime);
     }
 

@@ -64,6 +64,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationalMapping() {
         return true;
     }
@@ -141,6 +142,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This executes a single query to read the target for all of the objects and stores the
      * result of the batch query in the original query to allow the other objects to share the results.
      */
+    @Override
     protected Object batchedValueFromRow(AbstractRecord row, ReadAllQuery query) {
         throw QueryException.batchReadingNotSupported(this, query);
     }
@@ -150,6 +152,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This methods clones all the fields and ensures that each collection refers to
      * the same clones.
      */
+    @Override
     public Object clone() {
         VariableOneToOneMapping clone = (VariableOneToOneMapping)super.clone();
         Map setOfKeys = new HashMap(getSourceToTargetQueryKeyNames().size());
@@ -183,6 +186,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Return all the fields populated by this mapping.
      */
+    @Override
     protected Vector collectFields() {
         DatabaseField type = getTypeField();
 
@@ -205,6 +209,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Must get separate fields for the objects because we may be adding a different class to the
      * attribute because of the interface
      */
+    @Override
     protected boolean compareObjectsWithoutPrivateOwned(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstPrivateObject = getRealAttributeValueFromObject(firstObject, session);
         Object secondPrivateObject = getRealAttributeValueFromObject(secondObject, session);
@@ -275,15 +280,17 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * the descriptor for the specific class we are looking for
      * Bug 2612571
      */
+    @Override
     public ClassDescriptor getDescriptorForTarget(Object targetObject, AbstractSession session) {
         return session.getDescriptor(targetObject);
     }
 
     /**
      * INTERNAL:
-     * Return the classifiction for the field contained in the mapping.
+     * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
+    @Override
     public Class getFieldClassification(DatabaseField fieldToClassify) {
         if ((getTypeField() != null) && (fieldToClassify.equals(getTypeField()))) {
             return getTypeField().getType();
@@ -433,6 +440,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         Iterator iterator = getTypeIndicatorNameTranslation().entrySet().iterator();
@@ -463,6 +471,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) {
         super.initialize(session);
         initializeForeignKeys(session);
@@ -521,6 +530,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isVariableOneToOneMapping() {
         return true;
     }
@@ -535,14 +545,16 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      */
-    protected Vector getPrimaryKeyForObject(Object object, AbstractSession session) {
-        return session.keyFromObject(object);
+    @Override
+    protected Object getPrimaryKeyForObject(Object object, AbstractSession session) {
+        return session.getId(object);
     }
 
     /**
      * INTERNAL:
      * Set the type field classification through searching the indicators hashtable.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
         if (getTypeIndicatorTranslation().isEmpty()) {
@@ -562,10 +574,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
     /**
      * INTERNAL:
-     * Rehash any hashtables based on fields.
-     * This is used to clone descriptors for aggregates, which hammer field names,
-     * it is probably better not to hammer the field name and this should be refactored.
+     * Rehash any maps based on fields.
+     * This is used to clone descriptors for aggregates, which hammer field names.
      */
+    @Override
     public void rehashFieldDependancies(AbstractSession session) {
         setSourceToTargetQueryKeyFields(Helper.rehashMap(getSourceToTargetQueryKeyNames()));
     }
@@ -676,6 +688,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) {
         // First check if the value can be obtained from the value holder's row.
     	AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
@@ -710,6 +723,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
         for (Enumeration enumeration = getFields().elements(); enumeration.hasMoreElements();) {
@@ -777,9 +791,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
-     * If the mapping id targetforeign key, you must only write the type into the roe, the rest will be updated
+     * If the mapping id target foreign key, you must only write the type into the roe, the rest will be updated
      * when the object itself is written
      */
+    @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -813,9 +828,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
-     * If the mapping id targetforeign key, you must only write the type into the roe, the rest will be updated
+     * If the mapping id target foreign key, you must only write the type into the roe, the rest will be updated
      * when the object itself is written
      */
+    @Override
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -851,6 +867,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }
@@ -860,6 +877,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }
@@ -868,6 +886,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public void writeFromObjectIntoRowForWhereClause(ObjectLevelModifyQuery query, AbstractRecord record) {
         if (isReadOnly()) {
             return;
@@ -907,6 +926,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }

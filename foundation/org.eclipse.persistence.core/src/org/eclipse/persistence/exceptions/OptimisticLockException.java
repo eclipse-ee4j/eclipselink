@@ -92,9 +92,9 @@ public class OptimisticLockException extends EclipseLinkException {
     }
 
     public static OptimisticLockException noVersionNumberWhenDeleting(Object object, ObjectLevelModifyQuery query) {
-        Vector key = new Vector();
+        Object key = null;
         if (query.getSession() != null) {
-            key = query.getSession().keyFromObject(object);
+            key = query.getSession().getId(object);
         }
         Object[] args = { object, object.getClass().getName(), key, CR };
 
@@ -104,9 +104,9 @@ public class OptimisticLockException extends EclipseLinkException {
     }
 
     public static OptimisticLockException noVersionNumberWhenUpdating(Object object, ObjectLevelModifyQuery query) {
-        Vector key = new Vector();
+        Object key = null;
         if (query.getSession() != null) {
-            key = query.getSession().keyFromObject(object);
+            key = query.getSession().getId(object);
         }
         Object[] args = { object, object.getClass().getName(), key, CR };
 
@@ -116,9 +116,9 @@ public class OptimisticLockException extends EclipseLinkException {
     }
 
     public static OptimisticLockException objectChangedSinceLastReadWhenDeleting(Object object, ObjectLevelModifyQuery query) {
-        Vector key = new Vector();
+        Object key = null;
         if (query.getSession() != null) {
-            key = query.getSession().keyFromObject(object);
+            key = query.getSession().getId(object);
         }
         Object[] args = { object, object.getClass().getName(), key, CR };
 
@@ -128,9 +128,9 @@ public class OptimisticLockException extends EclipseLinkException {
     }
 
     public static OptimisticLockException objectChangedSinceLastReadWhenUpdating(Object object, ObjectLevelModifyQuery query) {
-        Vector key = new Vector();
+        Object key = null;
         if (query.getSession() != null) {
-            key = query.getSession().keyFromObject(object);
+            key = query.getSession().getId(object);
         }
         Object[] args = { object, object.getClass().getName(), key, CR };
 

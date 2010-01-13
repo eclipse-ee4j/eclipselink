@@ -411,7 +411,7 @@ public class WriteLockManager {
     protected CacheKey checkAndLockObject(Object objectToLock, Map lockedObjects, Map refreshedObjects, DatabaseMapping mapping, AbstractSession session, UnitOfWorkImpl unitOfWork) {
         //the cachekey should always reference an object otherwise what would we be cloning.
         if ((objectToLock != null) && !lockedObjects.containsKey(objectToLock)) {
-            Vector primaryKeysToLock = null;
+            Object primaryKeyToLock = null;
             ClassDescriptor referenceDescriptor = null;
             if (mapping.getReferenceDescriptor().hasInheritance() || mapping.getReferenceDescriptor().isDescriptorForInterface()) {
                 referenceDescriptor = session.getDescriptor(objectToLock);
@@ -422,11 +422,11 @@ public class WriteLockManager {
             if (referenceDescriptor.isDescriptorTypeAggregate()) {
                 traverseRelatedLocks(objectToLock, lockedObjects, refreshedObjects, referenceDescriptor, session, unitOfWork);
             } else {
-                primaryKeysToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, session);
-                CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKeysToLock, objectToLock.getClass(), referenceDescriptor);
+                primaryKeyToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, session);
+                CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKeyToLock, objectToLock.getClass(), referenceDescriptor);
                 if (cacheKey == null) {
                     // Cache key may be null for no-identity map, missing or deleted object, just create a new one to be locked.
-                    cacheKey = new CacheKey(primaryKeysToLock);
+                    cacheKey = new CacheKey(primaryKeyToLock);
                     cacheKey.setReadTime(System.currentTimeMillis());
                 }
                 CacheKey toWaitOn = acquireLockAndRelatedLocks(objectToLock, lockedObjects, refreshedObjects, cacheKey, referenceDescriptor, session, unitOfWork);

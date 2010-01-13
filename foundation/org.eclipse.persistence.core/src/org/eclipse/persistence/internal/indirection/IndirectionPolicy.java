@@ -127,8 +127,8 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
-    public Vector extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
-        return this.getOneToOneMapping().extractPrimaryKeysFromRealReferenceObject(referenceObject, session);
+    public Object extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
+        return getOneToOneMapping().extractPrimaryKeysFromRealReferenceObject(referenceObject, session);
     }
 
     /**

@@ -918,14 +918,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Build the primary key expression from the specified primary key values.
      */
-    public Expression buildPrimaryKeyExpressionFromKeys(Vector primaryKeyValues, AbstractSession session) {
+    public Expression buildPrimaryKeyExpressionFromKeys(Object primaryKey, AbstractSession session) {
         Expression expression = null;
         Expression subExpression;
         Expression builder = new ExpressionBuilder();
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            Object value = primaryKeyValues.get(index);
+            Object value = ((Vector)primaryKey).get(index);
             DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
             if (value != null) {
                 subExpression = builder.getField(field).equal(value);
@@ -1139,12 +1139,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Build the row from the primary key values.
      */
-    public AbstractRecord buildRowFromPrimaryKeyValues(Vector key, AbstractSession session) {
-        AbstractRecord databaseRow = createRecord(key.size(), session);
-        int keySize = key.size();
+    public AbstractRecord buildRowFromPrimaryKeyValues(Object key, AbstractSession session) {
+        AbstractRecord databaseRow = createRecord(((Vector)key).size(), session);
+        int keySize = ((Vector)key).size();
         for (int index = 0; index < keySize; index++) {
             DatabaseField field = this.descriptor.getPrimaryKeyFields().get(index);
-            Object value = key.elementAt(index);
+            Object value = ((Vector)key).get(index);
             value = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().convertObject(value, field.getType());
             databaseRow.put(field, value);
         }
@@ -1805,7 +1805,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         } else if (assignPrimaryKeyIfExisting) {
             if (!changes.isAggregate()) {
                 // If creating a new change set for a new object, the original change set (from change tracking) may have not had the primary key.
-                Vector primaryKey = extractPrimaryKeyFromObject(clone, session, true);
+                Object primaryKey = extractPrimaryKeyFromObject(clone, session, true);
                 if (primaryKey != null) {
                     changes.setCacheKey(new CacheKey(primaryKey));
                 }
@@ -1844,7 +1844,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Return the row with primary keys and their values from the given expression.
      */
-    public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
+    public Object extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
@@ -1865,14 +1865,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Extract primary key attribute values from the domainObject.
      */
-    public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
+    public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         return extractPrimaryKeyFromObject(domainObject, session, false);
     }
     
     /**
      * Extract primary key attribute values from the domainObject.
      */
-    public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session, boolean shouldReturnNullIfNull) {
+    public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session, boolean shouldReturnNullIfNull) {
         boolean isPersistenceEntity = domainObject instanceof PersistenceEntity;
         if (isPersistenceEntity) {
             Vector key = ((PersistenceEntity)domainObject)._persistence_getPKVector();
@@ -1949,7 +1949,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Extract primary key values from the specified row.
      * null is returned if the row does not contain the key.
      */
-    public Vector extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
+    public Object extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         List primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();

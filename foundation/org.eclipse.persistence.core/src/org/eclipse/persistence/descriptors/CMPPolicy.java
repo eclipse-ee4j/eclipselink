@@ -289,29 +289,10 @@ public class CMPPolicy implements java.io.Serializable {
     }
 
     /**
-     * INTERNAL: Create an instance of the composite primary key class for the
-     * key object.
-     */
-    @Deprecated //replaced by method below but may still be used by older clients.
-    public Object createPrimaryKeyInstance(Vector key) {
-        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
-        if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor) {
-            return key.get(0);
-        }
-        Object keyInstance = getPKClassInstance();
-        for (int index = 0; index < pkElementArray.length; index++) {
-            KeyElementAccessor accessor = pkElementArray[index];
-            Object fieldValue = key.get(index);
-            accessor.setValue(keyInstance, fieldValue);
-        }
-        return keyInstance;
-    }  
-
-    /**
      * INTERNAL:
      * Create an instance of the composite primary key class for the key object.
      */
-    public Object createPrimaryKeyInstance(Vector key, AbstractSession session) {
+    public Object createPrimaryKeyInstanceFromId(Object key, AbstractSession session) {
         Object keyInstance = null;
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
         if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor) {
@@ -319,14 +300,14 @@ public class CMPPolicy implements java.io.Serializable {
             if (mapping.isDirectToFieldMapping()) {
                 Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                 if (converter != null){
-                    return converter.convertDataValueToObjectValue(key.get(0), session);
+                    return converter.convertDataValueToObjectValue(((Vector)key).get(0), session);
                 }
-                keyInstance = key.get(0);
+                keyInstance = ((Vector)key).get(0);
             } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                 //get reference descriptor and extract pk from target cmp policy
-                keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(key, session);
+                keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
             }
-            key.remove(0); // remove processed key incase keys are complex and derrived
+            ((Vector)key).remove(0); // remove processed key incase keys are complex and derrived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
@@ -335,15 +316,15 @@ public class CMPPolicy implements java.io.Serializable {
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                 Object fieldValue = null;
                 if (mapping.isDirectToFieldMapping()) {
-                    fieldValue = key.get(0);
+                    fieldValue = ((Vector)key).get(0);
                     Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                     if (converter != null){
                         fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                     }
-                    key.remove(0);
+                    ((Vector)key).remove(0);
                 } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                     //get reference descriptor and extract pk from target cmp policy
-                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(key, session);
+                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
                 }
                 accessor.setValue(keyInstance, fieldValue);
             }

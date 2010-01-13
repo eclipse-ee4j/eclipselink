@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
@@ -37,6 +35,6 @@ public class SoftIdentityMap extends WeakIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new SoftCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime);
     }
 }

@@ -769,7 +769,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
         getDescriptor().getObjectBuilder().assignReturnRow(object, getSession(), row);
 
-        Vector primaryKeys = null;
+        Object primaryKey = null;
         if (isFirstCallForInsert) {
             AbstractRecord pkToModify = new DatabaseRecord();
             List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
@@ -780,8 +780,8 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 }
             }
             if (!pkToModify.isEmpty()) {
-                primaryKeys = getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
-                writeQuery.setPrimaryKey(primaryKeys);
+                primaryKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
+                writeQuery.setPrimaryKey(primaryKey);
                 // Now I need to update the row
                 getModifyRow().putAll(pkToModify);
                 getDescriptor().getObjectBuilder().addPrimaryKeyForNonDefaultTable(getModifyRow(), object, getSession());
@@ -796,8 +796,8 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             }
             if (objectChangeSet != null) {
                 updateChangeSet(getDescriptor(), objectChangeSet, row, object);
-                if (primaryKeys != null) {
-                    objectChangeSet.setCacheKey(new CacheKey(primaryKeys));
+                if (primaryKey != null) {
+                    objectChangeSet.setCacheKey(new CacheKey(primaryKey));
                 }
             }
         }
@@ -917,7 +917,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (sequenceValue == null) {
             return;
         }
-        Vector primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, getSession());
+        Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, getSession());
         writeQuery.setPrimaryKey(primaryKey);
         DatabaseField sequenceNumberField = descriptor.getSequenceNumberField();
         AbstractRecord modifyRow = getModifyRow();

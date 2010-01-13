@@ -57,7 +57,7 @@ public class Cascaded12MInheritanceListOnSuperOptimisticLockingTest extends Auto
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         uow = getSession().acquireUnitOfWork();
         cat = (Cat)uow.readObject(cat);
-        appt = (VetAppointment)cat.getAppointments().get(0);
+        appt = cat.getAppointments().get(0);
         appt.setCost(99);
         uow.commit();
     }

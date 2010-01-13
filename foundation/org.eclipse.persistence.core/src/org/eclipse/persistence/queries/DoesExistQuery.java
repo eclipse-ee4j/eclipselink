@@ -41,7 +41,7 @@ public class DoesExistQuery extends DatabaseQuery {
     public static final int CheckDatabase = 4;
 
     /** Query that is performing the does exist check. */
-    protected Vector primaryKey;
+    protected Object primaryKey;
     protected Object object;
 
     /** Flag to determine existence check policy. */
@@ -133,7 +133,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Note that custom query check is not require for does exist as the custom is always used.
      * Used by unit of work, and will return null if checkDatabaseIfInvalid is set and the cachekey is invalidated
      */
-    public Object checkEarlyReturn(Object object, Vector primaryKey, AbstractSession session, AbstractRecord translationRow) {
+    public Object checkEarlyReturn(Object object, Object primaryKey, AbstractSession session, AbstractRecord translationRow) {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
         buildSelectionCriteria(session);
@@ -149,7 +149,7 @@ public class DoesExistQuery extends DatabaseQuery {
             }
                 
         }
-        if ((primaryKey == null) || (primaryKey.contains(null))) {
+        if ((primaryKey == null) || (((Vector)primaryKey).contains(null))) {
             return Boolean.FALSE;
         }
         
@@ -265,7 +265,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Return the primaryKey.
      */
-    public Vector getPrimaryKey() {
+    public Object getPrimaryKey() {
         return primaryKey;
     }
 
@@ -370,7 +370,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Set the primaryKey.
      */
-    public void setPrimaryKey(Vector primaryKey) {
+    public void setPrimaryKey(Object primaryKey) {
         this.primaryKey = primaryKey;
     }
 

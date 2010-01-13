@@ -53,8 +53,8 @@ public class ReportQueryResult implements Serializable, Map {
     /** Actual converted attribute values */
     protected List<Object> results;
 
-    /** PK values if the retrievPKs flag was set on the ReportQuery. These can be used to get the actual object */
-    protected Vector<Object> primaryKeyValues;
+    /** Id value if the retrievPKs flag was set on the ReportQuery. These can be used to get the actual object */
+    protected Object primaryKey;
     
     /** If an objectLevel distinct is used then generate unique key for this result */
     // GF_ISSUE_395
@@ -64,9 +64,9 @@ public class ReportQueryResult implements Serializable, Map {
      * INTERNAL:
      * Used to create test results
      */
-    public ReportQueryResult(List<Object> results, Vector primaryKeyValues) {
+    public ReportQueryResult(List<Object> results, Object primaryKeyValues) {
         this.results = results;
-        this.primaryKeyValues = primaryKeyValues;
+        this.primaryKey = primaryKeyValues;
     }
 
     public ReportQueryResult(ReportQuery query, AbstractRecord row, Vector toManyResults) {
@@ -89,7 +89,7 @@ public class ReportQueryResult implements Serializable, Map {
         List results = new ArrayList(itemSize);
 
         if (query.shouldRetrievePrimaryKeys()) {
-            setPrimaryKeyValues(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
+            setId(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
         for (int index = 0; index < itemSize; index++) {
@@ -219,9 +219,9 @@ public class ReportQueryResult implements Serializable, Map {
                 }
                 // GF_ISSUE_395
                 if (this.key != null) {
-                    List list = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(subRow, query.getSession());
-                    if(list!=null){//GF3233 NPE is caused by processing the null PK being extracted from referenced target with null values in database.
-                        for (Iterator iterator = list.iterator(); iterator.hasNext();){
+                    Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(subRow, query.getSession());
+                    if (primaryKey != null){//GF3233 NPE is caused by processing the null PK being extracted from referenced target with null values in database.
+                        for (Iterator iterator = ((Vector)primaryKey).iterator(); iterator.hasNext();){
                            this.key.append(iterator.next());
                            this.key.append("-");
                         }
@@ -497,10 +497,21 @@ public class ReportQueryResult implements Serializable, Map {
 
     /**
      * PUBLIC:
-     * Return the PKs for the corresponding object or null if not requested.
+     * Return the Id for the result or null if not requested.
      */
+    public Object getId() {
+        return primaryKey;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the PKs for the corresponding object or null if not requested.
+     * @Deprecated since 2.1, replaced by getId()
+     * @see #getId()
+     */
+    @Deprecated
     public Vector<Object> getPrimaryKeyValues() {
-        return primaryKeyValues;
+        return (Vector)primaryKey;
     }
 
     /**
@@ -590,7 +601,7 @@ public class ReportQueryResult implements Serializable, Map {
         }
 
         ReadObjectQuery query = new ReadObjectQuery(javaClass);
-        query.setSelectionKey(getPrimaryKeyValues());
+        query.setSelectionId(getPrimaryKeyValues());
 
         return session.executeQuery(query);
     }
@@ -616,10 +627,10 @@ public class ReportQueryResult implements Serializable, Map {
 
     /**
      * INTERNAL:
-     * Set the PK values for the result row's object.
+     * Set the Id for the result row's object.
      */
-    protected void setPrimaryKeyValues(Vector primaryKeyValues) {
-        this.primaryKeyValues = primaryKeyValues;
+    protected void setId(Object primaryKey) {
+        this.primaryKey = primaryKey;
     }
 
     /**

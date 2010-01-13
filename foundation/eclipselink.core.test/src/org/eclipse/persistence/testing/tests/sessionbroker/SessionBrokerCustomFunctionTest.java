@@ -52,7 +52,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
         login.setPlatform(new CustomDatabasePlatform());
         project.setLogin(login);
         
-        DatabaseSession aSession = (DatabaseSession)project.createDatabaseSession();
+        DatabaseSession aSession = project.createDatabaseSession();
         this.sessionBroker = new SessionBroker();
         this.sessionBroker.registerSession("broker1", aSession);
         this.sessionBroker.setSessionLog(getSession().getSessionLog());

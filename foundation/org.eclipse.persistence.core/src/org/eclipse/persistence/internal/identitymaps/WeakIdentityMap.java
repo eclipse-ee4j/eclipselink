@@ -72,7 +72,7 @@ public class WeakIdentityMap extends FullIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new WeakCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime);
     }
 
     /**

@@ -546,8 +546,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         for(int i=0; i < currentList.size(); i++) {
             Object currentObject = currentList.get(i);
             try {
-                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
-                primaryKey.add(i);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
+                ((Vector)primaryKey).add(i);
                 CacheKey key = new CacheKey(primaryKey);
                 Object[] previousAndCurrent = new Object[]{null, currentObject};
                 previousAndCurrentByKey.put(key, previousAndCurrent);
@@ -567,8 +567,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // Next index the previous objects (read from db or from backup in uow)
             for(int i=0; i < previousList.size(); i++) {
                 Object previousObject = previousList.get(i);
-                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
-                primaryKey.add(i);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+                ((Vector)primaryKey).add(i);
                 CacheKey key = new CacheKey(primaryKey);
                 Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
                 if(previousAndCurrent == null) {
@@ -632,7 +632,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         for(int i=0; i < currentList.size(); i++) {
             Object currentObject = currentList.get(i);
             try {
-                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
                 CacheKey key = new CacheKey(primaryKey);
                 Object[] previousAndCurrent = new Object[]{null, currentObject, null, i};
                 previousAndCurrentByKey.put(key, previousAndCurrent);
@@ -649,7 +649,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // Next index the previous objects (read from db or from backup in uow), also remove the objects to be removed.
         for(int i=0; i < previousList.size(); i++) {
             Object previousObject = previousList.get(i);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
             CacheKey key = new CacheKey(primaryKey);
             Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
             if(previousAndCurrent == null) {

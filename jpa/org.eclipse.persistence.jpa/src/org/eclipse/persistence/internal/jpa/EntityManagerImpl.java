@@ -39,6 +39,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -638,8 +639,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
 
         List primaryKeyValues;
-        if (primaryKey instanceof List) {
-            primaryKeyValues = (List) primaryKey;
+        if (primaryKey instanceof Vector) {
+            primaryKeyValues = (Vector)primaryKey;
+        } else if (primaryKey instanceof List) {
+            primaryKeyValues = new NonSynchronizedVector((List)primaryKey);
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
             Class pkClass = policy.getPKClass();
@@ -665,7 +668,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             QueryHintsHandler.apply(properties, query, session.getLoader(), session);
 
             query.setIsExecutionClone(true);
-            query.setSelectionKey(primaryKeyValues);
+            query.setSelectionId(primaryKeyValues);
         }
 
         // Apply any EclipseLink defaults if they haven't been set through
@@ -1135,7 +1138,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected ReadObjectQuery getReadObjectQuery(Class referenceClass, List primaryKeyValues, Map properties) {
         ReadObjectQuery query = getReadObjectQuery(properties);
         query.setReferenceClass(referenceClass);
-        query.setSelectionKey(primaryKeyValues);
+        query.setSelectionId(primaryKeyValues);
         return query;
     }
 

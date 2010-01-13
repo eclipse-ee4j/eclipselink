@@ -85,8 +85,8 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
         if (proxy instanceof WrappedEmployee) {
             timesUnwrapCalled++;
             Vector primaryKey = new Vector(1);
-            primaryKey.addElement(((WrappedEmployee)proxy).getId());
-            return session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, Employee.class);
+            primaryKey.add(((WrappedEmployee)proxy).getId());
+            return session.getIdentityMapAccessor().getFromIdentityMap((Object)primaryKey, Employee.class);
         } else {
             return proxy;
         }

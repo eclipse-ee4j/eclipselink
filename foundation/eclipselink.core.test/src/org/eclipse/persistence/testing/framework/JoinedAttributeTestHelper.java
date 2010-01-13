@@ -132,7 +132,7 @@ public class JoinedAttributeTestHelper {
                 }
             }
             if (remove) {
-                excluded.add(new CacheKey(session.keyFromObject(object)));
+                excluded.add(new CacheKey(session.getId(object)));
             }
         }
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -151,7 +151,7 @@ public class JoinedAttributeTestHelper {
         // Iterate over the result and instantiate all joined indirection.
         for (Iterator iterator = collectionResult.iterator(); iterator.hasNext(); ) {
             Object object = iterator.next();
-            if (excluded.contains(new CacheKey(session.keyFromObject(object)))) {
+            if (excluded.contains(new CacheKey(session.getId(object)))) {
                 iterator.remove();
             } else {
                 for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {

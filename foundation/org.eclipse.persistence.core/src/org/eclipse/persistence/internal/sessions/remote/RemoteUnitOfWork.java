@@ -437,7 +437,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
         for (Iterator deletedObjects = getObjectsDeletedDuringCommit().keySet().iterator();
                  deletedObjects.hasNext();) {
             Object deletedObject = deletedObjects.next();
-            Vector primaryKey = keyFromObject(deletedObject);
+            Object primaryKey = getId(deletedObject);
             Object cloneFromParent = getParent().getIdentityMapAccessor().getFromIdentityMap(primaryKey, deletedObject.getClass());
 
             // The original may be a new object, or read on the server.
@@ -449,7 +449,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
                 }
             }
 
-            objectsDeletedDuringCommit.put(cloneFromParent, keyFromObject(cloneFromParent));
+            objectsDeletedDuringCommit.put(cloneFromParent, getId(cloneFromParent));
             ((UnitOfWorkImpl)getParent()).getIdentityMapAccessor().removeFromIdentityMap(cloneFromParent);
         }
         ((UnitOfWorkImpl)getParent()).setObjectsDeletedDuringCommit(objectsDeletedDuringCommit);

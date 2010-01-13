@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
-import java.util.*;
 import java.rmi.server.ObjID;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -119,7 +118,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      */
     protected Object getValueFromServerObject() {
         setSession(getRemoteUnitOfWork());
-        Vector primaryKey = getSession().keyFromObject(getSourceObject());
+        Object primaryKey = getSession().getId(getSourceObject());
         Object originalObject = getUnitOfWork().getParent().getIdentityMapAccessor().getFromIdentityMap(primaryKey, getSourceObject().getClass());
         if (originalObject == null) {
             originalObject = getUnitOfWork().getParent().readObject(getSourceObject());

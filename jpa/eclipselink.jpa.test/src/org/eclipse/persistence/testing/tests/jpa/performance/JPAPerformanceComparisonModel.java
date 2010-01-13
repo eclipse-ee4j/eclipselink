@@ -12,9 +12,9 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -22,13 +22,13 @@ import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.server.ServerSession;
+//import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
+//import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+//import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
 

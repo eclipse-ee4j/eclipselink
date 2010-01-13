@@ -371,7 +371,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
                 ReadObjectQuery query = new ReadObjectQuery();
                 query.setShouldUseWrapperPolicy(false);
                 query.setReferenceClass(getClassType(session));
-                query.setSelectionKey(getPrimaryKeys());
+                query.setSelectionId(getPrimaryKeys());
                 attributeValue = session.executeQuery(query);
             }
         }

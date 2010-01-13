@@ -2365,9 +2365,9 @@ public class ValidationException extends EclipseLinkException {
     }
     
     public static ValidationException cannotPersistExistingObject(Object registeredObject, AbstractSession session) {
-        Vector key = new Vector();
+        Object key = null;
         if (session != null) {
-            key = session.keyFromObject(registeredObject);
+            key = session.getId(registeredObject);
         }
         Object[] args = { registeredObject, registeredObject.getClass().getName(), key, CR };
         

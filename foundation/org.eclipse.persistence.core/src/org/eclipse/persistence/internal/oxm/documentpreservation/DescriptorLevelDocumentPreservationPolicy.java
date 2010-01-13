@@ -66,11 +66,11 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
         XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
         DOMRecord row = new DOMRecord((Element)node);
         row.setSession(session);
-        Vector pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, session);
+        Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, session);
         if (xmlDescriptor.shouldPreserveDocument() || xmlDescriptor.getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (pk.size() == 0)) {
+            if ((pk == null) || (((Vector)pk).size() == 0)) {
                 pk = new Vector();
-                pk.addElement(new WeakObjectWrapper(obj));
+                ((Vector)pk).add(new WeakObjectWrapper(obj));
             }
             CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
             if ((xmlDescriptor).shouldPreserveDocument()) {
@@ -85,10 +85,10 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
         AbstractSession session = context.getSession(obj);
         XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
         if(xmlDescriptor.shouldPreserveDocument()) {
-            Vector pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(obj, session);
-            if ((pk == null) || (pk.size() == 0)) {
+            Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(obj, session);
+            if ((pk == null) || (((Vector)pk).size() == 0)) {
                 pk = new Vector();
-                pk.addElement(new WeakObjectWrapper(obj));
+                ((Vector)pk).addElement(new WeakObjectWrapper(obj));
             }
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
             if(cacheKey != null && cacheKey.getRecord() != null) {

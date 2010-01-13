@@ -777,7 +777,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 parentRow = new DatabaseRecord(trimedFields, trimedValues);
             }
             // Extract the primary key of the source object, to filter only the joined rows for that object.
-            Vector sourceKey = builder.extractPrimaryKeyFromRow(parentRow, session);
+            Object sourceKey = builder.extractPrimaryKeyFromRow(parentRow, session);
             // May be any outer-join so ignore null.
             if (sourceKey != null) {
                 CacheKey sourceCacheKey = new CacheKey(sourceKey);

@@ -539,7 +539,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
+     * @Depreacted since EclipseLink 2.1, replaced by getSelectionId()
+     * @see #getSelectionId()
      */
+    @Deprecated
     public Vector getSelectionKey() {
         return selectionKey;
 
@@ -643,25 +646,27 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     
     /**
      * INTERNAL:
-     * Set the properties needed to be cascaded into the custom query inlucding the translation row.
+     * Set the properties needed to be cascaded into the custom query including the translation row.
+     * This is used only for primary key queries, as the descriptor query manager
+     * stores a predefined query for this query to avoid having to re-prepare and allow for customization.
      */
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         ReadObjectQuery customReadQuery = (ReadObjectQuery)customQuery;
-        customReadQuery.setShouldRefreshIdentityMapResult(shouldRefreshIdentityMapResult());
-        customReadQuery.setCascadePolicy(getCascadePolicy());
-        customReadQuery.setShouldMaintainCache(shouldMaintainCache());
-        customReadQuery.setShouldUseWrapperPolicy(shouldUseWrapperPolicy());
+        customReadQuery.shouldRefreshIdentityMapResult = this.shouldRefreshIdentityMapResult;
+        customReadQuery.cascadePolicy = this.cascadePolicy;
+        customReadQuery.shouldMaintainCache = this.shouldMaintainCache;
+        customReadQuery.shouldUseWrapperPolicy = this.shouldUseWrapperPolicy;
         // CR... was missing some values, execution could cause infinite loop.
-        customReadQuery.setQueryId(getQueryId());
-        customReadQuery.setExecutionTime(getExecutionTime());
-        customReadQuery.setShouldLoadResultIntoSelectionObject(shouldLoadResultIntoSelectionObject());
+        customReadQuery.queryId = this.queryId;
+        customReadQuery.executionTime = this.executionTime;
+        customReadQuery.shouldLoadResultIntoSelectionObject = this.shouldLoadResultIntoSelectionObject;
         AbstractRecord primaryKeyRow;
-        if (getSelectionObject() != null) {
+        if (this.selectionObject != null) {
             // CR#... Must also set the selection object as may be loading into the object (refresh)
-            customReadQuery.setSelectionObject(getSelectionObject());
+            customReadQuery.selectionObject = this.selectionObject;
             // The translation/primary key row will be set in prepareForExecution.
-        } else if (getSelectionKey() != null) {
-            customReadQuery.setSelectionKey(getSelectionKey());
+        } else if (this.selectionKey != null) {
+            customReadQuery.selectionKey = this.selectionKey;
         } else {
             // The primary key row must be used.
             primaryKeyRow = customQuery.getDescriptor().getObjectBuilder().extractPrimaryKeyRowFromExpression(getSelectionCriteria(), customQuery.getTranslationRow(), customReadQuery.getSession());
@@ -744,7 +749,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         // As the selection object is transient, compute the key.
         if (getSelectionObject() != null) {
             // Must be checked separately as the expression and row is not yet set.
-            setSelectionKey(getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(getSelectionObject(), session));
+            setSelectionId(getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(getSelectionObject(), session));
         }
 
         Object cacheHit = checkEarlyReturn(getSession(), getTranslationRow());
@@ -765,9 +770,33 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
+     * Return Id of the object to be selected by the query.
+     */
+    public Object getSelectionId() {
+        return getSelectionKey();
+    }
+
+    /**
+     * PUBLIC:
+     * The Id of the object to be selected by the query.
+     * This will generate a query by primary key.
+     * This can be used instead of an Expression, SQL, or JPQL, or example object.
+     * The Id is the Id value for a singleton primary key,
+     * for a composite it is an instance of CacheKey.
+     * @see CacheKey
+     */
+    public void setSelectionId(Object id) {
+        setSelectionKey((Vector)id);
+    }
+
+    /**
+     * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
+     * @Depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
+     * @see #setSelectionId(Object)
      */
+    @Deprecated
     public void setSelectionKey(List selectionKey) {
         if (selectionKey == null) {
             this.selectionKey = null;
@@ -793,7 +822,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (selectionObject == null) {
             throw QueryException.selectionObjectCannotBeNull(this);
         }
-        setSelectionKey(null);
+        setSelectionId(null);
         // Check if the query needs to be unprepared.
         if ((this.selectionObject == null) || (this.selectionObject.getClass() != selectionObject.getClass())) {
             setIsPrepared(false);
@@ -817,12 +846,14 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     /**
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
+     * @Depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
+     * @see #setSelectionId(Object)
      */
+    @Deprecated
     public void setSingletonSelectionKey(Object selectionKey) {
-        Vector key = new Vector();
-        key.addElement(selectionKey);
+        Vector key = new NonSynchronizedVector();
+        key.add(selectionKey);
         setSelectionKey(key);
-
     }
 
     /**

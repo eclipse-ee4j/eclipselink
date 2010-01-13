@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.sessions.remote;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Stores object description. The object descriptor is constructed and serialized as part of transporter.
@@ -21,7 +20,7 @@ import java.util.*;
 public class ObjectDescriptor implements Serializable {
 
     /** A primary key */
-    protected Vector key;
+    protected Object key;
 
     /** A write lock value */
     protected Object writeLockValue;
@@ -35,7 +34,7 @@ public class ObjectDescriptor implements Serializable {
     /**
      * Return primary key values of an associated object
      */
-    public Vector getKey() {
+    public Object getKey() {
         return key;
     }
 
@@ -63,7 +62,7 @@ public class ObjectDescriptor implements Serializable {
     /**
      * Set primary key values of an associated object
      */
-    public void setKey(Vector key) {
+    public void setKey(Object key) {
         this.key = key;
     }
 

@@ -79,8 +79,8 @@ public abstract class JPAInitializer {
         Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
-        ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);
-        ((SEPersistenceUnitInfo)persistenceUnitInfo).setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
+        persistenceUnitInfo.setNewTempClassLoader(tempLoader);
+        persistenceUnitInfo.setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
 
         EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(persistenceUnitUniqueName, sessionName);
 
@@ -89,7 +89,7 @@ public abstract class JPAInitializer {
 
         // After preDeploy it's impossible to weave again - so may substitute the temporary classloader with the real one.
         // The temporary classloader could be garbage collected even if the puInfo is cached for the future use by other emSetupImpls.
-        ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(((SEPersistenceUnitInfo)persistenceUnitInfo).getClassLoader());
+        persistenceUnitInfo.setNewTempClassLoader(persistenceUnitInfo.getClassLoader());
         
         registerTransformer(transformer, persistenceUnitInfo);
         return emSetupImpl;

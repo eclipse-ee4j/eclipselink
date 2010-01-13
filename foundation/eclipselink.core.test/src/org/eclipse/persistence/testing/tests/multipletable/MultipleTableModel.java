@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.multipletable;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.multipletable.Cow;
@@ -146,7 +144,7 @@ public class MultipleTableModel extends TestModel {
             this.cls = cls;
         }
         public void test() {
-            Vector results = (Vector)getSession().readAllObjects(cls);
+            getSession().readAllObjects(cls);
         }
     }
 }

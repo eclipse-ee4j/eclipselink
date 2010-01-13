@@ -159,7 +159,7 @@ public class RemoteSession extends DistributedSession {
         // object.
         ObjectDescriptor objectDescriptor = (ObjectDescriptor)objectDescriptors.get(serverSideDomainObject);
         if (objectDescriptor == null){
-            //the object must have been added concurently before serialize generate a new ObjectDescriptor on this side
+            //the object must have been added concurrently before serialize generate a new ObjectDescriptor on this side
             objectDescriptor = new ObjectDescriptor();
             objectDescriptor.setKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(serverSideDomainObject, this));
             objectDescriptor.setObject(serverSideDomainObject);
@@ -171,8 +171,8 @@ public class RemoteSession extends DistributedSession {
             }
             objectDescriptors.put(serverSideDomainObject, objectDescriptor);
         }
-        Vector primaryKeyValues = objectDescriptor.getKey();
-        Object clientSideDomainObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKeyValues, serverSideDomainObject.getClass(), descriptor);
+        Object primaryKey = objectDescriptor.getKey();
+        Object clientSideDomainObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, serverSideDomainObject.getClass(), descriptor);
 
         // If object is already processed the return back, this check must be done after the cliet-side object is found.
         if (processedObjects.containsKey(serverSideDomainObject)) {
@@ -186,7 +186,7 @@ public class RemoteSession extends DistributedSession {
         processedObjects.put(serverSideDomainObject, serverSideDomainObject);
 
         if (clientSideDomainObject == null) {
-            getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKeyValues, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
+            getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKey, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
             descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, objectDescriptors, processedObjects, query, this);
             clientSideDomainObject = serverSideDomainObject;
         } else {

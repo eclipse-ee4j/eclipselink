@@ -565,7 +565,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.addManagedEmployee((Employee)list.get(i++));
             }
             if(useChildren) {
-                empManager.getChildren().add((Child)list.get(i++));
+                empManager.getChildren().add(list.get(i++));
             }
             if(useProjects) {
                 empManager.addProject((Project)list.get(i++));
@@ -588,7 +588,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.addManagedEmployee(index, (Employee)list.get(i++));
             }
             if(useChildren) {
-                empManager.getChildren().add(index, (Child)list.get(i++));
+                empManager.getChildren().add(index, list.get(i++));
             }
             if(useProjects) {
                 empManager.addProject(index, (Project)list.get(i++));
@@ -611,7 +611,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.getManagedEmployees().add(index, (Employee)list.get(i++));
             }
             if(useChildren) {
-                empManager.getChildren().add(index, (Child)list.get(i++));
+                empManager.getChildren().add(index, list.get(i++));
             }
             if(useProjects) {
                 empManager.getProjects().add(index, (Project)list.get(i++));
@@ -706,7 +706,7 @@ public class OrderListTestModel extends TestModel {
                 listOut.add(empManager.setManagedEmployee(index, (Employee)list.get(i++)));
             }
             if(useChildren) {
-                listOut.add(empManager.getChildren().set(index, (Child)list.get(i++)));
+                listOut.add(empManager.getChildren().set(index, list.get(i++)));
             }
             if(useProjects) {
                 listOut.add(empManager.setProject(index, (Project)list.get(i++)));
@@ -731,7 +731,7 @@ public class OrderListTestModel extends TestModel {
                 listOut.add(empManager.getManagedEmployees().set(index, (Employee)list.get(i++)));
             }
             if(useChildren) {
-                listOut.add(empManager.getChildren().set(index, (Child)list.get(i++)));
+                listOut.add(empManager.getChildren().set(index, list.get(i++)));
             }
             if(useProjects) {
                 listOut.add(empManager.getProjects().set(index, (Project)list.get(i++)));
@@ -751,9 +751,8 @@ public class OrderListTestModel extends TestModel {
          */
         void setListInto(Employee empManager, List<List> listOfLists) {
             int i = 0;
-            List listOut = new ArrayList();
             if(useManagedEmployees) {
-                List<Employee> newList = (List<Employee>)listOfLists.get(i++);
+                List<Employee> newList = listOfLists.get(i++);
                 List<Employee> oldList = empManager.getManagedEmployees();
                 empManager.setManagedEmployees(newList);
                 if(oldList != null) {
@@ -771,7 +770,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.setChildren((Vector)listOfLists.get(i++));
             }
             if(useProjects) {
-                List<Project> newList = (List<Project>)listOfLists.get(i++);
+                List<Project> newList = listOfLists.get(i++);
                 List<Project> oldList = empManager.getProjects();
                 empManager.setProjects(newList);
                 if(oldList != null) {
@@ -786,10 +785,10 @@ public class OrderListTestModel extends TestModel {
                 }
             }
             if(useResponsibilities) {
-                empManager.setResponsibilitiesList((List<String>)listOfLists.get(i++));
+                empManager.setResponsibilitiesList(listOfLists.get(i++));
             }
             if(usePhones) {
-                empManager.setPhoneNumbers((List<PhoneNumber>)listOfLists.get(i++));
+                empManager.setPhoneNumbers(listOfLists.get(i++));
             }
         }
         
@@ -799,7 +798,6 @@ public class OrderListTestModel extends TestModel {
          */
         void update( List list, String prefix, int indexForName) {
             String iString = Integer.toString(indexForName);
-            String str = prefix + iString;
             int i = 0;
             if(useManagedEmployees) {
                 Employee emp = (Employee)list.get(i++);
@@ -857,7 +855,6 @@ public class OrderListTestModel extends TestModel {
          * Creates a list of Lists  that could be set to manager: List<Employee>, Vector, List<Project>, List<String>, List<PhoneNumber>.
          */
         List<List> createList() {
-            int i = 0;
             List<List> listOfLists = new ArrayList();
             if(useManagedEmployees) {
                 listOfLists.add(new ArrayList<Employee>());
@@ -885,19 +882,19 @@ public class OrderListTestModel extends TestModel {
         void addTo(List<List> listOfLists, List list) {
             int i = 0;
             if(useManagedEmployees) {
-                listOfLists.get(i).add((Employee)list.get(i++));
+                listOfLists.get(i).add(list.get(i++));
             }
             if(useChildren) {
-                listOfLists.get(i).add((Child)list.get(i++));
+                listOfLists.get(i).add(list.get(i++));
             }
             if(useProjects) {
-                listOfLists.get(i).add((Project)list.get(i++));
+                listOfLists.get(i).add(list.get(i++));
             }
             if(useResponsibilities) {
-                listOfLists.get(i).add((String)list.get(i++));
+                listOfLists.get(i).add(list.get(i++));
             }
             if(usePhones) {
-                listOfLists.get(i).add((PhoneNumber)list.get(i++));
+                listOfLists.get(i).add(list.get(i++));
             }
         }        
 
@@ -999,7 +996,7 @@ public class OrderListTestModel extends TestModel {
         OrderCorrectionType changeOrderCorrectionType(String attribute, OrderCorrectionType mode, OrderCorrectionType oldMode) {
             ClassDescriptor desc = getSession().getDescriptor(Employee.class);
             CollectionMapping mapping = (CollectionMapping)desc.getMappingForAttributeName(attribute);
-            OrderCorrectionType currOldMode = changeOrderCorrectionType((CollectionMapping)mapping, mode);
+            OrderCorrectionType currOldMode = changeOrderCorrectionType(mapping, mode);
             if(oldMode != null) {
                 if(oldMode != currOldMode) {
                     throw new TestProblemException("OrderCorrectionTypes for " + attribute+ " is " + currOldMode +"; for previous mapping(s) it was " + oldMode);
@@ -1163,7 +1160,6 @@ public class OrderListTestModel extends TestModel {
             }
             
             String textNameExt;
-            Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
                     textNameExt = "Cache";
@@ -1190,7 +1186,6 @@ public class OrderListTestModel extends TestModel {
             }
             int size = listToVerify.size();
             String textNameExt;
-            Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
                     textNameExt = "Cache";
@@ -1220,7 +1215,6 @@ public class OrderListTestModel extends TestModel {
             }
             int size = listToVerify.size();
             String textNameExt;
-            Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
                     textNameExt = "Cache";
@@ -2026,7 +2020,6 @@ public class OrderListTestModel extends TestModel {
             }
             
             String textNameExt;
-            Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
                     textNameExt = "Cache";

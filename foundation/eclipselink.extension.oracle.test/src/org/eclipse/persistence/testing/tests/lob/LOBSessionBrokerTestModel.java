@@ -68,7 +68,7 @@ public class LOBSessionBrokerTestModel extends TestModel {
     public void reset() {
         if (((AbstractSession)getSession()).isBroker()) {
             SessionBroker broker = (SessionBroker)getSession();
-            AbstractSession session = (AbstractSession)broker.getSessionsByName().values().iterator().next();
+            AbstractSession session = broker.getSessionsByName().values().iterator().next();
             session.setBroker(null);
             // no broker.logout() required - the original session should remain connected.
             getExecutor().setSession(session);

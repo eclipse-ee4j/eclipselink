@@ -2539,7 +2539,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Extract and return the primary key from the object.
      */
-    public Vector keyFromObject(Object domainObject) throws ValidationException {
+    public Object getId(Object domainObject) throws ValidationException {
         ClassDescriptor descriptor = getDescriptor(domainObject);
         return keyFromObject(domainObject, descriptor);
     }
@@ -2547,8 +2547,20 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * ADVANCED:
      * Extract and return the primary key from the object.
+     * @deprecated since EclipseLink 2.1, replaced by getId(Object)
+     * @see #getId(Object)
      */
-    public Vector keyFromObject(Object domainObject, ClassDescriptor descriptor) throws ValidationException {
+    @Deprecated
+    public Vector keyFromObject(Object domainObject) throws ValidationException {
+        ClassDescriptor descriptor = getDescriptor(domainObject);
+        return (Vector)keyFromObject(domainObject, descriptor);
+    }
+
+    /**
+     * ADVANCED:
+     * Extract and return the primary key from the object.
+     */
+    public Object keyFromObject(Object domainObject, ClassDescriptor descriptor) throws ValidationException {
         if (descriptor == null) {
             throw ValidationException.missingDescriptor(domainObject.getClass().getName());
         }

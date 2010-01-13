@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.performance.reading;
 
 import java.util.*;
-import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.performance.Address;

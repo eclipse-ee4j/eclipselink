@@ -144,10 +144,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
     
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
-    
-        EntityManager em = createEntityManager();
-        
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass) {            
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
         DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
         
@@ -287,8 +284,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
       
       List expected = em.createQuery("SELECT c FROM Employee c WHERE NOT EXISTS (SELECT o1 FROM c.phoneNumbers o1)").getResultList();
       beginTransaction(em);
-      try {        
-          Metamodel mm = em.getMetamodel();
+      try {
           CriteriaBuilder qbuilder = em.getCriteriaBuilder();
           CriteriaQuery<Employee> cquery =qbuilder.createQuery(Employee.class);
            Root<Employee> customer = cquery.from(Employee.class);
@@ -302,7 +298,6 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            cquery.where(qbuilder.not(qbuilder.exists(sq)));
            List result = em.createQuery(cquery).getResultList();
            Assert.assertTrue("testExistWithJoin test failed !", comparer.compareObjects(result,expected));
-
       } finally {
           rollbackTransaction(em);
           closeEntityManager(em);
@@ -691,10 +686,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
             cq.multiselect( qb.min(from.get(Emp_.getSingularAttribute("salary", int.class))));
             List resultList =  em.createQuery(cq).getResultList();
-            Object resultObject = (DataHolder)resultList.get(0);
-            assertTrue("constructor expression test expected DataHolder object, got "+resultObject,(resultObject instanceof DataHolder));
-            this.assertEquals("Expected DataHolder to contain int value of -100, Got :"+resultObject, -100, ((DataHolder)resultObject).getPrimitiveInt());
-        }finally{
+            Object resultObject = resultList.get(0);
+            assertTrue("constructor expression test expected DataHolder object, got " + resultObject,(resultObject instanceof DataHolder));
+            assertEquals("Expected DataHolder to contain int value of -100, Got :" + resultObject, -100, ((DataHolder)resultObject).getPrimitiveInt());
+        } finally {
             rollbackTransaction(em);
         }
     }

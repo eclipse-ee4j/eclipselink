@@ -721,7 +721,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     public void validateDelete(int rowCount, Object object, DeleteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache, only if version is the same as in query.
-            Vector primaryKey = query.getPrimaryKey();
+            Object primaryKey = query.getPrimaryKey();
             AbstractSession session = query.getSession().getParentIdentityMapSession(query, true, true);
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor());
             if ((cacheKey != null) && (cacheKey.getObject() != null) && (query.getObjectChangeSet() != null)) {
@@ -742,7 +742,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     public void validateUpdate(int rowCount, Object object, WriteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache, only if version is the same as in query.
-            Vector primaryKey = query.getPrimaryKey();
+            Object primaryKey = query.getPrimaryKey();
             AbstractSession session = query.getSession().getParentIdentityMapSession(query, true, true);
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor());
             if ((cacheKey != null) && (cacheKey.getObject() != null) && (query.getObjectChangeSet() != null)) {

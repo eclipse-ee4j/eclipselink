@@ -103,7 +103,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         queryReadObject_1_ByKey.conformResultsInUnitOfWork();
         Vector key = new Vector(1);
         key.add(emp1.getId());
-        queryReadObject_1_ByKey.setSelectionKey(key);
+        queryReadObject_1_ByKey.setSelectionId(key);
         if(emp1 != uow.executeQuery(queryReadObject_1_ByKey)) {
             errorMsg += "queryReadObject_1_ByKey: emp1; ";
         }

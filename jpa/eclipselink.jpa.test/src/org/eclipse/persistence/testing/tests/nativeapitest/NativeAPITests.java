@@ -27,7 +27,6 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.nativeapitest.Address;
@@ -72,7 +71,7 @@ public class NativeAPITests extends JUnitTestCase {
      * execution in the server.
      */
     public void testSetup() throws Exception {
-        new NativeAPITestTableCreator().replaceTables((ServerSession) (Server) SessionManager.getManager().getSession("NativeAPITest", this.getClass().getClassLoader()));
+        new NativeAPITestTableCreator().replaceTables((ServerSession)SessionManager.getManager().getSession("NativeAPITest", this.getClass().getClassLoader()));
         Employee bob = new Employee();
         bob.setFirstName("Bob");
         bob.setLastName("Jones");

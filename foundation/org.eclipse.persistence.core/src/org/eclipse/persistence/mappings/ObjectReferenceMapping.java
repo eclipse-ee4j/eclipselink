@@ -208,12 +208,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return false;
         }
 
-        Vector firstKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstReferencedObject, session);
-        Vector secondKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondReferencedObject, session);
+        Object firstKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstReferencedObject, session);
+        Object secondKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondReferencedObject, session);
 
-        for (int index = 0; index < firstKey.size(); index++) {
-            Object firstValue = firstKey.elementAt(index);
-            Object secondValue = secondKey.elementAt(index);
+        for (int index = 0; index < ((Vector)firstKey).size(); index++) {
+            Object firstValue = ((Vector)firstKey).get(index);
+            Object secondValue = ((Vector)secondKey).get(index);
 
             if (!((firstValue == null) && (secondValue == null))) {
                 if ((firstValue == null) || (secondValue == null)) {
@@ -847,7 +847,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * INTERNAL:
      */
-    protected Vector getPrimaryKeyForObject(Object object, AbstractSession session) {
+    protected Object getPrimaryKeyForObject(Object object, AbstractSession session) {
         return getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, session);
     }
 
@@ -905,7 +905,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Extract the reference pk for rvh usage in remote model.
      */
-    public Vector extractPrimaryKeysForReferenceObject(Object domainObject, AbstractSession session) {
+    public Object extractPrimaryKeysForReferenceObject(Object domainObject, AbstractSession session) {
         return this.indirectionPolicy.extractPrimaryKeyForReferenceObject(getAttributeValueFromObject(domainObject), session);
     }
 
@@ -923,7 +923,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Extract the reference pk for rvh usage in remote model.
      */
-    public Vector extractPrimaryKeysFromRealReferenceObject(Object object, AbstractSession session) {
+    public Object extractPrimaryKeysFromRealReferenceObject(Object object, AbstractSession session) {
         if (object == null) {
             return new Vector(1);
         } else {
@@ -1185,7 +1185,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(getReferenceClass());
-        query.setSelectionKey(pk);
+        query.setSelectionId(pk);
         query.setIsExecutionClone(true);
         return session.executeQuery(query);
     }

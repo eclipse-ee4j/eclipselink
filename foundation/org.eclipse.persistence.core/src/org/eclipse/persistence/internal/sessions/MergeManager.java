@@ -212,7 +212,7 @@ public class MergeManager {
         } else if (shouldRefreshRemoteObject()) {
             // Target is in session's cache.
             ClassDescriptor descriptor = this.session.getDescriptor(source);
-            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(source, this.session);
+            Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(source, this.session);
             return this.session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, source.getClass(), descriptor);
         }
 
@@ -285,7 +285,7 @@ public class MergeManager {
      */
     protected Object mergeChangesForRefreshingRemoteObject(Object serverSideDomainObject) {
         ClassDescriptor descriptor = this.session.getDescriptor(serverSideDomainObject);
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(serverSideDomainObject, this.session);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(serverSideDomainObject, this.session);
         Object clientSideDomainObject = this.session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, serverSideDomainObject.getClass(), descriptor);
         if (clientSideDomainObject == null) {
             //the referenced object came back as null from the cache.
@@ -486,7 +486,7 @@ public class MergeManager {
                 if (policy.isStoredInObject()) {
                     Object currentValue = builder.extractValueFromObjectForField(registeredObject, policy.getWriteLockField(), session); 
                 
-                    if (policy.isNewerVersion(currentValue, rmiClone, session.keyFromObject(rmiClone), session)) {
+                    if (policy.isNewerVersion(currentValue, rmiClone, session.keyFromObject(rmiClone, descriptor), session)) {
                         throw OptimisticLockException.objectChangedSinceLastMerge(rmiClone);
                     }
                 }
@@ -535,7 +535,7 @@ public class MergeManager {
         }
         //update the change policies with the refresh
         descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping());
-        Vector primaryKey = this.session.keyFromObject(clone);
+        Object primaryKey = this.session.keyFromObject(clone, descriptor);
         if (descriptor.usesOptimisticLocking()) {
             descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)this.session, primaryKey, clone);
         }
@@ -681,7 +681,7 @@ public class MergeManager {
             ((UnitOfWorkImpl)unitOfWork.getParent()).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance, descriptor);
         }
 
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
 
         // Must ensure the get and put of the cache occur as a single operation.
         // Cache key hold a reference to a concurrency manager which is used for the lock/release operation
@@ -786,7 +786,7 @@ public class MergeManager {
     protected Object registerObjectForMergeCloneIntoWorkingCopy(Object clone) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
 
         // Must use the java class as this may be a bean that we are merging and it may not have the same class as the
         // objects in the cache.  As of EJB 2.0.
@@ -1050,7 +1050,7 @@ public class MergeManager {
             // The cache key should never be null for the new commit, but may be for old commit, or depending on the cache isolation level may not be locked,
             // so needs to be re-acquired.
             if (cacheKey == null || !cacheKey.isAcquired()) {
-                Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
+                Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
                 
                 cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
                 locked = true;

@@ -98,12 +98,12 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         }
         ClassDescriptor descriptor = getReferenceDescriptor();
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        Vector pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
+        Object pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         int idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
         if (idx == -1) {
             return null;
         }
-        return pks.get(idx);
+        return ((Vector)pks).get(idx);
     }
 
     /**

@@ -190,7 +190,7 @@ public class JpaHelper {
         query.setShouldUseDefaultFetchGroup(false);
         Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
         if (result == null) {
-            Object[] args = {query.getSelectionKey()};
+            Object[] args = {query.getSelectionId()};
             String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
             throw new javax.persistence.EntityNotFoundException(message);
         }

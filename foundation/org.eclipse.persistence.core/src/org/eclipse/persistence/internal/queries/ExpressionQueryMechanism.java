@@ -743,7 +743,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // Each check is more optimal than the next.
         // Finally: (Conforming) check that any positive result was not deleted in the UnitOfWork.
         // 1: If selection key or selection object, do lookup by primary key.
-        Vector selectionKey = query.getSelectionKey();
+        Object selectionKey = query.getSelectionId();
         Object selectionObject = query.getSelectionObject();
         if ((selectionKey != null) || (selectionObject != null)) {
             if (selectionKey == null) {
@@ -753,7 +753,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     return InvalidObject.instance;
                 }
                 // Must be checked separately as the expression and row is not yet set.
-                query.setSelectionKey(selectionKey);
+                query.setSelectionId(selectionKey);
             }
             if (descriptor.shouldAcquireCascadedLocks()) {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
@@ -761,7 +761,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
             }
             // Also check if key is null, cannot exist.
-            if (selectionKey.contains(null)) {
+            if (((Vector)selectionKey).contains(null)) {
                 return InvalidObject.instance;
             }
         } else {
@@ -788,7 +788,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         }
                         // Because it was exact primary key if the lookup failed then it is not there.
                         // Also check if key is null, cannot exist.
-                        if (selectionKey.contains(null)) {
+                        if (((Vector)selectionKey).contains(null)) {
                             return InvalidObject.instance;
                         }
                     }
@@ -796,7 +796,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     // 4: If can extract inexact primary key, find one object by primary key and
                     // check if it conforms.  Failure of this object to conform however does not
                     // rule out a cache hit.
-                    Vector inexactSelectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(false, selectionCriteria, translationRow, session);// Check for any primary key in expression, may have other stuff.
+                    Object inexactSelectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(false, selectionCriteria, translationRow, session);// Check for any primary key in expression, may have other stuff.
                     if (inexactSelectionKey != null) {
                         // PERF: Only use deferred lock when required.
                         if (descriptor.shouldAcquireCascadedLocks()) {

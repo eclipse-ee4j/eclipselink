@@ -32,7 +32,7 @@ public class Scenario1_7b extends ReportQueryTestCase {
 
         for (Enumeration e = phoneNumbers.elements(); e.hasMoreElements(); ) {
             PhoneNumber phone = (PhoneNumber)e.nextElement();
-            Vector pks = 
+            Object pks = 
                 getSession().getDescriptor(PhoneNumber.class).getObjectBuilder().extractPrimaryKeyFromObject(phone, 
                                                                                                              getAbstractSession());
 

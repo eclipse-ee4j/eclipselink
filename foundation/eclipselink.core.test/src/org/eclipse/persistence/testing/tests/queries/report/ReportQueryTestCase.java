@@ -26,12 +26,12 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
     protected Vector results;
     protected boolean checkEntrySet = true;
 
-    protected void addResult(Object[] values, Vector primaryKeyValues) {
+    protected void addResult(Object[] values, Object primaryKey) {
         Vector results = new Vector(values.length);
         for (int index = 0; index < values.length; index++) {
-            results.addElement(values[index]);
+            results.add(values[index]);
         }
-        ReportQueryResult result = new ReportQueryResult(results, primaryKeyValues);
+        ReportQueryResult result = new ReportQueryResult(results, primaryKey);
 
         expectedResults.addElement(result);
     }

@@ -234,7 +234,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             List<Employee> result = tq.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
             assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-            assertTrue("Employee had wrong firstname", ((Employee) result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+            assertTrue("Employee had wrong firstname", result.get(0).getFirstName().equalsIgnoreCase("bob"));
 
             CriteriaQuery<Employee> cq2 = em.getCriteriaBuilder().createQuery(Employee.class);
             cq2.where(cq.getRestriction());
@@ -549,7 +549,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             List<Employee> result = tq.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
             assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-            assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+            assertTrue("Employee had wrong firstname", result.get(0).getFirstName().equalsIgnoreCase("bob"));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -638,7 +638,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             List<Employee> result = tq.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
             assertTrue("Did not return Employee", result.get(0).getClass().equals(Employee.class));
-            assertTrue("Employee had wrong firstname", ((Employee)result.get(0)).getFirstName().equalsIgnoreCase("bob"));
+            assertTrue("Employee had wrong firstname", result.get(0).getFirstName().equalsIgnoreCase("bob"));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

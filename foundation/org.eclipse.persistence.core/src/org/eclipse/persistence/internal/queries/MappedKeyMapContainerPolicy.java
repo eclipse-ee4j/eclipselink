@@ -340,13 +340,13 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
                 // CR2378 null check to prevent a null pointer exception - XC
                 // If value is null then nothing can be done with it.
                 if (firstObject != null) {
-                    Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
-                    if (originalKeyValues.containsKey(pks)) {
-                        originalKeyValues.remove(pks);
+                    Object primayKey = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+                    if (originalKeyValues.containsKey(primayKey)) {
+                        originalKeyValues.remove(primayKey);
                     } else {
                         // Place it in the add collection
                         buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                        cloneKeyValues.put(pks, firstObject);
+                        cloneKeyValues.put(primayKey, firstObject);
                     }
                 }
             }

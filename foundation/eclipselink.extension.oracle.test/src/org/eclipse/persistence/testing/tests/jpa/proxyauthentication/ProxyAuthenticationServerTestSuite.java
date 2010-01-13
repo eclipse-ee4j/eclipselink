@@ -211,7 +211,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             List<PhoneNumber> phoneNumbers = query.getResultList();
             for (PhoneNumber phoneNumber : phoneNumbers) {
                 phoneNumber.setAreaCode("613");
-                Employee owner = phoneNumber.getOwner();
+                phoneNumber.getOwner();
             }
             commitTransaction(em);
         } catch (Exception ex) {

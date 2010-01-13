@@ -29,11 +29,11 @@ public class SetWriteLockInIdentityMapTest extends RegisterInIdentityMapTest {
     }
 
     private Object getWriteLockValue(Object domainObject) {
-        return getAbstractSession().getIdentityMapAccessorInstance().getWriteLockValue(getSession().keyFromObject(domainObject), domainObject.getClass());
+        return getAbstractSession().getIdentityMapAccessorInstance().getWriteLockValue(getSession().getId(domainObject), domainObject.getClass());
     }
 
     private void setWriteLockValue(Object domainObject, Object writeLockValue) {
-        getAbstractSession().getIdentityMapAccessorInstance().getIdentityMapManager().setWriteLockValue(getSession().keyFromObject(domainObject), domainObject.getClass(), writeLockValue);
+        getAbstractSession().getIdentityMapAccessorInstance().getIdentityMapManager().setWriteLockValue(getSession().getId(domainObject), domainObject.getClass(), writeLockValue);
     }
 
     public void test() {

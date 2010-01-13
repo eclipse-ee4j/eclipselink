@@ -127,15 +127,16 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return the primary key for the reference object (i.e. the object
+     * Return the primary key for the reference object (i.e. the object
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
-    public Vector extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
-        if (this.objectIsInstantiated(referenceObject)) {
+    @Override
+    public Object extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
+        if (objectIsInstantiated(referenceObject)) {
             return super.extractPrimaryKeyForReferenceObject(((ValueHolderInterface)referenceObject).getValue(), session);
         } else {
-            return this.getOneToOneMapping().extractPrimaryKeysForReferenceObjectFromRow(this.extractReferenceRow(referenceObject));
+            return getOneToOneMapping().extractPrimaryKeysForReferenceObjectFromRow(extractReferenceRow(referenceObject));
         }
     }
 

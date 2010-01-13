@@ -23,7 +23,7 @@ public class KeyFromObjecWithoutDescriptor extends ExceptionTest {
 
     protected void test() {
         try {
-            getSession().keyFromObject(this);
+            getSession().getId(this);
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }

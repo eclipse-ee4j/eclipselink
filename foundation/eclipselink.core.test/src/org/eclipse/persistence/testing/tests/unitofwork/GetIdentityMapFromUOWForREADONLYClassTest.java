@@ -45,7 +45,7 @@ public class GetIdentityMapFromUOWForREADONLYClassTest extends AutoVerifyTestCas
     protected void test() {
         uow = getSession().acquireUnitOfWork();
         uow.addReadOnlyClass(employee.getClass());
-        uow.getIdentityMapAccessor().getFromIdentityMap(getSession().keyFromObject(employee), employee.getClass());
+        uow.getIdentityMapAccessor().getFromIdentityMap(getSession().getId(employee), employee.getClass());
         uow.commit();
     }
 

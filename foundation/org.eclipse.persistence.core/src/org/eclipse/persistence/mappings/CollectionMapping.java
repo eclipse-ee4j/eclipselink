@@ -604,7 +604,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                  cp.hasNext(currentObjectsIter);) {
             Object currentObject = cp.next(currentObjectsIter, query.getSession());
             try {
-                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
                 CacheKey key = new CacheKey(primaryKey);
                 currentObjectsByKey.put(key, currentObject);
                 cacheKeysOfCurrentObjects.put(currentObject, key);
@@ -625,7 +625,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Object wrappedObject = cp.nextEntry(previousObjectsIter, query.getSession());
             Map mapKeyFields = containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession());
             Object previousObject = containerPolicy.unwrapIteratorResult(wrappedObject);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
             CacheKey key = new CacheKey(primaryKey);
             previousObjectsByKey.put(key, previousObject);
             // Delete must occur first, in case object with same pk is removed and added,
@@ -689,13 +689,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         while (cp.hasNext(secondIter)) {
             Object secondObject = cp.next(secondIter, session);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
-            keyValue.addElement(new CacheKey(primaryKey));
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+            keyValue.add(new CacheKey(primaryKey));
         }
 
         while (cp.hasNext(firstIter)) {
             Object firstObject = cp.next(firstIter, session);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
 
             if (!keyValue.contains(new CacheKey(primaryKey))) {
                 return false;
@@ -725,13 +725,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         while (cp.hasNext(secondIter)) {
             Object secondObject = cp.next(secondIter, session);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
             keyValueToObject.put(new CacheKey(primaryKey), secondObject);
         }
 
         while (cp.hasNext(firstIter)) {
             Object firstObject = cp.next(firstIter, session);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
             cacheKey = new CacheKey(primaryKey);
 
             if (keyValueToObject.containsKey(cacheKey)) {
@@ -2290,7 +2290,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             ReadObjectQuery query = new ReadObjectQuery();
             query.setReferenceClass(getReferenceClass());
-            query.setSelectionKey(pk);
+            query.setSelectionId(pk);
             query.setIsExecutionClone(true);
             cp.addInto(session.executeQuery(query), result, session);
         }
@@ -2306,7 +2306,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         Object value = this.containerPolicy.containerInstance();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
-        Vector sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
+        Object sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
         CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
@@ -2338,7 +2338,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 
                 // Partial object queries must select the primary key of the source and related objects.
                 // If the target joined rows in null (outerjoin) means an empty collection.
-                Vector targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
+                Object targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
                 if (targetKey == null) {
                     // A null primary key means an empty collection returned as nulls from an outerjoin.
                     return this.indirectionPolicy.valueFromRow(value);

@@ -32,7 +32,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     protected ObjID id;
 
     // Primary key row for target object.
-    protected Vector targetObjectPrimaryKeys;
+    protected Object targetObjectPrimaryKeys;
     protected transient DatabaseMapping mapping;
     protected transient ObjectLevelReadQuery query;
 
@@ -57,7 +57,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
             return false;
         }
 
-        return (getTargetObjectPrimaryKeys() != null) && (!getTargetObjectPrimaryKeys().isEmpty()) && getMapping().isOneToOneMapping() && (!getQuery().shouldRefreshIdentityMapResult()) && (!getQuery().shouldRefreshRemoteIdentityMapResult()) && (getQuery().shouldMaintainCache());
+        return (getTargetObjectPrimaryKeys() != null) && (!((Vector)getTargetObjectPrimaryKeys()).isEmpty()) && getMapping().isOneToOneMapping() && (!getQuery().shouldRefreshIdentityMapResult()) && (!getQuery().shouldRefreshRemoteIdentityMapResult()) && (getQuery().shouldMaintainCache());
     }
 
     /**
@@ -132,7 +132,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Get target object primary key row.
      */
-    protected Vector getTargetObjectPrimaryKeys() {
+    protected Object getTargetObjectPrimaryKeys() {
         return targetObjectPrimaryKeys;
     }
 
@@ -234,10 +234,10 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      *  to Externalizable interface to avoid sending extra data through the superclass's serialization
      */
     public void readExternal(ObjectInput in) throws IOException, java.lang.ClassNotFoundException {
-        id = (ObjID)in.readObject();
-        targetObjectPrimaryKeys = (Vector)in.readObject();
-        row = (AbstractRecord)in.readObject();
-        isInstantiated = in.readBoolean();
+        this.id = (ObjID)in.readObject();
+        this.targetObjectPrimaryKeys = in.readObject();
+        this.row = (AbstractRecord)in.readObject();
+        this.isInstantiated = in.readBoolean();
     }
 
     /**
@@ -274,7 +274,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Set target object primary keys.
      */
-    public void setTargetObjectPrimaryKeys(Vector primaryKeys) {
+    public void setTargetObjectPrimaryKeys(Object primaryKeys) {
         this.targetObjectPrimaryKeys = primaryKeys;
     }
 

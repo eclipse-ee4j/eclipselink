@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.Arrays;
-import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
@@ -227,8 +226,8 @@ public class AdvancedJunitTest extends JUnitTestCase {
             em.persist(pLink3);
             commitTransaction(em);
             ClassDescriptor descriptor = getServerSession().getClassDescriptor(PartnerLink.class);
-            Vector pks = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(pLink3, getServerSession());
-            PartnerLinkPK createdPK = (PartnerLinkPK) descriptor.getCMPPolicy().createPrimaryKeyInstance(pks, getServerSession());
+            Object pks = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(pLink3, getServerSession());
+            PartnerLinkPK createdPK = (PartnerLinkPK) descriptor.getCMPPolicy().createPrimaryKeyInstanceFromId(pks, getServerSession());
             PartnerLinkPK usedPk = new PartnerLinkPK(pLink3.getManId(), pLink3.getWomanId());
             assertTrue("PK's do not match.", usedPk.equals(createdPK));
 

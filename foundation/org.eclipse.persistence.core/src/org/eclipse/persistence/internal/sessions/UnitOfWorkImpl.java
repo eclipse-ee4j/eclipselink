@@ -741,7 +741,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public boolean checkForUnregisteredExistingObject(Object object) {
 
         ClassDescriptor descriptor = getDescriptor(object.getClass());
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
         if (primaryKey == null) {
             return false;
         }
@@ -763,7 +763,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Object checkExistence(Object object) {
         ClassDescriptor descriptor = getDescriptor(object.getClass());
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
         // PERF: null primary key cannot exist.
         if (primaryKey == null) {
             return null;
@@ -914,7 +914,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey)) {
                 ReadObjectQuery query = new ReadObjectQuery();
                 query.setReferenceClass(object.getClass());
-                query.setSelectionKey(cacheKey.getKey());
+                query.setSelectionId(cacheKey.getKey());
                 query.refreshIdentityMapResult();
                 query.setIsExecutionClone(true);
                 parent.executeQuery(query);
@@ -1291,7 +1291,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     if ((originalObject != null) && ((UnitOfWorkImpl)getParent()).getNewObjectsCloneToOriginal().containsKey(originalObject)) {
                         ((UnitOfWorkImpl)getParent()).unregisterObject(originalObject);
                     } else {
-                        ((UnitOfWorkImpl)getParent()).getDeletedObjects().put(originalObject, keyFromObject(originalObject));
+                        ((UnitOfWorkImpl)getParent()).getDeletedObjects().put(originalObject, getId(originalObject));
                     }
                 }
             }
@@ -1937,7 +1937,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if(descriptor == null) {
                 descriptor = getDescriptor(clone);
             }
-            Vector primaryKey = keyFromObject(clone, descriptor);
+            Object primaryKey = keyFromObject(clone, descriptor);
 
             // This happens if clone was from the parent identity map.		
             if (getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, clone.getClass(), descriptor)) {
@@ -2365,7 +2365,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new object matching the expression.
      * Used for in-memory querying.
      */
-    public Object getObjectFromNewObjects(Class theClass, Vector selectionKey) {
+    public Object getObjectFromNewObjects(Class theClass, Object selectionKey) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return null;
@@ -2376,7 +2376,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Object object = newObjectsEnum.next();
             if (theClass.isInstance(object)) {
                 // removed dead null check as this method is never called if selectionKey == null
-                Vector primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, this);
+                Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, this);
                 if (new CacheKey(primaryKey).equals(new CacheKey(selectionKey))) {
                     return object;
                 }
@@ -2553,7 +2553,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(workingClone, this);
 
-        Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
+        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
         // there's no need to elaborately avoid the readlock like the other getOriginalVersionOfObjectOrNull
         // method as this one is not used during the commit cycle
         Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
@@ -2617,7 +2617,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected Object getObjectFromSharedCacheForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor){
         Object original = null;
-        Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
+        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
         if (this.lastUsedMergeManager == null){
             // not merging into the shared cache so just return object from parent identity map
             return getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
@@ -2885,7 +2885,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
                 // If it is not registered in the parent we must go through the existence check.
                 if (parentUnitOfWork.isObjectRegistered(object) || isUnregisteredNewObjectInParent(object)) {
-                    Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this);
+                    Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this);
                     if (this.isCloneNewObjectFromParent(object) || isUnregisteredNewObjectInParent(object)) {
                         // Since it is a new object a new cache-key can be used for both parent and child as not put into the cache.
                         registeredObject = cloneAndRegisterObject(object, new CacheKey(primaryKey), new CacheKey(primaryKey), descriptor);
@@ -3532,7 +3532,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             visitedObjects.put(toBeDeleted,toBeDeleted);
             Object registeredObject = checkIfAlreadyRegistered(toBeDeleted, descriptor);
             if (registeredObject == null) {
-                Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(toBeDeleted, this);
+                Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(toBeDeleted, this);
                 DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
                 existQuery = (DoesExistQuery)existQuery.clone();
                 existQuery.setObject(toBeDeleted);
@@ -3731,7 +3731,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             unregisterObject(implementation);
             return implementation;
         }
-        Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
+        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
         Object clone = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
         if (clone == null) {
             clone = implementation;
@@ -3767,20 +3767,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             writer.write(cr + LoggingLocalization.buildMessage("deleted_objects"));
             for (Iterator enumtr = getDeletedObjects().keySet().iterator(); enumtr.hasNext();) {
                 Object object = enumtr.next();
-                writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, Helper.printVector(getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this)), "\t", String.valueOf(System.identityHashCode(object)), object }));
+                writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this), "\t", String.valueOf(System.identityHashCode(object)), object }));
             }
         }
         writer.write(cr + LoggingLocalization.buildMessage("all_registered_clones"));
         for (Iterator enumtr = getCloneMapping().keySet().iterator(); enumtr.hasNext();) {
             Object object = enumtr.next();
-            writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, Helper.printVector(getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this)), "\t", String.valueOf(System.identityHashCode(object)), object }));
+            writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this), "\t", String.valueOf(System.identityHashCode(object)), object }));
         }
         if (hasNewObjectsInParentOriginalToClone()) {
             writer.write(cr + LoggingLocalization.buildMessage("new_objects"));
             for (Iterator enumtr = getNewObjectsCloneToOriginal().keySet().iterator();
                      enumtr.hasNext();) {
                 Object object = enumtr.next();
-                writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, Helper.printVector(getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this)), "\t", String.valueOf(System.identityHashCode(object)), object }));
+                writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, getDescriptor(object).getObjectBuilder().extractPrimaryKeyFromObject(object, this), "\t", String.valueOf(System.identityHashCode(object)), object }));
             }
         }
         log(SessionLog.SEVERE, SessionLog.TRANSACTION, writer.toString(), null, null, false);
@@ -3885,7 +3885,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (registeredObject == null) {
                 // Check if object is existing, if it is it must be cloned into the unit of work
                 // otherwise it is a new object
-                Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this);
+                Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this);
                 // Always check the cache first.
                 registeredObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, objectToRegister.getClass(), descriptor);
                 if (registeredObject == null) {
@@ -3941,7 +3941,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Was removed to prevent issue where weblogic would re-use beans from the pool in a single transaction
         // Ensure that the registered object is the one from the parent cache.
         if (shouldPerformFullValidation()) {
-            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(newObject, this);
+            Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(newObject, this);
             Object objectFromCache = this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, descriptor.getJavaClass(), descriptor);
             if (objectFromCache != null) {
                 throw ValidationException.wrongObjectRegistered(newObject, objectFromCache);
@@ -4042,7 +4042,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (registeredObject == null) {
                 // Ensure that the registered object is the one from the parent cache.
                 if (shouldPerformFullValidation()) {
-                    Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(implementation, this);
+                    Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(implementation, this);
                     Object objectFromCache = this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
                     if (objectFromCache != null) {
                         throw ValidationException.wrongObjectRegistered(implementation, objectFromCache);
@@ -4249,7 +4249,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // Put new objects in the cache if it has a valid primary key, this allows for double new object merges,
             // and cache hits on pk queries.
             // PERF: Only need to extract key using object builder, it will now return null if the key is not valid.
-            Vector key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this, true);
+            Object key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this, true);
             if (key != null) {
                 getIdentityMapAccessorInstance().putInIdentityMap(clone, key, null, 0, descriptor);
             }
@@ -5274,7 +5274,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
                 
                 // Check if object exists in the IM.
-                Vector primaryKey = getCurrentDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, UnitOfWorkImpl.this);
+                Object primaryKey = getCurrentDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, UnitOfWorkImpl.this);
 
                 // If object exists in IM remove it from the IM and also from clone mapping.
                 getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, object.getClass(), getCurrentDescriptor(), object);
@@ -5803,7 +5803,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (primaryKey == null) { //gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
-        Vector primaryKeyValues;
+        Object primaryKeyValues;
         if (primaryKey instanceof List) {
             primaryKeyValues = new NonSynchronizedVector((List)primaryKey);
         } else {
@@ -5817,7 +5817,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     primaryKeyValues = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(primaryKey, this);
                 } else {
                     primaryKeyValues = new NonSynchronizedVector(1);
-                    primaryKeyValues.add(primaryKey);
+                    ((Vector)primaryKeyValues).add(primaryKey);
                 }
             }
         }
@@ -5842,7 +5842,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         } else {
             ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
-            query.setSelectionKey(primaryKeyValues);
+            query.setSelectionId(primaryKeyValues);
             query.conformResultsInUnitOfWork();
             query.setIsExecutionClone(true);
             reference = executeQuery(query);

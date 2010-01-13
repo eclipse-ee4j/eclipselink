@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -37,7 +36,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
     /* Primary key of the object to be modified. */
-    protected Vector primaryKey;
+    protected Object primaryKey;
 
     /* The object being modified. */
     protected Object object;
@@ -142,7 +141,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * INTERNAL:
      * Get the primary key for the query
      */
-    public Vector getPrimaryKey() {
+    public Object getPrimaryKey() {
         return primaryKey;
     }
 
@@ -248,7 +247,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * INTERNAL:
      * Set the primary key for the query.
      */
-    public void setPrimaryKey(Vector primaryKey) {
+    public void setPrimaryKey(Object primaryKey) {
         this.primaryKey = primaryKey;
     }
 

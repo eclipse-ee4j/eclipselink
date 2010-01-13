@@ -200,14 +200,12 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
 
     protected void destroyInDb() throws java.sql.SQLException {
         java.sql.Connection conn = java.sql.DriverManager.getConnection(connectionString, user, password);
-        java.sql.SQLException exception1 = null;
         try {
             java.sql.Statement stmt1 = conn.createStatement();
             String dropQueue = "BEGIN DBMS_AQADM.DROP_QUEUE (queue_name => '" + queueName + "'); END;";
             try {
                 stmt1.executeUpdate(dropQueue);
             } catch (java.sql.SQLException ex) {
-                exception1 = ex;
             }
             java.sql.Statement stmt2 = conn.createStatement();
             String dropTable = "BEGIN DBMS_AQADM.DROP_QUEUE_TABLE (queue_table => '" + queueTableName + "', force => TRUE); END;";
