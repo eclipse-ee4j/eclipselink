@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-j2ee-engine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application-j2ee-engine.xsd">
+    <reference reference-type="hard">
+        <reference-target provider-name="JavaEE" target-type="application">%%eclipselinklib%%</reference-target>
+    </reference>
+</application-j2ee-engine>

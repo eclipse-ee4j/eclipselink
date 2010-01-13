@@ -1,0 +1,2 @@
+JavaEE/%%eclipselink_app%%
+JavaEE/%%datasource_app%%
