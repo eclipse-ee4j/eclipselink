@@ -66,6 +66,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new CloneAttributeIfMutableTest());
 
         addSRGTests();
+        
+        addTest(buildRefReadOnlyTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
@@ -229,4 +231,32 @@ public class UnitOfWorkTestSuite extends TestSuite {
         test.setDescription("Test issue of loss of identity causing loop in cloning with invalidation.");
         return test;
     }
+    
+    /**
+     * Tests saving a new object with a reference to a read-only object.
+     */
+    public TransactionalTestCase buildRefReadOnlyTest() {
+        TransactionalTestCase test = new TransactionalTestCase() {
+            public void setup() {
+                super.setup();
+                getSession().getDescriptor(Address.class).setReadOnly();
+            }
+            public void test() {
+                UnitOfWork uow = getSession().acquireUnitOfWork();
+                Address address = (Address)uow.readObject(Address.class);
+                Employee employee = new Employee();
+                // Delete the phone but do not remove the employee reference.
+                employee = (Employee)uow.registerObject(employee);
+                employee.setAddress(address);
+                uow.commit();
+            }
+            public void reset() {
+                super.reset();
+                getSession().getDescriptor(Address.class).setShouldBeReadOnly(false);
+            }
+        };
+        test.setName("RefReadOnlyTest");
+        test.setDescription("Tests saving a new object with a reference to a read-only object.");
+        return test;
+    }    
 }

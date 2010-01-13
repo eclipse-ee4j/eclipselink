@@ -3049,7 +3049,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public boolean isObjectNew(Object clone) {
         //CR3678 - ported from 4.0
-        return (isCloneNewObject(clone) || (!isObjectRegistered(clone) && !isClassReadOnly(clone.getClass(), null) && !isUnregisteredExistingObject(clone)));
+        return (isCloneNewObject(clone) || (!isObjectRegistered(clone) && !isClassReadOnly(clone.getClass()) && !isUnregisteredExistingObject(clone)));
     }
     
     /**
