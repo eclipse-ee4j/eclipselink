@@ -85,6 +85,7 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkSynchNewObjectsClientSessionTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.transactionisolation.UnitOfWorkTransactionIsolationTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel");
             tests.addElement("org.eclipse.persistence.testing.tests.collections.CollectionsTestModel");
