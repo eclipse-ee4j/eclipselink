@@ -28,7 +28,7 @@
         - all (default) : compiles all JPA tests, packages test jars
         - compile : compiles all JPA tests
         - package : jars JPA persistent units and tests jars
-        - test : runs JPA LRG (FullRegressionTestSuite)
+        - test : runs JPA FullRegressionTestSuite - includes the full set of JUnit tests, but no legacy tests
         - test-lrg : runs JPA LRG (FullRegressionTestSuite, if database is Oracle, OracleJPATestSuite as well)
         - oracle-test : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
         - oracle-proxy-test : runs JPA Oracle Proxy Authentication specific tests (ProxyAuthenticationServerTestSuite)
@@ -782,7 +782,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
     </target>
 
-    <!-- Default test target, run the LRG -->
+    <!-- Default test target, run the FullRegressionTestSuite -->
     <target name="test" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
@@ -795,7 +795,7 @@
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <!-- Runs LRG (FullRegressionTestSuite) with agent. -->
+    <!-- Runs LRG (AllCMP3TestRunModel) with agent. -->
     <target name="test-lrg" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
