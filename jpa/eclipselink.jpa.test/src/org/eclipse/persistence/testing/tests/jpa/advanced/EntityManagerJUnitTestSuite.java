@@ -67,6 +67,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -342,10 +343,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPreupdateEmbeddable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindReadOnlyIsolated"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testInheritanceQuery"));
         
         return suite;
     }
-
+    
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
 
@@ -9282,5 +9284,36 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    // bug 274975
+    public void testInheritanceQuery(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        em.persist(new LargeProject());
+        commitTransaction(em);
+        clearCache();
+        
+        ClassDescriptor descriptor = getServerSession().getClassDescriptor(Project.class);
+        ReadAllQuery query = new ReadAllQuery(Project.class);
+        ExpressionBuilder b = query.getExpressionBuilder();
+        query.addArgument("id", Integer.class); // declare bind variable in (parent) query
+
+        ReportQuery subQuery = new ReportQuery();
+        subQuery.setReferenceClass(Project.class); // use any dummy mapped class...
+        SQLCall selectIdsCall = new SQLCall();
+        String subSelect = "select p.PROJ_ID from CMP3_PROJECT p where p.PROJ_ID = #id"; // <= re-use bind variable in child query 
+        selectIdsCall.setSQLString(subSelect);
+        subQuery.setCall(selectIdsCall);
+
+        Expression expr = b.get("id").in(subQuery);
+        query.setSelectionCriteria(expr);
+
+        // Now execute query with bind variable   
+        // (using setShouldBindAllParameters(false) makes it work... 
+        // but this is not good, in particular it prevents use of advanced queries with Oraclearrays as bind-variables!!!) 
+        Vector params = new Vector(1);
+        params.add(new Integer(1));
+        List res = (List) getServerSession().executeQuery(query, params);
+        assertTrue(res.size() == 1);
+    }
 }
 

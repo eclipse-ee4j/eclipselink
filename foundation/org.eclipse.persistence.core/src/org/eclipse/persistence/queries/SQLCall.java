@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     arnaud nauwynck, tware - Bug 274975 - ensure custom sql calls are only translated once
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -28,6 +29,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
  */
 public class SQLCall extends DatabaseCall implements QueryStringCall {
     protected boolean hasCustomSQLArguments;
+    transient protected boolean isTranslatedCustomQuery;
 
     /**
      * PUBLIC:
@@ -36,6 +38,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
     public SQLCall() {
         super();
         this.hasCustomSQLArguments = false;
+        this.isTranslatedCustomQuery = false;
     }
 
     /**
@@ -268,6 +271,36 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         setSQLStringInternal(sqlString);
     }
 
+    /**
+     * INTERNAL:
+     * Keep track of the fact that this call has been translated.  This information is used to
+     * ensure the translation code for a custom SQLCall is only run once
+     * In the case of inheritance we will try to call the translation code once to get the
+     * list of types and again for each subclass
+     */
+    @Override
+    public void translateCustomQuery() {
+        super.translateCustomQuery();
+        isTranslatedCustomQuery = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Only translate the call if it was not previously translated
+     * 
+     * This code ensures the translation code for a custom SQLCall is only run once
+     * In the case of inheritance we will try to call the translation code once to get the
+     * list of types and again for each subclass
+     */
+    @Override
+    public void translatePureSQLCustomQuery() {
+        if (isTranslatedCustomQuery) {
+            return;
+        }
+        super.translatePureSQLCustomQuery();
+        isTranslatedCustomQuery = true;
+    }
+    
     /**
      * INTERNAL:
      * All values are printed as ? to allow for parameter binding or translation during the execute of the call.
