@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlMixed;
@@ -367,6 +368,11 @@ public class AnnotationsProcessor {
                 info.setXmlTransient(true);
             }
 
+            // handle @XmlInlineBinaryData
+            if (helper.isAnnotationPresent(javaClass, XmlInlineBinaryData.class)) {
+                info.setInlineBinaryData(true);
+            }
+            
             // handle @XmlRootElement
             processXmlRootElement(javaClass, info);
 
@@ -1258,7 +1264,7 @@ public class AnnotationsProcessor {
 
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
-
+        
         // if there is a TypeInfo for ptype check it for transient, otherwise check the class
         TypeInfo pTypeInfo = typeInfo.get(ptype.getQualifiedName());
         if ((pTypeInfo != null && !pTypeInfo.isTransient()) || !helper.isAnnotationPresent(ptype, XmlTransient.class)) {
@@ -1531,6 +1537,10 @@ public class AnnotationsProcessor {
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlMimeType.class)) {
             property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
+        }
+        // set indicator for inlining binary data - setting this to true on a non-binary data type won't have any affect 
+        if (helper.isAnnotationPresent(property.getElement(), XmlInlineBinaryData.class) || info.isBinaryDataToBeInlined()) {
+            property.setisInlineBinaryData(true);
         }
 
         // Get schema-type info if specified and set it on the property for later use:

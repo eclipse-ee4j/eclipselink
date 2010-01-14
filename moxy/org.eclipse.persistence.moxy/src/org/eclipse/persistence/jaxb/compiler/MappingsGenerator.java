@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
@@ -861,7 +860,7 @@ public class MappingsGenerator {
         } else if (property.isMtomAttachment()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
-        if (helper.isAnnotationPresent(property.getElement(), XmlInlineBinaryData.class)) {
+        if (property.isInlineBinaryData()) {
             mapping.setShouldInlineBinaryData(true);
         }
         // use a non-dynamic implementation of MimeTypePolicy to wrap the MIME string
@@ -900,7 +899,7 @@ public class MappingsGenerator {
         } else if (property.isMtomAttachment()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
-        if (helper.isAnnotationPresent(property.getElement(), XmlInlineBinaryData.class)) {
+        if (property.isInlineBinaryData()) {
             mapping.setShouldInlineBinaryData(true);
         }
         // use a non-dynamic implementation of MimeTypePolicy to wrap the MIME string

@@ -51,6 +51,7 @@ public class Property {
     private QName schemaType;
     private boolean isSwaAttachmentRef;
     private boolean isMtomAttachment;
+    private boolean isInlineBinaryData;
     private String mimeType;
     private JavaClass type;
     private JavaClass adapterClass;
@@ -239,7 +240,31 @@ public class Property {
     public void setIsMtomAttachment(boolean b) {
         isMtomAttachment = b;
     }
-    
+
+    /**
+     * Indicates if XOP encoding should be disabled for datatypes that 
+     * are bound to base64-encoded binary data in XML.
+     * 
+     * @return true if XOP encoding should be disabled for datatypes
+     * that are bound to base64-encoded binary data in XML; false if 
+     * not
+     */
+    public boolean isInlineBinaryData() {
+        return isInlineBinaryData;
+    }
+
+    /**
+     * Sets the flag that indicates if XOP encoding should  be disabled
+     * for datatypes that are bound to base64-encoded binary data in 
+     * XML.
+
+     * @param b if true, XOP encoding will be disabled for datatypes 
+     * that are bound to base64-encoded binary data in XML.
+     */
+    public void setisInlineBinaryData(boolean b) {
+        isInlineBinaryData = b;
+    }
+
     public boolean isRequired() {
         return isRequired;
     }

@@ -92,6 +92,8 @@ public class TypeInfo {
 
     private String anyAttributePropertyName;
     private String anyElementPropertyName;
+    
+    private boolean isBinaryDataInlined;
 
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
@@ -788,5 +790,24 @@ public class TypeInfo {
      */
     public void setAnyAttributePropertyName(String anyAttributePropertyName) {
         this.anyAttributePropertyName = anyAttributePropertyName;
+    }
+
+    /**
+     * Indicates if all binary data types are to be inlined for this class.
+     *     
+     * @return
+     */
+    public boolean isBinaryDataToBeInlined() {
+        return isBinaryDataInlined;
+    }
+
+    /**
+     * Sets the flag that indicates if all binary data types are to 
+     * be inlined for this class.
+     * 
+     * @param isBinaryDataInlined
+     */
+    public void setInlineBinaryData(boolean isBinaryDataInlined) {
+        this.isBinaryDataInlined = isBinaryDataInlined;
     }
 }

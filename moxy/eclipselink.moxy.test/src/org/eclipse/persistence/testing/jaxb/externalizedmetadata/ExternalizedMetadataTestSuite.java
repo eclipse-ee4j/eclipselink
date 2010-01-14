@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Xml
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist.XmlListTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.XmlMimeTypeCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed.XmlMixedTestCases;
@@ -81,6 +82,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlSchemaTypeTestCases.class);
         suite.addTestSuite(XmlSchemaTypesTestCases.class);
         suite.addTestSuite(XmlEnumTestCases.class);
+        suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         return suite;
     }
     
