@@ -179,6 +179,11 @@ public class XMLProcessor {
                         }
                     }
 
+                    // handle @XmlInlineBinaryData override
+                    if (javaType.isSetXmlInlineBinaryData()) {
+                        info.setInlineBinaryData(javaType.isXmlInlineBinaryData());
+                    }
+                    
                     // handle @XmlTransient override
                     if (javaType.isSetXmlTransient()) {
                         info.setXmlTransient(javaType.isXmlTransient());
@@ -443,6 +448,9 @@ public class XMLProcessor {
 
         // set required
         oldProperty.setIsRequired(xmlAttribute.isRequired());
+        
+        // set xml-inline-binary-data
+        oldProperty.setisInlineBinaryData(xmlAttribute.isXmlInlineBinaryData());
 
         // set schema name
         QName qName;
@@ -518,6 +526,9 @@ public class XMLProcessor {
 
         // set required
         oldProperty.setIsRequired(xmlElement.isRequired());
+
+        // set xml-inline-binary-data
+        oldProperty.setisInlineBinaryData(xmlElement.isXmlInlineBinaryData());
 
         // set nillable
         oldProperty.setNillable(xmlElement.isNillable());

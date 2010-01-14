@@ -12,11 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata;
 
+import java.util.HashMap;
+
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentMarshaller;
 
 public class MyAttachmentMarshaller extends AttachmentMarshaller {
-    static final String BOGUS_ID = "c_id0";
+    public static int count = 0;
+    public static HashMap attachments = new HashMap();
+    public static final String BOGUS_ID = "c_id0";
 
     public boolean isXOPPackage() {
         return true;
@@ -24,7 +28,12 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
 
     // SATISFY INTERFACE IMPLEMENTATION
     public String addSwaRefAttachment(DataHandler data) { return BOGUS_ID; }
-    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BOGUS_ID; }
-    public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) { return BOGUS_ID; }
+    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BOGUS_ID; } 
+    public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
+        String id = BOGUS_ID;
+        MyAttachmentMarshaller.count++;
+        attachments.put(id, bytes);
+        return id;
+    }
     public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) { return BOGUS_ID; }
 }

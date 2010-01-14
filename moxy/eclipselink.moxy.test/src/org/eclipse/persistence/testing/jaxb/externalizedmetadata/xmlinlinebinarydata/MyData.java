@@ -12,27 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata;
 
-import java.io.IOException;
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import java.util.Arrays;
 
-public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
-    public boolean isXOPPackage() {
-        return true;
-    }
-
-    public byte[] getAttachmentAsByteArray(String cid) {
-        Object obj = MyAttachmentMarshaller.attachments.get(cid);
-        if(obj instanceof byte[]){
-            return (byte[])obj;
-        }
-        
+@javax.xml.bind.annotation.XmlRootElement(name="my-data")
+public class MyData {
+    //@javax.xml.bind.annotation.XmlInlineBinaryData
+    public byte[] bytes;
+    
+    public boolean equals(Object obj) {
+        MyData mdObj;
         try {
-            return ((String)((DataHandler)obj).getContent()).getBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }        
+            mdObj = (MyData) obj;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        return Arrays.equals(bytes, mdObj.bytes);
     }
-    public DataHandler getAttachmentAsDataHandler(String cid) { return null; }
 }

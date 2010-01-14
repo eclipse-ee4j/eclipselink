@@ -401,6 +401,14 @@ public class JavaType {
         this.xmlInlineBinaryData = value;
     }
 
+    /**
+     * Indicates if xmlInlineBinaryData has been set, i.e. is non-null.
+     * 
+     * @return true if xmlInlineBinaryData is non-null, false otherwise
+     */
+    public boolean isSetXmlInlineBinaryData() {
+        return xmlInlineBinaryData != null;
+    }
 
     /**
      * <p>Java class for anonymous complex type.
