@@ -20,6 +20,7 @@ package org.eclipse.persistence.internal.dbws;
 // EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
+import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 
 /**
  * <p><b>INTERNAL</b>: runtime implementation of EclipseLink Database Web Service (DBWS)
@@ -30,6 +31,7 @@ import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 public class DBWSAdapter extends XRServiceAdapter {
     
     protected Schema extendedSchema;
+    protected XMLAttachmentUnmarshaller currentAttachmentUnmarshaller;
 
     public Schema getExtendedSchema() {
       return extendedSchema;
@@ -37,6 +39,13 @@ public class DBWSAdapter extends XRServiceAdapter {
 
     public void setExtendedSchema(Schema extendedSchema) {
       this.extendedSchema = extendedSchema;
+    }
+
+    public XMLAttachmentUnmarshaller getCurrentAttachmentUnmarshaller() {
+        return currentAttachmentUnmarshaller;
+    }
+    public void setCurrentAttachmentUnmarshaller(XMLAttachmentUnmarshaller currentAttachmentUnmarshaller) {
+        this.currentAttachmentUnmarshaller = currentAttachmentUnmarshaller;
     }
 
 }

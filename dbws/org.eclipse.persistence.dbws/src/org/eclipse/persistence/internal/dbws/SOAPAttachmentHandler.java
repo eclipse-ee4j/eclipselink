@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.dbws;
 // Javase imports
 import java.util.HashMap;
 import java.util.Map;
+import static java.util.UUID.randomUUID;
 
 // Java extension imports
 import javax.activation.DataHandler;
@@ -61,14 +62,21 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
     }
     
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
-        return null;
+        String name = "cid:" + randomUUID().toString();
+        attachments.put(name, data);
+        return name;
     }
     
-    public String addMtomAttachment(byte[] data, int start, int offset, String mimeType, String elementName, String namespace) {
-        return null;
+    public String addMtomAttachment(byte[] data, int start, int len, String mimeType, 
+        String elementName, String namespace) {
+        String name = "cid:" + randomUUID().toString();
+        DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(data,
+            "application/octet-stream"));
+        attachments.put(name, dataHandler);
+        return name;
     }
 
     public boolean isXOPPackage() {
-        return false;
+        return true;
     }
 }

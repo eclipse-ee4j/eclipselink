@@ -223,6 +223,7 @@ public class SOAPResponseWriter {
                 message.addAttachmentPart(part);
             }
         }
+        message.saveChanges();
 
         return message;
     }

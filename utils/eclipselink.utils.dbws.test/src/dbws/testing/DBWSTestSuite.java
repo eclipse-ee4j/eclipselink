@@ -95,6 +95,13 @@ public class DBWSTestSuite {
     public static final String OPTLOCK_SERVICE_NAMESPACE = "urn:" + OPTLOCK_SERVICE;
     public static final String OPTLOCK_PORT = OPTLOCK_SERVICE + "Port";
 
+    public static final String MTOM = "mtom";
+    public static final String MTOM_TEST = MTOM + "Test";
+    public static final String MTOM_SERVICE = MTOM + "Service";
+    public static final String MTOM_NAMESPACE = "urn:" + MTOM;
+    public static final String MTOM_SERVICE_NAMESPACE = "urn:" + MTOM_SERVICE;
+    public static final String MTOM_PORT = MTOM_SERVICE + "Port";
+
     // JUnit test fixtures
 
     public static String DBWS_BUILDER_XML_USERNAME;

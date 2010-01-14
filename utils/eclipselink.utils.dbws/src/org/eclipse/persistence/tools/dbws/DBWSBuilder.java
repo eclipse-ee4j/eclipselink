@@ -726,18 +726,35 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLDirectMapping xdm = null;
                 QName qName = getXMLTypeFromJDBCType(jdbcType);
                 // figure out if binary attachments are required
-                boolean isSwaRef = false;
+                boolean binaryAttach = false;
+                String attachmentType = null;
                 if (qName == BASE_64_BINARY_QNAME) {
                     for (OperationModel om : operations) {
                         if (om.isTableOperation()) {
                             TableOperationModel tom = (TableOperationModel)om;
+                            if (tom.getBinaryAttachment()) {
+                                binaryAttach = true;
+                                if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                                    attachmentType = "MTOM";
+                                }
+                                else { 
+                                    attachmentType = "SWAREF";
+                                }
+                                // only need one operation to require attachments
+                                break;
+                            }
                             if (tom.additionalOperations.size() > 0) {
                                 for (OperationModel om2 : tom.additionalOperations) {
                                     if (om2.isProcedureOperation()) {
                                         ProcedureOperationModel pom = (ProcedureOperationModel)om2;
                                         if (pom.getBinaryAttachment()) {
-                                            // only need one operation to require attachments
-                                            isSwaRef = true;
+                                            binaryAttach = true;
+                                            if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                                                attachmentType = "MTOM";
+                                            }
+                                            else { 
+                                                attachmentType = "SWAREF";
+                                            }
                                             break;
                                         }
                                     }
@@ -745,10 +762,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                             }
                         }
                     }
-                    if (isSwaRef) {
+                    if (binaryAttach) {
                         xdm = new XMLBinaryDataMapping();
                         XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)xdm;
-                        xbdm.setSwaRef(isSwaRef);
+                        if (attachmentType.equals("SWAREF")) {
+                            xbdm.setSwaRef(true);
+                        }
                         xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
                     }
                     else {
@@ -797,14 +816,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 desc.addMapping(dtfm);
                 xdesc.addMapping(xdm);
-                if (!isSwaRef && style == ELEMENT) {
+                if (binaryAttach && "MTOM".equals(attachmentType) && style == ELEMENT) {
                     xPath += "/text()";
                 }
                 xdm.setXPath(xPath);
                 XMLField xmlField = (XMLField)xdm.getField();
                 xmlField.setRequired(true);
                 xmlField.setSchemaType(qName);
-                if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
+                if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
                     // need xsd namespaces 
                     nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
                 }
@@ -1671,6 +1690,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             useSOAP12 = s.toLowerCase().equals("true");
         }
         return useSOAP12;
+    }
+    
+    public boolean mtomEnabled() {
+        boolean mtomEnabled = false;
+        for (OperationModel opModel : getOperations()) {
+            String attachmentType = opModel.getAttachmentType();
+            if ("MTOM".equalsIgnoreCase(attachmentType) || "SWAREF".equalsIgnoreCase(attachmentType)) {
+                mtomEnabled = true;
+                break;
+            }
+        }
+        return mtomEnabled;
     }
     
     public void setTargetNamespace(String targetNamespace) {
