@@ -34,5 +34,11 @@ public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
             return null;
         }        
     }
-    public DataHandler getAttachmentAsDataHandler(String cid) { return null; }
+    public DataHandler getAttachmentAsDataHandler(String cid) {
+        Object obj = MyAttachmentMarshaller.attachments.get(cid);
+        if (obj instanceof DataHandler) {
+            return (DataHandler)obj;
+        }
+        return null;
+    }
 }

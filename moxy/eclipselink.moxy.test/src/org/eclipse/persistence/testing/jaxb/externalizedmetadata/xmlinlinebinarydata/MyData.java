@@ -14,11 +14,17 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinar
 
 import java.util.Arrays;
 
+import javax.activation.DataHandler;
+
 @javax.xml.bind.annotation.XmlRootElement(name="my-data")
 public class MyData {
-    //@javax.xml.bind.annotation.XmlInlineBinaryData
+    private DataHandler myDataHandler;
+
     public byte[] bytes;
     
+    public DataHandler getData() { return myDataHandler; }
+    public void setData(DataHandler data) { myDataHandler = data; }
+
     public boolean equals(Object obj) {
         MyData mdObj;
         try {

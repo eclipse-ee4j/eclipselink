@@ -20,20 +20,26 @@ import javax.xml.bind.attachment.AttachmentMarshaller;
 public class MyAttachmentMarshaller extends AttachmentMarshaller {
     public static int count = 0;
     public static HashMap attachments = new HashMap();
-    public static final String BOGUS_ID = "c_id0";
+    public static final String BYTES_ID = "c_id0";
+    public static final String DATA_ID = "c_id1";
 
     public boolean isXOPPackage() {
         return true;
     }
 
     // SATISFY INTERFACE IMPLEMENTATION
-    public String addSwaRefAttachment(DataHandler data) { return BOGUS_ID; }
-    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BOGUS_ID; } 
+    public String addSwaRefAttachment(DataHandler data) { return DATA_ID; }
+    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BYTES_ID; } 
     public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
-        String id = BOGUS_ID;
-        MyAttachmentMarshaller.count++;
+        String id = BYTES_ID;
+        count++;
         attachments.put(id, bytes);
         return id;
     }
-    public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) { return BOGUS_ID; }
+    public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) {
+        String id = DATA_ID;
+        count++;
+        attachments.put(id, data);
+        return id;
+    }
 }

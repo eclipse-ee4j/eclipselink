@@ -5,6 +5,7 @@
             <xml-root-element name="my-data"/>
             <java-attributes>
                 <xml-element java-attribute="bytes" xml-inline-binary-data="true" />
+                <xml-element java-attribute="data" xml-inline-binary-data="true" />
             </java-attributes>
         </java-type>
     </java-types>

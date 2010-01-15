@@ -3,6 +3,7 @@
    <xsd:complexType name="myData">
       <xsd:sequence>
          <xsd:element name="bytes" type="xsd:base64Binary"/>
+         <xsd:element name="data" type="xsd:base64Binary" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="my-data" type="myData"/>

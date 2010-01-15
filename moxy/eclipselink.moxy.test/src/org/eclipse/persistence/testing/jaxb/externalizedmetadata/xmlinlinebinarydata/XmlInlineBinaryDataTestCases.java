@@ -91,20 +91,13 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
+        ctrlData.setData(data);
 
-        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BOGUS_ID, new byte[] { 0, 1, 2, 3 });
-
-////////////////        
-        //try {
-        //    Marshaller marshaller = jaxbContext.createMarshaller();
-        //    marshaller.marshal(ctrlData, System.out);
-        //} catch (JAXBException e) {
-        //    e.printStackTrace();
-        //    fail("Marshal operation failed.");
-        //}
-///////////////
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
         
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -237,14 +230,19 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
+        ctrlData.setData(data);
+
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
         
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
-        String instanceDoc = PATH + "mydata.xml";
+        String instanceDoc = PATH + "mydata-handler.xml";
         InputStream iDocStream = loader.getResourceAsStream(instanceDoc);
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
@@ -265,6 +263,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         Document testDoc = parser.newDocument();
         try {
             marshaller.marshal(ctrlData, testDoc);
+            //marshaller.marshal(ctrlData, System.out);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");
@@ -308,16 +307,19 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
-        
-        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BOGUS_ID, new byte[] { 0, 1, 2, 3 });
+        ctrlData.setData(data);
+
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
 
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
-        String instanceDoc = PATH + "mydata.xml";
+        String instanceDoc = PATH + "mydata-xop.xml";
         InputStream iDocStream = loader.getResourceAsStream(instanceDoc);
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
@@ -354,7 +356,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-
+    
     /**
      * Tests class level XmlInlineBinaryData metadata override.  Here, there are no
      * class annotations, and no property level XML metadata declarations.
@@ -452,14 +454,19 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyData ctrlData = new MyData();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
+        ctrlData.setData(data);
+
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
+        MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
         
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
-        String instanceDoc = PATH + "mydata.xml";
+        String instanceDoc = PATH + "mydata-handler.xml";
         InputStream iDocStream = loader.getResourceAsStream(instanceDoc);
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
