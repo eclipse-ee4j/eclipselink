@@ -145,7 +145,6 @@ import org.eclipse.persistence.tools.dbws.oracle.PLSQLHelperObjectsBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLORDescriptorBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
-import static org.eclipse.persistence.internal.helper.ClassConstants.ABYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
@@ -725,10 +724,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
                 XMLDirectMapping xdm = null;
                 QName qName = getXMLTypeFromJDBCType(jdbcType);
+                Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
+                    databasePlatform);
                 // figure out if binary attachments are required
                 boolean binaryAttach = false;
                 String attachmentType = null;
-                if (qName == BASE_64_BINARY_QNAME) {
+                if (BASE_64_BINARY_QNAME.equals(qName)) {
+                    // use primitive byte[] array, not object Byte[] array
+                    attributeClass = APBYTE;
                     for (OperationModel om : operations) {
                         if (om.isTableOperation()) {
                             TableOperationModel tom = (TableOperationModel)om;
@@ -780,12 +783,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     xdm = new XMLDirectMapping();
                 }
                 DirectToFieldMapping dtfm = new DirectToFieldMapping();
-                Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
-                	databasePlatform);
-                if (qName == BASE_64_BINARY_QNAME && attributeClass == ABYTE) {
-                    // switch to primitive byte[] from Byte[]
-                    attributeClass = APBYTE;
-                }
                 dtfm.setAttributeClassificationName(attributeClass.getName());
                 String fieldName = nct.generateElementAlias(columnName);
                 dtfm.setAttributeName(fieldName);
@@ -816,7 +813,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 desc.addMapping(dtfm);
                 xdesc.addMapping(xdm);
-                if (binaryAttach && "MTOM".equals(attachmentType) && style == ELEMENT) {
+                if (attributeClass != APBYTE) {
                     xPath += "/text()";
                 }
                 xdm.setXPath(xPath);
