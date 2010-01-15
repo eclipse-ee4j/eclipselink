@@ -62,13 +62,13 @@ public class DomHandlerConverter implements XMLConverter {
 		    Class<? extends DomHandler> domHandlerClass = cMgr.convertClassNameToClass(domHandlerClassName);
 		    
 			this.domHandler = domHandlerClass.newInstance();
-			
+
 			Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class[]{ValidationEventHandler.class}); 
-			resultType = createUnmarshallerMethod.getReturnType();
-			
-            Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class[]{resultType});
-			elementClass = getElementMethod.getReturnType();
-			
+			resultType = PrivilegedAccessHelper.getMethodReturnType(createUnmarshallerMethod);
+
+			Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class[]{resultType});
+			elementClass = PrivilegedAccessHelper.getMethodReturnType(getElementMethod);
+
 			xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
 			xmlTransformer.setFormattedOutput(true);
 		} catch(Exception ex) {

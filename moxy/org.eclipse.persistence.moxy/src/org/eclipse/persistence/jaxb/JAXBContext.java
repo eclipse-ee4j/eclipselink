@@ -445,10 +445,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
         Class boundType = Object.class;
-        
-        for (Method method:adapterClass.getDeclaredMethods()) {
+
+        for (Method method:PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
             if (method.getName().equals("marshal")) {
-                Class returnType = method.getReturnType();              
+                Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
                 if(!returnType.getName().equals(boundType.getName())) {
                     boundType = returnType;
                     break;

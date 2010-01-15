@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
@@ -34,15 +35,15 @@ import java.util.Collection;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A wrapper class for a JDK Class.  This implementation
- * of the TopLink JAXB 2.0 Java model simply makes reflective calls on the 
- * underlying JDK object. 
- * 
+ * of the EclipseLink JAXB 2.X Java model simply makes reflective calls on the
+ * underlying JDK object.
+ *
  * <p><b>Responsibilities:</b>
  * <ul>
- * <li>Provide access to the underlying JDK Class' name, package, 
+ * <li>Provide access to the underlying JDK Class' name, package,
  * method/field names and parameters, annotations, etc.</li>
  * </ul>
- * 
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see org.eclipse.persistence.jaxb.javamodel.JavaClass
  * @see java.lang.Class
@@ -59,7 +60,7 @@ public class JavaClassImpl implements JavaClass {
         jType = javaType;
         jClass = javaClass;
     }
-    
+
     public Collection getActualTypeArguments() {
         ArrayList<JavaClassImpl> argCollection = new ArrayList<JavaClassImpl>();
         if (jType instanceof ParameterizedType) {
@@ -70,20 +71,20 @@ public class JavaClassImpl implements JavaClass {
                     ParameterizedType pt = (ParameterizedType) type;
                     argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType()));
                 } else if(type instanceof WildcardType){
-                	Type[] upperTypes = ((WildcardType)type).getUpperBounds();
-                	if(upperTypes.length >0){
-	                	Type upperType = upperTypes[0];  
-	                	if(upperType instanceof Class){
-	                		argCollection.add(new JavaClassImpl((Class) upperType));
-	                	}
-                	}
+                    Type[] upperTypes = ((WildcardType)type).getUpperBounds();
+                    if(upperTypes.length >0){
+                        Type upperType = upperTypes[0];
+                        if(upperType instanceof Class){
+                            argCollection.add(new JavaClassImpl((Class) upperType));
+                        }
+                    }
                 } else if (type instanceof Class) {
                     argCollection.add(new JavaClassImpl((Class) type));
                 } else if(type instanceof GenericArrayType) {
-                	Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
-                	genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
-                	argCollection.add(new JavaClassImpl(genericTypeClass));
-                } 
+                    Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
+                    genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
+                    argCollection.add(new JavaClassImpl(genericTypeClass));
+                }
             }
         }
         return argCollection;
@@ -92,7 +93,7 @@ public class JavaClassImpl implements JavaClass {
     public String toString() {
         return getName();
     }
-    
+
     /**
      * Assumes JavaType is a JavaClassImpl instance
      */
@@ -183,12 +184,13 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaConstructorImpl(jClass.getConstructor(params));
+            Constructor constructor = PrivilegedAccessHelper.getConstructorFor(jClass, params, true);
+            return new JavaConstructorImpl(constructor);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
     }
-    
+
     public JavaConstructor getDeclaredConstructor(JavaClass[] paramTypes) {
         if (paramTypes == null) {
             paramTypes = new JavaClass[0];
@@ -205,8 +207,8 @@ public class JavaClassImpl implements JavaClass {
         } catch (NoSuchMethodException nsme) {
             return null;
         }
-    }    
-    
+    }
+
     public Collection getConstructors() {
         Constructor[] constructors = this.jClass.getConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
@@ -215,7 +217,7 @@ public class JavaClassImpl implements JavaClass {
         }
         return constructorCollection;
     }
-    
+
     public Collection getDeclaredConstructors() {
         Constructor[] constructors = this.jClass.getDeclaredConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
@@ -226,8 +228,9 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaField getField(String arg0) {
-        try { 
-            return new JavaFieldImpl(jClass.getField(arg0));
+        try {
+            Field field = PrivilegedAccessHelper.getField(jClass, arg0, true);
+            return new JavaFieldImpl(field);
         } catch (NoSuchFieldException nsfe) {
             return null;
         }
@@ -235,7 +238,7 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getFields() {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
-        Field[] fields = jClass.getFields();
+        Field[] fields = PrivilegedAccessHelper.getFields(jClass);
         for (Field field : fields) {
             fieldCollection.add(new JavaFieldImpl(field));
         }
@@ -245,7 +248,7 @@ public class JavaClassImpl implements JavaClass {
     public Class getJavaClass() {
         return jClass;
     }
-    
+
     /**
      * Assumes JavaType[] contains JavaClassImpl instances
      */
@@ -261,7 +264,8 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaMethodImpl(jClass.getMethod(arg0, params));
+            Method method = PrivilegedAccessHelper.getMethod(jClass, arg0, params, true);
+            return new JavaMethodImpl(method);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -269,7 +273,7 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getMethods() {
         ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
-        Method[] methods = jClass.getMethods();
+        Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
             methodCollection.add(new JavaMethodImpl(method));
         }
@@ -284,19 +288,19 @@ public class JavaClassImpl implements JavaClass {
         return new JavaPackageImpl(jClass.getPackage());
     }
 
-    public String getPackageName() {    	
-    	if(jClass.getPackage() != null){
-    		return jClass.getPackage().getName();
-    	}else{    		
-    		String className = jClass.getCanonicalName();
-    		if(className !=null){
-    		    int index = className.lastIndexOf(".");
-    		    if(index > -1){
-    			    return className.substring(0, index);
-    		    }
-    	    }
-    	}
-    	return null;
+    public String getPackageName() {
+        if(jClass.getPackage() != null){
+            return jClass.getPackage().getName();
+        }else{
+            String className = jClass.getCanonicalName();
+            if(className !=null){
+                int index = className.lastIndexOf(".");
+                if(index > -1){
+                    return className.substring(0, index);
+                }
+            }
+        }
+        return null;
     }
 
     public String getQualifiedName() {
@@ -402,5 +406,6 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getDeclaredAnnotations() {
         return null;
-    }    
+    }
+
 }

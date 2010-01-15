@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.Session;
@@ -54,7 +55,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
         Object result = null;
 
         try {
-            result = fromStringMethod.invoke(enumClass, new Object[] { dataValue });
+            result = PrivilegedAccessHelper.invokeMethod(fromStringMethod, enumClass, new Object[] { dataValue }); 
         } catch (Exception ex) {
             throw XMLMarshalException.errorInvokingFromStringMethod(ex, enumClass.getName());
         }
@@ -83,7 +84,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
             }
         }
         try {
-            fromStringMethod = enumClass.getMethod("fromString", new Class[] { String.class });
+            fromStringMethod = PrivilegedAccessHelper.getMethod(enumClass, "fromString", new Class[] { String.class },true);
         } catch (Exception ex) {
             throw XMLMarshalException.errorInvokingFromStringMethod(ex, enumClass.getName());
         }

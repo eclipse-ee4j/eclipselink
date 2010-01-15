@@ -202,13 +202,13 @@ public class AnnotationsProcessor {
                         element.setXmlAttachmentRef(xmlAttachmentRef);
 
                         if(adapterClass != null) {
-                            Method[] tacMethods = adapterClass.getMethods();
+                            Method[] tacMethods = PrivilegedAccessHelper.getMethods(adapterClass);
                             Class declJavaType = Object.class;
 
                             for (int i = 0; i < tacMethods.length; i++) {
                                 Method method = tacMethods[i];
                                 if (method.getName().equals("marshal")) {
-                                    if(!(method.getReturnType() == declJavaType)) {
+                                    if(!(PrivilegedAccessHelper.getMethodReturnType(method) == declJavaType)) {
                                         declJavaType = method.getReturnType();
                                         break;
                                     }

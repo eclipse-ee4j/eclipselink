@@ -242,7 +242,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
 
             // for some reason, getDeclaredMethods is returning inherited
             // methods - need to filter
-            if (method.getName().equals("marshal") && (method.getReturnType() != Object.class) && (method.getParameterTypes()[0] != Object.class)) {
+            if (method.getName().equals("marshal") && (PrivilegedAccessHelper.getMethodReturnType(method) != Object.class) && (method.getParameterTypes()[0] != Object.class)) {
                 valueType = method.getReturnType();
                 boundType = method.getParameterTypes()[0];
                 break;

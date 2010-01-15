@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
@@ -27,7 +28,7 @@ import java.util.Collection;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A wrapper for a JDK Method.  This implementation
- * of the TopLink JAXB 2.0 Java model simply makes reflective calls on the 
+ * of the EclipseLink JAXB 2.X Java model simply makes reflective calls on the 
  * underlying JDK object. 
  * 
  * <p><b>Responsibilities:</b>
@@ -42,7 +43,7 @@ import java.util.Collection;
  */
 public class JavaMethodImpl implements JavaMethod {
     protected Method jMethod;
-    
+
     public JavaMethodImpl(Method javaMethod) {
         jMethod = javaMethod;
     }
@@ -85,7 +86,7 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass[] getParameterTypes() {
-        Class[] params = jMethod.getParameterTypes();
+        Class[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
             paramArray[i] = new JavaClassImpl(params[i]);
@@ -94,16 +95,18 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass getResolvedType() {
-        return new JavaClassImpl(jMethod.getReturnType());
+        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        return new JavaClassImpl(returnType);
     }
 
     public JavaClass getReturnType() {
         Type type = jMethod.getGenericReturnType();
+        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
-            return new JavaClassImpl(pType, jMethod.getReturnType());
+            return new JavaClassImpl(pType, returnType);
         }
-        return new JavaClassImpl(jMethod.getReturnType());
+        return new JavaClassImpl(returnType);
     }
 
     public boolean hasActualTypeArguments() {
@@ -160,4 +163,5 @@ public class JavaMethodImpl implements JavaMethod {
     public Collection getDeclaredAnnotations() {
         return null;
     }
+
 }
