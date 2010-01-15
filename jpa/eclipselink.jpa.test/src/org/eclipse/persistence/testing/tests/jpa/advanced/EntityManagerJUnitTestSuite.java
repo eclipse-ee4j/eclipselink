@@ -9288,8 +9288,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testInheritanceQuery(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        em.persist(new LargeProject());
+        LargeProject project = new LargeProject();
+        em.persist(project);
         commitTransaction(em);
+        int id = project.getId();
         clearCache();
         
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(Project.class);
@@ -9311,7 +9313,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // (using setShouldBindAllParameters(false) makes it work... 
         // but this is not good, in particular it prevents use of advanced queries with Oraclearrays as bind-variables!!!) 
         Vector params = new Vector(1);
-        params.add(new Integer(1));
+        params.add(id);
         List res = (List) getServerSession().executeQuery(query, params);
         assertTrue(res.size() == 1);
     }
