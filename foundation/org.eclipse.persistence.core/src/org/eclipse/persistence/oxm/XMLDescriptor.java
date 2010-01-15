@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -155,10 +155,7 @@ public class XMLDescriptor extends ClassDescriptor {
     * @param newDefaultRootElement the default root element to specify on this ClassDescriptor
     */
     public void setDefaultRootElement(String newDefaultRootElement) {
-        if (newDefaultRootElement != null) {
-        	// create the root element xml field based on default root element name
-            setDefaultRootElementField(new XMLField(newDefaultRootElement));
-
+        if(setDefaultRootElementField(newDefaultRootElement)) {
             int index = getTableNames().indexOf(newDefaultRootElement);
             if (index == 0) {
                 return;
@@ -432,24 +429,22 @@ public class XMLDescriptor extends ClassDescriptor {
     @Override
     public void setTableNames(Vector tableNames) {
         if (null != tableNames && tableNames.size() > 0) {
-            setDefaultRootElementField(new XMLField((String)tableNames.get(0)));
+            setDefaultRootElementField((String) tableNames.get(0));
         }
         super.setTableNames(tableNames);
     }
-    
-    
+
     /**
      * INTERNAL:
      * Sets the tables
      */
     public void setTables(Vector<DatabaseTable> theTables) {
-    	 if (null != theTables && theTables.size() > 0) {
-             setDefaultRootElementField(new XMLField(theTables.get(0).getName()));
+        if (null != theTables && theTables.size() > 0) {
+            setDefaultRootElementField(theTables.get(0).getName());
          }
          super.setTables(theTables);
-
     }
-    
+
     /**
      * INTERNAL:
      * Allow the descriptor to initialize any dependencies on this session.
@@ -751,6 +746,19 @@ public class XMLDescriptor extends ClassDescriptor {
 
     public XMLField getDefaultRootElementField() {
         return defaultRootElementField;
+    }
+
+    /**
+     * @return true if a new default root element field was created, else false.
+     */
+    private boolean setDefaultRootElementField(String newDefaultRootElement) {
+        if (null == newDefaultRootElement || 0 == newDefaultRootElement.length()) {
+            setDefaultRootElementField((XMLField) null);
+            return false;
+        }
+        // create the root element xml field based on default root element name
+        setDefaultRootElementField(new XMLField(newDefaultRootElement));
+        return true;
     }
 
     public void setDefaultRootElementField(XMLField xmlField) {

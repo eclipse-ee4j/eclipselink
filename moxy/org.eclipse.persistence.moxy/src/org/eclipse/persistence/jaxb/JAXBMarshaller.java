@@ -402,30 +402,37 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 	}
 
-	private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
-        Object value = object;
-	    Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+    private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
+        Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
         if(generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((WrappedValue)newObject).setValue(value);
-            value = newObject;
+            ((WrappedValue)newObject).setValue(object);
+            object = newObject;
         } else if(generatedClass != null) {
             //should be a many value
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
-            Object newObject = desc.getInstantiationPolicy().buildNewInstance();            
-            ((ManyValue)newObject).setItem(value);                
-            value = newObject;
+            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+            ((ManyValue)newObject).setItem(object);
+            object = newObject;
         }
-        
-        if(wrapperElement != null) {
-            value = wrapObjectInXMLRoot(wrapperElement, value);
-        }
-	    
-	    return value;
-	}
-	
-	private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value) {
+
+        if(null == wrapperElement) {
+            XMLRoot xmlRoot = new XMLRoot();
+            QName xmlTagName = typeMappingInfo.getXmlTagName();
+            if(null == xmlTagName) {
+                return object;
+            }
+            xmlRoot.setNamespaceURI(typeMappingInfo.getXmlTagName().getNamespaceURI());
+            xmlRoot.setLocalName(typeMappingInfo.getXmlTagName().getLocalPart());
+            xmlRoot.setObject(object);
+            return xmlRoot;
+            
+        } 
+        return wrapObjectInXMLRoot(wrapperElement, object);
+    }
+
+    private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value) {
         XMLRoot xmlroot = new XMLRoot();
         Object objectValue = value;
         xmlroot.setObject(objectValue);
