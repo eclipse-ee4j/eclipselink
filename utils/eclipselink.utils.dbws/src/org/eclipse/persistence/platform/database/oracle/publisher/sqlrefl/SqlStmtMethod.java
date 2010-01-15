@@ -121,9 +121,9 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
                     // e.printStackTrace(); //D+
                     throw new SQLException(e.getMessage());
                 }
-                sqlStmtParamModesV.add(new Integer(ProcedureMethod.IN));
+                sqlStmtParamModesV.add(Integer.valueOf(ProcedureMethod.IN));
                 if (unique) {
-                    uniqueParamModesV.add(new Integer(ProcedureMethod.IN));
+                    uniqueParamModesV.add(Integer.valueOf(ProcedureMethod.IN));
                 }
                 m_sqlStmtTmp = m_sqlStmtTmp.substring(0, idx0) + "?"
                     + m_sqlStmtTmp.substring(idx1 + 1);

@@ -167,14 +167,14 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                     try {
                         paramNames_v.add(paramName[i]);
                         String mode = paramMode[i];
-                        paramModes_v.add(new Integer((mode == null) ? ProcedureMethod.INOUT : (mode
+                        paramModes_v.add(Integer.valueOf((mode == null) ? ProcedureMethod.INOUT : (mode
                             .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
                             : ProcedureMethod.INOUT))));
                         paramTypes_v.add(m_reflector.addPlsqlDBType(paramTypeOwner[i],
                             paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
                             mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
                             sequence[i], this));
-                        paramNCharFormOfUse_v.add(new Boolean(mcharFormOfUse[i]));
+                        paramNCharFormOfUse_v.add(Boolean.valueOf(mcharFormOfUse[i]));
                     }
                     catch (SQLException e) {
                         e.printStackTrace();
@@ -284,13 +284,13 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             if (overload == null || overload.equals("")) {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
-                        new Integer(object_id), methodName, new Integer(sequence), null},
+                        Integer.valueOf(object_id), methodName, Integer.valueOf(sequence), null},
                     new String[0]);
             }
             else {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
-                        new Integer(object_id), methodName, new Integer(sequence), overload},
+                        Integer.valueOf(object_id), methodName, Integer.valueOf(sequence), overload},
                     new String[0]);
             }
             if (rowIter.hasNext()) {
