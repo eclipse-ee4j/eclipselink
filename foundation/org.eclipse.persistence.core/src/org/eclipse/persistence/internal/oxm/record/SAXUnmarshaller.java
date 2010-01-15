@@ -309,14 +309,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             xmlReader.setContentHandler(unmarshalRecord);
-            try {
-                unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-            } catch (SAXNotRecognizedException ex) {
-            } catch (SAXNotSupportedException ex) {
-                //if lexical handling is not supported by this parser, just ignore. 
-            }
+            xmlReader.setLexicalHandler(unmarshalRecord);
             xmlReader.parse(inputSource);
-
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {

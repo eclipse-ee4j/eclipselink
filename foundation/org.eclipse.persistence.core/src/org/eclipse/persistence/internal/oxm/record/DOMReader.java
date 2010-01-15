@@ -34,15 +34,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.ext.Locator2;
 
 /**
@@ -55,71 +48,23 @@ import org.xml.sax.ext.Locator2;
  *  </ul>
  *  
  */
-public class DOMReader extends XMLReader {
-    ContentHandler contentHandler;
-    LexicalHandler lexicalHandler;
+public class DOMReader extends XMLReaderAdapter {
     private Node currentNode;
     private DocumentPreservationPolicy docPresPolicy;
-
-    public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        return false;
-    }
-    
-    public void setFeature (String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {}
-    
-    public Object getProperty (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        return null;
-    }
-
-    public void setProperty (String name, Object value)	throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(name.equals("http://xml.org/sax/properties/lexical-handler")) {
-            lexicalHandler = (LexicalHandler)value;
-        }
-    }
-
-    public void setEntityResolver (EntityResolver resolver) {}
-
-    public EntityResolver getEntityResolver () {
-        return null;
-    }
-
-    public void setDTDHandler (DTDHandler handler) {}
-
-    public DTDHandler getDTDHandler () {
-        return null;
-    }
-
-    public void setContentHandler (ContentHandler handler) {
-        this.contentHandler = handler;
-    }
-
-    public ContentHandler getContentHandler () {
-        return this.contentHandler;
-    }
-
-    public void setErrorHandler (ErrorHandler handler) {}
-
-    public ErrorHandler getErrorHandler () {
-        return null;
-    }
 
     @Override
     public void parse(InputSource input) throws SAXException {
         if(input instanceof DOMInputSource) {
             Node node = ((DOMInputSource) input).getNode();
             if(contentHandler != null && contentHandler.getClass() == SAXUnmarshallerHandler.class){
-            	((SAXUnmarshallerHandler)contentHandler).setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
+                ((SAXUnmarshallerHandler)contentHandler).setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
             }
-            
             parse(node);
         }
     }
 
-
-    public void parse(String systemId) {}
- 
     public void parse (Node node) throws SAXException {
-        if(getContentHandler() == null) {
+        if(null == contentHandler) {
             return;
         }
         Element rootNode = null;
@@ -151,7 +96,7 @@ public class DOMReader extends XMLReader {
             return;
         }
         // Add each parent node up to root to the stack
-        List<Node> parentElements = new ArrayList();
+        List<Node> parentElements = new ArrayList<Node>();
         while (parent != null && parent.getNodeType() != Node.DOCUMENT_NODE) {
             parentElements.add(parent);
             parent = parent.getParentNode();
@@ -164,13 +109,13 @@ public class DOMReader extends XMLReader {
                     Attr next = (Attr)attrs.item(i);
                     String attrPrefix = next.getPrefix();
                     if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
-                        getContentHandler().startPrefixMapping(next.getLocalName(), next.getValue());
+                        contentHandler.startPrefixMapping(next.getLocalName(), next.getValue());
                     }
                 }
             }
         }
     }
-    
+
     protected void reportElementEvents(Element elem) throws SAXException {
         this.currentNode = elem;
         IndexedAttributeList attributes = buildAttributeList(elem);
@@ -184,9 +129,9 @@ public class DOMReader extends XMLReader {
         } else {
             qname = getQName(elem);
         }
-        getContentHandler().startElement(elem.getNamespaceURI(), lname, qname, attributes);
-        handleChildNodes(elem.getChildNodes());        
-        getContentHandler().endElement(elem.getNamespaceURI(), lname, qname);
+        contentHandler.startElement(elem.getNamespaceURI(), lname, qname, attributes);
+        handleChildNodes(elem.getChildNodes());
+        contentHandler.endElement(elem.getNamespaceURI(), lname, qname);
         endPrefixMappings(elem);
     }
  
@@ -197,7 +142,7 @@ public class DOMReader extends XMLReader {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if(attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
-                getContentHandler().startPrefixMapping(next.getLocalName(), next.getValue());
+                contentHandler.startPrefixMapping(next.getLocalName(), next.getValue());
                 // Handle XMLNS prefixed attributes
                 handleXMLNSPrefixedAttribute(elem, next);
             } else if(attrPrefix == null) {
@@ -206,38 +151,38 @@ public class DOMReader extends XMLReader {
                     name = next.getNodeName();
                 }
                 if(name != null && name.equals(XMLConstants.XMLNS)) {
-                    getContentHandler().startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
+                    contentHandler.startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
                 }
             }
             attributes.addAttribute(next);
         }
         return attributes;
     }
-    
+
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamedNodeMap attrs = elem.getAttributes();
         for(int i = 0, numOfAtts = attrs.getLength(); i < numOfAtts; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
-                getContentHandler().endPrefixMapping(next.getLocalName());
+                contentHandler.endPrefixMapping(next.getLocalName());
             } else if(attrPrefix == null) {
                 String name = next.getLocalName();
                 if(name == null) {
                     name = next.getNodeName();
                 }
                 if(name != null) {
-                    getContentHandler().endPrefixMapping(XMLConstants.EMPTY_STRING);
+                    contentHandler.endPrefixMapping(XMLConstants.EMPTY_STRING);
                 }
             }
         }
     }
-    
+
     protected String getQName(Element elem) throws SAXException {
         if (elem.getLocalName() == null) {
             return elem.getNodeName();
         }
-        
+
         String prefix = elem.getPrefix();
         if (prefix != null && prefix.length() > 0) {
             String qname = prefix + XMLConstants.COLON + elem.getLocalName();
@@ -247,7 +192,7 @@ public class DOMReader extends XMLReader {
             return elem.getLocalName();
         }
     }
-    
+
     /**
      * Handle XMLNS prefixed attribute.
      * 
@@ -276,11 +221,11 @@ public class DOMReader extends XMLReader {
         while(nextChild != null) {
             if(nextChild.getNodeType() == Node.TEXT_NODE) {
                 char[] value = ((Text)nextChild).getNodeValue().toCharArray();
-                getContentHandler().characters(value, 0, value.length);
+                contentHandler.characters(value, 0, value.length);
             } else if(nextChild.getNodeType() == Node.COMMENT_NODE) {
                 char[] value = ((Comment)nextChild).getNodeValue().toCharArray();
                 if (lexicalHandler != null) {
-	        	lexicalHandler.comment(value, 0, value.length);
+                    lexicalHandler.comment(value, 0, value.length);
                 }
             } else if(nextChild.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element)nextChild;
@@ -290,7 +235,7 @@ public class DOMReader extends XMLReader {
                     lexicalHandler.startCDATA();
                 }
                 char[] value = ((CDATASection)nextChild).getData().toCharArray();
-                getContentHandler().characters(value, 0, value.length);
+                contentHandler.characters(value, 0, value.length);
                 if(lexicalHandler != null) {
                     lexicalHandler.endCDATA();
                 }
@@ -298,21 +243,23 @@ public class DOMReader extends XMLReader {
             nextChild = nextChild.getNextSibling();
         }
     }
+
     /**
      * Trigger an endDocument event on the contenthandler.
      */
     protected void endDocument() throws SAXException {
-        getContentHandler().endDocument();
+        contentHandler.endDocument();
     }
 
     /**
      * Trigger a startDocument event on the contenthandler.
      */
     protected void startDocument() throws SAXException {
-        getContentHandler().startDocument();
+        contentHandler.startDocument();
     }
+
     /**
-     * A toplink specific callback into the Reader. This allows Objects to be 
+     * An EclipseLink specific callback into the Reader. This allows Objects to be 
      * associated with the XML Nodes they came from.
      */
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
@@ -336,11 +283,11 @@ public class DOMReader extends XMLReader {
     public DocumentPreservationPolicy getDocPresPolicy() {
         return docPresPolicy;
     }
-    
+
     public void setDocPresPolicy(DocumentPreservationPolicy policy) {
         docPresPolicy = policy;
     }
-    
+
     protected void setupLocator(Document doc) {
         LocatorImpl locator = new LocatorImpl();
         try {
@@ -358,21 +305,23 @@ public class DOMReader extends XMLReader {
         }
         this.contentHandler.setDocumentLocator(locator);
     }
+
     /**
      * Implementation of Attributes - used to pass along a given node's attributes
      * to the startElement method of the reader's content handler.
      */
     protected class IndexedAttributeList implements org.xml.sax.Attributes {
+
         private List<Attr> attrs;
-        
+
         public IndexedAttributeList() {
             attrs = new ArrayList();
         }
-        
+
         public void addAttribute(Attr attribute) {
             attrs.add(attribute);
         }
-        
+
         public String getQName(int index) {
             try {
                 Attr item = attrs.get(index);
@@ -384,19 +333,19 @@ public class DOMReader extends XMLReader {
                 return null;
             }
         }
-        
+
         public String getType(String namespaceUri, String localName) {
             return XMLConstants.CDATA;
         }
-        
+
         public String getType(int index) {
             return XMLConstants.CDATA;
         }
-        
+
         public String getType(String qname) {
             return XMLConstants.CDATA;
         }
-        
+
         public int getIndex(String qname) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 if (attrs.get(i).getName().equals(qname)) {
@@ -405,7 +354,7 @@ public class DOMReader extends XMLReader {
             }
             return -1;
         }
-        
+
         public int getIndex(String uri, String localName) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 Attr item = attrs.get(i);
@@ -417,11 +366,11 @@ public class DOMReader extends XMLReader {
             }
             return -1;
         }
-        
+
         public int getLength() {
             return attrs.size();
         }
-        
+
         public String getLocalName(int index) {
             try {
                 Attr item = attrs.get(index);
@@ -432,16 +381,16 @@ public class DOMReader extends XMLReader {
             } catch (IndexOutOfBoundsException iobe) {
                 return null;
             }
-        }        
+        }
 
         public String getURI(int index) {
             return attrs.get(index).getNamespaceURI();
         }
-        
+
         public String getValue(int index) {
             return (attrs.get(index)).getValue();
         }
-        
+
         public String getValue(String qname) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 Attr item = attrs.get(i);
@@ -469,47 +418,51 @@ public class DOMReader extends XMLReader {
             return null;
         }
     }
-    
+
     protected class LocatorImpl implements Locator2 {
+
         private String encoding;
         private String version;
-        
+
         public LocatorImpl() {
             encoding = "UTF-8";
             version = "1.0";
         }
+
         public String getEncoding() {
             return encoding;
         }
-        
+
         public int getColumnNumber() {
             //not supported here
             return 0;
         }
-        
+
         public String getSystemId() {
             return XMLConstants.EMPTY_STRING;
         }
-        
+
         public String getPublicId() {
             return XMLConstants.EMPTY_STRING;
         }
-        
+
         public String getXMLVersion() {
             return version;
         }
-        
+
         public int getLineNumber() {
             //not supported
             return 0;
         }
-        
+
         protected void setEncoding(String enc) {
             this.encoding = enc;
         }
-        
+
         protected void setXMLVersion(String xmlVersion) {
             this.version = xmlVersion;
         }
+
     }
+
 }

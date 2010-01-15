@@ -84,16 +84,16 @@ import org.xml.sax.ext.Locator2;
  */
 public class UnmarshalRecord extends XMLRecord implements ContentHandler, LexicalHandler {
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
-    private XMLReader xmlReader;
+    protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
     private XPathNode xPathNode;
     private int levelIndex;
     private UnmarshalRecord childRecord;
-    private UnmarshalRecord parentRecord;
+    protected UnmarshalRecord parentRecord;
     private DOMRecord transformationRecord;
     private List<UnmarshalRecord> selfRecords;
-    private Map indexMap;
+    private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
     private Map<ContainerValue, Object> containersMap;
     private boolean isBufferCDATA;
@@ -705,6 +705,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(this, unmappedContentHandler);
         unmappedContentHandlerWrapper.startElement(namespaceURI, localName, qName, atts);
         xmlReader.setContentHandler(unmappedContentHandlerWrapper);
+        xmlReader.setLexicalHandler(unmappedContentHandlerWrapper);
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
@@ -755,6 +756,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 }
                 pRec.endElement(namespaceURI, localName, qName);
                 xmlReader.setContentHandler(pRec);
+                xmlReader.setLexicalHandler(pRec);
             }
        } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
@@ -837,23 +839,23 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             resultNode = (XPathNode)nonAttributeChildrenMap.get(xPathFragment);
             if (null == resultNode) {
                 // POSITIONAL MAPPING
-                Integer newIndex;
+                int newIndex;
                 if (null == this.indexMap) {
                     this.indexMap = new HashMap();
-                    newIndex = new Integer(1);
+                    newIndex = 1;
                 } else {
-                    Integer oldIndex = (Integer)indexMap.get(xPathFragment);
+                    Integer oldIndex = indexMap.get(xPathFragment);
                     if (null == oldIndex) {
-                        newIndex = new Integer(1);
+                        newIndex = 1;
                     } else {
-                        newIndex = new Integer(oldIndex.intValue() + 1);
+                        newIndex = oldIndex.intValue() + 1;
                     }
                 }
                 indexMap.put(xPathFragment, newIndex);
                 XPathFragment positionalFragment = new XPathFragment();
                 positionalFragment.setNamespaceURI(xPathFragment.getNamespaceURI());
                 positionalFragment.setLocalName(xPathFragment.getLocalName());
-                positionalFragment.setIndexValue(newIndex.intValue());
+                positionalFragment.setIndexValue(newIndex);
                 resultNode = (XPathNode)nonAttributeChildrenMap.get(positionalFragment);
                 if (null == resultNode) {
                     // ANY MAPPING

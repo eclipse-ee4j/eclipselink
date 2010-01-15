@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -211,7 +212,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
             }
             handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-            unmarshalRecord.getXMLReader().setContentHandler(handler);
+            XMLReader xmlReader = unmarshalRecord.getXMLReader();
+            xmlReader.setContentHandler(handler);
+            xmlReader.setLexicalHandler(handler);
             return true;
         } catch(SAXException ex) {
             throw XMLMarshalException.unmarshalException(ex);

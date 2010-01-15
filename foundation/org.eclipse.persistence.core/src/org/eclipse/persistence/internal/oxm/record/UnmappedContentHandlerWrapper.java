@@ -60,8 +60,9 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
         this.depth--;
 
         if (0 == depth) {
-            getParentRecord().endElement(uri, localName, name);
-            getXMLReader().setContentHandler(this.getParentRecord());
+            parentRecord.endElement(uri, localName, name);
+            xmlReader.setContentHandler(parentRecord);
+            xmlReader.setLexicalHandler(parentRecord);
         }
     }
 

@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -113,34 +114,35 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                      qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
                  }
                  handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-                 unmarshalRecord.getXMLReader().setContentHandler(handler);
-        } else if (lastFragment.isAttribute()) {
-            //handle swaRef and inline attribute cases here:
-            String value = atts.getValue(lastFragment.getNamespaceURI(), lastFragment.getLocalName());
-            Object fieldValue = null;
-            if (xmlBinaryDataCollectionMapping.isSwaRef()) {
-                if (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) {
-                    if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                        fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value);
-                    } else {
-                        fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value);
+                 XMLReader xmlReader = unmarshalRecord.getXMLReader();
+                 xmlReader.setContentHandler(handler);
+                 xmlReader.setLexicalHandler(handler);
+            } else if (lastFragment.isAttribute()) {
+                //handle swaRef and inline attribute cases here:
+                String value = atts.getValue(lastFragment.getNamespaceURI(), lastFragment.getLocalName());
+                Object fieldValue = null;
+                if (xmlBinaryDataCollectionMapping.isSwaRef()) {
+                    if (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) {
+                        if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                            fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value);
+                        } else {
+                            fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value);
+                        }
+                        xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
+                                unmarshalRecord.getSession()));
                     }
+                } else {
+                    //value should be base64 binary string
+                    fieldValue = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
                     xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
                             unmarshalRecord.getSession()));
                 }
-            } else {
-                //value should be base64 binary string
-                fieldValue = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
-                xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
-                        unmarshalRecord.getSession()));
             }
-        }
             return true;
         } catch(SAXException ex) {
             throw XMLMarshalException.unmarshalException(ex);
         }
     }
-
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.getStringBuffer().reset();

@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -64,7 +65,9 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
             this.c_id = atts.getValue("", HREF_ATTRIBUTE_NAME);
         } else {
             //Return control to the UnmarshalRecord
-            record.getXMLReader().setContentHandler(record);
+            XMLReader xmlReader = record.getXMLReader();
+            xmlReader.setContentHandler(record);
+            xmlReader.setLexicalHandler(record);
             record.startElement(namespaceURI, localName, qName, atts);
         }
     }
@@ -111,12 +114,16 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
             }
             //Return control to the UnmarshalRecord
             if(!xmlField.isSelfField()){
-            	record.getXMLReader().setContentHandler(record);
+                XMLReader xmlReader = record.getXMLReader();
+                xmlReader.setContentHandler(record);
+                xmlReader.setLexicalHandler(record);
             }
         } else {
             if(!xmlField.isSelfField()){
                 //Return control to the parent record
-       		record.getXMLReader().setContentHandler(record);
+                XMLReader xmlReader = record.getXMLReader();
+                xmlReader.setContentHandler(record);
+                xmlReader.setLexicalHandler(record);
                 record.endElement(namespaceURI, localName, qName);
             }
         }

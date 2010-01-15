@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -49,7 +50,9 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 qnameString = xPathFragment.getPrefix()  +XMLConstants.COLON + qnameString;
             }
             handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-            unmarshalRecord.getXMLReader().setContentHandler(handler);
+            XMLReader xmlReader = unmarshalRecord.getXMLReader();
+            xmlReader.setContentHandler(handler);
+            xmlReader.setLexicalHandler(handler);
             return;
         }
 
@@ -175,7 +178,9 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
 
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
-            unmarshalRecord.getXMLReader().setContentHandler(builder);
+            XMLReader xmlReader = unmarshalRecord.getXMLReader();
+            xmlReader.setContentHandler(builder);
+            xmlReader.setLexicalHandler(null);
         } catch (SAXException ex) {
         }
     }

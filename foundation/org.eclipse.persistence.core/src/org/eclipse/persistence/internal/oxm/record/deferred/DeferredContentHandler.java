@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -52,8 +54,10 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
             SAXEvent nextEvent = events.get(i);
             nextEvent.processEvent(unmarshalRecord);
         }
-        if (parent.getXMLReader().getContentHandler().equals(this)) {
-            parent.getXMLReader().setContentHandler(unmarshalRecord);
+        XMLReader parentXMLReader = parent.getXMLReader();
+        if (parentXMLReader.getContentHandler().equals(this)) {
+            parentXMLReader.setContentHandler(unmarshalRecord);
+            parentXMLReader.setLexicalHandler(unmarshalRecord);
         }
     }
 
@@ -103,12 +107,14 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
             //we know it is a simple element
             processSimpleElement();
         } else if(startOccurred){
-            //we know it is an empty element            
+            //we know it is an empty element
             processEmptyElement();
         }
 
         if ((levelIndex == 0) && (parent != null)) {
-            parent.getXMLReader().setContentHandler(parent);
+            XMLReader xmlReader = parent.getXMLReader();
+            xmlReader.setContentHandler(parent);
+            xmlReader.setLexicalHandler(parent);
         }
     }
 

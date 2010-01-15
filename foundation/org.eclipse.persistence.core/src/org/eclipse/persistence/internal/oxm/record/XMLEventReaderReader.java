@@ -31,22 +31,14 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Convert and XMLEventReader into SAX events. 
  */
-public class XMLEventReaderReader extends XMLReader {
+public class XMLEventReaderReader extends XMLReaderAdapter {
 
-    private ContentHandler contentHandler;
-    private LexicalHandler lexicalHandler;
-    private ErrorHandler errorHandler;
     private int depth = 0;
     //Required because the EndElement fails to properly won't give the list of namespaces going out of
     //scope in some STAX implementations
@@ -54,33 +46,6 @@ public class XMLEventReaderReader extends XMLReader {
 
     public XMLEventReaderReader() {
         this.namespaces = new HashMap<Integer, List<Namespace>>();
-    }
-
-    @Override
-    public ContentHandler getContentHandler() {
-        return contentHandler;
-    }
-
-    @Override
-    public void setContentHandler(ContentHandler aContentHandler) {
-        this.contentHandler = aContentHandler;
-    }
-
-    @Override
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
-
-    @Override
-    public void setErrorHandler(ErrorHandler anErrorHandler) {
-        this.errorHandler = anErrorHandler;
-    }
-
-    @Override
-    public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(name.equals("http://xml.org/sax/properties/lexical-handler")) {
-            lexicalHandler = (LexicalHandler)value;
-        }
     }
 
     @Override
@@ -93,8 +58,6 @@ public class XMLEventReaderReader extends XMLReader {
             parse(xmlEventReader);
         }
     }
-
-    public void parse(String systemId) throws SAXException {}
 
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
         try {
@@ -145,7 +108,7 @@ public class XMLEventReaderReader extends XMLReader {
                 return;
             }
             case XMLEvent.END_ELEMENT: {
-                List<Namespace> declaredNs = this.namespaces.get(new Integer(depth));
+                List<Namespace> declaredNs = this.namespaces.get(depth);
                 depth--;
                 EndElement endElement = xmlEvent.asEndElement();
 
@@ -359,4 +322,5 @@ public class XMLEventReaderReader extends XMLReader {
         }
 
     }
+
 }

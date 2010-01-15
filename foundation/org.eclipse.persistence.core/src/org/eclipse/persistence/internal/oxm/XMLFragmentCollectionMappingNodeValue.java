@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -81,7 +82,9 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
-            unmarshalRecord.getXMLReader().setContentHandler(builder);
+            XMLReader xmlReader = unmarshalRecord.getXMLReader();
+            xmlReader.setContentHandler(builder);
+            xmlReader.setLexicalHandler(null);
         } catch(SAXException ex) {
             // Do nothing.
         }

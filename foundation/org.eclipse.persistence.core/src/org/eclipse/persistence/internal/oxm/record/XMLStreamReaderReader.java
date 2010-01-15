@@ -24,21 +24,14 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Convert and XMLStreamReader into SAX events. 
  */
-public class XMLStreamReaderReader extends XMLReader {
+public class XMLStreamReaderReader extends XMLReaderAdapter {
 
-    private ContentHandler contentHandler;
-    private LexicalHandler lexicalHandler;
-    private ErrorHandler errorHandler;
     private int depth = 0;
     private UnmarshalNamespaceContext unmarshalNamespaceContext;
 
@@ -47,34 +40,12 @@ public class XMLStreamReaderReader extends XMLReader {
     }
 
     @Override
-    public ContentHandler getContentHandler() {
-        return contentHandler;
-    }
-
-    @Override
     public void setContentHandler (ContentHandler handler) {
-        this.contentHandler = handler;
+        super.setContentHandler(handler);
         if(handler.getClass() == UnmarshalRecord.class){
             ((UnmarshalRecord)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
         }else if(handler.getClass() == SAXUnmarshallerHandler.class){
             ((SAXUnmarshallerHandler)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
-        }
-    }
-
-    @Override
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
-
-    @Override
-    public void setErrorHandler(ErrorHandler anErrorHandler) {
-        this.errorHandler = anErrorHandler;
-    }
-
-    @Override
-    public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(name.equals("http://xml.org/sax/properties/lexical-handler")) {
-            lexicalHandler = (LexicalHandler)value;
         }
     }
 
@@ -89,8 +60,6 @@ public class XMLStreamReaderReader extends XMLReader {
             parse(xmlStreamReader);
         }
     }
-
-    public void parse(String systemId) throws SAXException {}
 
     private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
         try {

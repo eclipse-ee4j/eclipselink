@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -98,9 +99,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 // Check if descriptor is for a wrapper, if it is null it out and let continue
                 if (workingDescriptor != null && workingDescriptor.isWrapper()) {
                     workingDescriptor = null;
-                }                       
-            }  
-         
+                }
+            }
+
             UnmarshalKeepAsElementPolicy policy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if (((workingDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
@@ -114,7 +115,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
                 }
                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-                unmarshalRecord.getXMLReader().setContentHandler(handler);
+                XMLReader xmlReader = unmarshalRecord.getXMLReader();
+                xmlReader.setContentHandler(handler);
+                xmlReader.setLexicalHandler(handler);
                 return true;
             }
         } catch (SAXException e) {

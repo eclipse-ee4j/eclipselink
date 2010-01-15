@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -171,7 +172,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             if (((workingDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
             }else if (workingDescriptor != null) {
-                processChild(xPathFragment, unmarshalRecord, atts, workingDescriptor, xmlAnyObjectMapping);                
+                processChild(xPathFragment, unmarshalRecord, atts, workingDescriptor, xmlAnyObjectMapping);
             }else{
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyObjectMapping.usesXMLRoot());
                 String qnameString = xPathFragment.getLocalName();
@@ -179,7 +180,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
                 }
                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
-                unmarshalRecord.getXMLReader().setContentHandler(handler);
+                XMLReader xmlReader = unmarshalRecord.getXMLReader();
+                xmlReader.setContentHandler(handler);
+                xmlReader.setLexicalHandler(handler);
                 return true;
             }
 

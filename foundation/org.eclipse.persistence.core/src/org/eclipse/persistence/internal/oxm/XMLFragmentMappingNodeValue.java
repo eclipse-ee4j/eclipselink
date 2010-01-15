@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -89,7 +90,9 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
-            unmarshalRecord.getXMLReader().setContentHandler(builder);
+            XMLReader xmlReader = unmarshalRecord.getXMLReader();
+            xmlReader.setContentHandler(builder);
+            xmlReader.setLexicalHandler(null);
         } catch (SAXException ex) {
             // Do nothing.
         }

@@ -22,6 +22,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.ext.LexicalHandler;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -42,30 +43,37 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 public class XMLReader implements org.xml.sax.XMLReader {
 
+    protected static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
+
     private org.xml.sax.XMLReader reader;
+    private boolean supportsLexicalHandler;
+    private LexicalHandlerWrapper lexicalHandlerWrapper;
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
+        this();
         this.reader = internalReader;
     }
 
-    public XMLReader() {}
-
-    public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        return reader.getFeature(name);
-    }
-    
-    public void setFeature (String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        reader.setFeature(name, value);
-    }
-    
-    public Object getProperty (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        return reader.getProperty(name);
+    public XMLReader() {
+        this.supportsLexicalHandler = true;
     }
 
-    public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        reader.setProperty(name, value);
+    public ContentHandler getContentHandler () {
+        return reader.getContentHandler();
     }
-        
+
+    public void setContentHandler (ContentHandler handler) {
+        reader.setContentHandler(handler);
+    }
+
+    public DTDHandler getDTDHandler () {
+        return reader.getDTDHandler();
+    }
+
+    public void setDTDHandler (DTDHandler handler) {
+        reader.setDTDHandler(handler);
+    }
+
     public void setEntityResolver (EntityResolver resolver) {
         reader.setEntityResolver(resolver);
     }
@@ -74,46 +82,127 @@ public class XMLReader implements org.xml.sax.XMLReader {
         return reader.getEntityResolver();
     }
 
-    public void setDTDHandler (DTDHandler handler) {
-        reader.setDTDHandler(handler);
-    }
-
-    public DTDHandler getDTDHandler () {
-        return reader.getDTDHandler();
-    }
-
-    public void setContentHandler (ContentHandler handler) {
-        reader.setContentHandler(handler);
-    }
-    
-
-    public ContentHandler getContentHandler () {
-        return reader.getContentHandler();
+    public ErrorHandler getErrorHandler () {
+        return reader.getErrorHandler();
     }
 
     public void setErrorHandler (ErrorHandler handler) {
         reader.setErrorHandler(handler);
     }
 
-    public ErrorHandler getErrorHandler () {
-        return reader.getErrorHandler();
+    public LexicalHandler getLexicalHandler() {
+        if(supportsLexicalHandler) {
+            try {
+                return (LexicalHandler) reader.getProperty(LEXICAL_HANDLER_PROPERTY);
+            } catch (SAXException e) {
+                supportsLexicalHandler = false;
+            }
+        }
+        return null;
+    }
+
+    public void setLexicalHandler(LexicalHandler lexicalHandler) {
+        if(supportsLexicalHandler) {
+                if(null == lexicalHandlerWrapper) {
+                    try {
+                        lexicalHandlerWrapper = new LexicalHandlerWrapper(lexicalHandler);
+                        reader.setProperty(LEXICAL_HANDLER_PROPERTY, lexicalHandlerWrapper);
+                    } catch (SAXException e) {
+                        supportsLexicalHandler = false;
+                    }
+                } else {
+                    lexicalHandlerWrapper.setLexicalHandler(lexicalHandler);
+                }
+        }
+    }
+
+    public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+        return reader.getFeature(name);
+    }
+
+    public void setFeature (String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+        reader.setFeature(name, value);
+    }
+
+    public Object getProperty (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+            return getLexicalHandler();
+        } else {
+            return reader.getProperty(name);
+        }
+    }
+
+    public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
+        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+            setLexicalHandler((LexicalHandler) value);
+        } else {
+            reader.setProperty(name, value);
+        }
     }
 
     public void parse(InputSource input) throws IOException, SAXException {
         reader.parse(input);
     }
 
-
     public void parse (String systemId) throws IOException, SAXException {
         reader.parse(systemId);
     }
- 
+
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
         //no op in this class.
     }
 
     public Object getCurrentObject(AbstractSession session, XMLMapping selfRecordMapping) {
         return null;
+    }
+
+    /**
+     * Performance Optimization:
+     * It is expensive to change the LexicalHandler on the underlying XMLReader
+     * constantly through the setProperty(String, Object) mechanism.  So instead
+     * the LexicalHandlerWrapper is set once this way, and the "real" 
+     * LexicalHandler is changed on the LexicalHandlerWrapper.
+     */
+    private static class LexicalHandlerWrapper implements LexicalHandler {
+
+        private LexicalHandler lexicalHandler;
+
+        public LexicalHandlerWrapper(LexicalHandler lexicalHandler) {
+            this.lexicalHandler = lexicalHandler;
+        }
+
+        public void setLexicalHandler(LexicalHandler lexicalHandler) {
+            this.lexicalHandler = lexicalHandler;
+        }
+
+        public void comment(char[] ch, int start, int length) throws SAXException {
+            lexicalHandler.comment(ch, start, length);
+        }
+
+        public void endCDATA() throws SAXException {
+            lexicalHandler.endCDATA();
+        }
+
+        public void endDTD() throws SAXException {
+            lexicalHandler.endDTD();
+        }
+
+        public void endEntity(String name) throws SAXException {
+            lexicalHandler.endEntity(name);
+        }
+
+        public void startCDATA() throws SAXException {
+            lexicalHandler.startCDATA();
+        }
+
+        public void startDTD(String name, String publicId, String systemId) throws SAXException {
+            lexicalHandler.startCDATA();
+        }
+
+        public void startEntity(String name) throws SAXException {
+            lexicalHandler.startEntity(name);
+        }
+
     }
 
 }
