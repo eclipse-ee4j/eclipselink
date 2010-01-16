@@ -229,7 +229,7 @@
         <run_oxm_docpres_tests runpathref="oxm.run.against.jar.path"/>
     </target>
     <target name="compile-and-run-srg-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy srg tests against eclipselink.jar">
-        <run_jaxb_tests runpathref="jaxb.run.against.jar.path"/>
+        <run_jaxb_srg_tests runpathref="jaxb.run.against.jar.path"/>
         <run_oxm_srg_tests runpathref="oxm.run.against.jar.path"/>
     </target>
     <target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
@@ -337,10 +337,10 @@
     <macrodef name="run_jaxb_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${eclipselink.moxy.test}/${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
-            <mkdir dir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
-            <mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
-            <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
+            <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/jaxb"/>
+            <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -348,8 +348,8 @@
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
                 <syspropertyset refid="parser.properties"/>
-                <batchtest todir="${eclipselink.moxy.test}/${report.dir}/jaxb">
-                    <fileset dir="${eclipselink.moxy.test}/${src.dir}">
+                <batchtest todir="${report.dir}/jaxb">
+                    <fileset dir="${src.dir}">
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
