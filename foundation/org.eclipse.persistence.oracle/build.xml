@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -60,8 +67,8 @@
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
     <!-- Primary Targets -->
-    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build oracle component"/>
-    <target name="bnd"   depends="clean, compile, bnd-package" description="build Oracle component using bnd"/>
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="package, repackage"  description="package ${ant.project.name} component (** dev use only **)"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -75,14 +82,6 @@
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init">
-        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
-        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
-        <condition property="extensions.depend.dir" value="${oracle.2.base.dir}/../extension.lib.external"
-                                                    else="${oracle.build.location}">
-            <available file="${oracle.2.base.dir}/../extension.lib.external" type="dir"/>
-        </condition>
-        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
-
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
         <tstamp>
@@ -96,49 +95,37 @@
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
+    </target>
+    
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init-compile" depends="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${oracle.2.base.dir}/../extension.lib.external"
+                                                    else="${oracle.build.location}">
+            <available file="${oracle.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- dependency properties -->
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
-        <!-- property name="persistence.bundle.path"    value="${oracle.2.common.plugins.dir}/${persistence.jar}"/ -->
-        <property name="persistence.bundle.path"    value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
-        <property name="core.bundle.path"           value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <!-- property name="persistence.lib"    value="${oracle.2.common.plugins.dir}/${persistence10.jar}"/ -->
+        <property name="persistence.lib"    value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${persistence.bundle.path}"                 property="persistence.bundle.exist"/>
-        <available file="${core.bundle.path}"                        property="core.bundle.exist"/>
+        <available file="${persistence.lib}"                       property="persistence.bundle.exist"/>
+        <available file="${core.lib}"                                property="core.bundle.exist"/>
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
-        <fail message="Cannot find: '${persistence.bundle.path}'"      unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.bundle.path}'"             unless="core.bundle.exist"/>
-
-        <!-- Check for BND library -->
-        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.path" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.path                     = '${bnd.path}'"/>
-
-        <!-- Check for Oracle compile dependencies -->
-        <condition property="package.ok">
-            <and>
-                <isset property="oracle.depend.dir.exist"/>
-                <not>  <isset property="bnd.path"/> </not>
-            </and>
-        </condition>
-        <condition property="bnd-package.ok">
-            <and>
-                <isset property="oracle.depend.dir.exist"/>
-                <isset property="bnd.path"/>
-            </and>
-        </condition>
-
+        <fail message="Cannot find: '${persistence.lib}'"      unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"               unless="core.bundle.exist"/>
         <!-- Set Compile Path-->
         <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
         <path id="oracle.compile.path">
-            <pathelement path="${core.bundle.path}"/>
-            <pathelement path="${persistence.bundle.path}"/>
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${persistence.lib}"/>
             <fileset
                 dir="${oracle.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>
@@ -151,8 +138,39 @@
         </path>
     </target>
 
+    <!-- initialize varables and paths needed for packaging - needs to be evaluated post-compile -->
+    <target name="init-package" depends="init">
+        <!-- Test for recent compile -->
+        <available file="${classes.dir}"                  type="dir" property="classes.dir.exist"/>
+        
+        <!-- Check for BND library -->
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+
+        <!-- Check for Oracle compile dependencies -->
+        <condition property="package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <isset property="classes.dir.exist"/>
+                <not>  <isset property="bnd.lib"/> </not>
+            </and>
+        </condition>
+        <condition property="bnd-package.ok">
+            <and>
+                <isset property="oracle.depend.dir.exist"/>
+                <isset property="classes.dir.exist"/>
+                <isset property="bnd.lib"/>
+            </and>
+        </condition>
+    </target>
+
     <!-- compile -->
-    <target name="compile" if="oracle.depend.dir.exist" depends="init" description="Compile bundle code">
+    <target name="compile" if="oracle.depend.dir.exist" depends="init-compile" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -171,7 +189,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
+    <target name="package" if="package.ok" depends="generate-manifest, bnd-package" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
         <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
@@ -208,7 +226,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.lib" depends="init-package" description="Generate the OSGi bundle manifest before jarring">
         <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <mkdir dir="${classes.dir}"/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
@@ -259,7 +277,7 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="repackage" unless="bnd.path" depends="clean, generate-manifest, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="repackage" unless="bnd.lib" depends="generate-manifest, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
         <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF" duplicate="preserve">
@@ -296,10 +314,10 @@
         </jar>
     </target>
 
-    <target name="bnd-package" if="bnd-package.ok" depends="init">
+    <target name="bnd-package" if="bnd-package.ok" depends="init-package">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"
@@ -332,10 +350,10 @@
         </jar>
     </target>
 
-    <target name="bnd-repackage" if="bnd.path" depends="clean, init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="bnd-repackage" if="bnd.lib" depends="init-package" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"
             eclipse="false"

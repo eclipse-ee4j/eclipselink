@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -43,7 +50,8 @@
     <property file="${modelgen.build.location}/build.properties"/>
 
     <!-- Primary Targets -->
-    <target name="build" depends="clean, compile, package" description="build ModelGen component"/>
+    <target name="build" depends="clean, compile, package" description="build ${ant.project.name} component"/>
+    <target name="jar" depends="package" description="package ${ant.project.name} component (** dev use only **)"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -74,27 +82,27 @@
         <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
         <!-- dependency properties -->
-        <property name="persistence.bundle.path"    value="${modelgen.2.jpa.plugins.dir}/${persistence20.jar}"/>
-        <property name="core.bundle.path"           value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="jpa.bundle.path"            value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.lib"              value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${persistence.bundle.path}" property="persistence.bundle.exist"/>
-        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
-        <available file="${jpa.bundle.path}"         property="jpa.bundle.exist"/>
+        <available file="${persistence.lib}" property="persistence.bundle.exist"/>
+        <available file="${core.lib}"          property="core.bundle.exist"/>
+        <available file="${jpa.lib}"           property="jpa.bundle.exist"/>
 
-        <fail message="Cannot find: '${persistence.bundle.path}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${jpa.bundle.path}'"         unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${jpa.lib}'"         unless="core.bundle.exist"/>
 
         <!-- Set Compile Path-->
         <path id="modelgen.compile.path">
             <pathelement path="${modelgen.2.common.plugins.dir}/${antlr}"/>
             <pathelement path="${modelgen.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${core.bundle.path}"/>
-            <pathelement path="${jpa.bundle.path}"/>
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${jpa.lib}"/>
             <pathelement path="${modelgen.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${persistence.bundle.path}"/>
+            <pathelement path="${persistence.lib}"/>
             <fileset
                 dir="${modelgen.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>

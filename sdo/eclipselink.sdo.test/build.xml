@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -75,14 +82,14 @@
     </path>
     <!-- compile path without product components -->
     <path id="sdotest.thirdparty.compile.path">
-        <pathelement path="${sdotest.2.common.plugins.dir}/${persistence.jar.testing}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
         <fileset
             dir="${sdotest.2.common.plugins.dir}"
             includes="
                ${eclipselink.core.depend},
             "/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.lib}"/>
+        <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
         <pathelement path="${sdotest.2.common.plugins.dir}/${jaxb-api.lib}"/>
     </path>
     <!-- Run path without product components -->
@@ -105,7 +112,7 @@
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="sdotest.compile.against.jar.path">
-        <pathelement path="${sdotest.2.base.dir}/${eclipselink.jar.name}"/>
+        <pathelement path="${sdotest.2.base.dir}/${eclipselink.jar}"/>
         <path refid="sdotest.thirdparty.compile.path"/>
     </path>
     <path id="sdotest.run.against.jar.path">
@@ -118,7 +125,7 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
-        <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.lib}"/>
+        <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/javax.activation_1.1.0.jar"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
     </path>
@@ -126,7 +133,7 @@
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
-    <available file="${sdotest.2.base.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
+    <available file="${sdotest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
 
 
     <!-- Clean targets -->
@@ -139,7 +146,7 @@
 
     <!-- Build targets -->
     <target name="compile-sdo-tests-against-jar" depends="clean" description="build sdo test classes against eclipselink.jar">
-        <fail message="Cannot find EclipseLink: '${sdotest.2.base.dir}/${eclipselink.jar.name}'." unless="eclipselink.jar.exist"/>
+        <fail message="Cannot find EclipseLink: '${sdotest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
         <compile_sdo_tests compilepathref="sdotest.compile.against.jar.path"/>
     </target>
     <target name="compile-sdo-tests" depends="clean" description="build sdo test classes">

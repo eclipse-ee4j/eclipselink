@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -68,9 +75,9 @@
     <!-- Set Compile Path-->
     <path id="dbws_util_test.compile.path">
         <pathelement path="${junit.lib}"/>
-        <pathelement path="../../${eclipselink.jar.name}"/>
+        <pathelement path="../../${eclipselink.jar}"/>
         <pathelement path="${dbws_util_test.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbws_util_test.2.dbws_util.dir}/${eclipselink.utils.dbws.jar.name}"/>
+        <pathelement path="${dbws_util_test.2.dbws_util.dir}/${eclipselink.utils.dbws.jar}"/>
         <fileset
             dir="../plugins"
             includes="${eclipselink.utils.dbws.depend}"
@@ -85,15 +92,15 @@
     <path id="dbws_util_test.run.path">
         <path refid="dbws_util_test.compile.path"/>
         <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="./${eclipselink.utils.dbws.common.jar.name}"/>
+        <pathelement path="./${eclipselink.utils.dbws.common.jar}"/>
     </path>
     <!-- Test dependencies -->
-    <available file="../../${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
-    <available file="${dbws_util_test.2.dbws_util.dir}/${eclipselink.utils.dbws.jar.name}" property="dbws_util.jar.exist"/>
+    <available file="../../${eclipselink.jar}" property="eclipselink.jar.exist"/>
+    <available file="${dbws_util_test.2.dbws_util.dir}/${eclipselink.utils.dbws.jar}" property="dbws_util.jar.exist"/>
     <available file="${dbws_util_test.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
-    <available file="../plugins/${wsdl.lib}" property="wsdl.exist"/>
+    <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
-    <available file="./${eclipselink.utils.dbws.common.jar.name}" property="dbws_util_test.common.jar.exist"/>
+    <available file="./${eclipselink.utils.dbws.common.jar}" property="dbws_util_test.common.jar.exist"/>
     <condition property="support.test">
         <and>
             <isset property="is.java.version.16"/>
@@ -231,7 +238,7 @@
             path="./${classes.dir}"
           />
           <pathelement
-            path="./${eclipselink.utils.dbws.common.jar.name}"
+            path="./${eclipselink.utils.dbws.common.jar}"
           />
           <pathelement
             path="dbws@{package-name}.jar"
@@ -335,7 +342,7 @@
     <target name="clean" description="Clean generated files for common content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." includes="${dbws_util.jar.name}"/>
+            <fileset dir="." includes="${dbws_util.jar}"/>
         </delete>
     </target>
 
@@ -356,7 +363,7 @@
 
     <!-- package -->
     <target name="package" description="package DBWS Util Test Common jar">
-        <jar jarfile="./${eclipselink.utils.dbws.common.jar.name}">
+        <jar jarfile="./${eclipselink.utils.dbws.common.jar}">
             <fileset dir="${classes.dir}">
                 <include name="dbws/testing/*.class"/>
             </fileset>
@@ -366,7 +373,7 @@
     <!-- *** Test execution targets *** -->
     <target name="compile-common" unless="dbws_util_test.common.jar.exist">
         <antcall target="build" inheritAll="true" inheritRefs="true"/>
-        <available file="./${eclipselink.utils.dbws.common.jar.name}" property="dbws_util_test.common.jar.exist"/>
+        <available file="./${eclipselink.utils.dbws.common.jar}" property="dbws_util_test.common.jar.exist"/>
     </target>
 
     <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">

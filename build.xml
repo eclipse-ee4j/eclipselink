@@ -142,12 +142,12 @@
     <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
     <path id="javadoc.path">
-        <pathelement path="${eclipselink.jar.name}"/>
-        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${commonj.sdo.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${eclipselink.plugins}/${persistence.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
@@ -158,6 +158,9 @@
 
     <!-- Short alias for building the jar. -->
     <target name="jar" depends="package-eclipselink-jar"/>
+
+    <!-- Short alias for building the jar. -->
+    <target name="package-core" depends="dev-package-bundles, package-eclipselink-jar" description="package eclipselink without recompiling (*** dev use only ***)"/>
 
 <!-- ================================================================================= -->
 
@@ -195,7 +198,7 @@
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
         <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
         <delete failonerror="false">
-            <fileset dir="${trunk.build.location}" includes="${eclipselink.jar.name}*"/>
+            <fileset dir="${trunk.build.location}" includes="${eclipselink.jar}*"/>
         </delete>
         <delete failonerror="false">
             <fileset dir="${trunk.build.location}" includes="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}*"/>
@@ -250,6 +253,25 @@
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
     </target>
 
+    <!--      *** intended for dev use only ***
+    *    Create runtime components (excluding Tests) from existing classes in project heirarchy.
+    *    note: oracle extension tries to be tricksy and either jars from classes like others,
+    *          or "rejars" from prebuilt bundle if classes dir doesn't exist.
+    * -->
+    <target name="dev-package-bundles" depends="clean-runtime-checkedin">
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="jar"/>
+    </target>
+
     <target name="build-persistence20">
         <ant antfile="build.xml" dir="${jpa.prototype}" target="build"/>
     </target>
@@ -271,7 +293,6 @@
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
     </target>
 
     <target name="build-oracle-extension-test">
@@ -285,8 +306,8 @@
     <target name="build-all-core-except-dbws-test">
         <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"        target="all"/>
-        <ant antfile="${eclipselink.moxy.test}/build.xml"       target="compile-tests"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"  target="compile-sdo-tests"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="compile-tests-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"  target="compile-sdo-tests-against-jar"/>
     </target>
 
     <target name="build-dbws-test" unless="java_is_v5">
@@ -308,11 +329,11 @@
 
     <!-- Packages the eclipselink.jar. -->
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
-        <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
         <mkdir dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence20.jar}" dest="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
-        <jar jarfile="${eclipselink.jar.name}" duplicate="preserve">
+        <jar jarfile="${eclipselink.jar}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -543,7 +564,7 @@
         <delete dir="${build.dir}/commonj.sdo"/>
         <delete dir="${build.dir}/javax.xml.bind"/>
         <delete dir="${eclipselink.javadocs}"/>
-        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.lib}" dest="${build.dir}/commonj.sdo/src"/>
+        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.lib}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="384m"
@@ -648,7 +669,7 @@
             <zipfileset dir="./${eclipselink.dbws.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
-                <include name="${eclipselink.jar.name}"/>
+                <include name="${eclipselink.jar}"/>
                 <include name="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <zipfileset dir="./${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
@@ -658,7 +679,7 @@
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${modelgen.processor.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence jar -->
-            <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/ -->
+            <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence10.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 prototype jar -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${persistence20.jar}" prefix="eclipselink/jlib/jpa"/>
@@ -666,7 +687,7 @@
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
                 <include name="${mail.jar}"/>
-                <include name="${jsr173_1.0_api.jar}"/>
+                <include name="${stax_api.jar}"/>
             </zipfileset>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}" prefix="eclipselink/jlib/moxy">
@@ -677,10 +698,10 @@
                 <include name="${jaxb-impl.jar}"/>
             </zipfileset>
             <!-- grab the sdo jar -->
-            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.lib}" prefix="eclipselink/jlib/sdo"/>
+            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.jar}" prefix="eclipselink/jlib/sdo"/>
             <!-- grab the dbws util stuff -->
-            <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.lib}" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}" prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
             <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
@@ -736,16 +757,16 @@
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}" target="test-srg-against-jar"/>
     </target>
     <target name="test-moxy" description="run the moxy tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="test-against-jar"/>
     </target>
     <target name="test-moxy-srg" description="run the moxy srg tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-srg-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="test-srg-against-jar"/>
     </target>
     <target name="test-oxm" description="run the moxy (oxm) tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-oxm-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="test-oxm-against-jar"/>
     </target>
     <target name="test-jaxb" description="run the moxy (jaxb) tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-jaxb-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="test-jaxb-against-jar"/>
     </target>
     <target name="test-dbws" description="run the DBWS core tests"  unless="java_is_v5">
         <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>

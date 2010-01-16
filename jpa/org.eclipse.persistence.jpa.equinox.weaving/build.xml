@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -48,8 +55,8 @@
     <property name="equinox.jar" value="org.eclipse.osgi_3.5.0.v20090520.jar"/>
 
     <!-- Primary Targets -->
-    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build JPA Equinox weaving component"/>
-    <target name="bnd"   depends="clean, compile, bnd-package" description="build JPA Equinox Weaving component using bnd"/>
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -72,16 +79,16 @@
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- Check for Equinox library -->
-        <condition property="equinox.path" value="${extensions.depend.dir}/${equinox.jar}">
+        <condition property="equinox.lib" value="${extensions.depend.dir}/${equinox.jar}">
             <available file="${extensions.depend.dir}/${equinox.jar}"/>
         </condition>
-        <condition property="equinox.path" value="${weaving.2.jpa.plugins.dir}/${equinox.jar}">
+        <condition property="equinox.lib" value="${weaving.2.jpa.plugins.dir}/${equinox.jar}">
             <available file="${weaving.2.jpa.plugins.dir}/${equinox.jar}"/>
         </condition>
-        <condition property="equinox.path" value="${weaving.2.common.plugins.dir}/${equinox.jar}">
+        <condition property="equinox.lib" value="${weaving.2.common.plugins.dir}/${equinox.jar}">
             <available file="${weaving.2.common.plugins.dir}/${equinox.jar}"/>
         </condition>
-        <echo message="equinox.path                 = '${equinox.path}'"/>
+        <echo message="equinox.lib                 = '${equinox.lib}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -98,32 +105,32 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="persistence.bundle.path"    value="${weaving.2.jpa.plugins.dir}/${persistence20.jar}"/>
-        <property name="core.bundle.path"           value="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="jpa.bundle.path"            value="${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <property name="persistence.lib"    value="${weaving.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.lib"              value="${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${persistence.bundle.path}" property="persistence.bundle.exist"/>
-        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
-        <available file="${jpa.bundle.path}"         property="jpa.bundle.exist"/>
+        <available file="${persistence.lib}" property="persistence.bundle.exist"/>
+        <available file="${core.lib}"        property="core.bundle.exist"/>
+        <available file="${jpa.lib}"         property="jpa.bundle.exist"/>
 
         <condition property="build.ok">
             <and>
                 <isset property="persistence.bundle.exist"/>
                 <isset property="core.bundle.exist"/>
                 <isset property="jpa.bundle.exist"/>
-                <isset property="equinox.path"/>
+                <isset property="equinox.lib"/>
             </and>
         </condition>
     </target>
 
     <target name="dep-report" depends="pre-init, verify-required-deps, no-equinox-dep"/>
     <target name="verify-required-deps">
-        <fail message="Cannot find: '${persistence.bundle.path}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${jpa.bundle.path}'"         unless="jpa.bundle.exist"/>
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${jpa.lib}'"         unless="jpa.bundle.exist"/>
     </target>
-    <target name="no-equinox-dep" unless="equinox.path">
+    <target name="no-equinox-dep" unless="equinox.lib">
         <echo message="Compile will be skipped..."/>
         <echo message="    Cannot find: '${equinox.jar}'"/>
         <echo message="        In: '${extensions.depend.dir}'"/>
@@ -133,31 +140,31 @@
 
     <target name="init" if="build.ok" depends="pre-init, dep-report">
         <!-- Check for BND library -->
-        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
-        <condition property="bnd.path" value="${weaving.2.buildsys.dir}/${bndtool.jar}">
+        <condition property="bnd.lib" value="${weaving.2.buildsys.dir}/${bndtool.jar}">
             <available file="${weaving.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
-        <echo message="bnd.path                     = '${bnd.path}'"/>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
         <condition property="package.ok">
             <and>
-                <not>  <isset property="bnd.path"/> </not>
+                <not>  <isset property="bnd.lib"/> </not>
             </and>
         </condition>
         <condition property="bnd.ok">
             <and>
-                <isset property="bnd.path"/>
+                <isset property="bnd.lib"/>
             </and>
         </condition>
 
         <!-- Set Compile Path-->
         <path id="weaving.compile.path">
-            <pathelement path="${core.bundle.path}"/>
-            <pathelement path="${jpa.bundle.path}"/>
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${jpa.lib}"/>
             <pathelement path="${weaving.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${persistence.bundle.path}"/>
-            <pathelement path="${equinox.path}"/>
+            <pathelement path="${persistence.lib}"/>
+            <pathelement path="${equinox.lib}"/>
         </path>
     </target>
 
@@ -238,7 +245,7 @@
     </target>
 
     <target name="bnd-package" if="bnd.ok" depends="init">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

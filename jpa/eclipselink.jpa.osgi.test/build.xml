@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -77,11 +84,11 @@
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/${persistence.jar.testing}"/>
+            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
-            <pathelement path="${eclipselink.jar.name}"/>
+            <pathelement path="${eclipselink.jar}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
@@ -180,17 +187,17 @@
             <fileset file="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar"/>
         </copy>
 
-	<!-- copy DB related files --> 
+    <!-- copy DB related files -->
         <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0"/>
         <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0">
             <fileset dir="${eclipselink.targets.dir}">
-	        <include name="META-INF/MANIFEST.MF"/>
+            <include name="META-INF/MANIFEST.MF"/>
             </fileset>
-	    <fileset dir="${oracle.extensions.depend.dir}" includes="${oracle.libs.jars}"/>
+        <fileset dir="${oracle.extensions.depend.dir}" includes="${oracle.libs.jars}"/>
         </copy>
         <replace file="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0/META-INF/MANIFEST.MF"
-                 token="ojdbc5.jar" value="${jdbc.driver.jar.name}"/>
-	
+                 token="ojdbc5.jar" value="${jdbc.driver.jar}"/>
+
     </target>
 
     <!-- Repackages JPA persistent unit test jars. -->
@@ -202,7 +209,7 @@
             <property name="is.osgi" value="true"/>
         </ant>
     </target>
-    
+
     <target name="run-test">
         <echo>Running test on ${db.url}</echo>
 

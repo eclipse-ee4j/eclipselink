@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'  
@@ -69,7 +76,7 @@
     <!-- Here will use default server configuration. -->
     <target name="jboss-install">
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
-        <copy file="${eclipselink.jar.name}" todir="${jboss.server}/lib"/>
+        <copy file="${eclipselink.jar}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
     </target>
 
@@ -117,10 +124,10 @@
                 <pathelement location="${jboss.home}/common/lib/servlet-api.jar"/>
                 <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
                 <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
-                <pathelement location="${eclipselink.jar.name}"/>
+                <pathelement location="${eclipselink.jar}"/>
                 <pathelement location="${junit.lib}"/>
                 <pathelement location="${jdbc.driver.jar}"/>
-                <pathelement location="${persistence.jar}"/>
+                <pathelement location="${persistence10.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>

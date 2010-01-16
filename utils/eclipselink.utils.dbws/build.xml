@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -65,12 +72,12 @@
         <pathelement path="${dbwsutil.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
-        <pathelement path="../plugins/${wsdl.lib}"/>
+        <pathelement path="../plugins/${wsdl.jar}"/>
     </path>
     <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar" property="dbws.bundle.exist"/>
     <available file="${dbwsutil.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
-    <available file="../plugins/${wsdl.lib}" property="wsdl.exist"/>
+    <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, package" description="build dbwsutils jar"/>
@@ -79,7 +86,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." includes="${dbwsutil.jar.name}"/>
+            <fileset dir="." includes="${dbwsutil.jar}"/>
         </delete>
     </target>
 
@@ -108,7 +115,7 @@
 
     <!-- package -->
     <target name="package" description="package DBWS util jar">
-        <jar jarfile="./${dbwsutil.jar.name}">
+        <jar jarfile="./${dbwsutil.jar}">
              <manifest>
                 <attribute name="Specification-Title"    value="${dbwsutil.util.specification.title}"/>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>

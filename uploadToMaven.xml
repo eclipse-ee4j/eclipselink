@@ -9,7 +9,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
 *     e.g. 'runpathref'
@@ -137,7 +144,7 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="eclipselink"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.jar.name}"/>
+            <param name="artifact" value="${eclipselink.jar}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink (non-OSGi)"/>
             <param name="dependencies" value=""/>

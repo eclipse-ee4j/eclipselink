@@ -46,6 +46,7 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle_test.is.local"/>
 
     <!-- script to "cleanup" the value of a path property to replace any "\" with "/" -->
+    <!--    Needed because sometimes Java cares about \ and mixed paths result in issues -->
     <scriptdef name="cleanPath" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
@@ -180,12 +181,12 @@
         <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.oracle_${version.string}.jar" property="oracle.bundle.exist"/>
-        <available file="${oracle_test.2.base.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
+        <available file="${oracle_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
         <available file="${oracle_test.2.jpa.dir}/${classes.dir}" type="dir" property="jpa.classes.exist"/>
         <available file="${oracle_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
         <available file="${oracle_test.2.oracle.dir}/${classes.dir}" type="dir" property="oracle.classes.exist"/>
         <available file="${junit.lib}" property="junit.lib.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/${persistence.jar.testing}" property="persistence.jar.exist"/>
+        <available file="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
         <available file="${oracle_test.2.core.test.dir}/${eclipselink.tests.jar}" property="test.framework.exist"/>
         <available file="${oracle_test.2.jpa.test.dir}/${eclipselink.tests.jar}" property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
@@ -260,7 +261,7 @@
     <target name="init_eclipselink" if="use.eclipselink">
         <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
         <path id="oracle_test.product.path">
-            <pathelement path="${oracle_test.2.base.dir}/${eclipselink.jar.name}"/>
+            <pathelement path="${oracle_test.2.base.dir}/${eclipselink.jar}"/>
         </path>
     </target>
     <target name="init_bundles" if="use.bundles">
@@ -299,7 +300,7 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${persistence.jar.testing}"/>
+            <pathelement path="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
         </path>
     </target>

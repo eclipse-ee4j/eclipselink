@@ -23,7 +23,7 @@ package org.eclipse.persistence;
  */
 public class Version {
     // The current copyright info for EclipseLink.
-    private static final String CopyrightString = "Copyright (c) 1998, 2009, Oracle.  All rights reserved.";
+    private static final String CopyrightString = "Copyright (c) 1998, 2010 Oracle.  All rights reserved.";
 
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.

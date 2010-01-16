@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -10,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -37,10 +45,38 @@
         It requires some configuration of the build.properties and test.properties to run.
 -->
 <project name="eclipselink.core.test" default="build" basedir=".">
+    <echo message="CORETEST_BEGINS..."/>
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
 
+    <!-- script to "cleanup" the value of a path property to replace any "\" with "/" -->
+    <!--    Needed because sometimes Java cares about \ and mixed paths result in issues -->
+    <scriptdef name="cleanPath" language="javascript" manager="javax">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            // getting the value
+            input = attributes.get("input");
+            property = attributes.get("property");
+            if (input == null || property == null) {
+               self.fail("both 'input' and 'property' attributes must be set.");
+            }
+            if (input.startsWith("${") || input == "" ) {
+                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
+                project.setProperty(attributes.get("property"), "NA");
+            }
+            else {
+                convertedInput = input.replace("\\","/");
+                project.setProperty(attributes.get("property"), convertedInput);
+            }
+        ]]>
+    </scriptdef>
+
     <dirname  property="core_test.build.location" file="${ant.file.eclipselink.core.test}"/>
+    <echo message="core_test.build.location = '${core_test.build.location}'"/>
+    <cleanPath input="${core_test.build.location}" property="core_test.build.location"/>
+    <echo message="core_test.build.location = '${core_test.build.location}'"/>
+
     <condition property="core_test.2.base.dir" value="../.." else="..">
         <contains string="${core_test.build.location}" substring="foundation"/>
     </condition>
@@ -57,6 +93,7 @@
     <property file="${core_test.build.location}/build.properties"/>
     <property file="${core_test.build.location}/${test.properties}"/>
     <property file="${core_test.build.location}/test.properties"/>
+    <cleanPath input="${tools.lib}" property="tools.lib"/>
 
     <!-- Local path variables -->
     <property name="core_test.src.dir"      value="${core_test.build.location}/${src.dir}"/>
@@ -86,7 +123,7 @@
     <target name="init">
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
-        <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
+        <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
         <echo message="core_test.src.dir     ='${core_test.src.dir}'"/>
         <echo message="core_test.resource.dir='${core_test.resource.dir}'"/>
         <echo message="core_test.classes.dir ='${core_test.classes.dir}'"/>
@@ -96,6 +133,7 @@
         <echo message="test.properties='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
         <echo message="junit.lib             ='${junit.lib}'"/>
+        <echo message="tools.lib             ='${tools.lib}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -113,10 +151,10 @@
         <available file="${core_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
         <available file="${core_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
         <available file="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-        <available file="${core_test.2.base.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
+        <available file="${core_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
         <available file="${core_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
         <available file="${junit.lib}" property="junit.jar.exist"/>
-        <available file="${core_test.2.common.plugins.dir}/${persistence.jar.testing}" property="persistence.jar.exist"/>
+        <available file="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
         <!-- Determine availability of runtime dependencies   -->
         <available file="${eclipselink.core}/${resource.dir}" type="dir" property="core.resources.exist"/>
         <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
@@ -162,7 +200,7 @@
     <target name="init_eclipselink" if="use.eclipselink">
         <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
         <path id="core_test.product.path">
-            <pathelement path="${core_test.2.base.dir}/${eclipselink.jar.name}"/>
+            <pathelement path="${core_test.2.base.dir}/${eclipselink.jar}"/>
         </path>
     </target>
     <target name="init_bundles" if="use.bundles">
@@ -187,7 +225,7 @@
         <path id="core_test.compile.without.connector.path">
             <path refid="core_test.product.path"/>
             <pathelement path="${junit.lib}"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${persistence.jar.testing}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
             <fileset dir="${core_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>
         </path>
         <path id="core_test.compile.path">
@@ -209,7 +247,7 @@
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink core tests">
         <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
-        <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${persistence.jar.testing}'." unless="persistence.jar.exist"/ -->
+        <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}'." unless="persistence.bundle.exist"/ -->
         <mkdir dir="${core_test.classes.dir}"/>
         <javac srcdir="${core_test.src.dir}"
                destdir="${core_test.classes.dir}"

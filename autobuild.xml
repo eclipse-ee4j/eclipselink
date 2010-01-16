@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -138,27 +145,27 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
-        <property name="eclipselink.p2.archive.presigned" value="eclipselink-P2-${release.version}.zip"/>
-        <property name="eclipselink.p2.archive.signed"    value="eclipselink-P2signed-${version.string}.zip"/>
+        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${release.version}.zip"/>
+        <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
 
-        <!-- Set download.path appropriately depending upon build target          -->
-        <condition property="download.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
+        <!-- Set download.dir appropriately depending upon build target          -->
+        <condition property="download.dir" value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="download.path" value="${eclipselink.download.path}/releases/${release.version}">
+        <condition property="download.dir" value="${eclipselink.root.download.dir}/releases/${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="download.path" value="${eclipselink.download.path}/milestones/${release.version}/${build.type}"/>
+        <property name="download.dir" value="${eclipselink.root.download.dir}/milestones/${release.version}/${build.type}"/>
 
         <!-- Set p2 repository path appropriately depending upon build target     -->
-        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly/${release.version}">
+        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/nightly/${release.version}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="p2.repos.path" value="${eclipselink.download.path}/updates/${release.version}">
+        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/updates/${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone/${release.version}"/>
-        <property name="p2.base.dir" value="${p2.repos.path}"/>
+        <property name="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/milestone/${release.version}"/>
+        <property name="p2.base.dir" value="${p2.repos.dir}"/>
         <property name="p2.base.url" value="file:${p2.base.dir}"/>
 
         <!-- generate Release Designation string for manifest                     -->
@@ -379,12 +386,12 @@
     </target>
 
     <target name="wait-for-sign-jar">
-        <echo message="Waiting for ${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
+        <echo message="Waiting for ${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
         <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
         <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
         <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
         <waitfor maxwait="100" maxwaitunit="minute" checkevery="15" checkeveryunit="second" timeoutproperty="signing.time.limit.exceeded">
-            <available file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
+            <available file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
         </waitfor>
     </target>
 
@@ -393,30 +400,30 @@
         <echo message="SigningAborted, wait time exceeded!"/>
         <echo message="P2 repository generation will be skipped!"/>
         <echo message="Unsigned P2 archive will be copied to download site for safekeeping..."/>
-        <mkdir dir="${download.path}"/>
-        <copy file="${build.root.dir}/features/${eclipselink.p2.archive.presigned}"                    tofile="${download.path}/${eclipselink.p2.archive.presigned}" failonerror="false"/>
+        <mkdir dir="${download.dir}"/>
+        <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                    tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
     </target>
 
     <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
-        <mkdir dir="${download.path}"/>
-        <copy file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"                  tofile="${download.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <mkdir dir="${download.dir}"/>
+        <copy file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"                  tofile="${download.dir}/${p2.archive.signed.zip}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${download.dir}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${download.dir}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${download.dir}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${download.dir}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${download.dir}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${download.dir}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${download.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
+            <arg value="${build.root.dir}/${eclipselink.jar}"/>
             <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         </exec>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
@@ -504,23 +511,23 @@
     <target name="promote-init" depends="promote-pre-init, common-init">
         <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
-        <property name="build.source.path"    value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
-        <property name="build.signed.archive" value="${build.source.path}/${eclipselink.p2.archive.signed}"/>
-        <available file="${build.source.path}"    property="build.path.exist" type="dir"/>
-        <available file="${build.signed.archive}" property="signed.archive.exist"/>
+        <property name="promote.source.dir"         value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
+        <property name="promote.archive.signed.lib" value="${promote.source.dir}/${p2.archive.signed.zip}"/>
+        <available file="${promote.source.dir}"         property="promote.source.exist" type="dir"/>
+        <available file="${promote.archive.signed.lib}" property="signed.archive.exist"/>
         <!-- FAIL THIS PROMOTION if the source build is not found                                       -->
-        <fail unless="build.path.exist"     message="${build.source.path} not found! Cannot promote this build."/>
+        <fail unless="promote.source.exist"     message="${promote.source.dir} not found! Cannot promote this build."/>
         <!-- FAIL THIS PROMOTION if the signed archive for build is not found                           -->
-        <fail unless="signed.archive.exist" message="${build.signed.archive} not found! Cannot promote this build."/>
-        <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
-        <delete dir="${temp.rebuild.path}" failonerror="false"/>
-        <mkdir dir="${temp.rebuild.path}"/>
+        <fail unless="signed.archive.exist"     message="${promote.archive.signed.lib} not found! Cannot promote this build."/>
+        <property name="temp.rebuild.dir" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
+        <delete dir="${temp.rebuild.dir}" failonerror="false"/>
+        <mkdir dir="${temp.rebuild.dir}"/>
     </target>
 
     <target name="extract-signed-artifacts">
         <echo message="Extracting signed jars from archive..."/>
-        <property name="signed.jar.path" value="${temp.rebuild.path}/signed"/>
-        <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.p2.archive.signed}"/>
+        <property name="signed.jar.path" value="${temp.rebuild.dir}/signed"/>
+        <unzip dest="${signed.jar.path}" src="${promote.source.dir}/${p2.archive.signed.zip}"/>
     </target>
 
     <target name="regen-archives" depends="regen-installer-archive, regen-plugin-archive"/>
@@ -530,50 +537,50 @@
         <echo message="However, we still need a copy of eclipslink.jar for maven. Extracting from original InstallerZip for later copy..."/>
         <!-- unzip original InstallerZip to working dir -->
         <!-- echo message="Creating signed versions of InstallerZip archive..."/ -->
-        <unzip dest="${temp.rebuild.path}/install" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+        <unzip dest="${temp.rebuild.dir}/install" src="${promote.source.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*"/>
             </patternset>
         </unzip>
         <!-- Force overwrite of original content -->
-        <!-- copy todir="${temp.rebuild.path}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar.name}"   failonerror="false"/>
-        <copy todir="${temp.rebuild.path}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar.name}" failonerror="false"/ -->
+        <!-- copy todir="${temp.rebuild.dir}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar}"   failonerror="false"/>
+        <copy todir="${temp.rebuild.dir}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar}" failonerror="false"/ -->
         <!-- Rezip EclipseLink Installer Zip -->
-        <!-- zip destfile="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
-            <zipfileset dir="${temp.rebuild.path}/install" includes="**/*" />
+        <!-- zip destfile="${temp.rebuild.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${temp.rebuild.dir}/install" includes="**/*" />
         </zip -->
     </target>
 
     <target name="regen-plugin-archive">
         <echo message="Creating signed versions of Plugins archive..."/>
         <!-- unzip original PluginInstaller to working dir -->
-        <unzip dest="${temp.rebuild.path}/bundlezip" src="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+        <unzip dest="${temp.rebuild.dir}/bundlezip" src="${promote.source.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*"/>
             </patternset>
         </unzip>
         <!-- Force overwrite of original content -->
-        <copy todir="${temp.rebuild.path}/bundlezip" failonerror="false">
+        <copy todir="${temp.rebuild.dir}/bundlezip" failonerror="false">
             <fileset dir="${signed.jar.path}/plugins">
                 <include name="*.jar"/>
             </fileset>
         </copy>
         <!-- Rezip EclipseLink Plugins Zip -->
-        <zip destfile="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
-            <zipfileset dir="${temp.rebuild.path}/bundlezip" includes="**/*" />
+        <zip destfile="${temp.rebuild.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${temp.rebuild.dir}/bundlezip" includes="**/*" />
         </zip>
     </target>
 
     <target name="gen-build-for-maven">
         <!-- MUST BE DONE AFTER Recreating "signed" version of the archives -->
         <echo message="Prepare for Maven publishing"/>
-        <property name="tmp.maven.dir" value="${temp.rebuild.path}/maven"/>
+        <property name="tmp.maven.dir" value="${temp.rebuild.dir}/maven"/>
         <!-- need to setup a dir that contains the correct contents for maven to promote -->
         <mkdir dir="${tmp.maven.dir}"/>
         <!-- get eclipselink source zip -->
-        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
-        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.path}/install/eclipselink/jlib/${eclipselink.jar.name}"/>
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar}"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${signed.jar.path}/${plugins.dir}">
@@ -586,7 +593,7 @@
       </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
-            <fileset dir="${temp.rebuild.path}/bundlezip">
+            <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="javax.persistence*2.0*.jar"/>
             </fileset>
         </copy>
@@ -594,24 +601,24 @@
 
     <target name="publish-milestone">
         <!-- Publish from nightly published location to Milestone dir -->
-        <mkdir dir="${download.path}"/>
+        <mkdir dir="${download.dir}"/>
         <!-- From temp rebuild location -->
-        <!-- copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/ -->
-        <copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <!-- copy todir="${download.dir}" file="${temp.rebuild.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/ -->
+        <copy todir="${download.dir}" file="${temp.rebuild.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- Populated directly from original build -->
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-core-lrg-${version.string}.html"                                      failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-jpa-lrg-${version.string}.html"                                       failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-jaxb-lrg-${version.string}.html"                                      failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-oxm-lrg-${version.string}.html"                                       failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
-        <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-core-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-jpa-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-jaxb-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-oxm-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
         <!-- copy P2 archive as well as eclipse build file for safekeeping (in case rebuild needed) -->
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
-        <copy todir="${download.path}" file="${temp.rebuild.path}/signed/eclipselink.build" failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/${p2.archive.signed.zip}" failonerror="false"/>
+        <copy todir="${download.dir}" file="${temp.rebuild.dir}/signed/eclipselink.build" failonerror="false"/>
         <!-- Copy for maven to run -->
         <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
         <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"  failonerror="false"/>
@@ -621,9 +628,9 @@
     <target name="populate-p2-update-site" unless="signing.time.limit.exceeded">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
         <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
-        <delete dir="${p2.repos.path}" failonerror="false"/>
-        <mkdir dir="${p2.repos.path}"/>
-        <unzip dest="${p2.repos.path}/plugins" src="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <unzip dest="${p2.repos.dir}/plugins" src="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="*.jar"/>
             </patternset>
@@ -631,7 +638,7 @@
         <!-- Remove unwanted jars -->
         <delete>
             <fileset
-               dir="${p2.repos.path}/plugins"
+               dir="${p2.repos.dir}/plugins"
                includes="commonj.sdo_2.1.1.jar,
                         *dbws*.jar,
                         *jms*.jar,
@@ -645,7 +652,7 @@
             />
         </delete>
         <!-- populate features -->
-        <unzip dest="${p2.repos.path}/features" src="${download.path}/${eclipselink.p2.archive.signed}">
+        <unzip dest="${p2.repos.dir}/features" src="${download.dir}/${p2.archive.signed.zip}">
             <patternset>
                 <include name="features/*.jar"/>
             </patternset>
@@ -655,7 +662,7 @@
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
             <property name="bundle.installer.exist" value="true"/>
         </ant>
-        <delete dir="${temp.rebuild.path}" failonerror="false"/>
+        <delete dir="${temp.rebuild.dir}" failonerror="false"/>
     </target>
 
     <!-- Helper target for cb processing -->

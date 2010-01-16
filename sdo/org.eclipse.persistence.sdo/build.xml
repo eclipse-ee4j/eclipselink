@@ -11,7 +11,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
 *     e.g. 'runpathref'
@@ -46,8 +53,8 @@
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
     <!-- Primary Targets -->
-    <target name="build" depends="clean, compile, generate-manifest, package, bnd-package" description="build SDO component"/>
-    <target name="bnd"   depends="clean, compile, bnd-package" description="build SDO component using bnd"/>
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -83,24 +90,24 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="core.bundle.path"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="moxy.bundle.path"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
+        <property name="core.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="moxy.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${core.bundle.path}"        property="core.bundle.exist"/>
-        <available file="${moxy.bundle.path}"        property="moxy.bundle.exist"/>
+        <available file="${core.lib}"        property="core.bundle.exist"/>
+        <available file="${moxy.lib}"        property="moxy.bundle.exist"/>
 
-        <fail message="Cannot find: '${core.bundle.path}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${moxy.bundle.path}'"        unless="moxy.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${moxy.lib}'"        unless="moxy.bundle.exist"/>
 
         <!-- Check for BND library -->
-        <condition property="bnd.path" value="${extensions.depend.dir}/${bndtool.jar}">
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
-        <condition property="bnd.path" value="${sdo.2.buildsys.dir}/${bndtool.jar}">
+        <condition property="bnd.lib" value="${sdo.2.buildsys.dir}/${bndtool.jar}">
             <available file="${sdo.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
-        <echo message="bnd.path                     = '${bnd.path}'"/>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
 
         <!-- Needed because this package is only included in JDK6 and beyond -->
         <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
@@ -109,11 +116,11 @@
 
         <!-- Set Compile Path-->
         <path id="sdo.compile.path">
-            <pathelement path="../plugins/${commonj.sdo.lib}"/>
+            <pathelement path="../plugins/${commonj.sdo.jar}"/>
             <pathelement path="${sdo.2.common.plugins.dir}/${asm}"/>
             <pathelement path="${sdo.2.common.plugins.dir}/${jaxb-api.lib}"/>
-            <pathelement path="${core.bundle.path}"/>
-            <pathelement path="${moxy.bundle.path}"/>
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${moxy.lib}"/>
         </path>
     </target>
 
@@ -137,7 +144,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.path" depends="init" description="jar OSGI bundle">
+    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
         <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${sdo.2.base.dir}">
                 <include name="about.html"/>
@@ -174,7 +181,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.path" depends="init" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
         <echo message="Generate the OSGi bundle manifest before jarring..."/>
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
@@ -212,8 +219,8 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
-    <target name="bnd-package" if="bnd.path" depends="init" >
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
+    <target name="bnd-package" if="bnd.lib" depends="init" >
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"
