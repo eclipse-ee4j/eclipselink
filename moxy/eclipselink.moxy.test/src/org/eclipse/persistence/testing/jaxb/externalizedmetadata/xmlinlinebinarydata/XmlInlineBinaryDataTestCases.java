@@ -219,7 +219,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * No XML metadata is used for this test.
      * 
      * Positive test.
-     */
+     *
+     * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
+     *
     public void testClassLevelXmlInlineBinaryNoOverride() {
         JAXBContext jaxbContext = null;
         try {
@@ -279,6 +281,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
+    */
     
     /**
      * Tests property level XmlInlineBinaryData metadata override.  Here, the @XmlInlineBinaryData
@@ -433,7 +436,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * class annotations, and no class level XML metadata declarations.
      * 
      * Positive test.
-     */
+     *
+     * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
+     *
     public void testPropertyLevelXmlInlineBinaryViaMetadata() {
         String metadataFile = PATH + "eclipselink-oxm.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
@@ -503,4 +508,5 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
+    */
 }
