@@ -134,7 +134,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * named query from every being prepared.
      */
     protected void setAsSQLModifyQuery() {
-        if (getDatabaseQuery().isDataReadQuery()) {
+        if (getDatabaseQueryInternal().isDataReadQuery()) {
             DataModifyQuery query = new DataModifyQuery();
             query.setIsUserDefined(this.databaseQuery.isUserDefined());
             query.copyFromQuery(this.databaseQuery);
@@ -152,7 +152,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * set.
      */
     protected void setAsSQLReadQuery() {
-        if (getDatabaseQuery().isDataModifyQuery()) {
+        if (getDatabaseQueryInternal().isDataModifyQuery()) {
             DataReadQuery query = new DataReadQuery();
             query.setResultType(DataReadQuery.AUTO);
             query.setIsUserDefined(databaseQuery.isUserDefined());
@@ -402,10 +402,10 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         boolean shouldResetConformResultsInUnitOfWork = false;
         if (isFlushModeAUTO()) {
             performPreQueryFlush();
-            if (getDatabaseQuery().isObjectLevelReadQuery()) {
-                if (((ObjectLevelReadQuery) getDatabaseQuery()).shouldConformResultsInUnitOfWork()) {
+            if (getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+                if (((ObjectLevelReadQuery) getDatabaseQueryInternal()).shouldConformResultsInUnitOfWork()) {
                     cloneSharedQuery();
-                    ((ObjectLevelReadQuery) getDatabaseQuery()).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
+                    ((ObjectLevelReadQuery) getDatabaseQueryInternal()).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
                     shouldResetConformResultsInUnitOfWork = true;
                 }
             }
@@ -425,7 +425,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // checks)
             // If the return value from the set returns true, it indicates that
             // we were unable to set the lock mode.
-            if (((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
+            if (((ObjectLevelReadQuery) getDatabaseQueryInternal()).setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
                 throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
             }
         }
@@ -433,7 +433,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         Session session = getActiveSession();
         try {
             // in case it's a user-defined query
-            if (getDatabaseQuery().isUserDefined()) {
+            if (getDatabaseQueryInternal().isUserDefined()) {
                 // and there is an active transaction
                 if (this.entityManager.checkForTransaction(false) != null) {
                     // verify whether uow has begun early transaction
@@ -450,7 +450,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             }
 
             // Execute the query and return the result.
-            return session.executeQuery(getDatabaseQuery(), parameterValues);
+            return session.executeQuery(getDatabaseQueryInternal(), parameterValues);
         } catch (DatabaseException e) {
             // If we catch a database exception as a result of executing a
             // pessimistic locking query we need to ask the platform which
@@ -475,7 +475,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             lockMode = null;
 
             if (shouldResetConformResultsInUnitOfWork) {
-                ((ObjectLevelReadQuery) getDatabaseQuery()).conformResultsInUnitOfWork();
+                ((ObjectLevelReadQuery) getDatabaseQueryInternal()).conformResultsInUnitOfWork();
             }
         }
     }
@@ -492,7 +492,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
             setAsSQLModifyQuery();
             // bug:4294241, only allow modify queries - UpdateAllQuery preferred
-            if (!(getDatabaseQuery() instanceof ModifyQuery)) {
+            if (!(getDatabaseQueryInternal() instanceof ModifyQuery)) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
             }
 
@@ -514,11 +514,23 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     }
 
     /**
-     * Return the cached database query for this EJBQueryImpl. If the query is a
-     * named query and it has not yet been looked up, the query will be looked
-     * up and stored as the cached query.
+     * Return the wrapped {@link DatabaseQuery} ensuring that if it
+     * {@link #isShared} it is cloned before returning to prevent corruption of
+     * the query cache.
+     * 
+     * @see #getDatabaseQueryInternal()
      */
     public DatabaseQuery getDatabaseQuery() {
+        cloneSharedQuery();
+        return getDatabaseQueryInternal();
+    }
+
+    /**
+     * INTERNAL: Return the cached database query for this EJBQueryImpl. If the
+     * query is a named query and it has not yet been looked up, the query will
+     * be looked up and stored as the cached query.
+     */
+    public DatabaseQuery getDatabaseQueryInternal() {
         if ((this.queryName != null) && (this.databaseQuery == null)) {
             // need error checking and appropriate exception for non-existing
             // query
@@ -555,7 +567,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         try {
             entityManager.verifyOpen();
 
-            if (!getDatabaseQuery().isReadQuery()) {
+            if (!getDatabaseQueryInternal().isReadQuery()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
             }
 
@@ -579,16 +591,16 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         propagateResultProperties();
         // bug:4297903, check container policy class and throw exception if its
         // not the right type
-        if (getDatabaseQuery() instanceof ReadAllQuery) {
-            if (!((ReadAllQuery) getDatabaseQuery()).getContainerPolicy().isCursorPolicy()) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQuery()).getContainerPolicy().getContainerClass();
+        if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
+            if (!((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().isCursorPolicy()) {
+                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                 throw QueryException.invalidContainerClass(containerClass, Cursor.class);
             }
-        } else if (getDatabaseQuery() instanceof ReadObjectQuery) {
+        } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
             // bug:4300879, no support for ReadObjectQuery if a collection is
             // required
-            throw QueryException.incorrectQueryObjectFound(getDatabaseQuery(), ReadAllQuery.class);
-        } else if (!(getDatabaseQuery() instanceof ReadQuery)) {
+            throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
+        } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
         }
 
@@ -617,16 +629,16 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         propagateResultProperties();
         // bug:4297903, check container policy class and throw exception if its
         // not the right type
-        if (getDatabaseQuery() instanceof ReadAllQuery) {
-            Class containerClass = ((ReadAllQuery) getDatabaseQuery()).getContainerPolicy().getContainerClass();
+        if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
+            Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
             if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
                 throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
             }
-        } else if (getDatabaseQuery() instanceof ReadObjectQuery) {
+        } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
             // bug:4300879, no support for ReadObjectQuery if a collection is
             // required
-            throw QueryException.incorrectQueryObjectFound(getDatabaseQuery(), ReadAllQuery.class);
-        } else if (!(getDatabaseQuery() instanceof ReadQuery)) {
+            throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
+        } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
         }
 
@@ -655,15 +667,15 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             propagateResultProperties();
             // bug:4297903, check container policy class and throw exception if
             // its not the right type
-            if (getDatabaseQuery() instanceof ReadAllQuery) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQuery()).getContainerPolicy().getContainerClass();
+            if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
+                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                 if (!Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)) {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.List_Class);
                 }
-            } else if (getDatabaseQuery() instanceof ReadObjectQuery) {
+            } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
                 // bug:4300879, handle ReadObjectQuery returning null
-                throw QueryException.incorrectQueryObjectFound(getDatabaseQuery(), ReadAllQuery.class);
-            } else if (!(getDatabaseQuery() instanceof ReadQuery)) {
+                throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
+            } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_list"));
             }
             Object result = executeReadQuery();
@@ -696,7 +708,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // This API is used to return non-List results, so no other
             // validation is done.
             // It could be Cursor or other Collection or Map type.
-            if (!(getDatabaseQuery() instanceof ReadQuery)) {
+            if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
             Object result = executeReadQuery();
@@ -733,7 +745,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * are defined for the databaseQuery.
      */
     protected List<Object> processParameters() {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getDatabaseQueryInternal();
         List arguments = query.getArguments();
         if (arguments.isEmpty()) {
             // This occurs for native queries, as the query does not know of its
@@ -815,10 +827,10 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         try {
             entityManager.verifyOpen();
             if (flushMode == null) {
-                getDatabaseQuery().setFlushOnExecute(null);
+                getDatabaseQueryInternal().setFlushOnExecute(null);
             } else {
                 cloneSharedQuery();
-                getDatabaseQuery().setFlushOnExecute(flushMode == FlushModeType.AUTO);
+                getDatabaseQueryInternal().setFlushOnExecute(flushMode == FlushModeType.AUTO);
             }
             return this;
         } catch (RuntimeException e) {
@@ -869,8 +881,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * query."
      */
     protected boolean isFlushModeAUTO() {
-        if (getDatabaseQuery().getFlushOnExecute() != null) {
-            return getDatabaseQuery().getFlushOnExecute().booleanValue();
+        if (getDatabaseQueryInternal().getFlushOnExecute() != null) {
+            return getDatabaseQueryInternal().getFlushOnExecute().booleanValue();
         } else {
             return entityManager.isFlushModeAUTO();
         }
@@ -907,7 +919,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
         ClassLoader loader = getEntityManager().getServerSession().getLoader();
-        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery(), loader, (AbstractSession)getActiveSession());
+        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQueryInternal(), loader, (AbstractSession)getActiveSession());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);
         }
@@ -924,7 +936,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         try {
             entityManager.verifyOpen();
 
-            if (!getDatabaseQuery().isReadQuery()) {
+            if (!getDatabaseQueryInternal().isReadQuery()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
             }
 
@@ -941,7 +953,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * modified.
      */
     protected void cloneSharedQuery() {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getDatabaseQueryInternal();
         if (this.isShared) {
             // Clone to allow setting of hints or other properties without
             // corrupting original query.
@@ -1100,19 +1112,19 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * ReadQuery.
      */
     protected void propagateResultProperties() {
-        DatabaseQuery databaseQuery = getDatabaseQuery();
+        DatabaseQuery databaseQuery = getDatabaseQueryInternal();
         if (databaseQuery.isReadQuery()) {
             ReadQuery readQuery = (ReadQuery) databaseQuery;
             if (maxResults >= 0) {
                 cloneSharedQuery();
-                readQuery = (ReadQuery) getDatabaseQuery();
+                readQuery = (ReadQuery) getDatabaseQueryInternal();
                 int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
                 maxResults = -1;
             }
             if (firstResultIndex > -1) {
                 cloneSharedQuery();
-                readQuery = (ReadQuery) getDatabaseQuery();
+                readQuery = (ReadQuery) getDatabaseQueryInternal();
                 readQuery.setFirstResult(firstResultIndex);
                 firstResultIndex = -1;
             }
@@ -1130,7 +1142,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *            defines if index or named
      */
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getDatabaseQueryInternal();
         int index = query.getArguments().indexOf(name);
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
             if (index == -1) {
@@ -1168,7 +1180,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     }
 
     protected Session getActiveSession() {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getDatabaseQueryInternal();
         // PERF: If read-only query, avoid creating unit of work and JTA
         // transaction.
         if (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery) query).isReadOnly()) {
@@ -1202,7 +1214,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public FlushModeType getFlushMode() {
         try {
             entityManager.verifyOpen();
-            if (getDatabaseQuery().getFlushOnExecute()) return FlushModeType.AUTO;
+            if (getDatabaseQueryInternal().getFlushOnExecute()) return FlushModeType.AUTO;
             return FlushModeType.COMMIT;
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -1215,7 +1227,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Map<String, Object> getHints() {
-        return (Map<String, Object>)getDatabaseQuery().getProperty(QueryHintsHandler.QUERY_HINT_PROPERTY);
+        return (Map<String, Object>)getDatabaseQueryInternal().getProperty(QueryHintsHandler.QUERY_HINT_PROPERTY);
     }
 
     /**
@@ -1346,7 +1358,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     public Set<Parameter<?>> getParameters() {
         if (this.parameters == null) {
-            DatabaseQuery query = getDatabaseQuery(); // Retrieve named query
+            DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named query
             int count = 0;
             if (query.getArguments() != null && !query.getArguments().isEmpty()) {
                 this.parameters = new HashMap<Parameter<?>,Parameter<?>>();
@@ -1423,8 +1435,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // unwraps any proxy to Query, JPAQuery or EJBQueryImpl
             return (T) this;
         }
-        if (cls.isAssignableFrom(getDatabaseQuery().getClass())) {
-            return (T) getDatabaseQuery();
+        if (cls.isAssignableFrom(getDatabaseQueryInternal().getClass())) {
+            return (T) getDatabaseQueryInternal();
         }
 
         throw new PersistenceException("Could not unwrap query to: " + cls);
