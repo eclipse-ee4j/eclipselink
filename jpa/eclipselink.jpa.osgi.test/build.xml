@@ -196,7 +196,7 @@
         <fileset dir="${oracle.extensions.depend.dir}" includes="${oracle.libs.jars}"/>
         </copy>
         <replace file="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0/META-INF/MANIFEST.MF"
-                 token="ojdbc5.jar" value="${jdbc.driver.jar}"/>
+                 token="ojdbc5.jar" value="${jdbc.driver.jar.name}"/>
 
     </target>
 
