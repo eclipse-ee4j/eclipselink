@@ -31,8 +31,7 @@ public class ConcurrencyExceptionResource extends ListResourceBundle {
                                            { "2006", "Attempt to acquire sequencing values through a single Connection({0}) simultaneously in multiple threads" },
                                            { "2007", "Max number of attempts to lock object: {0} exceded.  Failed to clone the object." },
                                            { "2008", "Max number of attempts to lock object: {0} exceded.  Failed to merge the transaction." },
-                                           { "2009", "Max number of attempts to lock object exceded.  Failed to build the object. Thread: {0} has a lock on the object but thread: {1} is building the object"},
-                                           { "2011", "An exception was thrown while releasing locks.  The initial exception was ({0})."} 
+                                           { "2009", "Max number of attempts to lock object exceded.  Failed to build the object. Thread: {0} has a lock on the object but thread: {1} is building the object"}
     };
 
     /**

@@ -458,7 +458,7 @@ public class WriteLockManager {
         }
         List acquiredLocks = mergeManager.getAcquiredLocks(); 
         Iterator locks = acquiredLocks.iterator();
-        Exception exception = null;
+        RuntimeException exception = null;
         while (locks.hasNext()) {
             try {
                 CacheKey cacheKeyToRemove = (CacheKey) locks.next();
@@ -470,7 +470,7 @@ public class WriteLockManager {
                 } else {
                     cacheKeyToRemove.release();
                 }
-            } catch (Exception e){
+            } catch (RuntimeException e){
                 if (exception == null){
                     exception = e;
                 }
@@ -478,7 +478,7 @@ public class WriteLockManager {
         }
         acquiredLocks.clear();
         if (exception != null){
-            throw ConcurrencyException.exceptionReleasingLocks(exception);
+            throw exception;
         }
     }
 
