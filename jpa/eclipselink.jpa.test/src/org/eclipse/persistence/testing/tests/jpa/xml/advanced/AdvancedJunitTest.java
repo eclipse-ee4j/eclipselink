@@ -13,16 +13,20 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.CacheAuditor;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Woman;
@@ -59,6 +63,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testManAndWoman", persistenceUnit));
         if (persistenceUnit.equals("extended-advanced")) {            
             suite.addTest(new AdvancedJunitTest("testForRedirectorsAndInterceptors", persistenceUnit));
+            suite.addTest(new AdvancedJunitTest("testForExceptionsFromInterceptors", persistenceUnit));
         }
         
         return suite;
@@ -181,5 +186,33 @@ public class AdvancedJunitTest extends JUnitTestCase {
         assertTrue("Update queries default redirector was not set on decriptor", descriptor.getDefaultUpdateObjectQueryRedirector() != null);
         assertTrue("Delete queries default redirector was not set on decriptor", descriptor.getDefaultDeleteObjectQueryRedirector() != null);
     }
-
+    public void testForExceptionsFromInterceptors() {
+        ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Address.class);
+        CacheAuditor interceptor = (CacheAuditor) getServerSession(m_persistenceUnit).getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+        interceptor.setShouldThrow(true);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        try {
+            Address addr = new Address();
+            addr.setCity("WhaHa");
+            addr.setProvince("NFLD");
+            em.persist(addr);
+            commitTransaction(em);
+            beginTransaction(em);
+            em.remove(addr);
+            commitTransaction(em);
+            fail("There was no Optimistic Lock Exception");
+        } catch (RollbackException e) {
+            assertTrue("Not caused by OptimisticLockException", (e.getCause() instanceof javax.persistence.OptimisticLockException));
+            
+        }finally{
+            interceptor.setShouldThrow(false);
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
+    }
 }

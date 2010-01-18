@@ -28,7 +28,6 @@ public class ConcurrencyException extends EclipseLinkException {
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_MERGE = 2008;
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_BUILD_OBJECT = 2009;
     public final static int ACTIVE_LOCK_ALREADY_TRANSITIONED = 2010;
-    public final static int EXCEPTION_RELEASING_LOCKS = 2011;
 
     /**
      * INTERNAL:
@@ -124,15 +123,6 @@ public class ConcurrencyException extends EclipseLinkException {
 
         ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, SEQUENCING_MULTITHREAD_THRU_CONNECTION, args));
         concurrencyException.setErrorCode(SEQUENCING_MULTITHREAD_THRU_CONNECTION);
-        return concurrencyException;
-    }
-    
-    public static ConcurrencyException exceptionReleasingLocks(Exception exception) {
-        Object[] args = { exception };
-
-        ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, EXCEPTION_RELEASING_LOCKS, args));
-        concurrencyException.setInternalException(exception);
-        concurrencyException.setErrorCode(EXCEPTION_RELEASING_LOCKS);
         return concurrencyException;
     }
 }
