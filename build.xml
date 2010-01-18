@@ -85,7 +85,12 @@
     -->
 <project name="trunk" default="build" basedir=".">
 
-    <dirname  property="trunk.build.location" file="${ant.file.trunk}"/>
+    <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
+    <pathconvert targetos="unix" property="trunk.build.location">
+        <path>
+            <pathelement location="${trunk.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
     <echo message="env.CLASSPATH        = '${env.CLASSPATH}'"/>
