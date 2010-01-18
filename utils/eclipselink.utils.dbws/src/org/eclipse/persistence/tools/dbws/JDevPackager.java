@@ -83,14 +83,20 @@ public class JDevPackager extends WeblogicPackager {
         "\n//Java extension libraries\n" +
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
+        "import javax.annotation.Resource;\n" +
         "import javax.servlet.ServletContext;\n" +
         "import javax.xml.soap.SOAPMessage;\n" +
         "import javax.xml.ws.BindingType;\n" +
         "import javax.xml.ws.Provider;\n" +
         "import javax.xml.ws.ServiceMode;\n" +
+        "import javax.xml.ws.WebServiceContext;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
+        "import javax.xml.ws.handler.MessageContext;\n" +
         "import javax.xml.ws.soap.SOAPBinding;\n" +
         "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n" +        
         "\n//EclipseLink imports\n" +
         "import " + ProviderHelper.class.getName() + ";\n" +
         "\n" +
@@ -103,9 +109,20 @@ public class JDevPackager extends WeblogicPackager {
         "\",\n    targetNamespace = \"";
     public static final String DBWS_PROVIDER_SOURCE_SUFFIX =
         "\"\n)\n@ServiceMode(MESSAGE)\n";
+    
+    public static final String DBWS_PROVIDER_SOAP12_BINDING =
+        "@BindingType(value=SOAP12HTTP_BINDING)\n";
+    public static final String DBWS_PROVIDER_SOAP11_MTOM_BINDING =
+        "@BindingType(value=SOAP11HTTP_MTOM_BINDING)\n";
+    public static final String DBWS_PROVIDER_SOAP12_MTOM_BINDING =
+        "@BindingType(value=SOAP12HTTP_MTOM_BINDING)\n";
 
     public static final String DBWS_PROVIDER_SOURCE_CLASSDEF =
         "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n" +
+        "\n" +
+        "    // Container injects wsContext here\n" +
+        "    @Resource\n" +
+        "    protected WebServiceContext wsContext;\n" +
         "    public  DBWSProvider() {\n" +
         "        super();\n" +
         "    }\n" +
@@ -133,10 +150,20 @@ public class JDevPackager extends WeblogicPackager {
         "            // if the above doesn't work, then maybe we are running in JavaSE 6 'containerless' mode\n" +
         "            // we can live with a null ServletContext (just use the parentClassLoader to load resources \n" +
         "        }\n" +
-        "        super.init(parentClassLoader, sc);\n" +
+        "        boolean mtomEnabled = false;\n" +
+        "        BindingType thisBindingType = this.getClass().getAnnotation(BindingType.class);\n" +
+        "        if (thisBindingType != null) {\n" +
+        "            if (thisBindingType.value().toLowerCase().contains(\"mtom=true\")) {\n" +
+        "                mtomEnabled = true;\n" +
+        "            }\n" +
+        "        }\n" +
+        "        super.init(parentClassLoader, sc, mtomEnabled);\n" +
         "    }\n" +
         "    @Override\n" +
         "    public SOAPMessage invoke(SOAPMessage request) {\n" +
+        "        if (wsContext != null) {\n" +
+        "            setMessageContext(wsContext.getMessageContext());\n" +
+        "        }\n" +
         "        return super.invoke(request);\n" +
         "    }\n" +
         "    @Override\n" +
@@ -315,7 +342,18 @@ public class JDevPackager extends WeblogicPackager {
         sb.append(builder.getWSDLGenerator().getServiceNameSpace());
         sb.append(DBWS_PROVIDER_SOURCE_SUFFIX);
         if (builder.usesSOAP12()) {
-            sb.append("@BindingType(SOAPBinding.SOAP12HTTP_BINDING)\n");
+            if (builder.mtomEnabled()) {
+                sb.append(DBWS_PROVIDER_SOAP12_MTOM_BINDING);
+            }
+            else {
+                sb.append(DBWS_PROVIDER_SOAP12_BINDING);
+            }
+        }
+        else {
+            if (builder.mtomEnabled()) {
+                sb.append(DBWS_PROVIDER_SOAP11_MTOM_BINDING);
+            }
+            // else the default BindingType, don't have to explicitly set it
         }
         sb.append(DBWS_PROVIDER_SOURCE_CLASSDEF);
         OutputStreamWriter osw =

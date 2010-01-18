@@ -1334,7 +1334,7 @@ public class SqlReflector {
             try {
                 String v = m_conn.getMetaData().getDatabaseProductVersion().toUpperCase();
                 if (v.startsWith("ORACLE DATABASE 10G") || v.startsWith("ORACLE DATABASE 11G")) {
-                    m_isPre920 = new Boolean(false);
+                    m_isPre920 = Boolean.valueOf(false);
                     return false;
                 }
                 int pos = v.indexOf("ORACLE");
@@ -1347,14 +1347,14 @@ public class SqlReflector {
                     || vp.equals("ORACLE10")
                     || (vp.equals("ORACLE9I") && (v.indexOf("9.2.") > 0 || v.indexOf("9.3.") > 0 || v
                         .indexOf("9.4.") > 0))) {
-                    m_isPre920 = new Boolean(false);
+                    m_isPre920 = Boolean.valueOf(false);
                 }
             }
             catch (Exception e) {
                 // Connection is pre 9.2.0
             }
             if (m_isPre920 == null) {
-                m_isPre920 = new Boolean(true);
+                m_isPre920 = Boolean.valueOf(true);
             }
         }
         return m_isPre920.booleanValue();

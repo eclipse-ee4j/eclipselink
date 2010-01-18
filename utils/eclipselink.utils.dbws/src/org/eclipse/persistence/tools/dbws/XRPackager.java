@@ -225,6 +225,7 @@ public class XRPackager implements DBWSPackager {
         }
         DatabaseLoginConfig dlc = new DatabaseLoginConfig();
         dlc.setBindAllParameters(true);
+        dlc.setStreamsForBinding(true);
         dlc.setJdbcBatchWriting(true);
         dlc.setConnectionURL(builder.getUrl());
         dlc.setDriverClass(builder.getDriver());

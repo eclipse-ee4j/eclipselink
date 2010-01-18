@@ -103,17 +103,17 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     public static final String ATTACHED_BINARY_COLLECTION_XML =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
         "<attachedbinary-collection>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>1</id>" +
                 "<name>one</name>" +
                 "<b>cid:ref1</b>" +
             "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>2</id>" +
                 "<name>two</name>" +
                 "<b>cid:ref2</b>" +
             "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>3</id>" +
                 "<name>three</name>" +
                 "<b>cid:ref3</b>" +

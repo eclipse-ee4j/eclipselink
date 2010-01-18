@@ -28,6 +28,7 @@ public class OperationModel {
     protected String xmlTag;
     protected boolean isCollection = false;
     protected boolean binaryAttachment;
+    protected String attachmentType;
     protected String returnType;
 
     public String getName() {
@@ -86,6 +87,15 @@ public class OperationModel {
     }
     public void setBinaryAttachment(boolean binaryAttachment) {
         this.binaryAttachment = binaryAttachment;
+    }
+
+    public String getAttachmentType() {
+        return attachmentType;
+    }
+    public void setAttachmentType(String attachmentType) {
+        if ("MTOM".equalsIgnoreCase(attachmentType) || "SWAREF".equalsIgnoreCase(attachmentType)) {
+            this.attachmentType = attachmentType;
+        }
     }
 
     public String getReturnType() {

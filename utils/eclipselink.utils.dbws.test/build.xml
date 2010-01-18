@@ -382,5 +382,6 @@
         <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
         <SetupCompileRunTeardown testsuite-name="RootCause"/>
         <SetupCompileRunTeardown testsuite-name="OptLock"/>
+        <SetupCompileRunTeardown testsuite-name="MTOM"/>
     </target>
 </project>

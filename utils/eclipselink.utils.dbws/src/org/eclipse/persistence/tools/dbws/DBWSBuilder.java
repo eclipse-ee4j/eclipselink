@@ -145,7 +145,6 @@ import org.eclipse.persistence.tools.dbws.oracle.PLSQLHelperObjectsBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLORDescriptorBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
-import static org.eclipse.persistence.internal.helper.ClassConstants.ABYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
@@ -725,19 +724,40 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
                 XMLDirectMapping xdm = null;
                 QName qName = getXMLTypeFromJDBCType(jdbcType);
+                Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
+                    databasePlatform);
                 // figure out if binary attachments are required
-                boolean isSwaRef = false;
-                if (qName == BASE_64_BINARY_QNAME) {
+                boolean binaryAttach = false;
+                String attachmentType = null;
+                if (BASE_64_BINARY_QNAME.equals(qName)) {
+                    // use primitive byte[] array, not object Byte[] array
+                    attributeClass = APBYTE;
                     for (OperationModel om : operations) {
                         if (om.isTableOperation()) {
                             TableOperationModel tom = (TableOperationModel)om;
+                            if (tom.getBinaryAttachment()) {
+                                binaryAttach = true;
+                                if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                                    attachmentType = "MTOM";
+                                }
+                                else { 
+                                    attachmentType = "SWAREF";
+                                }
+                                // only need one operation to require attachments
+                                break;
+                            }
                             if (tom.additionalOperations.size() > 0) {
                                 for (OperationModel om2 : tom.additionalOperations) {
                                     if (om2.isProcedureOperation()) {
                                         ProcedureOperationModel pom = (ProcedureOperationModel)om2;
                                         if (pom.getBinaryAttachment()) {
-                                            // only need one operation to require attachments
-                                            isSwaRef = true;
+                                            binaryAttach = true;
+                                            if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                                                attachmentType = "MTOM";
+                                            }
+                                            else { 
+                                                attachmentType = "SWAREF";
+                                            }
                                             break;
                                         }
                                     }
@@ -745,10 +765,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                             }
                         }
                     }
-                    if (isSwaRef) {
+                    if (binaryAttach) {
                         xdm = new XMLBinaryDataMapping();
                         XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)xdm;
-                        xbdm.setSwaRef(isSwaRef);
+                        if (attachmentType.equals("SWAREF")) {
+                            xbdm.setSwaRef(true);
+                        }
                         xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
                     }
                     else {
@@ -761,12 +783,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     xdm = new XMLDirectMapping();
                 }
                 DirectToFieldMapping dtfm = new DirectToFieldMapping();
-                Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
-                	databasePlatform);
-                if (qName == BASE_64_BINARY_QNAME && attributeClass == ABYTE) {
-                    // switch to primitive byte[] from Byte[]
-                    attributeClass = APBYTE;
-                }
                 dtfm.setAttributeClassificationName(attributeClass.getName());
                 String fieldName = nct.generateElementAlias(columnName);
                 dtfm.setAttributeName(fieldName);
@@ -797,14 +813,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 desc.addMapping(dtfm);
                 xdesc.addMapping(xdm);
-                if (!isSwaRef && style == ELEMENT) {
+                if (attributeClass != APBYTE) {
                     xPath += "/text()";
                 }
                 xdm.setXPath(xPath);
                 XMLField xmlField = (XMLField)xdm.getField();
                 xmlField.setRequired(true);
                 xmlField.setSchemaType(qName);
-                if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
+                if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
                     // need xsd namespaces 
                     nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
                 }
@@ -1671,6 +1687,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             useSOAP12 = s.toLowerCase().equals("true");
         }
         return useSOAP12;
+    }
+    
+    public boolean mtomEnabled() {
+        boolean mtomEnabled = false;
+        for (OperationModel opModel : getOperations()) {
+            String attachmentType = opModel.getAttachmentType();
+            if ("MTOM".equalsIgnoreCase(attachmentType) || "SWAREF".equalsIgnoreCase(attachmentType)) {
+                mtomEnabled = true;
+                break;
+            }
+        }
+        return mtomEnabled;
     }
     
     public void setTargetNamespace(String targetNamespace) {

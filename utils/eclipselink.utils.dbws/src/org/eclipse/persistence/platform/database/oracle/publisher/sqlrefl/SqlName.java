@@ -729,7 +729,7 @@ public class SqlName extends Name {
 
     public boolean hasConversion() {
         if (m_hasConversion == null) {
-            m_hasConversion = new Boolean(getIntoConversion() != null
+            m_hasConversion = Boolean.valueOf(getIntoConversion() != null
                 || getOutOfConversion() != null);
         }
         return m_hasConversion.booleanValue();

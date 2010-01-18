@@ -173,6 +173,11 @@ public class DBWSBuilderModelProject extends Project {
         binaryAttachment.setXPath("@binaryAttachment");
         descriptor.addMapping(binaryAttachment);
 
+        XMLDirectMapping attachmentType = new XMLDirectMapping();
+        attachmentType.setAttributeName("attachmentType");
+        attachmentType.setXPath("@attachmentType");
+        descriptor.addMapping(attachmentType);
+
         XMLDirectMapping returnTypeMapping = new XMLDirectMapping();
         returnTypeMapping.setAttributeName("returnType");
         returnTypeMapping.setXPath("@returnType");
@@ -255,6 +260,11 @@ public class DBWSBuilderModelProject extends Project {
         binaryAttachment.setXPath("@binaryAttachment");
         descriptor.addMapping(binaryAttachment);
 
+        XMLDirectMapping attachmentType = new XMLDirectMapping();
+        attachmentType.setAttributeName("attachmentType");
+        attachmentType.setXPath("@attachmentType");
+        descriptor.addMapping(attachmentType);
+
         XMLDirectMapping returnTypeMapping = new XMLDirectMapping();
         returnTypeMapping.setAttributeName("returnType");
         returnTypeMapping.setXPath("@returnType");
@@ -335,6 +345,11 @@ public class DBWSBuilderModelProject extends Project {
         binaryAttachment.setNullValue(Boolean.FALSE);
         binaryAttachment.setXPath("@binaryAttachment");
         descriptor.addMapping(binaryAttachment);
+
+        XMLDirectMapping attachmentType = new XMLDirectMapping();
+        attachmentType.setAttributeName("attachmentType");
+        attachmentType.setXPath("@attachmentType");
+        descriptor.addMapping(attachmentType);
 
         XMLDirectMapping returnTypeMapping = new XMLDirectMapping();
         returnTypeMapping.setAttributeName("returnType");

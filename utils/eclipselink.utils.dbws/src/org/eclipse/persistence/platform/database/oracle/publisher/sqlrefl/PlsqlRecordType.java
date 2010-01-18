@@ -120,7 +120,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         data_level++;
         iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{PACKAGE_NAME,
             OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{packageName,
-            methodName, methodNo, new Integer(data_level)}, new String[]{SEQUENCE});
+            methodName, methodNo, Integer.valueOf(data_level)}, new String[]{SEQUENCE});
         viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) { // DISTINCT
             UserArguments item = (UserArguments)iter.next();

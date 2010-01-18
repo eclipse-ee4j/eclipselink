@@ -14,17 +14,20 @@
 package org.eclipse.persistence.internal.dbws;
 
 //javase imports
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 // Java extension imports
+import javax.activation.DataHandler;
 import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBodyElement;
@@ -39,10 +42,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
 import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
 
 // EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
@@ -68,6 +73,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
@@ -138,16 +144,22 @@ public class ProviderHelper extends XRServiceFactory {
         "</xsl:template>" +
       XSL_POSTSCRIPT;
     public SOAPResponseWriter responseWriter = null;
+    protected boolean mtomEnabled;
+    protected MessageContext mc;
 
     // Default constructor required by servlet/jax-ws spec
     public ProviderHelper() {
         super();
     }
 
-    @SuppressWarnings("unchecked")
-    public void init(ClassLoader parentClassLoader, ServletContext sc) {
+    protected void setMessageContext(MessageContext mc) {
+        this.mc = mc;
+    }
 
+    @SuppressWarnings("unchecked")
+    public void init(ClassLoader parentClassLoader, ServletContext sc, boolean mtomEnabled) {
         this.parentClassLoader = parentClassLoader;
+        this.mtomEnabled = mtomEnabled;
         InputStream xrServiceStream = null;
         for (String searchPath : META_INF_PATHS) {
             String path = searchPath + DBWS_SERVICE_XML;
@@ -375,6 +387,10 @@ public class ProviderHelper extends XRServiceFactory {
 
     @SuppressWarnings("unchecked")
     public SOAPMessage invoke(SOAPMessage request) {
+        Map<String,DataHandler> attachments = null;
+        if (mtomEnabled) {
+            attachments = (Map<String, DataHandler>)mc.get(INBOUND_MESSAGE_ATTACHMENTS);
+        }
         SOAPMessage response = null;
         boolean usesSOAP12 = false;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
@@ -428,8 +444,52 @@ public class ProviderHelper extends XRServiceFactory {
         XMLRoot xmlRoot = null;
         try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
-            xmlRoot = (XMLRoot)xmlContext.createUnmarshaller().unmarshal(body,
-                Invocation.class);
+            XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
+            if (attachments != null && attachments.size() > 0) {
+                unmarshaller.setAttachmentUnmarshaller(new XMLAttachmentUnmarshaller() {
+                    Map<String,DataHandler> attachments;
+                    public XMLAttachmentUnmarshaller setAttachments(Map<String, DataHandler> attachments) {
+                        this.attachments = attachments;
+                        return this;
+                    }
+                    public boolean isXOPPackage() {
+                        return true;
+                    }
+                    public DataHandler getAttachmentAsDataHandler(String id) {
+                        // strip off 'cid:' (Is this needed?)
+                        String attachmentRefId = id;
+                        if (attachmentRefId.startsWith("cid:")) {
+                            attachmentRefId = attachmentRefId.substring(4);
+                        }
+                        return attachments.get(attachmentRefId);
+                    }
+                    public byte[] getAttachmentAsByteArray(String id) {
+                        ByteArrayOutputStream out = null;
+                        try {
+                            DataHandler dh = attachments.get(id);
+                            if (dh == null) {
+                                return null;
+                            }
+                            InputStream in = dh.getInputStream();
+                            out = new ByteArrayOutputStream(1024);
+                            byte[] buf = new byte[1024];
+                            int len;
+                            while ((len = in.read(buf)) > 0) {
+                              out.write(buf, 0, len);
+                            }
+                        }
+                        catch (IOException e) {
+                            // e.printStackTrace();
+                        }
+                        if (out != null) {
+                            return out.toByteArray();
+                        }
+                        return null;
+                    }
+                }.setAttachments(attachments));
+                dbwsAdapter.setCurrentAttachmentUnmarshaller(unmarshaller.getAttachmentUnmarshaller());
+            }
+            xmlRoot = (XMLRoot)unmarshaller.unmarshal(body, Invocation.class);
         }
         catch (Exception e) {
             SOAPFault soapFault = null;

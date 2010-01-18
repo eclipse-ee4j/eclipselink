@@ -78,6 +78,7 @@ public class WeblogicPackager extends WebServicePackager {
             dlc.setExternalTransactionController(true);
             dlc.setDatasource(dataSource);
             dlc.setBindAllParameters(true);
+            dlc.setStreamsForBinding(true);
             orSessionConfig.setLoginConfig(dlc);
             ts.getSessionConfigs().set(0, orSessionConfig);
         }
