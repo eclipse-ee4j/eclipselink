@@ -913,7 +913,7 @@ public class XMLMarshaller {
             marshalRecord.closeStartElement();
         }
         if (treeObjectBuilder != null) {
-            treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
+            treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment);
         } else if (isXMLRoot) {
             if(null == object) {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);

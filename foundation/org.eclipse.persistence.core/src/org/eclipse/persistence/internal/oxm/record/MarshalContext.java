@@ -56,5 +56,7 @@ public interface MarshalContext {
      * @return If anything as marshalled as a result of this call. 
      */
     public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver);
+    
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment);
 
 }

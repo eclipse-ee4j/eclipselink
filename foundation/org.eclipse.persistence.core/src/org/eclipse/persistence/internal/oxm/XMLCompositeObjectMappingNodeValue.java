@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -159,7 +160,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 addTypeAttributeIfNeeded(descriptor, xmlCompositeObjectMapping, marshalRecord);
             }
 
-            objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller);
+            objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment);
 
             if (!xPathFragment.isSelfFragment()) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);

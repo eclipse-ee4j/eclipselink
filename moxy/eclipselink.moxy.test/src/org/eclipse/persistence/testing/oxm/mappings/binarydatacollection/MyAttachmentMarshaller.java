@@ -36,6 +36,7 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     public static int count = 0;
     public static HashMap attachments = new HashMap();
     public boolean returnNull = false;
+    private String localName = null;
 
     public String addSwaRefAttachment(DataHandler data) {
         if(returnNull) {
@@ -59,7 +60,7 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         return id;
     }
 
-    public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
+    public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elementName, String namespaceURI) {
         if(returnNull) {
             return null;
         }
@@ -68,11 +69,11 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
         MyAttachmentMarshaller.count++;
         attachments.put(id, bytes);
-
+        this.localName = elementName;
         return id;
     }
 
-    public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) {
+    public String addMtomAttachment(DataHandler data, String elementName, String namespaceURI) {
         if(returnNull) {
             return null;
         }
@@ -81,6 +82,7 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
         MyAttachmentMarshaller.count++;
         attachments.put(id, data);
+        this.localName = elementName;
         return id;
     }
 
@@ -90,5 +92,9 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     
     public void setReturnNull(boolean b) {
         this.returnNull = b;
+    }
+    
+    public String getLocalName() {
+    	return this.localName;
     }
 }

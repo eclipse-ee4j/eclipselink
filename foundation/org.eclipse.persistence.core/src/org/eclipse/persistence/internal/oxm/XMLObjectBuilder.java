@@ -176,6 +176,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
         parentRecord.setLeafElementType(null);
         nestedRecord.setDocPresPolicy(policy);
+        nestedRecord.setXOPPackage(parentRecord.isXOPPackage());
         return nestedRecord;
     }
     

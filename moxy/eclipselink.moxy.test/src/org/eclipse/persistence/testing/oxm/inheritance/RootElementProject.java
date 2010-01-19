@@ -12,11 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -41,7 +41,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("vehicle");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setClassIndicatorFieldName("@xsi:type");
@@ -65,7 +65,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("car");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setParentClass(Vehicle.class);
@@ -86,7 +86,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("sports-car");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setParentClass(Car.class);

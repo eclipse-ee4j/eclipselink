@@ -309,6 +309,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller) {
+        return buildRow(record, object, session, marshaller, null);
+    }
+
+    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment) {
         if (null == getRootXPathNode().getNonAttributeChildren()) {
             return record;
         }
@@ -323,7 +327,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         }
         for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(getRootXPathNode()); x < size; x++) {
             XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, getRootXPathNode());
-            xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x));
+            xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
         }
         return record;
     }

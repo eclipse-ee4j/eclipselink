@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -58,18 +59,22 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance(), null);
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         if (xmlBinaryDataMapping.isReadOnly()) {
             return false;
         }
         Object objectValue = marshalContext.getAttributeValue(object, xmlBinaryDataMapping);
-        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext, rootFragment);
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext, null);
+    }
+    
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataMapping.getConverter() != null) {
             Converter converter = xmlBinaryDataMapping.getConverter();
@@ -105,11 +110,21 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         } else if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
             XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
+            String localName = null;
+            String namespaceUri = null;
+            if(rootFragment != null) {
+                localName = rootFragment.getLocalName();
+                namespaceUri = rootFragment.getNamespaceURI();
+            }
+            if(!lastFrag.isSelfFragment) {
+                localName = lastFrag.getLocalName();
+                namespaceUri = lastFrag.getNamespaceURI();
+            }
             if (objectValue.getClass() == ClassConstants.APBYTE) {
                 bytes = (byte[]) objectValue;
-                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), localName, namespaceUri);
             } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, localName, namespaceUri);
                 if(c_id == null) {
                     bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                             objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
@@ -118,7 +133,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
                 bytes = data.getData();
-                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), localName, namespaceUri);
             }
         }
 

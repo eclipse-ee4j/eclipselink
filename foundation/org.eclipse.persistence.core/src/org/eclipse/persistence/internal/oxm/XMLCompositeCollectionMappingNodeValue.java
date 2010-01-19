@@ -266,7 +266,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-            objectBuilder.buildRow(marshalRecord, value, session, marshaller);
+            objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
            
