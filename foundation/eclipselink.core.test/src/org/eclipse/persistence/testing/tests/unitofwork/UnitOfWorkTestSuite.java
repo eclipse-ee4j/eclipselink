@@ -239,6 +239,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
         TransactionalTestCase test = new TransactionalTestCase() {
             public void setup() {
                 super.setup();
+                if (getSession().isRemoteSession()) {
+                    throwWarning("Test not supported on remote session.");
+                }
                 getSession().getDescriptor(Address.class).setReadOnly();
             }
             public void test() {
