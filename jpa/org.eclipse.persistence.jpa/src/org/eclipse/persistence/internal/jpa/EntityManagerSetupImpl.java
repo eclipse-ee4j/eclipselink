@@ -382,7 +382,11 @@ public class EntityManagerSetupImpl {
             }            
             
             // 266912: Initialize the Metamodel
-            this.getMetamodel();            
+            try {
+            	this.getMetamodel();
+            } catch (Exception e) {
+            	session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
+            }
             return session;
         } catch (Exception exception) {
             PersistenceException persistenceException = null;
@@ -1935,10 +1939,13 @@ public class EntityManagerSetupImpl {
      */
     public Metamodel getMetamodel() {
         // perform lazy initialisation
+    	Metamodel tempMetaModel = null;
         if(null == metaModel) {
-            metaModel = new MetamodelImpl(this);
+            tempMetaModel = new MetamodelImpl(this);
             //If the canonical metamodel classes exist, initialize them
-            initializeCanonicalMetamodel(metaModel);
+            initializeCanonicalMetamodel(tempMetaModel);
+            // set variable after init has executed without exception
+            metaModel = tempMetaModel;
         }
         return metaModel;
     }
@@ -1976,7 +1983,7 @@ public class EntityManagerSetupImpl {
             } catch (ConversionException exception){
             }
             if (!classInitialized) {
-                getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_classes_not_found");
+                getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_not_found", className);
             }
         }
     }    
