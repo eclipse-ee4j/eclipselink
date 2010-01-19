@@ -1001,7 +1001,7 @@
         <antcall target="all" inheritRefs="true"/>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
-            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
@@ -1009,7 +1009,7 @@
         </antcall>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
-            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>

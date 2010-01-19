@@ -217,7 +217,7 @@
 
     <target name="test-jpa-spring-container" depends="clean-run, config-trunk, config-flat">
         <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
-            <jvmarg value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <jvmarg value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
