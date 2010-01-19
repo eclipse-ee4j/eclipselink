@@ -90,6 +90,19 @@ public abstract class NodeValue {
     	marshalRecord.setMarshaller(marshaller);
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
+    
+    /**
+     * INTERNAL:
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @return
+     */
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
+        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, marshalContext);
+    }
 
     /**
      * INTERNAL:
@@ -107,6 +120,23 @@ public abstract class NodeValue {
     public abstract boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 
     /**
+     * INTERNAL:
+     * This method provides an optimization in cases where the value has already
+     * been calculated.
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param objectValue
+     * @param session
+     * @param namespaceResolver
+     * @param marshalContext
+     * @return
+     */
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
+    }
+
+/**
      * INTERNAL:
      * Override this method if the NodeValue is applicable to sequenced objects.
      * @param xPathFragment

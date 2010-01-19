@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith - June 24/2009 - 2.0 - Initial implementation
+ *     Matt MacIvor - January 18/2010 - 2.0 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
@@ -21,20 +21,14 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 import org.w3c.dom.Document;
 
-public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases {
-
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataSelfDataHandler.xml";
+public class BinaryDataCompositeSelfTestCases extends XMLMappingTestCases{
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataCompositeSelf.xml";
     private MyAttachmentMarshaller attachmentMarshaller;
-    public BinaryDataSelfDataHandlerTestCases(String name) throws Exception {
+    
+    public BinaryDataCompositeSelfTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Project p = new BinaryDataSelfProject();
-        p.getDescriptor(Employee.class).getMappingForAttributeName("photo").setIsReadOnly(true);
-        
-        ((XMLBinaryDataMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("data")).setShouldInlineBinaryData(false);
-        ((XMLBinaryDataMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("photo")).setShouldInlineBinaryData(false);
-        
-        
+        Project p = new BinaryDataCompositeSelfProject();
         setProject(p);
     }
     
@@ -45,25 +39,26 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases {
     	xmlMarshaller.setAttachmentMarshaller(this.attachmentMarshaller);
     	xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
     	
-    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+    	byte[] bytes = new byte[] {1, 2, 3, 4, 5, 6};    	
+    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     	
     }
 
     protected Object getControlObject() {
         Employee emp = new Employee(123);
         
-        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));        
+        MyImage image = new MyImage();
+        image.setMyBytes(new byte[]{1, 2, 3, 4, 5, 6});
+        emp.setMyImage(image);
         return emp;
     }
     
     public Object getReadControlObject() {
         Employee emp = new Employee(123);
         
-        String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
-       
-        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
-        emp.setPhoto(s.getBytes());
+        MyImage image = new MyImage();
+        image.setMyBytes(new byte[]{1, 2, 3, 4, 5, 6});
+        emp.setMyImage(image);
         
         return emp;
     }
@@ -72,6 +67,4 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases {
         super.objectToXMLDocumentTest(testDocument);
         assertNotNull(this.attachmentMarshaller.getLocalName());
     }
-    
-    
 }

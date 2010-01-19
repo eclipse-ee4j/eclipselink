@@ -93,5 +93,15 @@ public class SequencedMarshalContext implements MarshalContext {
             return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this);
         }
     }
+    
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
+        if(nodeValue.isContainerValue()) {
+            ((ContainerValue)nodeValue).marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, this);
+            return true;
+        } else {
+            return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this, rootFragment);
+        }
+    }
+    
 
 }

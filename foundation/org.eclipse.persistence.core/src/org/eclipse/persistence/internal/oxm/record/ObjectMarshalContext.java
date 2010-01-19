@@ -55,5 +55,9 @@ public class ObjectMarshalContext implements MarshalContext {
     public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this);
     }
+    
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
+        return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this, rootFragment);
+    }
 
 }

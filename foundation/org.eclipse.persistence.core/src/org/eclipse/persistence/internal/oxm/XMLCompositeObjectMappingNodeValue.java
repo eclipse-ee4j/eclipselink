@@ -160,7 +160,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 addTypeAttributeIfNeeded(descriptor, xmlCompositeObjectMapping, marshalRecord);
             }
 
-            objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller);
+            objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment);
 
             if (!xPathFragment.isSelfFragment()) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);

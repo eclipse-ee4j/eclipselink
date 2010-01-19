@@ -194,6 +194,16 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             //write as attachment
             String c_id = XMLConstants.EMPTY_STRING;
             byte[] bytes = null;
+            String elementName = field.getLastXPathFragment().getLocalName();
+            String namespaceUri = field.getLastXPathFragment().getNamespaceURI();
+            if(field.getLastXPathFragment().isSelfFragment()) {
+            	//If it's a self mapping, get the element from the DOM record
+            	DOMRecord domRecord = (DOMRecord)record;
+            	if(domRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
+            		elementName = domRecord.getDOM().getLocalName();
+            		namespaceUri = domRecord.getDOM().getNamespaceURI();
+            	}
+            }
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                 if (getAttributeClassification() == ClassConstants.ABYTE) {
                     attributeValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(attributeValue, ClassConstants.APBYTE);
@@ -203,11 +213,11 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                         bytes, 0,//
                         bytes.length,// 
                         this.getMimeType(parent),//
-                        field.getLastXPathFragment().getLocalName(),// 
-                        field.getLastXPathFragment().getNamespaceURI());//
+                        elementName,// 
+                        namespaceUri);//
             } else if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
-                        (DataHandler) attributeValue, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
+                        (DataHandler) attributeValue, elementName, namespaceUri);
                 if(c_id == null) {
                     //get the bytes so we can write it out inline
                     XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
@@ -221,8 +231,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0,//
                         bytes.length,//
                         data.getMimeType(),//
-                        field.getLastXPathFragment().getLocalName(),//
-                        field.getLastXPathFragment().getNamespaceURI());
+                        elementName,//
+                        namespaceUri);
             }
             if(c_id == null) {
             	XMLField textField = null;

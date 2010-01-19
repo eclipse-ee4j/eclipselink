@@ -41,6 +41,7 @@ public class Employee {
     private byte[] photo;
     private byte[] extraPhoto;
     private DataHandler data;
+    private MyImage myImage;
 
     public Employee() {
         super();
@@ -92,6 +93,14 @@ public class Employee {
     public void setData(DataHandler theData) {
         this.data = theData;
     }
+    
+    public MyImage getMyImage() {
+    	return this.myImage;
+    }
+    
+    public void setMyImage(MyImage mi) {
+    	this.myImage = mi;
+    }
 
     public String toString() {
         String returnString = "Employee: " + this.getID() + " ";
@@ -134,6 +143,16 @@ public class Employee {
         
         if(data != null && employeeObject.getData() == null){
         	return false;
+        }
+        
+        if(this.getMyImage() != null) {
+        	if(!(this.getMyImage().equals(employeeObject.getMyImage()))) {
+        		return false;
+        	}
+        } else {
+        	if(employeeObject.getMyImage() != null) {
+        		return false;
+        	}
         }
         
         if(data != null){

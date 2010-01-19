@@ -291,8 +291,11 @@ public class XPathNode {
         }
         return xPathNode;
     }
-
     public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext) {
+        return marshal(marshalRecord, object, session, namespaceResolver, marshaller, marshalContext, null);
+    }
+
+    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
         if ((null == marshalNodeValue) || marshalNodeValue.isMarshalOnlyNodeValue()) {
             marshalRecord.addGroupingElement(this);
 
@@ -300,7 +303,7 @@ public class XPathNode {
             if (null != attributeChildren) {
                 for (int x = 0, size = attributeChildren.size(); x < size; x++) {
                     XPathNode xPathNode = attributeChildren.get(x);
-                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance()) || hasValue;
+                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance(), this.xPathFragment) || hasValue;
                 }
             }
             if (anyAttributeNode != null) {
@@ -310,7 +313,7 @@ public class XPathNode {
                 for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(this); x < size; x++) {
                     XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, this);
                     MarshalContext childMarshalContext = marshalContext.getMarshalContext(x);
-                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, childMarshalContext) || hasValue;
+                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, childMarshalContext, this.xPathFragment) || hasValue;
                 }
             }
 
@@ -322,7 +325,7 @@ public class XPathNode {
 
             return hasValue;
         } else {
-            return marshalContext.marshal(marshalNodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver);
+            return marshalContext.marshal(marshalNodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver, rootFragment);
         }
     }
 

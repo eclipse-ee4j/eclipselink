@@ -20,6 +20,7 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
     public static int count = 0;
     public static HashMap attachments = new HashMap();
     public boolean returnNull = false;
+    public String localName = null;
 
     public String addSwaRefAttachment(DataHandler data) {
         if(returnNull) {
@@ -50,7 +51,7 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
 
         MyAttachmentMarshaller.count++;
         attachments.put(id, bytes);
-
+        this.localName = elemtnName;
         return id;
     }
 
@@ -62,6 +63,7 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
 
         MyAttachmentMarshaller.count++;
         attachments.put(id, data);
+        this.localName = elementName;
         return id;
     }
 
@@ -71,5 +73,9 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
     
     public void setReturnNull(boolean b) {
         this.returnNull = b;
+    }
+    
+    public String getLocalName() {
+        return this.localName;
     }
 }

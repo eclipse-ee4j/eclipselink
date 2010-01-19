@@ -867,7 +867,11 @@ public class MappingsGenerator {
         if (property.getMimeType() != null) {
             mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
         } else {
-            mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        	if(areEquals(property.getType(), javax.xml.transform.Source.class)) {
+                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml"));
+        	} else {
+        		mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        	}
         }
         descriptor.addMapping(mapping);
         
@@ -906,7 +910,11 @@ public class MappingsGenerator {
         if (property.getMimeType() != null) {
             mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
         } else {
-            mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        	if(areEquals(property.getType(), javax.xml.transform.Source.class)) {
+                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml"));
+        	} else {
+        		mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+        	}
         }
         
         JavaClass collectionType = property.getType();

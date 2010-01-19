@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee id="123">
+   <my-image>
+      <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="c_id0"/>
+   </my-image>
+</employee>
