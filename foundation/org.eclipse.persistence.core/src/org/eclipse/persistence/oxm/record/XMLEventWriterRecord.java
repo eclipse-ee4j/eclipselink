@@ -43,14 +43,14 @@ public class XMLEventWriterRecord extends MarshalRecord {
     private List attributes;
     private List namespaceDeclarations;
     private String namespaceURI;
-    private XPathFragment xPathFragment;    
+    private XPathFragment xPathFragment;
 
     public XMLEventWriterRecord(XMLEventWriter xmlEventWriter) {
         this.xmlEventWriter = xmlEventWriter;
         this.xmlEventFactory = XMLEventFactory.newInstance();
         this.domToXMLEventWriter = new DomToXMLEventWriter(xmlEventFactory);
     }
-    
+
     public XMLEventWriter getXMLEventWriter() {
         return xmlEventWriter;
     }
@@ -87,7 +87,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
              this.attributes.add(event);
          }
     }
-    
+
     public void attribute(String namespaceURI, String localName, String name, String value) {
          XMLEvent event;
          if(namespaceURI != null && namespaceURI.equals(XMLConstants.XMLNS_URL)) {
@@ -120,9 +120,9 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  this.attributes = new ArrayList();
              }
              this.attributes.add(event);
-         }         
+         }
     }
-    
+
     private void openAndCloseStartElement() {
         try {
              if(namespaceURI == null) {
@@ -160,6 +160,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(ex);
         }
     }
+
     public void cdata(String value) {
         try {
             if(isStartElementOpen) {
@@ -172,7 +173,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
        }
     }
-    
+
     public void characters(String value) {
         try {
             if(isStartElementOpen) {
@@ -185,7 +186,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public void closeStartElement() {
     }
 
@@ -201,7 +202,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         this.namespaceDeclarations = null;
         writePrefixMappings();
     }
-    
+
     public void element(XPathFragment frag) {
         try {
             if(isStartElementOpen) {
@@ -217,10 +218,9 @@ public class XMLEventWriterRecord extends MarshalRecord {
             this.xmlEventWriter.add(this.xmlEventFactory.createEndElement(prefix, frag.getNamespaceURI(), frag.getLocalName()));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
-        }    
+        }
     }
-    
-    
+
     public void endDocument() {
         try {
             if(isStartElementOpen) {
@@ -233,7 +233,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public void endElement(XPathFragment pathFragment, NamespaceResolver namespaceResolver) {
         if(isStartElementOpen) {
             openAndCloseStartElement();
@@ -251,7 +251,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public void node(Node node, NamespaceResolver resolver) {
         if(isStartElementOpen) {
             openAndCloseStartElement();
@@ -266,7 +266,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public void startDocument(String encoding, String version) {
         try {
             XMLEvent startDoc = this.xmlEventFactory.createStartDocument(encoding, version, false);
@@ -275,11 +275,11 @@ public class XMLEventWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     private String getString(String string) {
         return string;
     }
-    
+
     public void startPrefixMapping(String prefix, String namespaceUri) {
         if(null == this.prefixMapping) {
             this.prefixMapping = new HashMap<String, String>();
@@ -316,12 +316,12 @@ public class XMLEventWriterRecord extends MarshalRecord {
            }
             prefixMapping = null;
         }
-        
+
     }
 
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
     }
-    
+
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
         this.namespaceResolver = namespaceResolver;
     }
