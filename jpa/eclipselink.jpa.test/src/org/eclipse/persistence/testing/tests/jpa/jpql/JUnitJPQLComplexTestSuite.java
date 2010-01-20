@@ -186,8 +186,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
+        // Derby does not support simple CASE
+        if (!((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
+            suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
+        }
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInUpdateTest"));
@@ -2356,9 +2360,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexSimpleCaseInSelectTest(){
         EntityManager em = createEntityManager();
-
-        Assert.assertFalse("Warning: Derby does not support simple CASE",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby());
-
         Vector expectedResult = new Vector(2);
         expectedResult.add("Robert");
         expectedResult.add("Gillian");
@@ -2373,9 +2374,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexSimpleCaseInWhereTest(){
         EntityManager em = createEntityManager();
-
-        Assert.assertFalse("Warning: Derby does not support simple CASE",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby());
-
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
         List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         
