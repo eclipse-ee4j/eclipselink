@@ -309,10 +309,11 @@
     <target name="build-core-test" depends="build-all-core-except-dbws-test, build-dbws-test"/>
 
     <target name="build-all-core-except-dbws-test">
-        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="build"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml"        target="all"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="compile-tests-against-jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"  target="compile-sdo-tests-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}"    target="build"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml"           target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa.wdf.test}" target="build-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}"    target="compile-tests-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"     target="compile-sdo-tests-against-jar"/>
     </target>
 
     <target name="build-dbws-test" unless="java_is_v5">
@@ -722,7 +723,7 @@
             depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-utils-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-moxy, test-sdo, test-dbws, test-dbws-utils"
+            depends="test-core, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-utils"
             />
 
     <!-- Run core LRG. -->
@@ -749,6 +750,13 @@
     <!-- Run JPA SRG. -->
     <target name="test-jpa-srg" description="run the jpa srg tests">
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="test-srg"/>
+    </target>
+    <!-- Run WDF suite -->
+    <target name="build-wdf" description="build the WDF jpa tests">
+        <ant antfile="build.xml" dir="${eclipselink.jpa.wdf.test}" target="build-against-jar"/>
+    </target>
+    <target name="test-wdf" description="run the WDF jpa tests">
+        <ant antfile="build.xml" dir="${eclipselink.jpa.wdf.test}" target="test-against-jar"/>
     </target>
     <!-- Run JPA Spring. -->
     <target name="test-jpa-spring" description="run the jpa Spring tests">

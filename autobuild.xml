@@ -415,6 +415,7 @@
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${download.dir}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${download.dir}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"   tofile="${download.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${download.dir}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${download.dir}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${download.dir}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
@@ -611,6 +612,7 @@
         <copy todir="${download.dir}" file="${promote.source.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
         <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-core-lrg-${version.string}.html"                                      failonerror="false"/>
         <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-jpa-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"                                       failonerror="false"/>
         <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-jaxb-lrg-${version.string}.html"                                      failonerror="false"/>
         <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-oxm-lrg-${version.string}.html"                                       failonerror="false"/>
         <copy todir="${download.dir}" file="${promote.source.dir}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
