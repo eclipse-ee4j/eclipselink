@@ -37,6 +37,8 @@
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     01/19/2010-2.1 Guy Pelletier 
+ *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -105,6 +107,8 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.FetchAttributeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
@@ -161,6 +165,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildOptimisticLockingDescriptor());
         addDescriptor(buildCacheDescriptor());
         addDescriptor(buildCacheInterceptorDescriptor());
+        addDescriptor(buildFetchAttributeDescriptor());
+        addDescriptor(buildFetchGroupDescriptor());
         addDescriptor(buildTimeOfDayDescriptor());
         
         addDescriptor(buildColumnDescriptor());
@@ -1089,6 +1095,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
+        descriptor.addMapping(getFetchGroupMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1299,6 +1306,46 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
     
+    
+    /**
+     * INTERNAL:
+     * XSD: fetch-group
+     */
+    protected ClassDescriptor buildFetchAttributeDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(FetchAttributeMetadata.class);
+
+        // Element mappings - must remain in order of definition in XML.
+        
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: fetch-group
+     */
+    protected ClassDescriptor buildFetchGroupDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(FetchGroupMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeCollectionMapping attributesMapping = new XMLCompositeCollectionMapping();
+        attributesMapping.setAttributeName("m_fetchAttributes");
+        attributesMapping.setGetMethodName("getFetchAttributes");
+        attributesMapping.setSetMethodName("setFetchAttributes");
+        attributesMapping.setReferenceClass(FetchAttributeMetadata.class);
+        attributesMapping.setXPath("orm:attribute");
+        descriptor.addMapping(attributesMapping);
+        
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
     /**
      * INTERNAL:
      * XSD: field-result
@@ -1497,6 +1544,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
+        descriptor.addMapping(getFetchGroupMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -2959,6 +3007,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         fetchMapping.setSetMethodName("setFetch");
         fetchMapping.setXPath("@fetch");
         return fetchMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getFetchGroupMapping() {
+        XMLCompositeCollectionMapping fetchGroupMapping = new XMLCompositeCollectionMapping();
+        fetchGroupMapping.setAttributeName("m_fetchGroups");
+        fetchGroupMapping.setGetMethodName("getFetchGroups");
+        fetchGroupMapping.setSetMethodName("setFetchGroups");
+        fetchGroupMapping.setReferenceClass(FetchGroupMetadata.class);
+        fetchGroupMapping.setXPath("orm:fetch-group");
+        return fetchGroupMapping;
     }
     
     /**

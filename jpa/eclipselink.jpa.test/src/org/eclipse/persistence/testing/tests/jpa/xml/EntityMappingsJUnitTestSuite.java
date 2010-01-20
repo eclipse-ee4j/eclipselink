@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     01/19/2010-2.1 Guy Pelletier 
+ *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk.AdvancedCompositePKJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.xml.advanced.fetchgroup.EntityMappingsFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
@@ -50,6 +53,7 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
             suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
+            suite.addTest(EntityMappingsFetchGroupJunitTest.suite());
         }
         
         suite.addTest(AdvancedCompositePKJunitTest.suite());

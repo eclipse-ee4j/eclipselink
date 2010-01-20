@@ -25,6 +25,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     01/19/2010-2.1 Guy Pelletier 
+ *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -98,6 +100,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING = "metadata_warning_ignore_mapped_superclass_existence_checking";
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
+    public static final String IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP = "metadata_warning_ignore_mapped_superclass_fetch_group";
     
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
     
@@ -229,6 +232,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPED_SUPERCLASS_ID_CLASS);
         addContextString(IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
         addContextString(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP);
         
         addContextString(IGNORE_MAPPING_METADATA);
         

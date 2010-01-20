@@ -2713,8 +2713,25 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (this.fetchGroupName != null) {//set pre-defined named group
             this.fetchGroup = getDescriptor().getFetchGroupManager().getFetchGroup(this.fetchGroupName);
             if (this.fetchGroup == null) {
-                //named fetch group is not defined in the descriptor
-                throw QueryException.fetchGroupNotDefinedInDescriptor(this.fetchGroupName);
+                // Check the inheritance parents for the fetch group before
+                // throwing an exception.
+                if (getDescriptor().isChildDescriptor()) {
+                    ClassDescriptor parentDescriptor = getDescriptor().getInheritancePolicy().getParentDescriptor();
+                    
+                    while (parentDescriptor != null && this.fetchGroup == null) {
+                        if (parentDescriptor.hasFetchGroupManager()) {
+                            this.fetchGroup = parentDescriptor.getFetchGroupManager().getFetchGroup(this.fetchGroupName);
+                        }
+                        
+                        // Get the next parent.
+                        parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
+                    }
+                }
+                
+                if (this.fetchGroup == null) {
+                    // named fetch group is not defined in the descriptor
+                    throw QueryException.fetchGroupNotDefinedInDescriptor(this.fetchGroupName);
+                }
             }
         } else {//not set fetch group at all
             //use the default fetch group if not explicitly turned off

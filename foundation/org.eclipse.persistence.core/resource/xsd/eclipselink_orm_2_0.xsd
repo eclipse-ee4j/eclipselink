@@ -721,6 +721,7 @@
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking" minOccurs="0"/>
       <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
       <xsd:element name="cache-interceptor" type="orm:cache-interceptor" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="fetch-group" type="orm:fetch-group" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
@@ -1776,6 +1777,54 @@
 
 <!-- **************************************************** -->
 
+  <xsd:complexType name="fetch-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface FetchAttribute {
+          /**
+           * (Required) The fetch attribute name.
+           */
+          String name(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+<!-- **************************************************** -->
+
+  <xsd:complexType name="fetch-group">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface FetchGroup {
+          /**
+           * (Required) The fetch group name.
+           */
+          String name(); 
+
+          /**
+           * (Required) The list of attributes to fetch.
+           */
+          FetchAttribute[] attributes();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="attribute" type="orm:fetch-attribute" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
   <xsd:simpleType name="fetch-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -2363,6 +2412,7 @@
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking" minOccurs="0"/>
       <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
       <xsd:element name="cache-interceptor" type="orm:cache-interceptor" minOccurs="0"/>
+      <xsd:element name="fetch-group" type="orm:fetch-group" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>

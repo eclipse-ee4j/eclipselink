@@ -384,6 +384,13 @@ public class FetchGroupManager implements Cloneable {
     }
     
     /**
+     * Return true if a fetch group exists for the given group name.
+     */
+    public boolean hasFetchGroup(String groupName) {
+        return getFetchGroups().containsKey(groupName);
+    }
+    
+    /**
      * INTERNAL:
      * Initialize the fetch groups.
      */

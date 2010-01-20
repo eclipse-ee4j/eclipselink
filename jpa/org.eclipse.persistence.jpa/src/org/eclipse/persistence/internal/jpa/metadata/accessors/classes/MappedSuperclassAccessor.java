@@ -35,12 +35,16 @@
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
  *     12/2/2009-2.1 Guy Pelletier 
- *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
+ *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
+ *     01/19/2010-2.1 Guy Pelletier 
+ *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -62,6 +66,8 @@ import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheInterceptor;
+import org.eclipse.persistence.annotations.FetchGroup;
+import org.eclipse.persistence.annotations.FetchGroups;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
@@ -92,6 +98,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
@@ -127,6 +134,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
+    private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
     private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
     private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
     private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
@@ -271,6 +279,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<FetchGroupMetadata> getFetchGroups() {
+        return m_fetchGroups;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getIdClassName() {
         return m_idClassName;
     }
@@ -290,7 +306,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public List<NamedQueryMetadata> getNamedQueries() {
         return m_namedQueries;
     }
-    
     
     /**
      * INTERNAL:
@@ -461,6 +476,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObjects(m_associationOverrides, accessibleObject);
         initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_entityListeners, accessibleObject);
+        initXMLObjects(m_fetchGroups, accessibleObject);
         initXMLObjects(m_namedQueries, accessibleObject);
         initXMLObjects(m_namedNativeQueries, accessibleObject);
         initXMLObjects(m_namedStoredProcedureQueries, accessibleObject);
@@ -519,6 +535,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
         m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
+        m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
         m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
         m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
         m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
@@ -806,6 +823,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the association override metadata.
         processAssociationOverrides();
         
+        // Process the fetch group metadata.
+        processFetchGroups();
+        
         // Process the named query metadata.
         processNamedQueries();
                     
@@ -973,6 +993,54 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     }
     
     /**
+     * INTERNAL:
+     */
+    protected void processFetchGroup(FetchGroupMetadata fetchGroup, Map<String, FetchGroupMetadata> fetchGroups) {
+        if (fetchGroup.shouldOverride(fetchGroups.get(fetchGroup.getName()))) {
+            fetchGroups.put(fetchGroup.getName(), fetchGroup);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the fetch groups for this class. We need to go through both
+     * the XML list and those defined in annotations. Must look for multiple
+     * same named fetch groups within XML and annotations and XML named fetch
+     * groups must override a similar named fetch group defined within an
+     * annotation.
+     * 
+     * This method will be called from both Entity And MappedSuperclass. The
+     * fetch groups from the entity are added first followed by those from its 
+     * mapped superclass(es).
+     */
+    protected void processFetchGroups() {
+        Map<String, FetchGroupMetadata> fetchGroups = new HashMap<String, FetchGroupMetadata>();
+        
+        // Process the XML fetch groups first.
+        for (FetchGroupMetadata fetchGroup : m_fetchGroups) {
+            processFetchGroup(fetchGroup, fetchGroups);
+        }
+        
+        // Process the fetch group annotations.
+        // Look for a @FetchGroup.
+        if (isAnnotationPresent(FetchGroups.class)) {
+            for (Object fetchGroup : (Object[]) getAnnotation(FetchGroups.class).getAttributeArray("value")) {
+                processFetchGroup(new FetchGroupMetadata((MetadataAnnotation) fetchGroup, getAccessibleObject()), fetchGroups);
+            }
+        }
+        
+        // Look for a @FetchGroup.
+        if (isAnnotationPresent(FetchGroup.class)) {
+            processFetchGroup(new FetchGroupMetadata(getAnnotation(FetchGroup.class), getAccessibleObject()), fetchGroups);
+        }
+        
+        // Now process all the fetch groups we found to the descriptor.
+        for (FetchGroupMetadata fetchGroup : fetchGroups.values()) {
+            fetchGroup.process(this);  
+        }
+    }
+    
+    /**
      * INTERNAL: 
      * Process an IdClass metadata. It is used to specify composite primary 
      * keys. The primary keys will be processed and stored from the PK class so 
@@ -1047,7 +1115,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process/collect the named queries on this accessor and add them to the 
      * project for later processing.
      */
-    protected void processNamedQueries() { 
+    protected void processNamedQueries() {
         // Process the XML named queries first.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
             getProject().addQuery(namedQuery);
@@ -1314,6 +1382,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setExistenceChecking(String checking) {
         m_existenceChecking = checking;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setFetchGroups(List<FetchGroupMetadata> fetchGroups) {
+        m_fetchGroups = fetchGroups;
     }
     
     /**

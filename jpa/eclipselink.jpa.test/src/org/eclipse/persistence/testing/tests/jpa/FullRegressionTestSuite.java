@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     01/19/2010-2.1 Guy Pelletier 
+ *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -32,6 +34,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJ
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
@@ -101,6 +104,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
+        suite.addTest(AdvancedFetchGroupJunitTest.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model

@@ -3,6 +3,11 @@
     <description>Advanced Extended Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
     <type-converter name="String2String" data-type="String" object-type="String"/>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.GoalieGear" access="FIELD">
+        <fetch-group name="AgeGroup">
+            <attribute name="ageGroup"/>
+        </fetch-group>
+    </mapped-superclass>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
         <customizer class="EmployeeCustomizer"/>
         <change-tracking type="AUTO"/>
@@ -292,6 +297,23 @@
                 <property name="attributeName" value="customers"/>
             </one-to-many>
         </attributes>
+    </entity>
+    <entity name="XMLHockeyGear" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.HockeyGear" access="FIELD">
+        <fetch-group name="MSRP">
+            <attribute name="msrp"/>
+        </fetch-group>
+    </entity>
+    <entity name="XMLChestProtector" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.ChestProtector" access="FIELD">
+        <!--  currently has no fetch groups -->
+    </entity>
+    <entity name="XMLPads" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.Pads" access="FIELD">
+        <fetch-group name="HeightAndWidth">
+            <attribute name="height"/>
+            <attribute name="width"/>
+        </fetch-group>
+        <fetch-group name="Weight">
+            <attribute name="weight"/>
+        </fetch-group>
     </entity>
     <embeddable class="EmploymentPeriod">
         <property name="embeddableClassName" value="EmploymentPeriod"/>
