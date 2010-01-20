@@ -72,9 +72,7 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class JAXBContextFactory {
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
-    public static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
-    private static JAXBContext jaxbContext = null;
-
+        
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
@@ -366,17 +364,7 @@ public class JAXBContextFactory {
         XmlBindings xmlBindings = null;
         Unmarshaller unmarshaller;
         // only create the JAXBContext for our XmlModel once
-        
-        if (jaxbContext == null) {
-            try {
-                jaxbContext = (JAXBContext) createContext(METADATA_MODEL_PACKAGE, classLoader);
-            } catch (JAXBException e) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
-            }
-            if (jaxbContext == null) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
-            }
-        }
+        JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
         try {
             unmarshaller = jaxbContext.createUnmarshaller();
             xmlBindings = (XmlBindings) unmarshaller.unmarshal(metadataSource);
@@ -397,7 +385,7 @@ public class JAXBContextFactory {
      * @return
      */   
     private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
-        ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
+        
         JavaTypes jTypes = xmlBindings.getJavaTypes();
         if (jTypes != null) { 
         	java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);

@@ -38,6 +38,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -352,7 +353,10 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	        	}
 	        }
 	        
-	        if(controlValue.getClass().isArray()){
+	        if(controlValue.getClass() == ClassConstants.ABYTE && testValue.getClass() == ClassConstants.ABYTE ||
+	        	controlValue.getClass() == ClassConstants.APBYTE && testValue.getClass() == ClassConstants.APBYTE){
+	        	compareValues(controlValue, testValue);
+	        }else if(controlValue.getClass().isArray()){
 	            if(testValue.getClass().isArray()){
 	                if(controlValue.getClass().getComponentType().isPrimitive()){
 	                    comparePrimitiveArrays(controlValue, testValue);

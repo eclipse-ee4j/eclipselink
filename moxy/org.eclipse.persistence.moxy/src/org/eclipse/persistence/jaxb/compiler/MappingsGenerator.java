@@ -121,6 +121,7 @@ public class MappingsGenerator {
     private Project project;
     private NamespaceResolver globalNamespaceResolver;
     private boolean isDefaultNamespaceAllowed;
+    private Map<TypeMappingInfo, Class>typeMappingInfoToAdapterClasses;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -133,7 +134,7 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, boolean isDefaultNamespaceAllowed) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -141,6 +142,7 @@ public class MappingsGenerator {
         this.globalElements = globalElements;
         this.localElements = localElements;
         this.typeMappingInfoToGeneratedClasses = typeMappingInfoToGeneratedClass;
+        this.typeMappingInfoToAdapterClasses = typeMappingInfoToAdapterClasses;
         project = new Project();
 
         // Generate descriptors
@@ -1924,9 +1926,6 @@ public class MappingsGenerator {
                 Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
                 
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
-                if(nextElement.getTypeMappingInfo() != null) {
-                    typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
-                }
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
                     this.qNamesToDeclaredClasses.put(next, declaredClass);
@@ -1972,7 +1971,20 @@ public class MappingsGenerator {
                   namespaceUri = "";
               }	              	               
       	}
-      	 Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+      	 
+      	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
+      	Class generatedClass = null;
+      	if(tmi != null){      		      		      
+            generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());                
+            if(generatedClass == null){                      
+            	generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+            }
+      		
+            typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+      	}else{
+      	    generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+      	}
+      	 
           this.qNamesToGeneratedClasses.put(next, generatedClass);
           try{
               Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
@@ -1981,128 +1993,132 @@ public class MappingsGenerator {
               
           }
           
-          XMLDescriptor desc = new XMLDescriptor();
-          desc.setJavaClass(generatedClass);
-                      
+          XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(generatedClass);
           
-          if(nextElement.isList()){
-              XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
-              mapping.setAttributeName("value");
-              mapping.setXPath("text()");
-              mapping.setUsesSingleNode(true);
-              mapping.setReuseContainer(true);
-              
-              if(type != null && type.isEnumerationType()){
-                  mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
-              }else{
-                  try{
-                      Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());                                                                                        
-                      mapping.setFieldElementClass(fieldElementClass);                        
-                  }catch(ClassNotFoundException e){                       
-                  }
-              }
-                                  
-              if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-                 ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-              }
-              else if(nextClassName.equals("javax.xml.namespace.QName")){
-                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
-              }
-              desc.addMapping(mapping);
-          } else{                 
-              if(nextElement.getJavaTypeName().equals(OBJECT_CLASS_NAME)){
-                  XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
-                  mapping.setAttributeName("value");
-                  mapping.setSetMethodName("setValue");
-                  mapping.setGetMethodName("getValue");                                
-                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);                                                       
-                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-                  mapping.setXPath(".");
-                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
-                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
-                  desc.addMapping(mapping);
-              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
-              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping(); 
-              	  mapping.setAttributeName("value");
-              	  mapping.setXPath(".");
-                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-                  mapping.setSetMethodName("setValue");
-                  mapping.setGetMethodName("getValue");
-                  
-                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
-                  mapping.setAttributeClassification(attributeClassification);
-                  
-              	  mapping.setShouldInlineBinaryData(false);
-              	  if(nextElement.getTypeMappingInfo() != null) {
-              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
-              	      mapping.setMimeType(nextElement.getXmlMimeType());
-              	  }
-                  desc.addMapping(mapping);
-                  
-              }else{                  
-                  XMLDirectMapping mapping = new XMLDirectMapping();
-                  mapping.setAttributeName("value");
-                  mapping.setXPath("text()");
-                  mapping.setSetMethodName("setValue");
-                  mapping.setGetMethodName("getValue");
-                  if(nextElement.getDefaultValue() != null) {
-                      mapping.setNullValue(nextElement.getDefaultValue());
-                  }
-
-                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){ 
-                      Class attributeClassification = null;
-                      if(nextElement.getJavaType().isPrimitive()) {
-                          attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
-                      } else {
-                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
-                      }
-                      mapping.setAttributeClassification(attributeClassification);
-                  }               
-                  
-                  IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isSetValue", false, true, XMLNullRepresentationType.ABSENT_NODE);
-                  //nullPolicy.setNullRepresentedByEmptyNode(true);
-                  mapping.setNullPolicy(nullPolicy);
-                                      
-                  if(type != null && type.isEnumerationType()){
-                      mapping.setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
-                  }
-                  if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-                      ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-                  }
-                  else if(nextClassName.equals("javax.xml.namespace.QName")){
-                      ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
-                  }
-                                      
-                  if (nextElement.getJavaTypeAdapterClass() != null) {
-                      mapping.setConverter(new XMLJavaTypeConverter(nextElement.getJavaTypeAdapterClass()));
-                  }
-
-                  desc.addMapping(mapping);
-              }
+          if(desc == null){
+	          desc = new XMLDescriptor();
+	          desc.setJavaClass(generatedClass);
+	                      
+	          
+	          if(nextElement.isList()){
+	              XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
+	              mapping.setAttributeName("value");
+	              mapping.setXPath("text()");
+	              mapping.setUsesSingleNode(true);
+	              mapping.setReuseContainer(true);
+	              
+	              if(type != null && type.isEnumerationType()){
+	                  mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
+	              }else{
+	                  try{
+	                      Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());                                                                                        
+	                      mapping.setFieldElementClass(fieldElementClass);                        
+	                  }catch(ClassNotFoundException e){                       
+	                  }
+	              }
+	                                  
+	              if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+	                 ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	              }
+	              else if(nextClassName.equals("javax.xml.namespace.QName")){
+	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+	              }
+	              desc.addMapping(mapping);
+	          } else{                 
+	              if(nextElement.getJavaTypeName().equals(OBJECT_CLASS_NAME)){
+	                  XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+	                  mapping.setAttributeName("value");
+	                  mapping.setSetMethodName("setValue");
+	                  mapping.setGetMethodName("getValue");                                
+	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);                                                       
+	                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+	                  mapping.setXPath(".");
+	                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
+	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+	                  desc.addMapping(mapping);
+	              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
+	              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping(); 
+	              	  mapping.setAttributeName("value");
+	              	  mapping.setXPath(".");
+	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	                  mapping.setSetMethodName("setValue");
+	                  mapping.setGetMethodName("getValue");
+	                  
+	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
+	                  mapping.setAttributeClassification(attributeClassification);
+	                  
+	              	  mapping.setShouldInlineBinaryData(false);
+	              	  if(nextElement.getTypeMappingInfo() != null) {
+	              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
+	              	      mapping.setMimeType(nextElement.getXmlMimeType());
+	              	  }
+	                  desc.addMapping(mapping);
+	                  
+	              }else{                  
+	                  XMLDirectMapping mapping = new XMLDirectMapping();
+	                  mapping.setAttributeName("value");
+	                  mapping.setXPath("text()");
+	                  mapping.setSetMethodName("setValue");
+	                  mapping.setGetMethodName("getValue");
+	                  if(nextElement.getDefaultValue() != null) {
+	                      mapping.setNullValue(nextElement.getDefaultValue());
+	                  }
+	
+	                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){ 
+	                      Class attributeClassification = null;
+	                      if(nextElement.getJavaType().isPrimitive()) {
+	                          attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
+	                      } else {
+	                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
+	                      }
+	                      mapping.setAttributeClassification(attributeClassification);
+	                  }               
+	                  
+	                  IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isSetValue", false, true, XMLNullRepresentationType.ABSENT_NODE);
+	                  //nullPolicy.setNullRepresentedByEmptyNode(true);
+	                  mapping.setNullPolicy(nullPolicy);
+	                                      
+	                  if(type != null && type.isEnumerationType()){
+	                      mapping.setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
+	                  }
+	                  if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+	                      ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	                  }
+	                  else if(nextClassName.equals("javax.xml.namespace.QName")){
+	                      ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+	                  }
+	                                      
+	                  if (nextElement.getJavaTypeAdapterClass() != null) {
+	                      mapping.setConverter(new XMLJavaTypeConverter(nextElement.getJavaTypeAdapterClass()));
+	                  }
+	
+	                  desc.addMapping(mapping);
+	              }
+	          }
+	          if(next != null){
+	              NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
+	              
+	  			if(info != null) {
+	  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
+	  				String prefix = resolver.resolveNamespaceURI(namespaceUri);
+	  				desc.setNamespaceResolver(resolver);
+	  				desc.setDefaultRootElement("");
+	  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	              } else {
+	                  if(namespaceUri.equals("")) {
+	                      desc.setDefaultRootElement(next.getLocalPart());                      
+	                  } else {
+	                      NamespaceResolver resolver = new NamespaceResolver();
+	                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
+	                      
+	                      desc.setNamespaceResolver(resolver);
+	                      desc.setDefaultRootElement("");
+	                      desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	  				}
+	  			}
+	          }
+	          project.addDescriptor(desc);
           }
-          if(next != null){
-              NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
-              
-  			if(info != null) {
-  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
-  				String prefix = resolver.resolveNamespaceURI(namespaceUri);
-  				desc.setNamespaceResolver(resolver);
-  				desc.setDefaultRootElement("");
-  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
-              } else {
-                  if(namespaceUri.equals("")) {
-                      desc.setDefaultRootElement(next.getLocalPart());                      
-                  } else {
-                      NamespaceResolver resolver = new NamespaceResolver();
-                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
-                      
-                      desc.setNamespaceResolver(resolver);
-                      desc.setDefaultRootElement("");
-                      desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
-  				}
-  			}
-          }
-          project.addDescriptor(desc);
           return generatedClass;
     }
     
