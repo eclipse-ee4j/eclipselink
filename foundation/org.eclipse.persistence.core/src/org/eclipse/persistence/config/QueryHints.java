@@ -398,10 +398,14 @@ public class QueryHints {
     
     /**
      * "eclipselink.sql.hint"
-     * <p>Sets an SQL hint string into the query.
-     * An SQL hint can be used on certain database platforms to define how the query uses indexes
-     * and other such low level usages.
-     * This should be the full hint string including the comment delimiters.
+     * <p>
+     * Sets a SQL hint string into the query that will be generated into the SQL statement after
+     * the SELECT/INSERT/UPDATE/DELETE command.
+     * <p>
+     * A SQL hint can be used on certain database platforms to define how the query uses indexes
+     * and other such low level usages. This should be the full hint string including the comment \
+     * delimiters.
+     * 
      * @see org.eclipse.persistence.queries.DatabaseQuery#setHintString(String)
      */
     public static final String HINT = "eclipselink.sql.hint";
