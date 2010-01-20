@@ -72,8 +72,6 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class JAXBContextFactory {
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
-    public static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
-    private static JAXBContext jaxbContext = null;
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
         ClassLoader loader = null;
@@ -366,16 +364,7 @@ public class JAXBContextFactory {
         XmlBindings xmlBindings = null;
         Unmarshaller unmarshaller;
         // only create the JAXBContext for our XmlModel once
-        if (jaxbContext == null) {
-            try {
-                jaxbContext = (JAXBContext) createContext(METADATA_MODEL_PACKAGE, classLoader);
-            } catch (JAXBException e) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
-            }
-            if (jaxbContext == null) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
-            }
-        }
+        JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
         try {
             unmarshaller = jaxbContext.createUnmarshaller();
             xmlBindings = (XmlBindings) unmarshaller.unmarshal(metadataSource);
@@ -396,7 +385,7 @@ public class JAXBContextFactory {
      * @return
      */
     private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
-        ArrayList<Class> javaTypeClasses = new ArrayList<Class>();
+        
         JavaTypes jTypes = xmlBindings.getJavaTypes();
         if (jTypes != null) { 
         	java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
@@ -480,27 +469,6 @@ public class JAXBContextFactory {
             additionalClasses = getXmlBindingsClasses(xmlBindingMap.get(packageName), classLoader, additionalClasses);
         }
         return additionalClasses;
-    }
-
-    private static Class[] updateClassesWithObjectFactory(Class[] classes, ClassLoader loader) {
-        ArrayList<Class> updatedClasses = new ArrayList<Class>();
-        for (Class next : classes) {
-            if (!(updatedClasses.contains(next))) {
-                updatedClasses.add(next);
-            }
-            if (next.getPackage() != null) {
-                String packageName = next.getPackage().getName();
-                try {
-                    Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
-                    if (!(updatedClasses.contains(objectFactoryClass))) {
-                        updatedClasses.add(objectFactoryClass);
-                    }
-                } catch (Exception ex) {
-                }
-            }
-        }
-
-        return updatedClasses.toArray(new Class[updatedClasses.size()]);
     }
 
     private static TypeMappingInfo[] updateTypesWithObjectFactory(TypeMappingInfo[] typeMappingInfos, ClassLoader loader) {

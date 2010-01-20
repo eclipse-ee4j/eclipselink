@@ -12,21 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 public class DuplicateListOfStringsTestCasesWithXML extends DuplicateListOfStringsTestCases {
     @XmlElement

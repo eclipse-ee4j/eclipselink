@@ -123,6 +123,7 @@ public class MappingsGenerator {
     private Project project;
     private NamespaceResolver globalNamespaceResolver;
     private boolean isDefaultNamespaceAllowed;
+    private Map<TypeMappingInfo, Class>typeMappingInfoToAdapterClasses;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -135,7 +136,7 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, boolean isDefaultNamespaceAllowed) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -143,6 +144,7 @@ public class MappingsGenerator {
         this.globalElements = globalElements;
         this.localElements = localElements;
         this.typeMappingInfoToGeneratedClasses = typeMappingInfoToGeneratedClass;
+        this.typeMappingInfoToAdapterClasses = typeMappingInfoToAdapterClasses;
         project = new Project();
 
         // Generate descriptors
@@ -1926,9 +1928,6 @@ public class MappingsGenerator {
                 Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
                 
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
-                if(nextElement.getTypeMappingInfo() != null) {
-                    typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
-                }
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
                     this.qNamesToDeclaredClasses.put(next, declaredClass);
@@ -1974,7 +1973,19 @@ public class MappingsGenerator {
                   namespaceUri = "";
               }	              	               
       	}
-      	 Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+      	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
+      	Class generatedClass = null;
+      	if(tmi != null){      		      		      
+            generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());                
+            if(generatedClass == null){                      
+            	generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+            }
+      		
+            typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+      	}else{
+      	    generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+      	}
+      	 
           this.qNamesToGeneratedClasses.put(next, generatedClass);
           try{
               Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
@@ -1983,7 +1994,10 @@ public class MappingsGenerator {
               
           }
           
-          XMLDescriptor desc = new XMLDescriptor();
+          XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(generatedClass);
+          
+          if(desc == null){
+	          desc = new XMLDescriptor();
           desc.setJavaClass(generatedClass);
                       
           
@@ -2105,6 +2119,7 @@ public class MappingsGenerator {
   			}
           }
           project.addDescriptor(desc);
+          }
           return generatedClass;
     }
     

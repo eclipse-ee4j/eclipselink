@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array" targetNamespace="http://jaxb.dev.java.net/array">
+   <xsd:complexType name="stringArray">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testTagName3" type="stringArray"/>
+   <xsd:element name="testTagName2" type="stringArray"/>
+   <xsd:element name="testTagName1" type="stringArray"/>
+</xsd:schema>

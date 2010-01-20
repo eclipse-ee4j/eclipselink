@@ -74,11 +74,7 @@ public class MultipleMapTestCases extends TypeMappingInfoTestCases{
 	protected Object getControlObject() {
 		HashMap<String, Integer> theMap = new HashMap<String, Integer>();
 		theMap.put("thekey", new Integer(10));
-				
-		QName qname = new QName("examplenamespace", "root1");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
-		jaxbElement.setValue(theMap);
-
+	
 		return theMap;
 	}
 	

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:testTagName xmlns:ns0="someUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:listOfEmployee">
+    <item>
+        <firstName>theFirstName</firstName>
+        <lastName>theLastName</lastName>
+    </item>
+</ns0:testTagName>

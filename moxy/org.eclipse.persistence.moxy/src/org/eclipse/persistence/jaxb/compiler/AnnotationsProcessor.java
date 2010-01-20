@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -81,7 +80,6 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.LocalVariableTypeTab
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -122,7 +120,6 @@ public class AnnotationsProcessor {
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
-    private static JAXBContext xmlModelContext = null;
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -200,21 +197,12 @@ public class AnnotationsProcessor {
                         element.setXmlMimeType(xmlMimeType);
                         element.setXmlAttachmentRef(xmlAttachmentRef);
 
+                        
                         if(adapterClass != null) {
-                            Method[] tacMethods = adapterClass.getMethods();
-                            Class declJavaType = Object.class;
-
-                            for (int i = 0; i < tacMethods.length; i++) {
-                                Method method = tacMethods[i];
-                                if (method.getName().equals("marshal")) {
-                                    if(!(method.getReturnType() == declJavaType)) {
-                                        declJavaType = method.getReturnType();
-                                        break;
-                                    }
-                                }
+                            Class declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
+                            if(declJavaType != null){
+                                element.setJavaType(helper.getJavaClass(declJavaType));
                             }
-
-                            element.setJavaType(helper.getJavaClass(declJavaType));
                         }                                    
                             
                         Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo); 
@@ -250,7 +238,7 @@ public class AnnotationsProcessor {
             cMgr.setLoader(loader);
 
             // unmarshal the node into an XmlElement
-            org.eclipse.persistence.jaxb.xmlmodel.XmlElement xElt = (org.eclipse.persistence.jaxb.xmlmodel.XmlElement) getXmlElement(tmInfo.getXmlElement(), loader);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlElement xElt = (org.eclipse.persistence.jaxb.xmlmodel.XmlElement) CompilerHelper.getXmlElement(tmInfo.getXmlElement(), loader);
             List annotations = new ArrayList();
             // where applicable, a given dynamic proxy will contain a Map of method name/return value entries
             Map<String, Object> components = null;
@@ -651,9 +639,12 @@ public class AnnotationsProcessor {
                 if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
                     extraClasses.add(javaClass.getComponentType());
                 }
-                Class generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
-                extraClasses.add(helper.getJavaClass(generatedClass));
-                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses,  helper.getClassLoader());                
+                if(generatedClass == null){                	               
+                    generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
+                    extraClasses.add(helper.getJavaClass(generatedClass));
+                    arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+                }
                 generatedClassesToArrayClasses.put(generatedClass, javaClass);
                 typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
 
@@ -668,9 +659,11 @@ public class AnnotationsProcessor {
                     componentClass = helper.getJavaClass(Object.class);
                 }
           
-                Class generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType);
-                        
-                extraClasses.add(helper.getJavaClass(generatedClass));
+                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());                
+                if(generatedClass == null){                      
+                    generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType);
+                    extraClasses.add(helper.getJavaClass(generatedClass));
+                }
                 typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);                
             } else if (isMapType(javaClass)) {
                 JavaClass keyClass;
@@ -689,8 +682,11 @@ public class AnnotationsProcessor {
                     valueClass = helper.getJavaClass(Object.class);
                 }
                
-                Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
-                extraClasses.add(helper.getJavaClass(generatedClass));
+                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses,  helper.getClassLoader());                
+                if(generatedClass == null){              
+                    generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
+                    extraClasses.add(helper.getJavaClass(generatedClass));
+                }
                 typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
             } else {
                 // process @XmlRegistry, @XmlSeeAlso and inner classes
@@ -3392,44 +3388,7 @@ public class AnnotationsProcessor {
     public Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedClasses() {
         return this.typeMappingInfoToGeneratedClasses;
     }
-    /**
-     * Return a JAXBContext for the XmlModel.
-     *  
-     * @return
-     */
-    private JAXBContext getXmlModelContext() {
-        // only create the JAXBContext for our XmlModel once
-        if (xmlModelContext == null) {
-            try {
-                xmlModelContext = JAXBContextFactory.createContext(JAXBContextFactory.METADATA_MODEL_PACKAGE, helper.getClassLoader());
-            } catch (javax.xml.bind.JAXBException e) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
-            }
-            if (xmlModelContext == null) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
-            }
-        }
-        return xmlModelContext;
-    }
-    /**
-     * Convenience method for creating an XmlElement object based on a given Element.
-     * The method will load the eclipselink metadata model and unmarshal the Element. 
-     * This assumes that the Element represents an xml-element to be unmarshalled.
-     * 
-     * @param xmlElementNode
-     * @param classLoader
-     * @return
-     */
-    public org.eclipse.persistence.jaxb.xmlmodel.XmlElement getXmlElement(org.w3c.dom.Element xmlElementNode, ClassLoader classLoader) {
-        try {
-            Unmarshaller unmarshaller = getXmlModelContext().createUnmarshaller();
-            JAXBElement<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> jelt = unmarshaller.unmarshal(xmlElementNode, org.eclipse.persistence.jaxb.xmlmodel.XmlElement.class);
-            return jelt.getValue();
-        } catch (javax.xml.bind.JAXBException jaxbEx) {
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
-        }
-    }
-    
+      
     public Map<TypeMappingInfo, Class> getTypeMappingInfoToAdapterClasses() {
         return this.typeMappingInfoToAdapterClasses;
     }
