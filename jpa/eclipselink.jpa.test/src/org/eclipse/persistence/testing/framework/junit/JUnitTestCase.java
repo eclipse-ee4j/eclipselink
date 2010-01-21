@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -55,6 +55,9 @@ public abstract class JUnitTestCase extends TestCase {
     
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
+    
+    /** Determine if the data-source is JTA, or non-JTA. */
+    public static Boolean isJTA =true;
     
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
@@ -125,12 +128,25 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     /**
+     * Return if the data-source is JTA or not.
+     */
+    public static boolean isJTA() {
+        String property =System.getProperty("is.JTA");
+        if (property != null && property.toUpperCase().equals("FALSE")) {
+            isJTA = false;
+        } else {
+            isJTA = true;
+        }
+        return isJTA;
+    }
+    
+    /**
      * Return if the tests were run using weaving, agent or static.
      */
     public static boolean isWeavingEnabled() {
-    	if("false".equals(JUnitTestCase.getServerSession().getProperty("eclipselink.weaving"))) {
-    		return false;
-    	}
+        if("false".equals(JUnitTestCase.getServerSession().getProperty("eclipselink.weaving"))) {
+            return false;
+        }
         return System.getProperty("TEST_NO_WEAVING") == null;
     }
     
@@ -228,7 +244,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allows the same code to be used on the server where JTA is used.
      */
     public boolean isTransactionActive(EntityManager entityManager) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().isTransactionActive();
         } else {
             return entityManager.getTransaction().isActive();
@@ -240,7 +256,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allows the same code to be used on the server where JTA is used.
      */
     public boolean getRollbackOnly(EntityManager entityManager) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().getRollbackOnly();
         } else {
             return entityManager.getTransaction().getRollbackOnly();
@@ -252,7 +268,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allows the same code to be used on the server where JTA is used.
      */
     public void beginTransaction(EntityManager entityManager) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             getServerPlatform().beginTransaction();
         } else {
             entityManager.getTransaction().begin();
@@ -264,7 +280,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allows the same code to be used on the server where JTA is used.
      */
     public void commitTransaction(EntityManager entityManager) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             getServerPlatform().commitTransaction();
         } else {
             entityManager.getTransaction().commit();
@@ -276,7 +292,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allows the same code to be used on the server where JTA is used.
      */
     public void rollbackTransaction(EntityManager entityManager) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             getServerPlatform().rollbackTransaction();
         } else {
             entityManager.getTransaction().rollback();
@@ -288,7 +304,7 @@ public abstract class JUnitTestCase extends TestCase {
      * If in JEE this will create or return the active managed entity manager.
      */
     public static EntityManager createEntityManager() {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().getEntityManager("default");
         } else {
             return getEntityManagerFactory().createEntityManager();
@@ -300,7 +316,7 @@ public abstract class JUnitTestCase extends TestCase {
      * If in JEE this will create or return the active managed entity manager.
      */
     public static EntityManager createEntityManager(String persistenceUnitName) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().getEntityManager(persistenceUnitName);
         } else {
             return getEntityManagerFactory(persistenceUnitName).createEntityManager();

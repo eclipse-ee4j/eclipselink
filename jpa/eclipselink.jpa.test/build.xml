@@ -146,6 +146,11 @@
         <contains string="${server.weaving}" substring="static"/>
     </condition>
 
+    <!-- This checks if testing on nonJTA DS -->
+    <condition property="is.nonjta.datasource">
+        <contains string="${is.JTA}" substring="false"/>
+    </condition>
+
     <!-- Define Spring jars needed for running JPA tests on Spring -->
     <path id="spring.path">
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
@@ -181,6 +186,15 @@
             <contains string="${server.name}" substring="jboss"/>
         </condition>
         <condition property="DS_NAME" value="jdbc/EclipseLinkDS">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="NONJTA_DS_NAME" value="java:/ELNonJTADS">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="NONJTA_DS_NAME" value="jdbc/ELNonJTADS">
             <not>
                 <isset property="is.jboss"/>
             </not>
@@ -1589,9 +1603,6 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%default%%' value="${PERSISTENCE_UNIT_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
-            <include name="*.xml"/>
-        </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%session-data-source-name%%' value="${SESSION_DS_NAME}">
             <include name="*.xml"/>
         </replace>
@@ -1601,7 +1612,8 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database-platform%%' value="${db.platform}">
             <include name="*.xml"/>
         </replace>
-
+        <!-- Replace datasource type, name and transaction type -->
+        <antcall target="replace-datasource-type" inheritRefs="true"/>
         <!-- Copy the canonical metamodel and criteria api test -->
         <antcall target="copy_criteria_api_canonical_model" inheritRefs="true"/>
         <!-- Create ejb jar. -->
@@ -1609,7 +1621,33 @@
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
     </target>
-
+    
+    <target name="replace-datasource-type" depends="replace-jta-datasource,replace-nonjta-datasource"/>
+    
+    <target name="replace-jta-datasource" unless="is.nonjta.datasource">
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%transaction-type%%' value="JTA">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%datasource-type%%' value="jta-data-source">
+            <include name="*.xml"/>
+        </replace>
+    </target>
+    
+    <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${NONJTA_DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%transaction-type%%' value="RESOURCE_LOCAL">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%datasource-type%%' value="non-jta-data-source">
+            <include name="*.xml"/>
+        </replace>
+    </target>
+    
     <target name="create-ejb-jar" depends="create-ejb-jar-without-static-weaving,create-ejb-jar-with-static-weaving"/>
 
     <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">

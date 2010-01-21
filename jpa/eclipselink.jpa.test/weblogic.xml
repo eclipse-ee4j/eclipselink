@@ -114,6 +114,7 @@
             <!--sysproperty key="http.proxyPort" value="80"/-->
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="ejb.lookup" value="${ejb.lookup}"/>
+            <sysproperty key="is.JTA" value="${is.JTA}"/>
         </wlserver>
     </target>
 
