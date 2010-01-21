@@ -66,7 +66,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             issueid = -1;
         } else {
             runAllIssues = false;
-            if (testBugzillaRun != null) {
+            if (testIssueRun != null) {
                 issueid = Long.parseLong(testIssueRun);
             } else {
                 issueid = -1;

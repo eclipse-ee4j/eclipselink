@@ -81,14 +81,18 @@ public class TestCount extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=300337)
     public void testCount() {
         verifyCountResult("select count(d) from Department d", 2);
         verifyCountResult("select count(distinct d) from Department d", 2);
         verifyCountResult("select count(c) from Cubicle c", 1);
-        verifyCountResult("select count(distinct c) from Cubicle c", 1);
         verifyCountResult("select count(distinct d.name) from Department d", 2);
         verifyCountResult("select distinct count(d) from Department d", 2);
+    }
+    
+    @Test
+    @Bugzilla(bugid=297331)
+    public void testCountDistinctCompoundKey() {
+        verifyCountResult("select count(distinct c) from Cubicle c", 1);
     }
 
     @Test
