@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public class FormattedWriterRecord extends WriterRecord {
+
     private static final char[] TAB = "   ".toCharArray();
     private int numberOfTabs;
     private boolean complexType;
@@ -63,7 +64,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void endDocument() {
         try {
-        	writer.write(Helper.cr());    
+            writer.write(Helper.cr());
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -76,14 +77,14 @@ public class FormattedWriterRecord extends WriterRecord {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
         try {
             if (isStartElementOpen) {
-            	writer.write('>');
+                writer.write('>');
             }
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
-                	writer.write(Helper.cr());                    
+                    writer.write(Helper.cr());
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                	writer.write(TAB);
+                    writer.write(TAB);
                 }
             }
             isStartElementOpen = true;
@@ -108,7 +109,7 @@ public class FormattedWriterRecord extends WriterRecord {
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-            	writer.write(TAB);
+                writer.write(TAB);
             }
             super.element(frag);
         } catch (IOException e) {
@@ -124,15 +125,15 @@ public class FormattedWriterRecord extends WriterRecord {
             isLastEventText = false;
             numberOfTabs--;
             if (isStartElementOpen) {
-            	writer.write('/');
-            	writer.write('>');
+                writer.write('/');
+                writer.write('>');
                 isStartElementOpen = false;
                 return;
             }
             if (complexType) {
-            	writer.write(Helper.cr());
+                writer.write(Helper.cr());
                 for (int x = 0; x < numberOfTabs; x++) {
-                	writer.write(TAB);
+                    writer.write(TAB);
                 }
             } else {
                 complexType = true;
@@ -151,7 +152,7 @@ public class FormattedWriterRecord extends WriterRecord {
         isLastEventText = true;
         complexType = false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -159,12 +160,12 @@ public class FormattedWriterRecord extends WriterRecord {
         //Format the CDATA on it's own line
         try {
             if(isStartElementOpen) {
-            	writer.write('>');
+                writer.write('>');
                 isStartElementOpen = false;
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-            	writer.write(TAB);
+                writer.write(TAB);
             }
             super.cdata(value);
             complexType=true;
@@ -172,7 +173,7 @@ public class FormattedWriterRecord extends WriterRecord {
             throw XMLMarshalException.marshalException(ex);
         }
     }
-    
+
     /**
      * Receive notification of a node.
      * @param node The Node to be added to the document
@@ -209,13 +210,13 @@ public class FormattedWriterRecord extends WriterRecord {
             }
         }
     }
-    
+
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
-     * to this class - the event's data is then written to the enclosing class' 
+     * to this class - the event's data is then written to the enclosing class'
      * writer.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      * @see org.eclipse.persistence.oxm.record.WriterRecord.WriterRecordContentHandler
      */
@@ -223,13 +224,13 @@ public class FormattedWriterRecord extends WriterRecord {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
-            	if (isStartElementOpen) {
-            		writer.write('>');
-            	}
+                if (isStartElementOpen) {
+                    writer.write('>');
+                }
                 if (!isLastEventText) {
-                	writer.write(Helper.cr());
+                    writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(TAB);
+                        writer.write(TAB);
                     }
                 }
                 writer.write('<');
@@ -251,16 +252,16 @@ public class FormattedWriterRecord extends WriterRecord {
                 isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
-                	writer.write('/');
-                	writer.write('>');
+                    writer.write('/');
+                    writer.write('>');
                     isStartElementOpen = false;
                     complexType = true;
                     return;
                 }
                 if (complexType) {
-                	writer.write(Helper.cr());
+                    writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(TAB);
+                        writer.write(TAB);
                     }
                 } else {
                     complexType = true;
@@ -272,31 +273,32 @@ public class FormattedWriterRecord extends WriterRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
-        	if (isProcessingCData) {
-            	cdata(new String (ch, start, length));
-        		return;
-        	}
-        	if (new String(ch).trim().length() == 0) {
-        		return;
-        	}        	
+            if (isProcessingCData) {
+                cdata(new String (ch, start, length));
+                return;
+            }
+            if (new String(ch).trim().length() == 0) {
+                return;
+            }
             super.characters(ch, start, length);
             isLastEventText = true;
             complexType = false;
         }
-        
-        // --------------------- LEXICALHANDLER METHODS --------------------- //
-	public void comment(char[] ch, int start, int length) throws SAXException {
+
+    // --------------------- LEXICALHANDLER METHODS --------------------- //
+    public void comment(char[] ch, int start, int length) throws SAXException {
             try {
-            	if (isStartElementOpen) {
-            		writer.write('>');
-            		writer.write(Helper.cr());
+                if (isStartElementOpen) {
+                    writer.write('>');
+                    writer.write(Helper.cr());
                     isStartElementOpen = false;
                 }
-            	writeComment(ch, start, length);
+                writeComment(ch, start, length);
                 complexType = false;
             } catch (IOException e) {
-            	throw XMLMarshalException.marshalException(e);
+                throw XMLMarshalException.marshalException(e);
             }
-	}
+        }
     }
+
 }
