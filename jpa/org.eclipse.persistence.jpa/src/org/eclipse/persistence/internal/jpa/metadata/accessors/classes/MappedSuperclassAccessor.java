@@ -1034,9 +1034,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             processFetchGroup(new FetchGroupMetadata(getAnnotation(FetchGroup.class), getAccessibleObject()), fetchGroups);
         }
         
-        // Now process all the fetch groups we found to the descriptor.
-        for (FetchGroupMetadata fetchGroup : fetchGroups.values()) {
-            fetchGroup.process(this);  
+        // Now process all the fetch groups we found to the descriptor only
+        // if weaving is enabled or if the descriptors java class for this 
+        // accessor implements the FetchGroupTracker interface.
+        if (getProject().isWeavingEnabled() || getDescriptor().getJavaClass().extendsInterface(org.eclipse.persistence.queries.FetchGroupTracker.class)) {
+            for (FetchGroupMetadata fetchGroup : fetchGroups.values()) {
+                fetchGroup.process(this);  
+            }
+        } else if (! fetchGroups.isEmpty()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_FETCH_GROUP, getJavaClass(), getDescriptor().getJavaClass());
         }
     }
     

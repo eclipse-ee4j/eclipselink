@@ -151,6 +151,16 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     /**
+     * Return if the tests were run using weaving, agent or static.
+     */
+    public static boolean isWeavingEnabled(String persistenceUnitName) {
+        if("false".equals(JUnitTestCase.getServerSession(persistenceUnitName).getProperty("eclipselink.weaving"))) {
+            return false;
+        }
+        return System.getProperty("TEST_NO_WEAVING") == null;
+    }
+    
+    /**
      * Return if the test is running against JPA 1.0. Any test that uses 2.0
      * functionality should call this method to avoid been run against a 1.0
      * container.

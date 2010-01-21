@@ -35,6 +35,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * the Entity or MappedSuperclass level; and dynamic (use case) fetch groups at 
  * the query level.
  * 
+ * Fetch groups can only be used when weaving is enabled or when individual 
+ * classes that define them explicitly implement the 
+ * org.eclipse.persistence.queries.FetchGroupTracker interface.  
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 2.1 
  */

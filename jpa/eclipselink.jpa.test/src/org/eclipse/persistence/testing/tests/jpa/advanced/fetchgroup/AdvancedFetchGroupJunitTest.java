@@ -72,120 +72,130 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
     }
 
     public void testVerifyFetchGroups() {
-        ClassDescriptor hockeyGearDescriptor = getServerSession().getDescriptor(HockeyGear.class);
-        FetchGroupManager hockeyGearFetchGroupManager = hockeyGearDescriptor.getFetchGroupManager();
-        assertTrue("Wrong number of fetch groups for HockeyGear", hockeyGearFetchGroupManager.getFetchGroups().size() == 1);
-        assertNotNull("The 'MSRP' fetch group was not found for HockeyGear", hockeyGearFetchGroupManager.getFetchGroup("MSRP")); 
-        
-        ClassDescriptor padsDescriptor = getServerSession().getDescriptor(Pads.class);
-        FetchGroupManager padsFetchGroupManager = padsDescriptor.getFetchGroupManager();
-        assertTrue("Wrong number of fetch groups for Pads", padsFetchGroupManager.getFetchGroups().size() == 3);
-        assertNotNull("The 'HeightAndWidth' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("HeightAndWidth"));
-        assertNotNull("The 'Weight' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("Weight"));
-        assertNotNull("The 'AgeGroup' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("AgeGroup"));
-        
-        ClassDescriptor chestProtectorDescriptor = getServerSession().getDescriptor(ChestProtector.class);
-        FetchGroupManager chestProtectorFetchGroupManager = chestProtectorDescriptor.getFetchGroupManager();
-        assertTrue("Wrong number of fetch groups for ChestProtector", chestProtectorFetchGroupManager.getFetchGroups().size() == 1);
-        assertNotNull("The 'AgeGroup' fetch group was not found for ChestProtector", chestProtectorFetchGroupManager.getFetchGroup("AgeGroup"));
+        if (isWeavingEnabled()) {
+            ClassDescriptor hockeyGearDescriptor = getServerSession().getDescriptor(HockeyGear.class);
+            FetchGroupManager hockeyGearFetchGroupManager = hockeyGearDescriptor.getFetchGroupManager();
+            assertTrue("Wrong number of fetch groups for HockeyGear", hockeyGearFetchGroupManager.getFetchGroups().size() == 1);
+            assertNotNull("The 'MSRP' fetch group was not found for HockeyGear", hockeyGearFetchGroupManager.getFetchGroup("MSRP")); 
+            
+            ClassDescriptor padsDescriptor = getServerSession().getDescriptor(Pads.class);
+            FetchGroupManager padsFetchGroupManager = padsDescriptor.getFetchGroupManager();
+            assertTrue("Wrong number of fetch groups for Pads", padsFetchGroupManager.getFetchGroups().size() == 3);
+            assertNotNull("The 'HeightAndWidth' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("HeightAndWidth"));
+            assertNotNull("The 'Weight' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("Weight"));
+            assertNotNull("The 'AgeGroup' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("AgeGroup"));
+            
+            ClassDescriptor chestProtectorDescriptor = getServerSession().getDescriptor(ChestProtector.class);
+            FetchGroupManager chestProtectorFetchGroupManager = chestProtectorDescriptor.getFetchGroupManager();
+            assertTrue("Wrong number of fetch groups for ChestProtector", chestProtectorFetchGroupManager.getFetchGroups().size() == 1);
+            assertNotNull("The 'AgeGroup' fetch group was not found for ChestProtector", chestProtectorFetchGroupManager.getFetchGroup("AgeGroup"));
+        }
     }
     
     public void testCreateHockeyGear() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        
-        try {    
-            Pads pads = new Pads();
-            pads.setAgeGroup(AgeGroup.SENIOR);
-            pads.setDescription("Louisville TPS");
-            pads.setHeight(35.5);
-            pads.setMsrp(999.99);
-            pads.setWeight(4.9);
-            pads.setWidth(11.0);
-            em.persist(pads);
-
-            ChestProtector chestProtector = new ChestProtector();
-            chestProtector.setAgeGroup(AgeGroup.INTERMEDIATE);
-            chestProtector.setDescription("RBK Premier");
-            chestProtector.setMsrp(599.99);
-            chestProtector.setSize("Large");
-            em.persist(chestProtector);
+        if (isWeavingEnabled()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
             
-            commitTransaction(em);
-            
-            padsId = pads.getSerialNumber();
-            chestProtectorId = chestProtector.getSerialNumber();
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
+            try {    
+                Pads pads = new Pads();
+                pads.setAgeGroup(AgeGroup.SENIOR);
+                pads.setDescription("Louisville TPS");
+                pads.setHeight(35.5);
+                pads.setMsrp(999.99);
+                pads.setWeight(4.9);
+                pads.setWidth(11.0);
+                em.persist(pads);
+    
+                ChestProtector chestProtector = new ChestProtector();
+                chestProtector.setAgeGroup(AgeGroup.INTERMEDIATE);
+                chestProtector.setDescription("RBK Premier");
+                chestProtector.setMsrp(599.99);
+                chestProtector.setSize("Large");
+                em.persist(chestProtector);
+                
+                commitTransaction(em);
+                
+                padsId = pads.getSerialNumber();
+                chestProtectorId = chestProtector.getSerialNumber();
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw e;
             }
-            closeEntityManager(em);
-            throw e;
         }
     }
     
     public void testFetchGroupOnPads() {
-        EntityManager em = createEntityManager();
-        Map properties = new HashMap();
-        properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
-        Class PadsClass = Pads.class;
-        Pads pads = (Pads) em.find(PadsClass, padsId, properties);
-            
-        try {
-            verifyFetchedField(PadsClass.getDeclaredField("height"), pads, 35.5);
-            verifyFetchedField(PadsClass.getDeclaredField("width"), pads, 11.0);
-            
-            verifyNonFetchedField(PadsClass.getDeclaredField("weight"), pads);
-            verifyNonFetchedField(PadsClass.getField("ageGroup"), pads);
-            verifyNonFetchedField(PadsClass.getField("description"), pads);
-            verifyNonFetchedField(PadsClass.getField("msrp"), pads);
-        } catch (Exception e) {
-            fail("Error verifying field content: " + e.getMessage());
-        } finally {
-            closeEntityManager(em);
+        if (isWeavingEnabled()) {
+            EntityManager em = createEntityManager();
+            Map properties = new HashMap();
+            properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
+            Class PadsClass = Pads.class;
+            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+                
+            try {
+                verifyFetchedField(PadsClass.getDeclaredField("height"), pads, 35.5);
+                verifyFetchedField(PadsClass.getDeclaredField("width"), pads, 11.0);
+                
+                verifyNonFetchedField(PadsClass.getDeclaredField("weight"), pads);
+                verifyNonFetchedField(PadsClass.getField("ageGroup"), pads);
+                verifyNonFetchedField(PadsClass.getField("description"), pads);
+                verifyNonFetchedField(PadsClass.getField("msrp"), pads);
+            } catch (Exception e) {
+                fail("Error verifying field content: " + e.getMessage());
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
     public void testFetchGroupOnChestProtector() {
-        EntityManager em = createEntityManager();
-        Map properties = new HashMap();
-        properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
-        Class chestProtectorClass = ChestProtector.class;
-        ChestProtector chestProtector = (ChestProtector) em.find(chestProtectorClass, chestProtectorId, properties);
+        if (isWeavingEnabled()) {
+            EntityManager em = createEntityManager();
+            Map properties = new HashMap();
+            properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
+            Class chestProtectorClass = ChestProtector.class;
+            ChestProtector chestProtector = (ChestProtector) em.find(chestProtectorClass, chestProtectorId, properties);
+                    
+            try {
+                verifyFetchedField(chestProtectorClass.getField("ageGroup"), chestProtector, AgeGroup.INTERMEDIATE);
                 
-        try {
-            verifyFetchedField(chestProtectorClass.getField("ageGroup"), chestProtector, AgeGroup.INTERMEDIATE);
-            
-            verifyNonFetchedField(chestProtectorClass.getField("description"), chestProtector);
-            verifyNonFetchedField(chestProtectorClass.getField("msrp"), chestProtector);
-            verifyNonFetchedField(chestProtectorClass.getDeclaredField("size"), chestProtector);
-        } catch (Exception e) {
-            fail("Error verifying field content: " + e.getMessage());
-        } finally {
-            closeEntityManager(em);
+                verifyNonFetchedField(chestProtectorClass.getField("description"), chestProtector);
+                verifyNonFetchedField(chestProtectorClass.getField("msrp"), chestProtector);
+                verifyNonFetchedField(chestProtectorClass.getDeclaredField("size"), chestProtector);
+            } catch (Exception e) {
+                fail("Error verifying field content: " + e.getMessage());
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
     public void testFetchGroupOnPadsFromInheritanceParent() {
-        EntityManager em = createEntityManager();
-        Map properties = new HashMap();
-        properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
-        Class PadsClass = Pads.class;
-        Pads pads = (Pads) em.find(PadsClass, padsId, properties);
-            
-        try {
-            verifyFetchedField(PadsClass.getField("msrp"), pads, 999.99);
-            
-            verifyNonFetchedField(PadsClass.getDeclaredField("height"), pads);
-            verifyNonFetchedField(PadsClass.getDeclaredField("width"), pads);
-            verifyNonFetchedField(PadsClass.getDeclaredField("weight"), pads);
-            verifyNonFetchedField(PadsClass.getField("ageGroup"), pads);
-            verifyNonFetchedField(PadsClass.getField("description"), pads);
-            
-        } catch (Exception e) {
-            fail("Error verifying field content: " + e.getMessage());
-        } finally {
-            closeEntityManager(em);
+        if (isWeavingEnabled()) {
+            EntityManager em = createEntityManager();
+            Map properties = new HashMap();
+            properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
+            Class PadsClass = Pads.class;
+            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+                
+            try {
+                verifyFetchedField(PadsClass.getField("msrp"), pads, 999.99);
+                
+                verifyNonFetchedField(PadsClass.getDeclaredField("height"), pads);
+                verifyNonFetchedField(PadsClass.getDeclaredField("width"), pads);
+                verifyNonFetchedField(PadsClass.getDeclaredField("weight"), pads);
+                verifyNonFetchedField(PadsClass.getField("ageGroup"), pads);
+                verifyNonFetchedField(PadsClass.getField("description"), pads);
+                
+            } catch (Exception e) {
+                fail("Error verifying field content: " + e.getMessage());
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     

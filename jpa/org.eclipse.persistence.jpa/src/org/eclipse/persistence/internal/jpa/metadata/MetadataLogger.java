@@ -102,7 +102,9 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     public static final String IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP = "metadata_warning_ignore_mapped_superclass_fetch_group";
     
+    public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
+    
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -234,6 +236,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         addContextString(IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP);
         
+        addContextString(IGNORE_FETCH_GROUP);
         addContextString(IGNORE_MAPPING_METADATA);
         
         // Generic default messages that could apply to XML and annotation
