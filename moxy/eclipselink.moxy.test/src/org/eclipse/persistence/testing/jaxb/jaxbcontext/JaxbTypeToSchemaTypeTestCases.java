@@ -97,4 +97,18 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 		assertNotNull(tmiMap.get(tmi));
 		//assertEquals(XMLConstants.SWA_REF_QNAME, tmiMap.get(tmi));
 	}
+	
+	public void testObject() throws Exception{
+		TypeMappingInfo tmi = new TypeMappingInfo();
+		tmi.setType(Object.class);
+		
+                TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+		assertEquals(0, typeMap.size());
+		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+		assertEquals(1, tmiMap.size());
+		assertNotNull(tmiMap.get(tmi));
+	}
 }
