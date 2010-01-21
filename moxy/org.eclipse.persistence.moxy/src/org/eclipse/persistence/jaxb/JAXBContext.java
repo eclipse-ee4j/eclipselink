@@ -384,6 +384,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 //Change default for byte[] to Base64 (JAXB 2.0 default)
                 if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
                     name = XMLConstants.BASE_64_BINARY_QNAME;
+                } else if(type == ClassConstants.OBJECT){
+                	name = XMLConstants.ANY_TYPE_QNAME;
                 } else {
                     name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
                 }
