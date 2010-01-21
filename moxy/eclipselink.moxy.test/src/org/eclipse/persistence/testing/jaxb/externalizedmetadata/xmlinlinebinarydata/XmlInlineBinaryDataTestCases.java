@@ -91,7 +91,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
@@ -221,7 +221,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     *
+     */
     public void testClassLevelXmlInlineBinaryNoOverride() {
         JAXBContext jaxbContext = null;
         try {
@@ -232,7 +232,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
@@ -281,7 +281,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-    */
+    
     
     /**
      * Tests property level XmlInlineBinaryData metadata override.  Here, the @XmlInlineBinaryData
@@ -310,7 +310,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
@@ -438,7 +438,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     *
+     */
     public void testPropertyLevelXmlInlineBinaryViaMetadata() {
         String metadataFile = PATH + "eclipselink-oxm.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
@@ -459,7 +459,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyData ctrlData = new MyData();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
@@ -508,5 +508,4 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-    */
 }
