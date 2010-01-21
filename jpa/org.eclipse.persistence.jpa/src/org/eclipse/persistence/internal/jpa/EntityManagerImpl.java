@@ -974,7 +974,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *      found to be invalid
      */
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass){
-        throw new UnsupportedOperationException();
+        return (TypedQuery<T>) createNamedQuery(name);
     }
 
     /**

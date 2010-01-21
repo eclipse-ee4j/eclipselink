@@ -1760,7 +1760,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             } catch (RuntimeException ex) {
                 fail("Failed to execute query, exception resulted on second execution");
             }
-            query = em.createNamedQuery("findEmployeeByPostalCode");
+            query = em.createNamedQuery("findEmployeeByPostalCode", Employee.class);
             query.setParameter("postalCode", "K1T3B9");
             try {
                 query.getResultList();
