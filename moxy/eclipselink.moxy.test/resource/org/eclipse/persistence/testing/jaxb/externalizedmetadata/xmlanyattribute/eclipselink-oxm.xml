@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute.Employee">
             <java-attributes>
                 <xml-any-attribute java-attribute="stuff" />
-                <xml-any-element java-attribute="stuffs" />
+                <xml-element java-attribute="stuffs" required="0" />
             </java-attributes>
 		</java-type>
 	</java-types>

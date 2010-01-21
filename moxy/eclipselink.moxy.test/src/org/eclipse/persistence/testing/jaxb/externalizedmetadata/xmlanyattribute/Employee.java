@@ -23,4 +23,29 @@ public class Employee {
 
     @javax.xml.bind.annotation.XmlAnyAttribute
     public java.util.Map<QName, Object> stuffs;
+    
+    public boolean equals(Object obj) {
+        Employee eObj;
+        try {
+            eObj = (Employee) obj;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        
+        if (this.a != eObj.a) { return false; }
+        if (!this.b.equals(eObj.b)) { return false; }
+        if (this.stuff.size() != eObj.stuff.size()) { return false; }
+        
+        for (QName key : this.stuff.keySet()) {
+            if (!eObj.stuff.containsKey(key)) {
+                return false;
+            }
+            Object val1 = this.stuff.get(key);
+            Object val2 = eObj.stuff.get(key);
+            if (!val1.equals(val2)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

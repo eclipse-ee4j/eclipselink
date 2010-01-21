@@ -50,7 +50,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      * 
      * Positive test.
      */
-    public void xtestXmlElementRefsSchemaGen() {
+    public void testXmlElementRefsSchemaGen() {
         MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
@@ -121,70 +121,4 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
             fail("Unmarshal operation failed.");
         }
     }
-
-    /**
-     * Tests @XmlElementRefs via eclipselink-oxm.xml.  Here an xml-element-wrapper
-     * is also used.
-     * 
-     * Positive test.
-     *
-    public void testXmlElementRefsWithWrapper() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Foos.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
-        
-        // load instance doc
-        String src = PATH + "foo-wrapper.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    */
 }

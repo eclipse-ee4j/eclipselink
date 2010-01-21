@@ -4,7 +4,20 @@
       <xsd:sequence>
          <xsd:element name="a" type="xsd:int"/>
          <xsd:element name="b" type="xsd:string" minOccurs="0"/>
-         <xsd:any processContents="skip" namespace="##other"/>
+         <xsd:element name="stuffs" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="key" type="xsd:QName" minOccurs="0"/>
+                           <xsd:element name="value" type="xsd:anyType" minOccurs="0"/>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
       </xsd:sequence>
       <xsd:anyAttribute processContents="skip" namespace="##other"/>
    </xsd:complexType>
