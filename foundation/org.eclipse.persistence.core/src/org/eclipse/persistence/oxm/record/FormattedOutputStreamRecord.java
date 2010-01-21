@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the
- * XML should be formatted with carriage returns and indenting. This type is only 
+ * XML should be formatted with carriage returns and indenting. This type is only
  * used if the encoding of the OutputStream is UTF-8</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
@@ -48,18 +48,19 @@ import org.xml.sax.SAXException;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
-	private static byte[] TAB;
+
+    private static byte[] TAB;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
-    
+
     static {
         try {
-        	TAB = "   ".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            TAB = "   ".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
         } catch (UnsupportedEncodingException e) {
         }
     }
-    
+
     public FormattedOutputStreamRecord() {
         super();
         numberOfTabs = 0;
@@ -72,7 +73,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      */
     public void endDocument() {
         try {
-          outputStream.write(CR);    
+          outputStream.write(CR);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -85,14 +86,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
         try {
             if (isStartElementOpen) {
-            	outputStream.write(CLOSE_ELEMENT);
+                outputStream.write(CLOSE_ELEMENT);
             }
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
-                	outputStream.write(CR);                    
+                    outputStream.write(CR);
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                	outputStream.write(TAB);
+                    outputStream.write(TAB);
                 }
             }
             isStartElementOpen = true;
@@ -112,19 +113,19 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         try {
             isLastEventText = false;
             if (isStartElementOpen) {
-            	outputStream.write(CLOSE_ELEMENT);
+                outputStream.write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
             outputStream.write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	outputStream.write(TAB);
+                outputStream.write(TAB);
             }
             super.element(frag);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
-    }    
-   
+    }
+
     /**
      * INTERNAL:
      */
@@ -132,15 +133,15 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         try {
             isLastEventText = false;
             numberOfTabs--;
-            if (isStartElementOpen) {            	
-            	outputStream.write(CLOSE_EMPTY_ELEMENT);
+            if (isStartElementOpen) {
+                outputStream.write(CLOSE_EMPTY_ELEMENT);
                 isStartElementOpen = false;
                 return;
             }
             if (complexType) {
-            	outputStream.write(CR);
+                outputStream.write(CR);
                 for (int x = 0; x < numberOfTabs; x++) {
-                	outputStream.write(TAB);
+                    outputStream.write(TAB);
                 }
             } else {
                 complexType = true;
@@ -159,7 +160,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         isLastEventText = true;
         complexType = false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -167,12 +168,12 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         //Format the CDATA on it's own line
         try {
             if(isStartElementOpen) {
-            	outputStream.write(CLOSE_ELEMENT);
+                outputStream.write(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
             outputStream.write(CR);
             for (int x = 0; x < numberOfTabs; x++) {
-            	outputStream.write(TAB);
+                outputStream.write(TAB);
             }
             super.cdata(value);
             complexType=true;
@@ -180,7 +181,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             throw XMLMarshalException.marshalException(ex);
         }
     }
-    
+
     /**
      * Receive notification of a node.
      * @param node The Node to be added to the document
@@ -217,13 +218,13 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             }
         }
     }
-    
+
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
-     * to this class - the event's data is then written to the enclosing class' 
+     * to this class - the event's data is then written to the enclosing class'
      * writer.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      * @see org.eclipse.persistence.oxm.record.WriterRecord.WriterRecordContentHandler
      */
@@ -231,13 +232,13 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
-            	if (isStartElementOpen) {
-            		outputStream.write(CLOSE_ELEMENT);
-            	}
+                if (isStartElementOpen) {
+                    outputStream.write(CLOSE_ELEMENT);
+                }
                 if (!isLastEventText) {
-                	outputStream.write(CR);
+                    outputStream.write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	outputStream.write(TAB);
+                        outputStream.write(TAB);
                     }
                 }
                 outputStream.write(OPEN_START_ELEMENT);
@@ -259,15 +260,15 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                 isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
-                	outputStream.write(CLOSE_EMPTY_ELEMENT);
+                    outputStream.write(CLOSE_EMPTY_ELEMENT);
                     isStartElementOpen = false;
                     complexType = true;
                     return;
                 }
                 if (complexType) {
-                	outputStream.write(CR);
+                    outputStream.write(CR);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	outputStream.write(TAB);
+                        outputStream.write(TAB);
                     }
                 } else {
                     complexType = true;
@@ -279,31 +280,32 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
-        	if (isProcessingCData) {
-            	cdata(new String (ch, start, length));
-        		return;
-        	}
-        	if (new String(ch).trim().length() == 0) {
-        		return;
-        	}        	
+            if (isProcessingCData) {
+                cdata(new String (ch, start, length));
+                return;
+            }
+            if (new String(ch).trim().length() == 0) {
+                return;
+            }
             super.characters(ch, start, length);
             isLastEventText = true;
             complexType = false;
         }
-        
+
         // --------------------- LEXICALHANDLER METHODS --------------------- //
-	public void comment(char[] ch, int start, int length) throws SAXException {
+    public void comment(char[] ch, int start, int length) throws SAXException {
             try {
-            	if (isStartElementOpen) {
-            		outputStream.write(CLOSE_ELEMENT);
-            		outputStream.write(CR);
+                if (isStartElementOpen) {
+                    outputStream.write(CLOSE_ELEMENT);
+                    outputStream.write(CR);
                     isStartElementOpen = false;
                 }
-            	writeComment(ch, start, length);
+                writeComment(ch, start, length);
                 complexType = false;
             } catch (IOException e) {
-            	throw XMLMarshalException.marshalException(e);
+                throw XMLMarshalException.marshalException(e);
             }
-	}
+        }
     }
+
 }
