@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 import javax.persistence.EntityManager;
 import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CubiclePrimaryKeyClass;
@@ -29,6 +30,7 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 public class TestMap extends JPA1Base {
 
     @Test
+    @Bugzilla(bugid=300337)
     public void testEmptyOffice() {
         final Integer officeId = Integer.valueOf(1);
         final EntityManager em = getEnvironment().getEntityManager();
@@ -54,6 +56,7 @@ public class TestMap extends JPA1Base {
     }
 
     @Test
+    @Bugzilla(bugid=300337)
     public void testOffice() {
         final Integer officeId = Integer.valueOf(2);
         final EntityManager em = getEnvironment().getEntityManager();

@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.junit.Test;
@@ -759,6 +760,7 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
+    @Bugzilla(bugid=300337)
     public void testMemberOfHandling() {
         assertValidQuery("select cri from Criminal cri, City c where cri.attachedCop member of c.cops");
         assertInvalidQuery("select cri from Criminal cri, City c where cri.attachedCop member c.criminals");

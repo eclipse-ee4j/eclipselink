@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
@@ -80,6 +81,7 @@ public class TestCount extends JPA1Base {
     }
 
     @Test
+    @Bugzilla(bugid=300337)
     public void testCount() {
         verifyCountResult("select count(d) from Department d", 2);
         verifyCountResult("select count(distinct d) from Department d", 2);
