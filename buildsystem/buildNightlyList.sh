@@ -45,7 +45,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "            <th align=\"center\"> Build ID </th>                             " >> $tmp/index.xml
     echo "            <th align=\"center\"> Archives </th>                             " >> $tmp/index.xml
     echo "            <th align=\"center\"> </th>                                      " >> $tmp/index.xml
-    echo "            <th colspan=\"7\" align=\"center\"> Nightly Testing Results </th>" >> $tmp/index.xml
+    echo "            <th colspan=\"8\" align=\"center\"> Nightly Testing Results </th>" >> $tmp/index.xml
     echo "          </tr>                                                              " >> $tmp/index.xml
     
     #    Generate each table row depending upon available content
@@ -88,6 +88,14 @@ for version in `ls -dr [0-9]*` ; do
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> JPA </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> JPA </td>" >> $tmp/index.xml
+        fi
+        if [ "${version}" = "2.1.0" ] ; then
+            file=`ls | sort -r | grep -m1 eclipselink-jpa-wdf-[l,s]rg-[0-9]`
+            if [ "${file}" != "" ] ; then
+                echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> JPA (WDF) </a> </td>" >> $tmp/index.xml
+            else
+                echo "            <td align=\"center\"> JPA (WDF) </td>" >> $tmp/index.xml
+            fi
         fi
         file=`ls | sort -r | grep -m1 eclipselink-jaxb-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then

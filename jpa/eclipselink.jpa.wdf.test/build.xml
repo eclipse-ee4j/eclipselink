@@ -73,9 +73,16 @@
     <property file="${wdf_test.build.location}/test.properties"/>
 
     <!-- Default ant targets, compiles and packages test jars, does not run tests. -->
-    <target name="build-against-jar" depends="clean, init_against_jar, compile, package"            description="build JPA WDF testing jars"/>
-    <target name="test-against-jar"  depends="clean-test, init_against_jar, init_runtime, test-lrg" description="run JPA WDF tests"/>
-
+    <target name="build-against-jar"     depends="clean, init_against_jar, compile, package"                description="build JPA WDF testing jars"/>
+    <target name="build-against-classes" depends="clean, init_against_classes, compile, package"            description="build JPA WDF testing jars"/>
+    <target name="build-against-bundles" depends="clean, init_against_bundles, compile, package"            description="build JPA WDF testing jars"/>
+    <target name="test-against-jar"      depends="clean-test, init_against_jar, init_runtime, test-lrg"     description="run JPA WDF tests"/>
+    <target name="test-against-classes"  depends="clean-test, init_against_classes, init_runtime, test-lrg" description="run JPA WDF tests"/>
+    <target name="test-against-bundles"  depends="clean-test, init_against_bundles, init_runtime, test-lrg" description="run JPA WDF tests"/>
+    <!-- convienience targets -->
+    <target name="build"     depends="build-against-jar"/>
+    <target name="test"      depends="test-against-jar"/>
+    
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${wdf_test.build.location}/${classes.dir}"/>
@@ -119,6 +126,16 @@
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
         </path>
+        <path id="product.bundles.path">
+            <fileset dir="${wdf_test.2.common.plugins.dir}"
+                includes="org.eclipse.persistence.core_*.jar,
+                          org.eclipse.persistence.jpa_*.jar,
+                          org.eclipse.persistence.moxy_*.jar,
+                          org.eclipse.persistence.asm_*.jar,
+                          org.eclipse.persistence.antlr_*.jar
+                "
+            />
+        </path>
         <path id="product.jar.path">
             <pathelement path="${eclipselink.lib}"/>
         </path>
@@ -134,6 +151,13 @@
     <target name="init_against_classes" depends="init">
         <path id="compile.path">
             <path refid="product.classes.path"/>
+            <path refid="base.compile.path"/>
+        </path>
+    </target>
+
+    <target name="init_against_bundles" depends="init">
+        <path id="compile.path">
+            <path refid="product.bundles.path"/>
             <path refid="base.compile.path"/>
         </path>
     </target>
