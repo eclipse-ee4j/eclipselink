@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -75,6 +75,7 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
@@ -1440,6 +1441,7 @@ public class EntityManagerSetupImpl {
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
         updateAllowZeroIdSetting(m);
+        updateIdValidation(m);
         updatePessimisticLockTimeout(m);
         updateQueryTimeout(m);
         updateCacheCoordination(m, loader);
@@ -1815,6 +1817,16 @@ public class EntityManagerSetupImpl {
             } else {
                 session.handleException(ValidationException.invalidBooleanValueForProperty(allowZero, PersistenceUnitProperties.ALLOW_ZERO_ID));
             }
+        }
+    }
+
+    /**
+     * Enable or disable default allowing 0 as an id. 
+     */
+    protected void updateIdValidation(Map m) {
+        String idValidationString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ID_VALIDATION, m, session);
+        if (idValidationString != null) {
+            session.getProject().setDefaultIdValidation(IdValidation.valueOf(idValidationString));
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,11 +25,13 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.ExistenceChecking;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.Properties;
@@ -178,6 +180,8 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     @Property(name="entityIntegerProperty", value="1", valueType=Integer.class)
 }
 )
+// overrides IdValidation.NEGATIVE set in persistence.xml
+@PrimaryKey(validation=IdValidation.ZERO)
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -272,13 +272,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
         } else {
             existingValue = getBaseValueForField(sequenceNumberField, object);
         }
-        // If the value is null or zero (int/long) return.
+        
         // PERF: The (internal) support for letting the sequence decide this was removed,
         // as anything other than primitive should allow null and default as such.
-        if (existingValue != null && !Helper.isEquivalentToNull(existingValue)) {
+        Object sequenceValue;
+        if(isPrimaryKeyComponentInvalid(existingValue) || getDescriptor().getSequence().shouldAlwaysOverrideExistingValue()) {
+            sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
+        } else {
             return null;
         }
-        Object sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
 
         // Check that the value is not null, this occurs on any databases using IDENTITY type sequencing.
         if (sequenceValue == null) {
@@ -1804,7 +1806,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (descriptor.hasInheritance() && (domainObject.getClass() != descriptor.getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(descriptor.getJavaClass()))) {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
         } else {
-            IdValidation idValidation = descriptor.getIdValidation();
             List primaryKeyFields = descriptor.getPrimaryKeyFields();
             Vector primaryKeyValues = new NonSynchronizedVector(primaryKeyFields.size());
 
@@ -1816,9 +1817,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 for (int index = 0; index < size; index++) {
                     AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
                     Object keyValue = mapping.valueFromObject(domainObject, (DatabaseField)primaryKeyFields.get(index), session);
-                    // Only check for 0 for singleton primary keys.
-                    if ((idValidation != IdValidation.NONE) && ((keyValue == null)
-                                || ((idValidation == IdValidation.ZERO) && Helper.isEquivalentToNull(keyValue)))) {
+                    if(isPrimaryKeyComponentInvalid(keyValue)) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
@@ -1845,8 +1844,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     Class classification = (Class)primaryKeyClassifications.get(index);
                     Object value = databaseRow.get((DatabaseField)primaryKeyFields.get(index));
                     // Only check for 0 for singleton primary keys.
-                    if ((idValidation != IdValidation.NONE) && ((value == null)
-                            || ((idValidation == IdValidation.ZERO) && Helper.isEquivalentToNull(value)))) {
+                    if(isPrimaryKeyComponentInvalid(value)) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
@@ -2364,6 +2362,20 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if ((sequenceMapping != null) && sequenceMapping.isDirectToFieldMapping()) {
                 setSequenceMapping((AbstractDirectMapping)sequenceMapping);
             }
+        }
+    }
+    
+    public boolean isPrimaryKeyComponentInvalid(Object keyValue) {
+        IdValidation idValidation = descriptor.getIdValidation();
+        if(idValidation == IdValidation.ZERO) {
+            return keyValue == null || Helper.isEquivalentToNull(keyValue); 
+        } else if(idValidation == IdValidation.NULL) {
+            return keyValue == null;
+        } else if(idValidation == IdValidation.NEGATIVE) {
+            return keyValue == null || Helper.isNumberNegativeOrZero(keyValue);
+        } else {
+            // idValidation == IdValidation.NONE
+            return false;
         }
     }
     

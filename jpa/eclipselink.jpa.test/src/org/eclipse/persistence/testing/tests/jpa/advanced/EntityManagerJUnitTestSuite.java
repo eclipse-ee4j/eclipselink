@@ -51,6 +51,7 @@ import javax.persistence.spi.ProviderUtil;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.indirection.IndirectList;
@@ -4578,6 +4579,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int numAddressCalls = Customizer.getNumberOfCallsForClass(Address.class.getName());
         if(numAddressCalls == 0) {
             fail("Address customizer hasn't been called");
+        }
+        
+        IdValidation employeeIdValidation = ss.getDescriptor(Employee.class).getIdValidation();
+        if(employeeIdValidation != IdValidation.ZERO) {
+            fail("employeeIdValidation is wrong, IdValidation.ZERO assigned through PrimaryKey annotation was expected");
+        }
+        
+        IdValidation addressIdValidation = ss.getDescriptor(Address.class).getIdValidation();
+        if(addressIdValidation != IdValidation.NEGATIVE) {
+            fail("addressIdValidation is wrong, IdValidation.NEGATIVE set as a default value in persistence.xml was expected");
         }
         
         closeEntityManager(em);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     James Sutherland - allow for zero ids
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
 /** 
@@ -25,17 +25,24 @@ package org.eclipse.persistence.annotations;
  */ 
 public enum IdValidation {
     /**
-     * Only null is not allowed as an id value, 0 is allowed.
+     * Only null is invalid All other values are considered valid. This is the
+     * default configuration when composite identifiers are used.
      */
     NULL,
 
     /**
-     * null and 0 are not allowed, (only int and long).
+     * null and 0 are not allowed for primitive int and long ids. This is the
+     * default configuration for a simple identifier.
      */
     ZERO,
 
     /**
-     * No id validation is done.
+     * null, 0 and negative values are not allowed for ids extending Number and primitive int and long ids. 
+     */
+    NEGATIVE,
+
+    /**
+     * No identifier validation is performed.
      */
     NONE
 }

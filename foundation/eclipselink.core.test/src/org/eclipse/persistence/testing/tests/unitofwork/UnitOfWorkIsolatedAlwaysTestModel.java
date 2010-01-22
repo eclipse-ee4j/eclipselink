@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Iterator;
 
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeNothingTest;
@@ -121,7 +122,15 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
         //addTest(new NullAggregateTest()); - Requires merge.
         addTest(new UOWHasOnlyDeletesTest());
         //CR 2728
-        addTest(new RegisterNewObjectInIdentityMapNoSeqTest());
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, true, true));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, true, true));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, true, true));
         //CR 2783
         addTest(new NestedUnitOfWorkDeleteNewObjectTest());
         //bug 3115160

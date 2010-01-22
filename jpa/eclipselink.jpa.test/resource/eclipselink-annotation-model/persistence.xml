@@ -65,6 +65,7 @@
             <property name="eclipselink.weaving.internal" value="false"/-->
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="javax.persistence.lock.timeout" value="5"/>
+            <property name="eclipselink.id-validation" value="NEGATIVE"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="default1">
