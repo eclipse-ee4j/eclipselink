@@ -301,6 +301,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                 }
             } else {
                 unmarshalRecord.setRootElementName(qName);
+                unmarshalRecord.setLocalName(localName);
                 unmarshalRecord.setRootElementNamespaceUri(namespaceURI);
             }
 

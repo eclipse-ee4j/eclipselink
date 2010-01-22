@@ -99,8 +99,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private boolean isBufferCDATA;
     private Attributes attributes;
     private QName typeQName;
-    private String rootElementName;
-    private String rootElementNamespaceUri;
+    protected String rootElementLocalName;
+    protected String rootElementName;
+    protected String rootElementNamespaceUri;
     private SAXFragmentBuilder fragmentBuilder;
     private String encoding;
     private String version;
@@ -156,8 +157,13 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         this.childRecordPool.add(this);
     }
 
+    @Override
     public String getLocalName() {
-        throw XMLMarshalException.operationNotSupported("getLocalName");
+        return rootElementLocalName;
+    }
+
+    public void setLocalName(String localName) {
+        rootElementLocalName = localName;
     }
 
     public String getNamespaceURI() {
@@ -561,7 +567,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
         // set the root element's local name and namespace prefix and look for
         // schema locations etc.
-        if (rootElementName == null) {
+        if (null == rootElementName  && null == rootElementLocalName) {
+            rootElementLocalName = localName;
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
             schemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION);

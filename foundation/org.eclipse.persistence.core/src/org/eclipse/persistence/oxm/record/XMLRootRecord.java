@@ -25,9 +25,8 @@ import org.xml.sax.SAXException;
  * method will be used to gather the text to be converted.
  */
 public class XMLRootRecord extends UnmarshalRecord {
+
     private Class targetClass;
-    private String rootElementName;
-    private String rootElementNamespaceUri;
     private StrBuffer characters;
     private boolean shouldReadChars;
     private int elementCount;
@@ -42,6 +41,7 @@ public class XMLRootRecord extends UnmarshalRecord {
         elementCount = 0;
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (characters == null) {
             characters = new StrBuffer();
@@ -52,9 +52,11 @@ public class XMLRootRecord extends UnmarshalRecord {
         }
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         // once the root element is closed (or any sub-elements for that matter) we don't
         // want to process any more characters
@@ -64,6 +66,7 @@ public class XMLRootRecord extends UnmarshalRecord {
     /**
      * Return a populated XMLRoot object.
      */
+    @Override
     public Object getCurrentObject() {
         // this assumes that since we're unmarshalling to a primitive wrapper, the root
         // element has a single text node.  if, however, the root element doesn't have
@@ -74,36 +77,21 @@ public class XMLRootRecord extends UnmarshalRecord {
         }
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setObject(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(val, targetClass));
-        xmlRoot.setLocalName(getRootElementName());
+        xmlRoot.setLocalName(getLocalName());
         xmlRoot.setNamespaceURI(getRootElementNamespaceUri());
         return xmlRoot;
     }
 
-    /**
-     * Return the root element's prefix qualified name
-     * 
-     * @return
-     */
-    public String getRootElementName() {
-        return rootElementName;
-    }
-
-    /**
-     * Return the root element's namespace URI
-     * 
-     * @return
-     */
-    public String getRootElementNamespaceUri() {
-        return rootElementNamespaceUri;
-    }
-
+    @Override
     public void startDocument() throws SAXException {
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         // set the root element's prefix qualified name and namespace prefix
         if (rootElementName == null) {
             rootElementName = qName;
+            rootElementLocalName = localName;
             rootElementNamespaceUri = namespaceURI;
         }
         elementCount++;
@@ -113,4 +101,5 @@ public class XMLRootRecord extends UnmarshalRecord {
             shouldReadChars = false;
         }
     }
+
 }

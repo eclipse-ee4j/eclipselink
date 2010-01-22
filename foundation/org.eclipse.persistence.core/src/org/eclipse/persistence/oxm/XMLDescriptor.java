@@ -651,16 +651,9 @@ public class XMLDescriptor extends ClassDescriptor {
      * @return object
      */
     public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
-        String elementName = unmarshalRecord.getRootElementName();
-        int colonIndex = elementName.indexOf(XMLConstants.COLON);
-        String elementLocalName = elementName;
-        String elementPrefix = null;
-        if (colonIndex != -1) {
-            elementLocalName = elementName.substring(colonIndex + 1);
-            elementPrefix = elementName.substring(0, colonIndex);
-        }
+        String elementLocalName = unmarshalRecord.getLocalName();
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
-        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix)) {
+        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null)) {
             XMLRoot xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
@@ -670,7 +663,7 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setSchemaLocation(unmarshalRecord.getSchemaLocation());
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
             return xmlRoot;
-        }        
+        }
         return unmarshalRecord.getCurrentObject();
     }
 
