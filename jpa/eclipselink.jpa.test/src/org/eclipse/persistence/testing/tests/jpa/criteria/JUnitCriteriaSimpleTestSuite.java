@@ -163,12 +163,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testOneEqualsOne"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleAsOrderByTest"));
-        // Derby does not support simple CASE
-        if (!((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
-        {
-            suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInWhereTest"));
-            suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInSelectTest"));
-        }
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInWhereTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInSelectTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("caseConditionInWhereTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("caseConditionInSelectTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCoalesceInWhereTest"));
@@ -2539,6 +2535,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     }
     
     public void simpleCaseInWhereTest(){
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test simpleCaseInWhereTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
         EntityManager em = createEntityManager();
         //select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Rob' then 'Robbie' else 'Not Bob' = 'Bob'
         CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -2563,6 +2564,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     }
     
     public void simpleCaseInSelectTest(){
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test simpleCaseInSelectTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
         EntityManager em = createEntityManager();
         //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
         CriteriaBuilder qb = em.getCriteriaBuilder();
