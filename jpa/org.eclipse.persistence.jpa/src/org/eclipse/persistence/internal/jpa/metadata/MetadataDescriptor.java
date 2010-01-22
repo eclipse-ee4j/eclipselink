@@ -50,6 +50,8 @@
  *       - 290567: mappedbyid support incomplete
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+ *     01/22/2010-2.0.1 Guy Pelletier 
+ *       - 294361: incorrect generated table for element collection attribute overrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -79,6 +81,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Collecti
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
@@ -1218,11 +1221,23 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Process this descriptors accessors. Some accessors will not be processed
      * right away, instead stored on the project for processing in a later 
-     * stage.
+     * stage. This method can not and must not be called beyond MetadataProject 
+     * stage 2 processing.
      */
     public void processAccessors() {
         for (MappingAccessor accessor : m_accessors.values()) {
             if (! accessor.isProcessed()) {
+                // If we a mapped key map accessor with an embeddable as the 
+                // key, process that embeddable accessor now.
+                if (accessor.isMappedKeyMapAccessor()) {
+                    MappedKeyMapAccessor mapAccessor = (MappedKeyMapAccessor) accessor;
+                    EmbeddableAccessor mapKeyEmbeddableAccessor = getProject().getEmbeddableAccessor(mapAccessor.getMapKeyClass());
+                    
+                    if (mapKeyEmbeddableAccessor != null && ! mapKeyEmbeddableAccessor.isProcessed()) {
+                        mapKeyEmbeddableAccessor.process();
+                    }
+                }
+                
                 // We need to defer the processing of some mappings to stage
                 // 3 processing. Accessors are added to different lists since
                 // the order or processing of those accessors is important.

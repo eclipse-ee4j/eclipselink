@@ -39,6 +39,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     01/22/2010-2.0.1 Guy Pelletier 
+ *       - 294361: incorrect generated table for element collection attribute overrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -224,7 +226,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // Add the embeddable accessor to the project. In the case of
                 // pre-processing, if we are an embeddable accessor the nested 
                 // embeddable will be pre-processed now.
-                addPotentialEmbeddableAccessor(mapKeyClass, accessor.getReferenceDescriptor(), accessor.getClassAccessor());
+                addPotentialEmbeddableAccessor(mapKeyClass, accessor.getClassAccessor());
             }
          
             // Add the accessor to the descriptor.
@@ -406,24 +408,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * @see MetadataProject processStage1()
      */
     protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass, ClassAccessor embeddingAccessor) {
-        addPotentialEmbeddableAccessor(potentialEmbeddableClass, getDescriptor(), embeddingAccessor);
-    }
-    
-    /**
-     * INTERNAL
-     * Add an embeddable class to the embeddable accessor list if it is
-     * indeed an embeddable. This method is called on map key classes that
-     * are embeddables. The owning descriptor at this point is the accessors
-     * reference descriptor (passed in as the owning descriptor).
-     * @see addAccessor(MappingAccessor)
-     */
-    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass, MetadataDescriptor owningDescriptor, ClassAccessor embeddingAccessor) {
         if (potentialEmbeddableClass != null) {
             EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass);
         
             if (embeddableAccessor != null) {
                 embeddableAccessor.addEmbeddingAccessor(embeddingAccessor);
-                embeddableAccessor.addOwningDescriptor(owningDescriptor);
+                embeddableAccessor.addOwningDescriptor(getDescriptor());
                 getProject().addRootEmbeddableAccessor(embeddableAccessor);
             }
         }
