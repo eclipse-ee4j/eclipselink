@@ -30,7 +30,7 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 public class TestMap extends JPA1Base {
 
     @Test
-    @Bugzilla(bugid=300337)
+    @Bugzilla(bugid=300485)
     public void testEmptyOffice() {
         final Integer officeId = Integer.valueOf(1);
         final EntityManager em = getEnvironment().getEntityManager();
@@ -56,7 +56,7 @@ public class TestMap extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=300337)
+    @Bugzilla(bugid=300485)
     public void testOffice() {
         final Integer officeId = Integer.valueOf(2);
         final EntityManager em = getEnvironment().getEntityManager();

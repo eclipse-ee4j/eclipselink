@@ -760,11 +760,8 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @Bugzilla(bugid=300337)
     public void testMemberOfHandling() {
-        assertValidQuery("select cri from Criminal cri, City c where cri.attachedCop member of c.cops");
         assertInvalidQuery("select cri from Criminal cri, City c where cri.attachedCop member c.criminals");
-        assertValidQuery("select cri from Criminal cri, City c where cri member c.criminals");
         assertInvalidQuery("select cri from Criminal cri, City c where cri member c.rivers");
         assertInvalidQuery("select cri from Criminal cri, City c where 5 member c.rivers");
         assertInvalidQuery("select p from City c, Person p where p.integer member c.criminals");
@@ -780,6 +777,18 @@ public class TestConditionalExpressions extends QueryTest {
         assertValidQuery("select c from City c where :one not member OF c.criminals");
         assertInvalidQuery("select c from City c where (select p from Person p) not member OF c.criminals");
         assertInvalidQuery("select c from City c where avg(c.id) not member OF c.criminals");
+    }
+    
+    @Test
+    @Bugzilla(bugid=300488)
+    public void testMemberOfHandling0() {
+      assertValidQuery("select cri from Criminal cri, City c where cri.attachedCop member of c.cops");
+    }
+    
+    @Test
+    @Bugzilla(bugid=300488)
+    public void testMemberOfHandling4() {
+        assertValidQuery("select cri from Criminal cri, City c where cri member c.criminals");
     }
 
     @Test
