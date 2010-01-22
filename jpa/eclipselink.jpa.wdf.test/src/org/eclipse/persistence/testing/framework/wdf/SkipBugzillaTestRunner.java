@@ -61,7 +61,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         }
 
         String testIssueRun = (String) properties.get("test.issue.run");
-        if ("all".equals(testBugzillaRun)) {
+        if ("all".equals(testIssueRun)) {
             runAllIssues = true;
             issueid = -1;
         } else {

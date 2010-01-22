@@ -37,6 +37,7 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Vehicle;
 
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
@@ -396,8 +397,8 @@ public class TestBidirectionalManyToMany extends JPA1Base {
         }
     }
 
+    @Bugzilla(bugid=300503)
     @Test
-    @ToBeInvestigated
     public void testCopyProjectsToExisting() throws SQLException {
         // copy all projects from hans to a new employee with out actually touching them
         JPAEnvironment env = getEnvironment();
