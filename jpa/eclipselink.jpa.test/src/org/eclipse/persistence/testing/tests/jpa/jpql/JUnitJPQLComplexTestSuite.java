@@ -186,12 +186,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInSelectTest"));
-        // Derby does not support simple CASE
-        if (!((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
-        {
-            suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
-            suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
-        }
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInUpdateTest"));
@@ -2359,6 +2355,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void complexSimpleCaseInSelectTest(){
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test complexSimpleCaseInSelectTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
         EntityManager em = createEntityManager();
         Vector expectedResult = new Vector(2);
         expectedResult.add("Robert");
@@ -2373,6 +2374,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void complexSimpleCaseInWhereTest(){
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test complexSimpleCaseInWhereTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
         EntityManager em = createEntityManager();
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
         List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
@@ -2382,7 +2388,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         List result = em.createQuery(ejbqlString).getResultList();
         
-        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("complexSimpleCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
     }
     
     public void complexConditionCaseInSelectTest(){
@@ -2397,7 +2403,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         List result = em.createQuery(ejbqlString).getResultList();
         
-        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("complexConditionCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
     
     public void complexConditionCaseInWhereTest(){
@@ -2411,7 +2417,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         List result = em.createQuery(ejbqlString).getResultList();
         
-        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("complexConditionCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
     }
     
     public void complexConditionCaseInUpdateTest(){
