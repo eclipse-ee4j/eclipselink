@@ -587,7 +587,6 @@ public final class SessionCreationDialog extends AbstractValidatingDialog {
 		// EIS platform drop-down
 		this.j2cAdapterComboBoxModel = buildJ2CAdaptersComboBoxModel();
 		final JComboBox adapterComboBox = new JComboBox(this.j2cAdapterComboBoxModel);
-		adapterComboBox.setRenderer(buildEisNameRenderer());
 		adapterComboBox.setEnabled(false);
 
 		String platformName = preferences().get(SCPlugin.EIS_PLATFORM_PREFERENCE, SCPlugin.EIS_PLATFORM_PREFERENCE_DEFAULT);
@@ -641,24 +640,6 @@ public final class SessionCreationDialog extends AbstractValidatingDialog {
 		String serverClassName = NullServerPlatformAdapter.instance().getServerClassName();
 		servers.remove(ClassTools.shortNameForClassNamed(serverClassName));
 		return servers.iterator();
-	}
-
-	private ListCellRenderer buildEisNameRenderer() {
-		return new SimpleListCellRenderer() {
-			protected String buildText(Object cellValue) {
-				String string = (String) cellValue;
-				if (string.equals("AQPlatform")) {
-					return EisPlatformManager.AQ_ID;
-				}
-				if (string.equals("MQPlatform")) {
-					return EisPlatformManager.MQ_ID;
-				}
-				if (string.equals("JMSPlatform")) {
-					return EisPlatformManager.JMS_ID;
-				}
-				return EisPlatformManager.XML_ID;
-			}
-		};
 	}
 
 	public SessionAdapter addNewSessionTo( TopLinkSessionsAdapter topLinkSessions) {
