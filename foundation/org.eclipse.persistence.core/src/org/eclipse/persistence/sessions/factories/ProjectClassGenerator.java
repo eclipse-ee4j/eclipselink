@@ -1872,7 +1872,9 @@ public class ProjectClassGenerator {
 
         // This handles most cases.
         //CR#2648.  Get fully qualified name for object.
-        return "new " + value.getClass().getName() + "(" + value + ")";
+        // Bug 298443 - account for Byte, Double, Short, Long, etc. constructors.
+        return "new " + value.getClass().getName() + "(\"" + String.valueOf(value) + "\")";
+
     }
 
     protected String removeDots(String packageName) {
