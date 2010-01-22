@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -41,6 +41,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     01/22/2010-2.0.1 Guy Pelletier 
+ *       - 294361: incorrect generated table for element collection attribute overrides
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -1267,11 +1269,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
         MetadataClass mapKeyClass = mappedKeyMapAccessor.getMapKeyClass();
         keyMapping.setReferenceClassName(mapKeyClass.getName());
         
-        // Tell the embeddable accessor to process itself it is hasn't already.
+        // The embeddable accessor must be processed by now. If it is not then
+        // we are in trouble since by the time we get here, we are too late in
+        // the cycle to process embeddable classes and their accessors. See
+        // MetadataProject processStage3(), processEmbeddableMappingAccessors. 
+        // At this stage all class accessors (embeddable, entity and mapped 
+        // superclass) have to have been processed to gather all their 
+        // relational and embedded mappings. 
         EmbeddableAccessor mapKeyAccessor = getProject().getEmbeddableAccessor(mapKeyClass);
-        if (! mapKeyAccessor.isProcessed()) {
-            mapKeyAccessor.process();
-        }
         
         // Ensure the reference descriptor is marked as an embeddable collection.
         mapKeyAccessor.getDescriptor().setIsEmbeddableCollection();

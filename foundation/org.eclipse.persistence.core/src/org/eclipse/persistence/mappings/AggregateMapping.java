@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -71,11 +71,15 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Initialize the aggregate query with the settings from the source query.
      */
     protected void buildAggregateModifyQuery(ObjectLevelModifyQuery sourceQuery, ObjectLevelModifyQuery aggregateQuery, Object sourceAttributeValue) {
-        if (sourceQuery.getSession().isUnitOfWork()) {
+        // If we are map key mapping we can't build a backupAttributeValue
+        // from a back up clone since a map key mapping does not map a field
+        // on the source queries backup clone.
+        if (sourceQuery.getSession().isUnitOfWork() && ! isMapKeyMapping()) {
             Object backupAttributeValue = getAttributeValueFromBackupClone(sourceQuery.getBackupClone());
             if (backupAttributeValue == null) {
                 backupAttributeValue = getObjectBuilder(sourceAttributeValue, sourceQuery.getSession()).buildNewInstance();
             }
+            
             aggregateQuery.setBackupClone(backupAttributeValue);
         }
         aggregateQuery.setCascadePolicy(sourceQuery.getCascadePolicy());
