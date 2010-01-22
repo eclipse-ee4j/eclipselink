@@ -63,5 +63,6 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
         addTest(unicodeSuite);
 
         addTest(new ProjectClassGeneratorOrderByQueryKeysTest());
+        addTest(new ProjectClassGeneratorInheritanceMappingTest()); // Bug 298443
     }
 }
