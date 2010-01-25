@@ -81,7 +81,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private HashMap<QName, Class> qNameToGeneratedClasses;
     private HashMap<String, Class> classToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
-    private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
     private HashMap<Type, QName> typeToSchemaType;
     private TypeMappingInfo[] boundTypes;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
@@ -235,79 +234,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
     
-    public void initTypeMappingInfoToSchemaType() {
-        this.typeMappingInfoToSchemaType = new HashMap<TypeMappingInfo, QName>();
-        
-        if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
-        	return;
-        }
-        
-        Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
-
-        //Add schema types generated for mapped domain classes
-        while (descriptors.hasNext()) {
-            XMLDescriptor next = (XMLDescriptor)descriptors.next();
-            Class javaClass = next.getJavaClass();
-
-            if (next.getSchemaReference() != null){
-                QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
-                
-                TypeMappingInfo tmi = null;                
-                if(getTypeMappingInfoToGeneratedType() != null){                             	
-                	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                	while(iter.hasNext()){
-                		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
-                		if(entry.getValue().equals(javaClass)){
-                			tmi = entry.getKey();
-                			break;
-                		}
-                	}
-                }
-                
-                Type type = null;
-                if (tmi == null && generator != null) {
-                    type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);                    
-                    if (type == null) {
-                        JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
-                        if (arrayClass != null) {
-                            String arrayClassName = arrayClass.getName();
-                            try {
-                                type = PrivilegedAccessHelper.getClassForName(arrayClassName);
-                            } catch (Exception ex) {}
-                        }                             
-                    }
-                    if (type == null) {
-                        type = javaClass;
-                    }
-                    
-                } else {
-                    type = javaClass;
-                }
-                if(tmi == null && type != null){
-                	tmi = new TypeMappingInfo();
-                	tmi.setType(type);
-                }
-                
-                this.typeMappingInfoToSchemaType.put(tmi, schemaType);
-            }
-        }
-
-      //Add any types that we didn't generate descriptors for (built in types)
-        if (boundTypes != null) {
-        	for (TypeMappingInfo next:this.boundTypes) {
-                if (this.typeMappingInfoToSchemaType.get(next) == null) {
-                	Type nextType = next.getType();
-                	QName name = getSchemaTypeForTypeMappingInfo(nextType);
-                	if (name != null) {
-                        this.typeMappingInfoToSchemaType.put(next, name);
-                    }                	                	
-                }
-            }
-        }
-    }
-    
-    
-    
     public void initTypeToSchemaType() {
         this.typeToSchemaType = new HashMap<Type, QName>();
         
@@ -397,10 +323,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
     
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-        if (typeMappingInfoToSchemaType == null) {
-            initTypeMappingInfoToSchemaType();
+        if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
+        	return new HashMap<TypeMappingInfo, QName>();
         }
-        return typeMappingInfoToSchemaType;
+
+        return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
     }
     
     public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {

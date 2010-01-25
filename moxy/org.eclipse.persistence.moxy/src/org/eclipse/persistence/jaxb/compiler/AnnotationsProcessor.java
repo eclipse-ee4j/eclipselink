@@ -68,6 +68,7 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
@@ -79,6 +80,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
 import org.eclipse.persistence.internal.libraries.asm.attrs.LocalVariableTypeTableAttribute;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
@@ -141,7 +143,8 @@ public class AnnotationsProcessor {
     private Map<JavaClass, TypeMappingInfo> javaClassToTypeMappingInfos;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
     private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
-
+    private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
+    
     private NamespaceResolver namespaceResolver;
     private Helper helper;
 
@@ -165,9 +168,8 @@ public class AnnotationsProcessor {
         classes = postBuildTypeInfo(classes);
         processJavaClasses(classes);
         finalizeProperties();
-        createElementsForTypeMappingInfo();
+        createElementsForTypeMappingInfo();        
     }
-
     public void createElementsForTypeMappingInfo() {
         if (this.javaClassToTypeMappingInfos != null && !this.javaClassToTypeMappingInfos.isEmpty()) {
             Set<JavaClass> classes = this.javaClassToTypeMappingInfos.keySet();
@@ -178,6 +180,10 @@ public class AnnotationsProcessor {
                     String xmlMimeType = null;
                     java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
                     Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
+                    Class declJavaType = null;
+                    if(adapterClass != null){
+                    	declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
+                    }
                     if (annotations != null) {
                         for (int j = 0; j < annotations.length; j++) {
                             java.lang.annotation.Annotation nextAnnotation = annotations[j];
@@ -190,21 +196,56 @@ public class AnnotationsProcessor {
                                 }
                             }
                         }
+                    }                                       
+                    
+                    QName qname = null;
+                    String nextClassName = nextClass.getRawName();
+            		                    
+                    if(declJavaType != null){
+                        nextClassName = declJavaType.getCanonicalName();    	    				
                     }
+                    
+                    if(typeMappingInfoToGeneratedClasses != null){
+                        Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
+                        if(generatedClass != null){
+                            nextClassName = generatedClass.getCanonicalName();
+                        }
+                    }
+    	    		
+                    TypeInfo nextTypeInfo = typeInfo.get(nextClassName);
+                    if(nextTypeInfo != null){
+                        qname = new QName(nextTypeInfo.getClassNamespace(), nextTypeInfo.getSchemaTypeName());
+                    } else {
+                        qname = getUserDefinedSchemaTypes().get(nextClassName);
+                        if(qname == null){
+                            if (nextClassName.equals(ClassConstants.ABYTE.getCanonicalName()) || nextClassName.equals(ClassConstants.APBYTE.getCanonicalName()) || nextClassName.equals(Image.class.getCanonicalName()) || nextClassName.equals(Source.class.getCanonicalName()) || nextClassName.equals("javax.activation.DataHandler") ) {
+                                if(xmlAttachmentRef){
+                                    qname = XMLConstants.SWA_REF_QNAME;
+                                }else{
+                                    qname = XMLConstants.BASE_64_BINARY_QNAME;
+                                }
+                            } else if(nextClassName.equals(ClassConstants.OBJECT.getCanonicalName())){
+                               qname = XMLConstants.ANY_TYPE_QNAME;
+                           } else {
+                               Class theClass = helper.getClassForJavaClass(nextClass);
+                               qname = (QName)XMLConversionManager.getDefaultJavaTypes().get(theClass);
+                           }
+                        }
+                    }
+    	    	
+                    if(qname != null){
+                        typeMappingInfoToSchemaType.put(nextInfo, qname);
+                    }
+                    
                     if (nextInfo.getXmlTagName() != null) {
                         ElementDeclaration element = new ElementDeclaration(nextInfo.getXmlTagName(), nextClass, nextClass.getQualifiedName(), false);
                         element.setTypeMappingInfo(nextInfo);
                         element.setXmlMimeType(xmlMimeType);
                         element.setXmlAttachmentRef(xmlAttachmentRef);
-
-                        
-                        if(adapterClass != null) {
-                            Class declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
-                            if(declJavaType != null){
-                                element.setJavaType(helper.getJavaClass(declJavaType));
-                            }
-                        }                                    
-                            
+                                                    
+                        if(declJavaType != null){
+                            element.setJavaType(helper.getJavaClass(declJavaType));
+                        }
                         Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
                         if (generatedClass != null) {
                             element.setJavaType(helper.getJavaClass(generatedClass));
@@ -297,6 +338,7 @@ public class AnnotationsProcessor {
         generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
         generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
         typeMappingInfoToGeneratedClasses = new HashMap<TypeMappingInfo, Class>();
+        typeMappingInfoToSchemaType = new HashMap<TypeMappingInfo, QName>();
         globalElements = new HashMap<QName, ElementDeclaration>();
         localElements = new ArrayList<ElementDeclaration>();
 
@@ -3507,4 +3549,11 @@ public class AnnotationsProcessor {
     public Map<TypeMappingInfo, Class> getTypeMappingInfoToAdapterClasses() {
         return this.typeMappingInfoToAdapterClasses;
     }
+    
+    
+    public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType(){
+    	return this.typeMappingInfoToSchemaType;
+    	
+    }
+    
 }
