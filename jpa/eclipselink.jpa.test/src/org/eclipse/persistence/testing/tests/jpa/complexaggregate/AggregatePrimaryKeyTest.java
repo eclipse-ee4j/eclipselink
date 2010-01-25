@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * BUG 4219210 - EJB30: EMBEDABLE IDS ARE NOT SHARABLE
@@ -27,41 +26,39 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * @version 1.0
  */
 public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
-    protected boolean m_reset = false;    // reset gets called twice on error
-    protected Exception m_exception;
-        
     public AggregatePrimaryKeyTest() {
         setDescription("Tests an aggregate that is also the primary key.");
     }
     
     public void setup () {
         super.setup();
-        m_reset = true;
-        m_exception = null;
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test() throws Exception {
         try {
-            Name sharedName = new Name();
-            sharedName.setFirstName("Tom");
-            sharedName.setLastName("Ware");
+            Name name1 = new Name();
+            name1.setFirstName("Tom");
+            name1.setLastName("Ware");
             
             CountryDweller countryDweller = new CountryDweller();
             countryDweller.setAge(30);
-            countryDweller.setName(sharedName);
+            countryDweller.setName(name1);
             
             CitySlicker citySlicker = new CitySlicker();
             citySlicker.setAge(53);
-            citySlicker.setName(sharedName);
+            // Bug 300696 - Invalid tests: sharing embedded objects is not allowed 
+            // Changed the test to use clone instead of sharing the same Name between the two Entities.
+            Name name1Clone = (Name)name1.clone();
+            citySlicker.setName(name1Clone);
             
-            Name name = new Name();
-            name.setFirstName("Guy");
-            name.setLastName("Pelletier");
+            Name name2 = new Name();
+            name2.setFirstName("Guy");
+            name2.setLastName("Pelletier");
             
             CountryDweller countryDweller2 = new CountryDweller();
             countryDweller2.setAge(65);
-            countryDweller2.setName(name);
+            countryDweller2.setName(name2);
         
             beginTransaction();
             getEntityManager().persist(countryDweller);
@@ -75,7 +72,8 @@ public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
             // Now read them back in and delete them.
             beginTransaction();
             
-            CitySlicker cs = getEntityManager().find(CitySlicker.class, sharedName);
+            // Note that in Identity case name1Clone may no longer have the same id as name1
+            CitySlicker cs = getEntityManager().find(CitySlicker.class, name1Clone);
             CountryDweller cd = getEntityManager().merge(countryDweller);
             CountryDweller cd2 = getEntityManager().merge(countryDweller2);
             
@@ -86,19 +84,7 @@ public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
             commitTransaction();
         } catch (RuntimeException e) {
             rollbackTransaction();
-            m_exception = e;
+            throw e;
         }
-    }
-    
-    public void reset () {
-        if (m_reset) {
-            m_reset = false;
-        }
-    }
-    
-    public void verify() {
-        if (m_exception != null) {
-            throw new TestErrorException("Something went terribly wrong when creating a CountryDweller and a CitySlicker with the same name: " + m_exception.getMessage());
-        }
-    }
+    }    
 }

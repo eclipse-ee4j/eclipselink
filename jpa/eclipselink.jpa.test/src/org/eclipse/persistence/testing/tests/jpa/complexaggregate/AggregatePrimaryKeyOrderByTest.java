@@ -56,7 +56,10 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
             
             CitySlicker citySlicker1 = new CitySlicker();
             citySlicker1.setAge(53);
-            citySlicker1.setName(name1);
+            // Bug 300696 - Invalid tests: sharing embedded objects is not allowed 
+            // Changed the test to use clone instead of sharing the same Name between the two Entities.
+            Name name1Clone = (Name)name1.clone();
+            citySlicker1.setName(name1Clone);
             citySlicker1.setGender("Male");
             getEntityManager().persist(citySlicker1);
             world.addCitySlicker(citySlicker1);
@@ -75,7 +78,10 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
             
             CitySlicker citySlicker2 = new CitySlicker();
             citySlicker2.setAge(41);
-            citySlicker2.setName(name2);
+            // Bug 300696 - Invalid tests: sharing embedded objects is not allowed 
+            // Changed the test to use clone instead of sharing the same Name between the two Entities.
+            Name name2Clone = (Name)name2.clone();
+            citySlicker2.setName(name2Clone);
             citySlicker2.setGender("Male");
             getEntityManager().persist(citySlicker2);
             world.addCitySlicker(citySlicker2);
@@ -94,7 +100,10 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
             
             CitySlicker citySlicker3 = new CitySlicker();
             citySlicker3.setAge(76);
-            citySlicker3.setName(name3);
+            // Bug 300696 - Invalid tests: sharing embedded objects is not allowed 
+            // Changed the test to use clone instead of sharing the same Name between the two Entities.
+            Name name3Clone = (Name)name3.clone();
+            citySlicker3.setName(name3Clone);
             citySlicker3.setGender("Female");
             getEntityManager().persist(citySlicker3);
             world.addCitySlicker(citySlicker3);
@@ -122,11 +131,12 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
             //countryDwellersAreOrdered = ((CountryDweller) cds.elementAt(0)).getAge() == 28 && ((CountryDweller) cds.elementAt(1)).getAge() == 30 && ((CountryDweller) cds.elementAt(2)).getAge() == 48;
         
             // Make sure we delete them    
-            CitySlicker cs1 = getEntityManager().find(CitySlicker.class, name1);
+            // Note that in Identity case name1Clone may no longer have the same id as name1
+            CitySlicker cs1 = getEntityManager().find(CitySlicker.class, name1Clone);
             getEntityManager().remove(cs1);
-            CitySlicker cs2 = getEntityManager().find(CitySlicker.class, name2);
+            CitySlicker cs2 = getEntityManager().find(CitySlicker.class, name2Clone);
             getEntityManager().remove(cs2);
-            CitySlicker cs3 = getEntityManager().find(CitySlicker.class, name3);
+            CitySlicker cs3 = getEntityManager().find(CitySlicker.class, name3Clone);
             getEntityManager().remove(cs3);
             
             CountryDweller cd1 = getEntityManager().merge(countryDweller1);
