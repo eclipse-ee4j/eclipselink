@@ -647,6 +647,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if(this.isIsolated == null) {
             this.isIsolated = Boolean.valueOf(session.getProject().getDefaultIsIsolated());
         }
+        if(this.idValidation == null) {
+            this.idValidation = session.getProject().getDefaultIdValidation();
+        }
     }
     
     /**
@@ -2794,7 +2797,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         
         // Set id validation, zero is allowed for composite primary keys.
         if (getIdValidation() == null) {
-            if (getPrimaryKeyFields().size() > 1) {
+            if (getPrimaryKeyFields().size() > 1 && !usesSequenceNumbers()) {
                 setIdValidation(IdValidation.NULL);
             } else {
                 setIdValidation(IdValidation.ZERO);

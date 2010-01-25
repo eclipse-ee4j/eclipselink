@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.tests.writing.UpdateChangeObjectTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeValueTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateDeepOwnershipTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateToNullTest;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
@@ -132,7 +133,15 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new NullAggregateTest());
         addTest(new UOWHasOnlyDeletesTest());
         //CR 2728
-        addTest(new RegisterNewObjectInIdentityMapNoSeqTest());
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, false, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, true, false));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NULL, true, true));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.ZERO, true, true));
+        addTest(new RegisterNewObjectInIdentityMapNoSeqTest(IdValidation.NEGATIVE, true, true));
         //CR 2783
         addTest(new NestedUnitOfWorkDeleteNewObjectTest());
         //bug 3115160

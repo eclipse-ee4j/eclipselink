@@ -26,6 +26,8 @@ package org.eclipse.persistence.sessions;
 
 import java.util.*;
 import java.io.*;
+
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -90,6 +92,10 @@ public class Project implements Serializable, Cloneable {
     
     /** Default value for ClassDescriptor.isIsolated. */
     protected boolean defaultIsIsolated = false;
+    
+    /** Default value for ClassDescriptor.idValidation. */
+    protected IdValidation defaultIdValidation = null;
+    
     
     /** List of queries - once Project is initialized, these are copied to the Session. */
     protected transient List<DatabaseQuery> queries = null;
@@ -507,6 +513,14 @@ public class Project implements Serializable, Cloneable {
         return this.defaultIsIsolated;
     }
     
+    /** 
+     * PUBLIC:
+     * Return default value for descriptor primary key validation.
+     */
+    public IdValidation getDefaultIdValidation() {
+        return this.defaultIdValidation;
+    }
+    
     /**
      * PUBLIC:
      * Return the descriptor specified for the class.
@@ -646,6 +660,14 @@ public class Project implements Serializable, Cloneable {
      */
     public void setDefaultIsIsolated(boolean defaultIsIsolated) {
         this.defaultIsIsolated = defaultIsIsolated;
+    }
+    
+    /** 
+     * PUBLIC:
+     * Set default value for descriptor primary key validation.
+     */
+    public void setDefaultIdValidation(IdValidation defaultIdValidation) {
+        this.defaultIdValidation = defaultIdValidation;
     }
     
     /**

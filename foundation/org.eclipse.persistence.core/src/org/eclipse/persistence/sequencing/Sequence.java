@@ -53,6 +53,10 @@ public abstract class Sequence implements Serializable, Cloneable {
     // false - copied from platform (or not set at all). 
     protected boolean isCustomQualifier;
     
+    // indicates whether the existing pk value should always be overridden by the sequence.
+    // note that even if set to false sequence always overrides if shouldAcquireValueAfterInsert returns true. 
+    protected boolean shouldAlwaysOverrideExistingValue;
+    
     public Sequence() {
         super();
     }
@@ -353,5 +357,31 @@ public abstract class Sequence implements Serializable, Cloneable {
         } else {
             return qualifier + "." + str;
         }
+    }
+    
+    /**
+     * ADVANCED:
+     * Set that to true if the sequence should always override the existing pk value.
+     */
+    public void setShouldAlwaysOverrideExistingValue(boolean shouldAlwaysOverrideExistingValue) {
+        this.shouldAlwaysOverrideExistingValue = shouldAlwaysOverrideExistingValue;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the existing pk value should always be overridden by the sequence.
+     * As always the version of the method taking seqName is provided for the benefit
+     * of DefaultSequence. 
+     */
+    public boolean shouldAlwaysOverrideExistingValue() {
+        return shouldAlwaysOverrideExistingValue(getName());
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the existing pk value should always be overridden by the sequence.
+     */
+    public boolean shouldAlwaysOverrideExistingValue(String seqName) {
+        return this.shouldAlwaysOverrideExistingValue || shouldAcquireValueAfterInsert();
     }
 }

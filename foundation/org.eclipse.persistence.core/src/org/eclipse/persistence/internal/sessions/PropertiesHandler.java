@@ -23,6 +23,7 @@ import java.security.PrivilegedAction;
 
 import javax.persistence.FlushModeType;
 
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
@@ -193,6 +194,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new ExclusiveConnectionModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
+            addProp(new IdValidationProp());
         }
         
         Prop(String name) {
@@ -608,6 +610,18 @@ public class PropertiesHandler {
                 ExclusiveConnectionMode.Transactional,
                 ExclusiveConnectionMode.Isolated,
                 ExclusiveConnectionMode.Always
+            };
+        }
+    }
+
+    protected static class IdValidationProp extends Prop {
+        IdValidationProp() {
+            super(PersistenceUnitProperties.ID_VALIDATION, IdValidation.ZERO.toString());
+            valueArray = new Object[] { 
+                IdValidation.NULL.toString(),
+                IdValidation.ZERO.toString(),
+                IdValidation.NEGATIVE.toString(),
+                IdValidation.NONE.toString()
             };
         }
     }

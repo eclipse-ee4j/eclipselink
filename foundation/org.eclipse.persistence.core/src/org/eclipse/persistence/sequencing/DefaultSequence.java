@@ -99,6 +99,14 @@ public class DefaultSequence extends Sequence {
 
     /**
      * INTERNAL:
+     * Indicates whether the existing pk value should always be overridden by the sequence.
+     */
+    public boolean shouldAlwaysOverrideExistingValue(String seqName) {
+        return this.shouldAlwaysOverrideExistingValue || getDefaultSequence().shouldAlwaysOverrideExistingValue(seqName);
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates whether several sequencing values should be acquired at a time
      * and be kept by TopLink. This in only possible in case sequencing numbers should
      * be acquired before insert (shouldAcquireValueAfterInsert()==false).

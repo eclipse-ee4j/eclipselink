@@ -12,18 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * IdValidation configures which id values are considered valid when loading
  * from the database. This configuration is set either using the
  * {@link PrimaryKey} annotation or using the {@link ClassDescriptor} API.
- * <p>
- * <i>Note: This configuration is not used to determine if a sequence number is
- * required. To control how sequencing handles zero values in new objects use
- * the {@link PersistenceUnitProperties#ALLOW_ZERO_ID} property.</i>
- * <p>
+ * This configuration is also used to determine if a sequence number is
+ * required.
  * 
  * @see PrimaryKey#validation()
  * @see ClassDescriptor#setIdValidation(IdValidation)
@@ -33,7 +28,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public enum IdValidation {
     /**
      * Only null is invalid All other values are considered valid. This is the
-     * default configuration when composite identifiers are used.
+     * default configuration when composite identifiers are used and sequencing is not used.
      */
     NULL,
 
@@ -42,6 +37,11 @@ public enum IdValidation {
      * default configuration for a simple identifier.
      */
     ZERO,
+
+    /**
+     * null, 0 and negative values are not allowed for ids extending Number and primitive int and long ids. 
+     */
+    NEGATIVE,
 
     /**
      * No identifier validation is performed.

@@ -16,6 +16,8 @@ package org.eclipse.persistence.internal.helper;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.AccessController;
@@ -73,7 +75,11 @@ public class Helper implements Serializable {
     /** Prime the platform-dependent temporary directory */
     protected static String TEMP_DIRECTORY = null;
 
-    /** Backdoor to allow 0 to be used in primary keys. */
+    /** Backdoor to allow 0 to be used in primary keys. 
+     * @deprecated
+     * Instead of setting the flag to true use:
+     * session.getProject().setDefaultIdValidation(IdValidation.NULL)  
+     **/
     public static boolean isZeroValidPrimaryKey = false;
 
     // settings to allow ascertaining attribute names from method names
@@ -2152,13 +2158,21 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Check if the value is null, or 0 (int/long) for primitive ids.
+     * Check if the value is 0 (int/long) for primitive ids.
      */
     public static boolean isEquivalentToNull(Object value) {
-        return (value == null)
-                        || (!isZeroValidPrimaryKey
-                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
-                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
+        return (!isZeroValidPrimaryKey
+                    && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
+                            || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
+    }
+
+    /**
+     * Returns true if the passed value is Number that is negative or equals to zero.
+     */
+    public static boolean isNumberNegativeOrZero(Object value) {
+        return ((value.getClass() == ClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) || 
+                ((value.getClass() == ClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
+                ((value instanceof Number) && (((Number)value).longValue() <= 0));
     }
 
     /**

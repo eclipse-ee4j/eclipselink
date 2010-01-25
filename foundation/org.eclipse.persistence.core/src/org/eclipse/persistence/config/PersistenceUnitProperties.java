@@ -28,7 +28,6 @@ import javax.persistence.Persistence;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -1109,8 +1108,22 @@ public class PersistenceUnitProperties {
      * 
      * @see org.eclipse.persistence.annotations.PrimaryKey
      * @see org.eclipse.persistence.annotations.IdValidation
+     * 
+     * @deprecated replaced by ID_VALIDATION property with value "NULL".
      */
     public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
+
+    /**
+     * The <code>"eclipselink.id-validation"</code> property defines
+     * which primary key componets values are considered invalid.
+     * These values will be also overridden by sequencing.
+     * Note that Identity always overrides any existing id value
+     * and so does any sequence with shouldAlwaysOverrideExistingValue flag set to true.
+     * 
+     * @see org.eclipse.persistence.annotations.PrimaryKey
+     * @see org.eclipse.persistence.annotations.IdValidation
+     */
+    public static final String ID_VALIDATION = "eclipselink.id-validation";
 
     /**
      * Defines EntityManager cache behavior after a call to flush method
