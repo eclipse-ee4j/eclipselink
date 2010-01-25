@@ -22,7 +22,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa2.employee.Address;
 import org.eclipse.persistence.testing.models.wdf.jpa2.employee.ContactInfo;
@@ -63,7 +62,6 @@ public class TestNestedEmbeddables extends JPA2Base {
     }
 
     @Test
-    @Issue(issueid = 1)
     public void testNested() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

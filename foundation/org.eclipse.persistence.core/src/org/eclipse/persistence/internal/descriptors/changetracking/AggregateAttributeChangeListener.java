@@ -51,10 +51,14 @@ public class AggregateAttributeChangeListener extends AttributeChangeListener {
         // Also need to raise the event in the parent, to create a change set for it.
         // Only raise the event in parent if something actually changed.
         if (this.objectChangeSet != null && this.parentListener != null) {
-            this.parentListener.internalPropertyChange(new PropertyChangeEvent(evt.getSource(), parentAttributeName, evt.getOldValue(), evt.getNewValue()));
+            if (evt.getSource() == owner){
+                this.parentListener.internalPropertyChange(new PropertyChangeEvent(evt.getSource(), parentAttributeName, evt.getOldValue(), evt.getNewValue()));
+            } else {
+                // the event's source is not the owner of this change tracking policy - this is a nested aggregate change.
+                this.parentListener.internalPropertyChange(new PropertyChangeEvent(owner, parentAttributeName, evt.getOldValue(), evt.getNewValue()));
+            }
         }
     }
-    
     /**
      * Used to control the parent listener;
      */
