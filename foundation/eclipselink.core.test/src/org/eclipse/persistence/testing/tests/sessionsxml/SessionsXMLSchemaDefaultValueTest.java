@@ -64,7 +64,8 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
             throw new TestErrorException("Employee session is null");
         }
 
-        if (!employeeSession.getDatasourceLogin().getPlatform().getSequenceTableName().equals(XMLSessionConfigProject.SEQUENCE_TABLE_DEFAULT)) {
+        // Bug 300111 - Platform should specify default sequence table 
+        if (!employeeSession.getDatasourceLogin().getPlatform().getSequenceTableName().equals(employeeSession.getPlatform().getDefaultSequenceTableName())) {
             throw new TestErrorException("The sequence table had the wrong default value");
         }
 
@@ -78,7 +79,7 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
 
         // We could check a few others. More can be added later.
         // Most defaults were verified in the debugger at runtime.
-        // The three above were explicitely tested since they were the cause of
+        // The three above were explicitly tested since they were the cause of
         // error for BUG 3454653
         if (employeeSession.getDatasourceLogin().getPlatform().getSequencePreallocationSize() != XMLSessionConfigProject.SEQUENCE_PREALLOCATION_SIZE_DEFAULT) {
             throw new TestErrorException("The sequence preallocation size had the wrong default value");

@@ -122,7 +122,8 @@ public abstract class Sequence implements Serializable, Cloneable {
             Sequence clone = (Sequence)super.clone();
             if (isConnected()) {
                 clone.depth = 1;
-                clone.onDisconnect(getDatasourcePlatform());
+                clone.onDisconnect();
+                clone.setDatasourcePlatform(null);
             }
             return clone;
         } catch (Exception exception) {
@@ -270,7 +271,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * This method is called when Sequencing object is created.
      * If it requires initialization, subclass should override this method.
      */
-    protected abstract void onConnect();
+    public abstract void onConnect();
 
     /**
      * INTERNAL:
@@ -292,7 +293,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * This method is called when Sequencing object is destroyed.
      * If it requires deinitialization, subclass should override this method.
      */
-    protected abstract void onDisconnect();
+    public abstract void onDisconnect();
 
     /**
      * PUBLIC:

@@ -17,7 +17,6 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.sequencing.SeqTestClass2;
 import org.eclipse.persistence.testing.models.sequencing.SampleStringSequencingPolicy;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.TableSequence;
 
 public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
     protected SeqTestClass2 obj1;
@@ -33,11 +32,7 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
 
     protected void setup() {
         originalSequence = getSession().getLogin().getPlatform().getDefaultSequence();
-        String defaultSequenceTableName = TableSequence.defaultTableName;
-        if (originalSequence instanceof TableSequence) {
-            defaultSequenceTableName = ((TableSequence)originalSequence).getTableName();
-        }
-        getSession().getPlatform().setDefaultSequence(new SampleStringSequencingPolicy(originalSequence.getName(), defaultSequenceTableName, originalSequence.getPreallocationSize()));
+        getSession().getPlatform().setDefaultSequence(new SampleStringSequencingPolicy(originalSequence.getName(), "", originalSequence.getPreallocationSize()));
         ((DatabaseSession)getSession()).getSequencingControl().resetSequencing();
     }
 

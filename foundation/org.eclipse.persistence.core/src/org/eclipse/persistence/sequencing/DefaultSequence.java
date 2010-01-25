@@ -160,7 +160,7 @@ public class DefaultSequence extends Sequence {
      * This method is called when Sequencing object is created.
      * It's a chance to do initialization.
      */
-    protected void onConnect() {
+    public void onConnect() {
         qualifier = getDefaultSequence().getQualifier();
     }
 

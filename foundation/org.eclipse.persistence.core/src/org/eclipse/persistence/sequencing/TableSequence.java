@@ -14,6 +14,7 @@ package org.eclipse.persistence.sequencing;
 
 import java.io.StringWriter;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 /**
@@ -28,7 +29,11 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
  * There will be a row in the table for each sequence object.
  */
 public class TableSequence extends QuerySequence {
-    /** Default sequence table name */
+    /** Default sequence table name
+     * @deprecated 
+     * Use an empty string as a default sequence table name instead, 
+     * that triggers usage of platform.getDefaultSequenceTableName() when the sequence is connected.
+     */    
     public static final String defaultTableName = "SEQUENCE";
 
     /** Hold the database table */
@@ -42,7 +47,7 @@ public class TableSequence extends QuerySequence {
     
     public TableSequence() {
         super(false, true);
-        setTableName(defaultTableName);
+        setTableName("");
     }
     
     /**
@@ -50,7 +55,7 @@ public class TableSequence extends QuerySequence {
      */
     public TableSequence(String name) {
         super(name, false, true);
-        setTableName(defaultTableName);
+        setTableName("");
     }
     
     /**
@@ -58,12 +63,12 @@ public class TableSequence extends QuerySequence {
      */
     public TableSequence(String name, int size) {
         super(name, size, false, true);
-        setTableName(defaultTableName);
+        setTableName("");
     }
     
     public TableSequence(String name, int size, int initialValue) {
         super(name, size, initialValue, false, true);
-        setTableName(defaultTableName);
+        setTableName("");
     }
     
     /**
@@ -147,6 +152,13 @@ public class TableSequence extends QuerySequence {
     
     public void setTableName(String name) {
         table = new DatabaseTable(name);
+    }
+    
+    public void onConnect() {
+        if(this.table.getName().length() == 0) {
+            this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
+        }
+        super.onConnect();
     }
 
     protected ValueReadQuery buildSelectQuery() {

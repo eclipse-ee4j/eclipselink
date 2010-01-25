@@ -922,6 +922,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * Returns the table name used by TableSequence by default. 
+     */
+    public String getDefaultSequenceTableName() {
+        return "SEQUENCE";
+    }
+    
+    /**
      * Return the field type object describing this databases platform specific representation
      * of the Java primitive class name.
      */
@@ -1250,7 +1257,11 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     public String getSequenceTableName() {
         if (getDefaultSequence() instanceof TableSequence) {
-            return ((TableSequence)getDefaultSequence()).getTableName();
+            String tableName = ((TableSequence)getDefaultSequence()).getTableName();
+            if(tableName.length() == 0) {
+                tableName = this.getDefaultSequenceTableName();
+            }
+            return tableName;
         } else {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
         }

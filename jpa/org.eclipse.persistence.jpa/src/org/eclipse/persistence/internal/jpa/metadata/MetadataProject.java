@@ -573,12 +573,7 @@ public class MetadataProject {
      */     
     public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema) {
         // Process the default values.
-        String defaultSequenceTableName = TableSequence.defaultTableName;
-        Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
-        if (seq instanceof TableSequence) {
-            defaultSequenceTableName = ((TableSequence)seq).getTableName();
-        }
-        processTable(tableGenerator, defaultSequenceTableName, defaultCatalog, defaultSchema);
+        processTable(tableGenerator, "", defaultCatalog, defaultSchema);
         
         String generatorName = tableGenerator.getGeneratorName();
         
