@@ -13,6 +13,7 @@
  *     tware - added implementation of computeMaxRowsForSQL 
  *     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
  *     Dies Koper (Fujitsu) - added methods to create/drop indices
+ *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -2936,5 +2937,11 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean supportsOuterJoinsWithBrackets() {
         return true;
+    }
+    
+    /**
+     * Used by some platforms during reading of ResultSet to free temporary objects.
+     */
+    public void freeTemporaryObject(Object value) throws SQLException {
     }
 }
