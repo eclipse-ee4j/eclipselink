@@ -124,6 +124,19 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateAttributeChangeListener(descriptor, uow, (AttributeChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute, aggregate)); 
+        
+        // set change trackers for nested aggregates
+        Iterator<DatabaseMapping> i = descriptor.getMappings().iterator();
+        while (i.hasNext()){
+            DatabaseMapping mapping = i.next();
+            if (mapping.isAggregateObjectMapping()){
+                AggregateObjectMapping aggregateMapping = (AggregateObjectMapping)mapping;
+                Object nestedAggregate = aggregateMapping.getAttributeValueFromObject(aggregate);
+                if (nestedAggregate != null && nestedAggregate instanceof ChangeTracker){
+                    descriptor.getObjectChangePolicy().setAggregateChangeListener(aggregate, nestedAggregate, uow, aggregateMapping.getReferenceDescriptor(), aggregateMapping.getAttributeName());
+                }
+            }
+        }
     }
 
     /**
