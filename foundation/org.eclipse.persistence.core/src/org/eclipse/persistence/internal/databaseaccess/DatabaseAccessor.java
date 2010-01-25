@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -1136,10 +1137,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // PERF: only perform blob check on non-optimized types.
                     // CR2943 - convert early if the type is a BLOB or a CLOB.  
                     if (isBlob(type)) {
+                        // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
+                        Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.APBYTE);
+                        platform.freeTemporaryObject(originalValue);
                     }
                     if (isClob(type)) {
+                        // EL Bug 294578 - Store previous value of CLOB so that temporary objects can be freed after conversion
+                        Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.STRING);
+                        platform.freeTemporaryObject(originalValue);
                     }
                     //Bug6068155 convert early if type is Array and Structs.
                     if (isArray(type)){

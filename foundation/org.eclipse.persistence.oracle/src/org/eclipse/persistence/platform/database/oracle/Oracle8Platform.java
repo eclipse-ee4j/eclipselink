@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database.oracle;
 
@@ -281,5 +282,17 @@ public class Oracle8Platform extends OraclePlatform {
     public Object getRefValue(Ref ref,Connection connection) throws SQLException {
         ((oracle.sql.REF)ref).setPhysicalConnectionOf(connection); 
         return ((oracle.sql.REF)ref).getValue();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used by Oracle platforms during reading of ResultSet to free temporary LOBs.
+     */
+    public void freeTemporaryObject(Object value) throws SQLException {
+        if (value instanceof oracle.sql.CLOB && ((oracle.sql.CLOB)value).isTemporary()) {
+            ((oracle.sql.CLOB)value).freeTemporary();
+        } else if (value instanceof oracle.sql.BLOB && ((oracle.sql.BLOB)value).isTemporary()) {
+            ((oracle.sql.BLOB)value).freeTemporary();
+        }
     }
 }
