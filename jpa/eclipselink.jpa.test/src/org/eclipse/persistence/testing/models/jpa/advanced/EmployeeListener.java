@@ -31,7 +31,7 @@ public class EmployeeListener implements EventListener {
     // preUpdate will remove this prefix from firstName and lastName
     public static String PRE_UPDATE_NAME_PREFIX = "PRE_UPDATE_NAME_PREFIX";
     
-    public static final Date UPDATE_DATE = Date.valueOf("2004-1-1");
+    public static final Date UPDATE_DATE = Date.valueOf("2004-01-01");
     
 	@PrePersist
 	public void prePersist(Object emp) {
