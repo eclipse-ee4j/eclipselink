@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -30,6 +31,9 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 
 	@XmlAttachmentRef 
 	public DataHandler attachmentRefField;
+	public String stringField;
+	
+	public List<String> listOfStringsField;
 	
 	public JaxbTypeToSchemaTypeTestCases(String name) {
 		super(name);
@@ -95,7 +99,7 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 		assertNotNull(tmiMap.get(tmi2));
 		assertEquals(XMLConstants.BASE_64_BINARY_QNAME, tmiMap.get(tmi2));
 		assertNotNull(tmiMap.get(tmi));
-		//assertEquals(XMLConstants.SWA_REF_QNAME, tmiMap.get(tmi));
+		assertEquals(XMLConstants.SWA_REF_QNAME, tmiMap.get(tmi));
 	}
 	
 	public void testObject() throws Exception{
@@ -110,5 +114,96 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
 		assertEquals(1, tmiMap.size());
 		assertNotNull(tmiMap.get(tmi));
+	}
+	
+	public void testByteArray() throws Exception{
+		TypeMappingInfo tmi = new TypeMappingInfo();
+		tmi.setType(byte[].class);
+		
+        TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+		assertEquals(0, typeMap.size());
+		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+		assertEquals(1, tmiMap.size());
+		assertNotNull(tmiMap.get(tmi));
+	}
+	
+	public void testStringType() throws Exception{
+		TypeMappingInfo tmi = new TypeMappingInfo();
+		tmi.setType(getClass().getField("stringField").getGenericType());
+		
+        TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+		assertEquals(0, typeMap.size());
+		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+		assertEquals(1, tmiMap.size());
+		assertNotNull(tmiMap.get(tmi));
+	}
+		
+	public void testListofStringType() throws Exception{
+		TypeMappingInfo tmi = new TypeMappingInfo();
+		tmi.setType(getClass().getField("listOfStringsField").getGenericType());
+		
+                TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+		assertEquals(0, typeMap.size());
+		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+		assertEquals(1, tmiMap.size());
+		assertNotNull(tmiMap.get(tmi));
+	}
+	
+	public void testIntegerArray() throws Exception{
+		TypeMappingInfo tmi = new TypeMappingInfo();
+		tmi.setType(Integer[].class);
+		
+                TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+		assertEquals(0, typeMap.size());
+		Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+		assertEquals(1, tmiMap.size());
+		assertNotNull(tmiMap.get(tmi));
+	}
+	
+	public void testSimpleTypes() throws Exception{
+                TypeMappingInfo[] typesToBeBound = new TypeMappingInfo[5];
+		
+		TypeMappingInfo tmi1 = new TypeMappingInfo();
+		tmi1.setType(String.class);
+		
+		TypeMappingInfo tmi2 = new TypeMappingInfo();
+		tmi2.setType(int.class);
+		
+		TypeMappingInfo tmi3 = new TypeMappingInfo();
+		tmi3.setType(Integer.class);
+		
+		TypeMappingInfo tmi4 = new TypeMappingInfo();
+		tmi4.setType(char.class);
+		
+		TypeMappingInfo tmi5 = new TypeMappingInfo();
+		tmi5.setType(Object.class);
+		
+		typesToBeBound[0] = tmi1;
+		typesToBeBound[1] = tmi2;
+		typesToBeBound[2] = tmi3;
+		typesToBeBound[3] = tmi4;
+		typesToBeBound[4] = tmi5;
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(typesToBeBound, null, Thread.currentThread().getContextClassLoader());
+		Map<TypeMappingInfo, QName> types = ctx.getTypeMappingInfoToSchemaType();
+		
+		assertEquals(5, types.size());
+		assertNotNull(types.get(tmi1));
+		assertNotNull(types.get(tmi2));
+		assertNotNull(types.get(tmi3));
+		assertNotNull(types.get(tmi4));
+		assertNotNull(types.get(tmi5));		
 	}
 }
