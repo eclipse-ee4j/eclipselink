@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -303,25 +303,28 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager(m_persistenceUnit);
         
         try {
-            Name sharedName = new Name();
-            sharedName.setFirstName("Tom");
-            sharedName.setLastName("Ware");
+            Name name1 = new Name();
+            name1.setFirstName("Tom");
+            name1.setLastName("Ware");
             
             CountryDweller countryDweller = new CountryDweller();
             countryDweller.setAge(30);
-            countryDweller.setName(sharedName);
+            countryDweller.setName(name1);
             
             CitySlicker citySlicker = new CitySlicker();
             citySlicker.setAge(53);
-            citySlicker.setName(sharedName);
+            // Bug 300696 - Invalid tests: sharing embedded objects is not allowed 
+            // Changed the test to use clone instead of sharing the same Name between the two Entities.
+            Name name1Clone = (Name)name1.clone();
+            citySlicker.setName(name1Clone);
             
-            Name name = new Name();
-            name.setFirstName("Guy");
-            name.setLastName("Pelletier");
+            Name name2 = new Name();
+            name2.setFirstName("Guy");
+            name2.setLastName("Pelletier");
             
             CountryDweller countryDweller2 = new CountryDweller();
             countryDweller2.setAge(65);
-            countryDweller2.setName(name);
+            countryDweller2.setName(name2);
         
             beginTransaction(em);
             em.persist(countryDweller);
@@ -335,7 +338,8 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
             // Now read them back in and delete them.
             beginTransaction(em);
             
-            CitySlicker cs = em.find(CitySlicker.class, sharedName);
+            // Note that in Identity case name1Clone may no longer have the same id as name1
+            CitySlicker cs = em.find(CitySlicker.class, name1Clone);
             CountryDweller cd = em.merge(countryDweller);
             CountryDweller cd2 = em.merge(countryDweller2);
             
