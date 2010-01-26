@@ -134,6 +134,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         readAndWriteSuite.addTest(new ProjectXMLDatabaseTableNameTest());
         readAndWriteSuite.addTest(new ProjectXMLOrderByQueryKeysTest());
         readAndWriteSuite.addTest(new ProjectXMLQueryManagerQueryOrderTest());
+        readAndWriteSuite.addTest(new EventListenerCollectionTest()); //bug 295383
         addTest(readAndWriteSuite);
 
         TestSuite mappingSuite = new TestSuite();
