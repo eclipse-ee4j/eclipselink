@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,6 +27,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     01/26/2010-2.0.1 Guy Pelletier 
+ *       - 299893: @MapKeyClass does not work with ElementCollection
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -48,6 +50,7 @@ public class InheritedTableManager extends TableCreator {
         
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_COURSES_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AUDIO_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table());
@@ -874,6 +877,45 @@ public class InheritedTableManager extends TableCreator {
         table.addField(fieldAUDIO);
         
         table.addForeignKeyConstraint("FK_EC_AUD", "ID", "ID", "EXPERT_CONSUMER");
+    
+        return table;
+    }
+    
+    
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_COURSES_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EXPERT_COURSES");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("EBC_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
+        fieldAWARDS_KEY.setName("COURSE");
+        fieldAWARDS_KEY.setTypeName("VARCHAR");
+        fieldAWARDS_KEY.setSize(40);
+        fieldAWARDS_KEY.setShouldAllowNull(false);
+        fieldAWARDS_KEY.setIsPrimaryKey(false);
+        fieldAWARDS_KEY.setUnique(true);
+        fieldAWARDS_KEY.setIsIdentity(false);
+        table.addField(fieldAWARDS_KEY);
+        
+        FieldDefinition fieldAWARD_CODE = new FieldDefinition();
+        fieldAWARD_CODE.setName("COURSE_GRADE");
+        fieldAWARD_CODE.setTypeName("VARCHAR");
+        fieldAWARD_CODE.setSize(2);
+        fieldAWARD_CODE.setShouldAllowNull(false);
+        fieldAWARD_CODE.setIsPrimaryKey(false);
+        fieldAWARD_CODE.setUnique(false);
+        fieldAWARD_CODE.setIsIdentity(false);
+        table.addField(fieldAWARD_CODE);
     
         return table;
     }
