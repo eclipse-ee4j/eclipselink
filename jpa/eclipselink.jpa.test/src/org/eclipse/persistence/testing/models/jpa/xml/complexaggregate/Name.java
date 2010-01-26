@@ -15,7 +15,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.complexaggregate;
 
-public class Name  {
+public class Name implements Cloneable {
     private int id;
 	private String firstName;
 	private String lastName;
@@ -48,5 +48,13 @@ public class Name  {
     
     public String toString() {
         return firstName + " " + lastName;
+    }
+    
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
     }
 }
