@@ -187,6 +187,16 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
+     * INTERNAL:
+     * In SQLServer local temporary table created by one 
+     * PreparedStatement can't be used in another PreparedStatement. 
+     * Workaround is to use Statement instead of PreparedStatement.
+     */
+    public boolean dontBindUpdateAllQueryUsingTempTables() {
+        return true;
+    }
+    
+    /**
      * Used for batch writing and sp defs.
      */
     public String getBatchDelimiterString() {
